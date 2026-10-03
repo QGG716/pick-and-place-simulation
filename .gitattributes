@@ -70,3 +70,6 @@ docs/experiments/m710_top_row_planning_only_20261002/** -text -whitespace
 
 # Preserve this planning-only experiment without text conversion.
 docs/experiments/m710_top_row_planning_only_20261003/** -text -whitespace
+
+# Preserve static-prior planning-only evidence without text conversion.
+docs/experiments/m710_static_prior_fast_20261003/** -text -whitespace

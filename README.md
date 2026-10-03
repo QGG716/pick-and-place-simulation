@@ -1,3 +1,9 @@
+# 当前实验：静态先验辅助顶排五箱 29.687 秒（2026-10-04）
+
+同一 GPU 服务器新批次已完成 5/5；T_plan_5=29.687 秒，T_online_5=30.041 秒，未达到五箱 ≤1 秒。整批 OMPL 0 次；同机任务级 c03/c04 对照分别改善约 79.3%/47.8%。结果为 PLANNING_ONLY_NOT_EXECUTABLE，qualification_status=NOT_EVALUATED。详见[报告](docs/m710_static_prior_fast_20261003.md)与[数据](docs/experiments/m710_static_prior_fast_20261003/summary.json)。
+
+---
+
 # 当前实验：修复静止 place 错误拒绝，新的五箱纯规划 129.041 秒（2026-10-03）
 
 GPU 服务器已完成新的连续 5/5 planning-only 批次。c00/c04 同服务器局部对照分别为 462.276 → 10.765 秒、202.405 → 31.426 秒。修复成功单点轨迹被错误拒绝的问题；结果仍为 PLANNING_ONLY_NOT_EXECUTABLE，执行资格 NOT_EVALUATED。详见[本轮报告](docs/m710_top_row_planning_only_optimization_20261003.md)与[实测 JSON](docs/experiments/m710_top_row_planning_only_20261003/summary.json)。

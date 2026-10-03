@@ -1,0 +1,9 @@
+{
+  "started_utc": "2026-10-03T16:05:36.235563+00:00",
+  "exit_code": 0,
+  "process_wall_s": 31.90240908227861,
+  "cpu_user_s": 31.083517,
+  "cpu_system_s": 0.8756079999999999,
+  "max_child_rss_kib": 1878600,
+  "scope": "Entire fresh Python invocation and native worker; includes interpreter imports, initialization, planning, scene updates and output delivery."
+}

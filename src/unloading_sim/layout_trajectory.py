@@ -2690,6 +2690,92 @@ class LayoutTrajectoryConnector:
                 }
         self._last_extraction_attempts = attempts
 
+    def _static_prior_front_channel_goal(self, start, extraction_end, outward):
+        """A bounded workspace heuristic, never a joint-family compatibility proof."""
+        if (not getattr(self, "planning_only", False)
+                or getattr(self, "planning_mode", "cold_from_scratch") != "static_prior_fast"
+                or not getattr(self, "static_prior_loaded", False)):
+            return None
+        scene = getattr(self, "native_scene", None)
+        if scene is None:
+            return None
+        direction = np.asarray(outward, dtype=float)
+        norm = float(np.linalg.norm(direction))
+        if not np.isfinite(norm) or norm <= 1e-12:
+            return None
+        direction = direction / norm
+        if direction[0] >= -1e-9:
+            return None
+        stack = scene.policy.layout_validation.layout.data["carton_stack"]
+        virtual = np.asarray(scene.policy.data["tool_frame_contract"]["T_flange_virtual_task_tcp"])
+        # Same first-front-plane formula as static_prior.layout_portal_poses;
+        # no stored query q, path, or successful connection is read here.
+        plane_x = (float(stack["front_face_x_m"]) - float(stack["carton_size_xyz_m"][0])
+                   - float(np.linalg.norm(virtual[:3, 3])) - .05)
+        first, actual = self.robot.fk(start), self.robot.fk(extraction_end)
+        used = float(np.linalg.norm(actual[:3, 3] - first[:3, 3]))
+        to_plane = float((plane_x - actual[0, 3]) / direction[0])
+        distance = min(to_plane, self.budget.maximum_extraction_m - used)
+        if not np.isfinite(distance) or distance <= 1e-6:
+            return None
+        goal = actual.copy()
+        goal[:3, 3] += direction * distance
+        evidence = dict(source="CONFIGURATION_FRONT_CHANNEL_HEURISTIC", stage="transit",
+            compatibility_status="HEURISTIC_PENDING_CURRENT_PRIOR_CONNECTION",
+            direction_world=direction.tolist(), front_plane_x_m=plane_x,
+            extraction_distance_m=used, connection_distance_m=distance,
+            total_distance_bound_m=self.budget.maximum_extraction_m,
+            requested_front_plane_reached=bool(goal[0, 3] <= plane_x + 1e-12),
+            geometry_or_contact_permissions_changed=False, history_solution_input=False)
+        return goal, evidence
+
+    def _extraction_with_prior_exit_options(self, start, attachment, obstacles, tracker,
+                                           outward, *, seed):
+        """Keep the original extraction and its free-space extension as separate stages."""
+        attempted = False
+        enabled = (getattr(self, "planning_only", False)
+            and getattr(self, "planning_mode", "cold_from_scratch") == "static_prior_fast"
+            and getattr(self, "static_prior_loaded", False))
+        for path, released_tracker, failure, evidence in self._extraction_options(
+                start, attachment, obstacles, tracker, outward, seed=seed):
+            connection_evidence = None
+            if enabled and failure is None and not attempted:
+                attempted = True
+                selected = next(a for a in evidence["attempts"]
+                    if a["index"] == evidence["selected_attempt"])
+                # Extend only the existing straight outward exit. Bent/other
+                # directions keep their original candidate definitions.
+                requested = (self._static_prior_front_channel_goal(start, path[-1], outward)
+                    if selected["search"]["route"] == "straight"
+                    and np.allclose(selected["direction_world"],
+                        np.asarray(outward) / np.linalg.norm(outward), atol=1e-12, rtol=0.)
+                    else None)
+                if requested is not None:
+                    goal, connection_evidence = requested
+                    prefix, connection_failure, search = self._cartesian(
+                        path[-1], goal, obstacles, seed=seed + 9001,
+                        attachment=attachment, stage="transit",
+                        purpose=MotionPurpose.FREE_LOADED_TRANSFER)
+                    # No initial_proximity/support permission crosses the
+                    # release boundary. This is a native transit child of the
+                    # actual extraction endpoint, with normal payload rules.
+                    if connection_failure is None:
+                        connection_failure = self._extraction_reserve_failure(
+                            prefix[-1], attachment, obstacles)
+                    connection_evidence.update(search=search, failure=connection_failure,
+                        status="ACCEPTED" if connection_failure is None else "REJECTED")
+                    if interrupts_generation(connection_failure):
+                        yield [], released_tracker, connection_failure, evidence, [], connection_evidence
+                        return
+                    if connection_failure is None:
+                        connection_evidence["actual_end_tcp_world_m"] = self.robot.fk(prefix[-1])[:3, 3].tolist()
+                        yield path, released_tracker, None, evidence, prefix, {
+                            **connection_evidence, "selected": True}
+            # Reuse the successful original extraction and its original native
+            # receipt if the extension fails or its downstream candidates fail.
+            yield path, released_tracker, failure, evidence, [], (
+                {**connection_evidence, "selected": False} if connection_evidence else None)
+
     def _extraction_reserve_failure(self, q, attachment, obstacles):
         required = max(self.collision_policy.pair_clearance("external", self.collision_margin_m)
                        + self.contact_tolerance_m, self.collision_policy.free_space_clearance_m)
@@ -3000,15 +3086,20 @@ class LayoutTrajectoryConnector:
         if failure is not None:
             return None, failure, trace
 
-        extraction_options = self._extraction_options(
+        extraction_options = self._extraction_with_prior_exit_options(
             support_release[-1], attachment, payload_obstacles, tracker, outward, seed=seed + 50)
         all_exit_attempts = []
         self._placement_remaining = self.budget.stage_connection_iterations
         self._local_transit_remaining = self.budget.local_transit_cartesian_sample_budget
-        for exit_index, (extraction, released_tracker, failure, evidence) in enumerate(extraction_options):
+        for exit_index, (extraction, released_tracker, failure, evidence, transit_prefix, front_connection) in enumerate(extraction_options):
             trace["stages"]["extraction"] = evidence
+            if front_connection is not None:
+                trace["stages"]["front_channel_connection"] = front_connection
+            else:
+                trace["stages"].pop("front_channel_connection", None)
             if failure is not None:
                 return None, failure, trace
+            transfer_start = transit_prefix[-1] if transit_prefix else extraction[-1]
             supports = tuple(
                 ConveyorSupport(box, self.surface_directions_world.get(box.name))
                 for box in all_obstacles
@@ -3029,7 +3120,7 @@ class LayoutTrajectoryConnector:
                                 for surface in support_bodies)]
             placement_generation_started = perf_counter()
             placements = generate_conveyor_placements(target, supports or (receiver,),
-                occupied=occupied, preferred_point_world=attachment.box_at(extraction[-1]).center,
+                occupied=occupied, preferred_point_world=attachment.box_at(transfer_start).center,
                 policy=replace(self.placement_policy, sampling_edge_reserve_m=self.budget.receiver_edge_reserve_m),
                 contact_normal_local=(np.linalg.inv(rigid.tcp_from_box)[:3, :3]
                                       @ np.array([0.0, 0.0, 1.0])))
@@ -3077,7 +3168,7 @@ class LayoutTrajectoryConnector:
                         released_tracker=released_tracker, payload_obstacles=payload_obstacles,
                         placement=placement, selected_supports=[box for box in support_bodies if box.name in placement.receiver_names],
                         trace=branch_trace, seed=seed + placement_index * 1000, release_height=height,
-                        transit_hint=transit_hint)
+                        transit_hint=transit_hint, transit_prefix=transit_prefix)
                     record = {"height_m": height, "failure": failure}
                     if interrupts_generation(failure):
                         if not release_choices:
@@ -3145,7 +3236,9 @@ class LayoutTrajectoryConnector:
             if residence_fallback is not None:
                 return residence_fallback
             all_exit_attempts.append({"exit": exit_index, "extraction": evidence,
-                                      "placements": placement_attempts})
+                                      "placements": placement_attempts,
+                                      **({"front_channel_connection": front_connection}
+                                         if front_connection is not None else {})})
 
         trace["exit_attempts"] = all_exit_attempts
         return None, {"reason": "EXTRACTION_AND_PLACEMENT_CANDIDATES_EXHAUSTED", "stage": "place",
@@ -3579,7 +3672,8 @@ class LayoutTrajectoryConnector:
     def _finish_place_branch(self, *, target, face, requested_virtual_contact, home_q,
             contact_q, physical_contact, rigid, attachment, selection, pregrasp, contact,
             support_release, extraction, released_tracker, payload_obstacles, placement,
-            selected_supports, trace, seed, release_height=0., transit_hint=None, history_hint=None):
+            selected_supports, trace, seed, release_height=0., transit_hint=None, history_hint=None,
+            transit_prefix=None):
         if self.budget.proof_of_concept:
             policy = self.budget.release_policy()
             policy.ideal_heights()
@@ -3592,6 +3686,7 @@ class LayoutTrajectoryConnector:
         failure = self._extraction_reserve_failure(extraction[-1], attachment, payload_obstacles)
         if failure is not None:
             return None, failure, trace
+        transfer_start = transit_prefix[-1] if transit_prefix else extraction[-1]
         desired_box = placement.payload.world_from_local.copy()
         desired_box[2, 3] += release_height
         support_z = float(np.min(placement.payload.corners()[:, 2]))
@@ -3635,7 +3730,7 @@ class LayoutTrajectoryConnector:
                     dict(source='HISTORICAL_LOADED_PREFIX_CURRENT_CONTRACT_RECHECK'))
             if getattr(self, '_local_transit_remaining', 0) > 0:
                 def local():
-                    path, failure, evidence = self._bounded_local_transit(extraction[-1],
+                    path, failure, evidence = self._bounded_local_transit(transfer_start,
                         self.robot.fk(goal_q), payload_obstacles, attachment, seed=seed + 55)
                     trace['stages']['local_transit'] = evidence
                     return path, failure, evidence
@@ -3643,8 +3738,8 @@ class LayoutTrajectoryConnector:
 
         preplace_q, transit, failure, evidence = self._connect_pose(
                 preplace_virtual,
-                [extraction[-1], contact_q, home_q],
-                extraction[-1],
+                [transfer_start, contact_q, home_q],
+                transfer_start,
                 payload_obstacles,
                 ik_seed=seed + 60,
                 connection_seed=seed + 70,
@@ -3656,6 +3751,10 @@ class LayoutTrajectoryConnector:
         trace["stages"]["transit"] = evidence
         if preplace_q is None or failure is not None:
             return None, failure, trace
+        if transit_prefix:
+            # Both native children retain their own stage IDs/parents. The
+            # public transit range includes both, never the extraction range.
+            transit = [*transit_prefix, *transit[1:]]
 
         place, failure, evidence = self._cartesian(
                 preplace_q,

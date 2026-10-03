@@ -1,0 +1,24 @@
+{
+  "hostname": "autodl-container-3thhhs3jx0-8e323128",
+  "host_os": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+  "cpu": "Architecture:                    x86_64\nCPU op-mode(s):                  32-bit, 64-bit\nAddress sizes:                   52 bits physical, 57 bits virtual\nByte Order:                      Little Endian\nCPU(s):                          208\nOn-line CPU(s) list:             0-207\nVendor ID:                       GenuineIntel\nModel name:                      Intel(R) Xeon(R) Platinum 8470Q\nCPU family:                      6\nModel:                           143\nThread(s) per core:              2\nCore(s) per socket:              52\nSocket(s):                       2\nStepping:                        8\nCPU max MHz:                     3800.0000\nCPU min MHz:                     800.0000\nBogoMIPS:                        4200.00\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single intel_ppin cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities\nVirtualization:                  VT-x\nL1d cache:                       4.9 MiB (104 instances)\nL1i cache:                       3.3 MiB (104 instances)\nL2 cache:                        208 MiB (104 instances)\nL3 cache:                        210 MiB (2 instances)\nNUMA node(s):                    2\nNUMA node0 CPU(s):               0-51,104-155\nNUMA node1 CPU(s):               52-103,156-207\nVulnerability Itlb multihit:     Not affected\nVulnerability L1tf:              Not affected\nVulnerability Mds:               Not affected\nVulnerability Meltdown:          Not affected\nVulnerability Mmio stale data:   Not affected\nVulnerability Retbleed:          Not affected\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence\nVulnerability Srbds:             Not affected\nVulnerability Tsx async abort:   Not affected",
+  "loadavg": "2.29 3.89 4.62 4/8269 3498\n",
+  "cpu_quota": "2200000 100000\n",
+  "memory_limit_bytes": "118111600640\n",
+  "memory": "total        used        free      shared  buff/cache   available\nMem:           1.0Ti        32Gi       247Gi       4.7Gi       728Gi       964Gi\nSwap:             0B          0B          0B",
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/md0        140G  119G   22G  85% /root/autodl-tmp",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, 595.71.05, 97887 MiB, 0 MiB, 100 %",
+  "rootfs": "/root/autodl-tmp/m710-moveit2-20260922/rootfs",
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "cpu_affinity": "0-21",
+    "build_parallelism": 2,
+    "build_type": "Release"
+  },
+  "gpu_planner_backend_used": false,
+  "observation": "GPU utilization is a device-wide observation; this planner uses CPU MoveIt/Pilz/OMPL/FCL.",
+  "baseline_source_tree": "6c8f059f49baa4483aed22193752ac2f83ca045e",
+  "integration_base_tree": "6c8f059f49baa4483aed22193752ac2f83ca045e",
+  "baseline_worker_sha256": "5126aa3275288827554ab8e14db98d1e3eca8b5191645cb3430892a35e049d09"
+}

@@ -1,0 +1,18 @@
+正式五箱轻量证据审查
+审查结论：CONSISTENT_WITH_AVAILABLE_EVIDENCE；47 项元数据/边界核对未发现不一致。
+源码：00352b6ff2ab3114b5248b266a0f3e955dd30f08。
+运行：planning-only-c372f920eaa748c5a2146e083e3c8d1c。
+
+5/5 完成，顺序 c02、c01、c03、c00、c04。
+T_plan_5 = 29.68708397448063 s；T_online_5 = 30.040590232238173 s。
+c00 = 4.322031527757645 s；c04 = 12.036047771573067 s。
+共享 1 s 阶段完成 0/5；慢速补全规划 = 28.71851659938693 s；未达到 1 s 目标。
+
+初始 q 与冻结配置完全一致；4 个箱间接口逐数值相等。每箱独立 Task，选中链均为 pregrasp -> contact -> extraction -> transit -> transit -> place semantic event -> withdrawal。两段 transit 保留独立父子身份及正常碰撞权限。5 个 place 事件无伪造轨迹点，terminal_q 与前驱实际末点完全一致。
+选中记录：7 次静态先验节点复用、3 次在线直接连接、20 次原生运动、5 个语义事件。实际全部尝试包含 LIN 20、PTP 1、IK 21、OMPL 0；另有失败尝试保留在计时/诊断中。
+释放事件先于撤离结束，撤离 receipt 保留正确目标及实际放置姿态，native process evidence 显示已解除附着。未卸邻箱位置和尺寸与初始记录一致；只按完成顺序移除。
+T_plan 为单箱墙钟求和；T_online = batch_wall + result_file_write。场景更新、bookkeeping、写出只计一次；原生/IK/通信分项未重复加总。初始化独立列出。
+
+证据限制：完整 submitted request/world inventory 未保存。撤离目标存在由 accepted target context、native process evidence 和冻结代码 [*obstacles, placed] 联合支持；没有独立的该时刻 native scene inventory。条件零运动 support-release 不产生独立 native motion。审查只读现有端点和元数据，不做逐采样扫描或任何几何复检。
+所有输出仍为 PLANNING_ONLY_NOT_EXECUTABLE，qualification_status = NOT_EVALUATED；原跳过项保持 SKIPPED_PLANNING_ONLY。
+机器可读详情及输入 SHA256：verification.json。

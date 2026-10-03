@@ -136,6 +136,7 @@ def call_summary(c):
             "pipeline_id", "planner_id", "native_solver_calls", "mtc_plan_s", "native_output_check_s",
             "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
             "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
+            "generation_source", "semantic_event", "prior_usage", "prior_query_s", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
             "native_output_status", "authoritative_status", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
@@ -146,13 +147,37 @@ def call_summary(c):
     counts = {name: sum(int(r.get("native_solver_calls", {}).get(name, 0))
                        for r in c.native_evidence) for name in ("PTP", "LIN", "OMPL")}
     counts["IK"] = sum(int(r.get("native_ik_calls", 0)) for r in c.native_ik_evidence)
-    return dict(counts=counts, stages=stages, ik=[{k: r[k] for k in (
-        "stage", "status", "ik_s", "elapsed_s", "authority_failure") if k in r} for r in c.native_ik_evidence],
+    return dict(counts=counts, stages=stages,
+        prior_hits=sum(r.get("prior_usage",{}).get("prior_hit",False) and r.get("status")=="SUCCESS" for r in c.native_evidence),
+        direct_short_connections=sum(r.get("generation_source")=="NATIVE_DIRECT_CONNECTION" and r.get("status")=="SUCCESS" for r in c.native_evidence),
+        prior_nodes_reused=sum(r.get("prior_usage",{}).get("prior_nodes_reused",0) for r in c.native_evidence if r.get("status")=="SUCCESS"),
+        prior_edges_reused=sum(r.get("prior_usage",{}).get("prior_edges_reused",0) for r in c.native_evidence if r.get("status")=="SUCCESS"),
+        prior_query_s=sum(r.get("prior_query_s",0.) for r in c.native_evidence),
+        motion_request_round_trip_s=sum(r.get("request_round_trip_s",0.) for r in c.native_evidence),
+        prior_misses=sum(r.get("pipeline_id")=="static_prior" and r.get("status")!="SUCCESS" for r in c.native_evidence),
+        semantic_events=sum(r.get("generation_source")=="SEMANTIC_EVENT" for r in c.native_evidence),
+        local_repairs=0, slow_ompl_calls=counts["OMPL"],
+        ik=[{k: r[k] for k in (
+        "stage", "status", "ik_s", "elapsed_s", "request_round_trip_s", "native_solver_s",
+        "planning_phase", "fast_phase_overrun_s", "batch_status", "batch_seed_index",
+        "batch_consume_count", "native_ik_calls", "authority_failure") if k in r} for r in c.native_ik_evidence],
         native_solver_s=sum(r.get("mtc_plan_s", 0) for r in c.native_evidence),
         ik_solver_s=sum(r.get("ik_s", 0) for r in c.native_ik_evidence),
         ik_including_ipc_s=sum(r.get("elapsed_s", 0) for r in c.native_ik_evidence),
         skipped_calls=dict(c.skipped_calls), independent_path_checks_executed=len(c.authority_path_evidence),
         validated_stage_records=len(c.native_verified), history_and_legacy=dict(c._cold_counters))
+
+
+def online_delivery_timing(summary, result_file_write_s):
+    """The batch clock already includes planning, scene updates and bookkeeping."""
+    batch_s = summary["batch_wall_s"]
+    bookkeeping_s = max(0., batch_s-summary["cumulative_attempted_plan_s"]-summary["scene_update_s"])
+    online_s = batch_s+result_file_write_s
+    return dict(status=MARKER, qualification_status="NOT_EVALUATED",
+        result_file_write_s=result_file_write_s, batch_bookkeeping_s=bookkeeping_s,
+        T_online_5_s=online_s if summary["completed_count"] == 5 else None,
+        attempted_online_s=online_s,
+        excluded="write_timing.json, final timing accounting and final stdout")
 
 
 def main():
@@ -162,6 +187,10 @@ def main():
     parser.add_argument("--worker-binary", required=True, type=Path)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--seed", type=int, default=71070)
+    parser.add_argument("--planning-mode", choices=("cold_from_scratch", "static_prior_fast"), default="cold_from_scratch")
+    parser.add_argument("--static-prior", type=Path)
+    parser.add_argument("--fast-phase-budget-s", type=float, default=1.)
+    parser.add_argument("--slow-completion", action="store_true", help="After shared fast phase, continue the same tasks within the unchanged delivery budget")
     parser.add_argument("--stage-budget-s", type=float, default=300.)
     parser.add_argument("--box-budget-s", type=float, default=1800.)
     parser.add_argument("--batch-budget-s", type=float, default=7200.)
@@ -170,6 +199,10 @@ def main():
     parser.add_argument("--diagnostic-input", type=Path,
         help="Fixed-input single-box diagnostic only; JSON with target, start_q_rad, removed_targets, seed_offset")
     args = parser.parse_args()
+    if args.planning_mode == "static_prior_fast" and args.static_prior is None:
+        parser.error("static_prior_fast requires --static-prior")
+    if args.fast_phase_budget_s <= 0 or not np.isfinite(args.fast_phase_budget_s):
+        parser.error("fast phase budget must be finite and positive")
     diagnostic = json.loads(args.diagnostic_input.read_text()) if args.diagnostic_input else None
     if diagnostic is not None:
         q_input = np.asarray(diagnostic["start_q_rad"], dtype=float)
@@ -191,6 +224,7 @@ def main():
     if built.connector is None:
         raise RuntimeError(built.failure_reason)
     c = PlanningOnlyConnector.from_existing(built.connector, scene, args.worker_command,
+        planning_mode=args.planning_mode,
         native_budget=dict(task_wall_time_s=args.box_budget_s, stage_wall_time_s=args.stage_budget_s,
                            ipc_timeout_s=args.ipc_timeout_s))
     try:
@@ -208,6 +242,10 @@ def main():
             process_family_by_support=dict(strategy.get("surface_process_families", {})),
             allowed_families_by_process={k: tuple(v) for k,v in strategy.get("allowed_placement_families", {}).items()},
             overlap_process_priority=tuple(strategy.get("overlap_process_priority", ["longitudinal", "transverse"])))
+        if args.planning_mode == "static_prior_fast":
+            from unloading_sim.static_prior import placement_policy_fingerprint
+            c.static_prior_placement_policy_sha256 = placement_policy_fingerprint(policy)
+            c.load_static_prior(args.static_prior)
         q = np.asarray(policy.layout_validation.initial_q).copy()
         sequence = RowUnloadingState(config=RowSequencePolicy(
             row_height_fraction=float(strategy.get("row_height_fraction", .05)),
@@ -233,6 +271,9 @@ def main():
         summary = dict(schema="m710_top_row_planning_only_batch_v1", status=MARKER,
             run_id="planning-only-" + uuid.uuid4().hex, source_commit=args.source_commit,
             command=[sys.executable, *sys.argv], seed=args.seed, budgets=budgets,
+            planning_mode=args.planning_mode, static_prior=getattr(c, "static_prior_metadata", None),
+            fast_phase_budget_s=args.fast_phase_budget_s if args.planning_mode == "static_prior_fast" else None,
+            slow_completion_allowed=args.slow_completion,
             environment=dict(python=platform.python_version(), platform=platform.platform(),
                 native=c.native_startup, worker_sha256=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()),
             initial_state_source="离线规划基准，初始机器人静止，场景采用配置几何，非本次物理实测状态",
@@ -246,11 +287,17 @@ def main():
             preload=preload_result, development_prepare_only=args.prepare_only, boxes=[])
         trajectories, completed = [], []
         batch_start = perf_counter()
+        if args.planning_mode == "static_prior_fast":
+            c._fast_phase_deadline_monotonic = batch_start + args.fast_phase_budget_s
+            c._slow_completion_allowed = args.slow_completion
+        fast_completed = 0
         if not args.prepare_only:
             for index in ([int(diagnostic["seed_offset"])] if diagnostic else range(5)):
                 scene_started = perf_counter()
                 current = next_scene(scene, initial_removed + completed, q, c.robot)
+                selection_started = perf_counter()
                 selection = rank(current, sequence, c, q)
+                selection_s = perf_counter()-selection_started
                 target = selection.candidates[0].carton
                 if diagnostic and target.name != diagnostic["target"]:
                     raise ValueError("DIAGNOSTIC_TARGET_ORDER_CHANGED")
@@ -265,12 +312,14 @@ def main():
                                                   stage="pregrasp", target_contact=target)
                 request.update(op="inspect", inspect_pairs=[])
                 prepared = c.native.request(request)
-                scene_s = perf_counter()-scene_started
+                scene_s = perf_counter()-scene_started-selection_s
                 box_started = perf_counter()
                 c.start_planning_request(box_started)
                 c.native_task_id = "planning-only-" + uuid.uuid4().hex
                 c._native_task_started = box_started
                 c._request_deadline_monotonic = min(box_started+args.box_budget_s, batch_start+args.batch_budget_s)
+                if args.planning_mode == "static_prior_fast" and not args.slow_completion:
+                    c._request_deadline_monotonic = min(c._request_deadline_monotonic, c._fast_phase_deadline_monotonic)
                 c._deadline_monotonic = c._request_deadline_monotonic
                 c._final_export_reserve_s = 0.
                 c.skipped_calls.clear()
@@ -279,10 +328,18 @@ def main():
                     trajectory, detail = plan_box(c, current, target, q, args.seed+index)
                 except Exception as exc:
                     detail = dict(last_failure={"reason": type(exc).__name__, "detail": str(exc)})
-                elapsed = perf_counter()-box_started
+                returned_at = perf_counter()
+                elapsed = returned_at-box_started+selection_s
+                fast_complete = trajectory is not None and (args.planning_mode != "static_prior_fast" or returned_at <= c._fast_phase_deadline_monotonic)
+                fast_completed += int(fast_complete)
+                fast_deadline = getattr(c,"_fast_phase_deadline_monotonic",returned_at)
+                fast_plan_s = max(0., min(returned_at,fast_deadline)-box_started) + max(0., min(selection_started+selection_s,fast_deadline)-selection_started)
                 row = dict(order=index+1, target=target.name, complete=trajectory is not None,
                     plan_s=elapsed, cumulative_plan_s=sum(b["plan_s"] for b in summary["boxes"])+elapsed,
-                    scene_update_s=scene_s, start_q_rad=q.tolist(), task_id=c.native_task_id,
+                    scene_update_s=scene_s, candidate_ordering_s=selection_s, start_q_rad=q.tolist(), task_id=c.native_task_id,
+                    completed_within_fast_phase=fast_complete,
+                    fast_phase_plan_s=fast_plan_s,
+                    slow_completion_plan_s=max(0.,elapsed-fast_plan_s),
                     scene_cartons=len(current.cartons), scene_prepared=prepared,
                     row_selection=selection.as_dict(), calls=call_summary(c), **detail)
                 if trajectory is not None:
@@ -303,6 +360,9 @@ def main():
                 args.diagnostic_input.read_bytes()).hexdigest(), fresh_five_box_batch=False)
         summary.update(batch_wall_s=perf_counter()-batch_start, completed_count=len(completed),
             completed_targets=completed, missing_targets=sorted(top_ids-set(completed)),
+            fast_phase_completed_count=fast_completed,
+            target_1s_achieved=len(completed)==5 and sum(b["plan_s"] for b in summary["boxes"])<=1.,
+            slow_completion_plan_s=sum(b["slow_completion_plan_s"] for b in summary["boxes"]),
             cumulative_attempted_plan_s=sum(b["plan_s"] for b in summary["boxes"]),
             T_plan_diagnostic_s=sum(b["plan_s"] for b in summary["boxes"]) if diagnostic else None,
             T_plan_5_s=sum(b["plan_s"] for b in summary["boxes"]) if len(completed)==5 else None,
@@ -310,6 +370,10 @@ def main():
             first_box_scene_preparation_s=summary["boxes"][0]["scene_update_s"] if summary["boxes"] else None,
             inter_box_scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"][1:]),
             result="DIAGNOSTIC_COMPLETE" if diagnostic and len(completed)==1 else "COMPLETE_5_OF_5" if len(completed)==5 else "DEVELOPMENT_PRELOAD_ONLY" if args.prepare_only else "INCOMPLETE")
+        # Include per-box evidence aggregation, bookkeeping and progress output
+        # in delivery time. These are outside the pure planning and scene clocks.
+        summary["batch_wall_s"] = perf_counter()-batch_start
+        summary["batch_bookkeeping_s"] = online_delivery_timing(summary, 0.)["batch_bookkeeping_s"]
         write_started = perf_counter()
         (args.output / "timing.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False), encoding="utf-8")
         (args.output / "trajectories.json").write_text(json.dumps(dict(status=MARKER,
@@ -321,9 +385,8 @@ def main():
         # This measurement is separate from all planning and scene clocks; the
         # tiny accounting file itself is excluded to avoid recursive timing.
         write_s = perf_counter() - write_started
-        (args.output / "write_timing.json").write_text(json.dumps(dict(
-            status=MARKER, qualification_status="NOT_EVALUATED",
-            result_file_write_s=write_s, excluded="write_timing.json and stdout"), indent=2))
+        (args.output / "write_timing.json").write_text(json.dumps(
+            online_delivery_timing(summary, write_s), indent=2))
         print(json.dumps({k: summary[k] for k in ("result", "completed_count", "T_plan_5_s",
             "cumulative_attempted_plan_s", "initialization_s", "scene_update_s", "batch_wall_s")}), flush=True)
     finally:

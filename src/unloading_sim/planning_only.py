@@ -107,7 +107,8 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
                 raise MoveItUnavailable("PLANNING_ONLY_UNSUPPORTED_PROXIMITY_POLICY")
             initial_proximity._update_released(attachment.box_at(path[-1]))
         attempt.update(authoritative_status=SKIPPED, authoritative_s=None,
-            lin_constraint_audit=SKIPPED, failure=None, end_to_end_s=perf_counter()-started)
+            lin_constraint_audit=SKIPPED, failure=None, end_to_end_s=perf_counter()-started,
+            connection_elapsed_s=perf_counter()-started)
         self.native_evidence.extend(attempts)
         self.native_generated.append(deepcopy(attempt))
         context = self._native_state_context(submitted, endpoint=path[-1], attachment=attachment)
@@ -139,12 +140,19 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
             "actual_box_pose_world", "support_names", "placement_family", "place_surface")}
         selected = self._native_selected_records(selection[0])
         keep.update(schema="m710_planning_only_trajectory_v1", status=MARKER,
-            task_id=self.native_task_id, execution_ready=False, execution_qualified=False,
+            task_id=self.native_task_id, planning_mode=getattr(self,"planning_mode","cold_from_scratch"),
+            execution_ready=False, execution_qualified=False,
             qualification_status="NOT_EVALUATED", skipped_checks={k: SKIPPED for k in SKIPPED_CHECKS},
-            native_stages=[{key: r[key] for key in (
+            native_stages=[{key: deepcopy(r[key]) for key in (
                 "stage", "stage_id", "parent_stage_id", "pipeline_id", "planner_id",
                 "points", "joint_names", "time_parameterization", "authoritative_status",
-                "native_output_status", "planning_only_status")} for r in selected],
+                "native_output_status", "planning_only_status", "generation_source",
+                "native_solver_calls", "prior_usage") if key in r}
+                for r in selected if r.get("generation_source") != "SEMANTIC_EVENT"],
+            semantic_events=[dict(event=deepcopy(r["semantic_event"]),
+                terminal_q=deepcopy(r["terminal_q"]), generation_source="SEMANTIC_EVENT",
+                native_solver_calls=deepcopy(r["native_solver_calls"]), points=[])
+                for r in selected if r.get("generation_source") == "SEMANTIC_EVENT"],
             zero_motion_events=[deepcopy(r["zero_motion_event"]) for r in selected if r.get("zero_motion_event")],
             final_state_receipt=selection[0].native_receipt)
         segment.clear()

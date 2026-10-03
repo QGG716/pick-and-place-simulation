@@ -1,0 +1,7 @@
+{
+  "server_code_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+  "base_commit": "f7846bee960d290de695312b0e2ded0ef4975034",
+  "method": "Fast-forward GitHub tree publication from server-only edited snapshot; original incremental Git history retained in server-source-commits.bundle.",
+  "source_and_all_computation": "authorized existing Linux server",
+  "no_windows_planning": true
+}

@@ -170,9 +170,74 @@ class NativeIKCandidateStream:
         self.native_calls = 0
         self.converged_pose_results = 0
         self.duplicate_candidates = 0
+        self._pending_native_results = []
 
     def __iter__(self):
         return self
+
+    def _next_native_result(self):
+        c = self.connector
+        if self._pending_native_results:
+            return self._pending_native_results.pop(0)
+        index = self.seed_index
+        q_seed = self.seeds[index]
+        request = c._build_native_request(q_seed, None, self.obstacles, seed=self.seed+index,
+            stage=self.stage, goal_pose=self.pose, **self.options)
+        request.update(op="ik", position_tolerance_m=float(c.ik["position_tolerance_m"]),
+            orientation_tolerance_rad=float(c.ik["orientation_tolerance_rad"]),
+            ik_timeout_s=c.native_ik_seconds, collision_check_in_native_ik=False)
+        stage_seconds, timeout = c._native_limits()
+        request["allowed_planning_time_s"] = stage_seconds
+        request["ik_timeout_s"] = min(c.native_ik_seconds, stage_seconds)
+        batched = c.planning_only and getattr(c, "planning_mode", "cold_from_scratch") == "static_prior_fast"
+        if batched:
+            request.update(op="ik_batch", ik_seeds=[q.tolist() for q in self.seeds[index:index+4]],
+                stop_on_first_success=True)
+        request["planning_phase"] = c._planning_phase()
+        started = perf_counter()
+        raw = c.native.request(request, timeout=timeout, cancelled=c._native_cancelled)
+        raw["planning_phase"] = request["planning_phase"]
+        raw["fast_phase_overrun_s"] = c._fast_phase_overrun(request["planning_phase"])
+        round_trip = perf_counter()-started
+        if not batched:
+            self.seed_index += 1
+            return index, q_seed, request, raw, round_trip, raw.get("ik_s")
+        results = raw.get("results", [])
+        consumed = raw.get("consume_count")
+        batch_status = raw.get("status")
+        if (batch_status not in {"SUCCESS", "NATIVE_IK_BATCH_TIMEOUT", "CANCELLED"}
+                or type(consumed) is not int or consumed < 0
+                or (consumed == 0 and batch_status == "SUCCESS")
+                or consumed > len(request["ik_seeds"])
+                or len(results) != consumed or raw.get("native_ik_calls") != consumed
+                or any(row.get("seed_index") != offset or row.get("native_ik_calls") != 1
+                       for offset, row in enumerate(results))):
+            raise MoveItUnavailable("NATIVE_IK_BATCH_EVIDENCE_MISSING")
+        if batch_status == "CANCELLED" or consumed == 0:
+            c.native_ik_evidence.append({**raw, "stage": self.stage, "seed": self.seed+index,
+                "request_fingerprint": digest(request), "elapsed_s": round_trip,
+                "request_round_trip_s": round_trip, "native_solver_s": raw.get("ik_s"),
+                "input_state_sha256": digest(q_seed.tolist())})
+            self.native_calls += consumed
+            self.seed_index += consumed
+            self.termination = batch_status
+            if (consumed == 0 and batch_status == "NATIVE_IK_BATCH_TIMEOUT"
+                    and getattr(c, "_slow_completion_allowed", False)
+                    and request["planning_phase"] == "FAST"
+                    and c._planning_phase() == "SLOW_COMPLETION" and not c._native_cancelled()):
+                return self._next_native_result()
+            raise StopIteration
+        self.seed_index += consumed
+        for offset, row in enumerate(results):
+            # Count batch IPC once, retain each actual seed and native IK call.
+            row = {**row, "request_id": raw.get("request_id"), "batch_seed_index": offset,
+                "batch_consume_count": consumed, "batch_status": batch_status,
+                "planning_phase": raw["planning_phase"],
+                "fast_phase_overrun_s": raw["fast_phase_overrun_s"] if offset == 0 else 0.}
+            self._pending_native_results.append((index+offset, self.seeds[index+offset],
+                request, row, round_trip if offset == 0 else 0.,
+                row.get("ik_s", raw.get("ik_s") if offset == 0 else 0.)))
+        return self._pending_native_results.pop(0)
 
     def __next__(self):
         from contextlib import nullcontext
@@ -181,26 +246,15 @@ class NativeIKCandidateStream:
         if len(self.solutions) >= c.budget.stage_ik_candidates:
             self.termination = "IK_CANDIDATE_LIMIT_REACHED"
             raise StopIteration
-        while self.seed_index < len(self.seeds):
+        while self.seed_index < len(self.seeds) or self._pending_native_results:
             if c._native_cancelled():
                 self.termination = "VALIDATION_CANCELLED" if getattr(c, "cancel_requested", False) else "PLANNING_WALL_CLOCK_DEADLINE"
                 raise StopIteration
-            index = self.seed_index
-            q_seed = self.seeds[index]
-            self.seed_index += 1
-            request = c._build_native_request(q_seed, None, self.obstacles, seed=self.seed+index,
-                stage=self.stage, goal_pose=self.pose, **self.options)
-            request.update(op="ik", position_tolerance_m=float(c.ik["position_tolerance_m"]),
-                orientation_tolerance_rad=float(c.ik["orientation_tolerance_rad"]),
-                ik_timeout_s=c.native_ik_seconds, collision_check_in_native_ik=False)
-            started = perf_counter()
-            stage_seconds, timeout = c._native_limits()
-            request["allowed_planning_time_s"] = stage_seconds
-            request["ik_timeout_s"] = min(c.native_ik_seconds, stage_seconds)
-            raw = c.native.request(request, timeout=timeout, cancelled=c._native_cancelled)
+            index, q_seed, request, raw, round_trip, native_solver_s = self._next_native_result()
             self.native_calls += int(raw.get("native_ik_calls", 0))
             record = {**raw, "stage": self.stage, "seed": self.seed+index,
-                "request_fingerprint": digest(request), "elapsed_s": perf_counter()-started,
+                "request_fingerprint": digest(request), "elapsed_s": round_trip,
+                "request_round_trip_s": round_trip, "native_solver_s": native_solver_s,
                 "input_state_sha256": digest(q_seed.tolist())}
             c.native_ik_evidence.append(record)
             if raw.get("native_ik_calls") != 1:
@@ -443,9 +497,72 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         expected_collision_shapes={link.attrib["name"]:len(link.findall("collision")) for link in urdf.findall("link") if link.findall("collision")}), tool_names, compliant
 
 
-def validate_native_result(result, start, goal, names, *, allow_stationary_place=False):
+def native_generation_evidence(result, submitted, *, planning_mode="cold_from_scratch"):
+    """Fail closed for the two explicitly authorized zero-solver sources."""
+    source = result.get("generation_source", "NATIVE_GENERATED")
+    calls = result.get("native_solver_calls", {})
+    if not isinstance(calls, dict) or any(type(v) is not int or v < 0 for v in calls.values()):
+        return False
+    if source == "SEMANTIC_EVENT":
+        event = result.get("semantic_event", {})
+        return (planning_mode == "static_prior_fast"
+            and submitted.get("planning_only") is True and submitted.get("stage") == "place"
+            and calls == {} and result.get("returned_waypoint_count") == 0
+            and result.get("points") == [] and isinstance(event, dict)
+            and event.get("event_type") == "PLACE_TARGET_REACHED"
+            and event.get("target_id") == submitted.get("process_policy", {}).get("target_id")
+            and bool(event.get("target_id")))
+    if source in {"STATIC_PRIOR_REUSE", "NATIVE_DIRECT_CONNECTION"}:
+        usage = result.get("prior_usage", {})
+        if not isinstance(usage, dict):
+            return False
+        nodes, edges = usage.get("prior_nodes_reused"), usage.get("prior_edges_reused")
+        if type(nodes) is not int or nodes < 0 or type(edges) is not int or edges < 0:
+            return False
+        if source == "STATIC_PRIOR_REUSE":
+            if usage.get("prior_hit") is not True or nodes == 0:
+                return False
+        elif (usage.get("prior_hit") is not False or nodes != 0 or edges != 0
+                or type(usage.get("connector_edges")) is not int or usage["connector_edges"] != 1):
+            return False
+        return (planning_mode == "static_prior_fast"
+            and submitted.get("planning_only") is True
+            and submitted.get("stage") in {"pregrasp", "transit", "residence"}
+            and submitted.get("goal_pose") is None
+            and submitted.get("pipeline_id") == "static_prior" and calls == {}
+            and isinstance(usage, dict) and bool(usage.get("prior_id"))
+            and usage.get("context_checked") is True
+            and usage.get("current_geometry_checked") is True
+            and usage.get("connector_kind") == "CHECKED_JOINT_INTERPOLATION"
+            and isinstance(usage.get("route_nodes"), list))
+    return source == "NATIVE_GENERATED" and sum(calls.values()) >= 1
+
+
+def validate_native_result(result, start, goal, names, *, allow_stationary_place=False,
+                           allow_semantic_place=False):
     if result.get("joint_names") != names: raise ValueError("OUTPUT_JOINT_ORDER_MISMATCH")
     points = result["points"]
+    semantic = result.get("semantic_event")
+    if semantic is not None or result.get("generation_source") == "SEMANTIC_EVENT":
+        if (not allow_semantic_place or not isinstance(semantic, dict)
+                or result.get("generation_source") != "SEMANTIC_EVENT"
+                or semantic.get("event_type") != "PLACE_TARGET_REACHED"
+                or semantic.get("goal_constraints_satisfied") is not True
+                or semantic.get("start_unchanged") is not True
+                or not semantic.get("target_id") or points != []
+                or result.get("returned_waypoint_count") != 0
+                or result.get("native_solver_calls") != {}
+                or any(not result.get(k) or semantic.get(k) != result.get(k)
+                       for k in ("task_id", "stage_id", "parent_stage_id"))):
+            raise ValueError("INVALID_NATIVE_SEMANTIC_EVENT")
+        terminal = np.asarray(result.get("terminal_q"), dtype=float)
+        if (terminal.shape != (6,) or not np.isfinite(terminal).all()
+                or not np.array_equal(terminal, np.asarray(start))):
+            raise ValueError("NATIVE_SEMANTIC_EVENT_CHANGED_STATE")
+        if goal is not None and not np.allclose(terminal, goal, atol=1e-9, rtol=0):
+            raise ValueError("GOAL_CHANGED")
+        # A state continuation for the core, never a fabricated motion point.
+        return [terminal.copy()]
     path = np.asarray([p["q"] for p in points], dtype=float)
     times = np.asarray([p["t"] for p in points], dtype=float)
     if path.ndim != 2 or path.shape[1] != 6 or len(path) < 1 or not np.isfinite(path).all():
@@ -505,8 +622,15 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     @classmethod
     def from_existing(cls, connector, scene, command=None, *, native_client=None,
-                      native_cold=False, require_native_motion=None, native_budget=None):
+                      native_cold=False, require_native_motion=None, native_budget=None,
+                      planning_mode="cold_from_scratch"):
+        if planning_mode not in {"cold_from_scratch", "static_prior_fast"}:
+            raise ValueError("UNKNOWN_PLANNING_MODE")
+        if planning_mode == "static_prior_fast" and not cls.planning_only:
+            raise ValueError("STATIC_PRIOR_REQUIRES_PLANNING_ONLY")
         self = cls.__new__(cls); self.__dict__.update(connector.__dict__)
+        self.planning_mode = planning_mode
+        self.static_prior_loaded = False
         self.native_cold = bool(native_cold)
         self.require_native_motion = self.native_cold if require_native_motion is None else bool(require_native_motion)
         if self.native_cold and not self.require_native_motion:
@@ -528,6 +652,11 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         init, self.native_tools, self.native_compliant = model_request(self, scene,
             asset_root=os.environ.get("M710_MOVEIT_ASSET_ROOT"), seed=int(os.environ.get("M710_MOVEIT_SEED", "71070")))
         init["planning_only"] = self.planning_only
+        init["planning_mode"] = self.planning_mode
+        if self.planning_mode == "static_prior_fast":
+            from .static_prior import placement_policy_fingerprint
+            self.static_prior_placement_policy_sha256 = placement_policy_fingerprint(scene.policy)
+            init["placement_policy_sha256"] = self.static_prior_placement_policy_sha256
         self.native_identity=init["identity"]; self.native_joint_names=init["joint_names"]
         limits = native_budget or {}
         self.native_stage_seconds=float(limits.get("stage_wall_time_s", os.environ.get("M710_MOVEIT_STAGE_SECONDS", "60")))
@@ -544,11 +673,32 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         try:
             started = perf_counter()
             self.native_startup=self.native.request(init)
+            if (self.planning_mode == "static_prior_fast"
+                    and self.native_startup.get("planning_mode") != self.planning_mode):
+                raise MoveItUnavailable("WORKER_PLANNING_MODE_MISMATCH")
             self.check_fk()
             self.native_model_warmup_s = perf_counter()-started
         except Exception:
             self.native.close(); raise
         return self
+
+    def load_static_prior(self, path):
+        if not self.planning_only or self.planning_mode != "static_prior_fast":
+            raise MoveItUnavailable("STATIC_PRIOR_REQUIRES_EXPLICIT_MODE")
+        from .static_prior import load_prior
+        loaded_started = perf_counter()
+        database, metadata = load_prior(path)
+        request_started = perf_counter()
+        response = self.native.request(dict(op="load_static_prior", identity=self.native_identity,
+            planning_only=True, planning_mode=self.planning_mode, database=database))
+        if response.get("status") not in {"SUCCESS", "READY"}:
+            raise MoveItUnavailable("STATIC_PRIOR_LOAD_FAILED:"+str(response.get("status")))
+        self.static_prior_loaded = True
+        self.static_prior_metadata = {**metadata, "file_load_s": metadata.get("load_s"),
+            "native_load_s": response.get("load_s"),
+            "native_request_round_trip_s": perf_counter()-request_started,
+            "total_load_s": perf_counter()-loaded_started}
+        return response
 
     def _native_cancelled(self):
         return bool(getattr(self, "cancel_requested", False) or self._deadline_reached() or
@@ -580,7 +730,26 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         remaining = min(deadlines) if deadlines else float("inf")
         if remaining <= 0:
             raise MoveItUnavailable("NATIVE_REQUEST_SHARED_BUDGET_EXHAUSTED")
-        return min(self.native_stage_seconds, remaining), min(self.native_request_timeout, remaining)
+        stage_seconds = min(self.native_stage_seconds, remaining)
+        fast_deadline = getattr(self, "_fast_phase_deadline_monotonic", None)
+        if fast_deadline is not None:
+            fast_remaining = float(fast_deadline)-perf_counter()
+            if fast_remaining > 0:
+                stage_seconds = min(stage_seconds, fast_remaining)
+            elif not getattr(self, "_slow_completion_allowed", False):
+                raise MoveItUnavailable("FAST_PHASE_BUDGET_EXHAUSTED")
+        # IPC retains the real task watchdog so an in-flight solve is accounted.
+        return stage_seconds, min(self.native_request_timeout, remaining)
+
+    def _planning_phase(self):
+        if getattr(self, "planning_mode", "cold_from_scratch") != "static_prior_fast":
+            return "COLD_FROM_SCRATCH"
+        deadline = getattr(self, "_fast_phase_deadline_monotonic", None)
+        return "FAST" if deadline is None or perf_counter() < deadline else "SLOW_COMPLETION"
+
+    def _fast_phase_overrun(self, phase):
+        deadline = getattr(self, "_fast_phase_deadline_monotonic", None)
+        return max(0., perf_counter()-deadline) if phase == "FAST" and deadline is not None else 0.
 
     def _forbid_legacy(self, entry):
         if getattr(self, "require_native_motion", False):
@@ -652,7 +821,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             sources=[r for r in self._native_lineage_records() if r.get("stage_id")==receipt.stage_id]
             if (len(sources)!=1 or sources[0].get("task_id")!=receipt.task_id or
                     not self._native_lineage_accepted(sources[0]) or
-                    not np.array_equal(sources[0]["points"][-1]["q"],q)):
+                    not np.array_equal(
+                        sources[0].get("terminal_q") if sources[0].get("generation_source") == "SEMANTIC_EVENT"
+                        else sources[0]["points"][-1]["q"], q)):
                 raise MoveItUnavailable("NATIVE_PARENT_SOURCE_MISMATCH")
         elif receipt != self._native_root_receipt:
             # Zero-motion semantics may keep the root stage but must descend
@@ -878,7 +1049,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             links=["base_link", "J3_link", "J6_link", "flange", "fanuc_flange", "tool0"]
             reference=self.robot.named_link_frames(q)
             links=[l for l in links if l in reference]
-            result=self.native.request(dict(op="fk",identity=self.native_identity,q_start=q.tolist(),links=links+[TASK_TCP_LINK]))
+            result=self.native.request(dict(op="fk",identity=self.native_identity,q_start=q.tolist(),
+                planning_mode=getattr(self,"planning_mode","cold_from_scratch"),links=links+[TASK_TCP_LINK]))
             error=max(float(np.max(np.abs(np.asarray(result["frames"][l])-reference[l]))) for l in links)
             tcp=np.asarray(result["frames"][TASK_TCP_LINK])
             error=max(error,float(np.max(np.abs(tcp-self.robot.fk(q)))))
@@ -914,6 +1086,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             seed=int(seed),cancelled=False,allowed_planning_time_s=getattr(self,"native_stage_seconds",60.),velocity_scale=.2,acceleration_scale=.2,
             flange_from_task_tcp=self.flange_from_virtual_task_tcp.tolist())
         request["planning_only"] = self.planning_only
+        request["planning_mode"] = getattr(self,"planning_mode","cold_from_scratch")
         if goal_pose is None: request["q_goal"]=np.asarray(goal).tolist()
         else: request["goal_pose"]=np.asarray(goal_pose).tolist()
         request["clearance_policy"]=dict(schema="m710_native_free_clearance_v1",stage=stage,
@@ -1014,23 +1187,48 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         schedule=[("pilz_industrial_motion_planner","LIN")] if goal_pose is not None else [
             *([("pilz_industrial_motion_planner","PTP")] if try_ptp else []),*( [("ompl","RRTConnectkConfigDefault")]*
                 (ompl_attempts if allow_ompl and not constrained else 0))]
+        if (getattr(self, "planning_mode", "cold_from_scratch") == "static_prior_fast"
+                and getattr(self, "static_prior_loaded", False) and self.planning_only
+                and stage in {"pregrasp", "transit", "residence"} and goal_pose is None):
+            schedule.insert(0, ("static_prior", "SPARSE_PRM"))
         context=self._context_identity(obstacles,attachment=attachment,support_names=support_names,target_contact=target_contact,stage=stage)
         for pipeline,planner in schedule:
             if self._deadline_reached(): break
             submitted={**request,"pipeline_id":pipeline,"planner_id":planner}
+            if pipeline == "static_prior":
+                from .static_prior import request_context
+                submitted["prior_context"] = request_context(submitted,
+                    placement_policy_sha256=self.static_prior_placement_policy_sha256,
+                    joint_limits_rad=self.robot.joint_limits.tolist())
             timeout = getattr(self,"native_request_timeout",900.)
             if strict:
                 stage_seconds, timeout = self._native_limits()
                 submitted["allowed_planning_time_s"] = stage_seconds
                 submitted["stage_id"] = self.native_task_id+":"+str(next(self._native_stage_ids))
+            # An uncovered graph must yield to the next legal branch/fallback.
+            # This query-only ceiling cannot enlarge the shared fast/task budget.
+            if pipeline == "static_prior":
+                submitted["allowed_planning_time_s"] = min(
+                    submitted["allowed_planning_time_s"], 6.0)
+            submitted["planning_phase"] = self._planning_phase()
             request_log=os.environ.get("M710_MOVEIT_REQUEST_LOG")
             if request_log:
                 with open(request_log,"a",encoding="utf-8") as stream: stream.write(json.dumps(submitted,allow_nan=False)+"\n")
+            request_started=perf_counter()
             raw=self.native.request(submitted,timeout=timeout,
                 cancelled=self._native_cancelled if strict else self._deadline_reached)
-            attempt={**raw,"stage":stage,"seed":seed,"request_fingerprint":digest(submitted),
+            request_round_trip_s=perf_counter()-request_started
+            attempt={**raw,"request_round_trip_s":request_round_trip_s,
+                "planning_phase":submitted["planning_phase"],
+                "fast_phase_overrun_s":self._fast_phase_overrun(submitted["planning_phase"]),
+                "connection_elapsed_s":perf_counter()-started,
+                "native_solver_s":raw.get("native_solver_s",raw.get("mtc_plan_s")),
+                "stage":stage,"seed":seed,"request_fingerprint":digest(submitted),
                 "endpoint_authority":endpoints,"endpoint_authority_s":endpoint_s,
-                "ipc_watchdog_s":timeout,"solver":pipeline+"/"+planner,
+                "ipc_watchdog_s":timeout,
+                "requested_planning_time_s":submitted["allowed_planning_time_s"],
+                "solver":raw.get("pipeline_id",pipeline)+"/"+raw.get("planner_id",planner),
+                "requested_solver":pipeline+"/"+planner,
                 "input_state_sha256":digest(np.asarray(start,dtype=float).tolist()),
                 "constraints_sha256":digest({k:v for k,v in submitted.items()
                     if k not in {"q_start","request_id"}})}
@@ -1048,11 +1246,14 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 "task_id", "stage_id", "parent_stage_id", "stage", "candidate_id", "seed",
                 "status", "pipeline_id", "planner_id", "solver_returned_success", "solver_message",
                 "moveit_error_code", "moveit_error_code_source", "returned_waypoint_count",
-                "trajectory_present", "processing_branch", "zero_motion_event", "goal_translation_delta_m", "goal_rotation_delta_rad",
+                "trajectory_present", "processing_branch", "zero_motion_event", "semantic_event",
+                "generation_source", "prior_usage", "goal_translation_delta_m", "goal_rotation_delta_rad",
+                "request_round_trip_s", "connection_elapsed_s", "native_solver_s",
+                "planning_phase", "fast_phase_overrun_s", "requested_planning_time_s",
                 "mtc_plan_s", "task_backtracks", "failure")}
             diagnostic.update(request_id=raw.get("request_id"),
                 q_start=submitted["q_start"], q_goal=submitted.get("q_goal"),
-                goal_pose=submitted.get("goal_pose"), elapsed_s=perf_counter()-started,
+                goal_pose=submitted.get("goal_pose"),
                 fallback_parent_stage_id=submitted.get("parent_stage_id"))
             diagnostic_path = os.environ.get("M710_MOVEIT_DIAGNOSTICS")
             if diagnostic_path:
@@ -1064,7 +1265,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 continue
             if strict and (any(raw.get(key) != submitted.get(key) for key in ("task_id", "stage_id", "parent_stage_id"))
                     or raw.get("mtc_generation") is not True
-                    or sum(raw.get("native_solver_calls", {}).values()) < 1
+                    or not native_generation_evidence(raw, submitted,
+                        planning_mode=getattr(self,"planning_mode","cold_from_scratch"))
                     or (constrained and not self.planning_only and raw.get("process_semantics_checked") is not True)
                     or (self.planning_only and raw.get("planning_only_status") != "PLANNING_ONLY_NOT_EXECUTABLE")):
                 attempt["authoritative_status"]="PROTOCOL_REJECTED"
@@ -1073,7 +1275,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 return [],attempt["failure"],dict(backend="moveit2",success=False,attempts=attempts)
             try:
                 path=validate_native_result(raw,start,goal,self.native_joint_names,
-                    allow_stationary_place=self.planning_only and stage=="place")
+                    allow_stationary_place=self.planning_only and stage=="place",
+                    allow_semantic_place=(self.planning_only and stage=="place"
+                        and getattr(self,"planning_mode","cold_from_scratch")=="static_prior_fast"))
             except ValueError as exc:
                 attempt["authoritative_status"]="PROTOCOL_REJECTED"
                 attempt["failure"]={"reason":str(exc),"stage":stage,"requested_q_goal":request.get("q_goal")}
@@ -1323,6 +1527,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             cold_audit["zero_length_semantic_events"].extend(deepcopy(segment["events"]))
             _,timeout=self._native_limits()
             task_request=dict(op="task_audit",identity=self.native_identity,
+                planning_mode=getattr(self,"planning_mode","cold_from_scratch"),
                 task_id=self.native_task_id,stage_ids=[r["stage_id"] for r in coverage["records"]],
                 events=segment["events"],stage_ranges=segment["stage_ranges"],target_id=target.name)
             terminal=self._native_terminal_state_request(selection[0])
@@ -1353,7 +1558,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             specs.append(spec)
         world=[box_message(b) for b in obstacles]
         if target.name not in {b["id"] for b in world}: world.append(box_message(target))
-        composition=self.native.request(dict(op="compose",identity=self.native_identity,q_start=path[0].tolist(),
+        composition=self.native.request(dict(op="compose",identity=self.native_identity,
+            planning_mode=getattr(self,"planning_mode","cold_from_scratch"),q_start=path[0].tolist(),
             world=world,scene_fingerprint=digest(world),allowed_pairs=[["base_link",self.robot_state_validator.base_support_obstacle_name]],
             attachment=None,start_velocity=[0.]*6,path_constraints={},stages=specs))
         if composition["status"]!="SUCCESS":

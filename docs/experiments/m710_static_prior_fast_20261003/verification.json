@@ -1,0 +1,697 @@
+{
+  "schema": "m710_planning_only_lightweight_verification_v1",
+  "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "audit_status": "CONSISTENT_WITH_AVAILABLE_EVIDENCE",
+  "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+  "scope": "Read archived summaries, selected stage endpoints, parent IDs, event indices and accepted scene contexts. No planning, per-sample path audit, collision checking or execution qualification.",
+  "checks": [
+    {
+      "name": "initial_q_from_frozen_configuration",
+      "result": "CONSISTENT",
+      "configuration": "configs/validation/m710id70_layout_poc_pair_clearance.yaml",
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "initial_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ]
+    },
+    {
+      "name": "complete_five_distinct_top_row_targets",
+      "result": "CONSISTENT",
+      "actual_order": [
+        "carton_l07_c02",
+        "carton_l07_c01",
+        "carton_l07_c03",
+        "carton_l07_c00",
+        "carton_l07_c04"
+      ]
+    },
+    {
+      "name": "initial_scene_40_cartons",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "unique_task_per_carton",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "four_exact_cross_box_connections",
+      "result": "CONSISTENT",
+      "numeric_comparison": "Exact JSON numeric equality; no tolerance or wrapping"
+    },
+    {
+      "name": "planning_only_markers",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c02.complete_selected_stage_chain",
+      "result": "CONSISTENT",
+      "stage_labels": [
+        "pregrasp",
+        "contact",
+        "extraction",
+        "transit",
+        "transit",
+        "place",
+        "withdrawal"
+      ],
+      "selected_motion_stages": 6,
+      "semantic_place_events": 1,
+      "motion_ranges": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:1",
+          "parent_stage_id": "",
+          "path_range": [
+            0,
+            214
+          ],
+          "generation_source": "NATIVE_DIRECT_CONNECTION"
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:2",
+          "parent_stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:1",
+          "path_range": [
+            214,
+            228
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:3",
+          "parent_stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:2",
+          "path_range": [
+            228,
+            386
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:4",
+          "parent_stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:3",
+          "path_range": [
+            386,
+            439
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:5",
+          "parent_stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:4",
+          "path_range": [
+            439,
+            794
+          ],
+          "generation_source": "NATIVE_DIRECT_CONNECTION"
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:7",
+          "parent_stage_id": "planning-only-6ab190b8b4fc4f75903e89215f876183:6",
+          "path_range": [
+            794,
+            804
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        }
+      ]
+    },
+    {
+      "name": "carton_l07_c02.task_target_and_generation_binding",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c02.ordered_attach_release_retreat",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c02.normal_transit_permissions",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c02.placed_target_retained_in_withdrawal_context",
+      "result": "CONSISTENT",
+      "evidence_scope": "Recorded accepted withdrawal receipt and native process summary; frozen source passes [*obstacles, placed] to withdrawal. Full request world inventory was intentionally not archived."
+    },
+    {
+      "name": "carton_l07_c02.unremoved_neighbor_geometry_unchanged",
+      "result": "CONSISTENT",
+      "remaining_neighbor_count": 39
+    },
+    {
+      "name": "carton_l07_c02.markers_and_no_history",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c01.complete_selected_stage_chain",
+      "result": "CONSISTENT",
+      "stage_labels": [
+        "pregrasp",
+        "contact",
+        "extraction",
+        "transit",
+        "transit",
+        "place",
+        "withdrawal"
+      ],
+      "selected_motion_stages": 6,
+      "semantic_place_events": 1,
+      "motion_ranges": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:1",
+          "parent_stage_id": "",
+          "path_range": [
+            0,
+            755
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:2",
+          "parent_stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:1",
+          "path_range": [
+            755,
+            769
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:3",
+          "parent_stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:2",
+          "path_range": [
+            769,
+            927
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:4",
+          "parent_stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:3",
+          "path_range": [
+            927,
+            980
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:5",
+          "parent_stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:4",
+          "path_range": [
+            980,
+            1360
+          ],
+          "generation_source": "NATIVE_DIRECT_CONNECTION"
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:7",
+          "parent_stage_id": "planning-only-631bea897e7e49309dda15487d6199b5:6",
+          "path_range": [
+            1360,
+            1370
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        }
+      ]
+    },
+    {
+      "name": "carton_l07_c01.task_target_and_generation_binding",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c01.ordered_attach_release_retreat",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c01.normal_transit_permissions",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c01.placed_target_retained_in_withdrawal_context",
+      "result": "CONSISTENT",
+      "evidence_scope": "Recorded accepted withdrawal receipt and native process summary; frozen source passes [*obstacles, placed] to withdrawal. Full request world inventory was intentionally not archived."
+    },
+    {
+      "name": "carton_l07_c01.unremoved_neighbor_geometry_unchanged",
+      "result": "CONSISTENT",
+      "remaining_neighbor_count": 38
+    },
+    {
+      "name": "carton_l07_c01.markers_and_no_history",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c03.complete_selected_stage_chain",
+      "result": "CONSISTENT",
+      "stage_labels": [
+        "pregrasp",
+        "contact",
+        "extraction",
+        "transit",
+        "transit",
+        "place",
+        "withdrawal"
+      ],
+      "selected_motion_stages": 6,
+      "semantic_place_events": 1,
+      "motion_ranges": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:1",
+          "parent_stage_id": "",
+          "path_range": [
+            0,
+            1281
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:2",
+          "parent_stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:1",
+          "path_range": [
+            1281,
+            1295
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:3",
+          "parent_stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:2",
+          "path_range": [
+            1295,
+            1453
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:4",
+          "parent_stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:3",
+          "path_range": [
+            1453,
+            1506
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:5",
+          "parent_stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:4",
+          "path_range": [
+            1506,
+            4764
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:7",
+          "parent_stage_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39:6",
+          "path_range": [
+            4764,
+            4774
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        }
+      ]
+    },
+    {
+      "name": "carton_l07_c03.task_target_and_generation_binding",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c03.ordered_attach_release_retreat",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c03.normal_transit_permissions",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c03.placed_target_retained_in_withdrawal_context",
+      "result": "CONSISTENT",
+      "evidence_scope": "Recorded accepted withdrawal receipt and native process summary; frozen source passes [*obstacles, placed] to withdrawal. Full request world inventory was intentionally not archived."
+    },
+    {
+      "name": "carton_l07_c03.unremoved_neighbor_geometry_unchanged",
+      "result": "CONSISTENT",
+      "remaining_neighbor_count": 37
+    },
+    {
+      "name": "carton_l07_c03.markers_and_no_history",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c00.complete_selected_stage_chain",
+      "result": "CONSISTENT",
+      "stage_labels": [
+        "pregrasp",
+        "contact",
+        "extraction",
+        "transit",
+        "transit",
+        "place",
+        "withdrawal"
+      ],
+      "selected_motion_stages": 6,
+      "semantic_place_events": 1,
+      "motion_ranges": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:1",
+          "parent_stage_id": "",
+          "path_range": [
+            0,
+            1696
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:2",
+          "parent_stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:1",
+          "path_range": [
+            1696,
+            1710
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:3",
+          "parent_stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:2",
+          "path_range": [
+            1710,
+            1868
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:4",
+          "parent_stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:3",
+          "path_range": [
+            1868,
+            1921
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:5",
+          "parent_stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:4",
+          "path_range": [
+            1921,
+            3124
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:7",
+          "parent_stage_id": "planning-only-787d4e18a04c4d219667418606fce13a:6",
+          "path_range": [
+            3124,
+            3134
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        }
+      ]
+    },
+    {
+      "name": "carton_l07_c00.task_target_and_generation_binding",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c00.ordered_attach_release_retreat",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c00.normal_transit_permissions",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c00.placed_target_retained_in_withdrawal_context",
+      "result": "CONSISTENT",
+      "evidence_scope": "Recorded accepted withdrawal receipt and native process summary; frozen source passes [*obstacles, placed] to withdrawal. Full request world inventory was intentionally not archived."
+    },
+    {
+      "name": "carton_l07_c00.unremoved_neighbor_geometry_unchanged",
+      "result": "CONSISTENT",
+      "remaining_neighbor_count": 36
+    },
+    {
+      "name": "carton_l07_c00.markers_and_no_history",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c04.complete_selected_stage_chain",
+      "result": "CONSISTENT",
+      "stage_labels": [
+        "pregrasp",
+        "contact",
+        "extraction",
+        "transit",
+        "transit",
+        "place",
+        "withdrawal"
+      ],
+      "selected_motion_stages": 6,
+      "semantic_place_events": 1,
+      "motion_ranges": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:3",
+          "parent_stage_id": "",
+          "path_range": [
+            0,
+            1803
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:4",
+          "parent_stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:3",
+          "path_range": [
+            1803,
+            1817
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:5",
+          "parent_stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:4",
+          "path_range": [
+            1817,
+            1975
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:6",
+          "parent_stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:5",
+          "path_range": [
+            1975,
+            2028
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:7",
+          "parent_stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:6",
+          "path_range": [
+            2028,
+            3080
+          ],
+          "generation_source": "STATIC_PRIOR_REUSE"
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:9",
+          "parent_stage_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417:8",
+          "path_range": [
+            3080,
+            3090
+          ],
+          "generation_source": "NATIVE_GENERATED"
+        }
+      ]
+    },
+    {
+      "name": "carton_l07_c04.task_target_and_generation_binding",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c04.ordered_attach_release_retreat",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c04.normal_transit_permissions",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "carton_l07_c04.placed_target_retained_in_withdrawal_context",
+      "result": "CONSISTENT",
+      "evidence_scope": "Recorded accepted withdrawal receipt and native process summary; frozen source passes [*obstacles, placed] to withdrawal. Full request world inventory was intentionally not archived."
+    },
+    {
+      "name": "carton_l07_c04.unremoved_neighbor_geometry_unchanged",
+      "result": "CONSISTENT",
+      "remaining_neighbor_count": 35
+    },
+    {
+      "name": "carton_l07_c04.markers_and_no_history",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "planning_time_accounting",
+      "result": "CONSISTENT",
+      "T_plan_5_s": 29.68708397448063,
+      "rule": "Sum each box plan wall time once; native/IK/IPC/prior subtotals are not added."
+    },
+    {
+      "name": "delivery_time_accounting",
+      "result": "CONSISTENT",
+      "T_online_5_s": 30.040590232238173,
+      "batch_wall_s": 29.890005448833108,
+      "scene_update_s": 0.20198958553373814,
+      "batch_bookkeeping_s": 0.0009318888187408447,
+      "result_file_write_s": 0.15058478340506554,
+      "excluded": "write_timing.json, final timing accounting and final stdout",
+      "initialization_s_excluded": 0.9418339375406504
+    },
+    {
+      "name": "fast_slow_partition",
+      "result": "CONSISTENT",
+      "fast_planning_s": 0.9685673750936985,
+      "slow_completion_planning_s": 28.71851659938693,
+      "shared_fast_phase_budget_s": 1.0
+    },
+    {
+      "name": "no_ompl_calls",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "no_diagnostic_or_historical_answers",
+      "result": "CONSISTENT"
+    },
+    {
+      "name": "frozen_worker_and_database_hashes",
+      "result": "CONSISTENT",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "database_sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311"
+    }
+  ],
+  "boxes": [
+    {
+      "target": "carton_l07_c02",
+      "task_id": "planning-only-6ab190b8b4fc4f75903e89215f876183",
+      "plan_s": 1.8173214551061392,
+      "complete": true,
+      "native_counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "selected_stage_count": 7,
+      "semantic_place_events": 1
+    },
+    {
+      "target": "carton_l07_c01",
+      "task_id": "planning-only-631bea897e7e49309dda15487d6199b5",
+      "plan_s": 2.277386935427785,
+      "complete": true,
+      "native_counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "selected_stage_count": 7,
+      "semantic_place_events": 1
+    },
+    {
+      "target": "carton_l07_c03",
+      "task_id": "planning-only-ca153bad7b8f4794b4d246a65cff5d39",
+      "plan_s": 9.234296284615993,
+      "complete": true,
+      "native_counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "selected_stage_count": 7,
+      "semantic_place_events": 1
+    },
+    {
+      "target": "carton_l07_c00",
+      "task_id": "planning-only-787d4e18a04c4d219667418606fce13a",
+      "plan_s": 4.322031527757645,
+      "complete": true,
+      "native_counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 7
+      },
+      "selected_stage_count": 7,
+      "semantic_place_events": 1
+    },
+    {
+      "target": "carton_l07_c04",
+      "task_id": "planning-only-4214fd7f91b949ceae9f7ebc4c654417",
+      "plan_s": 12.036047771573067,
+      "complete": true,
+      "native_counts": {
+        "PTP": 1,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 5
+      },
+      "selected_stage_count": 7,
+      "semantic_place_events": 1
+    }
+  ],
+  "selected_generation_sources": {
+    "NATIVE_DIRECT_CONNECTION": 3,
+    "NATIVE_GENERATED": 20,
+    "SEMANTIC_EVENT": 5,
+    "STATIC_PRIOR_REUSE": 7
+  },
+  "diagnostic_request_count": 37,
+  "input_sha256": {
+    "timing.json": "80e0467d05af9a1fc09fea0380eafd9fe5a1e2c2ae9f851607f3dd08a151e94d",
+    "trajectories.json": "db316ec8e9d4ce61e140df87e2fd72ff3b8117bd225fefa7e8f86076458620fe",
+    "requests.jsonl": "489d196805d7aa30bfcf0c0b122ad8fd5a7b9d040ca27e7cc58f2090eafedabf",
+    "write_timing.json": "b351717d5ed85b14b5377abaa09df7d7215849404ce20439523c11e16b0b5cc1"
+  },
+  "limitations": [
+    "Full submitted request payloads/world inventories were intentionally not saved. Withdrawal target presence is supported by accepted target context, native process evidence and frozen code, not an independent native scene snapshot.",
+    "Conditional zero-length support-release is folded between contact and extraction; there is no separate native motion stage for it. No missing motion is invented.",
+    "Only stage boundaries and metadata were inspected; interior geometry, dense path/source coverage, TCP contracts, dynamics, execution and real unloading cycle time remain NOT_EVALUATED.",
+    "The immutable initial configuration itself was derived before this batch. This review confirms use of that configuration, not a new physical measurement."
+  ]
+}

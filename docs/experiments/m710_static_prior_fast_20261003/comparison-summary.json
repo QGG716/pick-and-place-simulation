@@ -1,0 +1,3506 @@
+{
+  "schema": "m710_static_prior_comparison_summary_v1",
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "generated_at_utc": "2026-10-03T16:06:32.585566+00:00",
+  "counts_and_timings_are_components_not_added_to_plan_total": true,
+  "preserves_failed_and_regressed_runs": true,
+  "timing_notes": [
+    "A uses independently measured connection_elapsed_s at fixed start and goal.",
+    "B subtracts recorded candidate_ordering_s only from the new plan_s; the old baseline measured ordering in scene_update_s.",
+    "Missing baseline ordering is unrecorded, not asserted to cost zero.",
+    "Formal T_plan_5 uses complete source plan_s including ordering; never subtract ordering.",
+    "Native solver, IK, prior query and IPC times overlap the planning wall clock and are not additive.",
+    "Source connection_elapsed_s inside per-request logs may be cumulative; stage aggregation uses request round trip only.",
+    "Stage times aggregate recorded request/IK fields; they are not complete stage wall clocks and exclude unrecorded Python work.",
+    "No ratio is produced for incomplete/failed or input-hash-mismatched pairs."
+  ],
+  "rows": [
+    {
+      "case_id": "carton_l07_c03-transit",
+      "target": "carton_l07_c03",
+      "stage": "transit",
+      "planning_mode": "cold_from_scratch",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 21.587374525144696,
+      "request_round_trip_s": 21.582041449844837,
+      "native_solver_s": 21.522113755,
+      "initialization_s": 0.3445391058921814,
+      "static_prior": null,
+      "prior_usage": null,
+      "failure": null,
+      "processing_branch": "ACCEPTED",
+      "geometry_input_sha256": "f59f984d6b7470edb49819a5b9b2feb629315f32f8b3ffa05f70d25153761246",
+      "source_commit": "318ec39921a9ed9c3d8665324c10948aa7ed9006",
+      "worker_sha256": "c17c98631468683ab158b8bc72bf4ff69ef53705346b778f9a2f4991d1fbbd16",
+      "seed": 2448834033,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-first",
+      "comparable_s": 21.587374525144696,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {
+        "OMPL": 1
+      },
+      "source_file": "fixed-first/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 0,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": null,
+      "rejected_edges": null,
+      "timed_out_edges": null,
+      "state_checks": null,
+      "local_repairs": null,
+      "prior_query_s": null,
+      "generation_source": "NATIVE_GENERATED",
+      "returned_waypoint_count": 182,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 21.582041449844837,
+          "native_solver_s": 21.522113755,
+          "prior_query_s": null,
+          "generation_source": "NATIVE_GENERATED",
+          "counts": {
+            "OMPL": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-transit",
+      "target": "carton_l07_c03",
+      "stage": "transit",
+      "planning_mode": "static_prior_fast",
+      "status": "PRIOR_NOT_CONNECTED",
+      "complete": false,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 0.9673431925475597,
+      "request_round_trip_s": 0.9638771396130323,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.3713850602507591,
+      "static_prior": {
+        "load_s": 0.010771913453936577,
+        "sha256": "138f72106e75dd043edfa0d165e2b33bc49ae8e1eab0d851990721f758eeef00",
+        "bytes": 92447,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.010771913453936577,
+        "native_load_s": 0.000200821,
+        "native_request_round_trip_s": 0.010123113170266151,
+        "total_load_s": 0.020951012149453163
+      },
+      "prior_usage": {
+        "connector_edges": 0,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": false,
+        "edge_check_limit": 128,
+        "edge_checks": 30,
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "prior_edges_reused": 0,
+        "prior_hit": false,
+        "prior_id": "3b9d1d26af68162ea720a8ec52c0da6ea62e066fda5cc8b951b0a1cbc7910b4f",
+        "rejected_edges": 29,
+        "route_nodes": [],
+        "slow_path": false,
+        "state_checks": 1802,
+        "static_clearance_inherited": false
+      },
+      "failure": null,
+      "processing_branch": null,
+      "geometry_input_sha256": "f59f984d6b7470edb49819a5b9b2feb629315f32f8b3ffa05f70d25153761246",
+      "source_commit": "318ec39921a9ed9c3d8665324c10948aa7ed9006",
+      "worker_sha256": "c17c98631468683ab158b8bc72bf4ff69ef53705346b778f9a2f4991d1fbbd16",
+      "seed": 2448834033,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-first",
+      "comparable_s": 0.9673431925475597,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-first/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 1,
+      "prior_misses": 1,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 30,
+      "rejected_edges": 29,
+      "timed_out_edges": null,
+      "state_checks": 1802,
+      "local_repairs": 0,
+      "prior_query_s": 0.91378656,
+      "generation_source": "STATIC_PRIOR_REUSE",
+      "returned_waypoint_count": 0,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 0.9638771396130323,
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.91378656,
+          "generation_source": "STATIC_PRIOR_REUSE",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-transit",
+      "target": "carton_l07_c03",
+      "stage": "transit",
+      "planning_mode": "static_prior_fast",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 3.221221376210451,
+      "request_round_trip_s": 3.2079954836517572,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.39155190996825695,
+      "static_prior": {
+        "load_s": 0.023318670690059662,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023318670690059662,
+        "native_load_s": 0.000620409,
+        "native_request_round_trip_s": 0.02103603258728981,
+        "total_load_s": 0.04450553096830845
+      },
+      "prior_usage": {
+        "connector_edges": 2,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": true,
+        "edge_check_limit": 128,
+        "edge_checks": 29,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.004166666666666667,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.008130081300813009,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 33
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.003179650238473768,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 58
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.0032102728731942215,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 159
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 1,
+        "prior_hit": true,
+        "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+        "prior_nodes_reused": 2,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 3,
+          "graph_edge": 0,
+          "start_connector": 20
+        },
+        "rejected_edges": 24,
+        "route_nodes": [
+          160,
+          11,
+          33,
+          161
+        ],
+        "slow_path": false,
+        "state_checks": 4137,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      },
+      "failure": null,
+      "processing_branch": "ACCEPTED_CURRENT_CONTEXT_PRIOR",
+      "geometry_input_sha256": "f59f984d6b7470edb49819a5b9b2feb629315f32f8b3ffa05f70d25153761246",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 2448834033,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-first",
+      "comparable_s": 3.221221376210451,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-v3-first/comparison.json",
+      "prior_hits": 1,
+      "prior_queries": 1,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 29,
+      "rejected_edges": 24,
+      "timed_out_edges": 0,
+      "state_checks": 4137,
+      "local_repairs": 0,
+      "prior_query_s": 3.146421105,
+      "generation_source": "STATIC_PRIOR_REUSE",
+      "returned_waypoint_count": 1665,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 3.2079954836517572,
+          "native_solver_s": 0.0,
+          "prior_query_s": 3.146421105,
+          "generation_source": "STATIC_PRIOR_REUSE",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-pregrasp",
+      "target": "carton_l07_c03",
+      "stage": "pregrasp",
+      "planning_mode": "cold_from_scratch",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 9.67136637121439,
+      "request_round_trip_s": 9.657403409481049,
+      "native_solver_s": 9.595818258,
+      "initialization_s": 0.34253146685659885,
+      "static_prior": null,
+      "prior_usage": null,
+      "failure": null,
+      "processing_branch": "ACCEPTED",
+      "geometry_input_sha256": "02b04d85349720e28884293d60bbc625ad5d5173281e239cddcefc2cf8c2bf69",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 2448833974,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 9.67136637121439,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {
+        "OMPL": 1
+      },
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 0,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": null,
+      "rejected_edges": null,
+      "timed_out_edges": null,
+      "state_checks": null,
+      "local_repairs": null,
+      "prior_query_s": null,
+      "generation_source": "NATIVE_GENERATED",
+      "returned_waypoint_count": 396,
+      "stages": {
+        "pregrasp": {
+          "request_round_trip_s": 9.657403409481049,
+          "native_solver_s": 9.595818258,
+          "prior_query_s": null,
+          "generation_source": "NATIVE_GENERATED",
+          "counts": {
+            "OMPL": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-pregrasp",
+      "target": "carton_l07_c03",
+      "stage": "pregrasp",
+      "planning_mode": "static_prior_fast",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 4.929139491170645,
+      "request_round_trip_s": 4.918331779539585,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.428653247654438,
+      "static_prior": {
+        "load_s": 0.023924492299556732,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023924492299556732,
+        "native_load_s": 0.000511923,
+        "native_request_round_trip_s": 0.029257720336318016,
+        "total_load_s": 0.05333898030221462
+      },
+      "prior_usage": {
+        "connector_edges": 2,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": true,
+        "edge_check_limit": 128,
+        "edge_checks": 19,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.1281645569620253,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c00"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.6961538461538461,
+            "from": 141,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_compliant_bellows_0",
+              "carton_l07_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.7314285714285714,
+            "from": 3,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_compliant_bellows_1",
+              "carton_l07_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.2777777777777778,
+            "from": 6,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_compliant_bellows_71",
+              "trailer_ceiling"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 0,
+        "prior_hit": true,
+        "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+        "prior_nodes_reused": 1,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 8,
+          "graph_edge": 0,
+          "start_connector": 0
+        },
+        "rejected_edges": 9,
+        "route_nodes": [
+          160,
+          43,
+          161
+        ],
+        "slow_path": false,
+        "state_checks": 8998,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      },
+      "failure": null,
+      "processing_branch": "ACCEPTED_CURRENT_CONTEXT_PRIOR",
+      "geometry_input_sha256": "02b04d85349720e28884293d60bbc625ad5d5173281e239cddcefc2cf8c2bf69",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 2448833974,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 4.929139491170645,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 1,
+      "prior_queries": 1,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 19,
+      "rejected_edges": 9,
+      "timed_out_edges": 0,
+      "state_checks": 8998,
+      "local_repairs": 0,
+      "prior_query_s": 4.856451702,
+      "generation_source": "STATIC_PRIOR_REUSE",
+      "returned_waypoint_count": 1295,
+      "stages": {
+        "pregrasp": {
+          "request_round_trip_s": 4.918331779539585,
+          "native_solver_s": 0.0,
+          "prior_query_s": 4.856451702,
+          "generation_source": "STATIC_PRIOR_REUSE",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c04-transit",
+      "target": "carton_l07_c04",
+      "stage": "transit",
+      "planning_mode": "cold_from_scratch",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 16.516251351684332,
+      "request_round_trip_s": 16.510630384087563,
+      "native_solver_s": 16.450525729,
+      "initialization_s": 0.3541476372629404,
+      "static_prior": null,
+      "prior_usage": null,
+      "failure": null,
+      "processing_branch": "ACCEPTED",
+      "geometry_input_sha256": "89e2baf8684415750a492c005dbc95c3b203cf525719513a9283e1ea87887703",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 3320176687,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 16.516251351684332,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {
+        "OMPL": 1
+      },
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 0,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": null,
+      "rejected_edges": null,
+      "timed_out_edges": null,
+      "state_checks": null,
+      "local_repairs": null,
+      "prior_query_s": null,
+      "generation_source": "NATIVE_GENERATED",
+      "returned_waypoint_count": 169,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 16.510630384087563,
+          "native_solver_s": 16.450525729,
+          "prior_query_s": null,
+          "generation_source": "NATIVE_GENERATED",
+          "counts": {
+            "OMPL": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c04-transit",
+      "target": "carton_l07_c04",
+      "stage": "transit",
+      "planning_mode": "static_prior_fast",
+      "status": "PRIOR_NOT_CONNECTED",
+      "complete": false,
+      "held_out": false,
+      "perturbation": null,
+      "connection_elapsed_s": 0.7317526135593653,
+      "request_round_trip_s": 0.7282063402235508,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.39424291625618935,
+      "static_prior": {
+        "load_s": 0.024820664897561073,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.024820664897561073,
+        "native_load_s": 0.000504974,
+        "native_request_round_trip_s": 0.020882725715637207,
+        "total_load_s": 0.045869436115026474
+      },
+      "prior_usage": {
+        "connector_edges": 0,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": false,
+        "edge_check_limit": 128,
+        "edge_checks": 29,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.003115264797507788,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.06751824817518248,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c04",
+              "trailer_ceiling"
+            ],
+            "reason": "INTERSECTION_OR_CONTACT",
+            "to": 97
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.038288288288288286,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "tool_rigid_0",
+              "trailer_left_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 24
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.0036540803897685747,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 77
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 0,
+        "prior_hit": false,
+        "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+        "prior_nodes_reused": 0,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 0,
+          "graph_edge": 0,
+          "start_connector": 28
+        },
+        "rejected_edges": 29,
+        "route_nodes": [],
+        "slow_path": false,
+        "state_checks": 1298,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      },
+      "failure": null,
+      "processing_branch": null,
+      "geometry_input_sha256": "89e2baf8684415750a492c005dbc95c3b203cf525719513a9283e1ea87887703",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 3320176687,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 0.7317526135593653,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 1,
+      "prior_misses": 1,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 29,
+      "rejected_edges": 29,
+      "timed_out_edges": 0,
+      "state_checks": 1298,
+      "local_repairs": 0,
+      "prior_query_s": 0.679361569,
+      "generation_source": "STATIC_PRIOR_QUERY",
+      "returned_waypoint_count": 0,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 0.7282063402235508,
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.679361569,
+          "generation_source": "STATIC_PRIOR_QUERY",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-transit-heldout-j1-plus-0p005",
+      "target": "carton_l07_c03",
+      "stage": "transit",
+      "planning_mode": "cold_from_scratch",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": true,
+      "perturbation": {
+        "joint_index": 0,
+        "delta_rad": 0.005,
+        "source": "NOT_USED_IN_DATABASE_CONSTRUCTION"
+      },
+      "connection_elapsed_s": 30.7440596614033,
+      "request_round_trip_s": 30.738788951188326,
+      "native_solver_s": 30.68059397,
+      "initialization_s": 0.34357663057744503,
+      "static_prior": null,
+      "prior_usage": null,
+      "failure": null,
+      "processing_branch": "ACCEPTED",
+      "geometry_input_sha256": "c6dc74da733ae87f9a6797fea28270360efc47269fa1e216c3dc33653b86c56b",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 2448834033,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 30.7440596614033,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {
+        "OMPL": 1
+      },
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 0,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": null,
+      "rejected_edges": null,
+      "timed_out_edges": null,
+      "state_checks": null,
+      "local_repairs": null,
+      "prior_query_s": null,
+      "generation_source": "NATIVE_GENERATED",
+      "returned_waypoint_count": 149,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 30.738788951188326,
+          "native_solver_s": 30.68059397,
+          "prior_query_s": null,
+          "generation_source": "NATIVE_GENERATED",
+          "counts": {
+            "OMPL": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c03-transit-heldout-j1-plus-0p005",
+      "target": "carton_l07_c03",
+      "stage": "transit",
+      "planning_mode": "static_prior_fast",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": true,
+      "perturbation": {
+        "joint_index": 0,
+        "delta_rad": 0.005,
+        "source": "NOT_USED_IN_DATABASE_CONSTRUCTION"
+      },
+      "connection_elapsed_s": 3.3997019212692976,
+      "request_round_trip_s": 3.387803452089429,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.3973214905709028,
+      "static_prior": {
+        "load_s": 0.03171243518590927,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.03171243518590927,
+        "native_load_s": 0.000571975,
+        "native_request_round_trip_s": 0.020730378106236458,
+        "total_load_s": 0.05259800888597965
+      },
+      "prior_usage": {
+        "connector_edges": 2,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": true,
+        "edge_check_limit": 128,
+        "edge_checks": 29,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.004158004158004158,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.010141987829614604,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 33
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.004761904761904762,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 58
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.0032102728731942215,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c03",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 159
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 1,
+        "prior_hit": true,
+        "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+        "prior_nodes_reused": 2,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 3,
+          "graph_edge": 0,
+          "start_connector": 20
+        },
+        "rejected_edges": 24,
+        "route_nodes": [
+          160,
+          11,
+          33,
+          161
+        ],
+        "slow_path": false,
+        "state_checks": 4511,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      },
+      "failure": null,
+      "processing_branch": "ACCEPTED_CURRENT_CONTEXT_PRIOR",
+      "geometry_input_sha256": "c6dc74da733ae87f9a6797fea28270360efc47269fa1e216c3dc33653b86c56b",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 2448834033,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 3.3997019212692976,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 1,
+      "prior_queries": 1,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 29,
+      "rejected_edges": 24,
+      "timed_out_edges": 0,
+      "state_checks": 4511,
+      "local_repairs": 0,
+      "prior_query_s": 3.326482987,
+      "generation_source": "STATIC_PRIOR_REUSE",
+      "returned_waypoint_count": 1664,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 3.387803452089429,
+          "native_solver_s": 0.0,
+          "prior_query_s": 3.326482987,
+          "generation_source": "STATIC_PRIOR_REUSE",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c04-transit-heldout-j1-plus-0p005",
+      "target": "carton_l07_c04",
+      "stage": "transit",
+      "planning_mode": "cold_from_scratch",
+      "status": "SUCCESS",
+      "complete": true,
+      "held_out": true,
+      "perturbation": {
+        "joint_index": 0,
+        "delta_rad": 0.005,
+        "source": "NOT_USED_IN_DATABASE_CONSTRUCTION"
+      },
+      "connection_elapsed_s": 17.24376219511032,
+      "request_round_trip_s": 17.238714115694165,
+      "native_solver_s": 17.181943945,
+      "initialization_s": 0.3386066388338804,
+      "static_prior": null,
+      "prior_usage": null,
+      "failure": null,
+      "processing_branch": "ACCEPTED",
+      "geometry_input_sha256": "25ab39b038341e363c0f848f2b55033de0fc35cf23707129277f63f453102b7a",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 3320176687,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 17.24376219511032,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {
+        "OMPL": 1
+      },
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 0,
+      "prior_misses": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": null,
+      "rejected_edges": null,
+      "timed_out_edges": null,
+      "state_checks": null,
+      "local_repairs": null,
+      "prior_query_s": null,
+      "generation_source": "NATIVE_GENERATED",
+      "returned_waypoint_count": 172,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 17.238714115694165,
+          "native_solver_s": 17.181943945,
+          "prior_query_s": null,
+          "generation_source": "NATIVE_GENERATED",
+          "counts": {
+            "OMPL": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "carton_l07_c04-transit-heldout-j1-plus-0p005",
+      "target": "carton_l07_c04",
+      "stage": "transit",
+      "planning_mode": "static_prior_fast",
+      "status": "PRIOR_NOT_CONNECTED",
+      "complete": false,
+      "held_out": true,
+      "perturbation": {
+        "joint_index": 0,
+        "delta_rad": 0.005,
+        "source": "NOT_USED_IN_DATABASE_CONSTRUCTION"
+      },
+      "connection_elapsed_s": 0.9893841780722141,
+      "request_round_trip_s": 0.9858875423669815,
+      "native_solver_s": 0.0,
+      "initialization_s": 0.3889597076922655,
+      "static_prior": {
+        "load_s": 0.023900941014289856,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023900941014289856,
+        "native_load_s": 0.000567588,
+        "native_request_round_trip_s": 0.02117629162967205,
+        "total_load_s": 0.04523100703954697
+      },
+      "prior_usage": {
+        "connector_edges": 0,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": false,
+        "edge_check_limit": 128,
+        "edge_checks": 29,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.006220839813374806,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.06751824817518248,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c04",
+              "trailer_ceiling"
+            ],
+            "reason": "INTERSECTION_OR_CONTACT",
+            "to": 97
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.03153153153153153,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "tool_rigid_0",
+              "trailer_left_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 24
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.004866180048661801,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 77
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 0,
+        "prior_hit": false,
+        "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+        "prior_nodes_reused": 0,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 0,
+          "graph_edge": 0,
+          "start_connector": 28
+        },
+        "rejected_edges": 29,
+        "route_nodes": [],
+        "slow_path": false,
+        "state_checks": 1806,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      },
+      "failure": null,
+      "processing_branch": null,
+      "geometry_input_sha256": "25ab39b038341e363c0f848f2b55033de0fc35cf23707129277f63f453102b7a",
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 3320176687,
+      "request_budget_s": 60.0,
+      "ipc_timeout_s": 90.0,
+      "protocol_failure": null,
+      "group": "A",
+      "dataset": "fixed-v3-rest",
+      "comparable_s": 0.9893841780722141,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "counts": {},
+      "source_file": "fixed-v3-rest/comparison.json",
+      "prior_hits": 0,
+      "prior_queries": 1,
+      "prior_misses": 1,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 29,
+      "rejected_edges": 29,
+      "timed_out_edges": 0,
+      "state_checks": 1806,
+      "local_repairs": 0,
+      "prior_query_s": 0.936672477,
+      "generation_source": "STATIC_PRIOR_QUERY",
+      "returned_waypoint_count": 0,
+      "stages": {
+        "transit": {
+          "request_round_trip_s": 0.9858875423669815,
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.936672477,
+          "generation_source": "STATIC_PRIOR_QUERY",
+          "counts": {}
+        }
+      }
+    },
+    {
+      "group": "B",
+      "dataset": "baseline-carton_l07_c03",
+      "case_id": "carton_l07_c03",
+      "target": "carton_l07_c03",
+      "order": 3,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 44.84389655292034,
+      "reported_plan_s": 44.84389655292034,
+      "candidate_ordering_s": null,
+      "candidate_ordering_recorded": false,
+      "comparable_s": 44.84389655292034,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 44.84389655292034,
+      "scene_update_s": 0.084195327013731,
+      "scene_cartons": 38,
+      "counts": {
+        "PTP": 20,
+        "LIN": 9,
+        "OMPL": 2,
+        "IK": 37
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 21,
+          "motion_statuses": {
+            "NATIVE_PLANNING_FAILED": 20,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:PTP": 16,
+            "pilz_industrial_motion_planner:LIN": 4,
+            "ompl:RRTConnectkConfigDefault": 1
+          },
+          "native_calls": {
+            "PTP": 16,
+            "LIN": 4,
+            "OMPL": 1
+          },
+          "native_solver_s": 10.104498655,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 11.326954334974289,
+          "motion_round_trip_observed_requests": 21,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 29,
+          "ik_statuses": {
+            "SUCCESS": 20,
+            "NATIVE_IK_FAILED": 9
+          },
+          "ik_solver_s": 0.009511555000000001,
+          "ik_including_ipc_s": 0.7823087479919195,
+          "planning_phases": {
+            "UNRECORDED": 21
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.018060782,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0884954184293747,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.2126078,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.2928500063717365,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 6,
+          "motion_statuses": {
+            "NATIVE_PLANNING_FAILED": 5,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:PTP": 4,
+            "pilz_industrial_motion_planner:LIN": 1,
+            "ompl:RRTConnectkConfigDefault": 1
+          },
+          "native_calls": {
+            "PTP": 4,
+            "LIN": 1,
+            "OMPL": 1
+          },
+          "native_solver_s": 30.867298284,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 31.25379222072661,
+          "motion_round_trip_observed_requests": 6,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 7,
+          "ik_statuses": {
+            "SUCCESS": 4,
+            "NATIVE_IK_FAILED": 3
+          },
+          "ik_solver_s": 0.001076522,
+          "ik_including_ipc_s": 0.19254419580101967,
+          "planning_phases": {
+            "UNRECORDED": 6
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.00435863,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.07338537834584713,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015296704,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.09002306871116161,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000248006,
+          "ik_including_ipc_s": 0.02516082488000393,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": null,
+      "prior_hits": null,
+      "prior_misses": null,
+      "direct_short_connections": null,
+      "prior_nodes_reused": null,
+      "prior_edges_reused": null,
+      "semantic_events": null,
+      "local_repairs": null,
+      "slow_ompl_calls": null,
+      "native_solver_s": 41.222120855,
+      "ik_solver_s": 0.010836083000000002,
+      "ik_including_ipc_s": 1.0000137686729431,
+      "motion_request_round_trip_s": null,
+      "source_commit": "f7846bee960d290de695312b0e2ded0ef4975034",
+      "run_id": "planning-only-5f2219e566684e139bc0d1b520417267",
+      "worker_sha256": "5126aa3275288827554ab8e14db98d1e3eca8b5191645cb3430892a35e049d09",
+      "diagnostic_input_sha256": "fd85798a823a1167d0a871d43d4fdfef85fa21cc0f54115cede2c85dee9967cc",
+      "comparison_geometry_scope_sha256": "60c15a8ae9740db9503c1d6daa1b63f884db0734276d67e85e495cb8847b1edf",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "2fa7122a6970de653fd6a4f75599bf5f0b59d2207969285f0d9f0b8786685a51",
+      "source_file": "baseline-carton_l07_c03/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.8874854389578104,
+      "static_prior": null,
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": null,
+      "completed_within_fast_phase": null,
+      "fast_phase_plan_s": null,
+      "slow_completion_plan_s": null,
+      "prior_queries": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 0,
+      "rejected_edges": 0,
+      "timed_out_edges": 0,
+      "state_checks": 0,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "NATIVE_PLANNING_FAILED": 25,
+        "SUCCESS": 6
+      },
+      "generation_sources": {
+        "pilz_industrial_motion_planner:PTP": 20,
+        "pilz_industrial_motion_planner:LIN": 9,
+        "ompl:RRTConnectkConfigDefault": 2
+      },
+      "failed_motion_requests": 25,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "B",
+      "dataset": "baseline-carton_l07_c04",
+      "case_id": "carton_l07_c04",
+      "target": "carton_l07_c04",
+      "order": 5,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 31.07781540043652,
+      "reported_plan_s": 31.07781540043652,
+      "candidate_ordering_s": null,
+      "candidate_ordering_recorded": false,
+      "comparable_s": 31.07781540043652,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 31.07781540043652,
+      "scene_update_s": 0.07528357580304146,
+      "scene_cartons": 36,
+      "counts": {
+        "PTP": 20,
+        "LIN": 6,
+        "OMPL": 2,
+        "IK": 39
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 18,
+          "motion_statuses": {
+            "NATIVE_PLANNING_FAILED": 16,
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:PTP": 16,
+            "pilz_industrial_motion_planner:LIN": 1,
+            "ompl:RRTConnectkConfigDefault": 1
+          },
+          "native_calls": {
+            "PTP": 16,
+            "LIN": 1,
+            "OMPL": 1
+          },
+          "native_solver_s": 9.11798092,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 10.109795009717345,
+          "motion_round_trip_observed_requests": 18,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 32,
+          "ik_statuses": {
+            "SUCCESS": 20,
+            "NATIVE_IK_FAILED": 12
+          },
+          "ik_solver_s": 0.012407610000000001,
+          "ik_including_ipc_s": 0.8280461262911558,
+          "planning_phases": {
+            "UNRECORDED": 18
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.017380842,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.09778067655861378,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.211886132,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.2890491597354412,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 6,
+          "motion_statuses": {
+            "NATIVE_PLANNING_FAILED": 5,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:PTP": 4,
+            "pilz_industrial_motion_planner:LIN": 1,
+            "ompl:RRTConnectkConfigDefault": 1
+          },
+          "native_calls": {
+            "PTP": 4,
+            "LIN": 1,
+            "OMPL": 1
+          },
+          "native_solver_s": 18.381408386,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 18.743943450972438,
+          "motion_round_trip_observed_requests": 6,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 6,
+          "ik_statuses": {
+            "SUCCESS": 4,
+            "NATIVE_IK_FAILED": 2
+          },
+          "ik_solver_s": 0.0013301419999999999,
+          "ik_including_ipc_s": 0.1551668457686901,
+          "planning_phases": {
+            "UNRECORDED": 6
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.002921867,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.070180119946599,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "pilz_industrial_motion_planner:LIN": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015690643,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.08928662911057472,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "UNRECORDED": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.00022484,
+          "ik_including_ipc_s": 0.02412445656955242,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": null,
+      "prior_hits": null,
+      "prior_misses": null,
+      "direct_short_connections": null,
+      "prior_nodes_reused": null,
+      "prior_edges_reused": null,
+      "semantic_events": null,
+      "local_repairs": null,
+      "slow_ompl_calls": null,
+      "native_solver_s": 27.747268790000003,
+      "ik_solver_s": 0.013962592000000001,
+      "ik_including_ipc_s": 1.0073374286293983,
+      "motion_request_round_trip_s": null,
+      "source_commit": "f7846bee960d290de695312b0e2ded0ef4975034",
+      "run_id": "planning-only-fb49ccfe3ffc419687d85f23186be5b3",
+      "worker_sha256": "5126aa3275288827554ab8e14db98d1e3eca8b5191645cb3430892a35e049d09",
+      "diagnostic_input_sha256": "380da9e9eef2478c2c16730960f03070d5c6c5a6e296ec99a2d1d5cff030a4cf",
+      "comparison_geometry_scope_sha256": "8deed840a22aeadc3d23134106b486a5a947280c0cd8cbb5de1ec821dc4c788e",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "2fa7122a6970de653fd6a4f75599bf5f0b59d2207969285f0d9f0b8786685a51",
+      "source_file": "baseline-carton_l07_c04/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.8781422022730112,
+      "static_prior": null,
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": null,
+      "completed_within_fast_phase": null,
+      "fast_phase_plan_s": null,
+      "slow_completion_plan_s": null,
+      "prior_queries": 0,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 0,
+      "rejected_edges": 0,
+      "timed_out_edges": 0,
+      "state_checks": 0,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "NATIVE_PLANNING_FAILED": 21,
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "pilz_industrial_motion_planner:PTP": 20,
+        "pilz_industrial_motion_planner:LIN": 6,
+        "ompl:RRTConnectkConfigDefault": 2
+      },
+      "failed_motion_requests": 21,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "B",
+      "dataset": "optimized-carton_l07_c03",
+      "case_id": "carton_l07_c03",
+      "target": "carton_l07_c03",
+      "order": 3,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 9.22967086918652,
+      "reported_plan_s": 9.22967086918652,
+      "candidate_ordering_s": 0.0458698645234108,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 9.18380100466311,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 9.22967086918652,
+      "scene_update_s": 0.039193492382764816,
+      "scene_cartons": 38,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 4.729561611,
+          "motion_request_round_trip_s": 4.778717562556267,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 19,
+          "rejected_edges": 9,
+          "timed_out_edges": 0,
+          "state_checks": 8998,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000144423,
+          "ik_including_ipc_s": 0.024522079154849052,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.018623711,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06488719955086708,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.211446939,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.26941187120974064,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 3.145578278,
+          "motion_request_round_trip_s": 3.2000223975628614,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 29,
+          "rejected_edges": 24,
+          "timed_out_edges": 0,
+          "state_checks": 4137,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000219759,
+          "ik_including_ipc_s": 0.02500387839972973,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.00417527,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0497874841094017,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015821709,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.07017252594232559,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000236088,
+          "ik_including_ipc_s": 0.02081732451915741,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 7.875139889,
+      "prior_hits": 2,
+      "prior_misses": 0,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 3,
+      "prior_edges_reused": 1,
+      "semantic_events": 0,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.250067629,
+      "ik_solver_s": 0.00060027,
+      "ik_including_ipc_s": 0.07034328207373619,
+      "motion_request_round_trip_s": 8.432999040931463,
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "run_id": "planning-only-eff5ae20109a418d902da233812d1b47",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": "fd85798a823a1167d0a871d43d4fdfef85fa21cc0f54115cede2c85dee9967cc",
+      "comparison_geometry_scope_sha256": "60c15a8ae9740db9503c1d6daa1b63f884db0734276d67e85e495cb8847b1edf",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "optimized-carton_l07_c03/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9328762795776129,
+      "static_prior": {
+        "load_s": 0.023843033239245415,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023843033239245415,
+        "native_load_s": 0.000609238,
+        "native_request_round_trip_s": 0.021382002159953117,
+        "total_load_s": 0.04537113755941391
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 300.0,
+      "completed_within_fast_phase": true,
+      "fast_phase_plan_s": 9.22967086918652,
+      "slow_completion_plan_s": 0.0,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 48,
+      "rejected_edges": 33,
+      "timed_out_edges": 0,
+      "state_checks": 13135,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 6
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 4
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "B",
+      "dataset": "optimized-carton_l07_c04",
+      "case_id": "carton_l07_c04",
+      "target": "carton_l07_c04",
+      "order": 5,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 78.66196750104427,
+      "reported_plan_s": 78.66196750104427,
+      "candidate_ordering_s": 0.03992966189980507,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 78.62203783914447,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 78.66196750104427,
+      "scene_update_s": 0.03699619136750698,
+      "scene_cartons": 36,
+      "counts": {
+        "PTP": 6,
+        "LIN": 4,
+        "OMPL": 1,
+        "IK": 13
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 5,
+          "motion_statuses": {
+            "PRIOR_EDGE_CHECK_LIMIT": 2,
+            "NATIVE_PLANNING_FAILED": 2,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_QUERY": 2,
+            "pilz_industrial_motion_planner:PTP": 2,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "PTP": 2
+          },
+          "native_solver_s": 0.188173431,
+          "prior_query_s": 51.80185693,
+          "motion_request_round_trip_s": 52.204120418056846,
+          "motion_round_trip_observed_requests": 5,
+          "prior_queries": 3,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 2,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 2,
+          "edge_checks": 262,
+          "rejected_edges": 157,
+          "timed_out_edges": 0,
+          "state_checks": 90313,
+          "local_repairs": 0,
+          "ik_rows": 6,
+          "ik_statuses": {
+            "SUCCESS": 4,
+            "NATIVE_IK_FAILED": 2
+          },
+          "ik_solver_s": 0.000801021,
+          "ik_including_ipc_s": 0.09516484849154949,
+          "planning_phases": {
+            "FAST": 5
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.017982641,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0611922275274992,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.21814739,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.2732998672872782,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 11,
+          "motion_statuses": {
+            "PRIOR_NOT_CONNECTED": 5,
+            "NATIVE_PLANNING_FAILED": 5,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_QUERY": 5,
+            "pilz_industrial_motion_planner:PTP": 4,
+            "pilz_industrial_motion_planner:LIN": 1,
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "PTP": 4,
+            "LIN": 1,
+            "OMPL": 1
+          },
+          "native_solver_s": 23.277466041,
+          "prior_query_s": 1.094560765,
+          "motion_request_round_trip_s": 24.80939195305109,
+          "motion_round_trip_observed_requests": 11,
+          "prior_queries": 5,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 5,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 108,
+          "rejected_edges": 108,
+          "timed_out_edges": 0,
+          "state_checks": 2102,
+          "local_repairs": 0,
+          "ik_rows": 6,
+          "ik_statuses": {
+            "SUCCESS": 4,
+            "NATIVE_IK_FAILED": 2
+          },
+          "ik_solver_s": 0.002161941,
+          "ik_including_ipc_s": 0.0972172413021326,
+          "planning_phases": {
+            "FAST": 11
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0463066790252924,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015739038,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06921781040728092,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000210489,
+          "ik_including_ipc_s": 0.020586760714650154,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 52.896417695000004,
+      "prior_hits": 1,
+      "prior_misses": 7,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 2,
+      "prior_edges_reused": 1,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 1,
+      "native_solver_s": 23.717508541,
+      "ik_solver_s": 0.0031734510000000003,
+      "ik_including_ipc_s": 0.21296885050833225,
+      "motion_request_round_trip_s": 77.46352895535529,
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "run_id": "planning-only-8d0e4656a6de40558ccf18a61f3ffcd2",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": "380da9e9eef2478c2c16730960f03070d5c6c5a6e296ec99a2d1d5cff030a4cf",
+      "comparison_geometry_scope_sha256": "8deed840a22aeadc3d23134106b486a5a947280c0cd8cbb5de1ec821dc4c788e",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "optimized-carton_l07_c04/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.931403273716569,
+      "static_prior": {
+        "load_s": 0.024550601840019226,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.024550601840019226,
+        "native_load_s": 0.000573454,
+        "native_request_round_trip_s": 0.021197998896241188,
+        "total_load_s": 0.04589255526661873
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 300.0,
+      "completed_within_fast_phase": true,
+      "fast_phase_plan_s": 78.66196750104427,
+      "slow_completion_plan_s": 0.0,
+      "prior_queries": 8,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 2,
+      "edge_checks": 370,
+      "rejected_edges": 265,
+      "timed_out_edges": 0,
+      "state_checks": 92415,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "PRIOR_EDGE_CHECK_LIMIT": 2,
+        "NATIVE_PLANNING_FAILED": 7,
+        "SUCCESS": 6,
+        "PRIOR_NOT_CONNECTED": 5
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_QUERY": 7,
+        "pilz_industrial_motion_planner:PTP": 6,
+        "STATIC_PRIOR_REUSE": 1,
+        "NATIVE_GENERATED": 4,
+        "pilz_industrial_motion_planner:LIN": 1,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 14,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "B",
+      "dataset": "tuned-carton_l07_c03",
+      "case_id": "carton_l07_c03",
+      "target": "carton_l07_c03",
+      "order": 3,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 9.33055597729981,
+      "reported_plan_s": 9.33055597729981,
+      "candidate_ordering_s": 0.04736887104809284,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 9.283187106251717,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 9.33055597729981,
+      "scene_update_s": 0.03974285535514355,
+      "scene_cartons": 38,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 4.720764138,
+          "motion_request_round_trip_s": 4.772571722045541,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 19,
+          "rejected_edges": 9,
+          "timed_out_edges": 0,
+          "state_checks": 8998,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000130596,
+          "ik_including_ipc_s": 0.02407657727599144,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.018227886,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06527824886143208,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.210298497,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.2659259922802448,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.074060941,
+          "prior_query_s": 3.018801597,
+          "motion_request_round_trip_s": 3.206163629889488,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 8,
+          "rejected_edges": 2,
+          "timed_out_edges": 0,
+          "state_checks": 3931,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000293004,
+          "ik_including_ipc_s": 0.025076374411582947,
+          "planning_phases": {
+            "FAST": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.045753488317131996,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015568567,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.069374343380332,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000217942,
+          "ik_including_ipc_s": 0.02179744467139244,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 7.739565734999999,
+      "prior_hits": 2,
+      "prior_misses": 0,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 6,
+      "prior_edges_reused": 4,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.31815589099999997,
+      "ik_solver_s": 0.0006415419999999999,
+      "ik_including_ipc_s": 0.07095039635896683,
+      "motion_request_round_trip_s": 8.42506742477417,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-02b6ae140a61492da085162a91998589",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": "fd85798a823a1167d0a871d43d4fdfef85fa21cc0f54115cede2c85dee9967cc",
+      "comparison_geometry_scope_sha256": "60c15a8ae9740db9503c1d6daa1b63f884db0734276d67e85e495cb8847b1edf",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "tuned-carton_l07_c03/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.934267895296216,
+      "static_prior": {
+        "load_s": 0.023199792951345444,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023199792951345444,
+        "native_load_s": 0.000570426,
+        "native_request_round_trip_s": 0.021923156455159187,
+        "total_load_s": 0.045266762375831604
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 300.0,
+      "completed_within_fast_phase": true,
+      "fast_phase_plan_s": 9.33055597729981,
+      "slow_completion_plan_s": 0.0,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 27,
+      "rejected_edges": 11,
+      "timed_out_edges": 0,
+      "state_checks": 12929,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 4,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "B",
+      "dataset": "tuned-carton_l07_c04",
+      "case_id": "carton_l07_c04",
+      "target": "carton_l07_c04",
+      "order": 5,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 16.26967160217464,
+      "reported_plan_s": 16.26967160217464,
+      "candidate_ordering_s": 0.03982180543243885,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 16.2298497967422,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "cumulative_plan_s": 16.26967160217464,
+      "scene_update_s": 0.034470872953534126,
+      "scene_cartons": 36,
+      "counts": {
+        "PTP": 2,
+        "LIN": 5,
+        "OMPL": 0,
+        "IK": 8
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 5,
+          "motion_statuses": {
+            "PRIOR_QUERY_TIMEOUT": 2,
+            "NATIVE_PLANNING_FAILED": 2,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_QUERY": 2,
+            "pilz_industrial_motion_planner:PTP": 2,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "PTP": 2
+          },
+          "native_solver_s": 0.185179852,
+          "prior_query_s": 13.268197115,
+          "motion_request_round_trip_s": 13.666003001853824,
+          "motion_round_trip_observed_requests": 5,
+          "prior_queries": 3,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 2,
+          "prior_timeouts": 2,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 112,
+          "rejected_edges": 78,
+          "timed_out_edges": 2,
+          "state_checks": 23763,
+          "local_repairs": 0,
+          "ik_rows": 6,
+          "ik_statuses": {
+            "SUCCESS": 4,
+            "NATIVE_IK_FAILED": 2
+          },
+          "ik_solver_s": 0.0008164709999999999,
+          "ik_including_ipc_s": 0.0980137512087822,
+          "planning_phases": {
+            "FAST": 5
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.017676363,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06178159452974796,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.214270503,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.268134918063879,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.081024462,
+          "prior_query_s": 0.994204003,
+          "motion_request_round_trip_s": 1.169853376224637,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 6,
+          "rejected_edges": 4,
+          "timed_out_edges": 0,
+          "state_checks": 1308,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000137122,
+          "ik_including_ipc_s": 0.023661091923713684,
+          "planning_phases": {
+            "FAST": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.004272496,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.04868411459028721,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015275434,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0670973639935255,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.0002233,
+          "ik_including_ipc_s": 0.020743291825056076,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 14.262401118,
+      "prior_hits": 2,
+      "prior_misses": 2,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 3,
+      "prior_edges_reused": 1,
+      "semantic_events": 0,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.51769911,
+      "ik_solver_s": 0.001176893,
+      "ik_including_ipc_s": 0.14241813495755196,
+      "motion_request_round_trip_s": 15.2815543692559,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-b774a9231a1a47cbb5e5427532544fc7",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": "380da9e9eef2478c2c16730960f03070d5c6c5a6e296ec99a2d1d5cff030a4cf",
+      "comparison_geometry_scope_sha256": "8deed840a22aeadc3d23134106b486a5a947280c0cd8cbb5de1ec821dc4c788e",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "tuned-carton_l07_c04/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9266740288585424,
+      "static_prior": {
+        "load_s": 0.023107444867491722,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023107444867491722,
+        "native_load_s": 0.000525007,
+        "native_request_round_trip_s": 0.02045806497335434,
+        "total_load_s": 0.04370037280023098
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 300.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 300.0,
+      "completed_within_fast_phase": true,
+      "fast_phase_plan_s": 16.26967160217464,
+      "slow_completion_plan_s": 0.0,
+      "prior_queries": 4,
+      "prior_timeouts": 2,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 118,
+      "rejected_edges": 82,
+      "timed_out_edges": 2,
+      "state_checks": 25071,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "PRIOR_QUERY_TIMEOUT": 2,
+        "NATIVE_PLANNING_FAILED": 2,
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_QUERY": 2,
+        "pilz_industrial_motion_planner:PTP": 2,
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 5
+      },
+      "failed_motion_requests": 4,
+      "timeout_motion_requests": 2
+    }
+  ],
+  "pair_comparisons": [
+    {
+      "group": "A",
+      "case_id": "carton_l07_c03-transit",
+      "baseline_dataset": "fixed-first",
+      "variant_dataset": "fixed-first",
+      "baseline_status": "SUCCESS",
+      "variant_status": "PRIOR_NOT_CONNECTED",
+      "baseline_s": 21.587374525144696,
+      "variant_s": 0.9673431925475597,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": null,
+      "reduction_percent": null,
+      "outcome": "NO_SUCCESS_SPEED_RATIO",
+      "held_out": false
+    },
+    {
+      "group": "A",
+      "case_id": "carton_l07_c03-transit",
+      "baseline_dataset": "fixed-first",
+      "variant_dataset": "fixed-v3-first",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 21.587374525144696,
+      "variant_s": 3.221221376210451,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": 6.701611595084092,
+      "reduction_percent": 85.07821610053408,
+      "outcome": "IMPROVED",
+      "held_out": false
+    },
+    {
+      "group": "A",
+      "case_id": "carton_l07_c03-pregrasp",
+      "baseline_dataset": "fixed-v3-rest",
+      "variant_dataset": "fixed-v3-rest",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 9.67136637121439,
+      "variant_s": 4.929139491170645,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": 1.9620800727060559,
+      "reduction_percent": 49.03368043380498,
+      "outcome": "IMPROVED",
+      "held_out": false
+    },
+    {
+      "group": "A",
+      "case_id": "carton_l07_c04-transit",
+      "baseline_dataset": "fixed-v3-rest",
+      "variant_dataset": "fixed-v3-rest",
+      "baseline_status": "SUCCESS",
+      "variant_status": "PRIOR_NOT_CONNECTED",
+      "baseline_s": 16.516251351684332,
+      "variant_s": 0.7317526135593653,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": null,
+      "reduction_percent": null,
+      "outcome": "NO_SUCCESS_SPEED_RATIO",
+      "held_out": false
+    },
+    {
+      "group": "A",
+      "case_id": "carton_l07_c03-transit-heldout-j1-plus-0p005",
+      "baseline_dataset": "fixed-v3-rest",
+      "variant_dataset": "fixed-v3-rest",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 30.7440596614033,
+      "variant_s": 3.3997019212692976,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": 9.043163304718442,
+      "reduction_percent": 88.94192257394897,
+      "outcome": "IMPROVED",
+      "held_out": true
+    },
+    {
+      "group": "A",
+      "case_id": "carton_l07_c04-transit-heldout-j1-plus-0p005",
+      "baseline_dataset": "fixed-v3-rest",
+      "variant_dataset": "fixed-v3-rest",
+      "baseline_status": "SUCCESS",
+      "variant_status": "PRIOR_NOT_CONNECTED",
+      "baseline_s": 17.24376219511032,
+      "variant_s": 0.9893841780722141,
+      "time_basis": "FIXED_START_GOAL_CONNECTION_WALL",
+      "input_hash_matches": {
+        "geometry_input_sha256": true
+      },
+      "ratio_baseline_over_variant": null,
+      "reduction_percent": null,
+      "outcome": "NO_SUCCESS_SPEED_RATIO",
+      "held_out": true
+    },
+    {
+      "group": "B",
+      "case_id": "carton_l07_c03",
+      "baseline_dataset": "baseline-carton_l07_c03",
+      "variant_dataset": "optimized-carton_l07_c03",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 44.84389655292034,
+      "variant_s": 9.18380100466311,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "input_hash_matches": {
+        "diagnostic_input_sha256": true,
+        "comparison_geometry_scope_sha256": true
+      },
+      "ratio_baseline_over_variant": 4.8829342589359985,
+      "reduction_percent": 79.52051068125783,
+      "outcome": "IMPROVED",
+      "held_out": null
+    },
+    {
+      "group": "B",
+      "case_id": "carton_l07_c04",
+      "baseline_dataset": "baseline-carton_l07_c04",
+      "variant_dataset": "optimized-carton_l07_c04",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 31.07781540043652,
+      "variant_s": 78.62203783914447,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "input_hash_matches": {
+        "diagnostic_input_sha256": true,
+        "comparison_geometry_scope_sha256": true
+      },
+      "ratio_baseline_over_variant": 0.3952812246360199,
+      "reduction_percent": -152.98444187952845,
+      "outcome": "REGRESSED_OR_EQUAL",
+      "held_out": null
+    },
+    {
+      "group": "B",
+      "case_id": "carton_l07_c03",
+      "baseline_dataset": "baseline-carton_l07_c03",
+      "variant_dataset": "tuned-carton_l07_c03",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 44.84389655292034,
+      "variant_s": 9.283187106251717,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "input_hash_matches": {
+        "diagnostic_input_sha256": true,
+        "comparison_geometry_scope_sha256": true
+      },
+      "ratio_baseline_over_variant": 4.830657406734853,
+      "reduction_percent": 79.29888386193957,
+      "outcome": "IMPROVED",
+      "held_out": null
+    },
+    {
+      "group": "B",
+      "case_id": "carton_l07_c04",
+      "baseline_dataset": "baseline-carton_l07_c04",
+      "variant_dataset": "tuned-carton_l07_c04",
+      "baseline_status": "SUCCESS",
+      "variant_status": "SUCCESS",
+      "baseline_s": 31.07781540043652,
+      "variant_s": 16.2298497967422,
+      "time_basis": "PLAN_BOX_EXCLUDING_NEW_ORDERING_BASELINE_ORDERING_WAS_IN_SCENE_UPDATE",
+      "input_hash_matches": {
+        "diagnostic_input_sha256": true,
+        "comparison_geometry_scope_sha256": true
+      },
+      "ratio_baseline_over_variant": 1.9148553923570344,
+      "reduction_percent": 47.776735309026144,
+      "outcome": "IMPROVED",
+      "held_out": null
+    }
+  ],
+  "offline_builds": [
+    {
+      "result": "BUILD_FAILED",
+      "generation_s": 0.248092632740736,
+      "initialization_s": 0.8041556868702173,
+      "database_write_s": null,
+      "load": null,
+      "source_commit": "a3a3350fbe89d4d1fb1f4135c0e1f89cf92845e5+diagnostic-raw-response",
+      "worker_sha256": "28773b5441e5d79df9afa21ef5dc570249a3ac08e1721f1c41d18f16aa434b9f",
+      "seed": 71071,
+      "build_limits": {
+        "node_limit": 2,
+        "attempt_limit": 20,
+        "neighbors": 1,
+        "build_budget_s": 15.0,
+        "ipc_timeout_s": 30.0
+      },
+      "failure": {
+        "type": "ValueError",
+        "reason": "STATIC_PRIOR_BUILD_CONTEXT_CHANGED"
+      },
+      "source_file": "static-prior-probe.build.json",
+      "modes": {
+        "empty": {
+          "nodes": 2,
+          "edges": 0,
+          "native_status": "SUCCESS",
+          "generation_s": 0.24759243242442608,
+          "build_s": 0.220486492,
+          "accepted_portals": null,
+          "state_checks": 557,
+          "portal_attempts": null,
+          "context_equal_after_serialization": true
+        }
+      }
+    },
+    {
+      "result": "BUILD_FAILED",
+      "generation_s": 104.72244314476848,
+      "initialization_s": 0.8136483505368233,
+      "database_write_s": null,
+      "load": null,
+      "source_commit": "a3a3350fbe89d4d1fb1f4135c0e1f89cf92845e5",
+      "worker_sha256": "28773b5441e5d79df9afa21ef5dc570249a3ac08e1721f1c41d18f16aa434b9f",
+      "seed": 71071,
+      "build_limits": {
+        "node_limit": 160,
+        "attempt_limit": 1600,
+        "neighbors": 10,
+        "build_budget_s": 300.0,
+        "ipc_timeout_s": 360.0
+      },
+      "failure": {
+        "type": "ValueError",
+        "reason": "STATIC_PRIOR_BUILD_CONTEXT_CHANGED"
+      },
+      "source_file": "static-prior-v1.build.json",
+      "modes": {}
+    },
+    {
+      "result": "BUILT_STATIC_CANDIDATE_GRAPH",
+      "generation_s": 207.20346337743104,
+      "initialization_s": 0.7928278837352991,
+      "database_write_s": 0.0012302063405513763,
+      "load": {
+        "load_s": 0.009548984467983246,
+        "sha256": "138f72106e75dd043edfa0d165e2b33bc49ae8e1eab0d851990721f758eeef00",
+        "bytes": 92447,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD"
+      },
+      "source_commit": "318ec39921a9ed9c3d8665324c10948aa7ed9006",
+      "worker_sha256": "c17c98631468683ab158b8bc72bf4ff69ef53705346b778f9a2f4991d1fbbd16",
+      "seed": 71071,
+      "build_limits": {
+        "node_limit": 160,
+        "attempt_limit": 1600,
+        "neighbors": 10,
+        "build_budget_s": 300.0,
+        "ipc_timeout_s": 360.0
+      },
+      "failure": null,
+      "source_file": "static-prior-v2.build.json",
+      "modes": {
+        "empty": {
+          "nodes": 160,
+          "edges": 420,
+          "native_status": "SUCCESS",
+          "generation_s": 104.01917414180934,
+          "build_s": 103.984127261,
+          "accepted_portals": null,
+          "state_checks": 388949,
+          "portal_attempts": null,
+          "context_equal_after_serialization": true
+        },
+        "loaded": {
+          "nodes": 160,
+          "edges": 275,
+          "native_status": "SUCCESS",
+          "generation_s": 103.18360336497426,
+          "build_s": 103.151998706,
+          "accepted_portals": null,
+          "state_checks": 284515,
+          "portal_attempts": null,
+          "context_equal_after_serialization": true
+        }
+      }
+    },
+    {
+      "result": "BUILT_STATIC_CANDIDATE_GRAPH",
+      "generation_s": 251.1216298956424,
+      "initialization_s": 0.7932776007801294,
+      "database_write_s": 0.003146568313241005,
+      "load": {
+        "load_s": 0.02372465841472149,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD"
+      },
+      "source_commit": "30c6f3bf058563fcd2ffe23c2523ef71db265809",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "seed": 71071,
+      "build_limits": {
+        "node_limit": 160,
+        "attempt_limit": 1600,
+        "neighbors": 10,
+        "build_budget_s": 300.0,
+        "ipc_timeout_s": 360.0
+      },
+      "failure": null,
+      "source_file": "static-prior-v3.build.json",
+      "modes": {
+        "empty": {
+          "nodes": 160,
+          "edges": 545,
+          "native_status": "SUCCESS",
+          "generation_s": 129.32323176413774,
+          "build_s": 129.277903025,
+          "accepted_portals": 73,
+          "state_checks": 387541,
+          "portal_attempts": 89,
+          "context_equal_after_serialization": true
+        },
+        "loaded": {
+          "nodes": 160,
+          "edges": 386,
+          "native_status": "SUCCESS",
+          "generation_s": 121.18319162353873,
+          "build_s": 121.14633575,
+          "accepted_portals": 73,
+          "state_checks": 278625,
+          "portal_attempts": 89,
+          "context_equal_after_serialization": true
+        }
+      },
+      "layout_portals": {
+        "pose_count": 30,
+        "candidate_count": 89,
+        "native_ik_calls": 510,
+        "native_batch_calls": 90,
+        "wall_s": 0.607529005035758
+      }
+    }
+  ],
+  "pending_expected": [
+    "tuned-c03",
+    "tuned-c04"
+  ],
+  "warnings": []
+}

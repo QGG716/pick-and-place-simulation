@@ -1,0 +1,1728 @@
+{
+  "schema": "m710_formal_perbox_summary_v1",
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "result": "COMPLETE_5_OF_5",
+  "boxes": [
+    {
+      "group": "FORMAL",
+      "dataset": "formal-once",
+      "case_id": "carton_l07_c02",
+      "target": "carton_l07_c02",
+      "order": 1,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 1.8173214551061392,
+      "reported_plan_s": 1.8173214551061392,
+      "candidate_ordering_s": 0.05394844152033329,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 1.8173214551061392,
+      "time_basis": "FULL_PLAN_INCLUDING_ORDERING",
+      "cumulative_plan_s": 1.8173214551061392,
+      "scene_update_s": 0.031428175047039986,
+      "scene_cartons": 40,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_DIRECT_CONNECTION": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.102806433,
+          "motion_request_round_trip_s": 0.14869696088135242,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 0,
+          "direct_short_connections": 1,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 1,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 215,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 7.7432e-05,
+          "ik_including_ipc_s": 0.02473634108901024,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.018556341,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06464883126318455,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.224223644,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.28234052285552025,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "FAST": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "NATIVE_DIRECT_CONNECTION": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.083586489,
+          "prior_query_s": 0.266502986,
+          "motion_request_round_trip_s": 0.445596382021904,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 0,
+          "direct_short_connections": 1,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 1,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 356,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000130181,
+          "ik_including_ipc_s": 0.02578296698629856,
+          "planning_phases": {
+            "SLOW_COMPLETION": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0455644354224205,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.01548581,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0707276426255703,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000161711,
+          "ik_including_ipc_s": 0.022067371755838394,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 0.369309419,
+      "prior_hits": 0,
+      "prior_misses": 0,
+      "direct_short_connections": 2,
+      "prior_nodes_reused": 0,
+      "prior_edges_reused": 0,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.341852284,
+      "ik_solver_s": 0.000369324,
+      "ik_including_ipc_s": 0.0725866798311472,
+      "motion_request_round_trip_s": 1.057574775069952,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": null,
+      "comparison_geometry_scope_sha256": "e4f4afc656627b73357da0e228a19f040bc972b2e2208dbcc96fe1c1b7863dd4",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "formal-once/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9418339375406504,
+      "static_prior": {
+        "load_s": 0.023604074493050575,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023604074493050575,
+        "native_load_s": 0.000581097,
+        "native_request_round_trip_s": 0.021050380542874336,
+        "total_load_s": 0.04479244165122509
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 900.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 1.0,
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.9685673750936985,
+      "slow_completion_plan_s": 0.8487540800124407,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 2,
+      "rejected_edges": 0,
+      "timed_out_edges": 0,
+      "state_checks": 571,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "NATIVE_DIRECT_CONNECTION": 2,
+        "NATIVE_GENERATED": 4,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "FORMAL",
+      "dataset": "formal-once",
+      "case_id": "carton_l07_c01",
+      "target": "carton_l07_c01",
+      "order": 2,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 2.277386935427785,
+      "reported_plan_s": 2.277386935427785,
+      "candidate_ordering_s": 0.04988172650337219,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 2.277386935427785,
+      "time_basis": "FULL_PLAN_INCLUDING_ORDERING",
+      "cumulative_plan_s": 4.094708390533924,
+      "scene_update_s": 0.04619060643017292,
+      "scene_cartons": 39,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.534313367,
+          "motion_request_round_trip_s": 0.583081841468811,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 3,
+          "rejected_edges": 1,
+          "timed_out_edges": 0,
+          "state_checks": 1006,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000105349,
+          "ik_including_ipc_s": 0.024869706481695175,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.01853683,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06242655962705612,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.226079483,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.280793746933341,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "NATIVE_DIRECT_CONNECTION": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.093228561,
+          "prior_query_s": 0.28802074,
+          "motion_request_round_trip_s": 0.47564494982361794,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 0,
+          "direct_short_connections": 1,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 1,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 381,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.00010663,
+          "ik_including_ipc_s": 0.025606127455830574,
+          "planning_phases": {
+            "SLOW_COMPLETION": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.04515099339187145,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015483552,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06696797162294388,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000107244,
+          "ik_including_ipc_s": 0.022611413151025772,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 0.822334107,
+      "prior_hits": 1,
+      "prior_misses": 0,
+      "direct_short_connections": 1,
+      "prior_nodes_reused": 1,
+      "prior_edges_reused": 0,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.35332842600000003,
+      "ik_solver_s": 0.000319223,
+      "ik_including_ipc_s": 0.07308724708855152,
+      "motion_request_round_trip_s": 1.5140660628676414,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": null,
+      "comparison_geometry_scope_sha256": "e4f4afc656627b73357da0e228a19f040bc972b2e2208dbcc96fe1c1b7863dd4",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "formal-once/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9418339375406504,
+      "static_prior": {
+        "load_s": 0.023604074493050575,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023604074493050575,
+        "native_load_s": 0.000581097,
+        "native_request_round_trip_s": 0.021050380542874336,
+        "total_load_s": 0.04479244165122509
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 900.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 1.0,
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.0,
+      "slow_completion_plan_s": 2.277386935427785,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 4,
+      "rejected_edges": 1,
+      "timed_out_edges": 0,
+      "state_checks": 1387,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_REUSE": 1,
+        "NATIVE_GENERATED": 4,
+        "NATIVE_DIRECT_CONNECTION": 1,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "FORMAL",
+      "dataset": "formal-once",
+      "case_id": "carton_l07_c03",
+      "target": "carton_l07_c03",
+      "order": 3,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 9.234296284615993,
+      "reported_plan_s": 9.234296284615993,
+      "candidate_ordering_s": 0.04632584750652313,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 9.234296284615993,
+      "time_basis": "FULL_PLAN_INCLUDING_ORDERING",
+      "cumulative_plan_s": 13.329004675149918,
+      "scene_update_s": 0.04165118560194969,
+      "scene_cartons": 38,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 4.624184608,
+          "motion_request_round_trip_s": 4.674277925863862,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 19,
+          "rejected_edges": 9,
+          "timed_out_edges": 0,
+          "state_checks": 8838,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000150107,
+          "ik_including_ipc_s": 0.025757620111107826,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.017744278,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.061072368174791336,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.211973611,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.26740269549191,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.073693041,
+          "prior_query_s": 3.019688222,
+          "motion_request_round_trip_s": 3.2045828327536583,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 8,
+          "rejected_edges": 2,
+          "timed_out_edges": 0,
+          "state_checks": 3931,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000309965,
+          "ik_including_ipc_s": 0.024177713319659233,
+          "planning_phases": {
+            "SLOW_COMPLETION": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.04404125176370144,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015269217,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0673130489885807,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000194698,
+          "ik_including_ipc_s": 0.023710127919912338,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 7.64387283,
+      "prior_hits": 2,
+      "prior_misses": 0,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 6,
+      "prior_edges_reused": 4,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.318680147,
+      "ik_solver_s": 0.00065477,
+      "ik_including_ipc_s": 0.0736454613506794,
+      "motion_request_round_trip_s": 8.318690123036504,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": null,
+      "comparison_geometry_scope_sha256": "e4f4afc656627b73357da0e228a19f040bc972b2e2208dbcc96fe1c1b7863dd4",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "formal-once/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9418339375406504,
+      "static_prior": {
+        "load_s": 0.023604074493050575,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023604074493050575,
+        "native_load_s": 0.000581097,
+        "native_request_round_trip_s": 0.021050380542874336,
+        "total_load_s": 0.04479244165122509
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 900.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 1.0,
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.0,
+      "slow_completion_plan_s": 9.234296284615993,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 27,
+      "rejected_edges": 11,
+      "timed_out_edges": 0,
+      "state_checks": 12769,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 4,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "FORMAL",
+      "dataset": "formal-once",
+      "case_id": "carton_l07_c00",
+      "target": "carton_l07_c00",
+      "order": 4,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 4.322031527757645,
+      "reported_plan_s": 4.322031527757645,
+      "candidate_ordering_s": 0.04339357651770115,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 4.322031527757645,
+      "time_basis": "FULL_PLAN_INCLUDING_ORDERING",
+      "cumulative_plan_s": 17.651036202907562,
+      "scene_update_s": 0.04115764796733856,
+      "scene_cartons": 37,
+      "counts": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 7
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 1.63388298,
+          "motion_request_round_trip_s": 1.687351930886507,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 6,
+          "rejected_edges": 2,
+          "timed_out_edges": 0,
+          "state_checks": 3027,
+          "local_repairs": 0,
+          "ik_rows": 2,
+          "ik_statuses": {
+            "NATIVE_IK_FAILED": 1,
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.002659936,
+          "ik_including_ipc_s": 0.028517358005046844,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.018937612,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.060479843989014626,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.234398167,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.28982625529170036,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.09546183,
+          "prior_query_s": 1.120768542,
+          "motion_request_round_trip_s": 1.3105368111282587,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 6,
+          "rejected_edges": 4,
+          "timed_out_edges": 0,
+          "state_checks": 1308,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000105874,
+          "ik_including_ipc_s": 0.025031331926584244,
+          "planning_phases": {
+            "SLOW_COMPLETION": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.044763097539544106,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015733893,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0691539328545332,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 4,
+          "ik_statuses": {
+            "NATIVE_IK_FAILED": 3,
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000612165,
+          "ik_including_ipc_s": 0.026197146624326706,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 2.754651522,
+      "prior_hits": 2,
+      "prior_misses": 0,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 3,
+      "prior_edges_reused": 1,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.364531502,
+      "ik_solver_s": 0.003377975,
+      "ik_including_ipc_s": 0.0797458365559578,
+      "motion_request_round_trip_s": 3.462111871689558,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": null,
+      "comparison_geometry_scope_sha256": "e4f4afc656627b73357da0e228a19f040bc972b2e2208dbcc96fe1c1b7863dd4",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "formal-once/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9418339375406504,
+      "static_prior": {
+        "load_s": 0.023604074493050575,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023604074493050575,
+        "native_load_s": 0.000581097,
+        "native_request_round_trip_s": 0.021050380542874336,
+        "total_load_s": 0.04479244165122509
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 900.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 1.0,
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.0,
+      "slow_completion_plan_s": 4.322031527757645,
+      "prior_queries": 2,
+      "prior_timeouts": 0,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 12,
+      "rejected_edges": 6,
+      "timed_out_edges": 0,
+      "state_checks": 4335,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 4,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 0,
+      "timeout_motion_requests": 0
+    },
+    {
+      "group": "FORMAL",
+      "dataset": "formal-once",
+      "case_id": "carton_l07_c04",
+      "target": "carton_l07_c04",
+      "order": 5,
+      "complete": true,
+      "status": "SUCCESS",
+      "plan_s": 12.036047771573067,
+      "reported_plan_s": 12.036047771573067,
+      "candidate_ordering_s": 0.039838140830397606,
+      "candidate_ordering_recorded": true,
+      "comparable_s": 12.036047771573067,
+      "time_basis": "FULL_PLAN_INCLUDING_ORDERING",
+      "cumulative_plan_s": 29.68708397448063,
+      "scene_update_s": 0.04156197048723698,
+      "scene_cartons": 36,
+      "counts": {
+        "PTP": 1,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 5
+      },
+      "stages": {
+        "pregrasp": {
+          "motion_requests": 3,
+          "motion_statuses": {
+            "PRIOR_QUERY_TIMEOUT": 1,
+            "NATIVE_PLANNING_FAILED": 1,
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "STATIC_PRIOR_QUERY": 1,
+            "pilz_industrial_motion_planner:PTP": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "PTP": 1
+          },
+          "native_solver_s": 0.072732339,
+          "prior_query_s": 9.060286931,
+          "motion_request_round_trip_s": 9.261580538004637,
+          "motion_round_trip_observed_requests": 3,
+          "prior_queries": 2,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 1,
+          "prior_timeouts": 1,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 90,
+          "rejected_edges": 67,
+          "timed_out_edges": 1,
+          "state_checks": 16391,
+          "local_repairs": 0,
+          "ik_rows": 3,
+          "ik_statuses": {
+            "SUCCESS": 3
+          },
+          "ik_solver_s": 0.000483234,
+          "ik_including_ipc_s": 0.06961444020271301,
+          "planning_phases": {
+            "SLOW_COMPLETION": 3
+          }
+        },
+        "contact": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.01754278,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.061926817521452904,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "extraction": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.214259152,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.2700835280120373,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "transit": {
+          "motion_requests": 2,
+          "motion_statuses": {
+            "SUCCESS": 2
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1,
+            "STATIC_PRIOR_REUSE": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.081828185,
+          "prior_query_s": 1.201641091,
+          "motion_request_round_trip_s": 1.3786297980695963,
+          "motion_round_trip_observed_requests": 2,
+          "prior_queries": 1,
+          "prior_successes": 1,
+          "prior_hits": 1,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 6,
+          "rejected_edges": 3,
+          "timed_out_edges": 0,
+          "state_checks": 1566,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000200902,
+          "ik_including_ipc_s": 0.024012664332985878,
+          "planning_phases": {
+            "SLOW_COMPLETION": 2
+          }
+        },
+        "place": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "SEMANTIC_EVENT": 1
+          },
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.044736770913004875,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "withdrawal": {
+          "motion_requests": 1,
+          "motion_statuses": {
+            "SUCCESS": 1
+          },
+          "generation_sources": {
+            "NATIVE_GENERATED": 1
+          },
+          "native_calls": {
+            "LIN": 1
+          },
+          "native_solver_s": 0.015370334,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.06657000444829464,
+          "motion_round_trip_observed_requests": 1,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 0,
+          "ik_statuses": {},
+          "ik_solver_s": 0.0,
+          "ik_including_ipc_s": 0.0,
+          "planning_phases": {
+            "SLOW_COMPLETION": 1
+          }
+        },
+        "contact_endpoint": {
+          "motion_requests": 0,
+          "motion_statuses": {},
+          "generation_sources": {},
+          "native_calls": {},
+          "native_solver_s": 0.0,
+          "prior_query_s": 0.0,
+          "motion_request_round_trip_s": 0.0,
+          "motion_round_trip_observed_requests": 0,
+          "prior_queries": 0,
+          "prior_successes": 0,
+          "prior_hits": 0,
+          "direct_short_connections": 0,
+          "prior_misses": 0,
+          "prior_timeouts": 0,
+          "prior_edge_check_limits": 0,
+          "edge_checks": 0,
+          "rejected_edges": 0,
+          "timed_out_edges": 0,
+          "state_checks": 0,
+          "local_repairs": 0,
+          "ik_rows": 1,
+          "ik_statuses": {
+            "SUCCESS": 1
+          },
+          "ik_solver_s": 0.000169304,
+          "ik_including_ipc_s": 0.02142355591058731,
+          "planning_phases": {}
+        }
+      },
+      "prior_query_s": 10.261928022,
+      "prior_hits": 2,
+      "prior_misses": 1,
+      "direct_short_connections": 0,
+      "prior_nodes_reused": 3,
+      "prior_edges_reused": 1,
+      "semantic_events": 1,
+      "local_repairs": 0,
+      "slow_ompl_calls": 0,
+      "native_solver_s": 0.40173278999999995,
+      "ik_solver_s": 0.0008534399999999999,
+      "ik_including_ipc_s": 0.1150506604462862,
+      "motion_request_round_trip_s": 11.083527456969023,
+      "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+      "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+      "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6",
+      "diagnostic_input_sha256": null,
+      "comparison_geometry_scope_sha256": "e4f4afc656627b73357da0e228a19f040bc972b2e2208dbcc96fe1c1b7863dd4",
+      "comparison_geometry_scope": "RECORDED_GEOMETRY_POLICY_TCP_AND_DIAGNOSTIC_INPUT_NOT_BINARY_IDENTITY",
+      "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+      "source_file": "formal-once/timing.json",
+      "last_failure": null,
+      "initialization_s": 0.9418339375406504,
+      "static_prior": {
+        "load_s": 0.023604074493050575,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.023604074493050575,
+        "native_load_s": 0.000581097,
+        "native_request_round_trip_s": 0.021050380542874336,
+        "total_load_s": 0.04479244165122509
+      },
+      "budgets": {
+        "stage_budget_s": 90.0,
+        "box_budget_s": 300.0,
+        "batch_budget_s": 900.0,
+        "ipc_timeout_s": 100.0
+      },
+      "fast_phase_budget_s": 1.0,
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.0,
+      "slow_completion_plan_s": 12.036047771573067,
+      "prior_queries": 3,
+      "prior_timeouts": 1,
+      "prior_edge_check_limits": 0,
+      "edge_checks": 96,
+      "rejected_edges": 70,
+      "timed_out_edges": 1,
+      "state_checks": 17957,
+      "native_count_consistency": {
+        "PTP": true,
+        "LIN": true,
+        "OMPL": true
+      },
+      "ik_record_count_matches_native_count": true,
+      "motion_statuses": {
+        "PRIOR_QUERY_TIMEOUT": 1,
+        "NATIVE_PLANNING_FAILED": 1,
+        "SUCCESS": 7
+      },
+      "generation_sources": {
+        "STATIC_PRIOR_QUERY": 1,
+        "pilz_industrial_motion_planner:PTP": 1,
+        "STATIC_PRIOR_REUSE": 2,
+        "NATIVE_GENERATED": 4,
+        "SEMANTIC_EVENT": 1
+      },
+      "failed_motion_requests": 2,
+      "timeout_motion_requests": 1
+    }
+  ],
+  "T_plan_5_s": 29.68708397448063,
+  "T_online_5_s": null,
+  "completed_count": 5,
+  "note": "Formal planning time includes ordering and every failed attempt; no local comparison clock adjustment.",
+  "run_id": "planning-only-c372f920eaa748c5a2146e083e3c8d1c",
+  "source_commit": "00352b6ff2ab3114b5248b266a0f3e955dd30f08",
+  "completed_targets": [
+    "carton_l07_c02",
+    "carton_l07_c01",
+    "carton_l07_c03",
+    "carton_l07_c00",
+    "carton_l07_c04"
+  ],
+  "missing_targets": [],
+  "cumulative_attempted_plan_s": 29.68708397448063,
+  "initialization_s": 0.9418339375406504,
+  "scene_update_s": 0.20198958553373814,
+  "first_box_scene_preparation_s": 0.031428175047039986,
+  "inter_box_scene_update_s": 0.17056141048669815,
+  "batch_wall_s": 29.890005448833108,
+  "result_file_write_s": null,
+  "batch_bookkeeping_s": 0.0009318888187408447,
+  "target_1s_achieved": false,
+  "fast_phase_budget_s": 1.0,
+  "fast_phase_completed_count": 0,
+  "slow_completion_plan_s": 28.71851659938693,
+  "budgets": {
+    "stage_budget_s": 90.0,
+    "box_budget_s": 300.0,
+    "batch_budget_s": 900.0,
+    "ipc_timeout_s": 100.0
+  },
+  "static_prior": {
+    "load_s": 0.023604074493050575,
+    "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+    "bytes": 238781,
+    "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+    "file_load_s": 0.023604074493050575,
+    "native_load_s": 0.000581097,
+    "native_request_round_trip_s": 0.021050380542874336,
+    "total_load_s": 0.04479244165122509
+  },
+  "seed": 71070,
+  "fresh_five_box_batch": null,
+  "sum_recorded_box_plan_s": 29.68708397448063,
+  "source_T_plan_matches_box_sum": true,
+  "worker_sha256": "23432aac551a63dbf366a02eb8ecc9c6aee1c7566e468893bcf52a19d76605f6"
+}
