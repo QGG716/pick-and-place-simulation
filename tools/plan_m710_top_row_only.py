@@ -242,7 +242,7 @@ def main():
             payload_mass_kg=42.5, model_identity=c.native_identity,
             skipped_checks={k: SKIPPED for k in SKIPPED_CHECKS},
             execution_requests=0, isaac_launches=0, executable_bundle_generated=False,
-            execution_qualification="NOT_EVALUATED", initialization_s=perf_counter()-initialized,
+            execution_qualification="NOT_EVALUATED", qualification_status="NOT_EVALUATED", initialization_s=perf_counter()-initialized,
             preload=preload_result, development_prepare_only=args.prepare_only, boxes=[])
         trajectories, completed = [], []
         batch_start = perf_counter()
@@ -310,13 +310,20 @@ def main():
             first_box_scene_preparation_s=summary["boxes"][0]["scene_update_s"] if summary["boxes"] else None,
             inter_box_scene_update_s=sum(b["scene_update_s"] for b in summary["boxes"][1:]),
             result="DIAGNOSTIC_COMPLETE" if diagnostic and len(completed)==1 else "COMPLETE_5_OF_5" if len(completed)==5 else "DEVELOPMENT_PRELOAD_ONLY" if args.prepare_only else "INCOMPLETE")
+        write_started = perf_counter()
         (args.output / "timing.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False), encoding="utf-8")
         (args.output / "trajectories.json").write_text(json.dumps(dict(status=MARKER,
-            execution_ready=False, run_id=summary["run_id"], trajectories=trajectories), allow_nan=False), encoding="utf-8")
+            execution_ready=False, qualification_status="NOT_EVALUATED", run_id=summary["run_id"], trajectories=trajectories), allow_nan=False), encoding="utf-8")
         with (args.output / "timing.csv").open("w", newline="", encoding="utf-8") as stream:
             fields = ["order", "target", "complete", "plan_s", "cumulative_plan_s", "scene_update_s"]
             writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
             writer.writeheader(); writer.writerows(summary["boxes"])
+        # This measurement is separate from all planning and scene clocks; the
+        # tiny accounting file itself is excluded to avoid recursive timing.
+        write_s = perf_counter() - write_started
+        (args.output / "write_timing.json").write_text(json.dumps(dict(
+            status=MARKER, qualification_status="NOT_EVALUATED",
+            result_file_write_s=write_s, excluded="write_timing.json and stdout"), indent=2))
         print(json.dumps({k: summary[k] for k in ("result", "completed_count", "T_plan_5_s",
             "cumulative_attempted_plan_s", "initialization_s", "scene_update_s", "batch_wall_s")}), flush=True)
     finally:
