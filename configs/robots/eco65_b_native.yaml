@@ -1,0 +1,24 @@
+schema: eco65_native_robot_v1
+robot_id: realman_eco65
+robot_variant: ECO65-B
+urdf: assets/robots/realman_eco65/official/description/rm_models/ECO65/urdf/ECO65-B/urdf/ECO65-B.urdf
+package_root: assets/robots/realman_eco65/official/description/rm_models/ECO65/urdf/ECO65-B
+source_manifest: assets/robots/realman_eco65/official/SOURCE_MANIFEST.json
+source_manifest_sha256: 217b391cb47fa0b7270a887511b80554587a9441fcfcca856ab1b042b44e157c
+tool_config: configs/local/eco65_desktop/tool.json
+joint_names: [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6]
+planning_group: eco65_arm
+base_link: base_link
+flange_link: link_6
+task_tcp_link: eco65_task_tcp
+geometry_scale: 1.0
+contact_geometry_type: cad_seal_contours_v1
+required_seal_count: 12
+simulation_limits:
+  joint_velocity_rad_s: 0.55
+  joint_acceleration_rad_s2: 1.0
+  joint_jerk_rad_s3: 4.0
+  tcp_velocity_m_s: 0.10
+  tcp_acceleration_m_s2: 0.20
+  tcp_rotation_rad_s: 0.30
+hardware_capability: NOT_EVALUATED

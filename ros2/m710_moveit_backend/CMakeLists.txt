@@ -30,4 +30,7 @@ target_compile_definitions(m710_native_semantic_event_test PRIVATE M710_MOVEIT_V
 add_executable(m710_static_prior_test src/static_prior_test.cpp)
 ament_target_dependencies(m710_static_prior_test moveit_ros_planning)
 target_link_libraries(m710_static_prior_test nlohmann_json::nlohmann_json)
+add_executable(eco65_seal_contours_test src/seal_contours_test.cpp)
+ament_target_dependencies(eco65_seal_contours_test moveit_ros_planning)
+target_link_libraries(eco65_seal_contours_test nlohmann_json::nlohmann_json)
 ament_package()

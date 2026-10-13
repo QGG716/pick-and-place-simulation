@@ -102,6 +102,16 @@ def face_tcp(box_pose,size,face):
     return box_pose@transform(local,FACE_ROTATIONS[face])
 
 def seal_check(tool,tcp,box_pose,size,face,edge=.003,tolerance=.0004):
+    if 'native_contact_geometry' in tool:
+        from .native_contact import check_contours
+        if face!='top':raise ValueError('Native ECO65 task requires top contact')
+        flange=check_transform(tcp)@np.linalg.inv(check_transform(tool['T_flange_tcp']))
+        report=check_contours(tool['native_contact_geometry'],flange,box_pose,size,
+            gap=tolerance,penetration=tolerance,margin=edge,angle=tool['contact']['normal_tolerance_rad'])
+        return dict(fits=report['status']=='PASS',rings=report['checked_count'],
+            max_plane_error_m=max(max(abs(r['min_gap_m']),abs(r['max_gap_m'])) for r in report['contours']),
+            min_edge_clearance_m=min(r['edge_margin_m'] for r in report['contours']),
+            independent_control_assumed=False,contour_report=report)
     axis,sign=FACE_AXES[face];others=[i for i in range(3) if i!=axis];half=np.array(size)/2
     cad=check_transform(tcp)@np.linalg.inv(check_transform(tool['T_tool_cad_tcp']))
     local=np.linalg.inv(box_pose)@cad;normal=(np.linalg.inv(box_pose)@tcp)[:3,2]

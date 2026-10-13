@@ -202,4 +202,4 @@ if __name__ == '__main__':
         write(ROOT/'outputs/eco65_asset_restore/report.json',
               (json.dumps(report, ensure_ascii=False, indent=2)+'\n').encode())
         if failures:
-            raise SystemExit(f'{failures} archive entries failed; see manifest.')
+            raise SystemExit(f'{failures} archive entries failed; see outputs/eco65_asset_restore/report.json.')

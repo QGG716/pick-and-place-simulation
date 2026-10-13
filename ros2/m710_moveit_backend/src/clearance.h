@@ -1,3 +1,4 @@
+#include "native_robot.h"
 #pragma once
 #include <moveit/planning_scene/planning_scene.h>
 #include <nlohmann/json.hpp>
@@ -22,6 +23,7 @@ class Clearance {
   std::mutex mutex_;
   std::unique_ptr<ClearanceWorkspace> workspace_;
   std::string mode_;
+  bool eco65_=false;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
     double seconds=0,bookkeeping_s=0,witness_s=0;};
   std::map<std::string,Count> counts_;
@@ -31,14 +33,22 @@ public:
   Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized")
     : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode) {
     const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
-    if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
+    eco65_=policy.at("schema")=="eco65_native_process_clearance_v1";
+    if(eco65_) {
+      const auto& source=policy.at("source_policy");
+      if(source.at("schema")!="eco65_pair_collision_policy_v1" ||
+         source.at("collision_margin_m")!=.002 || source.at("mesh_error_reserve_m")!=.0002 ||
+         source.at("required_pair_clearance_m")!=.0024 || source.at("self_collision_clearance_m")!=.0024 ||
+         source.at("contact_tolerance_m")!=.0004 || policy.at("numerical_gap_tolerance_m")!=1e-9 ||
+         policy.at("receiver_reserve_m")!=0.)throw std::runtime_error("UNSUPPORTED_ECO65_CLEARANCE_POLICY");
+    } else if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
        policy.at("source_policy").at("schema")!="m710_poc_pair_collision_policy_v4" ||
        policy.at("source_policy").at("required_pair_clearance_m")!=.005 ||
        policy.at("source_policy").at("self_collision_clearance_m")!=0. ||
        policy.at("numerical_gap_tolerance_m")!=1e-9)
       throw std::runtime_error("UNSUPPORTED_CLEARANCE_POLICY");
     const std::string stage=policy.at("stage");
-    if(!process && stage!="transit" && stage!="pregrasp" && stage!="residence")
+    if(!process && !eco65_ && stage!="transit" && stage!="pregrasp" && stage!="residence")
       throw std::runtime_error("UNSUPPORTED_CLEARANCE_STAGE");
     tools_=policy.at("tool_links").get<std::set<std::string>>();
     conveyors_=policy.at("conveyor_ids").get<std::set<std::string>>();
@@ -51,17 +61,19 @@ public:
     query_range_=gap_+reserve_+.001;
     if(scene->getCollisionDetectorName()!="FCL") throw std::runtime_error("FCL_REQUIRED");
     if(mode!="reference" && mode!="optimized") throw std::runtime_error("UNKNOWN_CLEARANCE_MODE");
+    if(eco65_ && mode!="optimized") throw std::runtime_error("ECO65_EXPLICIT_CONVEX_WORKSPACE_REQUIRED");
     if(mode=="optimized") {
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);});
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
   double required(const std::string& a, collision_detection::BodyType ta,
                   const std::string& b, collision_detection::BodyType tb) const {
     using namespace collision_detection;
+    if(eco65_) return gap_; // Source applies margin + two body reserves once, including self pairs.
     if(ta==BodyTypes::ROBOT_LINK && tb==BodyTypes::ROBOT_LINK && !tools_.count(a) && !tools_.count(b)) return 0.;
     if((a==payload_ && conveyors_.count(b)) || (b==payload_ && conveyors_.count(a))) return gap_+reserve_;
     return gap_;
@@ -82,11 +94,11 @@ public:
             collision_detection::CollisionRequest request;collision_detection::CollisionResult result;
             env_->checkSelfCollision(request,result,probe,acm_);env_->checkRobotCollision(request,result,probe,acm_);
             ++c.legacy_witness_checks;c.witness_s+=elapsed(witness);
-            if(!result.collision) {search_gap_witness=last_failure;std::vector<double> q;probe.copyJointGroupPositions("manipulator",q);search_gap_witness["q_rad"]=q;search_gap_witness["legacy_intersection_valid"]=true;}
+            if(!result.collision) {search_gap_witness=last_failure;std::vector<double> q;probe.copyJointGroupPositions(m710::nativeFrames().planning_group,q);search_gap_witness["q_rad"]=q;search_gap_witness["legacy_intersection_valid"]=true;}
           }
         }
 
-        if(rejected_examples.size()<8) { auto detail=last_failure; detail["phase"]=phase; std::vector<double> q;input.copyJointGroupPositions("manipulator",q);detail["q_rad"]=q;rejected_examples.push_back(detail); }
+        if(rejected_examples.size()<8) { auto detail=last_failure; detail["phase"]=phase; std::vector<double> q;input.copyJointGroupPositions(m710::nativeFrames().planning_group,q);detail["q_rad"]=q;rejected_examples.push_back(detail); }
       }
       c.bookkeeping_s+=elapsed(bookkeeping);c.seconds+=elapsed(start);return valid;
     };
@@ -138,7 +150,7 @@ public:
   }
   Json checkPath(moveit::core::RobotState probe, const Json& path, double resolution) {
     if(!std::isfinite(resolution) || resolution<=0 || path.empty()) throw std::runtime_error("INVALID_CHECK_PATH");
-    const size_t count=probe.getJointModelGroup("manipulator")->getVariableCount();
+    const size_t count=probe.getJointModelGroup(m710::nativeFrames().planning_group)->getVariableCount();
     for(size_t edge=0;edge<std::max(size_t(1),path.size()-1);++edge) {
       auto a=path.at(edge).get<std::vector<double>>();auto b=path.at(std::min(edge+1,path.size()-1)).get<std::vector<double>>();
       if(a.size()!=count || b.size()!=count) throw std::runtime_error("INVALID_PATH_JOINT_COUNT");
@@ -147,7 +159,7 @@ public:
       const size_t samples=2*std::max({size_t(1),size_t(std::ceil(maximum/resolution)),size_t(std::ceil(4.*sum/.0025))});
       for(size_t k=0;k<=samples;++k) {
         const double fraction=double(k)/samples;auto q=a;for(size_t i=0;i<q.size();++i) q[i]+=fraction*(b[i]-a[i]);
-        probe.setJointGroupPositions("manipulator",q);probe.update();
+        probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);probe.update();
         if(!check(probe)) {Json failure=last_failure;failure["edge"]=edge;failure["fraction"]=fraction;failure["q_rad"]=q;return failure;}
       }
     }

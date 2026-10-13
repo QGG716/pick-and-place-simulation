@@ -1,11 +1,14 @@
+#include "native_robot.h"
 #pragma once
 #include "process_geometry.h"
 #include "clearance.h"
+#include "eco65_process.h"
 
 namespace m710 {
 // Candidate-local process permissions. ACM exempts only the named pairs whose
 // geometry is checked here; the ordered verifier restores free-space rules.
 class ProcessPolicy {
+  std::unique_ptr<Eco65Process> eco65_;
   Json spec_,source_,initial_;
   std::string stage_,target_id_;
   std::set<std::string> compliant_,stack_,supports_;
@@ -45,6 +48,10 @@ public:
      compliant_(request.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
      stack_(spec_.at("stack_carton_ids").get<std::set<std::string>>()),supports_(spec_.at("support_names").get<std::set<std::string>>()),
      target_(processBox(spec_.at("target"))) {
+    if(spec_.value("geometry_type",std::string())=="cad_seal_contours_v1") {
+      attached_=scene->getCurrentState().hasAttachedBody(target_id_);
+      eco65_=std::make_unique<Eco65Process>(scene,request);return;
+    }
     if(spec_.at("schema")!="m710_native_process_v1" || spec_.at("stage")!=stage_ || spec_.at("collision_policy")!=source_ ||
        target_.id!=target_id_ || request.at("clearance_policy").at("target_id")!=target_id_)
       throw std::runtime_error("PROCESS_CONTEXT_MISMATCH");
@@ -111,6 +118,10 @@ public:
     }
   }
   bool check(const moveit::core::RobotState& state,bool endpoint=false) {
+    if(eco65_) {
+      ++state_checks_;const bool ok=eco65_->check(state,endpoint);
+      last_failure=eco65_->failure;last_seal=eco65_->seal;return ok;
+    }
     ++state_checks_;last_failure=nullptr;const auto target=targetAt(state);
     const bool contact=attached_ || stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact" || stage_=="withdrawal";
     if(contact) for(const auto& name:compliant_) {
@@ -138,7 +149,7 @@ public:
       }
     }
     if(attached_ || (endpoint && (stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact"))) {
-      last_seal=processSealRings(spec_,target,state.getGlobalLinkTransform("flange"));
+      last_seal=processSealRings(spec_,target,state.getGlobalLinkTransform(m710::nativeFrames().flange_link));
       if(last_seal.value("status",std::string())!="PASS") {last_failure=last_seal;return false;}
     }
     return true;
@@ -154,7 +165,7 @@ public:
       const size_t samples=2*std::max({size_t(1),size_t(std::ceil(maximum/resolution)),size_t(std::ceil(4*sum/.0025))});
       for(size_t k=(edge?1:0);k<=samples;++k) {
         ++ordered_checks_;auto q=a;for(size_t i=0;i<q.size();++i) q[i]+=(b[i]-a[i])*double(k)/samples;
-        state.setJointGroupPositions("manipulator",q);state.update();
+        state.setJointGroupPositions(m710::nativeFrames().planning_group,q);state.update();
         auto bad=[&](Json failure) {failure["edge"]=edge;failure["fraction"]=double(k)/samples;failure["q_rad"]=q;return failure;};
         if(!check(state,edge+2>=path.size() && k==samples)) return bad(last_failure);
         if(!relaxed_) continue;const auto target=targetAt(state);
@@ -190,7 +201,7 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
-  Json evidence() const {return {{"schema","m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
+  Json evidence() const {return {{"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
 };

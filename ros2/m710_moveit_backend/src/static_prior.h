@@ -1,3 +1,4 @@
+#include "native_robot.h"
 #pragma once
 #include "clearance.h"
 #include "process_policy.h"
@@ -84,7 +85,7 @@ public:
     for(size_t i=0;i<=n;++i) {
       if(elapsed(begin)>=budget)return reject({{"reason","TIMEOUT"}},"DEADLINE",i);
       Q q=a;for(size_t j=0;j<q.size();++j)q[j]+=(b[j]-a[j])*double(i)/n;
-      if(i==n)q=b;state.setJointGroupPositions("manipulator",q);state.update();++checks;
+      if(i==n)q=b;state.setJointGroupPositions(m710::nativeFrames().planning_group,q);state.update();++checks;
       if(!state.satisfiesBounds())return reject({{"reason","JOINT_BOUNDS"}},"JOINT_BOUNDS",i);
       if(!clearance.check(state))return reject(clearance.last_failure,"CLEARANCE",i);
       if(process&&!process->check(state))return reject(process->last_failure,"PROCESS",i);
@@ -110,7 +111,7 @@ public:
         const double v=q.at(j),lo=limits.at(j).at(0),hi=limits.at(j).at(1);
         if(!std::isfinite(v)||v<lo||v>hi)throw std::runtime_error("PRIOR_PORTAL_BOUNDS_INVALID");
       }
-      state.setJointGroupPositions("manipulator",q.get<Q>());state.update();
+      state.setJointGroupPositions(m710::nativeFrames().planning_group,q.get<Q>());state.update();
       if(!state.satisfiesBounds())throw std::runtime_error("PRIOR_PORTAL_MODEL_BOUNDS_INVALID");
     }
     auto existing=[&](const Q& q) {
@@ -124,7 +125,7 @@ public:
     clearance.phase="prior_build";
     for(const auto& portal:portals) {
       if(elapsed(begin)>=budget)break;++portal_attempts;
-      const Q q=portal.at("q").get<Q>();state.setJointGroupPositions("manipulator",q);state.update();++checks;
+      const Q q=portal.at("q").get<Q>();state.setJointGroupPositions(m710::nativeFrames().planning_group,q);state.update();++checks;
       if(!clearance.check(state))continue;
       const size_t index=existing(q);const bool duplicate=index<nodes.size();
       if(!duplicate)nodes.push_back(q);else ++portal_duplicates;
@@ -133,7 +134,7 @@ public:
     }
     for(size_t k=0;k<attempts && nodes.size()<limit && elapsed(begin)<budget;++k){++tried;Q q(6);
       for(size_t j=0;j<6;++j){double lo=limits.at(j).at(0),hi=limits.at(j).at(1);q[j]=lo+(hi-lo)*halton(k+1+spec.value("seed",71071)%997,primes[j]);}
-      state.setJointGroupPositions("manipulator",q);state.update();++checks;
+      state.setJointGroupPositions(m710::nativeFrames().planning_group,q);state.update();++checks;
       if(state.satisfiesBounds()&&clearance.check(state)&&existing(q)==nodes.size()) nodes.push_back(q);
     }
     std::set<std::pair<size_t,size_t>> pairs;

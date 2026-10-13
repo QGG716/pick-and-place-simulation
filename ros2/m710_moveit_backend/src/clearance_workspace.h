@@ -35,7 +35,8 @@ public:
   struct Failure {std::string a,b;double distance=0,limit=0;bool self=false;};
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
-      const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required)
+      const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
+      bool explicit_convex_meshes=false)
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()) {
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
@@ -46,6 +47,20 @@ public:
       Body b;b.object=o;b.name=d->getID();b.type=d->type;b.shape=d->shape_index;
       if(b.type==collision_detection::BodyTypes::ROBOT_LINK) b.link=d->ptr.link;
       if(b.type==collision_detection::BodyTypes::ROBOT_ATTACHED) b.touch=d->ptr.ab->getTouchLinks();
+      // ECO65's independent MuJoCo world uses convex solids. A triangle BVH
+      // cannot prove containment equivalence merely because its file is the
+      // same. Construct real FCL convex solids once for this candidate.
+      if(explicit_convex_meshes && b.link) {
+        const auto& shape=b.link->getShapes().at(b.shape);
+        if(shape->type==shapes::MESH) {
+          const auto* mesh=static_cast<const shapes::Mesh*>(shape.get());
+          auto vertices=std::make_shared<std::vector<fcl::Vector3d>>();auto faces=std::make_shared<std::vector<int>>();
+          for(size_t i=0;i<mesh->vertex_count;++i)vertices->emplace_back(mesh->vertices[3*i],mesh->vertices[3*i+1],mesh->vertices[3*i+2]);
+          for(size_t i=0;i<mesh->triangle_count;++i){faces->push_back(3);for(int k=0;k<3;++k)faces->push_back(mesh->triangles[3*i+k]);}
+          auto convex=std::make_shared<fcl::Convexd>(vertices,mesh->triangle_count,faces,true);
+          b.object=std::make_shared<fcl::CollisionObjectd>(convex,o->getTransform());
+        }
+      }
       bodies_.push_back(std::move(b));
     };
     for(const auto& o:robot_.collision_objects_) add(o);

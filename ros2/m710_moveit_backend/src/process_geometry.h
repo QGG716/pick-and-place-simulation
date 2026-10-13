@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <set>
 #include <vector>
+#include "seal_contours.h"
 
 namespace m710 {
 using ProcessJson = nlohmann::json;
@@ -60,6 +61,14 @@ inline bool processSupportSeparated(const ProcessBox& box,const ProcessBox& supp
   return lowest>=support.half.z()-tolerance;
 }
 inline ProcessJson processSealRings(const ProcessJson& policy,const ProcessBox& target,const Eigen::Isometry3d& flange) {
+  if(policy.value("geometry_type",std::string("circular_72_v1"))=="cad_seal_contours_v1") {
+    if(policy.at("target_face")!="top") throw std::runtime_error("ECO65_TOP_FACE_REQUIRED");
+    const auto local=target.pose.inverse()*flange*processTransform(policy.at("flange_from_contact_frame"));
+    return checkSealContours(policy,local,target.half,policy.at("max_attachment_gap_m"),
+      policy.at("maximum_penetration_m"),policy.at("suction_edge_margin_m"),policy.at("max_normal_misalignment_rad"));
+  }
+  if(policy.value("geometry_type",std::string("circular_72_v1"))!="circular_72_v1")
+    throw std::runtime_error("CONTACT_GEOMETRY_TYPE_MISMATCH");
   const auto& cups=policy.at("cups");
   const auto& active=policy.at("commanded_active_mask");
   if(cups.size()!=72 || active.size()!=72) throw std::runtime_error("PROCESS_REQUIRES_72_CUPS");
