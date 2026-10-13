@@ -1,0 +1,162 @@
+schema: eco65_desktop_unloading_compact_v1
+status: DESIGN_CANDIDATE
+units:
+  length: metre
+  angle: radian
+  mass: kilogram
+reference:
+  sha: 9db77cb8a51e9bf1821c6e84e90a7632fbce6b26
+  layout: configs/workcells/m710id70_unloading_layout_v1.yaml
+  nominal_plan_scale: 0.3333333333333333
+world:
+  origin: stack_front_center_tabletop_projection
+  axes:
+    x: into_trailer
+    y: left_when_facing_into_trailer
+    z: up
+  tabletop_z_m: 0.0
+  T_world_installation:
+  - - 1
+    - 0
+    - 0
+    - 0
+  - - 0
+    - 1
+    - 0
+    - 0
+  - - 0
+    - 0
+    - 1
+    - 0
+  - - 0
+    - 0
+    - 0
+    - 1
+robot:
+  variant: ECO65-B
+  geometry_scale: 1.0
+  base_xy_m:
+  - -0.36
+  - 0.1
+  mounting_plate_size_m:
+  - 0.14
+  - 0.14
+  - 0.18
+  private_tool_config: configs/local/eco65_desktop/tool.json
+  mounting_status: inherited_simulation_adapter_not_measured
+  mobility: fixed
+trailer:
+  opening_x_m: -0.6
+  closed_end_inner_x_m: 0.3
+  inner_width_m: 0.76
+  inner_height_m: 0.65
+  wall_thickness_m: 0.012
+  floor_thickness_m: 0.0
+  panels:
+    left: true
+    right: true
+    rear: true
+    roof: true
+carton_stack:
+  carton_size_xyz_m:
+  - 0.22
+  - 0.22
+  - 0.16
+  front_face_x_m: 0.0
+  depth_rows: 1
+  width_columns: 2
+  height_layers: 2
+  column_gap_m: 0.01
+  layer_gap_m: 0.0
+  mass_kg_assumed: 0.3
+conveyors:
+  surface_z_m: 0.18
+  belt_thickness_m: 0.004
+  body_thickness_m: 0.04
+  leg_width_m: 0.018
+  end_dead_zone_m: 0.02
+  transverse:
+    bounds_xy_m:
+    - -0.26
+    - -0.02
+    - -0.09
+    - 0.31
+    direction:
+    - 0
+    - -1
+    - 0
+    receive_center_xy_m:
+    - -0.14
+    - 0.1
+    process_owner: transverse
+  longitudinal:
+    bounds_xy_m:
+    - -0.92
+    - -0.02
+    - -0.35
+    - -0.09
+    direction:
+    - -1
+    - 0
+    - 0
+    receive_center_xy_m:
+    - -0.5
+    - -0.22
+    process_owner: longitudinal
+  transfer:
+    bounds_xy_m:
+    - -0.26
+    - -0.02
+    - -0.35
+    - -0.09
+    process_owner: longitudinal
+    mode: longitudinal_front_partition
+    mechanics: IDEAL_OUTFEED geometric support; 90 degree drive dynamics NOT_EVALUATED
+  outlet:
+    mode: longitudinal_direct
+    final_center_xy_m:
+    - -0.78
+    - -0.22
+    support: longitudinal_belt_no_disappearance
+installation:
+  desk_fit: PENDING_MEASURED_DESK_DIMENSIONS
+  recommended_edge_reserve_m: 0.0
+  recommended_front_access_m: 0.6
+validation:
+  collision_margin_m: 0.002
+  mesh_error_reserve_m: 0.0002
+  contact_tolerance_m: 0.0004
+  seal_edge_reserve_m: 0.003
+  seed: 6518
+  ik_restarts_per_pose: 64
+  ik_iterations: 220
+  ik_seconds_per_pose: 180
+  execution_mode: simulation
+  enable_hardware: false
+  full_path_search: true
+  dynamics: NOT_EVALUATED
+layout_id: eco65_desktop_unloading_compact_v1
+table:
+  bounds_xy_m:
+  - -1.0
+  - 0.4
+  - -0.45
+  - 0.45
+  thickness_m: 0.03
+  evidence: 1400 x 900 design constraint, not measured desk
+task:
+  planning_budget_s: 1800
+  candidate_budget_s: 300
+  ik_seeds: 64
+  rrt_iterations: 6000
+  joint_velocity_rad_s: 0.55
+  joint_acceleration_rad_s2: 1.0
+  joint_jerk_rad_s3: 4.0
+  outfeed_speed_m_s: 0.05
+  initial_seed_q_rad:
+  - -0.27
+  - 0.77
+  - -0.33
+  - 1.13
+  - -1.57
+  - -1.85

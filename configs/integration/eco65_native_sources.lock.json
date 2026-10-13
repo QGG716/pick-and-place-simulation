@@ -1,0 +1,42 @@
+{
+  "schema": "eco65_native_migration_v1",
+  "base_commit": "3a84888f85fd490b538e5ce643aa135c2e8cabdb",
+  "asset_source_commit": "c07fb73b0caaca9965d8c5b3f09ede18dfb703d4",
+  "branch": "feat/v0.6-eco65-moveit2-native-single-carton",
+  "migrated_paths": [
+    "assets/robots/realman_eco65/official/README.md",
+    "assets/robots/realman_eco65/official/SOURCE_MANIFEST.json",
+    "assets/tools/desktop_suction/README.md",
+    "assets/tools/desktop_suction/cad/raw/.gitkeep",
+    "assets/tools/desktop_suction/collision/.gitkeep",
+    "assets/tools/desktop_suction/meshes/.gitkeep",
+    "configs/workcells/eco65_desktop_unloading_compact_v1.yaml",
+    "configs/workcells/eco65_desktop_warehouse_v1.yaml",
+    "configs/isaac/eco65_warehouse_assets.json",
+    "requirements/eco65-desktop.txt",
+    "requirements/eco65-cad.txt",
+    "tools/eco65_official_archive.py",
+    "tools/check_eco65_bootstrap.py",
+    "tools/build_desktop_suction.py",
+    "tools/convert_desktop_suction.py",
+    "tools/export_eco65_warehouse_workstation.py",
+    "scripts/isaacsim_warehouse_assets.py",
+    "scripts/isaacsim_render_eco65_warehouse.py",
+    "src/unloading_sim/eco65/__init__.py",
+    "src/unloading_sim/eco65/model.py",
+    "src/unloading_sim/eco65/observation_contracts.py",
+    "src/unloading_sim/eco65/unloading_layout.py",
+    "src/unloading_sim/eco65/task_world.py",
+    "src/unloading_sim/eco65/layout_figures.py",
+    "src/unloading_sim/eco65/usd_export.py",
+    "src/unloading_sim/eco65/visuals.py",
+    "docs/eco65_desktop_compact_round1.md",
+    "docs/eco65_desktop_warehouse_environment_v1.md"
+  ],
+  "remote_heads_observed": {
+    "feat/v0.5-moveit2-native-single-carton": "3a84888f85fd490b538e5ce643aa135c2e8cabdb",
+    "feat/v0.6-eco65-desktop": "c07fb73b0caaca9965d8c5b3f09ede18dfb703d4"
+  },
+  "source_worktree_initial_state": "514 existing deletions; preserved; separate worktree created",
+  "legacy_eco65_motion_planners_imported": false
+}

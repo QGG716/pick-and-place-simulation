@@ -1,3 +1,16 @@
+# Active ECO65 native migration (2026-10-13)
+The current user request supersedes branch-specific FANUC instructions below.
+Work only on feat/v0.6-eco65-moveit2-native-single-carton, rooted at 3a84888.
+Use ECO65-B assets and scene definitions pinned at c07fb73; no source branch writes.
+Preserve resident native MoveIt/MTC/Pilz/OMPL generation and FANUC regressions.
+Use all 12 verified CAD seal contours; no FANUC wrist/neighbor exemptions for ECO65.
+Keep private assets and generated snapshots/USD/images/videos ignored.
+Use one combined compact/warehouse scene and a newly generated cold single-carton plan.
+No hardware or SDK; offline replay stays PLANNING_ONLY_NOT_EXECUTABLE / KINEMATIC_REPLAY.
+Run directed checks only. Reuse existing isolated remote environments, no upgrades.
+
+# Historical FANUC instructions (apply only to retained FANUC entries)
+
 # Codex development instructions
 
 ## Goal

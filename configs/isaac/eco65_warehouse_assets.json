@@ -1,0 +1,32 @@
+{
+  "schema": "eco65_warehouse_assets_v1",
+  "asset_root_resolution": "isaacsim.storage.native.get_assets_root_path() in installed runtime",
+  "warehouse": "/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+  "carton": "/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+  "official_sources_immutable": true,
+  "composition_policy": "reference originals; changes only in separate composition layer",
+  "asset_cache": "outputs/eco65_desktop_warehouse/<run_id>/assets/official",
+  "hash_policy": "SHA-256 for every downloaded USD and external dependency",
+  "software_upgrade": false,
+  "verified_runtime": {
+    "isaacsim": "6.0.1.0",
+    "kit": "110.1.2+production.326809.f9bf0dda.gl",
+    "asset_root": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+  },
+  "verified_sources": [
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "bytes": 5056,
+      "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+      "bytes": 1593402,
+      "sha256": "0b833b2c59c18832a1fb421292c256e7ca21977961f62a2b9b4e2feee86b9903"
+    }
+  ],
+  "verified_dependency_file_count": 158,
+  "verified_dependency_total_bytes": 299133603
+}

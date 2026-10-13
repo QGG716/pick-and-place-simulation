@@ -1,0 +1,4 @@
+# Optional offline STEP preparation only; tested Windows x64 Python 3.12
+cadquery-ocp-novtk==7.9.3.1.1
+trimesh==5.1.0
+scipy==1.18.1
