@@ -38,9 +38,14 @@ def export(snapshot_path, home_path, config_path, out):
         raise FileExistsError('Use a fresh run directory; historical evidence is immutable')
     snapshot = load_json(snapshot_path)
     check = dict(snapshot); expected = check.pop('fingerprint')
-    if canonical_fingerprint(check) != expected:
-        raise ValueError('Snapshot fingerprint mismatch')
-    asset_check()
+    native = snapshot.get('schema') == 'eco65_native_snapshot_v1'
+    if native:
+        from unloading_sim.eco65.native_io import verify_snapshot
+        verify_snapshot(snapshot)
+    else:
+        if canonical_fingerprint(check) != expected:
+            raise ValueError('Snapshot fingerprint mismatch')
+        asset_check()
     for relative, digest in snapshot['asset_sha256'].items():
         if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != digest:
             raise ValueError('Snapshot asset changed: ' + relative)
@@ -111,17 +116,20 @@ def export(snapshot_path, home_path, config_path, out):
         return obj
 
     for o in scene['obstacles']:
-        if o['id']=='trailer_floor' or o['id'] in {b['id'] for b in scene['boxes']}: continue
+        if (not native and o['id']=='trailer_floor') or o['id'] in {b['id'] for b in scene['boxes']}: continue
+        if o['role'] == 'warehouse_environment':
+            cube(o['id'],o['size_m'],o['position_m'],mats['frame'],True); continue
         mat = mats['glass'] if o['role'] in ('wall','roof') else material(stage,o['id'],o['rgba'][:3],metallic=.3,roughness=.4)
         cube(o['id'],o['size_m'],o['position_m'],mat)
-    x0,x1,y0,y1 = c['table']['bounds_xy_D_m']; th = c['table']['thickness_m']; w = c['table']['leg_width_m']; inset = c['table']['leg_inset_m']
-    cube('trailer_floor',[x1-x0,y1-y0,th],[(x0+x1)/2,(y0+y1)/2,-th/2],mats['table'])
-    xs,ys = [x0+inset,x1-inset],[y0+inset,y1-inset]
-    for i,x in enumerate(xs):
-        for j,y in enumerate(ys): cube(f'Table/Leg_{i}{j}',[w,w,.8-th],[x,y,(-.8-th)/2],mats['frame'])
-    for z in [-.09,c['table']['lower_support_z_D_m']]:
-        for i,y in enumerate(ys): cube(f'Table/RailX_{i}_{abs(int(z*100))}',[xs[1]-xs[0],w,w],[(x0+x1)/2,y,z],mats['frame'])
-        for i,x in enumerate(xs): cube(f'Table/RailY_{i}_{abs(int(z*100))}',[w,ys[1]-ys[0],w],[x,(y0+y1)/2,z],mats['frame'])
+    if not native:
+        x0,x1,y0,y1 = c['table']['bounds_xy_D_m']; th = c['table']['thickness_m']; w = c['table']['leg_width_m']; inset = c['table']['leg_inset_m']
+        cube('trailer_floor',[x1-x0,y1-y0,th],[(x0+x1)/2,(y0+y1)/2,-th/2],mats['table'])
+        xs,ys = [x0+inset,x1-inset],[y0+inset,y1-inset]
+        for i,x in enumerate(xs):
+            for j,y in enumerate(ys): cube(f'Table/Leg_{i}{j}',[w,w,.8-th],[x,y,(-.8-th)/2],mats['frame'])
+        for z in [-.09,c['table']['lower_support_z_D_m']]:
+            for i,y in enumerate(ys): cube(f'Table/RailX_{i}_{abs(int(z*100))}',[xs[1]-xs[0],w,w],[(x0+x1)/2,y,z],mats['frame'])
+            for i,x in enumerate(xs): cube(f'Table/RailY_{i}_{abs(int(z*100))}',[w,ys[1]-ys[0],w],[x,(y0+y1)/2,z],mats['frame'])
     for b in scene['boxes']:
         prim = UsdGeom.Xform.Define(stage,'/Workstation/Cartons/'+b['id']).GetPrim()
         pose(prim,transform(b['pose'])); prim.SetCustomDataByKey('stable_id',b['id'])
@@ -133,6 +141,8 @@ def export(snapshot_path, home_path, config_path, out):
         table_config=c,cartons=scene['boxes'],base_position_D_m=scene['base_position_m'],
         source_config_sha256=snapshot['config_sha256'], physics='NOT_EVALUATED',planning='NOT_EXECUTED',
         workstation_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    if native:
+        manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)
 

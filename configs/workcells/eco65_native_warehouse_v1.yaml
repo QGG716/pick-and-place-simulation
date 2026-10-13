@@ -1,0 +1,15 @@
+schema: eco65_native_combined_scene_v1
+layout_id: eco65_native_warehouse_v1
+equipment_config: configs/workcells/eco65_desktop_unloading_compact_v1.yaml
+warehouse_config: configs/workcells/eco65_desktop_warehouse_v1.yaml
+robot_config: configs/robots/eco65_b_native.yaml
+planning_frame: D
+target_id: carton_r00_l01_c00
+target_face: top
+route: B
+enable_hardware: false
+planning_status: PLANNING_ONLY_NOT_EXECUTABLE
+replay_mode: KINEMATIC_REPLAY
+dynamics: NOT_EVALUATED
+environment_geometry: conservative_world_AABBs_transformed_once_to_D
+environment_bounds: outputs/eco65_native/environment_bounds.json

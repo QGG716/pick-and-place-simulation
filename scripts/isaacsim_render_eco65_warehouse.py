@@ -98,8 +98,22 @@ def main():
                 if not floor_covered(low,high):continue
                 if not any(np.all(high>lo) and np.all(hi>low) for _,lo,hi in obstacles):
                     candidates.append((float((x-.3)**2+y*y),float(x),float(y)))
-        if not candidates:raise RuntimeError('No conservative collision-free table placement')
-        _,x,y=min(candidates);x=round(x,3);y=round(y,3);translation=[x,y,.8]
+        if data.get('native_snapshot'):
+            translation=np.array(data['T_W_D'])[:3,3].tolist();x,y,_=translation
+            if translation!=[.32,-.1,.8]:raise ValueError('NATIVE_PLACEMENT_CHANGED')
+            frozen=data['environment']
+            if abs(frozen['floor_normalization_m']+floor_z)>1e-9:raise ValueError('WAREHOUSE_FLOOR_NORMALIZATION_CHANGED')
+            # Native scene already contains every bound. Never choose a new
+            # visual-only station placement after planning.
+            from unloading_sim.eco65.model import ROOT
+            for relative,sha in frozen['asset_sha256'].items():
+                if hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()!=sha:raise ValueError('FROZEN_ENVIRONMENT_CHANGED')
+            for row in source_manifest['files']:
+                relative=(a.assets/'official'/row['path']).relative_to(ROOT).as_posix()
+                if frozen['asset_sha256'].get(relative)!=row['sha256']:raise ValueError('APPEARANCE_ENVIRONMENT_NOT_BOUND')
+        else:
+            if not candidates:raise RuntimeError('No conservative collision-free table placement')
+            _,x,y=min(candidates);x=round(x,3);y=round(y,3);translation=[x,y,.8]
         station=UsdGeom.Xform.Define(stage,'/World/Workstation')
         station.GetPrim().GetReferences().AddReference(Path(os.path.relpath(a.workstation,a.output)).as_posix())
         station.AddTranslateOp(opSuffix='T_W_D').Set(Gf.Vec3d(*translation))
@@ -122,6 +136,9 @@ def main():
             fit=UsdGeom.Xform.Define(stage,path+'/Fit');fit.AddScaleOp().Set(Gf.Vec3d(*scale))
             pivot=UsdGeom.Xform.Define(stage,path+'/Fit/Pivot');pivot.AddTranslateOp().Set(Gf.Vec3d(*(-center)))
             visual=stage.DefinePrim(path+'/Fit/Pivot/Official');visual.GetReferences().AddReference(Path(os.path.relpath(carton['path'],a.output)).as_posix())
+            # Deinstance the appearance subtree before overriding duplicate collisions.
+            for prim in Usd.PrimRange(visual):
+                if prim.IsInstance():prim.SetInstanceable(False)
             for prim in Usd.PrimRange(visual):
                 if prim.HasAPI(UsdPhysics.CollisionAPI):UsdPhysics.CollisionAPI(prim).CreateCollisionEnabledAttr(False)
                 if prim.HasAPI(UsdPhysics.RigidBodyAPI):UsdPhysics.RigidBodyAPI(prim).CreateRigidBodyEnabledAttr(False)
@@ -146,6 +163,7 @@ def main():
         # Check each actual workstation mesh/collider, not just its design footprint.
         intersections=[];checked=0
         for prim in Usd.PrimRange(station.GetPrim()):
+            if '/Workstation/warehouse/' in str(prim.GetPath()):continue
             if not (prim.IsA(UsdGeom.Mesh) or prim.HasAPI(UsdPhysics.CollisionAPI)):continue
             r=bbox.ComputeWorldBound(prim).ComputeAlignedRange()
             if r.IsEmpty():continue
