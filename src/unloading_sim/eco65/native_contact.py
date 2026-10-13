@@ -28,6 +28,8 @@ def validate_geometry(geometry):
                 np.linalg.matrix_rank(p-p[0], tol=1e-9) != 2 or
                 np.max(np.abs((p-p[0]) @ n)) > 1e-7):
             raise ValueError('CONTACT_CONTOUR_GEOMETRY_INVALID')
+        if np.linalg.norm(np.cross(p-p[0], np.roll(p, -1, axis=0)-p[0]).sum(axis=0)) < 1e-12:
+            raise ValueError('CONTACT_CONTOUR_DEGENERATE')
     return geometry
 
 
@@ -72,6 +74,10 @@ def extract_cad_contours(tool, root):
     import trimesh
     if not tool['contact'].get('require_all_seals_fit') or len(tool['seals']) != 12:
         raise ValueError('ALL_12_CAD_SEALS_REQUIRED')
+    components = {s['component'] for s in tool['seals']}
+    bands = [p for p in tool['collisions'] if p['semantic'] == 'terminal_contact_band']
+    if len(components) != 12 or len(bands) != 12 or {b['source_part'] for b in bands} != components:
+        raise ValueError('SEAL_TO_CONTACT_BAND_OWNERSHIP_MISMATCH')
     parts = {p['id']: p for p in tool['visual_parts']}
     rows = []
     for seal in tool['seals']:
@@ -113,6 +119,15 @@ def extract_cad_contours(tool, root):
         # Ambiguous disconnected terminal patches are rejected for inspection.
         if len(loops) != 2 or min(map(area, loops)) <= 0 or area(outer) <= 0:
             raise ValueError('CAD_TERMINAL_ANNULUS_AMBIGUOUS:'+seal['id'])
+        inner = next(p for p in loops if p is not outer)
+        polygon = outer[:, [0, 2]]
+        for point in inner[:, [0, 2]]:
+            inside = False
+            for a, b in zip(polygon, np.roll(polygon, -1, axis=0)):
+                if (a[1] > point[1]) != (b[1] > point[1]):
+                    crossing = a[0]+(point[1]-a[1])*(b[0]-a[0])/(b[1]-a[1])
+                    if point[0] < crossing: inside = not inside
+            if not inside: raise ValueError('CAD_TERMINAL_LOOPS_NOT_NESTED:'+seal['id'])
         rows.append(dict(id=seal['id'], component=seal['component'], points_m=outer.tolist(),
                          normal=normal.tolist(), mesh_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
                          source='existing_CAD_terminal_face_outer_boundary',

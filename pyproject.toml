@@ -42,6 +42,7 @@ pythonpath = ["src", "."]
 testpaths = ["tests"]
 addopts = "-m 'not simulation and not slow and not pybullet and not isaac'"
 markers = [
+  "real_eco65_asset: requires pinned official ECO65-B files; does not imply private tool/runtime acceptance",
   "simulation: starts or executes a simulation/planning workflow",
   "slow: long-running test excluded from the default baseline suite",
   "pybullet: requires or starts the PyBullet backend",
