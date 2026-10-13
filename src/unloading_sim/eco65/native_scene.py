@@ -70,7 +70,7 @@ def combined_scene(config=CONFIG, *, root=ROOT, environment=None):
         scene['environment_asset_sha256'] = environment['asset_sha256']
         scene['environment'] = deepcopy(environment)
     scene['components_by_id'] = {o['id']: dict(role=o['role'], owner=o['owner']) for o in scene['obstacles']}
-    scene['config_sha256'] = {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()}
+    scene['config_sha256'] = {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()}
     for relative in [c['equipment_config'], c['warehouse_config'], c['robot_config']]:
         scene['config_sha256'][relative] = hashlib.sha256((root/relative).read_bytes()).hexdigest()
     scene['scene_fingerprint'] = digest(scene)

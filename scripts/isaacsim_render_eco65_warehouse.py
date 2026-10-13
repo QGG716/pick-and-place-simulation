@@ -33,6 +33,10 @@ def main():
             if item['up_axis']!='Z' or item['meters_per_unit']!=1.:
                 raise ValueError('Unexpected official units/up axis; explicit unit conversion required')
         data=json.loads(a.workstation.with_name('workstation_manifest.json').read_text())
+        if data.get('native_snapshot'):
+            from unloading_sim.eco65.model import ROOT
+            warehouse['path']=str(ROOT/data['environment']['warehouse_path'])
+            carton['path']=str(ROOT/data['environment']['carton_path'])
         if hashlib.sha256(a.workstation.read_bytes()).hexdigest()!=data['workstation_sha256']:
             raise ValueError('Workstation changed after export')
         stage_path=a.output/'eco65_desktop_warehouse.usda'
