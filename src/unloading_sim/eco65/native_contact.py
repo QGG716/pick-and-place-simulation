@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 import numpy as np
 
@@ -82,6 +83,32 @@ def extract_cad_contours(tool, root):
     rows = []
     for seal in tool['seals']:
         path = Path(root)/parts[seal['component']]['visual']
+        if seal.get('contour_method') == 'exact_trimmed_CAD_torus_axial_tangent':
+            manifest = Path(root)/'assets/tools/desktop_suction/derived/manifests/cad.json'
+            if hashlib.sha256(manifest.read_bytes()).hexdigest() != tool['cad_manifest_sha256']:
+                raise ValueError('CONTACT_CAD_MANIFEST_CHANGED')
+            cad = json.loads(manifest.read_text(encoding='utf-8'))
+            if cad['source_sha256'] != tool['source_sha256']:
+                raise ValueError('CONTACT_CAD_SOURCE_CHANGED')
+            part = next(p for p in cad['parts'] if p['id'] == seal['component'])
+            if hashlib.sha256(path.read_bytes()).hexdigest() != part['visual_sha256']:
+                raise ValueError('CONTACT_VISUAL_CHANGED')
+            faces = [part['surface_features'][i] for i in seal['cad_face_indices']]
+            if len(faces) != 2 or any(f['type'] != 'torus' for f in faces):
+                raise ValueError('CONTACT_CAD_FACE_IDENTITY')
+            a, b = [np.asarray(f['axial_tangent_curve_m']) for f in faces]
+            if not np.allclose(a[-1], b[0], atol=1e-10) or not np.allclose(b[-1], a[0], atol=1e-10):
+                raise ValueError('CONTACT_CAD_CURVE_OPEN')
+            points = np.concatenate([a[:-1], b[:-1]])
+            if not np.array_equal(points, seal['ring_cad_m']): raise ValueError('CONTACT_CAD_CURVE_CHANGED')
+            if not np.allclose(seal['normal_cad'], faces[0]['axis'], atol=1e-12):
+                raise ValueError('CONTACT_CAD_NORMAL_CHANGED')
+            rows.append(dict(id=seal['id'], component=seal['component'], points_m=points.tolist(),
+                normal=seal['normal_cad'], mesh_sha256=part['visual_sha256'],
+                source='exact_trimmed_CAD_torus_axial_tangent', original_fitted_ring_used=False,
+                source_sha256=cad['source_sha256'], cad_manifest_sha256=tool['cad_manifest_sha256'],
+                cad_face_indices=seal['cad_face_indices'], max_chord_error_m=seal['max_chord_error_m']))
+            continue
         mesh = trimesh.load(path, force='mesh', process=True)
         vertices, faces = np.asarray(mesh.vertices), np.asarray(mesh.faces)
         normal = np.asarray(seal['normal_cad'], float)
@@ -135,4 +162,6 @@ def extract_cad_contours(tool, root):
     result = dict(geometry_type=TYPE, max_normal_misalignment_rad=tool['contact']['normal_tolerance_rad'],
                   expected_contour_ids=[r['id'] for r in rows],
                   contours=rows, flange_from_contact_frame=tool['T_flange_tool_cad'])
+    if 'mounting_contacts' in tool:
+        result['mounting_contacts'] = tool['mounting_contacts']
     return validate_geometry(result)

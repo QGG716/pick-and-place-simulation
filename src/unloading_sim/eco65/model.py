@@ -30,6 +30,23 @@ def check_transform(t):
 def require_simulation(config):
     if config.get("enable_hardware",False) or config.get("execution_mode","simulation")!="simulation":
         raise PermissionError("HARDWARE_DISABLED: this implementation has no hardware execution provider")
+
+def mounting_pairs(tool):
+    """Only asset-bound interface solids receive signed contact tolerance."""
+    ids={c['id'] for c in tool['collisions']} | {c['id'] for c in tool['adapter']}
+    bands={c['id'] for c in tool['collisions'] if c['semantic']=='terminal_contact_band'}
+    result=set()
+    for row in tool.get('mounting_contacts', []):
+        if row['robot_link']!='link_6' or row['tool_collision'] not in ids or row['tool_collision'] in bands or row['maximum_penetration_m']!=.0004:
+            raise ValueError('MOUNT_CONTACT_IDENTITY_INVALID')
+        pair=frozenset(['robot_'+row['robot_link'],row['tool_collision']])
+        if pair in result:raise ValueError('DUPLICATE_MOUNT_CONTACT')
+        result.add(pair)
+    return result
+
+def distance_accepted(distance, threshold):
+    """Same 1 nm arithmetic epsilon as native FCL; physical margins unchanged."""
+    return bool(np.isfinite(distance) and distance+1e-9 >= threshold)
 def asset_check():
     m=load_json(OFFICIAL/"SOURCE_MANIFEST.json")
     for e in m["entries"]:
@@ -82,6 +99,7 @@ class World:
         import mujoco
         self.mj=mujoco;require_simulation(scene)
         self.tool,self.scene=tool,scene;self.robot=robot_for(tool,scene)
+        self.mounting_pairs=mounting_pairs(tool)
         self.boxes={b["id"]:b for b in (scene.get("boxes") or [scene["box"]])}
         self.flange_cad=check_transform(tool["T_flange_tool_cad"])
         assert np.allclose(self.flange_cad@check_transform(tool["T_tool_cad_tcp"]),self.robot.tip_from_tcp)
@@ -193,7 +211,7 @@ class World:
                 pair={a["name"],b["name"]}
                 allowance=None
                 if pair=={"robot_base_link","bench"}:allowance="fixed_base_mount"
-                if pair=={"robot_link_6","adapter_flange_disk"}:allowance="named_flange_mount"
+                if frozenset(pair) in self.mounting_pairs:allowance="measured_flange_mount"
                 if self.box_id in pair:
                     other=b if a["name"]==self.box_id else a
                     if other["kind"]=="terminal_contact_band" and phase in ("contact","loaded_lift","loaded_transfer","place_contact","retreat"):
@@ -216,7 +234,7 @@ class World:
                 if delta-r>margin:continue
                 dist=self.mj.mj_geomDistance(self.model,self.data,ga,gb,margin,None)
                 threshold=-self.scene["contact_tolerance_m"] if allowance else margin
-                if dist<threshold-1e-7:
+                if not distance_accepted(dist,threshold):
                     self.last_failure=dict(reason="collision",phase=phase,pair=[a["name"],b["name"]],distance_m=float(dist),threshold_m=threshold,allowance=allowance)
                     return False
                 if not allowance:self.min_clearance=min(self.min_clearance,float(dist))

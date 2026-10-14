@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import yaml
 
-from .model import ROOT, check_transform, load_json, transform
+from .model import ROOT, check_transform, load_json, transform, mounting_pairs
 from .native_contact import extract_cad_contours
 from ..moveit2_backend import digest, _rpy
 
@@ -60,6 +60,14 @@ def asset_inventory(root=ROOT, config=None):
             hashes[relative] = hashlib.sha256(p.read_bytes()).hexdigest()
         if hashes.get(cad['source']) != cad['source_sha256'] or tool['source_sha256'] != cad['source_sha256']:
             failures.append(dict(path=cad['source'], reason='CAD_SOURCE_IDENTITY_MISMATCH'))
+        if tool.get('cad_manifest_sha256') and hashes.get(required[1]) != tool['cad_manifest_sha256']:
+            failures.append(dict(path=required[1], reason='CAD_MANIFEST_IDENTITY_MISMATCH'))
+        for row in tool['visual_parts']:
+            if row.get('visual_sha256') and hashes.get(row['visual']) != row['visual_sha256']:
+                failures.append(dict(path=row['visual'], reason='VISUAL_IDENTITY_MISMATCH'))
+        for row in tool['collisions']:
+            if row.get('mesh_sha256') and hashes.get(row['mesh']) != row['mesh_sha256']:
+                failures.append(dict(path=row['mesh'], reason='COLLISION_IDENTITY_MISMATCH'))
         if ({p['id'] for p in cad['parts']} != {p['id'] for p in tool['visual_parts']} or
                 {p['id'] for p in cad['parts']} != {p['source_part'] for p in tool['collisions']}):
             failures.append(dict(path=required[0], reason='TOOL_SOLID_COVERAGE_MISMATCH'))
@@ -80,6 +88,7 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     if not np.allclose(flange_to_cad@cad_to_tcp, tcp, atol=1e-10, rtol=0):
         raise ValueError('TOOL_TRANSFORM_CHAIN_MISMATCH')
     geometry = extract_cad_contours(tool, root)
+    if not mounting_pairs(tool): raise ValueError('ASSET_BOUND_MOUNT_CONTACT_REQUIRED')
     contact_to_tcp = np.linalg.inv(cad_to_tcp)
     for row in geometry['contours']:
         points = np.array(row['points_m'])@contact_to_tcp[:3, :3].T+contact_to_tcp[:3, 3]
@@ -194,7 +203,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     identity.update(schema='eco65_native_model_v1', model_tool_fingerprint=digest(params),
         scene_fingerprint=scene['scene_fingerprint'], asset_fingerprint=digest(audit['asset_sha256']),
         policy_fingerprint=digest(POLICY), flange_from_task_tcp=tcp.tolist(),
-        task_tcp_fingerprint=digest(tcp.tolist()), policy_scope='PLANNING_ONLY_NOT_EXECUTABLE')
+        task_tcp_fingerprint=digest(tcp.tolist()), contact_geometry_fingerprint=digest(geometry),
+        policy_scope='PLANNING_ONLY_NOT_EXECUTABLE')
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
         collision_policy=POLICY, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',

@@ -2,6 +2,7 @@
 #include "process_geometry.h"
 #include "native_robot.h"
 #include "clearance.h"
+#include "eco65_distance_policy.h"
 
 namespace m710 {
 // Separate ECO65 policy: no circular masks, neighbor permission, or FANUC wrist
@@ -109,8 +110,18 @@ public:
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& id:bands_) {bands.push_back(solid(state,id));acm.setEntry(id,target_id_,true);}
     base_solid=solid(state,nativeFrames().base_link);
-    mount_pairs.push_back({solid(state,nativeFrames().flange_link),solid(state,"adapter_flange_disk")});
-    acm.setEntry(nativeFrames().flange_link,"adapter_flange_disk",true);
+    const auto mounts=spec_.at("mounting_contacts");
+    if(!mounts.is_array() || mounts.empty())throw std::runtime_error("ECO65_MOUNT_IDENTITY_REQUIRED");
+    std::set<std::string> mounted;
+    const auto owned=req.at("clearance_policy").at("tool_links").get<std::set<std::string>>();
+    for(const auto& mount:mounts) {
+      const std::string robot=mount.at("robot_link"),tool=mount.at("tool_collision");
+      if(robot!=nativeFrames().flange_link || !owned.count(tool) || bands_.count(tool) ||
+         !mounted.insert(tool).second || mount.at("maximum_penetration_m")!=.0004)
+        throw std::runtime_error("ECO65_MOUNT_IDENTITY_INVALID");
+      mount_pairs.push_back({solid(state,robot),solid(state,tool)});
+      acm.setEntry(robot,tool,true);
+    }
     if(attached_)for(const auto& id:supports_)acm.setEntry(target_id_,id,true);
   }
   bool check(const moveit::core::RobotState& state,bool endpoint) {
@@ -130,7 +141,7 @@ public:
     seal=processSealRings(geometry,target,flange);
     const bool fit=seal.at("status")=="PASS";
     auto accept=[&](const std::string& a,const std::string& b,double d,double threshold) {
-      if(d<threshold-1e-7) {failure={{"reason","ECO65_CONTACT_OR_CLEARANCE"},{"pair",{a,b}},
+      if(!eco65DistanceAccepted(d,threshold)) {failure={{"reason","ECO65_CONTACT_OR_CLEARANCE"},{"pair",{a,b}},
         {"signed_distance_m",d},{"threshold_m",threshold},{"stage",stage_}};return false;}return true;
     };
     if(!accept(nativeFrames().base_link,"robot_mount_plate",distance(base_solid,state,world_.at("robot_mount_plate")),-.0004))return false;

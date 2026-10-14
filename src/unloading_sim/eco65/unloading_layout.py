@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 from scipy.spatial.transform import Rotation
-from .model import ROOT,URDF,LOCAL,World,asset_check,transform,check_transform,save_json,load_json,canonical_fingerprint,require_simulation
+from .model import ROOT,URDF,LOCAL,World,asset_check,transform,check_transform,save_json,load_json,canonical_fingerprint,require_simulation,distance_accepted
 from ..ik import solve_ik
 
 CONFIG=ROOT/'configs/workcells/eco65_desktop_unloading_compact_v1.yaml'
@@ -247,7 +247,7 @@ class UnloadingWorld(World):
         for index in np.flatnonzero(distances<=margin):
             a,b=self.pairs[index];pair={a['name'],b['name']};allowance=None
             if pair=={'robot_base_link','robot_mount_plate'}:allowance='fixed_mount_interface'
-            elif pair=={'robot_link_6','adapter_flange_disk'}:allowance='flange_interface'
+            elif frozenset(pair) in self.mounting_pairs:allowance='measured_flange_interface'
             elif self._support_pair(a,b):allowance='carton_bottom_support_top'
             if self.box_id in pair and self.active_face and phase in ('pose','approach','contact','loaded_lift','front_separation','loaded_transfer','place_contact','retreat'):
                 other=b if a['name']==self.box_id else a
@@ -256,7 +256,7 @@ class UnloadingWorld(World):
                     if seal['fits']:allowance='actual_target_seals_'+self.active_face
             threshold=-self.scene['contact_tolerance_m'] if allowance else margin
             distance=self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],margin,None)
-            if distance<threshold-1e-7:
+            if not distance_accepted(distance,threshold):
                 self.last_failure=dict(reason='collision',pair=[a['name'],b['name']],distance_m=float(distance),threshold_m=threshold,allowance=allowance)
                 return False
         return True

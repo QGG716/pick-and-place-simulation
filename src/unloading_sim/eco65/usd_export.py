@@ -81,17 +81,20 @@ def export_isaac():
     for p in tool["visual_parts"]:mesh("/World/Tool/visual_"+p["id"],trimesh.load(ROOT/p["visual"],process=False),p["rgb"] or [.6,.6,.6])
     for c in tool["collisions"]:mesh("/World/Tool/collision_"+c["id"],trimesh.load(ROOT/c["mesh"],process=False),[.1,.8,.8],True)
     fixed("/World/tool_mount","/World/Robot/link_6","/World/Tool",np.array(tool["T_flange_tool_cad"]))
-    body=rigid("/World/Adapter",flange);total=[]
-    for a in tool["adapter"]:
-        m=trimesh.creation.box(a["size"]) if a["kind"]=="box" else trimesh.creation.cylinder(radius=a["radius"],height=2*a["half_length"],sections=48)
-        m.apply_translation(a["position"]);total.append(m)
-        mesh("/World/Adapter/visual_"+a["id"],m,[.85,.57,.15]);mesh("/World/Adapter/collision_"+a["id"],m,[.8,.5,.1],True)
-    combined=trimesh.util.concatenate(total);mp=combined.mass_properties
-    mass(body,tool["physics"]["adapter_mass_kg"],mp["center_mass"],mp["inertia"]*tool["physics"]["adapter_mass_kg"]/mp["mass"])
-    fixed("/World/adapter_mount","/World/Robot/link_6","/World/Adapter")
-    # Only the explicit attached interface pairs; never whole wrist/tool versus environment.
-    UsdPhysics.FilteredPairsAPI.Apply(stage.GetPrimAtPath("/World/Robot/link_6/collision")).CreateFilteredPairsRel().AddTarget("/World/Adapter/collision_adapter_flange_disk")
-    UsdPhysics.FilteredPairsAPI.Apply(stage.GetPrimAtPath("/World/Adapter")).CreateFilteredPairsRel().AddTarget("/World/Tool")
+    if tool['adapter']:
+        body=rigid("/World/Adapter",flange);total=[]
+        for a in tool["adapter"]:
+            m=trimesh.creation.box(a["size"]) if a["kind"]=="box" else trimesh.creation.cylinder(radius=a["radius"],height=2*a["half_length"],sections=48)
+            m.apply_translation(a["position"]);total.append(m)
+            mesh("/World/Adapter/visual_"+a["id"],m,[.85,.57,.15]);mesh("/World/Adapter/collision_"+a["id"],m,[.8,.5,.1],True)
+        combined=trimesh.util.concatenate(total);mp=combined.mass_properties
+        mass(body,tool["physics"]["adapter_mass_kg"],mp["center_mass"],mp["inertia"]*tool["physics"]["adapter_mass_kg"]/mp["mass"])
+        fixed("/World/adapter_mount","/World/Robot/link_6","/World/Adapter")
+    # Offline geometry consumers use the same explicitly bound interface IDs.
+    for contact in tool.get('mounting_contacts', []):
+        ident=contact['tool_collision']
+        parent='/World/Adapter' if any(a['id']==ident for a in tool['adapter']) else '/World/Tool'
+        UsdPhysics.FilteredPairsAPI.Apply(stage.GetPrimAtPath('/World/Robot/'+contact['robot_link']+'/collision')).CreateFilteredPairsRel().AddTarget(parent+'/collision_'+ident)
     for obj in scene["obstacles"]+[dict(id=scene["box"]["id"],position_m=scene["box"]["pose"],size_m=scene["box"]["size_m"],rgba=[.65,.43,.22,1])]:
         pathobj="/World/"+obj["id"];cube=UsdGeom.Cube.Define(stage,pathobj);cube.CreateSizeAttr(1.)
         pose(cube.GetPrim(),transform(obj["position_m"]));UsdGeom.Xformable(cube).AddScaleOp().Set(Gf.Vec3f(*obj["size_m"]))
