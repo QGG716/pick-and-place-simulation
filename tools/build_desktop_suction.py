@@ -7,6 +7,9 @@ ROOT=Path(__file__).resolve().parents[1]
 D=ROOT/"assets/tools/desktop_suction/derived"
 def build():
     cad=json.loads((D/"manifests/cad.json").read_text(encoding="utf-8"))
+    if any(p['name'].startswith('L57-') for p in cad['parts']):
+        from build_desktop_suction_assembly import build as measured_build
+        return measured_build()
     parts=cad["parts"]
     plate=max(parts,key=lambda p:np.prod(sorted(p["size_m"])[-2:]))
     # Repeated bellows/stem solids are identified by CAD geometry, not a hard-coded cup count.
@@ -66,6 +69,8 @@ def build():
             cad_mounting_holes="four diameter5mm holes at CAD x=+/-82mm,z=+/-22.5mm on y=10mm plate; no matching 49mm bolt circle",
             ambiguity="0/180 degree yaw mechanically unresolved; symmetric plate/cup footprint; choose yaw0 in simulation"),
         adapter=adapter,collisions=collisions,seals=rings,visual_parts=parts,
+        mounting_contacts=[dict(robot_link='link_6',tool_collision='adapter_flange_disk',
+            interface='legacy_assumed_flange_disk',maximum_penetration_m=.0004)],
         contact=dict(ideal_suction=True,geometric_position_tolerance_m=.0004,normal_tolerance_rad=.01,
             terminal_band_thickness_m=float(cut-lip_y),terminal_band_semantics="CAD lip-to-annular-plane skirt; contact-only allowance, material/compliance not measured",
             independent_control_verified=False,require_all_seals_fit=True),

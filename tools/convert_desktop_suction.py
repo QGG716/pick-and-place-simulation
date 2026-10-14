@@ -1,6 +1,7 @@
 """Read-only XCAF STEP conversion. All detailed geometry stays in ignored local paths."""
 from __future__ import annotations
-import argparse, hashlib, json, re
+import argparse, hashlib, json, re, shutil
+from datetime import datetime, timezone
 from pathlib import Path
 import numpy as np
 
@@ -8,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT/"assets/tools/desktop_suction/cad/raw"
 DERIVED = ROOT/"assets/tools/desktop_suction/derived"
 
-def convert():
+def convert(input_path=None):
     from OCP.STEPCAFControl import STEPCAFControl_Reader
     from OCP.IFSelect import IFSelect_RetDone
     from OCP.TDocStd import TDocStd_Document
@@ -19,7 +20,9 @@ def convert():
     from OCP.Quantity import Quantity_Color
     from OCP.TopLoc import TopLoc_Location
     from OCP.TopExp import TopExp_Explorer
-    from OCP.TopAbs import TopAbs_SOLID, TopAbs_FACE, TopAbs_SHELL, TopAbs_REVERSED
+    from OCP.TopAbs import TopAbs_SOLID, TopAbs_FACE, TopAbs_SHELL, TopAbs_REVERSED, TopAbs_WIRE
+    from OCP.BRepTools import BRepTools, BRepTools_WireExplorer
+    from OCP.GCPnts import GCPnts_QuasiUniformDeflection
     from OCP.TopoDS import TopoDS
     from OCP.BRep import BRep_Tool
     from OCP.BRepCheck import BRepCheck_Analyzer
@@ -28,14 +31,22 @@ def convert():
     from OCP.Bnd import Bnd_Box
     from OCP.BRepGProp import BRepGProp
     from OCP.GProp import GProp_GProps
-    from OCP.BRepAdaptor import BRepAdaptor_Surface
-    from OCP.GeomAbs import GeomAbs_Plane, GeomAbs_Cylinder
+    from OCP.BRepAdaptor import BRepAdaptor_Surface, BRepAdaptor_Curve
+    from OCP.GeomAbs import GeomAbs_Plane, GeomAbs_Cylinder, GeomAbs_Torus
     from OCP.Interface import Interface_Static
     import trimesh, OCP
-    paths=sorted(p for p in RAW.rglob("*") if p.is_file() and p.suffix.lower() in (".step",".stp"))
+    paths=([Path(input_path).resolve()] if input_path else
+           sorted(p for p in RAW.rglob("*") if p.is_file() and p.suffix.lower() in (".step",".stp")))
     if not paths: raise FileNotFoundError("No private STEP/STP in assets/tools/desktop_suction/cad/raw; no demo fallback.")
     if len(paths)!=1: raise ValueError("Multiple STEP inputs: inspect assembly/version relationships before choosing; no implicit duplication.")
     source=paths[0]; original=source.read_bytes(); digest=hashlib.sha256(original).hexdigest()
+    # Preserve every previous generation, including a tool config bound to it.
+    if DERIVED.exists():
+        backup=ROOT/"outputs/eco65_native/asset_backups"/datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        backup.mkdir(parents=True)
+        shutil.copytree(DERIVED,backup/"derived")
+        config=ROOT/"configs/local/eco65_desktop/tool.json"
+        if config.exists():shutil.copy2(config,backup/"tool.json")
     text=original.decode("latin-1")
     declarations=sorted(set(re.findall(r"SI_UNIT\s*\(\s*([^,]+),\s*\.METRE\.\s*\)",text)))
     if declarations!=[".MILLI."]: raise ValueError(f"Unreviewed STEP length units: {declarations}")
@@ -104,9 +115,38 @@ def convert():
                 if typ==GeomAbs_Plane:
                     plane=surf.Plane();a=plane.Axis();v=a.Direction();q=a.Location()
                     info.update(type="plane",point_m=[q.X()*.001,q.Y()*.001,q.Z()*.001],axis=[v.X(),v.Y(),v.Z()])
+                    info['outward_normal']=(np.array(info['axis'])*(-1 if face.Orientation()==TopAbs_REVERSED else 1)).tolist()
+                    info['face_index']=len(surfaces)
+                    wires=[];we=TopExp_Explorer(face,TopAbs_WIRE);outer=BRepTools.OuterWire_s(face)
+                    while we.More():
+                        wire=TopoDS.Wire_s(we.Current());walk_edges=BRepTools_WireExplorer(wire,face);points=[];edge_count=0
+                        while walk_edges.More():
+                            edge=walk_edges.Current();curve=BRepAdaptor_Curve(edge)
+                            sample=GCPnts_QuasiUniformDeflection(curve,.01)
+                            if not sample.IsDone():raise ValueError('CAD wire discretization failed')
+                            segment=np.array([[sample.Value(k).X(),sample.Value(k).Y(),sample.Value(k).Z()] for k in range(1,sample.NbPoints()+1)])*.001
+                            if edge.Orientation()==TopAbs_REVERSED:segment=segment[::-1]
+                            if len(points) and np.linalg.norm(points[-1]-segment[0])>1e-7:raise ValueError('Disconnected CAD wire')
+                            points.extend(segment if not len(points) else segment[1:]);edge_count+=1;walk_edges.Next()
+                        if not points or np.linalg.norm(points[0]-points[-1])>1e-7:raise ValueError('Open CAD wire')
+                        wires.append(dict(outer=wire.IsSame(outer),points_m=np.asarray(points[:-1]).tolist(),edge_count=edge_count,closed=True))
+                        we.Next()
+                    info['wires']=wires
                 elif typ==GeomAbs_Cylinder:
                     c=surf.Cylinder();a=c.Axis();v=a.Direction();q=a.Location()
                     info.update(type="cylinder",radius_m=c.Radius()*.001,point_m=[q.X()*.001,q.Y()*.001,q.Z()*.001],axis=[v.X(),v.Y(),v.Z()])
+                elif typ==GeomAbs_Torus:
+                    torus=surf.Torus();q=torus.Location();v=torus.Axis().Direction()
+                    u0,u1,v0,v1=surf.FirstUParameter(),surf.LastUParameter(),surf.FirstVParameter(),surf.LastVParameter()
+                    info.update(type='torus',face_index=len(surfaces),point_m=[q.X()*.001,q.Y()*.001,q.Z()*.001],
+                        axis=[v.X(),v.Y(),v.Z()],major_radius_m=torus.MajorRadius()*.001,
+                        minor_radius_m=torus.MinorRadius()*.001,uv_bounds=[u0,u1,v0,v1])
+                    # Actual free-state tangent locus on the trimmed CAD surface,
+                    # not an inferred/fitted circle or an invented planar annulus.
+                    if v0<=np.pi/2<=v1:
+                        steps=max(2,int(np.ceil((u1-u0)/(.02))))
+                        samples=[surf.Value(float(u),float(np.pi/2)) for u in np.linspace(u0,u1,steps+1)]
+                        info['axial_tangent_curve_m']=[[p.X()*.001,p.Y()*.001,p.Z()*.001] for p in samples]
                 else:info["type"]=str(typ)
                 surfaces.append(info);ex.Next()
             mesh=trimesh.Trimesh(vertices=vertices,faces=triangles,process=True)
@@ -130,17 +170,19 @@ def convert():
                 rgb=[color.Red(),color.Green(),color.Blue()] if has else None,
                 visual=str(path_visual.relative_to(ROOT)).replace("\\","/"),collision=str(path_hull.relative_to(ROOT)).replace("\\","/"),
                 vertices=len(mesh.vertices),triangles=len(mesh.faces),surface_features=surfaces,
+                visual_sha256=hashlib.sha256(path_visual.read_bytes()).hexdigest(),
+                collision_sha256=hashlib.sha256(path_hull.read_bytes()).hexdigest(),
                 collision_type="per_solid_convex_hull",max_vertex_outside_hull_m=violation,
                 conservative_surface_inflation_m=.0002,semantic="unknown_rigid"))
     for i in range(1,free.Length()+1):walk(free.Value(i),TopLoc_Location(),"root")
     lower=np.min([p["bounds_m"][0] for p in parts],axis=0);upper=np.max([p["bounds_m"][1] for p in parts],axis=0)
-    result=dict(schema="eco65_private_cad_v1",source=str(source.relative_to(ROOT)),source_sha256=digest,size_bytes=len(original),
+    result=dict(schema="eco65_private_cad_v1",source=str(source.relative_to(ROOT)) if source.is_relative_to(ROOT) else str(source),source_sha256=digest,size_bytes=len(original),
         format="STEP AP214",reader=f"OCP {OCP.__version__} STEPCAFControl_Reader",file_length_units="millimetres",
         reader_system_length_unit_mm=1.0,reader_output_units="millimetres",normalization_scale_to_m=.001,
         transform_convention="T_A_B converts B to A; translations scaled once, rotations unchanged",
-        selection_reason="One STEP assembly supplied, instantiate XCAF leaves once, not assembly compound plus children",
+        selection_reason="Explicit input when specified; instantiate XCAF leaves once, not assembly compound plus children",
         free_shapes=free.Length(),assembly_nodes=nodes,parts=parts,bounds_m=[lower.tolist(),upper.tolist()],size_m=(upper-lower).tolist(),
-        tessellation=dict(linear_deflection_m=.0001,angular_deflection_rad=.15,relative=False),
+        tessellation=dict(linear_deflection_m=.0001,angular_deflection_rad=.15,relative=False,wire_deflection_m=.00001),
         repairs=[],external_references=list(re.findall(r"EXTERNALLY_DEFINED[^;]+;",text)),unprocessed_parts=[],
         physics=dict(actual_mass_kg=None,material=None,vacuum_circuit=None,real_compression_stroke_m=None))
     assert hashlib.sha256(source.read_bytes()).hexdigest()==digest
@@ -150,4 +192,6 @@ def convert():
     return result
 
 if __name__=="__main__":
-    convert()
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input",type=Path,help="Exact private STEP; default retains single-file discovery")
+    convert(parser.parse_args().input)
