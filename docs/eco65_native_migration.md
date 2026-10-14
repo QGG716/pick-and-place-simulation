@@ -1,4 +1,121 @@
-# ECO65-B 原生迁移记录（2026-10-13）
+# ECO65-B 实际总成接入（2026-10-14）
+
+本轮从已审查的 `455384129665e34ddf3cb2fd2b2ede0f2189bae4` 继续同一分支，fetch 后没有后续远端提交。
+下面的 10 月 13 日记录保留为历史；其中“缺少原件/工具配置”的阻塞已被本轮解除。
+
+## 实际输入、安装与接触
+
+指定输入为 `assets/tools/desktop_suction/cad/raw/KVGL180-130-260909-01.STEP`，2,998,104 字节，
+SHA-256 `aa8d820d56fe3853b1b052e0c76dd77e666abd562427f4dff1b07ef1d6f6cf6c`，转换前后保持一致。
+STEP 的毫米单位由 OCCT 按毫米读取，网格、实例平移和面数据仅一次转换为米。
+真实总成为 43 个拓扑有效实体，其中 12 个重复吸附实例各含吸附体和独立固定环；没有以旧实体数量约束新输入。
+总成树、实体身份、可视网格哈希、分段碰撞网格哈希及最终配置形成完整私有追溯链。
+
+识别到真实工具侧法兰，其安装面、中心轴及六孔圆与官方 link_6 端面网格进行对照。
+机器人端和工具端分别保留自己的真实实体，无重复导入；旧生成的圆盘、横板、四支腿全部取消。
+安装距离由实际端面确定，没有增加额外 standoff。法兰按实际轴向台阶分成三个碰撞区域，保留杆身附近空隙。
+实际工具共 57 个碰撞分区，包括 12 个单独终端接触带；机器人加工具共 64 个凸体。
+
+F 为官方 link_6，C 为原始 CAD，T 为实际自由态接触线定义的任务 TCP；使用 `T_F_T = T_F_C × T_C_T`。
+TCP 原点为十二条接触线中心的均值，轴为 CAD +X、+Z、-Y；接触数据仍明确位于 C 坐标系。
+六孔圆提供六种等价滚转候选，选取最接近零的一个；官方网格的额外定位特征没有在工具侧找到对应特征。
+因此仍为安装仿真假设，未声称实机角度、装配紧固件、实测 TCP、质量、气路或压缩/承载能力已验证。
+详细变换、孔位、组件角色和候选角度仅写入私有 `assembly_review.json` 与 `tool.json`，不公开精细几何。
+
+真实唇缘由两个经裁剪的圆环曲面拼接构成，最低处并不存在旧脚本假设的平面环带。
+现在直接采样原始 CAD 曲面上的轴向切触线，核对闭合、唯一顶点、平面性、法向及组件/接触带身份。
+这是圆滑唇缘的自由态几何切触轮廓，不是拟合圆，也不伪称为平面密封面的内外边界。
+Python 和 C++ 消费同一份绑定 CAD/网格哈希的轮廓；9 组真实轮廓案例共检查全部 12 个组件，判定一致，数值误差小于 1e-12 m。
+
+## 代码与实际运行结果
+
+转换器增加 `--input`，默认单文件发现调用仍兼容；旧派生产物在重新生成前备份到忽略目录。
+现有工具入口识别带法兰总成后调用测量装配器。安装接触对来自私有配置并绑定到原生初始化几何，
+native_model、eco65_process、独立 Python 检查及 USD 导出不再强制寻找旧圆盘名称。
+接触权限仅覆盖实际法兰接口分区；其余机器人/工具组合仍正常检查。
+
+普通净空保持 2.4 mm、指定接触压入保持 0.4 mm、封边余量保持 3 mm；距离比较统一使用 1e-9 m 数值 epsilon。
+8 组实际 MuJoCo 正/负距离边界与生产 C++ 距离判定函数一致；C++ 标量探针不等于 FCL 运行时测试。
+实际 MuJoCo 编译几何与待交给 FCL 的凸体输入按双向面法向支撑值对照，64 个对象最大差异 1.1932e-8 m。
+**完整 worker/FCL 尚未编译运行，不将上述输入一致性称作 FCL 实际运行通过。**
+
+零位、旧种子和非零腕姿态的独立 XML 链/Python FK、法兰—CAD—TCP 组合和实际 MuJoCo 工具体随动一致。
+旧种子发生 link_3/厢体顶板碰撞，已保留失败；第 6 个有界静态候选得到新的本地合法 HOME。
+检查未移动设备、删除箱体/顶板或缩小工具。这个 HOME 只在当前本地设备几何中成立，仍需原生及完整仓库检查。
+本轮没有 Python RRT、IK 主规划替代、历史轨迹输入或原生轨迹生成。
+
+| 项目 | 实际状态 | 成功运行分项耗时 |
+|---|---|---:|
+| 指定 STEP 转换 | 43 实体，原件哈希不变 | 139.913 s |
+| 测量安装与工具配置 | 12 轮廓、57 分区 | 38.101 s |
+| 资产与设备场景准备 | PASS，本地完整四箱设备 | 4.116 s |
+| 派生原生模型准备 | URDF/SRDF/初始化内容已生成；非 worker 初始化 | 11.881 s |
+| 实际 MuJoCo 初始化 | 已运行 | 1.239 s |
+| 静态 FK/HOME 候选检查 | PASS_LOCAL_STATIC | 0.377 s |
+| 真实轮廓 Python/C++ 对照 | 9 案例一致 | 0.454 s |
+| MuJoCo/C++ 距离判定边界 | 8 案例一致 | 0.319 s |
+| 首版四图 / 改善观察视角后的四图 | 均真实渲染并查看 | 99.001 / 138.662 s |
+| 119 文件私有同步包 | PREPARED_NOT_SENT | 30.676 s |
+| 117 项定向 pytest | 全部通过 | 12.09 s |
+| 完整 worker、原生规划、选定轨迹独立复核、仓库回放 | NOT_RUN | 未运行，无耗时 |
+
+以上是各段实测值，不是端到端总耗时；凸体对照首轮未独立计时。
+早期依赖下载重试、两次构建性能排查中断和首轮探针缺少 target_face 的调用错误均保留日志，未算作通过。
+修正探针请求后完整执行真实轮廓检查，未改变接触阈值来通过。
+117 项含 ECO65 合成协议、实际官方链及保留的 FANUC/TCP/通信/时序回归，不能把全部用例称为真实机器人验收。
+本机另编译运行纯 C++ 72 杯/过程几何测试 15 cases；它不代替完整 worker。
+
+## 私有交付与复现
+
+所有模型原件、完整配置、详细快照、网格、检查图和同步包均被忽略，没有公开提交。
+
+- `assets/tools/desktop_suction/derived/{visual,collision,manifests/cad.json}`：本次实际派生资产。
+- `configs/local/eco65_desktop/tool.json`：实际安装变换、分区、接触和源身份。
+- `outputs/eco65_native/assembly_20261014_run02/`：FK/HOME、实际凸体对照、轮廓/距离边界和原生模型准备结果。
+- `outputs/eco65_native/assembly_20261014_figures_v2/`：A 总成、B 末端安装/TCP、C 十二轮廓叠加、D 四箱设备图；已逐张查看。
+- `outputs/eco65_native/assembly_20261014_delivery/`：详细装配审查、私有同步包、文件哈希清单和实例检查。
+- `outputs/eco65_native/assembly_20261014_native_build_gate/`：实际入口结果，资产 PASS、仓库 NOT_EVALUATED，未产生可规划快照。
+- `outputs/eco65_native/directed_tests_20261014.xml`：定向测试记录。
+- `.tmp/conversion.log`、`.tmp/assembly_build*.log`、`.tmp/inspection_run*.log`：运行与排错日志。
+
+本次在任务工作树的独立 `.venv` 使用 OCP 7.9.3.1.1、trimesh 5.1.0、SciPy 1.18.1、MuJoCo 3.13.0；
+复用本地 OCP/VTK 缓存及既有基础 Python 包，下载包校验发布哈希。未升级任何原 ROS/Isaac 环境。
+
+```powershell
+$env:PYTHONPATH='src'
+$env:PYTHONIOENCODING='utf-8'
+$env:OPENBLAS_NUM_THREADS='1'
+.venv\Scripts\python.exe tools/convert_desktop_suction.py --input assets/tools/desktop_suction/cad/raw/KVGL180-130-260909-01.STEP
+.venv\Scripts\python.exe tools/build_desktop_suction.py
+cmd.exe /c .tmp\build_contact.cmd
+.venv\Scripts\python.exe tools/inspect_eco65_assembly.py --output outputs/eco65_native/assembly_20261014_run02 --cpp-probe .tmp/seal_contours_test.exe
+$env:ECO65_CONTACT_PROBE=(Resolve-Path .tmp/seal_contours_test.exe).Path
+.venv\Scripts\python.exe -m pytest -q tests/test_eco65_native.py tests/test_eco65_mounting.py tests/test_moveit2_tcp.py tests/test_moveit2_native_cold.py tests/test_moveit2_backend.py tests/test_planning_only_timing.py
+.venv\Scripts\python.exe tools/run_eco65_moveit2_single_carton.py build --output outputs/eco65_native/assembly_20261014_native_build_gate
+```
+
+输出目录为真实运行名称；复跑必须使用新的目录，不能覆盖这些证据。
+四图 v2 使用同一工具哈希及已检查 HOME 调用 `inspect_eco65_assembly.render_figures` 改善视角；没有重规划。
+辅助 C++ 探针可由原有 CMake 的 `eco65_seal_contours_test` 目标构建，本地使用既有 MSVC/Eigen。
+
+## 尚未解除的最小运行条件
+
+原授权 SSH 三个已知入口本轮仍报 banner/connection refused，未建立远端会话。
+完整仓库缓存本地不存在；本轮没有仓库父级聚合 AABB/重复障碍/空隙的实际导入检查。
+不能把设备静态图当作完整仓库渲染。私有资产已打包待同步，尚未发送，目标端和 rootfs 内哈希核对尚未执行。
+
+恢复原授权环境后，先在宿主机及原 Humble rootfs 的实际工作副本中解包并逐文件核对
+`private_asset_manifest.json`，再在本分支编译完整 `m710_moveit_backend`，检查 worker 的真实 init/FK/状态/安装接触边界。
+原环境路径仍为既有 CPU venv、Isaac clean 和 20260922 Humble rootfs，不升级、不改系统。
+随后沿用下方历史记录中的 bounds/build/plan/review/export/replay 命令，但输入必须是本次新资产；
+先审查实际仓库导入表示，再生成新的完整快照。任务仍为目标顶吸、路线 B、七阶段、900/60 s 和最多两次有界尝试。
+当前本地 HOME 必须再次通过真实原生和仓库检查；不得直接宣布可执行或沿用 FANUC 成功结果。
+
+保持 `PLANNING_ONLY_NOT_EXECUTABLE` / `KINEMATIC_REPLAY` / Dynamics `NOT_EVALUATED`，不连接真机。
+
+---
+
+# 历史：ECO65-B 原生迁移记录（2026-10-13）
 
 分支：feat/v0.6-eco65-moveit2-native-single-carton。
 开发底座：3a84888f85fd490b538e5ce643aa135c2e8cabdb。

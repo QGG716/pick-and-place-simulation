@@ -1,4 +1,17 @@
-# 当前实验：静态先验辅助顶排五箱 29.687 秒（2026-10-04）
+# 当前 ECO65-B 迁移：真实吸具＋法兰资产与本地静态检查完成（2026-10-14）
+
+已读取本轮指定私有 STEP，生成 43 个实体、12 个真实吸附组件及匹配的安装/接触配置。
+保留 STEP 自带工具侧法兰，取消旧模拟法兰盘、横板和四支腿；使用实际圆滑唇缘的 CAD 切触线。
+四箱设备场景中已找到并检查新的本地静态 HOME，四张真实模型检查图已生成并查看；117 项定向回归通过。
+
+**完整 ROS/MoveIt worker、原生单箱规划、选定轨迹独立复核及仓库回放尚未运行。**
+当前阻塞是原授权 SSH 环境不可连接及完整仓库缓存不可用。工具原件、派生几何、完整配置、图像及同步包均留在忽略目录。
+状态保持 `PLANNING_ONLY_NOT_EXECUTABLE`；回放仅允许 `KINEMATIC_REPLAY`，Dynamics 为 `NOT_EVALUATED`。
+本轮结果、命令、计时和限制见[迁移记录](docs/eco65_native_migration.md)。以下均为保留的 FANUC 历史结果，不能作为 ECO65 验收。
+
+---
+
+# FANUC 历史实验：静态先验辅助顶排五箱 29.687 秒（2026-10-04）
 
 同一 GPU 服务器新批次已完成 5/5；T_plan_5=29.687 秒，T_online_5=30.041 秒，未达到五箱 ≤1 秒。整批 OMPL 0 次；同机任务级 c03/c04 对照分别改善约 79.3%/47.8%。结果为 PLANNING_ONLY_NOT_EXECUTABLE，qualification_status=NOT_EVALUATED。详见[报告](docs/m710_static_prior_fast_20261003.md)与[数据](docs/experiments/m710_static_prior_fast_20261003/summary.json)。
 
