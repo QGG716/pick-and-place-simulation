@@ -1,0 +1,2 @@
+{"target": "carton_l07_c04", "complete": true, "plan_s": 27.178236182779074, "cumulative_plan_s": 27.178236182779074, "progress": "1/1"}
+{"result": "DIAGNOSTIC_COMPLETE", "completed_count": 1, "T_plan_5_s": null, "cumulative_attempted_plan_s": 27.178236182779074, "initialization_s": 1.0039744675159454, "scene_update_s": 0.04050082340836525, "batch_wall_s": 27.220150977373123}

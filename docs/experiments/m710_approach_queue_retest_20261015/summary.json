@@ -1,0 +1,2765 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "run_order": [
+    "c04-A",
+    "c04-B",
+    "c02-B",
+    "c02-A"
+  ],
+  "formal_source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+  "caveat": "One task per side; no stable performance or five-box extrapolation.",
+  "comparisons": {
+    "c04": {
+      "plan_delta_s": 17.23776775225997,
+      "plan_delta_percent": 173.4100145556198,
+      "online_delta_s": 17.22614999487996,
+      "pregrasp_delta_s": 8.009238932281733,
+      "transit_delta_s": 6.945848025381565,
+      "selected_boundaries": {
+        "pregrasp_end": {
+          "a": [
+            0.49973707205127027,
+            -0.1866075276953517,
+            -0.15249879083455548,
+            1.5084148908041053,
+            -0.500801396022087,
+            -4.641302140729287
+          ],
+          "b": [
+            0.4997371107684931,
+            -0.18660766839846143,
+            -0.15249894222081156,
+            -1.6331763062102582,
+            0.5008009837195794,
+            -1.4997109423685853
+          ],
+          "exact_equal": false,
+          "maximum_joint_delta_rad": 3.141591198360702
+        },
+        "extraction_end": {
+          "a": [
+            0.9869328928028025,
+            -0.6632157178849846,
+            -0.4576540346531191,
+            1.4367436376017697,
+            -1.000780170517349,
+            -4.467498019031576
+          ],
+          "b": [
+            0.9869328868699969,
+            -0.6632157225993871,
+            -0.4576540342411479,
+            -1.704849031937002,
+            1.0007801524399986,
+            -1.3259053511832606
+          ],
+          "exact_equal": false,
+          "maximum_joint_delta_rad": 3.1415926695387717
+        },
+        "transit_start": {
+          "a": [
+            0.9869328928028025,
+            -0.6632157178849846,
+            -0.4576540346531191,
+            1.4367436376017697,
+            -1.000780170517349,
+            -4.467498019031576
+          ],
+          "b": [
+            0.9869328868699969,
+            -0.6632157225993871,
+            -0.4576540342411479,
+            -1.704849031937002,
+            1.0007801524399986,
+            -1.3259053511832606
+          ],
+          "exact_equal": false,
+          "maximum_joint_delta_rad": 3.1415926695387717
+        }
+      }
+    },
+    "c02": {
+      "plan_delta_s": 0.04161449521780014,
+      "plan_delta_percent": 2.838080094775375,
+      "online_delta_s": -0.07985614612698555,
+      "pregrasp_delta_s": -0.0012987889349460602,
+      "transit_delta_s": 0.004560362547636032,
+      "selected_boundaries": {
+        "pregrasp_end": {
+          "a": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ],
+          "b": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ],
+          "exact_equal": true,
+          "maximum_joint_delta_rad": 0.0
+        },
+        "extraction_end": {
+          "a": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "b": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "exact_equal": true,
+          "maximum_joint_delta_rad": 0.0
+        },
+        "transit_start": {
+          "a": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "b": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "exact_equal": true,
+          "maximum_joint_delta_rad": 0.0
+        }
+      }
+    }
+  },
+  "results": {
+    "c04-A": {
+      "direct_only_methods": {},
+      "direct_only_graph_search_calls": 0,
+      "direct_only_checked_successes": 0,
+      "run_id": "planning-only-d63dc7ecfe9942caa14bc9f8619e2c8e",
+      "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+      "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "prior": {
+        "load_s": 0.07553910464048386,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.07553910464048386,
+        "native_load_s": 0.000513074,
+        "native_request_round_trip_s": 0.019228287041187286,
+        "total_load_s": 0.09497993439435959
+      },
+      "input_sha256": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+      "input": {
+        "target": "carton_l07_c04",
+        "start_q_rad": [
+          -0.9645963630436601,
+          0.34902940305863794,
+          -0.16938280513201223,
+          2.723792554429788e-07,
+          -1.0523838754541985,
+          -2.1769964898998944
+        ],
+        "removed_targets": [
+          "carton_l07_c02",
+          "carton_l07_c01",
+          "carton_l07_c03",
+          "carton_l07_c00"
+        ],
+        "seed_offset": 4,
+        "planning_phase": "SLOW_COMPLETION",
+        "source_run_id": "planning-only-443d386e0e1b4274b530a871e39a222a",
+        "source_timing_sha256": "d19eb0583bba577995a73bb275c449bc731b629de69e6d400a6bf4b482e55504",
+        "configured_batch_budget_s": 900,
+        "configured_box_budget_s": 300,
+        "historical_previous_plan_and_scene_s": 11.521427739411592
+      },
+      "complete": true,
+      "plan_s": 9.940468430519104,
+      "selected_stage_endpoints": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:3",
+          "parent_stage_id": "",
+          "source": "STATIC_PRIOR_REUSE",
+          "start": [
+            -0.9645963630436601,
+            0.34902940305863794,
+            -0.16938280513201223,
+            2.723792554429788e-07,
+            -1.0523838754541985,
+            -2.1769964898998944
+          ],
+          "end": [
+            0.49973707205127027,
+            -0.1866075276953517,
+            -0.15249879083455548,
+            1.5084148908041053,
+            -0.500801396022087,
+            -4.641302140729287
+          ]
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:4",
+          "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:3",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.49973707205127027,
+            -0.1866075276953517,
+            -0.15249879083455548,
+            1.5084148908041053,
+            -0.500801396022087,
+            -4.641302140729287
+          ],
+          "end": [
+            0.4838146850048132,
+            -0.15276303918152231,
+            -0.12357673809541078,
+            1.5153170351783811,
+            -0.4846245173629847,
+            -4.649707933470684
+          ]
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:5",
+          "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:4",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.4838146850048132,
+            -0.15276303918152231,
+            -0.12357673809541078,
+            1.5153170351783811,
+            -0.4846245173629847,
+            -4.649707933470684
+          ],
+          "end": [
+            0.9869328928028025,
+            -0.6632157178849846,
+            -0.4576540346531191,
+            1.4367436376017697,
+            -1.000780170517349,
+            -4.467498019031576
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:6",
+          "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:5",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.9869328928028025,
+            -0.6632157178849846,
+            -0.4576540346531191,
+            1.4367436376017697,
+            -1.000780170517349,
+            -4.467498019031576
+          ],
+          "end": [
+            1.3067027007408618,
+            -0.749741721908547,
+            -0.49280036377762115,
+            1.5021863186302886,
+            -1.3155693028978803,
+            -4.4466408322866
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:7",
+          "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:6",
+          "source": "STATIC_PRIOR_REUSE",
+          "start": [
+            1.3067027007408618,
+            -0.749741721908547,
+            -0.49280036377762115,
+            1.5021863186302886,
+            -1.3155693028978803,
+            -4.4466408322866
+          ],
+          "end": [
+            -0.8608846362514265,
+            0.16653295840632254,
+            -0.4130862892126781,
+            3.043791506822901e-07,
+            -0.9911773803633583,
+            -2.280708216783928
+          ]
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:9",
+          "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:8",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.8608846362514265,
+            0.16653295840632254,
+            -0.4130862892126781,
+            3.043791506822901e-07,
+            -0.9911773803633583,
+            -2.280708216783928
+          ],
+          "end": [
+            -0.860884632552864,
+            0.15809066856911685,
+            -0.40383981666879437,
+            3.009298182935619e-07,
+            -1.0088661427444479,
+            -2.2807082141105144
+          ]
+        }
+      ],
+      "invalid_goal_followups": [],
+      "endpoint_attempts_before_graph": 0,
+      "distinct_endpoint_q_before_graph": 0,
+      "endpoint_attempts_by_call": {},
+      "valid_direct_attempts_by_call": {},
+      "pregrasp_connect_pose_calls": 1,
+      "write_timing": {
+        "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+        "qualification_status": "NOT_EVALUATED",
+        "result_file_write_s": 0.03717979043722153,
+        "batch_bookkeeping_s": 0.00034327432513237,
+        "T_online_5_s": null,
+        "attempted_online_s": 10.021458227187395,
+        "excluded": "write_timing.json, final timing accounting and final stdout"
+      },
+      "connect_pose_calls_before_graph": 0,
+      "endpoint_call_ids_before_graph": [],
+      "prior_status_counts": {
+        "PRIOR_QUERY_TIMEOUT": 1,
+        "SUCCESS": 2
+      },
+      "online_s": 10.021458227187395,
+      "initialization_s": 1.0174688883125782,
+      "scene_update_s": 0.043466731905937195,
+      "checks": {
+        "boundary_and_target_contexts_consistent": true,
+        "exact_cross_box_continuity": true,
+        "pair_profile_disabled_in_all_available_responses": true,
+        "pair_times_null": true,
+        "process_preparsed_and_profile_disabled": true,
+        "planning_only_isolation": true,
+        "no_history_or_legacy_calls": true
+      },
+      "native_calls": {
+        "PTP": 1,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 5
+      },
+      "measured_clearance": {
+        "measured_clearance_requests": 9,
+        "clearance_s": 7.921904179000045,
+        "workspace_prepare_s": 0.032272602000000004,
+        "clearance_queries": 29216,
+        "seal_input_compilations": 9,
+        "aabb_tests": 223914794,
+        "aabb_skips": 220239140,
+        "narrow_calls": 3676024,
+        "fixed_qualification_queries": 370,
+        "fixed_aabb_qualifications": 150,
+        "fixed_narrow_qualifications": 370,
+        "fixed_aabb_reuses": 32994,
+        "fixed_narrow_reuses": 198277
+      },
+      "stages": {
+        "pregrasp": {
+          "requests": 3,
+          "request_round_trip_s": 7.744400124996901,
+          "prior_query_s": 7.533111085,
+          "measured_clearance_s": 7.341953945000044
+        },
+        "contact": {
+          "requests": 1,
+          "request_round_trip_s": 0.05514266714453697,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.001863678
+        },
+        "extraction": {
+          "requests": 1,
+          "request_round_trip_s": 0.2088107094168663,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.02307497700000001
+        },
+        "transit": {
+          "requests": 2,
+          "request_round_trip_s": 0.7966244481503963,
+          "prior_query_s": 0.636175886,
+          "measured_clearance_s": 0.5508179519999999
+        },
+        "place": {
+          "requests": 1,
+          "request_round_trip_s": 0.04602590203285217,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.000472568
+        },
+        "withdrawal": {
+          "requests": 1,
+          "request_round_trip_s": 0.06930452585220337,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.0037210590000000005
+        }
+      },
+      "methods": {
+        "pregrasp/SPARSE_PRM": {
+          "calls": 2,
+          "failed": 1,
+          "round_trip_s": 7.635295230895281,
+          "failed_round_trip_s": 6.047379087656736
+        },
+        "pregrasp/PTP": {
+          "calls": 1,
+          "failed": 1,
+          "round_trip_s": 0.10910489410161972,
+          "failed_round_trip_s": 0.10910489410161972
+        },
+        "contact/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.05514266714453697,
+          "failed_round_trip_s": 0.0
+        },
+        "extraction/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.2088107094168663,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.10918952524662018,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/SPARSE_PRM": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.6874349229037762,
+          "failed_round_trip_s": 0.0
+        },
+        "place/NONE": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.04602590203285217,
+          "failed_round_trip_s": 0.0
+        },
+        "withdrawal/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.06930452585220337,
+          "failed_round_trip_s": 0.0
+        }
+      },
+      "first_pregrasp_graph_request": "10",
+      "direct_round_endpoints_before_graph": 0,
+      "distinct_direct_q_before_graph": 0,
+      "approach_sequence": [
+        {
+          "run": "c04-A",
+          "request_id": "10",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": 1,
+          "method": "SPARSE_PRM",
+          "status": "PRIOR_QUERY_TIMEOUT",
+          "rtt_s": 6.047379087656736,
+          "clearance_s": 5.901876306000042,
+          "workspace_prepare_s": 0.003605207,
+          "clearance_queries": 21510,
+          "edge_checks": 85,
+          "state_checks": 21508,
+          "graph_search_performed": true,
+          "direct_rejection_reused": false,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 165348182,
+          "aabb_skips": 162554994,
+          "narrow_calls": 2793188,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-A",
+          "request_id": "11",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": 1,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10910489410161972,
+          "clearance_s": 0.023856946,
+          "workspace_prepare_s": 0.003327202,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 328747,
+          "aabb_skips": 326092,
+          "narrow_calls": 2655,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-A",
+          "request_id": "14",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": 1,
+          "method": "SPARSE_PRM",
+          "status": "SUCCESS",
+          "rtt_s": 1.5879161432385445,
+          "clearance_s": 1.4162206930000016,
+          "workspace_prepare_s": 0.003439509,
+          "clearance_queries": 5809,
+          "edge_checks": 34,
+          "state_checks": 5807,
+          "graph_search_performed": true,
+          "direct_rejection_reused": false,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 44581826,
+          "aabb_skips": 43976814,
+          "narrow_calls": 605012,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ],
+      "boundary_partition_s": {
+        "request_build": 0.07481381297111511,
+        "accepted_return_processing": 0.1147417388856411,
+        "other_motion_connection": 0.195309080183506,
+        "unattributed_outside_motion": 0.5214614532887936
+      },
+      "failed_grasp_candidates": 0,
+      "rejected_motion_requests": 2,
+      "prior_timeouts": 1,
+      "duplicates_removed": 0,
+      "missing_clearance": []
+    },
+    "c04-B": {
+      "direct_only_methods": {
+        "CHECKED_JOINT_DIRECT": 13,
+        "PTP": 13,
+        "ENDPOINT_REJECTED": 2
+      },
+      "direct_only_graph_search_calls": 0,
+      "direct_only_checked_successes": 0,
+      "run_id": "planning-only-0ee5b72516824a0e85acaec392bc39db",
+      "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+      "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "prior": {
+        "load_s": 0.05935871601104736,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.05935871601104736,
+        "native_load_s": 0.000531079,
+        "native_request_round_trip_s": 0.020971182733774185,
+        "total_load_s": 0.08047280460596085
+      },
+      "input_sha256": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+      "input": {
+        "target": "carton_l07_c04",
+        "start_q_rad": [
+          -0.9645963630436601,
+          0.34902940305863794,
+          -0.16938280513201223,
+          2.723792554429788e-07,
+          -1.0523838754541985,
+          -2.1769964898998944
+        ],
+        "removed_targets": [
+          "carton_l07_c02",
+          "carton_l07_c01",
+          "carton_l07_c03",
+          "carton_l07_c00"
+        ],
+        "seed_offset": 4,
+        "planning_phase": "SLOW_COMPLETION",
+        "source_run_id": "planning-only-443d386e0e1b4274b530a871e39a222a",
+        "source_timing_sha256": "d19eb0583bba577995a73bb275c449bc731b629de69e6d400a6bf4b482e55504",
+        "configured_batch_budget_s": 900,
+        "configured_box_budget_s": 300,
+        "historical_previous_plan_and_scene_s": 11.521427739411592
+      },
+      "complete": true,
+      "plan_s": 27.178236182779074,
+      "selected_stage_endpoints": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:34",
+          "parent_stage_id": "",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.9645963630436601,
+            0.34902940305863794,
+            -0.16938280513201223,
+            2.723792554429788e-07,
+            -1.0523838754541985,
+            -2.1769964898998944
+          ],
+          "end": [
+            0.4997371107684931,
+            -0.18660766839846143,
+            -0.15249894222081156,
+            -1.6331763062102582,
+            0.5008009837195794,
+            -1.4997109423685853
+          ]
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:35",
+          "parent_stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:34",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.4997371107684931,
+            -0.18660766839846143,
+            -0.15249894222081156,
+            -1.6331763062102582,
+            0.5008009837195794,
+            -1.4997109423685853
+          ],
+          "end": [
+            0.4838146796941719,
+            -0.15276304188498346,
+            -0.1235767380700227,
+            -1.6262756387621589,
+            0.48462449774705946,
+            -1.5081152592295926
+          ]
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:36",
+          "parent_stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:35",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.4838146796941719,
+            -0.15276304188498346,
+            -0.1235767380700227,
+            -1.6262756387621589,
+            0.48462449774705946,
+            -1.5081152592295926
+          ],
+          "end": [
+            0.9869328868699969,
+            -0.6632157225993871,
+            -0.4576540342411479,
+            -1.704849031937002,
+            1.0007801524399986,
+            -1.3259053511832606
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:37",
+          "parent_stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:36",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            0.9869328868699969,
+            -0.6632157225993871,
+            -0.4576540342411479,
+            -1.704849031937002,
+            1.0007801524399986,
+            -1.3259053511832606
+          ],
+          "end": [
+            1.3067026974891742,
+            -0.7497417273103316,
+            -0.49280036322252735,
+            -1.6394063472278388,
+            1.3155692873577025,
+            -1.3050481684745412
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:48",
+          "parent_stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:37",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            1.3067026974891742,
+            -0.7497417273103316,
+            -0.49280036322252735,
+            -1.6394063472278388,
+            1.3155692873577025,
+            -1.3050481684745412
+          ],
+          "end": [
+            -0.860884638088783,
+            0.16653296528151787,
+            -0.4130862814209256,
+            -3.141592355768536,
+            0.991177396329641,
+            0.8608844436242062
+          ]
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:50",
+          "parent_stage_id": "planning-only-2abd5f48eff8401b8d67e5a375a78133:49",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.860884638088783,
+            0.16653296528151787,
+            -0.4130862814209256,
+            -3.141592355768536,
+            0.991177396329641,
+            0.8608844436242062
+          ],
+          "end": [
+            -0.8608846344699056,
+            0.15809067404505275,
+            -0.4038398065931259,
+            -3.141592359143553,
+            1.008866162393906,
+            0.8608844462400215
+          ]
+        }
+      ],
+      "invalid_goal_followups": [
+        {
+          "request_id": "38",
+          "connection_call_id": 3,
+          "later_requests": []
+        },
+        {
+          "request_id": "48",
+          "connection_call_id": 4,
+          "later_requests": []
+        }
+      ],
+      "endpoint_attempts_before_graph": 15,
+      "distinct_endpoint_q_before_graph": 11,
+      "endpoint_attempts_by_call": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3
+      },
+      "valid_direct_attempts_by_call": {
+        "1": 3,
+        "2": 3,
+        "3": 2,
+        "4": 2,
+        "5": 3
+      },
+      "pregrasp_connect_pose_calls": 5,
+      "write_timing": {
+        "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+        "qualification_status": "NOT_EVALUATED",
+        "result_file_write_s": 0.02745724469423294,
+        "batch_bookkeeping_s": 0.001413971185684204,
+        "T_online_5_s": null,
+        "attempted_online_s": 27.247608222067356,
+        "excluded": "write_timing.json, final timing accounting and final stdout"
+      },
+      "connect_pose_calls_before_graph": 5,
+      "endpoint_call_ids_before_graph": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "prior_status_counts": {
+        "PRIOR_QUERY_TIMEOUT": 1,
+        "PRIOR_NOT_CONNECTED": 5
+      },
+      "online_s": 27.247608222067356,
+      "initialization_s": 1.0039744675159454,
+      "scene_update_s": 0.04050082340836525,
+      "checks": {
+        "boundary_and_target_contexts_consistent": true,
+        "exact_cross_box_continuity": true,
+        "pair_profile_disabled_in_all_available_responses": true,
+        "pair_times_null": true,
+        "process_preparsed_and_profile_disabled": true,
+        "planning_only_isolation": true,
+        "no_history_or_legacy_calls": true
+      },
+      "native_calls": {
+        "PTP": 17,
+        "LIN": 9,
+        "OMPL": 2,
+        "IK": 37
+      },
+      "measured_clearance": {
+        "measured_clearance_requests": 50,
+        "clearance_s": 11.829934917999985,
+        "workspace_prepare_s": 0.16675969200000004,
+        "clearance_queries": 53673,
+        "seal_input_compilations": 50,
+        "aabb_tests": 360753505,
+        "aabb_skips": 356006047,
+        "narrow_calls": 4749048,
+        "fixed_qualification_queries": 1590,
+        "fixed_aabb_qualifications": 230,
+        "fixed_narrow_qualifications": 1590,
+        "fixed_aabb_reuses": 130257,
+        "fixed_narrow_reuses": 1682071
+      },
+      "stages": {
+        "pregrasp": {
+          "requests": 34,
+          "request_round_trip_s": 15.753639057278633,
+          "prior_query_s": 6.2174748939999995,
+          "measured_clearance_s": 8.43050454699999
+        },
+        "contact": {
+          "requests": 1,
+          "request_round_trip_s": 0.07239792495965958,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.0019300489999999999
+        },
+        "extraction": {
+          "requests": 1,
+          "request_round_trip_s": 0.19643761590123177,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.019842803000000006
+        },
+        "transit": {
+          "requests": 12,
+          "request_round_trip_s": 7.742472473531961,
+          "prior_query_s": 2.387214218,
+          "measured_clearance_s": 3.3748417019999994
+        },
+        "place": {
+          "requests": 1,
+          "request_round_trip_s": 0.04555637389421463,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.000319934
+        },
+        "withdrawal": {
+          "requests": 1,
+          "request_round_trip_s": 0.06761378794908524,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.002495883
+        }
+      },
+      "methods": {
+        "pregrasp/CHECKED_JOINT_DIRECT": {
+          "calls": 13,
+          "failed": 13,
+          "round_trip_s": 0.7006668522953987,
+          "failed_round_trip_s": 0.7006668522953987
+        },
+        "pregrasp/PTP": {
+          "calls": 13,
+          "failed": 13,
+          "round_trip_s": 1.7373555153608322,
+          "failed_round_trip_s": 1.7373555153608322
+        },
+        "pregrasp/ENDPOINT_CHECK_BEFORE_STAGE": {
+          "calls": 2,
+          "failed": 2,
+          "round_trip_s": 0.09428755566477776,
+          "failed_round_trip_s": 0.09428755566477776
+        },
+        "pregrasp/LIN": {
+          "calls": 4,
+          "failed": 4,
+          "round_trip_s": 0.15678609162569046,
+          "failed_round_trip_s": 0.15678609162569046
+        },
+        "pregrasp/SPARSE_PRM": {
+          "calls": 1,
+          "failed": 1,
+          "round_trip_s": 6.043351948261261,
+          "failed_round_trip_s": 6.043351948261261
+        },
+        "pregrasp/RRTConnectkConfigDefault": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 7.021191094070673,
+          "failed_round_trip_s": 0.0
+        },
+        "contact/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.07239792495965958,
+          "failed_round_trip_s": 0.0
+        },
+        "extraction/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.19643761590123177,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/LIN": {
+          "calls": 2,
+          "failed": 0,
+          "round_trip_s": 0.38407208025455475,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/SPARSE_PRM": {
+          "calls": 5,
+          "failed": 5,
+          "round_trip_s": 2.584178790450096,
+          "failed_round_trip_s": 2.584178790450096
+        },
+        "transit/PTP": {
+          "calls": 4,
+          "failed": 4,
+          "round_trip_s": 0.6014816537499428,
+          "failed_round_trip_s": 0.6014816537499428
+        },
+        "transit/RRTConnectkConfigDefault": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 4.172739949077368,
+          "failed_round_trip_s": 0.0
+        },
+        "place/NONE": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.04555637389421463,
+          "failed_round_trip_s": 0.0
+        },
+        "withdrawal/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.06761378794908524,
+          "failed_round_trip_s": 0.0
+        }
+      },
+      "first_pregrasp_graph_request": "63",
+      "direct_round_endpoints_before_graph": 13,
+      "distinct_direct_q_before_graph": 9,
+      "approach_sequence": [
+        {
+          "run": "c04-B",
+          "request_id": "10",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.052661433815956116,
+          "clearance_s": 0.013197562999999997,
+          "workspace_prepare_s": 0.003012518,
+          "clearance_queries": 87,
+          "edge_checks": 1,
+          "state_checks": 85,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 664201,
+          "aabb_skips": 659811,
+          "narrow_calls": 4390,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "11",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10432882979512215,
+          "clearance_s": 0.02355177199999999,
+          "workspace_prepare_s": 0.003351811,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 328747,
+          "aabb_skips": 326092,
+          "narrow_calls": 2655,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "14",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.06356287002563477,
+          "clearance_s": 0.024839336000000017,
+          "workspace_prepare_s": 0.003201482,
+          "clearance_queries": 163,
+          "edge_checks": 1,
+          "state_checks": 161,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 1249402,
+          "aabb_skips": 1240858,
+          "narrow_calls": 8544,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "15",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.13392014056444168,
+          "clearance_s": 0.043566912000000006,
+          "workspace_prepare_s": 0.003200777,
+          "clearance_queries": 104,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 443759,
+          "aabb_skips": 439532,
+          "narrow_calls": 4227,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "17",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.053437840193510056,
+          "clearance_s": 0.015495276999999997,
+          "workspace_prepare_s": 0.003418256,
+          "clearance_queries": 114,
+          "edge_checks": 1,
+          "state_checks": 112,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 872101,
+          "aabb_skips": 867679,
+          "narrow_calls": 4422,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "18",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.17025700956583023,
+          "clearance_s": 0.04912906800000001,
+          "workspace_prepare_s": 0.003328109,
+          "clearance_queries": 179,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 616927,
+          "aabb_skips": 612017,
+          "narrow_calls": 4910,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "20",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.051346760243177414,
+          "clearance_s": 0.013202220999999997,
+          "workspace_prepare_s": 0.003333446,
+          "clearance_queries": 87,
+          "edge_checks": 1,
+          "state_checks": 85,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 664201,
+          "aabb_skips": 659811,
+          "narrow_calls": 4390,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "21",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10138522461056709,
+          "clearance_s": 0.023460766000000004,
+          "workspace_prepare_s": 0.003426165,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 328747,
+          "aabb_skips": 326092,
+          "narrow_calls": 2655,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "24",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.04140102118253708,
+          "clearance_s": 0.003226769000000001,
+          "workspace_prepare_s": 0.003385709,
+          "clearance_queries": 24,
+          "edge_checks": 1,
+          "state_checks": 22,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 179008,
+          "aabb_skips": 178157,
+          "narrow_calls": 851,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "25",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.17571817338466644,
+          "clearance_s": 0.04416236100000001,
+          "workspace_prepare_s": 0.003429833,
+          "clearance_queries": 181,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 570384,
+          "aabb_skips": 564601,
+          "narrow_calls": 5783,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "27",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.03988778963685036,
+          "clearance_s": 0.0039065570000000015,
+          "workspace_prepare_s": 0.003069539,
+          "clearance_queries": 30,
+          "edge_checks": 1,
+          "state_checks": 28,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 225208,
+          "aabb_skips": 224202,
+          "narrow_calls": 1006,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "28",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 2,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.14129337668418884,
+          "clearance_s": 0.03453362499999999,
+          "workspace_prepare_s": 0.003352472,
+          "clearance_queries": 146,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 475399,
+          "aabb_skips": 470846,
+          "narrow_calls": 4553,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "30",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 3,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.04870442673563957,
+          "clearance_s": 0.013527573999999997,
+          "workspace_prepare_s": 0.003206469,
+          "clearance_queries": 89,
+          "edge_checks": 1,
+          "state_checks": 87,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 679601,
+          "aabb_skips": 675072,
+          "narrow_calls": 4529,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "31",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 3,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10417289659380913,
+          "clearance_s": 0.025699707000000006,
+          "workspace_prepare_s": 0.003388674,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 379567,
+          "aabb_skips": 377044,
+          "narrow_calls": 2523,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "35",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 3,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.05597206950187683,
+          "clearance_s": 0.016722592000000005,
+          "workspace_prepare_s": 0.003502974,
+          "clearance_queries": 115,
+          "edge_checks": 1,
+          "state_checks": 113,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 879801,
+          "aabb_skips": 875335,
+          "narrow_calls": 4466,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "36",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 3,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.16699783504009247,
+          "clearance_s": 0.045680164999999995,
+          "workspace_prepare_s": 0.003145288,
+          "clearance_queries": 178,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 706326,
+          "aabb_skips": 701679,
+          "narrow_calls": 4647,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "38",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 3,
+          "method": "ENDPOINT_CHECK_BEFORE_STAGE",
+          "status": "INVALID_GOAL_CLEARANCE",
+          "rtt_s": 0.04325106367468834,
+          "clearance_s": 0.000356265,
+          "workspace_prepare_s": 0.003203397,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 8448,
+          "aabb_skips": 8406,
+          "narrow_calls": 42,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "40",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 4,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.05816875770688057,
+          "clearance_s": 0.018645040999999998,
+          "workspace_prepare_s": 0.00408926,
+          "clearance_queries": 91,
+          "edge_checks": 1,
+          "state_checks": 89,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 695006,
+          "aabb_skips": 690342,
+          "narrow_calls": 4664,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "41",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 4,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10480121523141861,
+          "clearance_s": 0.026526651000000005,
+          "workspace_prepare_s": 0.003135327,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 399487,
+          "aabb_skips": 397007,
+          "narrow_calls": 2480,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "44",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 4,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.06409060582518578,
+          "clearance_s": 0.027051226999999997,
+          "workspace_prepare_s": 0.003200226,
+          "clearance_queries": 171,
+          "edge_checks": 1,
+          "state_checks": 169,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 1311002,
+          "aabb_skips": 1301270,
+          "narrow_calls": 9732,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "45",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 4,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.13261858746409416,
+          "clearance_s": 0.03807084899999999,
+          "workspace_prepare_s": 0.003346964,
+          "clearance_queries": 103,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 512830,
+          "aabb_skips": 508629,
+          "narrow_calls": 4201,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "48",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 4,
+          "method": "ENDPOINT_CHECK_BEFORE_STAGE",
+          "status": "INVALID_GOAL_CLEARANCE",
+          "rtt_s": 0.051036491990089417,
+          "clearance_s": 0.000243444,
+          "workspace_prepare_s": 0.003344712,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 8448,
+          "aabb_skips": 8406,
+          "narrow_calls": 42,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "49",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": null,
+          "method": "LIN",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.03727211803197861,
+          "clearance_s": 0.000354992,
+          "workspace_prepare_s": 0.003113826,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "",
+          "moveit_error_code": null,
+          "aabb_tests": 15400,
+          "aabb_skips": 15328,
+          "narrow_calls": 72,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "50",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": null,
+          "method": "LIN",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.04017839953303337,
+          "clearance_s": 0.00035097,
+          "workspace_prepare_s": 0.003145907,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "",
+          "moveit_error_code": null,
+          "aabb_tests": 15400,
+          "aabb_skips": 15328,
+          "narrow_calls": 72,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "51",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": null,
+          "method": "LIN",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.03953693434596062,
+          "clearance_s": 0.00034332799999999995,
+          "workspace_prepare_s": 0.003135871,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "",
+          "moveit_error_code": null,
+          "aabb_tests": 15400,
+          "aabb_skips": 15328,
+          "narrow_calls": 72,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "52",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": null,
+          "method": "LIN",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.039798639714717865,
+          "clearance_s": 0.000343649,
+          "workspace_prepare_s": 0.003214085,
+          "clearance_queries": 2,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "",
+          "moveit_error_code": null,
+          "aabb_tests": 15400,
+          "aabb_skips": 15328,
+          "narrow_calls": 72,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "54",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.051994241774082184,
+          "clearance_s": 0.013675167999999994,
+          "workspace_prepare_s": 0.003271538,
+          "clearance_queries": 87,
+          "edge_checks": 1,
+          "state_checks": 85,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 664201,
+          "aabb_skips": 659811,
+          "narrow_calls": 4390,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "55",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.10390839353203773,
+          "clearance_s": 0.02325800699999999,
+          "workspace_prepare_s": 0.003494901,
+          "clearance_queries": 85,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 328747,
+          "aabb_skips": 326092,
+          "narrow_calls": 2655,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "58",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.06733173131942749,
+          "clearance_s": 0.030803989,
+          "workspace_prepare_s": 0.003213661,
+          "clearance_queries": 163,
+          "edge_checks": 1,
+          "state_checks": 161,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 1249402,
+          "aabb_skips": 1240858,
+          "narrow_calls": 8544,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "59",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.13094162940979004,
+          "clearance_s": 0.040060199,
+          "workspace_prepare_s": 0.003221045,
+          "clearance_queries": 104,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 443759,
+          "aabb_skips": 439532,
+          "narrow_calls": 4227,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "61",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "DIRECT_CONNECTION_REJECTED",
+          "rtt_s": 0.0521073043346405,
+          "clearance_s": 0.015560976000000008,
+          "workspace_prepare_s": 0.003402917,
+          "clearance_queries": 114,
+          "edge_checks": 1,
+          "state_checks": 112,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 872101,
+          "aabb_skips": 867679,
+          "narrow_calls": 4422,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "62",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 5,
+          "method": "PTP",
+          "status": "NATIVE_PLANNING_FAILED",
+          "rtt_s": 0.16701220348477364,
+          "clearance_s": 0.04912870100000001,
+          "workspace_prepare_s": 0.003302731,
+          "clearance_queries": 179,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "aabb_tests": 616927,
+          "aabb_skips": 612017,
+          "narrow_calls": 4910,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "63",
+          "stage": "pregrasp",
+          "scope": "GLOBAL_ALLOWED",
+          "connection_call_id": 5,
+          "method": "SPARSE_PRM",
+          "status": "PRIOR_QUERY_TIMEOUT",
+          "rtt_s": 6.043351948261261,
+          "clearance_s": 5.900678419999985,
+          "workspace_prepare_s": 0.003272226,
+          "clearance_queries": 21576,
+          "edge_checks": 84,
+          "state_checks": 21574,
+          "graph_search_performed": true,
+          "direct_rejection_reused": true,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 165862081,
+          "aabb_skips": 163069777,
+          "narrow_calls": 2792304,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "run": "c04-B",
+          "request_id": "64",
+          "stage": "pregrasp",
+          "scope": "GLOBAL_ALLOWED",
+          "connection_call_id": 5,
+          "method": "RRTConnectkConfigDefault",
+          "status": "SUCCESS",
+          "rtt_s": 7.021191094070673,
+          "clearance_s": 1.8511504060000044,
+          "workspace_prepare_s": 0.00343472,
+          "clearance_queries": 14313,
+          "edge_checks": null,
+          "state_checks": null,
+          "graph_search_performed": null,
+          "direct_rejection_reused": null,
+          "solver_message": "",
+          "moveit_error_code": null,
+          "aabb_tests": 71492318,
+          "aabb_skips": 71091846,
+          "narrow_calls": 400472,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ],
+      "boundary_partition_s": {
+        "request_build": 0.27252594754099846,
+        "accepted_return_processing": 0.1796034462749958,
+        "other_motion_connection": 1.379075776785612,
+        "unattributed_outside_motion": 0.8749735355377197
+      },
+      "failed_grasp_candidates": 0,
+      "rejected_motion_requests": 42,
+      "prior_timeouts": 1,
+      "duplicates_removed": 0,
+      "missing_clearance": []
+    },
+    "c02-A": {
+      "direct_only_methods": {},
+      "direct_only_graph_search_calls": 0,
+      "direct_only_checked_successes": 0,
+      "run_id": "planning-only-9b7747d324de4011a9a23644a9ad557d",
+      "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+      "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "prior": {
+        "load_s": 0.059109173715114594,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.059109173715114594,
+        "native_load_s": 0.000519591,
+        "native_request_round_trip_s": 0.01984519511461258,
+        "total_load_s": 0.0791962780058384
+      },
+      "input_sha256": "ad118d8c9c136e641324d6bc965e01e1727a2758c93a1b3443b8efa9b0bb7422",
+      "input": {
+        "target": "carton_l07_c02",
+        "start_q_rad": [
+          -0.4738507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ],
+        "removed_targets": [],
+        "seed_offset": 0,
+        "planning_phase": "FAST",
+        "source": "CURRENT_CONFIG_INITIAL_STATE"
+      },
+      "complete": true,
+      "plan_s": 1.4662903733551502,
+      "selected_stage_endpoints": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:1",
+          "parent_stage_id": "",
+          "source": "NATIVE_DIRECT_CONNECTION",
+          "start": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "end": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ]
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:2",
+          "parent_stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:1",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ],
+          "end": [
+            -0.35906440152466956,
+            -0.21567106328784996,
+            -0.17655627893482562,
+            1.6746086267061495,
+            0.36109672893034256,
+            -4.8233009116410654
+          ]
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:3",
+          "parent_stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:2",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.35906440152466956,
+            -0.21567106328784996,
+            -0.17655627893482562,
+            1.6746086267061495,
+            0.36109672893034256,
+            -4.8233009116410654
+          ],
+          "end": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:4",
+          "parent_stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:3",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "end": [
+            -1.2088979926338046,
+            -0.8916419045612904,
+            -0.5364386438062386,
+            1.701703638069351,
+            1.2324274410668137,
+            -5.089984344986543
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:5",
+          "parent_stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:4",
+          "source": "NATIVE_DIRECT_CONNECTION",
+          "start": [
+            -1.2088979926338046,
+            -0.8916419045612904,
+            -0.5364386438062386,
+            1.701703638069351,
+            1.2324274410668137,
+            -5.089984344986543
+          ],
+          "end": [
+            -0.8608846844785021,
+            0.16653277967374558,
+            -0.4130864552626626,
+            3.1415925991155684,
+            0.9911770490053002,
+            -5.42230050977356
+          ]
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:7",
+          "parent_stage_id": "planning-only-618e60a15601428287cde1337ac3f28e:6",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.8608846844785021,
+            0.16653277967374558,
+            -0.4130864552626626,
+            3.1415925991155684,
+            0.9911770490053002,
+            -5.42230050977356
+          ],
+          "end": [
+            -0.8608846851404265,
+            0.15809049942114303,
+            -0.4038400079212143,
+            3.1415925997328884,
+            1.008865776599351,
+            -5.422300510252016
+          ]
+        }
+      ],
+      "invalid_goal_followups": [],
+      "endpoint_attempts_before_graph": 0,
+      "distinct_endpoint_q_before_graph": 0,
+      "endpoint_attempts_by_call": {},
+      "valid_direct_attempts_by_call": {},
+      "pregrasp_connect_pose_calls": 1,
+      "write_timing": {
+        "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+        "qualification_status": "NOT_EVALUATED",
+        "result_file_write_s": 0.12866570428013802,
+        "batch_bookkeeping_s": 0.0002413131296634674,
+        "T_online_5_s": null,
+        "attempted_online_s": 1.6283756084740162,
+        "excluded": "write_timing.json, final timing accounting and final stdout"
+      },
+      "connect_pose_calls_before_graph": 0,
+      "endpoint_call_ids_before_graph": [],
+      "prior_status_counts": {
+        "SUCCESS": 2
+      },
+      "online_s": 1.6283756084740162,
+      "initialization_s": 1.004289135336876,
+      "scene_update_s": 0.033178217709064484,
+      "checks": {
+        "boundary_and_target_contexts_consistent": true,
+        "exact_cross_box_continuity": true,
+        "pair_profile_disabled_in_all_available_responses": true,
+        "pair_times_null": true,
+        "process_preparsed_and_profile_disabled": true,
+        "planning_only_isolation": true,
+        "no_history_or_legacy_calls": true
+      },
+      "native_calls": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "measured_clearance": {
+        "measured_clearance_requests": 7,
+        "clearance_s": 0.14886366399999998,
+        "workspace_prepare_s": 0.023580513,
+        "clearance_queries": 819,
+        "seal_input_compilations": 7,
+        "aabb_tests": 6658405,
+        "aabb_skips": 6607407,
+        "narrow_calls": 51368,
+        "fixed_qualification_queries": 370,
+        "fixed_aabb_qualifications": 150,
+        "fixed_narrow_qualifications": 370,
+        "fixed_aabb_reuses": 23322,
+        "fixed_narrow_reuses": 50778
+      },
+      "stages": {
+        "pregrasp": {
+          "requests": 1,
+          "request_round_trip_s": 0.08781363070011139,
+          "prior_query_s": 0.037698293,
+          "measured_clearance_s": 0.021455281
+        },
+        "contact": {
+          "requests": 1,
+          "request_round_trip_s": 0.060954999178647995,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.001895981
+        },
+        "extraction": {
+          "requests": 1,
+          "request_round_trip_s": 0.2008565589785576,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.020992452999999998
+        },
+        "transit": {
+          "requests": 2,
+          "request_round_trip_s": 0.2690070606768131,
+          "prior_query_s": 0.12261326,
+          "measured_clearance_s": 0.101842169
+        },
+        "place": {
+          "requests": 1,
+          "request_round_trip_s": 0.04354114457964897,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.000281639
+        },
+        "withdrawal": {
+          "requests": 1,
+          "request_round_trip_s": 0.06386851519346237,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.0023961409999999996
+        }
+      },
+      "methods": {
+        "pregrasp/SPARSE_PRM": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.08781363070011139,
+          "failed_round_trip_s": 0.0
+        },
+        "contact/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.060954999178647995,
+          "failed_round_trip_s": 0.0
+        },
+        "extraction/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.2008565589785576,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.0997878722846508,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/SPARSE_PRM": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.16921918839216232,
+          "failed_round_trip_s": 0.0
+        },
+        "place/NONE": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.04354114457964897,
+          "failed_round_trip_s": 0.0
+        },
+        "withdrawal/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.06386851519346237,
+          "failed_round_trip_s": 0.0
+        }
+      },
+      "first_pregrasp_graph_request": "10",
+      "direct_round_endpoints_before_graph": 0,
+      "distinct_direct_q_before_graph": 0,
+      "approach_sequence": [
+        {
+          "run": "c02-A",
+          "request_id": "10",
+          "stage": "pregrasp",
+          "scope": null,
+          "connection_call_id": 1,
+          "method": "SPARSE_PRM",
+          "status": "SUCCESS",
+          "rtt_s": 0.08781363070011139,
+          "clearance_s": 0.021455281,
+          "workspace_prepare_s": 0.003833271,
+          "clearance_queries": 217,
+          "edge_checks": 1,
+          "state_checks": 215,
+          "graph_search_performed": true,
+          "direct_rejection_reused": false,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 1789816,
+          "aabb_skips": 1786959,
+          "narrow_calls": 2857,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ],
+      "boundary_partition_s": {
+        "request_build": 0.03592103719711304,
+        "accepted_return_processing": 0.06854066625237465,
+        "other_motion_connection": 0.10223965719342232,
+        "unattributed_outside_motion": 0.4656318202614784
+      },
+      "failed_grasp_candidates": 0,
+      "rejected_motion_requests": 0,
+      "prior_timeouts": 0,
+      "duplicates_removed": 0,
+      "missing_clearance": []
+    },
+    "c02-B": {
+      "direct_only_methods": {
+        "CHECKED_JOINT_DIRECT": 1
+      },
+      "direct_only_graph_search_calls": 0,
+      "direct_only_checked_successes": 1,
+      "run_id": "planning-only-bad0f8ad35414659a14fa3ce4385fa1a",
+      "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+      "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "prior": {
+        "load_s": 0.07483009994029999,
+        "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+        "bytes": 238781,
+        "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+        "file_load_s": 0.07483009994029999,
+        "native_load_s": 0.000530483,
+        "native_request_round_trip_s": 0.01970702037215233,
+        "total_load_s": 0.09478087723255157
+      },
+      "input_sha256": "ad118d8c9c136e641324d6bc965e01e1727a2758c93a1b3443b8efa9b0bb7422",
+      "input": {
+        "target": "carton_l07_c02",
+        "start_q_rad": [
+          -0.4738507840476061,
+          -0.46642585435191586,
+          -0.35455135903520246,
+          1.7851535539041579,
+          0.48589729025839207,
+          -3.3829904117272847
+        ],
+        "removed_targets": [],
+        "seed_offset": 0,
+        "planning_phase": "FAST",
+        "source": "CURRENT_CONFIG_INITIAL_STATE"
+      },
+      "complete": true,
+      "plan_s": 1.5079048685729504,
+      "selected_stage_endpoints": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:1",
+          "parent_stage_id": "",
+          "source": "NATIVE_DIRECT_CONNECTION",
+          "start": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "end": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ]
+        },
+        {
+          "stage": "contact",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:2",
+          "parent_stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:1",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.37183186381563244,
+            -0.2514560818573884,
+            -0.20519225196989294,
+            1.6888363609320358,
+            0.3745660010932489,
+            -4.839132179366259
+          ],
+          "end": [
+            -0.35906440152466956,
+            -0.21567106328784996,
+            -0.17655627893482562,
+            1.6746086267061495,
+            0.36109672893034256,
+            -4.8233009116410654
+          ]
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:3",
+          "parent_stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:2",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.35906440152466956,
+            -0.21567106328784996,
+            -0.17655627893482562,
+            1.6746086267061495,
+            0.36109672893034256,
+            -4.8233009116410654
+          ],
+          "end": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:4",
+          "parent_stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:3",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.8243489793411446,
+            -0.7829360105800519,
+            -0.5045940027376815,
+            1.8196772134724581,
+            0.8593888304627662,
+            -5.083605037664223
+          ],
+          "end": [
+            -1.2088979926338046,
+            -0.8916419045612904,
+            -0.5364386438062386,
+            1.701703638069351,
+            1.2324274410668137,
+            -5.089984344986543
+          ]
+        },
+        {
+          "stage": "transit",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:5",
+          "parent_stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:4",
+          "source": "NATIVE_DIRECT_CONNECTION",
+          "start": [
+            -1.2088979926338046,
+            -0.8916419045612904,
+            -0.5364386438062386,
+            1.701703638069351,
+            1.2324274410668137,
+            -5.089984344986543
+          ],
+          "end": [
+            -0.8608846844785021,
+            0.16653277967374558,
+            -0.4130864552626626,
+            3.1415925991155684,
+            0.9911770490053002,
+            -5.42230050977356
+          ]
+        },
+        {
+          "stage": "withdrawal",
+          "stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:7",
+          "parent_stage_id": "planning-only-a317c24409b54026ab9069bf4c59c79d:6",
+          "source": "NATIVE_GENERATED",
+          "start": [
+            -0.8608846844785021,
+            0.16653277967374558,
+            -0.4130864552626626,
+            3.1415925991155684,
+            0.9911770490053002,
+            -5.42230050977356
+          ],
+          "end": [
+            -0.8608846851404265,
+            0.15809049942114303,
+            -0.4038400079212143,
+            3.1415925997328884,
+            1.008865776599351,
+            -5.422300510252016
+          ]
+        }
+      ],
+      "invalid_goal_followups": [],
+      "endpoint_attempts_before_graph": 1,
+      "distinct_endpoint_q_before_graph": 1,
+      "endpoint_attempts_by_call": {
+        "1": 1
+      },
+      "valid_direct_attempts_by_call": {
+        "1": 1
+      },
+      "pregrasp_connect_pose_calls": 1,
+      "write_timing": {
+        "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+        "qualification_status": "NOT_EVALUATED",
+        "result_file_write_s": 0.012686256319284439,
+        "batch_bookkeeping_s": 0.00023417919874191284,
+        "T_online_5_s": null,
+        "attempted_online_s": 1.5485194623470306,
+        "excluded": "write_timing.json, final timing accounting and final stdout"
+      },
+      "connect_pose_calls_before_graph": 1,
+      "endpoint_call_ids_before_graph": [
+        1
+      ],
+      "prior_status_counts": {
+        "SUCCESS": 1
+      },
+      "online_s": 1.5485194623470306,
+      "initialization_s": 1.0095968879759312,
+      "scene_update_s": 0.027694158256053925,
+      "checks": {
+        "boundary_and_target_contexts_consistent": true,
+        "exact_cross_box_continuity": true,
+        "pair_profile_disabled_in_all_available_responses": true,
+        "pair_times_null": true,
+        "process_preparsed_and_profile_disabled": true,
+        "planning_only_isolation": true,
+        "no_history_or_legacy_calls": true
+      },
+      "native_calls": {
+        "PTP": 0,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 3
+      },
+      "measured_clearance": {
+        "measured_clearance_requests": 7,
+        "clearance_s": 0.1491613500000001,
+        "workspace_prepare_s": 0.023046644,
+        "clearance_queries": 819,
+        "seal_input_compilations": 7,
+        "aabb_tests": 6658405,
+        "aabb_skips": 6607407,
+        "narrow_calls": 51368,
+        "fixed_qualification_queries": 370,
+        "fixed_aabb_qualifications": 150,
+        "fixed_narrow_qualifications": 370,
+        "fixed_aabb_reuses": 23322,
+        "fixed_narrow_reuses": 50778
+      },
+      "stages": {
+        "pregrasp": {
+          "requests": 1,
+          "request_round_trip_s": 0.08651484176516533,
+          "prior_query_s": 0.037141412,
+          "measured_clearance_s": 0.021453015000000002
+        },
+        "contact": {
+          "requests": 1,
+          "request_round_trip_s": 0.05582888424396515,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.0018946000000000002
+        },
+        "extraction": {
+          "requests": 1,
+          "request_round_trip_s": 0.20562702789902687,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.021001756999999992
+        },
+        "transit": {
+          "requests": 2,
+          "request_round_trip_s": 0.27356742322444916,
+          "prior_query_s": 0.124377813,
+          "measured_clearance_s": 0.10210650600000008
+        },
+        "place": {
+          "requests": 1,
+          "request_round_trip_s": 0.04593144729733467,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.000293013
+        },
+        "withdrawal": {
+          "requests": 1,
+          "request_round_trip_s": 0.07080089673399925,
+          "prior_query_s": 0,
+          "measured_clearance_s": 0.002412459
+        }
+      },
+      "methods": {
+        "pregrasp/CHECKED_JOINT_DIRECT": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.08651484176516533,
+          "failed_round_trip_s": 0.0
+        },
+        "contact/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.05582888424396515,
+          "failed_round_trip_s": 0.0
+        },
+        "extraction/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.20562702789902687,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.10169308260083199,
+          "failed_round_trip_s": 0.0
+        },
+        "transit/SPARSE_PRM": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.17187434062361717,
+          "failed_round_trip_s": 0.0
+        },
+        "place/NONE": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.04593144729733467,
+          "failed_round_trip_s": 0.0
+        },
+        "withdrawal/LIN": {
+          "calls": 1,
+          "failed": 0,
+          "round_trip_s": 0.07080089673399925,
+          "failed_round_trip_s": 0.0
+        }
+      },
+      "first_pregrasp_graph_request": null,
+      "direct_round_endpoints_before_graph": 1,
+      "distinct_direct_q_before_graph": 1,
+      "approach_sequence": [
+        {
+          "run": "c02-B",
+          "request_id": "10",
+          "stage": "pregrasp",
+          "scope": "DIRECT_ONLY",
+          "connection_call_id": 1,
+          "method": "CHECKED_JOINT_DIRECT",
+          "status": "SUCCESS",
+          "rtt_s": 0.08651484176516533,
+          "clearance_s": 0.021453015000000002,
+          "workspace_prepare_s": 0.003381506,
+          "clearance_queries": 217,
+          "edge_checks": 1,
+          "state_checks": 215,
+          "graph_search_performed": false,
+          "direct_rejection_reused": null,
+          "solver_message": null,
+          "moveit_error_code": null,
+          "aabb_tests": 1789816,
+          "aabb_skips": 1786959,
+          "narrow_calls": 2857,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ],
+      "boundary_partition_s": {
+        "request_build": 0.036852769553661346,
+        "accepted_return_processing": 0.090634535998106,
+        "other_motion_connection": 0.13075825199484825,
+        "unattributed_outside_motion": 0.4502817168831825
+      },
+      "failed_grasp_candidates": 0,
+      "rejected_motion_requests": 0,
+      "prior_timeouts": 0,
+      "duplicates_removed": 0,
+      "missing_clearance": []
+    }
+  }
+}

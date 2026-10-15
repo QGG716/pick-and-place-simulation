@@ -1,0 +1,50 @@
+{
+  "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+  "baseline_commit": "62c207d47056c75cdc4da0c6cd6591504f51c3a9",
+  "utc": "2026-10-15T08:45:06.037509+00:00",
+  "run_order": [
+    "c04-A",
+    "c04-B",
+    "c02-B",
+    "c02-A"
+  ],
+  "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a",
+  "worker_binary": "/tmp/approach-queue-20261015/build/m710_moveit_worker",
+  "prior_sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+  "inputs": {
+    "c04-input.json": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+    "c02-input.json": "ad118d8c9c136e641324d6bc965e01e1727a2758c93a1b3443b8efa9b0bb7422"
+  },
+  "source_files": {
+    "ros2/m710_moveit_backend/src/static_prior.h": "1827a3ba1fb3b391eddc090b169b857a177b7616ccfef53646d4a4bdbfa09147",
+    "ros2/m710_moveit_backend/src/static_prior_test.cpp": "ced96ce8eb5a6a7593cdecdd89f079c2c1c7f328e0d51b8c41ba6ebc459b4864",
+    "ros2/m710_moveit_backend/src/worker.cpp": "f49cdf273a1c6b735ef3ae18a9b8e45320f4f3239d829a596d22d75327ca1af6",
+    "src/unloading_sim/layout_trajectory.py": "5bcfc30f33afd8fc01ac1d2c0fbdc7ccac463d0c0e7f2de5e7935e156aebf582",
+    "src/unloading_sim/moveit2_backend.py": "e641ad66fc35be08f5aa038f33a76a88af42b480762f3ab3a53fa393d75ab3c9",
+    "src/unloading_sim/stage_motion_policy.py": "a5c1056309d99d738fb47ceba97bffae5fd73c2bd17b65abb8f8242e84285ef2",
+    "tests/test_approach_connection_tiers.py": "d8e77007f384e3f9c635baac1463d39c3dceec4dfe8130d51ae8febe2c597036",
+    "tools/plan_m710_top_row_only.py": "5bf948df7835c550cb9e73e98ae39f3d274710b9a709efe11edab14da1e81a11",
+    "tools/summarize_m710_top_row_retest.py": "d82ccfcfe0eee6a9ec58ed9b14ec8543ee89646aa950a703452d0d8b1898712a"
+  },
+  "asset_file_count": 99,
+  "assets_sha256": "534ebbe6e9e3b9dec4b7a162852bf53170e547d247cd09b0bf73bd974e12476a",
+  "affinity": "0-21",
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "build": "Release -O3 -DNDEBUG",
+  "budgets": {
+    "stage_s": 90,
+    "box_s": 300,
+    "batch_s": 900,
+    "ipc_s": 100,
+    "prior_s": 6,
+    "prior_edges": 128,
+    "shared_fast_s": 1
+  },
+  "mode": "static_prior_fast",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "note": "A uses diagnostic legacy layering; same binary, B default direct-first. No archived goals/paths/masks as input."
+}

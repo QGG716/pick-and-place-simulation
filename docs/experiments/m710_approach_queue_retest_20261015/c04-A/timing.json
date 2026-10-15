@@ -1,0 +1,5312 @@
+{
+  "schema": "m710_top_row_planning_only_batch_v1",
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "run_id": "planning-only-d63dc7ecfe9942caa14bc9f8619e2c8e",
+  "source_commit": "edf62178c579f29c7032792305fa5e487e533516",
+  "command": [
+    "/opt/planning-opt-20261003-venv/bin/python",
+    "tools/plan_m710_top_row_only.py",
+    "--output",
+    "/tmp/approach-queue-20261015/c04-A",
+    "--diagnostic-input",
+    "/tmp/approach-queue-20261015/c04-input.json",
+    "--planning-mode",
+    "static_prior_fast",
+    "--static-prior",
+    "/tmp/static-prior-20261003/static-prior-v3.json",
+    "--fast-phase-budget-s",
+    "1",
+    "--slow-completion",
+    "--worker-command",
+    "/tmp/approach-queue-20261015/worker.sh",
+    "--worker-binary",
+    "/tmp/approach-queue-20261015/build/m710_moveit_worker",
+    "--source-commit",
+    "edf62178c579f29c7032792305fa5e487e533516",
+    "--stage-budget-s",
+    "90",
+    "--box-budget-s",
+    "300",
+    "--batch-budget-s",
+    "900",
+    "--ipc-timeout-s",
+    "100",
+    "--seed",
+    "71070",
+    "--legacy-approach-layering"
+  ],
+  "seed": 71070,
+  "budgets": {
+    "stage_budget_s": 90.0,
+    "box_budget_s": 300.0,
+    "batch_budget_s": 900.0,
+    "ipc_timeout_s": 100.0
+  },
+  "planning_mode": "static_prior_fast",
+  "approach_direct_first": false,
+  "static_prior": {
+    "load_s": 0.07553910464048386,
+    "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+    "bytes": 238781,
+    "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+    "file_load_s": 0.07553910464048386,
+    "native_load_s": 0.000513074,
+    "native_request_round_trip_s": 0.019228287041187286,
+    "total_load_s": 0.09497993439435959
+  },
+  "fast_phase_budget_s": 1.0,
+  "slow_completion_allowed": true,
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "native": {
+      "capabilities": {
+        "max_task_sessions": 8,
+        "max_task_stages_per_session": 4096,
+        "native_ik": true,
+        "native_ik_batch": true,
+        "native_task_session": true,
+        "process_geometry_bound": true,
+        "process_policy_schema": "m710_native_process_v1",
+        "semantic_place_event": true,
+        "static_prior_graph": true
+      },
+      "cold_start_s": 0.1263321,
+      "context_reused": false,
+      "identity": {
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+        "scene_version": "m710id70_unloading_layout_v1",
+        "schema": "m710_native_stage_v1",
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129"
+      },
+      "joint_names": [
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6"
+      ],
+      "pipelines": [
+        "pilz_industrial_motion_planner",
+        "ompl"
+      ],
+      "planning_mode": "static_prior_fast",
+      "planning_only": true,
+      "request_id": "1",
+      "seed": 71070,
+      "status": "READY",
+      "versions": {
+        "moveit": "2.5.10",
+        "mtc": "0.1.3",
+        "pilz": "2.5.10"
+      },
+      "transport_and_worker_s": 0.25620124116539955
+    },
+    "worker_sha256": "46ac78b7f2367f205ae3c4886767b87de8a5c4e707b38b1a4af4e3d26eb5e98a"
+  },
+  "initial_state_source": "离线规划基准，初始机器人静止，场景采用配置几何，非本次物理实测状态",
+  "initial_q_rad": [
+    -0.9645963630436601,
+    0.34902940305863794,
+    -0.16938280513201223,
+    2.723792554429788e-07,
+    -1.0523838754541985,
+    -2.1769964898998944
+  ],
+  "initial_scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+  "initial_cartons": [
+    {
+      "id": "carton_l00_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l00_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l00_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l00_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l00_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l01_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l01_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l01_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l01_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l01_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.44999999999999996
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l02_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l02_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l02_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l02_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l02_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.75
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l03_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l03_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l03_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l03_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l03_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.0499999999999998
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l04_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l04_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l04_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l04_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l04_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.3499999999999999
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l05_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l05_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l05_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l05_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l05_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.65
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l06_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l06_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l06_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l06_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l06_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.9499999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l07_c00",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l07_c01",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l07_c02",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l07_c03",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.42
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    },
+    {
+      "id": "carton_l07_c04",
+      "size": [
+        0.6,
+        0.4,
+        0.3
+      ],
+      "pose": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.3
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.84
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "category": "carton",
+      "geometry_source": "frozen_layout_or_audited_tool_OBB"
+    }
+  ],
+  "top_row": {
+    "status": "READY",
+    "row_id": "row_000",
+    "row_center_y_m": 0.0,
+    "candidates": [
+      {
+        "carton_name": "carton_l07_c02",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "center_distance_m": 0.0,
+        "normalized_center_cost": 0.0,
+        "normalized_actual_cost": 0.07513841012725497,
+        "score": 0.011270761519088245,
+        "available_faces": [
+          "front",
+          "top"
+        ],
+        "support_names": [
+          "carton_l06_c02"
+        ],
+        "reasons": [
+          "HIGHEST_UNFINISHED_ROW",
+          "STABLE_INITIAL_ROW_CENTER",
+          "LATEST_GEOMETRY_AND_SUPPORT",
+          "ALTERNATIVE_FACES_RETAINED"
+        ]
+      },
+      {
+        "carton_name": "carton_l07_c03",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "center_distance_m": 0.42,
+        "normalized_center_cost": 0.4038461538461538,
+        "normalized_actual_cost": 0.12115472168674331,
+        "score": 0.4220193620991653,
+        "available_faces": [
+          "front",
+          "top"
+        ],
+        "support_names": [
+          "carton_l06_c03"
+        ],
+        "reasons": [
+          "HIGHEST_UNFINISHED_ROW",
+          "STABLE_INITIAL_ROW_CENTER",
+          "LATEST_GEOMETRY_AND_SUPPORT",
+          "ALTERNATIVE_FACES_RETAINED"
+        ]
+      },
+      {
+        "carton_name": "carton_l07_c01",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "center_distance_m": 0.42,
+        "normalized_center_cost": 0.4038461538461538,
+        "normalized_actual_cost": 0.1211547430590943,
+        "score": 0.42201936530501793,
+        "available_faces": [
+          "front",
+          "top"
+        ],
+        "support_names": [
+          "carton_l06_c01"
+        ],
+        "reasons": [
+          "HIGHEST_UNFINISHED_ROW",
+          "STABLE_INITIAL_ROW_CENTER",
+          "LATEST_GEOMETRY_AND_SUPPORT",
+          "ALTERNATIVE_FACES_RETAINED"
+        ]
+      },
+      {
+        "carton_name": "carton_l07_c04",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "center_distance_m": 0.84,
+        "normalized_center_cost": 0.8076923076923076,
+        "normalized_actual_cost": 0.3047832529450865,
+        "score": 0.8534097956340706,
+        "available_faces": [
+          "front",
+          "top",
+          "left"
+        ],
+        "support_names": [
+          "carton_l06_c04"
+        ],
+        "reasons": [
+          "HIGHEST_UNFINISHED_ROW",
+          "STABLE_INITIAL_ROW_CENTER",
+          "LATEST_GEOMETRY_AND_SUPPORT",
+          "ALTERNATIVE_FACES_RETAINED"
+        ]
+      },
+      {
+        "carton_name": "carton_l07_c00",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "center_distance_m": 0.84,
+        "normalized_center_cost": 0.8076923076923076,
+        "normalized_actual_cost": 0.30478328140064936,
+        "score": 0.853409799902405,
+        "available_faces": [
+          "front",
+          "top",
+          "right"
+        ],
+        "support_names": [
+          "carton_l06_c00"
+        ],
+        "reasons": [
+          "HIGHEST_UNFINISHED_ROW",
+          "STABLE_INITIAL_ROW_CENTER",
+          "LATEST_GEOMETRY_AND_SUPPORT",
+          "ALTERNATIVE_FACES_RETAINED"
+        ]
+      }
+    ],
+    "scene_fingerprint": "3611b4acee629ab82bc3c3a3c95411185ce09b957ae0c2ccaa2b41bde17f2e1b",
+    "row_remaining_names": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "remaining_count": 40,
+    "blocked_reasons": {}
+  },
+  "tool_mass_kg": 20.0,
+  "payload_mass_kg": 42.5,
+  "model_identity": {
+    "schema": "m710_native_stage_v1",
+    "reviewed_sources": {
+      "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+      "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+    },
+    "scene_version": "m710id70_unloading_layout_v1",
+    "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+    "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+    "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+    "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+    "task_tcp_link": "m710_virtual_task_tcp",
+    "flange_from_task_tcp": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+    "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+  },
+  "skipped_checks": {
+    "python_independent_state_and_path_validation": "SKIPPED_PLANNING_ONLY",
+    "native_dense_output_recheck": "SKIPPED_PLANNING_ONLY",
+    "full_path_recheck": "SKIPPED_PLANNING_ONLY",
+    "independent_seal_compression_and_contact_lifecycle_audit": "SKIPPED_PLANNING_ONLY",
+    "sampled_tcp_lin_audit": "SKIPPED_PLANNING_ONLY",
+    "full_path_provenance_scan": "SKIPPED_PLANNING_ONLY",
+    "preflight": "SKIPPED_PLANNING_ONLY",
+    "execution_export": "SKIPPED_PLANNING_ONLY",
+    "execution_bundle_load": "SKIPPED_PLANNING_ONLY",
+    "dynamics_torque_jerk_qualification": "SKIPPED_PLANNING_ONLY",
+    "execution_time_law_conversion": "SKIPPED_PLANNING_ONLY",
+    "isaac_and_physical_reception": "SKIPPED_PLANNING_ONLY"
+  },
+  "execution_requests": 0,
+  "isaac_launches": 0,
+  "executable_bundle_generated": false,
+  "execution_qualification": "NOT_EVALUATED",
+  "qualification_status": "NOT_EVALUATED",
+  "initialization_s": 1.0174688883125782,
+  "preload": {
+    "attached_count": 0,
+    "base_attached_count": 0,
+    "permissions": [],
+    "request_id": "6",
+    "status": "SUCCESS",
+    "target_attached": false,
+    "target_id": "carton_l07_c02",
+    "target_in_world": true,
+    "target_world_pose": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.3
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        2.25
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "world_count": 48,
+    "transport_and_worker_s": 0.03553303703665733
+  },
+  "development_prepare_only": false,
+  "boxes": [
+    {
+      "order": 5,
+      "target": "carton_l07_c04",
+      "complete": true,
+      "plan_s": 9.940468430519104,
+      "cumulative_plan_s": 9.940468430519104,
+      "scene_update_s": 0.043466731905937195,
+      "candidate_ordering_s": 0.04614939168095589,
+      "start_q_rad": [
+        -0.9645963630436601,
+        0.34902940305863794,
+        -0.16938280513201223,
+        2.723792554429788e-07,
+        -1.0523838754541985,
+        -2.1769964898998944
+      ],
+      "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+      "completed_within_fast_phase": false,
+      "fast_phase_plan_s": 0.0,
+      "slow_completion_plan_s": 9.940468430519104,
+      "scene_cartons": 36,
+      "scene_prepared": {
+        "attached_count": 0,
+        "base_attached_count": 0,
+        "permissions": [],
+        "request_id": "7",
+        "status": "SUCCESS",
+        "target_attached": false,
+        "target_id": "carton_l07_c04",
+        "target_in_world": true,
+        "target_world_pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "world_count": 44,
+        "transport_and_worker_s": 0.03689637780189514
+      },
+      "boundary_costs": {
+        "request_build_s": 0.07481381297111511,
+        "motion_request_build_s": 0.024953406304121017,
+        "motion_connection_inclusive_s": 9.255312602967024,
+        "accepted_return_processing_s": 0.1147417388856411
+      },
+      "row_selection": {
+        "status": "READY",
+        "row_id": "row_000",
+        "row_center_y_m": 0.0,
+        "candidates": [
+          {
+            "carton_name": "carton_l07_c04",
+            "row_id": "row_000",
+            "row_center_y_m": 0.0,
+            "center_distance_m": 0.84,
+            "normalized_center_cost": 0.8076923076923076,
+            "normalized_actual_cost": 0.9937487644362227,
+            "score": 0.956754622357741,
+            "available_faces": [
+              "front",
+              "top",
+              "left",
+              "right"
+            ],
+            "support_names": [
+              "carton_l06_c04"
+            ],
+            "reasons": [
+              "HIGHEST_UNFINISHED_ROW",
+              "STABLE_INITIAL_ROW_CENTER",
+              "LATEST_GEOMETRY_AND_SUPPORT",
+              "ALTERNATIVE_FACES_RETAINED"
+            ]
+          }
+        ],
+        "scene_fingerprint": "25e5f4cab89df08e29fd2a54133d3823858c175fd1ba16aa1d56a5e82bceb426",
+        "row_remaining_names": [
+          "carton_l07_c04"
+        ],
+        "remaining_count": 36,
+        "blocked_reasons": {}
+      },
+      "calls": {
+        "counts": {
+          "PTP": 1,
+          "LIN": 4,
+          "OMPL": 0,
+          "IK": 5
+        },
+        "stages": [
+          {
+            "request_id": "10",
+            "request_fingerprint": "7ebf56e018c3d4ee85d6da2c4fa970e638ad292177bb788361e33b486da47f6c",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "pregrasp",
+            "status": "PRIOR_QUERY_TIMEOUT",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:1",
+            "parent_stage_id": "",
+            "pipeline_id": "static_prior",
+            "planner_id": "SPARSE_PRM",
+            "native_solver_calls": {},
+            "mtc_plan_s": 0.0,
+            "returned_waypoint_count": 0,
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.0,
+            "generation_source": "STATIC_PRIOR_QUERY",
+            "prior_usage": {
+              "connector_edges": 0,
+              "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+              "context_bound_by_worker": true,
+              "context_checked": true,
+              "continuous_swept_proof": false,
+              "current_geometry_checked": false,
+              "direct_rejection_reused": false,
+              "edge_check_limit": 128,
+              "edge_checks": 85,
+              "failed_edge_witnesses": [
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.14261460101867574,
+                  "from": 160,
+                  "kind": "direct_connector",
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.2813852813852814,
+                  "from": 147,
+                  "kind": "goal_connector",
+                  "pair": [
+                    "tool_rigid_58",
+                    "carton_l04_c01"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.014925373134328358,
+                  "from": 160,
+                  "kind": "start_connector",
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 0
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.014745308310991957,
+                  "from": 160,
+                  "kind": "start_connector",
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 88
+                }
+              ],
+              "graph_search_performed": true,
+              "interpolation_l1_step_rad": 0.01,
+              "local_repairs": 0,
+              "portal_connections_added": 16,
+              "prior_edges_reused": 0,
+              "prior_hit": false,
+              "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+              "prior_nodes_reused": 0,
+              "rejected_by_kind": {
+                "direct_connector": 1,
+                "goal_connector": 20,
+                "graph_edge": 12,
+                "start_connector": 25
+              },
+              "rejected_edges": 58,
+              "route_nodes": [],
+              "slow_path": false,
+              "state_checks": 21508,
+              "static_clearance_inherited": false,
+              "timed_out_edges": 1
+            },
+            "prior_query_s": 6.000460292,
+            "connection_scope": null,
+            "connection_call_id": 1,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 6.047379087656736,
+            "connection_elapsed_s": 6.057950597256422,
+            "planning_phase": "SLOW_COMPLETION",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 5.901876306000042,
+              "clearance_queries": 21510,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "PRIOR_QUERY_TIMEOUT",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 2.25e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 2,
+                  "rejected": 0,
+                  "seconds": 0.000497452,
+                  "valid": 2
+                },
+                "prior_online": {
+                  "bookkeeping_s": 0.00044587800000001803,
+                  "clearance_rejected": 58,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 21508,
+                  "rejected": 58,
+                  "seconds": 5.901378854000042,
+                  "valid": 21450
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000855385,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.0323655009999995,
+                "workspace_allocation_s": 0.003719192
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.7557610289175083,
+                    0.2726397358221028,
+                    -0.16697491975920312,
+                    -0.23291455376944292,
+                    -0.8308770364548297,
+                    -2.08040568176304
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0049876747886644646
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_58",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.525562847561961,
+                    -0.05121830221761574,
+                    -0.7935943138100497,
+                    -1.3726610280015252,
+                    -0.2725220292633723,
+                    -3.6394658229124546
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004334883896807893
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9736441237227388,
+                    0.3432121703207353,
+                    -0.1757932522396779,
+                    0.023444989860000567,
+                    -1.0132319330171673,
+                    -2.183062737569798
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0045862308561417375
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9509310280932125,
+                    0.35206417803136736,
+                    -0.15492070471282587,
+                    0.03580047488896886,
+                    -1.0215670151870986,
+                    -2.1648096196984397
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.003981608016821125
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_71",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9712894226682471,
+                    0.3439333336781026,
+                    -0.16848339080435218,
+                    0.017343445919641844,
+                    -1.0234213185174983,
+                    -2.187918294771201
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004728772313190577
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9686612251992733,
+                    0.3444037193107181,
+                    -0.1739704739786771,
+                    0.0434324250867928,
+                    -1.0232476860641426,
+                    -2.1729316252013935
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.00347660219674073
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.967691363465687,
+                    0.3447396520159442,
+                    -0.16957472558271539,
+                    0.03306966586546184,
+                    -1.0261305922926391,
+                    -2.173901487378293
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004695854340594385
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9745340188308924,
+                    0.3444691227255034,
+                    -0.1744452944933364,
+                    0.02082497202684499,
+                    -1.0177195096020648,
+                    -2.1819408241400096
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004932621515996383
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7700,
+                "exempt_pairs": 23232,
+                "geometry_prepare_s": 0.00016749,
+                "pair_filter_s": 0.003437619,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 15350,
+                    "aabb_tests": 15400,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 15400,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 50,
+                    "narrow_s": null,
+                    "queries": 2,
+                    "self_narrow": 42,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.9560999999999997e-05,
+                    "world_narrow": 8,
+                    "world_narrow_s": null
+                  },
+                  "prior_online": {
+                    "aabb_skips": 162539644,
+                    "aabb_tests": 165332782,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 165332782,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 2793138,
+                    "narrow_s": null,
+                    "queries": 21508,
+                    "self_narrow": 2773251,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.11669923500000028,
+                    "world_narrow": 19887,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003605207,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 21452,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "11",
+            "request_fingerprint": "d88fc5026a7553311a0bc80f6dc393ca085b53a7a0a7d4b3fbf090f18ded4419",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "pregrasp",
+            "status": "NATIVE_PLANNING_FAILED",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:2",
+            "parent_stage_id": "",
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "native_solver_calls": {
+              "PTP": 1
+            },
+            "mtc_plan_s": 0.068103434,
+            "solver_returned_success": false,
+            "solver_message": "INVALID_MOTION_PLAN",
+            "moveit_error_code": -2,
+            "returned_waypoint_count": 82,
+            "processing_branch": "SOLVER_RETURNED_FAILURE",
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.068103434,
+            "connection_scope": null,
+            "connection_call_id": 1,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.10910489410161972,
+            "connection_elapsed_s": 6.176338836550713,
+            "planning_phase": "SLOW_COMPLETION",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.023856946,
+              "clearance_queries": 85,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "NATIVE_PLANNING_FAILED",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 5.3999999999999994e-08,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 2,
+                  "rejected": 0,
+                  "seconds": 0.00028379999999999996,
+                  "valid": 2
+                },
+                "search": {
+                  "bookkeeping_s": 0.0035750770000000003,
+                  "clearance_rejected": 6,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 5,
+                  "legacy_witness_s": 0.0035250330000000003,
+                  "queries": 83,
+                  "rejected": 52,
+                  "seconds": 0.023573146,
+                  "valid": 31
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000320259,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.0009046550000000001,
+                "workspace_allocation_s": 0.003429787
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.7476151098783335,
+                    0.2696600482738145,
+                    -0.16688099676774867,
+                    -0.2419997276207447,
+                    -0.8222368473572202,
+                    -2.0766380200007064
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.7274412330344497,
+                    0.26228066611406853,
+                    -0.1666483906181787,
+                    -0.26449972762074475,
+                    -0.8008388798688648,
+                    -2.067307170526608
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.706370739441949,
+                    0.2545733114138894,
+                    -0.16640544641751676,
+                    -0.28799972762074477,
+                    -0.7784898916032492,
+                    -2.057561616631439
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.001466726870295212
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.6844036291008312,
+                    0.2465379841732771,
+                    -0.16615216416576278,
+                    -0.31249972762074485,
+                    -0.7551898825603732,
+                    -2.047401358315199
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.6615399020110964,
+                    0.23817468439223166,
+                    -0.16588854386291685,
+                    -0.33799972762074487,
+                    -0.7309388527402371,
+                    -2.036826395577888
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.6377795581727443,
+                    0.22948341207075307,
+                    -0.1656145855089789,
+                    -0.3644997276207449,
+                    -0.7057368021428407,
+                    -2.0258367284195056
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.6131225975857755,
+                    0.2204641672088413,
+                    -0.16533028910394892,
+                    -0.3919997276207449,
+                    -0.679583730768184,
+                    -2.0144323568400524
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "search",
+                  "q_rad": [
+                    -0.5875690202501895,
+                    0.2111169498064964,
+                    -0.165035654647827,
+                    -0.42049972762074495,
+                    -0.6524796386162672,
+                    -2.0026132808395283
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                }
+              ],
+              "search_gap_witness": {
+                "legacy_intersection_valid": true,
+                "numerical_gap_tolerance_m": 1e-09,
+                "pair": [
+                  "tool_compliant_bellows_24",
+                  "carton_l07_c04"
+                ],
+                "q_rad": [
+                  0.46482131690109707,
+                  -0.17383585520766504,
+                  -0.15290152365933488,
+                  -1.5942345912338785,
+                  0.46376660367453715,
+                  -1.515860243733965
+                ],
+                "query_range_m": 0.006,
+                "query_scope": "robot_tool_payload_to_world",
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "required_pair_clearance_m": 0.005,
+                "surface_distance_m": 0.004951295754338183
+              },
+              "workspace": {
+                "eligible_pairs": 7700,
+                "exempt_pairs": 23232,
+                "geometry_prepare_s": 0.000125352,
+                "pair_filter_s": 0.003201786,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 15350,
+                    "aabb_tests": 15400,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 15400,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 50,
+                    "narrow_s": null,
+                    "queries": 2,
+                    "self_narrow": 42,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 1.6797999999999997e-05,
+                    "world_narrow": 8,
+                    "world_narrow_s": null
+                  },
+                  "search": {
+                    "aabb_skips": 310742,
+                    "aabb_tests": 313347,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 313347,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 2605,
+                    "narrow_s": null,
+                    "queries": 83,
+                    "self_narrow": 2084,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.0004989320000000001,
+                    "world_narrow": 521,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003327202,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 33,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "14",
+            "request_fingerprint": "93323bd054271a128224088b218310b375ab13c3179240b2b90ee74bf4f45107",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "pregrasp",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:3",
+            "parent_stage_id": "",
+            "pipeline_id": "static_prior",
+            "planner_id": "SPARSE_PRM",
+            "native_solver_calls": {},
+            "mtc_plan_s": 0.0,
+            "native_output_check_s": null,
+            "returned_waypoint_count": 1804,
+            "processing_branch": "ACCEPTED_CURRENT_CONTEXT_PRIOR",
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.0,
+            "generation_source": "STATIC_PRIOR_REUSE",
+            "prior_usage": {
+              "connector_edges": 2,
+              "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+              "context_bound_by_worker": true,
+              "context_checked": true,
+              "continuous_swept_proof": false,
+              "current_geometry_checked": true,
+              "direct_rejection_reused": false,
+              "edge_check_limit": 128,
+              "edge_checks": 34,
+              "failed_edge_witnesses": [
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.24427480916030533,
+                  "from": 160,
+                  "kind": "direct_connector",
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.012594458438287154,
+                  "from": 160,
+                  "kind": "start_connector",
+                  "pair": [
+                    "tool_compliant_bellows_71",
+                    "trailer_right_wall"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 58
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.31464737793851716,
+                  "from": 147,
+                  "kind": "goal_connector",
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c02"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.702020202020202,
+                  "from": 33,
+                  "kind": "goal_connector",
+                  "pair": [
+                    "tool_rigid_58",
+                    "carton_l06_c03"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                }
+              ],
+              "graph_search_performed": true,
+              "interpolation_l1_step_rad": 0.01,
+              "local_repairs": 0,
+              "portal_connections_added": 16,
+              "prior_edges_reused": 1,
+              "prior_hit": true,
+              "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+              "prior_nodes_reused": 2,
+              "rejected_by_kind": {
+                "direct_connector": 1,
+                "goal_connector": 5,
+                "graph_edge": 0,
+                "start_connector": 21
+              },
+              "rejected_edges": 27,
+              "route_nodes": [
+                160,
+                33,
+                125,
+                161
+              ],
+              "slow_path": false,
+              "state_checks": 5807,
+              "static_clearance_inherited": false,
+              "timed_out_edges": 0
+            },
+            "prior_query_s": 1.532650793,
+            "connection_scope": null,
+            "connection_call_id": 1,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 1.5879161432385445,
+            "connection_elapsed_s": 1.6529721058905125,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 1.4162206930000016,
+              "clearance_queries": 5809,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 2.64e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 2,
+                  "rejected": 0,
+                  "seconds": 0.000298943,
+                  "valid": 2
+                },
+                "prior_online": {
+                  "bookkeeping_s": 0.00015390400000000193,
+                  "clearance_rejected": 27,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 5807,
+                  "rejected": 27,
+                  "seconds": 1.4159217500000016,
+                  "valid": 5780
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.00065512,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.009091482999999968,
+                "workspace_allocation_s": 0.003549087
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c01"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.6068965926387917,
+                    0.21818679401949542,
+                    -0.1652584657616411,
+                    0.3684679654296005,
+                    -0.9176461705547514,
+                    -2.7789642824689063
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.00485606131665553
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_71",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9809017307138758,
+                    0.3477231921051927,
+                    -0.16548522645484734,
+                    2.6872895718996283e-07,
+                    -1.0575876680432874,
+                    -2.2002577766363114
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.00479339591846073
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c02"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.47810540399441465,
+                    -0.05748494585752537,
+                    -0.7639202620168682,
+                    -0.39622591266706475,
+                    -0.551879244609053,
+                    -4.528917681188375
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0037918564056988457
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_58",
+                    "carton_l06_c03"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.06746738511114825,
+                    -0.3627666224729759,
+                    -0.3093546920810254,
+                    1.05893772717496,
+                    -0.8491051787365618,
+                    -4.71225725011818
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004486231394776989
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "carton_l04_c00"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.5939249174561024,
+                    0.1700570112427314,
+                    -0.2224398621419471,
+                    0.2296488181758542,
+                    -1.12817516925483,
+                    -2.2678952446008114
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0035191560028697624
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_71",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9712894226682471,
+                    0.3439333336781026,
+                    -0.16848339080435218,
+                    0.017343445919641844,
+                    -1.0234213185174983,
+                    -2.187918294771201
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004728772313190577
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_66",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9736441237227388,
+                    0.3432121703207353,
+                    -0.1757932522396779,
+                    0.023444989860000567,
+                    -1.0132319330171673,
+                    -2.183062737569798
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0045862308561417375
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_68",
+                    "trailer_right_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    -0.9729289705733933,
+                    0.34445020811229005,
+                    -0.1683176251732973,
+                    0.016341028026072374,
+                    -1.0230102818428144,
+                    -2.187299984048885
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004562181023338052
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7700,
+                "exempt_pairs": 23232,
+                "geometry_prepare_s": 0.000145648,
+                "pair_filter_s": 0.003293801,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 15350,
+                    "aabb_tests": 15400,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 15400,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 50,
+                    "narrow_s": null,
+                    "queries": 2,
+                    "self_narrow": 42,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.484e-05,
+                    "world_narrow": 8,
+                    "world_narrow_s": null
+                  },
+                  "prior_online": {
+                    "aabb_skips": 43961464,
+                    "aabb_tests": 44566426,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 44566426,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 604962,
+                    "narrow_s": null,
+                    "queries": 5807,
+                    "self_narrow": 598200,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.03321572499999998,
+                    "world_narrow": 6762,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003439509,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 5782,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "15",
+            "request_fingerprint": "46567ea328f691287b3fb00b921d177686331e3f42292faf83b4f6a38b842e6e",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "contact",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:4",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:3",
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "mtc_plan_s": 0.013002916,
+            "native_output_check_s": null,
+            "solver_returned_success": true,
+            "solver_message": "",
+            "moveit_error_code": null,
+            "returned_waypoint_count": 15,
+            "processing_branch": "ACCEPTED",
+            "goal_translation_delta_m": 0.03500022901073196,
+            "goal_rotation_delta_rad": 3.302779951850284e-08,
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.013002916,
+            "generation_source": "NATIVE_GENERATED",
+            "connection_scope": null,
+            "connection_call_id": null,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.05514266714453697,
+            "connection_elapsed_s": 0.07062577456235886,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.001863678,
+              "clearance_queries": 16,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.24e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000156671,
+                  "valid": 1
+                },
+                "search": {
+                  "bookkeeping_s": 3.8699999999999996e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 15,
+                  "rejected": 0,
+                  "seconds": 0.001707007,
+                  "valid": 15
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000400086,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.000218666,
+                "workspace_allocation_s": 0.003397035
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7628,
+                "exempt_pairs": 23304,
+                "geometry_prepare_s": 0.000156559,
+                "pair_filter_s": 0.003126149,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 7614,
+                    "aabb_tests": 7628,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 7628,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 14,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 7,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.2101e-05,
+                    "world_narrow": 7,
+                    "world_narrow_s": null
+                  },
+                  "search": {
+                    "aabb_skips": 114208,
+                    "aabb_tests": 114420,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 114420,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 212,
+                    "narrow_s": null,
+                    "queries": 15,
+                    "self_narrow": 101,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 8.753099999999999e-05,
+                    "world_narrow": 111,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003282899,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 1152,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "contact",
+              "state_checks": 16,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "16",
+            "request_fingerprint": "27b18219a8072c91b6263df7b4aa945f2ab9db7a841e112461f061bf22bded27",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "extraction",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:5",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:4",
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "mtc_plan_s": 0.155926334,
+            "native_output_check_s": null,
+            "solver_returned_success": true,
+            "solver_message": "",
+            "moveit_error_code": null,
+            "returned_waypoint_count": 159,
+            "processing_branch": "ACCEPTED",
+            "goal_translation_delta_m": 0.6087562054395681,
+            "goal_rotation_delta_rad": 0.0,
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.155926334,
+            "generation_source": "NATIVE_GENERATED",
+            "connection_scope": null,
+            "connection_call_id": null,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.2088107094168663,
+            "connection_elapsed_s": 0.2296561412513256,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.02307497700000001,
+              "clearance_queries": 160,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.28e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000160888,
+                  "valid": 1
+                },
+                "search": {
+                  "bookkeeping_s": 2.708000000000001e-06,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 159,
+                  "rejected": 0,
+                  "seconds": 0.02291408900000001,
+                  "valid": 159
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000491805,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.0035309630000000002,
+                "workspace_allocation_s": 0.003074409
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7636,
+                "exempt_pairs": 23339,
+                "geometry_prepare_s": 0.000158717,
+                "pair_filter_s": 0.002814253,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 7622,
+                    "aabb_tests": 7636,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 7506,
+                    "fixed_aabb_qualifications": 126,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 130,
+                    "fixed_narrow_qualifications": 4,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 130,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 4,
+                    "narrow_calls": 18,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 13,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.3128e-05,
+                    "world_narrow": 5,
+                    "world_narrow_s": null
+                  },
+                  "search": {
+                    "aabb_skips": 1191088,
+                    "aabb_tests": 1193454,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 1193454,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 20034,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 636,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 20670,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 2366,
+                    "narrow_s": null,
+                    "queries": 159,
+                    "self_narrow": 1841,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.0013568869999999998,
+                    "world_narrow": 525,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.00297304,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": true,
+              "compression_sat_evaluations": 11520,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": {
+                "commanded_count": 48,
+                "computed_actual_contact_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "computed_geometrically_eligible_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "contact_observation": "predicted_robot_state_geometry_not_physical_contact",
+                "status": "PASS"
+              },
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": true,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 160,
+              "seal_input_compilations": 1,
+              "stage": "extraction",
+              "state_checks": 160,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "17",
+            "request_fingerprint": "b430cf52fad27ecaa7b09a3a3b536cc9002cffd995ff73b15fcd4dc4d8b1bd59",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "transit",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:6",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:5",
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "mtc_plan_s": 0.056811658,
+            "native_output_check_s": null,
+            "solver_returned_success": true,
+            "solver_message": "",
+            "moveit_error_code": null,
+            "returned_waypoint_count": 54,
+            "processing_branch": "ACCEPTED",
+            "goal_translation_delta_m": 0.19124379462945232,
+            "goal_rotation_delta_rad": 0.0,
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.056811658,
+            "generation_source": "NATIVE_GENERATED",
+            "connection_scope": null,
+            "connection_call_id": null,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.10918952524662018,
+            "connection_elapsed_s": 0.12592409551143646,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.011138273,
+              "clearance_queries": 55,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.91e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.00043426,
+                  "valid": 1
+                },
+                "search": {
+                  "bookkeeping_s": 9.689999999999997e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 54,
+                  "rejected": 0,
+                  "seconds": 0.010704013,
+                  "valid": 54
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.00047388,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.0011290969999999997,
+                "workspace_allocation_s": 0.004730761
+              },
+              "query_range_m": 0.009000000000000001,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7671,
+                "exempt_pairs": 23304,
+                "geometry_prepare_s": 0.000179161,
+                "pair_filter_s": 0.004395907,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 7522,
+                    "aabb_tests": 7671,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 7541,
+                    "fixed_aabb_qualifications": 8,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 130,
+                    "fixed_narrow_qualifications": 122,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 130,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 122,
+                    "narrow_calls": 271,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 267,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.2237e-05,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  },
+                  "search": {
+                    "aabb_skips": 403952,
+                    "aabb_tests": 407214,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 407214,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 432,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 6588,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 7020,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 3262,
+                    "narrow_s": null,
+                    "queries": 54,
+                    "self_narrow": 3104,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.000407913,
+                    "world_narrow": 158,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.004575214,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": true,
+              "compression_sat_evaluations": 3960,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": {
+                "commanded_count": 48,
+                "computed_actual_contact_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "computed_geometrically_eligible_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "contact_observation": "predicted_robot_state_geometry_not_physical_contact",
+                "status": "PASS"
+              },
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 55,
+              "seal_input_compilations": 1,
+              "stage": "transit",
+              "state_checks": 55,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "19",
+            "request_fingerprint": "cc1a1aa5e5fcea4ccf7cb55c48c92f7bdb1ef522351954d814a9810c85869520",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "transit",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:7",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:6",
+            "pipeline_id": "static_prior",
+            "planner_id": "SPARSE_PRM",
+            "native_solver_calls": {},
+            "mtc_plan_s": 0.0,
+            "native_output_check_s": null,
+            "returned_waypoint_count": 1053,
+            "processing_branch": "ACCEPTED_CURRENT_CONTEXT_PRIOR",
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.0,
+            "generation_source": "STATIC_PRIOR_REUSE",
+            "prior_usage": {
+              "connector_edges": 2,
+              "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+              "context_bound_by_worker": true,
+              "context_checked": true,
+              "continuous_swept_proof": false,
+              "current_geometry_checked": true,
+              "direct_rejection_reused": false,
+              "edge_check_limit": 128,
+              "edge_checks": 6,
+              "failed_edge_witnesses": [
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.04888268156424581,
+                  "from": 160,
+                  "kind": "direct_connector",
+                  "pair": [
+                    "tool_rigid_0",
+                    "trailer_left_wall"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.22488038277511962,
+                  "from": 11,
+                  "kind": "goal_connector",
+                  "pair": [
+                    "carton_l07_c04",
+                    "carton_l06_c04"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 161
+                },
+                {
+                  "failure_origin": "CLEARANCE",
+                  "fraction": 0.1743295019157088,
+                  "from": 160,
+                  "kind": "start_connector",
+                  "pair": [
+                    "carton_l07_c04",
+                    "carton_l06_c03"
+                  ],
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "to": 33
+                }
+              ],
+              "graph_search_performed": true,
+              "interpolation_l1_step_rad": 0.01,
+              "local_repairs": 0,
+              "portal_connections_added": 16,
+              "prior_edges_reused": 0,
+              "prior_hit": true,
+              "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+              "prior_nodes_reused": 1,
+              "rejected_by_kind": {
+                "direct_connector": 1,
+                "goal_connector": 1,
+                "graph_edge": 0,
+                "start_connector": 1
+              },
+              "rejected_edges": 3,
+              "route_nodes": [
+                160,
+                9,
+                161
+              ],
+              "slow_path": false,
+              "state_checks": 1566,
+              "static_clearance_inherited": false,
+              "timed_out_edges": 0
+            },
+            "prior_query_s": 0.636175886,
+            "connection_scope": null,
+            "connection_call_id": 2,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.6874349229037762,
+            "connection_elapsed_s": 0.7371818907558918,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.5396796789999999,
+              "clearance_queries": 1568,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.87e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 2,
+                  "rejected": 0,
+                  "seconds": 0.0006190060000000001,
+                  "valid": 2
+                },
+                "prior_online": {
+                  "bookkeeping_s": 4.534099999999898e-05,
+                  "clearance_rejected": 3,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1566,
+                  "rejected": 3,
+                  "seconds": 0.5390606729999999,
+                  "valid": 1563
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000721937,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.007756634999999977,
+                "workspace_allocation_s": 0.003677749
+              },
+              "query_range_m": 0.009000000000000001,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_rigid_0",
+                    "trailer_left_wall"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    1.2007452191839763,
+                    -0.7049517584853341,
+                    -0.4889037260544745,
+                    1.4287554380453866,
+                    -1.2997121558466118,
+                    -4.340764237953369
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.0049580745192883136
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "carton_l07_c04",
+                    "carton_l06_c04"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    1.023958979472588,
+                    -0.6408895482429342,
+                    -0.5054858074447393,
+                    1.2175551151079165,
+                    -1.4404513949055588,
+                    -2.682247893117798
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.003811460144482859
+                },
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "carton_l07_c04",
+                    "carton_l06_c03"
+                  ],
+                  "phase": "prior_online",
+                  "q_rad": [
+                    0.8341886293860052,
+                    -0.7546305809569459,
+                    -0.5252424211686068,
+                    1.2403109263883016,
+                    -1.377302164282817,
+                    -4.522087475769873
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "CLEARANCE_INSUFFICIENT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": 0.004451868403705008
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7671,
+                "exempt_pairs": 23304,
+                "geometry_prepare_s": 0.000172648,
+                "pair_filter_s": 0.003377239,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 14910,
+                    "aabb_tests": 15212,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 15082,
+                    "fixed_aabb_qualifications": 8,
+                    "fixed_aabb_reuses": 8,
+                    "fixed_first_checks": 130,
+                    "fixed_narrow_qualifications": 122,
+                    "fixed_narrow_reuses": 122,
+                    "fixed_property_evaluations": 130,
+                    "fixed_property_reuses": 130,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 122,
+                    "narrow_calls": 424,
+                    "narrow_s": null,
+                    "queries": 2,
+                    "self_narrow": 420,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.8627999999999998e-05,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  },
+                  "prior_online": {
+                    "aabb_skips": 11536981,
+                    "aabb_tests": 11803598,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 11803598,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 12520,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 190931,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 203451,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 266617,
+                    "narrow_s": null,
+                    "queries": 1566,
+                    "self_narrow": 262664,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.010239884000000003,
+                    "world_narrow": 3953,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003549992,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": true,
+              "compression_sat_evaluations": 112680,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": {
+                "commanded_count": 48,
+                "computed_actual_contact_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "computed_geometrically_eligible_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "contact_observation": "predicted_robot_state_geometry_not_physical_contact",
+                "status": "PASS"
+              },
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 1565,
+              "seal_input_compilations": 1,
+              "stage": "transit",
+              "state_checks": 1565,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "20",
+            "request_fingerprint": "fba02f70d39c28a621c1f7abd729964c15a4ada13d67869782e3243ed9b3d63c",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "place",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:8",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:7",
+            "pipeline_id": "semantic_event",
+            "planner_id": "NONE",
+            "native_solver_calls": {},
+            "mtc_plan_s": 0.0,
+            "native_output_check_s": null,
+            "solver_returned_success": null,
+            "moveit_error_code": null,
+            "returned_waypoint_count": 0,
+            "processing_branch": "SEMANTIC_PLACE_AT_GOAL",
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.0,
+            "generation_source": "SEMANTIC_EVENT",
+            "semantic_event": {
+              "event_type": "PLACE_TARGET_REACHED",
+              "goal_constraints_satisfied": true,
+              "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:7",
+              "release_pending": true,
+              "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:8",
+              "start_unchanged": true,
+              "target_id": "carton_l07_c04",
+              "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82"
+            },
+            "connection_scope": null,
+            "connection_call_id": null,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.04602590203285217,
+            "connection_elapsed_s": 0.0699499286711216,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.000472568,
+              "clearance_queries": 1,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 2.07e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000472568,
+                  "valid": 1
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000705469,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 1.846e-05,
+                "workspace_allocation_s": 0.003945882
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7670,
+                "exempt_pairs": 23305,
+                "geometry_prepare_s": 0.000165641,
+                "pair_filter_s": 0.003660911,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 7523,
+                    "aabb_tests": 7670,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 7540,
+                    "fixed_aabb_qualifications": 8,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 130,
+                    "fixed_narrow_qualifications": 122,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 130,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 122,
+                    "narrow_calls": 269,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 268,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 3.5937e-05,
+                    "world_narrow": 1,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.00382668,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": true,
+              "compression_sat_evaluations": 144,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": {
+                "commanded_count": 48,
+                "computed_actual_contact_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "computed_geometrically_eligible_mask": [
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  true,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false,
+                  false
+                ],
+                "contact_observation": "predicted_robot_state_geometry_not_physical_contact",
+                "status": "PASS"
+              },
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 2,
+              "seal_input_compilations": 1,
+              "stage": "place",
+              "state_checks": 2,
+              "support_names": [
+                "conveyor_longitudinal"
+              ],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          },
+          {
+            "request_id": "21",
+            "request_fingerprint": "7f29f0a86593aa6235bb333a8783e8b76d6f4d382b1f2b2a1621e2615fa2d4c8",
+            "task_id": "planning-only-f727937c047649da9dfbabf1efc2ab82",
+            "stage": "withdrawal",
+            "status": "SUCCESS",
+            "stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:9",
+            "parent_stage_id": "planning-only-f727937c047649da9dfbabf1efc2ab82:8",
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "native_solver_calls": {
+              "LIN": 1
+            },
+            "mtc_plan_s": 0.015874653,
+            "native_output_check_s": null,
+            "solver_returned_success": true,
+            "solver_message": "",
+            "moveit_error_code": null,
+            "returned_waypoint_count": 11,
+            "processing_branch": "ACCEPTED",
+            "goal_translation_delta_m": 0.018400080028552524,
+            "goal_rotation_delta_rad": 0.0,
+            "candidate_id": "1d2fd67628585fd34a3dddfda4b63804be1a179e35d959f6f8bd20c8008a2198",
+            "native_solver_s": 0.015874653,
+            "generation_source": "NATIVE_GENERATED",
+            "connection_scope": null,
+            "connection_call_id": null,
+            "direct_rejection_stage_id": null,
+            "request_round_trip_s": 0.06930452585220337,
+            "connection_elapsed_s": 0.08662619069218636,
+            "planning_phase": "SLOW_COMPLETION",
+            "native_output_status": "SKIPPED_PLANNING_ONLY",
+            "authoritative_status": "SKIPPED_PLANNING_ONLY",
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.0037210590000000005,
+              "clearance_queries": 12,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "AVAILABLE_EXECUTED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "failure": null,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 2.25e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000351014,
+                  "valid": 1
+                },
+                "search": {
+                  "bookkeeping_s": 3.07e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 11,
+                  "rejected": 0,
+                  "seconds": 0.0033700450000000003,
+                  "valid": 11
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.00043934,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 0.000210446,
+                "workspace_allocation_s": 0.003791793
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 7628,
+                "exempt_pairs": 23304,
+                "geometry_prepare_s": 0.000144361,
+                "pair_filter_s": 0.00354837,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 7482,
+                    "aabb_tests": 7628,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 7628,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 146,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 23,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 2.3679e-05,
+                    "world_narrow": 123,
+                    "world_narrow_s": null
+                  },
+                  "search": {
+                    "aabb_skips": 82338,
+                    "aabb_tests": 83908,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 83908,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 1570,
+                    "narrow_s": null,
+                    "queries": 11,
+                    "self_narrow": 280,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 0.00011719499999999999,
+                    "world_narrow": 1290,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003692859,
+                "prepared_objects": 253
+              }
+            },
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 864,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "withdrawal",
+              "state_checks": 12,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            }
+          }
+        ],
+        "prior_hits": 2,
+        "direct_short_connections": 0,
+        "prior_nodes_reused": 3,
+        "prior_edges_reused": 1,
+        "prior_query_s": 8.169286971,
+        "motion_request_round_trip_s": 8.920308377593756,
+        "prior_misses": 1,
+        "semantic_events": 1,
+        "local_repairs": 0,
+        "slow_ompl_calls": 0,
+        "ik": [
+          {
+            "request_id": "8",
+            "request_fingerprint": "fc5fbd5544d751efc4c1bbe4b66f34dec2f1e4db60a27822e2e1507401b65d7d",
+            "input_state_sha256": "9fa0742d4e4feb3316baaaed19e8431344164a16c12499887cefc4aa8221a164",
+            "stage": "contact_endpoint",
+            "status": "SUCCESS",
+            "ik_s": 0.000273956,
+            "elapsed_s": 0.02022727206349373,
+            "request_round_trip_s": 0.02022727206349373,
+            "native_solver_s": 0.000273956,
+            "planning_phase": "SLOW_COMPLETION",
+            "fast_phase_overrun_s": 0.0,
+            "batch_status": "SUCCESS",
+            "batch_seed_index": 0,
+            "batch_consume_count": 1,
+            "native_ik_calls": 1,
+            "authority_failure": null
+          },
+          {
+            "request_id": "9",
+            "request_fingerprint": "9280340a154be80ce4e79b864386e9190c9fd3cefc58f361f005cd8e4fe785de",
+            "input_state_sha256": "9fa0742d4e4feb3316baaaed19e8431344164a16c12499887cefc4aa8221a164",
+            "stage": "pregrasp",
+            "status": "SUCCESS",
+            "ik_s": 0.000160974,
+            "elapsed_s": 0.027165818959474564,
+            "request_round_trip_s": 0.027165818959474564,
+            "native_solver_s": 0.000160974,
+            "planning_phase": "SLOW_COMPLETION",
+            "fast_phase_overrun_s": 0.0,
+            "batch_status": "SUCCESS",
+            "batch_seed_index": 0,
+            "batch_consume_count": 1,
+            "native_ik_calls": 1,
+            "authority_failure": null
+          },
+          {
+            "request_id": "12",
+            "request_fingerprint": "11f61a22ae0d90d9dcfb2abb72b0f85aeb9a923a0892a7b457b990d33336c9f4",
+            "input_state_sha256": "3f37ea128f31e6438c22d4b3a58b4bb2cade8bdec78e24f1ff69cec6badf54f3",
+            "stage": "pregrasp",
+            "status": "SUCCESS",
+            "ik_s": 8.1338e-05,
+            "elapsed_s": 0.02270648628473282,
+            "request_round_trip_s": 0.02270648628473282,
+            "native_solver_s": 8.1338e-05,
+            "planning_phase": "SLOW_COMPLETION",
+            "fast_phase_overrun_s": 0.0,
+            "batch_status": "SUCCESS",
+            "batch_seed_index": 0,
+            "batch_consume_count": 1,
+            "native_ik_calls": 1,
+            "authority_failure": {
+              "reason": "DUPLICATE_NATIVE_IK"
+            }
+          },
+          {
+            "request_id": "13",
+            "request_fingerprint": "e61c64b70a7f565bcde91b972780c9072f4e42233bea10ca5e1ab55c8c3b590c",
+            "input_state_sha256": "2dbb2ef461378290f3ef7d8168e00c24d0215c312a2ad40578ca2c245cecf2c9",
+            "stage": "pregrasp",
+            "status": "SUCCESS",
+            "ik_s": 0.000245802,
+            "elapsed_s": 0.022055301815271378,
+            "request_round_trip_s": 0.022055301815271378,
+            "native_solver_s": 0.000245802,
+            "planning_phase": "SLOW_COMPLETION",
+            "fast_phase_overrun_s": 0.0,
+            "batch_status": "SUCCESS",
+            "batch_seed_index": 0,
+            "batch_consume_count": 1,
+            "native_ik_calls": 1,
+            "authority_failure": null
+          },
+          {
+            "request_id": "18",
+            "request_fingerprint": "f2afd98f2d996a9de87e289a915d310d9f99ac460b3a3498eaa373625dd8ed6f",
+            "input_state_sha256": "ebe42c0fbf3eda5e340f777408de9e742ea010676a875e642d2924d725cd4077",
+            "stage": "transit",
+            "status": "SUCCESS",
+            "ik_s": 0.00029796,
+            "elapsed_s": 0.021679088473320007,
+            "request_round_trip_s": 0.021679088473320007,
+            "native_solver_s": 0.00029796,
+            "planning_phase": "SLOW_COMPLETION",
+            "fast_phase_overrun_s": 0.0,
+            "batch_status": "SUCCESS",
+            "batch_seed_index": 0,
+            "batch_consume_count": 1,
+            "native_ik_calls": 1,
+            "authority_failure": null
+          }
+        ],
+        "native_solver_s": 0.309718995,
+        "ik_solver_s": 0.00106003,
+        "ik_including_ipc_s": 0.1138339675962925,
+        "skipped_calls": {
+          "independent_state_validation": 3131,
+          "independent_path_validation": 1
+        },
+        "independent_path_checks_executed": 0,
+        "validated_stage_records": 0,
+        "history_and_legacy": {
+          "history_enabled": false,
+          "history_inputs_read": 0,
+          "legacy_motion_generator_calls": 0,
+          "forbidden_entry_attempts": 0
+        }
+      },
+      "candidates": {
+        "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+        "generated_candidate_count": 144,
+        "unique_generated_candidate_count": 144,
+        "duplicate_generated_candidate_count": 0,
+        "unique_candidates_evaluated": 1,
+        "total_attempt_count": 1,
+        "retry_count": 0,
+        "actual_complete_connection_attempt_count": 1,
+        "batch_size": 12,
+        "attempt_limit": 432,
+        "complete_connection_attempt_limit": 432,
+        "remaining_unsearched_count": 143,
+        "remaining_unsearched_candidate_ids": [
+          "621c9259c026675a0596c2e92df69dc348ab987391f8b3da0581262eb8d8fa34",
+          "4f794705bc67ac6130bda917bee27b77a85674a5ac1aed2a797d3c952c2d966b",
+          "cf4b9913969427d9c21a93ec0c38ce6ed8e6a760f7b35972d8499f7695301158",
+          "47c532d3623f0b32ee8d481a9b716bf26fc251589227f5eb77138441fd97bd1e",
+          "689b1f221ac0fb2a1621abb1f41993e20f8541568437280a01285ae2cd4d7830",
+          "86da2195db61359ad87827459cf279e2d4dab27c95835f9d20d31e3068840a84",
+          "62d279c0a35095459de9853680d1a16f3af73c2955573ff73f561ae3bddb4082",
+          "91d4254c800a6d8602a08f1e159dbbf46321b421f2148615f8f644040a197900",
+          "e25f652b4c642437ba9d3eb43bc430336da658b7add5f731fc9b48ab018c829d",
+          "06c64cdcdc5d813b56d42d102a0b03ecddd122dbbf39de44efa2a7c063b77670",
+          "c2a05d0a38a061e7862d46d171b1ba1b8c20fd1da9a09a087d1f55a31b073291",
+          "3a9da0cfd6c05db28f419bbd23337df157d28972f27daffc45036bf0c1fdbb9c",
+          "eb7286623b4e8d08482bf10391ceee9c3b782ccc14f6b1b7b4ca75899dcaf3d4",
+          "767c4fd539125c9b239ae1ff77d4c4708408df0d7cb9fa653c9e8c0e2ca90cfd",
+          "2e357af6ada17d6cdb02563c00f655df14b3df81338bdf417528a351811a5aa5",
+          "bb69d23076ec2f7c5848aef25db5bd589800d720f62281d5aa4aa21174043e57",
+          "8029390eda0d3474f6eaf937252ba6c3447234255b4adae396bf19e03356263f",
+          "5510469828f074f6256f495ccede801a09d4da4bce36d9c737343f21a96afbf5",
+          "1c86163274170b5774de6e9a7857fffda796392527e198e86460376ed6bbc918",
+          "2240fbb3a0d08866cd8f147643494e32d2aefed02e651019974d65077c6fac8d",
+          "283bedca893a3eae6748eb2d762c29385c18d905c1867cfc13973776bdfdbb56",
+          "b097cb6fc17f77bc4e20706780976ca6a878f43c96ca066364aef8484f3b30d2",
+          "2395fef324f9ecdcb6775c25373c9da51bc970449a1cf8a7b6ace86cbe753794",
+          "ba0f67a1264c233f9fe0d37202c8f877020589aefcf3cc9168b0f6e898c7ad22",
+          "821efb0abdd2e91c95b938168e4d8ee4f4c8a8442d92e4a3849e6730456ad7b0",
+          "a356cb24a60586a799692535c18404bc586b1211d78dc28b325b10c48aa851cc",
+          "5b6dcad8241d73e603e49330dcce50f064d79c5bbb62f4c7bcceb1bc7d9a5bff",
+          "2a57db8bbd14078fc67faec6a2ac7aebde88ee890c0fd0dd5e33ef3ab4d399dc",
+          "8a25b89bd0ab4693c42f54a3150ad5b1a5ca05f47fdfb73d48cc67461857baf9",
+          "f9c49a017403c57e4a972ec667f75d53f32e5a3e030d8b1402de1de530add910",
+          "09b1c2d4d496663c3b3018cc0963a3dc95fcacb45c11b15ba5f11c0e53e05d93",
+          "cf6ed7a14b45724eb5250e792652910a284e63f700be9203525443f9d3bc6006",
+          "f85ca2f8770607a1e091f9f8c144d5095f0971b9557ce8f0391e0c608b458217",
+          "b6a94ef9c5ba3338b06fc072860fed98dc197d25d5b499ba79243fc1ec0507dd",
+          "ec8b8862ac1fe0c0d10a4debd44104b9cacba1f24a6a2c8a5ef222ee224ce1ca",
+          "8ebdafbf25c8a9ba2c137dd2fd86f62eb0f5be961aca92eee4a1e314f1cf2583",
+          "2be3ca4c0f3d4bc092c699e84e15d2e721ad353558b60e94ae4d27492da1e403",
+          "e9219ba4a687e4c405dd410449f33894ab83a2081f63cde00e1f4e730ca9d0ef",
+          "8072b9b3d166212e36843b2a0d26c5adb9c3ad62a6a93442c3ffc1a9c9cdc9b3",
+          "0c9728142cc33277b6c29268bcce9220a6f7ea7159cf391152d6a76dc3cf5d49",
+          "8e931c7fdb09491edb41d6c8003be724b29ea6885ca2f81c605dfcf3b676d39c",
+          "3b2473771a18fe8eaf3706baced688b8677730c252f4d2ac23dba7f5a976b8b7",
+          "2c456e011c1d0a15d3eff7db0381fb3c604067f80483b0f634d6dbfce485167e",
+          "2d3e1bd096b9ed348c51256b622c190d5c4dc822371ef2e9685fc9f573bbd41c",
+          "9c4dc25fc068ff7569e3dab13ab49391e0ebe8db019e339e0989662546de4a11",
+          "0f92026b3d10dd66a89db6747229318cff4acdcfb9f000ab824ee7359500a126",
+          "374f4580de87e79f07aba68d036fa38d218618254719ddb484b44b020c4efbc5",
+          "0c8e4ce8b82cd15c3fe141b1fbda9bf59af1355226425652404f47453fa23785",
+          "758de4fc88df1a05b1537413a2d4bb4f217fba653169914ef9b45b1b6128ed90",
+          "73321e103d855be9cd6741ba444e698ca70864aa8427fbabc6f06f98a0fbb591",
+          "6db6f61db03774fe1310446f95d70433bb7922803d09c2e9b4c90500cd14b86b",
+          "eeeb4a73b6f809aecacd443644b3bada87336a6a93fd68f46251d6ba9b89486d",
+          "5b2503b5db7f690b1e7a74b3b3d159f96eeb8803a325a76024c2e11dc12c6fb9",
+          "3bb619d25b5c3e242ed72f4afe980ffe0b521ac5444b9a655567b16d14d691a5",
+          "7a153fe74e887aca0bfd205989b06ea3181f6709a9674f10cdf446b424ffbdbe",
+          "b78c2c9eec5f2556e7adf51d987784e98084cade989bcc2d661ed4b35e6c7949",
+          "3862d262143a272978f831264b2c3f9378fba9f32cf773887a68802b94ed9d1f",
+          "63e8ed6265970b56edc3d8caf35e19b513c5c6bb39b0096e8e46474936073d54",
+          "e210d5989b5c98f85ea514dd719c84542234e0efe6739117163ab37c0f7f2c76",
+          "81dc1dd9fad32f06af8b5d4805bca2490a944b90ef648f584978cba00914b2bf",
+          "21d22dfadbceeb856058b93ec5c21314a5a64c5523d3639e1865d03ee24dc886",
+          "c3004284676ba3cda20a9ab59e136e3c700a922d656f6b14734dc5a45148122e",
+          "585d6713c65560121265544abdea2b7cde80c766377b883159ab92cbed35a443",
+          "96172da19e16dd70a6aa1559f60cc37ba7e2f4d939c116622c3dec0ceeacc020",
+          "8f1f97c6b170af50459917909cb6a7a886d1bf96c26987625095873e0266ed87",
+          "cdb36d53889edfbcf4d1a1caad972b8059bc61c032febb89ee1d24f15d772ccb",
+          "7597d8a9e986d2f6a888ed084b2da0c5ad43ac0acdac3bc246d81d92cfac554a",
+          "7472fa70f583a710d9f1559783082a777fdf2c0c9be23751352faf6ac6365e5b",
+          "ac8f4ac962451f63596d534291f2e30dfee31eadf41117f2a90d73922a5aea06",
+          "cf4b84bdfafe5eb5c363d2cc19b5f8846a54e6f9d13be5940437b82fe7e578d8",
+          "6d6e8931fa869d5d0703c59360539be8121ac468f4aa2d6100db60be61b088c1",
+          "1b311124a35c6b0358e35f0a0b1fdc1cad6e4741d7c84336e890310ace5f14ac",
+          "14eef95de1574eba528f1bc2a40fe97511530e2cd6cd974e6b41b897adf0b05f",
+          "0fbbeea39e0374db36731a227b95e394796bc57bc0a2726e5552e259fd7d80fb",
+          "534a8ebf8072c376b31b5326164e5813834c562e0b0d54f7e5950cbe5d0e4fdd",
+          "3bd49c72cb9a487da8827a58720467ffb3f2c5dac5ff8688a1a0ccbe2919562c",
+          "5d1db490a441835f858c13acf24551119e7a6a5d2213bb89a9c53d19a2efe6f4",
+          "f6c87db690bf4ef5932797eac728cc636e146358210d2e09bd5eaf5f6e14ddfb",
+          "575d27504f3822d7cd47948808a517f0478beb706c28b93a198d80b98f8a5457",
+          "091686acb36e68b9a40d79eb5e3d61c48c2924cf888550bc326ca2b36a9754c6",
+          "0516773277e32c64f6f2dee15ae7ec110f7fe8f50bce58d0b1fc3cc6483b12de",
+          "1900d9b8a5e4370490e3607f4a92ce47c729d1706e596efa08c1292fb835b1c4",
+          "cf8e6b2531fb0d6fcb3e2042ae3c3bbe8ded1733438524d1a403707ecc1c4a0b",
+          "dba14e66b74d28153c1fa54e1dda2ca1c5c9f4fddecbff0d6afe055d5e47775b",
+          "dd4f32add4f80bd1e88b83c5dd5dad7b649444cd9984285a49fc21f8a3024736",
+          "8d629027d63fdbf6151a2cb85c73521f1612c1e7510cdbb08ad348a95fcfba9c",
+          "4b709abb6915fce990557c478548da04e9b703eaa31a1a9b4d773250b1169731",
+          "119413e9c6537a1c7a07cc704b8773f3956de1b94846334c80385aaa2445c70d",
+          "2e0332357a8139f016cd062b549971adfb42c067a5ad7b2dc17f50318ca67b2f",
+          "61004a9ed10ff26c1291f610b85ea7fe510eb4b7bd0d0df45abb5935d27e6d07",
+          "22ee198f5d0784b0b3398369584a7bbac545712e0c7fe3ce0a9536f840f3d33b",
+          "8d0a932e2b81be75343781598f98c7a95c8b91aac2c8cba1fdb4940bab140f60",
+          "c88306d674936e6b3e00342932cb6fb300607dfecd0132da9c0e593fe843129e",
+          "0ab73ec3c3f7731930d8a2f74ff144a5173978f130b0f2c9652c5b6aa47d1c8a",
+          "8d3538fdb6f94022b71b45f0ad4c3f2623c6b7716889bb7704013262af405735",
+          "adf9334989fd137f569fc40e7d422124cebc67d121d25a2fa49c0056603adace",
+          "abeda03a572ca38be84692885d5d63c8e6bbe576ba3ea00dc12522826e17b0fa",
+          "290563da982710dbb30b4353916288aff6516b2978a12706eb2375a5d13d7a3f",
+          "a40fd0b34c0e5adb4a84d554bd74f46f4eafa3c3fb0e3557f5c8ed215c10ce39",
+          "f892f19e04884e4fb4007d4a1995256d64197c14026425064f75ed26bfa6ae83",
+          "4f62c0f34a9e66071a7d793b104e833e4cf3e743e42cdf57251f4bfbb3ac1538",
+          "31655831af5dc2cc1f1dd720c5d3b6a79e94118ea932d1ab53f850eb737f32c8",
+          "2c910a78fe29eca599fed06fe0f9203b278f3a7659799e924e35d3cc81c61731",
+          "aef82a89c6728aa1d73b0a72c6c8a67ce25d276aebe3f37f9f0dcf4ad3fe0f25",
+          "85200d8e38a3e597a77b69b1917091ecebbf9a4ff9ba32a07766859a35e8c1b9",
+          "54ac578b796b8379c2cc2861331a6275b908de5911aa68b95d14e82024ba739d",
+          "6a7abbe2a89bbcf68c46473f9cd2bb787e62253e18a2a795b3f9845265ceedc7",
+          "d62ce5159fa86a4c31ca37c1d3da3f0af48e32826fd3d926d78677c1398cf0c1",
+          "77cd629119e0402ff595571ef348c0b02c124f221d5b0f204452b645fb4f66f0",
+          "86a5d2d295b902904af9f6b1654573c6bff7c98080676a3f87a6263cf6b50dd5",
+          "31fa726f0ce2647c87b58d1a1670dc9b8b0d7e04b4792e59c051595ef57a841b",
+          "713a9033b4114b6034d21cb3655e2439b3fc81ca788c31db5aee8af5b2679548",
+          "93c26f3d82122faa7b60823f915db23a100349f8ffbb541788d2c0afd1482f4b",
+          "66a37fc3402bb50a241cbefbd286b2a5cb365d4b971df92af276f4bd0febc8b4",
+          "0569c8a0273d8c025a68e879a7ab92a1176e4b554df55413b0abd46a16a0a94e",
+          "bfe991d90e5467a666c7165ba88d669f7177c1dd1fbec93a8369035ee77f31cf",
+          "719d96cd6de88f89ee967346917d28ed2e06240029e2a29602a3dd9d904d3667",
+          "92c9e64642182a57bdc65375ae995028e1df13d66ba89eaef7cf53cb69db9781",
+          "f3974d92c50edddb8f46872d352414dd97064b95a4cf88ed4d7d09eaaea76c9b",
+          "9569e4692607ee84bd1e5ef230124490f8de4f802b05d15a38fef46eb813d971",
+          "46d11a48fdd427a61c5b039e242fada8066027614fd724ebc21b6d9f88cea790",
+          "ee68c732e7c8d6409296c7d54b1e24e812b67f1bc71a6fe5ba0f0f00e850c4fe",
+          "cdd817cb0339e0fea0c17d2136f534d36daaf9ae1492aef95a18c2c236a4863c",
+          "5982ede6dee7cb9f2813a7dd1d8d80df2038193f7c75954392467741d6dcfc13",
+          "35ae1fcb99d47c88985a053720a140765c3b06afcc59ea461f447a77056f7923",
+          "35c89b9e29255f15ce04daf63f9892365b53efb74580dbe08f39fa1f82367f54",
+          "127aa371811165c44c170b9f87250421f63d87a4989368fc87f4bea73d09126f",
+          "2061691aefa3bed75f8433f5a6230580389b75719efdd1e1c0218f057bb73889",
+          "27d5e87f475347ec59f0efb1e944b52a567628197d3971a12c0b97241d89e1d8",
+          "dd75a0a2be3b0b8a5d0a1acee198a0cbf2d0b3ed5b763c2d26293a9485179545",
+          "c5da21bd30921235828efe8210ba638a341da1043c9439de634600e63c99f73b",
+          "dc113e78dd6afe75bc65ea2965305c3e9e290a29687cc6f17e6cba6ea408572e",
+          "831724aff131c0b416e4d7d296f1663c6ff1eca40ca29ded9e52ac769286bf06",
+          "4c6700788c9a48eec8989bad34aecabfcd77eef17e8e4579c4ee245c68e12414",
+          "f4cab866fbee50e37bbd4355e0ad3a76cc9306a5396ac9691cc328d96273404b",
+          "55d70cef56ef32cfdebd4fcfbd20b82e3fc700c79834bf235ab2008edec4ff37",
+          "12dee370fb3333897ff0b672ba9d6a7c3c21a4920c404dfa0e4cc7f524725191",
+          "90d0d9fba1f30cdc92b087063e00531df2344dc8a13599541982949b4bb3763f",
+          "04cea369d896cc25f2d4813c2130d95113607b1fb057cf61ccbc89efa9bfe8b8",
+          "b90c195c286c5266e1fa6051d51c37efbe6cea3f0d51d33ea15cdcaf6f202617",
+          "212b8542235248850ea4f539aed417a144017d36dc984b3951daf5e72a1b508c",
+          "48d9c1661f2aa7435827ccdb755ebd138d4b47c95502630b89352479a27c8288",
+          "c7bf8be6d7f2b093f7f317e1906e16d6391f9d497f7b4438cbd08f64b5cbd8e2"
+        ],
+        "pending_retry_count": 0,
+        "per_family": {
+          "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39": {
+            "face": "front",
+            "roll_deg": 90,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 1,
+            "total_attempt_count": 1,
+            "remaining_unsearched_count": 8
+          },
+          "29ee73f147a57b1fdc3e16fe2385326bfb0d476054a4103eb64042b28b4166fa": {
+            "face": "left",
+            "roll_deg": 90,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "bfb10c218c9b9f9423aa2136a3e52de6915b00fc2abb5fa4807f3c6450a9a843": {
+            "face": "right",
+            "roll_deg": 90,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "1a22dff307c3f6ed6ac819ec796b7e1bbb91593e5845d8df7948ab9bdeef3ebd": {
+            "face": "top",
+            "roll_deg": 0,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "772ac8db3bfcf58d410fc37ee08629489cc65e94c5bb21e1f18f359772d63cde": {
+            "face": "front",
+            "roll_deg": 270,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "bf2cc758095df0f3053940421a20800a7c3e46a8613c8f0603fde76a8c21d50b": {
+            "face": "left",
+            "roll_deg": 270,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "7607dd2bfafaea67020cc3a17fadc92a1f74bb937a635de3be99f41cdca98961": {
+            "face": "right",
+            "roll_deg": 270,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "e78418de6c74ebd07250c0602a295f73efff2559d9704f4efefb7cf29e960eb4": {
+            "face": "top",
+            "roll_deg": 90,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "949f1fd0f39224125f189c84f6c3c02ed6b63809265c6dad5293880e7907bce3": {
+            "face": "top",
+            "roll_deg": 180,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "fce38846f59cef4b2b94b5fb38fa69a3284a3291c9ec2372c7b58f7f83bb805a": {
+            "face": "top",
+            "roll_deg": 270,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "ff15e6745608bef891e4ec7dff77f3195b76451da4b771c8ccf3f093d86a81b8": {
+            "face": "front",
+            "roll_deg": 0,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "e0e657cf8ba3238930352d989a3522c145f03ece04cc5edb3c50dad40de84f7c": {
+            "face": "left",
+            "roll_deg": 0,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "b70fc6f46f5d535e591516c36ce5d05a47938dd460ea64d983920f367fe9ffc4": {
+            "face": "right",
+            "roll_deg": 0,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "8a6b12182d85ddb7f94a6b8a144b837a0fc968bb5249a4ee1d9e694c36ce7e3e": {
+            "face": "front",
+            "roll_deg": 180,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "f6c4a8f9d2e109116465a49a36071c81d1c4e11bc1df12f5dc914a317f7f713c": {
+            "face": "left",
+            "roll_deg": 180,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          },
+          "78688f5483fe4ffa7ac2195806f00b090c21532ce806d4e8392949004aa5880e": {
+            "face": "right",
+            "roll_deg": 180,
+            "generated_candidate_count": 9,
+            "unique_candidate_count": 9,
+            "unique_candidates_evaluated": 0,
+            "total_attempt_count": 0,
+            "remaining_unsearched_count": 9
+          }
+        },
+        "termination": "COMPLETE_TRAJECTORY_FOUND",
+        "attempts": [
+          {
+            "candidate_id": "7e9b6afc0b4a27961206db39d64842bd4318e58fba2bd38b957bb2d59965379d",
+            "family_id": "fa3dec6ed0fff005ebc61ea9b711dcb1d45cfbd056aadc05031e030b62743e39",
+            "attempt_id": "7e9b6afc0b4a27961206db39d64842bd4318e58fba2bd38b957bb2d59965379d:attempt_0",
+            "retry_index": 0,
+            "retry_reason": null,
+            "variant": {
+              "variant": "nominal",
+              "face_offset_local_xy_m": [
+                0.0,
+                0.0
+              ],
+              "orientation_offset_local_xy_rad": [
+                0.0,
+                0.0
+              ],
+              "height_face_prior": 0.9,
+              "rigid_tool_bottom_above_box_bottom_m": 0.005999998000000062,
+              "placement_clearance_prior": "PREFER_LEVEL_SUPPORT_CLEARANCE_NOT_A_HARD_GATE"
+            },
+            "face": "front",
+            "roll_deg": 90,
+            "pose_ordinal": 0,
+            "batch_index": 0,
+            "mode": "FAIR_FULL_POOL_AND_SEEDED_RETRIES",
+            "ik_seed": 12776470,
+            "path_seed": 83083772,
+            "candidate_wall_budget_s": 20.0,
+            "actual_complete_connection_attempted": true,
+            "elapsed_s": 9.864615388214588,
+            "failure_stage": null,
+            "failure_reason": null,
+            "search_status": null
+          }
+        ],
+        "unsearched_candidates_are_infeasible": false
+      },
+      "failed_candidates": [],
+      "last_failure": null,
+      "end_q_rad": [
+        -0.860884632552864,
+        0.15809066856911685,
+        -0.40383981666879437,
+        3.009298182935619e-07,
+        -1.0088661427444479,
+        -2.2807082141105144
+      ],
+      "ideal_remove_after_withdrawal": "carton_l07_c04"
+    }
+  ],
+  "diagnostic_input": {
+    "target": "carton_l07_c04",
+    "start_q_rad": [
+      -0.9645963630436601,
+      0.34902940305863794,
+      -0.16938280513201223,
+      2.723792554429788e-07,
+      -1.0523838754541985,
+      -2.1769964898998944
+    ],
+    "removed_targets": [
+      "carton_l07_c02",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c00"
+    ],
+    "seed_offset": 4,
+    "planning_phase": "SLOW_COMPLETION",
+    "source_run_id": "planning-only-443d386e0e1b4274b530a871e39a222a",
+    "source_timing_sha256": "d19eb0583bba577995a73bb275c449bc731b629de69e6d400a6bf4b482e55504",
+    "configured_batch_budget_s": 900,
+    "configured_box_budget_s": 300,
+    "historical_previous_plan_and_scene_s": 11.521427739411592
+  },
+  "diagnostic_input_sha256": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+  "fresh_five_box_batch": false,
+  "batch_wall_s": 9.984278436750174,
+  "completed_count": 1,
+  "completed_targets": [
+    "carton_l07_c04"
+  ],
+  "missing_targets": [
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "fast_phase_completed_count": 0,
+  "target_1s_achieved": false,
+  "slow_completion_plan_s": 9.940468430519104,
+  "cumulative_attempted_plan_s": 9.940468430519104,
+  "T_plan_diagnostic_s": 9.940468430519104,
+  "T_plan_5_s": null,
+  "scene_update_s": 0.043466731905937195,
+  "first_box_scene_preparation_s": 0.043466731905937195,
+  "inter_box_scene_update_s": 0,
+  "result": "DIAGNOSTIC_COMPLETE",
+  "batch_bookkeeping_s": 0.00034327432513237
+}
