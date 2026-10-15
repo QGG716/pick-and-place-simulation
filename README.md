@@ -1,3 +1,9 @@
+# 当前实验：原生检查热循环去重（2026-10-15）
+
+真实 transit 固定片段检查中位数减少 **5.75%**，空载检查约增加 **0.096 ms**；3 组 A/B 判定一致。已实现候选内输入去重和固定 box 对净空复用，未重新规划五箱、未执行 Isaac。见[本轮报告](docs/m710_native_reuse_20261015.md)与[实测数据](docs/experiments/m710_native_reuse_20261015/formal/comparison.json)。
+
+---
+
 # 当前实验：静态先验辅助顶排五箱 29.687 秒（2026-10-04）
 
 同一 GPU 服务器新批次已完成 5/5；T_plan_5=29.687 秒，T_online_5=30.041 秒，未达到五箱 ≤1 秒。整批 OMPL 0 次；同机任务级 c03/c04 对照分别改善约 79.3%/47.8%。结果为 PLANNING_ONLY_NOT_EXECUTABLE，qualification_status=NOT_EVALUATED。详见[报告](docs/m710_static_prior_fast_20261003.md)与[数据](docs/experiments/m710_static_prior_fast_20261003/summary.json)。

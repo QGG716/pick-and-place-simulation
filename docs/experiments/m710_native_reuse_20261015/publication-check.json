@@ -1,0 +1,9 @@
+{
+  "measured_source_sha": "eaac48743d5c446524ed7d758659f608c94bf244",
+  "verified_publication_revision": "21dc6d31df3059ad4092fc9060269432d1f71459",
+  "verification_host": "Windows publication workspace",
+  "native_source_git_blobs_checked": 24,
+  "all_git_blobs_match_measured_bytes": true,
+  "compressed_inputs_match_frozen_sha256": true,
+  "code_diff_between_measured_and_publication_revision": false
+}
