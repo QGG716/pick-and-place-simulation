@@ -1,0 +1,10 @@
+{
+  "source_sha": "33dd0025fa4b19b73bc801ae6c8fff75ae87fb7e",
+  "formal_runs": 6,
+  "geometry_counts_identical": true,
+  "geometry_counts_match_previous_8df907_result": true,
+  "raw_timings_match_summary": true,
+  "verdicts_and_seal_match_previous": true,
+  "report_links_exist": true,
+  "no_new_formal_runs": true
+}

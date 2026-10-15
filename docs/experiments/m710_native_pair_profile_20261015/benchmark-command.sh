@@ -1,0 +1,3 @@
+set -e
+source /opt/ros/humble/setup.bash
+python3 /work-native-pair-profile-20261015/tools/benchmark_m710_native_checks.py --binary /tmp/native-pair-profile-20261015/build/m710_process_benchmark --model /work-native-pair-profile-20261015/docs/experiments/m710_native_pair_profile_20261015/model.json --input /work-native-pair-profile-20261015/docs/experiments/m710_native_pair_profile_20261015/fixed-input.json --output /work-native-pair-profile-20261015/docs/experiments/m710_native_pair_profile_20261015/formal --source-sha 33dd0025fa4b19b73bc801ae6c8fff75ae87fb7e --baseline-sha 6410d87799fd2ff6c4a18cacd77866f230766e21 --pair-profile-only --pairs 3 --cpu 0

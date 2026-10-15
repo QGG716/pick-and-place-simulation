@@ -1,0 +1,13 @@
+[INFO] [1792037436.264596515] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0267264 seconds
+[INFO] [1792037436.264685252] [moveit_robot_model.robot_model]: Loading robot model 'fanuc_m710id_70'...
+[INFO] [1792037436.264693241] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1792037436.285403472] [moveit.pilz_industrial_motion_planner.joint_limits_aggregator]: Reading limits from namespace robot_description_planning
+[INFO] [1792037436.285884712] [moveit.pilz_industrial_motion_planner]: Available plugins: pilz_industrial_motion_planner/PlanningContextLoaderCIRC pilz_industrial_motion_planner/PlanningContextLoaderLIN pilz_industrial_motion_planner/PlanningContextLoaderPTP 
+[INFO] [1792037436.285891457] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderCIRC
+[INFO] [1792037436.286469748] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [CIRC]
+[INFO] [1792037436.286476160] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderLIN
+[INFO] [1792037436.286879311] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [LIN]
+[INFO] [1792037436.286883959] [moveit.pilz_industrial_motion_planner]: About to load: pilz_industrial_motion_planner/PlanningContextLoaderPTP
+[INFO] [1792037436.287251226] [moveit.pilz_industrial_motion_planner]: Registered Algorithm [PTP]
+[INFO] [1792037436.287257821] [moveit.ros_planning.planning_pipeline]: Using planning interface 'Pilz Industrial Motion Planner'
+[INFO] [1792037436.293422895] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
