@@ -1,0 +1,36 @@
+Consolidate compiler generated dependencies of target m710_moveit_worker
+[ 50%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[100%] Linking CXX executable m710_moveit_worker
+[100%] Built target m710_moveit_worker
+Consolidate compiler generated dependencies of target m710_request_evidence_test
+[100%] Built target m710_request_evidence_test
+Consolidate compiler generated dependencies of target m710_static_prior_test
+[100%] Built target m710_static_prior_test
+[ 50%] Building CXX object CMakeFiles/m710_native_semantic_event_test.dir/src/native_semantic_event_test.cpp.o
+[100%] Linking CXX executable m710_native_semantic_event_test
+[100%] Built target m710_native_semantic_event_test
+PASS request-local evidence: failures, once-only success, no-check, unavailable; no geometry/solver callback
+[INFO] [1792045678.048901522] [moveit_robot_model.robot_model]: Loading robot model 'graph_test'...
+[INFO] [1792045678.048970621] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1792045678.050051491] [moveit_robot_model.robot_model]: Loading robot model 'graph_test'...
+[INFO] [1792045678.050057689] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1792045678.050436851] [moveit_robot_model.robot_model]: Loading robot model 'graph_test'...
+[INFO] [1792045678.050441468] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1792045678.050577458] [moveit_robot_model.robot_model]: Loading robot model 'graph_test'...
+[INFO] [1792045678.050580358] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+PASS: prior binding, direct-connection source, newly blocked edge and budget; synthetic checks only
+[INFO] [1792045678.076216441] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792045678.076268744] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792045678.076304326] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[ERROR] [1792045678.076491231] [moveit_robot_model.robot_model]: Link 'missing_tcp' not found in model 'semantic_test'
+[INFO] [1792045678.076560428] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792045678.076564732] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792045678.076574403] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[INFO] [1792045678.076903817] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792045678.076908301] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792045678.076916197] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[INFO] [1792045678.077010417] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792045678.077013749] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792045678.077020073] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+PASS: semantic place scope, original MoveIt goal tolerance and actual MTC no-motion propagation; synthetic tests only
+NATIVE_TESTS_COMPLETE

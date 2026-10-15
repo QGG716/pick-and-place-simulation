@@ -1,0 +1,480 @@
+{
+  "run_id": "planning-only-88bcd40321f84f3ab4ed284420d6d2b6",
+  "source_commit": "c7457aed7e6afd2e11ac861afa6474489fe85f97",
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "request_rows": [
+    {
+      "request_id": "10",
+      "stage": "pregrasp",
+      "status": "PRIOR_QUERY_TIMEOUT",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "round_trip_s": 6.042876455932856,
+      "clearance_s": 5.901646864999997,
+      "clearance_queries": 22222,
+      "clearance_mean_us": 265.5767646926468,
+      "aabb_tests": 170817724,
+      "fcl_queries": 2882566,
+      "prior_usage": {
+        "connector_edges": 0,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": false,
+        "edge_check_limit": 128,
+        "edge_checks": 87,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.14261460101867574,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c00"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.2813852813852814,
+            "from": 147,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_rigid_58",
+              "carton_l04_c01"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.014925373134328358,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "tool_compliant_bellows_66",
+              "trailer_right_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 0
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.014745308310991957,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "tool_compliant_bellows_66",
+              "trailer_right_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 88
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 0,
+        "prior_hit": false,
+        "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+        "prior_nodes_reused": 0,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 20,
+          "graph_edge": 14,
+          "start_connector": 25
+        },
+        "rejected_edges": 60,
+        "route_nodes": [],
+        "slow_path": false,
+        "state_checks": 22220,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 1
+      }
+    },
+    {
+      "request_id": "11",
+      "stage": "pregrasp",
+      "status": "NATIVE_PLANNING_FAILED",
+      "solver_message": "INVALID_MOTION_PLAN",
+      "moveit_error_code": -2,
+      "round_trip_s": 0.1059662289917469,
+      "clearance_s": 0.022928482999999996,
+      "clearance_queries": 85,
+      "clearance_mean_us": 269.74685882352935,
+      "aabb_tests": 328747,
+      "fcl_queries": 2655,
+      "prior_usage": null
+    },
+    {
+      "request_id": "14",
+      "stage": "pregrasp",
+      "status": "SUCCESS",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "round_trip_s": 1.4944906793534756,
+      "clearance_s": 1.331389562000002,
+      "clearance_queries": 5809,
+      "clearance_mean_us": 229.1942781890174,
+      "aabb_tests": 44581826,
+      "fcl_queries": 605012,
+      "prior_usage": {
+        "connector_edges": 2,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": true,
+        "edge_check_limit": 128,
+        "edge_checks": 34,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.24427480916030533,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c01"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.012594458438287154,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "tool_compliant_bellows_71",
+              "trailer_right_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 58
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.31464737793851716,
+            "from": 147,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_rigid_0",
+              "carton_l04_c02"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.702020202020202,
+            "from": 33,
+            "kind": "goal_connector",
+            "pair": [
+              "tool_rigid_58",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 1,
+        "prior_hit": true,
+        "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+        "prior_nodes_reused": 2,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 5,
+          "graph_edge": 0,
+          "start_connector": 21
+        },
+        "rejected_edges": 27,
+        "route_nodes": [
+          160,
+          33,
+          125,
+          161
+        ],
+        "slow_path": false,
+        "state_checks": 5807,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      }
+    },
+    {
+      "request_id": "15",
+      "stage": "contact",
+      "status": "SUCCESS",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "round_trip_s": 0.05637378618121147,
+      "clearance_s": 0.0018452949999999998,
+      "clearance_queries": 16,
+      "clearance_mean_us": 115.33093749999999,
+      "aabb_tests": 122048,
+      "fcl_queries": 226,
+      "prior_usage": null
+    },
+    {
+      "request_id": "16",
+      "stage": "extraction",
+      "status": "SUCCESS",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "round_trip_s": 0.1971762292087078,
+      "clearance_s": 0.020496219,
+      "clearance_queries": 160,
+      "clearance_mean_us": 128.10136875,
+      "aabb_tests": 1201090,
+      "fcl_queries": 2384,
+      "prior_usage": null
+    },
+    {
+      "request_id": "17",
+      "stage": "transit",
+      "status": "SUCCESS",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "round_trip_s": 0.09763550758361816,
+      "clearance_s": 0.011136591,
+      "clearance_queries": 55,
+      "clearance_mean_us": 202.4834727272727,
+      "aabb_tests": 414885,
+      "fcl_queries": 3533,
+      "prior_usage": null
+    },
+    {
+      "request_id": "19",
+      "stage": "transit",
+      "status": "SUCCESS",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "round_trip_s": 0.6820236817002296,
+      "clearance_s": 0.5074425819999996,
+      "clearance_queries": 1568,
+      "clearance_mean_us": 323.624095663265,
+      "aabb_tests": 11818810,
+      "fcl_queries": 267041,
+      "prior_usage": {
+        "connector_edges": 2,
+        "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+        "context_bound_by_worker": true,
+        "context_checked": true,
+        "continuous_swept_proof": false,
+        "current_geometry_checked": true,
+        "edge_check_limit": 128,
+        "edge_checks": 6,
+        "failed_edge_witnesses": [
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.04888268156424581,
+            "from": 160,
+            "kind": "direct_connector",
+            "pair": [
+              "tool_rigid_0",
+              "trailer_left_wall"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.22488038277511962,
+            "from": 11,
+            "kind": "goal_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c04"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 161
+          },
+          {
+            "failure_origin": "CLEARANCE",
+            "fraction": 0.1743295019157088,
+            "from": 160,
+            "kind": "start_connector",
+            "pair": [
+              "carton_l07_c04",
+              "carton_l06_c03"
+            ],
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "to": 33
+          }
+        ],
+        "interpolation_l1_step_rad": 0.01,
+        "local_repairs": 0,
+        "portal_connections_added": 16,
+        "prior_edges_reused": 0,
+        "prior_hit": true,
+        "prior_id": "752f7ea3f1b6a53ee524c248cea414d5f323adfff296a7e48030fe96fb29ffd4",
+        "prior_nodes_reused": 1,
+        "rejected_by_kind": {
+          "direct_connector": 1,
+          "goal_connector": 1,
+          "graph_edge": 0,
+          "start_connector": 1
+        },
+        "rejected_edges": 3,
+        "route_nodes": [
+          160,
+          9,
+          161
+        ],
+        "slow_path": false,
+        "state_checks": 1566,
+        "static_clearance_inherited": false,
+        "timed_out_edges": 0
+      }
+    },
+    {
+      "request_id": "20",
+      "stage": "place",
+      "status": "SUCCESS",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "round_trip_s": 0.043941911309957504,
+      "clearance_s": 0.00030849,
+      "clearance_queries": 1,
+      "clearance_mean_us": 308.49,
+      "aabb_tests": 7670,
+      "fcl_queries": 269,
+      "prior_usage": null
+    },
+    {
+      "request_id": "21",
+      "stage": "withdrawal",
+      "status": "SUCCESS",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "round_trip_s": 0.05784120783209801,
+      "clearance_s": 0.002503234,
+      "clearance_queries": 12,
+      "clearance_mean_us": 208.60283333333334,
+      "aabb_tests": 91536,
+      "fcl_queries": 1716,
+      "prior_usage": null
+    }
+  ],
+  "post_run_input_comparison": [
+    {
+      "new_request_id": "10",
+      "stage": "pregrasp",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 6.0
+    },
+    {
+      "new_request_id": "11",
+      "stage": "pregrasp",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    },
+    {
+      "new_request_id": "14",
+      "stage": "pregrasp",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 6.0
+    },
+    {
+      "new_request_id": "15",
+      "stage": "contact",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    },
+    {
+      "new_request_id": "16",
+      "stage": "extraction",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    },
+    {
+      "new_request_id": "17",
+      "stage": "transit",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    },
+    {
+      "new_request_id": "19",
+      "stage": "transit",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 6.0
+    },
+    {
+      "new_request_id": "20",
+      "stage": "place",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    },
+    {
+      "new_request_id": "21",
+      "stage": "withdrawal",
+      "seed_equal": true,
+      "candidate_id_equal": false,
+      "q_start_equal": true,
+      "q_goal_equal": true,
+      "goal_pose_equal": true,
+      "planning_phase": "SLOW_COMPLETION",
+      "requested_planning_time_s": 90.0
+    }
+  ],
+  "diagnostic_attempts": 1,
+  "boundary_partition_s": {
+    "request_build": 0.06258488819003105,
+    "accepted_return_processing": 0.1282077096402645,
+    "other_motion_connection": 0.21930719166994095,
+    "unattributed_outside_motion": 0.5390230938792229
+  },
+  "scope": "New diagnostic only. Historical timing unchanged; comparison reads old request endpoints only after diagnostic.",
+  "complete_current_request_evidence": true,
+  "frozen_sources_and_binary_unchanged": true,
+  "initialization_s": 1.0227290913462639,
+  "planning_s": 9.840727988630533,
+  "online_s": 9.924303196370602
+}

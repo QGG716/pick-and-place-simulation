@@ -1,0 +1,559 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "run_id": "planning-only-88bcd40321f84f3ab4ed284420d6d2b6",
+  "source_commit": "c7457aed7e6afd2e11ac861afa6474489fe85f97",
+  "completed_count": 1,
+  "T_plan_5_s": null,
+  "T_online_5_s": null,
+  "T_plan_diagnostic_s": 9.840727988630533,
+  "attempted_plan_s": 9.840727988630533,
+  "attempted_online_s": 9.924303196370602,
+  "diagnostic_input": {
+    "target": "carton_l07_c04",
+    "start_q_rad": [
+      -0.9645963630436601,
+      0.34902940305863794,
+      -0.16938280513201223,
+      2.723792554429788e-07,
+      -1.0523838754541985,
+      -2.1769964898998944
+    ],
+    "removed_targets": [
+      "carton_l07_c02",
+      "carton_l07_c01",
+      "carton_l07_c03",
+      "carton_l07_c00"
+    ],
+    "seed_offset": 4,
+    "planning_phase": "SLOW_COMPLETION",
+    "source_run_id": "planning-only-443d386e0e1b4274b530a871e39a222a",
+    "source_timing_sha256": "d19eb0583bba577995a73bb275c449bc731b629de69e6d400a6bf4b482e55504",
+    "configured_batch_budget_s": 900,
+    "configured_box_budget_s": 300,
+    "historical_previous_plan_and_scene_s": 11.521427739411592
+  },
+  "initialization_s": 1.0227290913462639,
+  "inter_box_scene_update_s": 0,
+  "scene_update_s": 0.04630667343735695,
+  "result_file_write_s": 0.03695739433169365,
+  "batch_wall_s": 9.887345802038908,
+  "batch_bookkeeping_s": 0.0003111399710178375,
+  "boxes": [
+    {
+      "order": 5,
+      "target": "carton_l07_c04",
+      "complete": true,
+      "plan_s": 9.840727988630533,
+      "cumulative_plan_s": 9.840727988630533,
+      "scene_update_s": 0.04630667343735695,
+      "start_q_rad": [
+        -0.9645963630436601,
+        0.34902940305863794,
+        -0.16938280513201223,
+        2.723792554429788e-07,
+        -1.0523838754541985,
+        -2.1769964898998944
+      ],
+      "end_q_rad": [
+        -0.860884632552864,
+        0.15809066856911685,
+        -0.40383981666879437,
+        3.009298182935619e-07,
+        -1.0088661427444479,
+        -2.2807082141105144
+      ],
+      "task_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c",
+      "counts": {
+        "PTP": 1,
+        "LIN": 4,
+        "OMPL": 0,
+        "IK": 5
+      },
+      "ik_requests": 5,
+      "motion_requests": 9,
+      "ik_failed_seeds": 0,
+      "ik_round_trip_s": 0.11327941715717316,
+      "ik_solver_s": 0.00097102,
+      "motion_round_trip_s": 8.7783256880939,
+      "prior_query_s": 8.032940579,
+      "native_solver_s": 0.28689718300000006,
+      "prior_hits": 2,
+      "direct_connections": 0,
+      "prior_queries": 3,
+      "prior_failed_queries": 1,
+      "prior_timeouts": 1,
+      "failed_candidates": 0,
+      "failures": [
+        {
+          "request_id": "10",
+          "stage": "pregrasp",
+          "status": "PRIOR_QUERY_TIMEOUT",
+          "solver_message": null,
+          "moveit_error_code": null,
+          "failure": null,
+          "prior_usage": {
+            "connector_edges": 0,
+            "connector_kind": "CHECKED_JOINT_INTERPOLATION",
+            "context_bound_by_worker": true,
+            "context_checked": true,
+            "continuous_swept_proof": false,
+            "current_geometry_checked": false,
+            "edge_check_limit": 128,
+            "edge_checks": 87,
+            "failed_edge_witnesses": [
+              {
+                "failure_origin": "CLEARANCE",
+                "fraction": 0.14261460101867574,
+                "from": 160,
+                "kind": "direct_connector",
+                "pair": [
+                  "tool_rigid_0",
+                  "carton_l04_c00"
+                ],
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "to": 161
+              },
+              {
+                "failure_origin": "CLEARANCE",
+                "fraction": 0.2813852813852814,
+                "from": 147,
+                "kind": "goal_connector",
+                "pair": [
+                  "tool_rigid_58",
+                  "carton_l04_c01"
+                ],
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "to": 161
+              },
+              {
+                "failure_origin": "CLEARANCE",
+                "fraction": 0.014925373134328358,
+                "from": 160,
+                "kind": "start_connector",
+                "pair": [
+                  "tool_compliant_bellows_66",
+                  "trailer_right_wall"
+                ],
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "to": 0
+              },
+              {
+                "failure_origin": "CLEARANCE",
+                "fraction": 0.014745308310991957,
+                "from": 160,
+                "kind": "start_connector",
+                "pair": [
+                  "tool_compliant_bellows_66",
+                  "trailer_right_wall"
+                ],
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "to": 88
+              }
+            ],
+            "interpolation_l1_step_rad": 0.01,
+            "local_repairs": 0,
+            "portal_connections_added": 16,
+            "prior_edges_reused": 0,
+            "prior_hit": false,
+            "prior_id": "e337bd156a6ef6722aa5e1a0cb73601bcde7fdbd596e8b134f2ea6f4ebad8c4e",
+            "prior_nodes_reused": 0,
+            "rejected_by_kind": {
+              "direct_connector": 1,
+              "goal_connector": 20,
+              "graph_edge": 14,
+              "start_connector": 25
+            },
+            "rejected_edges": 60,
+            "route_nodes": [],
+            "slow_path": false,
+            "state_checks": 22220,
+            "static_clearance_inherited": false,
+            "timed_out_edges": 1
+          },
+          "request_check_evidence": {
+            "clearance": "AVAILABLE_EXECUTED",
+            "clearance_check_s": 5.901646864999997,
+            "clearance_queries": 22222,
+            "completion": "PARTIAL_OR_FAILED_REQUEST",
+            "process_policy": "AVAILABLE_EXECUTED",
+            "request_status": "PRIOR_QUERY_TIMEOUT",
+            "scope": "CURRENT_REQUEST_ONLY"
+          }
+        },
+        {
+          "request_id": "11",
+          "stage": "pregrasp",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "moveit_error_code": -2,
+          "failure": null,
+          "prior_usage": null,
+          "request_check_evidence": {
+            "clearance": "AVAILABLE_EXECUTED",
+            "clearance_check_s": 0.022928482999999996,
+            "clearance_queries": 85,
+            "completion": "PARTIAL_OR_FAILED_REQUEST",
+            "process_policy": "AVAILABLE_EXECUTED",
+            "request_status": "NATIVE_PLANNING_FAILED",
+            "scope": "CURRENT_REQUEST_ONLY"
+          }
+        }
+      ],
+      "unattributed_remaining_s": 0.9491228833794594,
+      "cross_box_start_exact": true,
+      "boundary_costs": {
+        "request_build_s": 0.06258488819003105,
+        "motion_request_build_s": 0.02167278155684471,
+        "motion_connection_inclusive_s": 9.14751337096095,
+        "accepted_return_processing_s": 0.1282077096402645
+      },
+      "boundary_partition_s": {
+        "request_build": 0.06258488819003105,
+        "accepted_return_processing": 0.1282077096402645,
+        "other_motion_connection": 0.21930719166994095,
+        "unattributed_outside_motion": 0.5390230938792229
+      }
+    }
+  ],
+  "totals": {
+    "ik_round_trip_s": 0.11327941715717316,
+    "ik_solver_s": 0.00097102,
+    "motion_round_trip_s": 8.7783256880939,
+    "prior_query_s": 8.032940579,
+    "native_solver_s": 0.28689718300000006,
+    "unattributed_remaining_s": 0.9491228833794594,
+    "prior_queries": 3,
+    "prior_hits": 2,
+    "direct_connections": 0,
+    "prior_failed_queries": 1,
+    "prior_timeouts": 1,
+    "ik_requests": 5,
+    "motion_requests": 9,
+    "ik_failed_seeds": 0,
+    "counts": {
+      "IK": 5,
+      "PTP": 1,
+      "LIN": 4,
+      "OMPL": 0
+    }
+  },
+  "measured_clearance": {
+    "measured_clearance_requests": 9,
+    "clearance_s": 7.799697320999998,
+    "workspace_prepare_s": 0.027838580999999998,
+    "clearance_queries": 29928,
+    "seal_input_compilations": 9,
+    "aabb_tests": 229384336,
+    "aabb_skips": 225619304,
+    "narrow_calls": 3765402,
+    "fixed_qualification_queries": 370,
+    "fixed_aabb_qualifications": 150,
+    "fixed_narrow_qualifications": 370,
+    "fixed_aabb_reuses": 32994,
+    "fixed_narrow_reuses": 198277
+  },
+  "stages": {
+    "pregrasp": {
+      "requests": 3,
+      "request_round_trip_s": 7.643333364278078,
+      "prior_query_s": 7.43641813,
+      "measured_clearance_s": 7.255964909999999
+    },
+    "contact": {
+      "requests": 1,
+      "request_round_trip_s": 0.05637378618121147,
+      "prior_query_s": 0,
+      "measured_clearance_s": 0.0018452949999999998
+    },
+    "extraction": {
+      "requests": 1,
+      "request_round_trip_s": 0.1971762292087078,
+      "prior_query_s": 0,
+      "measured_clearance_s": 0.020496219
+    },
+    "transit": {
+      "requests": 2,
+      "request_round_trip_s": 0.7796591892838478,
+      "prior_query_s": 0.596522449,
+      "measured_clearance_s": 0.5185791729999996
+    },
+    "place": {
+      "requests": 1,
+      "request_round_trip_s": 0.043941911309957504,
+      "prior_query_s": 0,
+      "measured_clearance_s": 0.00030849
+    },
+    "withdrawal": {
+      "requests": 1,
+      "request_round_trip_s": 0.05784120783209801,
+      "prior_query_s": 0,
+      "measured_clearance_s": 0.002503234
+    }
+  },
+  "requests": [
+    {
+      "request_id": "10",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:1",
+      "parent_stage_id": "",
+      "stage": "pregrasp",
+      "status": "PRIOR_QUERY_TIMEOUT",
+      "request_round_trip_s": 6.042876455932856,
+      "prior_query_s": 6.000586534,
+      "mtc_plan_s": 0.0,
+      "pipeline_id": "static_prior",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 5.901646864999997,
+        "clearance_queries": 22222,
+        "completion": "PARTIAL_OR_FAILED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "PRIOR_QUERY_TIMEOUT",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 5.901646864999997,
+      "workspace_prepare_s": 0.003135195,
+      "clearance_queries": 22222
+    },
+    {
+      "request_id": "11",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:2",
+      "parent_stage_id": "",
+      "stage": "pregrasp",
+      "status": "NATIVE_PLANNING_FAILED",
+      "request_round_trip_s": 0.1059662289917469,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.060693161,
+      "pipeline_id": "pilz_industrial_motion_planner",
+      "solver_message": "INVALID_MOTION_PLAN",
+      "moveit_error_code": -2,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.022928482999999996,
+        "clearance_queries": 85,
+        "completion": "PARTIAL_OR_FAILED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "NATIVE_PLANNING_FAILED",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.022928482999999996,
+      "workspace_prepare_s": 0.003152519,
+      "clearance_queries": 85
+    },
+    {
+      "request_id": "14",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:3",
+      "parent_stage_id": "",
+      "stage": "pregrasp",
+      "status": "SUCCESS",
+      "request_round_trip_s": 1.4944906793534756,
+      "prior_query_s": 1.435831596,
+      "mtc_plan_s": 0.0,
+      "pipeline_id": "static_prior",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 1.331389562000002,
+        "clearance_queries": 5809,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 1.331389562000002,
+      "workspace_prepare_s": 0.003160507,
+      "clearance_queries": 5809
+    },
+    {
+      "request_id": "15",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:4",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:3",
+      "stage": "contact",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.05637378618121147,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.012998559,
+      "pipeline_id": "pilz_industrial_motion_planner",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.0018452949999999998,
+        "clearance_queries": 16,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.0018452949999999998,
+      "workspace_prepare_s": 0.003118872,
+      "clearance_queries": 16
+    },
+    {
+      "request_id": "16",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:5",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:4",
+      "stage": "extraction",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.1971762292087078,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.14495374,
+      "pipeline_id": "pilz_industrial_motion_planner",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.020496219,
+        "clearance_queries": 160,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.020496219,
+      "workspace_prepare_s": 0.002971529,
+      "clearance_queries": 160
+    },
+    {
+      "request_id": "17",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:6",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:5",
+      "stage": "transit",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.09763550758361816,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.056905666,
+      "pipeline_id": "pilz_industrial_motion_planner",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.011136591,
+        "clearance_queries": 55,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.011136591,
+      "workspace_prepare_s": 0.003143837,
+      "clearance_queries": 55
+    },
+    {
+      "request_id": "19",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:7",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:6",
+      "stage": "transit",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.6820236817002296,
+      "prior_query_s": 0.596522449,
+      "mtc_plan_s": 0.0,
+      "pipeline_id": "static_prior",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.5074425819999996,
+        "clearance_queries": 1568,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.5074425819999996,
+      "workspace_prepare_s": 0.003151464,
+      "clearance_queries": 1568
+    },
+    {
+      "request_id": "20",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:8",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:7",
+      "stage": "place",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.043941911309957504,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.0,
+      "pipeline_id": "semantic_event",
+      "solver_message": null,
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.00030849,
+        "clearance_queries": 1,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.00030849,
+      "workspace_prepare_s": 0.003122029,
+      "clearance_queries": 1
+    },
+    {
+      "request_id": "21",
+      "stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:9",
+      "parent_stage_id": "planning-only-a017313000fc40c0a30403ed56b0ba5c:8",
+      "stage": "withdrawal",
+      "status": "SUCCESS",
+      "request_round_trip_s": 0.05784120783209801,
+      "prior_query_s": null,
+      "mtc_plan_s": 0.011346057,
+      "pipeline_id": "pilz_industrial_motion_planner",
+      "solver_message": "",
+      "moveit_error_code": null,
+      "failure": null,
+      "request_check_evidence": {
+        "clearance": "AVAILABLE_EXECUTED",
+        "clearance_check_s": 0.002503234,
+        "clearance_queries": 12,
+        "completion": "COMPLETED_REQUEST",
+        "process_policy": "AVAILABLE_EXECUTED",
+        "request_status": "SUCCESS",
+        "scope": "CURRENT_REQUEST_ONLY"
+      },
+      "target": "carton_l07_c04",
+      "clearance_s": 0.002503234,
+      "workspace_prepare_s": 0.002882629,
+      "clearance_queries": 12
+    }
+  ],
+  "checks": {
+    "boundary_and_target_contexts_consistent": true,
+    "exact_cross_box_continuity": true,
+    "pair_profile_disabled_in_all_available_responses": true,
+    "pair_times_null": true,
+    "process_preparsed_and_profile_disabled": true,
+    "planning_only_isolation": true,
+    "no_history_or_legacy_calls": true
+  },
+  "exact_duplicates_removed": 0,
+  "missing_clearance_request_ids": [],
+  "full_clearance_total_s": 7.799697320999998,
+  "limitations": [
+    "Missing failure Clearance responses are unmeasured, not zero.",
+    "Clearance and solver/prior timings are nested inside motion round trips; never add them.",
+    "Workspace prepare excludes other unmeasured context preparation.",
+    "No pair timings: cannot isolate traversal/AABB/FCL costs.",
+    "Only endpoint/metadata review, not dense verification or execution qualification."
+  ]
+}
