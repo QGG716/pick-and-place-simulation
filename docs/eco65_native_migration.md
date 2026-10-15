@@ -1,4 +1,132 @@
-# ECO65-B 衔接修补与本地验证（2026-10-15）
+# ECO65-B 完整 worker 联调与单箱失败记录（2026-10-15）
+
+用户提供新授权入口后，使用原有 SSH 密钥恢复连接，未使用或保存密码，未升级原有环境。
+代码分两阶段提交：`fd825033aaa35ea92abbfbea56b2e50f1d7efb03`（实际 worker 接入修补和显式 HOME 提案）、
+`36570454284350502c22d92d404ab711041675f0`（支撑面高度修正、重复 IK 分支去重、URI 读取计数）。
+此前已推送的 `7382203`/`10b55c9` 路径、孔位与 HOME 衔接成果保留；旧工作树、私有原件及历史失败均未覆盖。
+
+**实际结果：完整仓库四箱、顶吸、纵向输送带路线 B、固定目标 `carton_r00_l01_c00`，
+原生 pregrasp → contact → extraction 通过，transit 未通过。尚无完整七阶段候选，整轨迹独立复核和仓库回放未运行。**
+所有结果保持 `PLANNING_ONLY_NOT_EXECUTABLE`；后续回放限定 `KINEMATIC_REPLAY`，Dynamics `NOT_EVALUATED`。
+
+## 资产与真实运行环境
+
+Linux 工作副本为 `/root/autodl-tmp/eco65-native-20261015/repo`。
+复用 `/root/autodl-tmp/m710-moveit2-20260922/rootfs` 内 ROS Humble、MoveIt 2.5.10；
+CPU 几何/仓库读取使用已有 `/root/autodl-tmp/envs/isaacsim-clean/bin/python`（Python 3.12.3、MuJoCo 3.8.0）。
+该环境有现成 SciPy/USD 依赖；原旧 CPU 环境缺 SciPy，因此未使用它，也未安装依赖。
+容器不允许 bind mount，故 rootfs 中 `/work-eco65-20261015` 是独立实际文件副本，按清单同步并重新核对。
+
+原先 198 文件私有包在两端解包后逐文件验证通过；完整场景模型、新 HOME 和官方清单加入后的运行清单为 **203 文件**。
+Linux 宿主机与 rootfs 各实际读文件、校验 SHA256、核对引用覆盖，均 PASS；rootfs 另实际读取 **71 个资源 URI**。
+宿主机还执行 HOME 语义身份校验；精简 rootfs 执行候选字节身份校验，原生主入口另外执行完整语义及几何检查。
+标准相对 POSIX 资产身份、宿主机实际文件路径和 rootfs URI 分开处理，没有扫描磁盘寻找同名文件。
+
+联调暴露 Windows `git archive` 对官方 SOURCE_MANIFEST 的行尾转换：仓库对象及本地原件是 LF，归档曾导出 CRLF，导致精确哈希失败。
+已用该文件的 `-text` 属性保护字节，并将它显式纳入资产包；复验恢复到原固定哈希
+`217b391cb47fa0b7270a887511b80554587a9441fcfcca856ab1b042b44e157c`。
+清单审计抽到轻量模块，rootfs 无需 SciPy 即可验证资产。未重新转换 STEP，也未修改任何原始网格。
+
+最终部署的源码归档及两端 **273 个源码文件**逐字节一致，完整 worker 重新编译通过且重新启动检查 HOME。
+源码/二进制绑定见私有 `worker_20261015/final_source_binding.json`，二进制 SHA256 为
+`a386aac0cdc5be3e924c5eeaaadd131605411c5cc36c64cad82566c9c4eed57a`。
+失败定位期间的临时 FCL 查询追踪已恢复；最终编译来自上述提交，不包含临时追踪代码。
+
+## 完整仓库、法兰与 HOME
+
+恢复既有仓库缓存，158 个依赖文件通过清单核对。实际源包含 781 个 Mesh 和 1 个 Plane。
+首次读取因 guide-purpose 地面碰撞平面未进入 BBoxCache 而失败，原始失败保存在 `bounds_20261015_initial`。
+修补为读取 default/render/proxy/guide 目的几何，保留全部 **782 个叶级对象**。
+导入审计没有父子聚合 AABB 重复、重复 prim 或指定工作区空隙封堵；D/W 往返最大误差 `4.44e-16 m`。
+状态如实为 `ALL_BOUNDS_INCLUDED_CONSERVATIVELY`，没有空环境替身、删除障碍或绕过场景门禁。
+完整快照指纹：`0abef6de8a0c872fe0becbc2ff82c6f85074d25115fc1d9f17ec1637e65b7bb4`。
+
+真实六孔最终匹配最大残差 **2.9552844412e-9 m**，RMS **2.5659693872e-9 m**；安装面、轴与法向残差为零。
+当前安装/TCP 变换没有变化，继续保留 STEP 自带法兰。六种滚转候选不等于实机唯一定位，硬件安装角度仍 `NOT_VERIFIED`。
+
+原本地 HOME 在完整场景中通过静态原生检查，但到 pregrasp 的路径未通过。
+保留此失败，基于本次真实原生 IK 返回值提出最多两个显式关节候选，首个通过独立完整场景状态检查。
+候选携带工具、设备、场景身份、来源失败哈希、原生 IK 请求/响应与关节偏置；不读取旧成功轨迹。
+`plan --home-candidate` 实际读取该提案，重新检查限位、安装接口、FK/TCP 和原生碰撞/净空后接纳。
+另外运行完整四箱仓库 HOME 的原生/MuJoCo 独立对照，均通过，14 个接触判定一致。
+这是 `SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION`，不表示从旧 HOME 到新 HOME 的运动已验证。
+
+## 真实 FCL 与原生单箱调用
+
+完整 C++ worker 实际 READY；模型身份、关节顺序、法兰/TCP 初始化通过，四组 FK 最大矩阵误差 `8.88e-16`。
+设备级诊断明确标记 `EQUIPMENT_ONLY_DIAGNOSTIC`，不冒充完整场景验收。
+FCL 数据来自生产距离查询调用，新增开关仅保存查询结果，不以标量判定函数或纯几何探针替代查询。
+三组状态的基座、法兰、12 个唇缘共 **42 项**对照，在正常 `0.0034 m` 查询范围内判定全部一致；
+截断远距离明确标记 censored，安装接触最大数值差约 `1.20e-7 m`。
+宽范围查询保留一项异常：旧种子状态下一个唇缘距离 FCL 约 `0.2042 m`，MuJoCo 返回 `0.0`。
+改变 MuJoCo 原生 CCD 的临时诊断没有证明远距离可靠，因此生产设置未改、未升级、未放松阈值；不能声称宽范围距离全部一致。
+
+每个开发运行最多 2 次尝试、任务预算 900 s、单次求解器预算 60 s；超时请求保留异常且关闭该 worker。
+原生调用的完整请求、响应、错误、耗时、首个关键失败均在对应 `attempt_*/failure.json` 的 `native_calls` 中。
+
+| 运行 | 实际结果 | 总耗时 |
+|---|---|---:|
+| plan01 | 原 HOME，首个 pregrasp PTP 返回 INVALID_MOTION_PLAN；OMPL 请求超时 | 197.259 s |
+| plan02 | 有界原生 IK 按关节距离排序，先尝试 PTP；仍停在 pregrasp | 197.396 s |
+| plan03 | 显式新 HOME；前三阶段通过，transit PTP 拒绝；一次求解器 TIMED_OUT，另一次请求超时 | 305.767 s |
+| plan04 | 支撑面高度修正、近似重复 IK 去重；前三阶段通过，两次均 transit 请求超时 | 219.455 s |
+
+真实失败包括目标箱/输送带、目标箱或工具/右墙及机器人/顶板接触。
+发现旧抽离仅抬升 10 mm，使箱底从 0.16 到 0.17 m，低于所跨输送带的 0.18 m 台面。
+小范围修正以路径跨越的支撑面为基准保留 10 mm 净空，此场景原生 LIN 抬升 30 mm 至箱底 0.19 m。
+这不改变安装 standoff、工具、墙体、邻箱或碰撞阈值；不能保证后续任意 PTP 都不下降，仍由真实碰撞检查拒绝。
+在 plan04 第一次尝试，pregrasp/contact/extraction 分别返回 7/12/12 个原生点，输出检查均 PASS；
+三段原生生成耗时 `0.02965/0.04565/0.04850 s`，输出检查 `0.4650/2.7001/2.9281 s`。
+随后首个 transit PTP 返回 66 点但 `INVALID_MOTION_PLAN`；OMPL 在客户端 90 s 超时，没有伪造返回或接受未检查路径。
+短预算复现曾收到真实 OMPL `TIMED_OUT`，但尚未确定长请求超时根因；不能断言全局无解。
+
+## 命令、输出与验收边界
+
+以下相对路径都位于忽略的 `outputs/eco65_native/`。详细私有证据已下载至本地工作树，未公开推送。
+
+| 项目 | 输出 | 实测耗时 |
+|---|---|---:|
+| 完整 worker 初次编译 | worker_20261015/build.log、build_timing.json | 31 s |
+| FCL 证据版本编译 | worker_20261015/build_contact_evidence.log | 29 s |
+| 最终源码编译及完整 HOME 重查 | worker_20261015/build_final.log、final_source_binding.json | 34 s |
+| 实际设备 worker/FK/状态 | worker_20261015/diagnostic02/report.json | 7.081 s |
+| 运行资产两端验证 | worker_20261015/runtime_host_check.json、runtime_rootfs_check.json | 0.588 / 0.306 s |
+| 资产/场景/模型初始化 | full_20261015_build/build_report.json | 0.170 / 0.400 / 3.115 s |
+| 导入表示审计 | worker_20261015/warehouse_complete_audit.json | 0.175 s |
+| 新 HOME 提案 | native_HOME_20261015/proposal_report.json | 1.479 s |
+| 完整 HOME 独立对照（初次，本地保留） | worker_20261015/full_HOME_initial_native_MuJoCo.json | 3.799 s |
+| FCL/MuJoCo 正常范围对照 | worker_20261015/FCL_MuJoCo_policy_range.json | 0.491 s |
+| 最终定向 Python 回归 | directed_tests_20261015_worker_final.xml | 122 passed / 12.52 s |
+
+实际主要命令（在新 Linux 工作副本；`P` 复用原环境）：
+
+```bash
+export PYTHONPATH=src OPENBLAS_NUM_THREADS=1
+P=/root/autodl-tmp/envs/isaacsim-clean/bin/python
+R=/root/autodl-tmp/m710-moveit2-20260922/rootfs
+O=outputs/eco65_native
+chroot "$R" /bin/bash -c 'source /opt/ros/humble/setup.bash; cd /work-eco65-20261015; cmake -S ros2/m710_moveit_backend -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target m710_moveit_worker -j2'
+"$P" tools/verify_eco65_transfer.py --root . --manifest "$O/worker_20261015/runtime_asset_manifest.json" --scope LINUX_HOST --output "$O/worker_20261015/runtime_host_check.json"
+chroot "$R" /bin/bash -c 'cd /work-eco65-20261015; PYTHONPATH=src python3 tools/verify_eco65_transfer.py --root . --manifest outputs/eco65_native/worker_20261015/runtime_asset_manifest.json --scope ROS_ROOTFS --output outputs/eco65_native/worker_20261015/runtime_rootfs_check.json'
+"$P" tools/run_eco65_moveit2_single_carton.py bounds --assets "$O/warehouse_assets" --output "$O/bounds_20261015_run02"
+"$P" tools/run_eco65_moveit2_single_carton.py build --environment "$O/bounds_20261015_run02/environment_bounds.json" --native-asset-root /work-eco65-20261015 --output "$O/full_20261015_build"
+"$P" tools/check_eco65_native_worker.py --model "$O/bridge_20261015_home/native_model_prepared.json" --home-candidate "$O/bridge_20261015_home/home_candidate.json" --worker-command /root/autodl-tmp/eco65-native-20261015/worker.sh --output "$O/worker_20261015/diagnostic02"
+"$P" tools/propose_eco65_home_from_native_ik.py --snapshot "$O/full_20261015_build/snapshot.json" --failure "$O/full_20261015_plan02/attempt_00/failure.json" --output "$O/native_HOME_20261015"
+"$P" tools/run_eco65_moveit2_single_carton.py plan --snapshot "$O/full_20261015_build/snapshot.json" --home-candidate "$O/native_HOME_20261015/home_candidate.json" --worker-command /root/autodl-tmp/eco65-native-20261015/worker.sh --task-seconds 900 --stage-seconds 60 --attempts 2 --output "$O/full_20261015_plan04"
+```
+
+常驻 worker 启动脚本实际执行 `chroot ... /bin/bash -c 'source /opt/ros/humble/setup.bash; export ROS_HOME=/tmp/ros-eco65-20261015; exec /work-eco65-20261015/build/m710_moveit_worker'`。
+全场景 HOME/FCL 对照使用本机 `.tmp/` 中保留并上传到新工作副本 `tools/` 的私有驱动脚本：
+`"$P" tools/full_home_check.py`、`"$P" tools/compare_native_contacts.py`、`"$P" tools/compare_policy_range.py`。
+最终重新启动 worker 的 HOME 结果为 `worker_20261015/full_HOME_native_MuJoCo.json`，原初次结果也保留在下载的归档内。
+上述命令记录保留在本机 `.tmp/remote_*.sh`，运行 JSON 内保存原生请求，足以定位本次失败。
+本轮没有缺失 SSH、STEP、tool.json、ROS 环境或完整仓库缓存。
+后续最小待解问题是当前完整场景中可通过实际检查的 transit 原生连接，以及长 OMPL 请求的超时原因；
+完成七阶段后才可做一次独立整轨迹复核，再以同轨迹和事件进行仓库外观回放。不能将当前部分成功称为单箱验收。
+
+---
+
+# 历史阶段：ECO65-B 衔接修补与本地验证（2026-10-15，连接恢复前）
 
 从已审查的 `ca71dd64a06f7a032f7184768f2b51edf388a825` 续作，定向 fetch 确认当前远端分支无后续提交。
 实际工作树为 `pick-and-place-simulation-v0.6-eco65-moveit2-native-single-carton`；未改动旧工作树的既有删除。
