@@ -135,10 +135,11 @@ def audit(stage,data):
             M=np.array(mast['T_D_mast']);part_bounds=[];mast_intersections=[]
             from pathlib import Path
             repo=Path(__file__).resolve().parents[1]
-            visuals=[p for p in stage.GetPrimAtPath('/World/Workstation/Mast').GetChildren() if p.GetName().startswith('visual_')]
+            mast_path=mast.get('usd_path','/Workstation/Mast').replace('/Workstation','/World/Workstation',1)
+            visuals=[p for p in stage.GetPrimAtPath(mast_path).GetChildren() if p.GetName().startswith('visual_')]
             compare('mast_visual_count',len(mast['parts']),len(visuals))
             for part in mast['parts']:
-                p=stage.GetPrimAtPath('/World/Workstation/Mast/visual_'+part['id'])
+                p=stage.GetPrimAtPath(mast_path+'/visual_'+part['id'])
                 actual_vertices=np.array(UsdGeom.Mesh(p).GetPointsAttr().Get());actual_matrix=np.array(cache.GetLocalToWorldTransform(p)).T
                 actual_vertices=actual_vertices@actual_matrix[:3,:3].T+actual_matrix[:3,3]
                 actual=np.array([actual_vertices.min(0),actual_vertices.max(0)])
@@ -151,7 +152,7 @@ def audit(stage,data):
                     n=triangles_inside_box(v[source.faces],np.array(b))
                     if n:mast_intersections.append(dict(part=part['id'],obstacle=key,triangles_intersecting_interior=n))
             allbounds=np.array(part_bounds);mb=np.array([allbounds[:,0].min(0),allbounds[:,1].max(0)])
-            compare('mast_bottom_on_table',np.array(dims['trailer_floor'])[1,2],mb[0,2])
+            if mast.get('attachment')!='link_1':compare('mast_bottom_on_table',np.array(dims['trailer_floor'])[1,2],mb[0,2])
             report['mast_readback']=dict(parts=len(visuals),mount_reference_D_m=(M[:3,:3]@np.array(mast['mount_reference_CAD_m'])+M[:3,3]).tolist(),head_center_W_m=np.mean(np.array(part_bounds)[[3,7,18]],axis=(0,1)).tolist(),yaw_D_deg=float(np.degrees(np.arctan2(M[1,0],M[0,0]))),bounds_W_m=mb.tolist(),bounds_D_m=(mb-origin).tolist(),T_D_mast=M.tolist(),placement=mast['placement'],surface_intersections=mast_intersections)
             if mast_intersections:issues.append('MAST_ENVIRONMENT_SURFACE_INTERSECTION')
     return report

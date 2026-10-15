@@ -83,7 +83,7 @@ def export(snapshot_path, home_path, config_path, out):
     def pose(prim, T):
         UsdGeom.Xformable(prim).AddTransformOp().Set(Gf.Matrix4d(np.asarray(T).T.tolist()))
 
-    def mesh(path, m, color, T, collision=False, mat=None):
+    def mesh(path, m, color, T, collision=False, mat=None, world_T=None):
         obj = UsdGeom.Mesh.Define(stage, path)
         obj.CreatePointsAttr(Vt.Vec3fArray.FromNumpy(np.asarray(m.vertices, np.float32)))
         obj.CreateFaceVertexCountsAttr([3] * len(m.faces))
@@ -95,7 +95,7 @@ def export(snapshot_path, home_path, config_path, out):
             UsdPhysics.CollisionAPI.Apply(obj.GetPrim())
             UsdPhysics.MeshCollisionAPI.Apply(obj.GetPrim()).CreateApproximationAttr('convexHull')
             obj.CreatePurposeAttr('guide')
-            collision_records.append(dict(path=path,points=np.asarray(m.vertices).tolist(),T_D=np.asarray(T).tolist()))
+            collision_records.append(dict(path=path,points=np.asarray(m.vertices).tolist(),T_D=np.asarray(T if world_T is None else world_T).tolist()))
         elif mat:
             UsdShade.MaterialBindingAPI.Apply(obj.GetPrim()).Bind(mat)
         return obj
@@ -114,8 +114,9 @@ def export(snapshot_path, home_path, config_path, out):
         if origin is not None:
             assert np.allclose(np.fromstring(origin.get('xyz','0 0 0'),sep=' '),0)
             assert np.allclose(np.fromstring(origin.get('rpy','0 0 0'),sep=' '),0)
-        mesh('/Workstation/Robot/'+name+'/Visual',m,[.8,.83,.86],frames[name],mat=mats['robot_dark' if name=='base_link' else 'robot'])
-        mesh('/Workstation/Robot/'+name+'/Collision',collision_mesh('robot_'+name,lambda:m.convex_hull),[.2,.7,.8],frames[name],True)
+        pose(UsdGeom.Xform.Define(stage,'/Workstation/Robot/'+name).GetPrim(),frames[name])
+        mesh('/Workstation/Robot/'+name+'/Visual',m,[.8,.83,.86],np.eye(4),mat=mats['robot_dark' if name=='base_link' else 'robot'])
+        mesh('/Workstation/Robot/'+name+'/Collision',collision_mesh('robot_'+name,lambda:m.convex_hull),[.2,.7,.8],np.eye(4),True,world_T=frames[name])
     flange = frames['link_6']; Ttool = flange @ np.array(tool['T_flange_tool_cad'])
     for p in tool['visual_parts']:
         rgb = p['rgb'] or [.6,.6,.6]
@@ -166,14 +167,27 @@ def export(snapshot_path, home_path, config_path, out):
             prim=UsdGeom.Xform.Define(stage,'/Workstation/'+item['id']).GetPrim()
             prim.GetReferences().AddReference(Path(os.path.relpath(source,out)).as_posix())
     if scene.get('mast',{}).get('parts'):
-        mast=scene['mast'];T=np.array(mast['T_D_mast'])
-        root_mast=UsdGeom.Xform.Define(stage,'/Workstation/Mast').GetPrim()
+        mast=dict(scene['mast']);attached=mast.get('attachment')=='link_1'
+        if attached:
+            from eco65_mast_attachment import evaluate
+            diagnostic=evaluate(frames['link_1'],mast)
+            T=np.array(diagnostic['T_D_mast']);mast['T_D_mast']=T.tolist()
+            mast['axis_diagnostic']=diagnostic
+        else:T=np.array(mast['T_D_mast'])
+        mast_path='/Workstation/Robot/link_1/Mast' if attached else '/Workstation/Mast'
+        mast['usd_path']=mast_path
+        root_mast=UsdGeom.Xform.Define(stage,mast_path).GetPrim()
+        pose(root_mast,np.array(mast['T_link1_mast']) if attached else T)
         root_mast.SetCustomDataByKey('placement',mast['placement'])
+        root_mast.SetCustomDataByKey('attachment',mast['attachment'])
+        if attached:
+            pose(UsdGeom.Xform.Define(stage,mast_path+'/CameraFrame').GetPrim(),mast['T_mast_camera'])
         for part in mast['parts']:
-            rgb=part['rgb'] or ([.08,.10,.12] if part['id'] in ['mast_part_006','mast_part_016'] else [.43,.46,.50])
+            dark=['mast_part_006','mast_part_016']+(['mast_part_019'] if attached else [])
+            rgb=part['rgb'] or (([.035,.04,.045] if attached else [.08,.10,.12]) if part['id'] in dark else [.43,.46,.50])
             mat=material(stage,part['id'],rgb,metallic=.4,roughness=.4)
-            mesh('/Workstation/Mast/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,T,mat=mat)
-            mesh('/Workstation/Mast/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],T,True)
+            mesh(mast_path+'/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,np.eye(4),mat=mat)
+            mesh(mast_path+'/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],np.eye(4),True,world_T=T)
     frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
     for name,T in frame_transforms.items():
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)
@@ -189,7 +203,7 @@ def export(snapshot_path, home_path, config_path, out):
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
     if full_face:
         manifest.update(full_face_static=True,layout_config=c,conveyors=scene['conveyors'],top_geometry=scene['top_geometry'],
-            mast=scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)
+            mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)
 

@@ -13,7 +13,9 @@ def main():
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--compose-only',action='store_true',help='Check USD composition without Isaac or rendering')
     p.add_argument('--layout-review',action='store_true',help='Seven frozen layout views, USD readback and display-only collision overlay')
+    p.add_argument('--j1-mast-review',action='store_true',help='Static J1 attachment and camera heading diagnostics; requires layout review')
     a=p.parse_args()
+    if a.j1_mast_review and not a.layout_review:p.error('--j1-mast-review requires --layout-review')
     a.output=a.output.resolve();a.assets=a.assets.resolve();a.workstation=a.workstation.resolve()
     a.output.mkdir(parents=True,exist_ok=False)
     app=None
@@ -194,6 +196,8 @@ def main():
             from eco65_static_review import audit,overlay,wall_edges,views as review_views,annotate
             if data.get('full_face_static'):
                 from eco65_full_face_review import audit,views as review_views,annotate
+            if a.j1_mast_review:
+                from eco65_j1_mast_review import audit,views as review_views,annotate
             review=audit(stage,data)
             review['environment_AABB_potential_only']=intersections
             (a.output/'static_checks.json').write_text(json.dumps(review,indent=2))

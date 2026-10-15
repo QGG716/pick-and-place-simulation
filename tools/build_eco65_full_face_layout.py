@@ -11,7 +11,6 @@ from unloading_sim.eco65.native_io import verify_snapshot, file_hash
 from unloading_sim.eco65.native_model import POLICY
 from unloading_sim.moveit2_backend import digest
 from prepare_eco65_static_pose import prepare
-from eco65_official_conveyor import build as build_conveyors
 
 
 def verify_static(snapshot):
@@ -61,6 +60,7 @@ def geometry(scene,tool,config):
 
 
 def build(args):
+    from eco65_official_conveyor import build as build_conveyors
     out=args.output.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     old=verify_snapshot(load_json(args.snapshot));c=yaml.safe_load(args.config.read_text(encoding='utf8'))
     prepare(args.snapshot,args.candidate,args.failure,out/'inherited_accepted_pose.json')
