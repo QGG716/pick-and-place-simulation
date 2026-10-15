@@ -34,6 +34,7 @@ from unloading_perception.observed_faces import (  # noqa: E402
 )
 from unloading_perception.fusion import ModuleFaceBatch, fuse_module_face_batches  # noqa: E402
 from unloading_perception.lineage import load_instance_lineage  # noqa: E402
+from unloading_perception.proposals import proposal_path, validate_detector_document
 from unloading_perception.isaac_payload import CapturePayloadError, require_capture_payload, write_capture_snapshot
 from unloading_perception.final_geometry import validate_final_record  # noqa: E402
 from unloading_perception.rgbd import (  # noqa: E402
@@ -65,7 +66,11 @@ def _scalar_mean(value) -> float | None:
 def _worker_artifacts(scene_dir: Path, *, payload=None) -> dict:
     if payload is not None:
         payload = require_capture_payload(scene_dir, payload.manifest, payload=payload)
-    response = json.loads((scene_dir / "mode_b1_worker_response.json").read_text(encoding="utf-8").strip().splitlines()[-1])
+    raw_response = (scene_dir / "mode_b1_worker_response.json").read_text(encoding="utf-8").strip()
+    try:
+        response = json.loads(raw_response)
+    except json.JSONDecodeError:
+        response = json.loads(raw_response.splitlines()[-1])  # historical JSON-lines worker log
     if response.get("status") != "COMPLETE":
         raise RuntimeError(f"SAM/2D worker response is incomplete for {scene_dir.name}")
     metrics_path = Path(response["metrics_reference"]["path"])
@@ -76,7 +81,8 @@ def _worker_artifacts(scene_dir: Path, *, payload=None) -> dict:
         raise ValueError("cached SAM image hash mismatch")
     if payload is not None and response['input_sha256'] != payload.binding.rgb_sha256:
         raise ValueError('cached SAM image differs from original capture binding')
-    if metrics["config"]["proposal_sha256"] != sha256(scene_dir / "oracle_proposals.json"):
+    path = proposal_path(scene_dir)
+    if metrics["config"]["proposal_sha256"] != sha256(path):
         raise ValueError("cached SAM proposal hash mismatch")
     from unloading_perception.upstream_v4 import UPSTREAM_V4_SHA
     config = metrics["config"]
@@ -90,8 +96,14 @@ def _worker_artifacts(scene_dir: Path, *, payload=None) -> dict:
             raise ValueError(f"worker artifact digest mismatch: {name}")
     metadata = payload.metadata if payload is not None else CaptureMetadata.from_dict(
         json.loads((scene_dir / 'capture_metadata.json').read_text(encoding='utf-8')))
-    proposals = json.loads((scene_dir / 'oracle_proposals.json').read_text(encoding='utf-8'))
-    if payload is not None:
+    proposals = json.loads(path.read_text(encoding='utf-8'))
+    if proposals.get('source') == 'GROUNDING_DINO':
+        from unloading_perception.rgb_input import load_rgb_input
+        rgb = load_rgb_input(scene_dir)
+        validate_detector_document(proposals, rgb_sha256=rgb.rgb_sha256, width=rgb.rgb.shape[1], height=rgb.rgb.shape[0],
+            capture_id=metadata.capture_id, module_id=rgb.camera['module_id'], sensor_epoch=metadata.sensor_epoch,
+            frame_sequence=metadata.frame_sequence)
+    elif payload is not None:
         from run_metric_small_matrix import oracle_proposal_document
         if proposals != oracle_proposal_document(payload):
             raise ValueError('oracle proposals differ from verified capture annotations')
@@ -99,7 +111,7 @@ def _worker_artifacts(scene_dir: Path, *, payload=None) -> dict:
         Path(artifacts["cargo_masks.npz"]["path"]), Path(artifacts["cargo_instances.json"]["path"]),
         proposals, {"instances": []},
         sensor_epoch=metadata.sensor_epoch, module_id=metadata.rgb_frame_id.removesuffix("_rgb_optical"),
-        capture_id=metadata.capture_id, source_path=scene_dir / "sensor_rgb.png", proposal_path=scene_dir / "oracle_proposals.json",
+        capture_id=metadata.capture_id, source_path=scene_dir / "sensor_rgb.png", proposal_path=path,
     )
     return artifacts
 
@@ -216,7 +228,7 @@ def _observation(
     lineage = load_instance_lineage(
         masks_path, masks_path.parent / "cargo_instances.json", proposals, geometry_payload,
         sensor_epoch=metadata.sensor_epoch, module_id=module_id, capture_id=metadata.capture_id,
-        source_path=lineage_directory / "sensor_rgb.png", proposal_path=lineage_directory / "oracle_proposals.json",
+        source_path=lineage_directory / "sensor_rgb.png", proposal_path=proposal_path(lineage_directory),
     )
     masks_by_id = {item.identity: item.mask for item in lineage.values()}
     records = {int(item["mask_id"]): item for item in geometry_payload["instances"]}
@@ -357,8 +369,8 @@ def _observation(
         ObservationStatus.COMPLETE if not unknown else ObservationStatus.PARTIAL,
         None, None, tuple(cargo), tuple(unknown),
         {
-            "mode": "STAGED_RGBD", "role": "PRIMARY", "proposal_source": "ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL",
-            "raw_image_automatic": False,
+            "mode": "STAGED_RGBD", "role": "PRIMARY", "proposal_source": proposals.get('source', 'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL'),
+            "raw_image_automatic": proposals.get('source') == 'GROUNDING_DINO',
             "detector_metrics": "NOT_EVALUATED", "pointmap_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
             "capture_id": metadata.capture_id, "absence_means_free_space": False,
             "input_provenance": payload.input_provenance(),
@@ -431,14 +443,23 @@ def _run_secondary_module(
     payload = require_capture_payload(module_dir, manifest, payload=payload,
         expected_module_id=expected_module, with_instance_masks=True)
     lineage_directory = module_dir
-    proposals = json.loads((module_dir / 'oracle_proposals.json').read_text(encoding='utf-8'))
-    from run_metric_small_matrix import oracle_proposal_document
-    if proposals != oracle_proposal_document(payload):
-        raise ValueError('oracle proposals differ from verified capture annotations')
+    path = proposal_path(module_dir)
+    proposals = json.loads(path.read_text(encoding='utf-8'))
+    if proposals.get('source') == 'GROUNDING_DINO':
+        validate_detector_document(proposals, rgb_sha256=payload.binding.rgb_sha256,
+            width=payload.rgb.shape[1], height=payload.rgb.shape[0], capture_id=payload.metadata.capture_id,
+            module_id=payload.camera['module_id'], sensor_epoch=payload.metadata.sensor_epoch,
+            frame_sequence=payload.metadata.frame_sequence)
+    else:
+        from run_metric_small_matrix import oracle_proposal_document
+        if proposals != oracle_proposal_document(payload):
+            raise ValueError('oracle proposals differ from verified capture annotations')
     if payload.directory == payload.source_directory:
         payload = write_capture_snapshot(payload, output_directory or module_dir/'geometry-run')
         module_dir = payload.directory
-        (module_dir/'oracle_proposals.json').write_text(json.dumps(proposals, indent=2), encoding='utf-8')
+        (module_dir/path.name).write_bytes(path.read_bytes())
+        if (path.parent/'proposal_binding.json').exists():
+            (module_dir/'proposal_binding.json').write_bytes((path.parent/'proposal_binding.json').read_bytes())
     masks_path = Path(artifacts["cargo_masks.npz"]["path"])
     input_validation_seconds = perf_counter() - module_started
     diagnostic_enabled = config['vision'].get('legacy_cuboid_diagnostic', False)

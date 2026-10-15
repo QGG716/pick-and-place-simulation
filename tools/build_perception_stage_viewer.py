@@ -95,7 +95,7 @@ def main(argv=None):
     a.output.mkdir(parents=True,exist_ok=False)
     assets=a.output/'assets';assets.mkdir();groups=[]
     data=dict(schema='perception_stage_viewer_v1',origin=a.origin,groups=groups,tool=frozen['tool'],
-        policy='仿真采集、真实算法运行 / ORACLE_PROPOSAL / raw_image_automatic=false / READ ONLY',
+        policy='仿真采集、真实算法运行 / 提示来源见各模组 proposal.source / READ ONLY',
         planning_geometry={'status':'NOT_RUN','reason':'本次未显式启用尺寸先验实验；不以包络面代替接触面'},
         moge={'status':'NOT_RUN','reason':'当前 RGB-D 主链未调用 MoGe'},enable_hardware=False,
         legend={'supported':'#45d6a1','rejected':'#eb5547','unknown':'#f5af4c','not_run':'#96a3b7'})
@@ -134,7 +134,8 @@ def main(argv=None):
             colors[~valid]=[255,75,167]
             depth_image=image_file('depth.png',colors)
             align=image_file('alignment.png',(.55*rgb+.45*colors).astype(np.uint8))
-            proposals=read(folder/'oracle_proposals.json')
+            from unloading_perception.proposals import proposal_path
+            proposals=read(proposal_path(folder))
             prompt=Image.fromarray(rgb);draw=ImageDraw.Draw(prompt)
             for proposal in proposals['instances']:
                 draw.rectangle(proposal['bbox'],outline=(255,196,64),width=3)
@@ -151,8 +152,10 @@ def main(argv=None):
             if metrics_hash!=response['metrics_reference']['sha256']:raise ValueError('SAM_METRICS_HASH_MISMATCH')
             session_ref=metrics['artifacts'].get('sam_image_session.json')
             session=json.loads(_read_reference(session_ref,root)) if session_ref else None
-            gt_raw=_read_reference(inputrefs['gt_instance_masks.npz'],root)
-            with np.load(BytesIO(gt_raw),allow_pickle=False) as ar:gt_masks={k:ar[k] for k in ar.files}
+            gt_masks={}
+            if proposals.get('source') != 'GROUNDING_DINO' and 'gt_instance_masks.npz' in inputrefs:
+                gt_raw=_read_reference(inputrefs['gt_instance_masks.npz'],root)
+                with np.load(BytesIO(gt_raw),allow_pickle=False) as ar:gt_masks={k:ar[k] for k in ar.files}
             maskref=next(iter(members.values())).mask_reference if members else None
             # SAM scores and proposal association from current worker artifact, not guessed.
             sam_entries={}
@@ -174,7 +177,13 @@ def main(argv=None):
             if (folder/'sam_boundaries.png').exists():
                 shutil.copyfile(folder/'sam_boundaries.png',dest/'sam-boundaries.png')
                 md['sam_boundaries']=(dest/'sam-boundaries.png').relative_to(a.output).as_posix()
-            md['independent_mask_evaluation']=read(folder/'mask_evaluation.json')
+            md['independent_mask_evaluation']=read(folder/'mask_evaluation.json') if (folder/'mask_evaluation.json').exists() else {'status':'NOT_RUN'}
+            if (folder/'sam_review.html').exists():
+                # The lightweight page includes rejected/merged proposals and independent GT matching.
+                review_dir=dest/'sam-review';review_dir.mkdir()
+                for name in ('sam_review.html','sam_review_data.js','sensor_rgb.png'):
+                    shutil.copyfile(folder/name,review_dir/name)
+                md['sam_review']=(review_dir/'sam_review.html').relative_to(a.output).as_posix()
             for sid,member in members.items():
                 mask=masks[sid];mid=int(member.raw_result['instance_lineage']['mask_id']);bounds=crop_bounds(mask)
                 record=to_wire(member.raw_result.get('record',{}));prefix=f'mask-{mid}'
@@ -189,7 +198,7 @@ def main(argv=None):
                 proposal=next((p for p in proposals['instances'] if p['id']==entry.get('proposal_id')),None)
                 selected_prompt=None
                 if proposal:
-                    truth=gt_masks[proposal['simulation_object_id']]
+                    truth=gt_masks.get(proposal.get('simulation_object_id'),np.zeros_like(mask))
                     pic=rgb.copy();pic[truth&~_erode_mask(truth,1)]=[50,140,255]
                     pic[mask&~_erode_mask(mask,1)]=[50,240,150]
                     binding_overlay[truth&~_erode_mask(truth,1)]=[50,140,255]
@@ -201,9 +210,9 @@ def main(argv=None):
                     draw.rectangle(proposal['bbox'],outline=(255,196,64),width=3)
                     draw.rectangle(mask_bbox(mask),outline=(255,255,255),width=1)
                     cropped('prompts',np.asarray(picture))
-                    selected_prompt=dict(base_oracle_bbox=proposal['bbox'],rendered_visible_bbox=mask_bbox(truth),
+                    selected_prompt=dict(base_proposal_bbox=proposal['bbox'],proposal_source=proposals['source'],rendered_visible_bbox=mask_bbox(truth),
                         output_sam_bbox=mask_bbox(mask),actual_five_prompts=actual,
-                        proposal_id=proposal['id'],object_id=proposal['simulation_object_id'],
+                        proposal_id=proposal['id'],object_id=proposal.get('simulation_object_id'),
                         sam_instance_id=mid,supporting_proposal_ids=entry.get('supporting_proposal_ids',[]),
                         bbox_convention='xyxy half-open; RGB native pixel coordinates',
                         truth_usage='independent annotation audit, never geometry input')

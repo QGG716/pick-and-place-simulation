@@ -198,7 +198,7 @@ def test_real_video_loop_forwards_subprocess_and_reuses_one_model_for_two_jobs(t
         else: (output/'stop-worker').touch()
         return code
     monkeypatch.setattr(video, 'run_capture', run)
-    assert video.main(['--output',str(output),'--models',str(captures[0][1]),'--vision',str(tmp_path),
+    assert video.main(['--proposal-mode','oracle','--output',str(output),'--models',str(captures[0][1]),'--vision',str(tmp_path),
         '--geometry-backend','subprocess','--geometry-blas-threads','1','--geometry-timeout','23']) == 0
     assert len(calls) == len(set(calls)) == 4
     assert caches[0] is caches[1] and caches[0].loads == 1

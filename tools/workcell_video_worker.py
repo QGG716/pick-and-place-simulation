@@ -14,7 +14,11 @@ from run_workcell_perception_once import main as run_capture
 class RuntimeCache:
     def __init__(self): self.runtime=None; self.identity=None; self.loads=0
     def __call__(self,args):
-        identity=(str(args.upstream_root.resolve()),args.sam_model)
+        from unloading_perception.proposals import fingerprint
+        manifest_path=getattr(args,'detector_manifest',None)
+        detector_identity=None if manifest_path is None else fingerprint(read_json(manifest_path).get('grounding_dino'))
+        identity=(str(args.upstream_root.resolve()),args.sam_model,
+                  detector_identity,getattr(args,'detector_config',None))
         if self.runtime is None:
             from vision_resident_worker import ResidentRuntime
             self.runtime=ResidentRuntime(args); self.identity=identity; self.loads+=1
@@ -33,6 +37,8 @@ def main(argv=None):
     from geometry_runtime_config import add_arguments, validate_arguments, forwarded_arguments
     parser=argparse.ArgumentParser(description=__doc__)
     add_arguments(parser)
+    from perception_sam_pipeline import add_arguments as add_vision_arguments
+    add_vision_arguments(parser)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--models',type=Path,required=True)
     parser.add_argument('--vision',type=Path,required=True)
@@ -54,7 +60,10 @@ def main(argv=None):
         atomic_json(args.output/'worker-status.json',result)
         try:
             code=run_capture(['--capture',request['capture'],'--vision',str(args.vision),
-                '--models',str(args.models),'--output-directory',request['algorithm_output']] + forwarded_arguments(args),
+                '--models',str(args.models),'--output-directory',request['algorithm_output'],
+                '--proposal-mode',args.proposal_mode,'--detector-config',str(args.detector_config)]
+                + (['--stop-after',args.stop_after] if args.stop_after else [])
+                + (['--evaluate-gt'] if args.evaluate_gt else []) + forwarded_arguments(args),
                 runtime_factory=cache, geometry_stop_requested=lambda: (args.output/'stop-worker').exists())
             summary=read_json(Path(request['algorithm_output'])/'summary.json')
             result.update(exit_code=code,status='COMPLETED' if code==0 else 'FAILED',summary=summary)

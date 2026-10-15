@@ -55,7 +55,8 @@ class RosDelivery:
         if self.log is not None: self.log.close()
 
 
-def run_sequence(groups,output,*,models,config,algorithm_python,vision,delivery,run_algorithm=subprocess.run):
+def run_sequence(groups,output,*,models,config,algorithm_python,vision,delivery,run_algorithm=subprocess.run,
+                 proposal_mode='grounding-dino',detector_config=None):
     """Tests may substitute only external inference/transport; production reduction stays here."""
     state = {'schema_version':'finite_capture_progress_v1','batch_id':uuid.uuid4().hex,
         'sequence_kind':'INDEPENDENT_CAPTURE_GROUPS','status':'RUNNING','exit_code':1,
@@ -98,7 +99,8 @@ def run_sequence(groups,output,*,models,config,algorithm_python,vision,delivery,
                     with (folder/'algorithm.log').open('w',encoding='utf-8') as log:
                         result = run_algorithm([str(algorithm_python),str(ROOT/'tools/run_workcell_perception_once.py'),
                             '--capture',row['capture'],'--vision',str(vision),'--models',str(output/'models.json'),
-                            '--output-directory',str(folder/'algorithm')],env=env,stdout=log,stderr=subprocess.STDOUT)
+                            '--output-directory',str(folder/'algorithm'),'--proposal-mode',proposal_mode]
+                            + (['--detector-config',str(detector_config)] if detector_config else []),env=env,stdout=log,stderr=subprocess.STDOUT)
                     row['algorithm_seconds']=time.monotonic()-started
                     if summary_path.exists():
                         partial = read_json(summary_path)
@@ -159,6 +161,8 @@ def main(argv=None):
     parser.add_argument('--vision',type=Path,required=True)
     parser.add_argument('--algorithm-python',type=Path,required=True)
     parser.add_argument('--domain-id',type=int,default=174)
+    parser.add_argument('--proposal-mode',choices=('grounding-dino','oracle'),default='grounding-dino')
+    parser.add_argument('--detector-config',type=Path)
     args=parser.parse_args(argv)
     try:
         groups=manifest_groups(args.manifest)
@@ -177,7 +181,8 @@ def main(argv=None):
         atomic_json(output/'manifest.json',{'schema_version':'finite_capture_sequence_v1',
                     'sequence_kind':'INDEPENDENT_CAPTURE_GROUPS','groups':groups})
         return run_sequence(groups,output,models=models,config=config,algorithm_python=args.algorithm_python,
-            vision=args.vision,delivery=RosDelivery(output,args.domain_id))
+            vision=args.vision,delivery=RosDelivery(output,args.domain_id),
+            proposal_mode=args.proposal_mode,detector_config=args.detector_config)
     except Exception as exc:
         print(f'finite sequence: {type(exc).__name__}: {exc}',file=sys.stderr,flush=True)
         return 1

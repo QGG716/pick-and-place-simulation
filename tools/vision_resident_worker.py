@@ -22,6 +22,7 @@ import sys
 from time import monotonic, perf_counter, time
 from typing import Any
 from urllib.parse import unquote, urlparse
+from urllib.request import url2pathname
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,16 @@ class ResidentRuntime:
         torch.cuda.synchronize()
         self.model_load_seconds = perf_counter() - load_started
         self.startup_seconds = perf_counter() - started
+        self.detector = None
+
+    def detect(self, rgb):
+        if self.detector is None:
+            from grounding_dino_runtime import GroundingDinoRuntime
+            from unloading_perception.proposals import DetectorConfig
+            manifest = json.loads(Path(self.args.detector_manifest).read_text(encoding='utf-8'))
+            config = DetectorConfig(**json.loads(self.args.detector_config))
+            self.detector = GroundingDinoRuntime(manifest, config)
+        return self.detector.detect(rgb)
 
     def _sample_gpu(self, stage: str, samples: list[dict[str, Any]]) -> None:
         try:
@@ -288,7 +299,7 @@ class ResidentRuntime:
         parsed = urlparse(str(frame_data["rgb_uri"]))
         if parsed.scheme != "file" or parsed.netloc not in ("", "localhost"):
             raise ValueError("worker accepts local file URIs only")
-        source = Path(unquote(parsed.path)).resolve()
+        source = Path(url2pathname(parsed.path)).resolve()
         roots = tuple(path.resolve() for path in self.args.input_root)
         if not any(source == root or root in source.parents for root in roots):
             raise ValueError("input escapes configured worker roots")
@@ -302,7 +313,7 @@ class ResidentRuntime:
             parsed_proposal = urlparse(str(proposal_reference.get("uri", "")))
             if parsed_proposal.scheme != "file" or parsed_proposal.netloc not in ("", "localhost"):
                 raise ValueError("proposal_reference must use a local file URI")
-            proposal = Path(unquote(parsed_proposal.path)).resolve()
+            proposal = Path(url2pathname(parsed_proposal.path)).resolve()
             if not any(proposal == root or root in proposal.parents for root in roots):
                 raise ValueError("proposal reference escapes configured worker roots")
             expected_proposal_hash = str(proposal_reference.get("sha256", ""))
@@ -310,6 +321,19 @@ class ResidentRuntime:
                 raise ValueError("proposal file missing or SHA-256 mismatch")
         if proposal is None:
             raise ValueError("each request requires a validated proposal_reference")
+        document = json.loads(proposal.read_text(encoding='utf-8'))
+        from PIL import Image
+        with Image.open(source) as image:
+            if image.size != (frame_data['width'], frame_data['height']):
+                raise ValueError('SAM_FRAME_SIZE_MISMATCH')
+        if document.get('source') == 'GROUNDING_DINO':
+            from unloading_perception.proposals import validate_detector_document, fingerprint, DetectorConfig
+            validate_detector_document(document, rgb_sha256=input_hash, width=frame_data['width'],
+                height=frame_data['height'], capture_id=frame_data['capture_id'], module_id=frame_data['module_id'],
+                sensor_epoch=frame_data['epoch'], frame_sequence=frame_data['sequence'],
+                config_identity=fingerprint(DetectorConfig(**json.loads(self.args.detector_config)).to_dict()))
+        elif request.get('proposal_mode') != 'oracle' and not getattr(self.args, 'proposal_json', None):
+            raise ValueError('ORACLE_REQUIRES_EXPLICIT_MODE')
 
         safe_id = "".join(character for character in request_id if character.isalnum() or character in "-_")
         run_dir = controlled(
@@ -325,7 +349,27 @@ class ResidentRuntime:
 
         sam_image, masks = run_dir / "sam_crossvalidated.jpg", run_dir / "cargo_masks.npz"
         instances = run_dir / "cargo_instances.json"
-        self._sam(source, proposal, sam_image, masks, instances, run_dir / "sam.log", timings, samples)
+        if document['instances']:
+            self._sam(source, proposal, sam_image, masks, instances, run_dir / "sam.log", timings, samples)
+        else:
+            import numpy as np
+            np.savez_compressed(masks, masks=np.empty((0, frame_data['height'], frame_data['width']), dtype=bool),
+                mask_ids=np.empty(0, dtype=np.int64), boxes=np.empty((0, 4), dtype=np.float32),
+                scores=np.empty(0, dtype=np.float32), labels=np.empty(0, dtype='U3'), sources=np.empty(0, dtype='U3'))
+            instances.write_text(json.dumps(dict(source=str(source), box_source=str(proposal), instances=[],
+                rejected=[], proposal_audit=[], status='EMPTY_DETECTION', absence_means_free_space=False)), encoding='utf-8')
+            Image.open(source).save(sam_image)
+            (run_dir/'sam.log').write_text('NOT_RUN: EMPTY_DETECTION', encoding='utf-8')
+            timings['sam'] = 0.
+        # Upstream serializes zero accepted boxes as shape (0,). Normalize only
+        # that empty archive shape; retain every nonempty bbox and score exactly.
+        import numpy as np
+        with np.load(masks, allow_pickle=False) as archive:
+            empty = len(archive['mask_ids']) == 0
+            values = {k: archive[k] for k in archive.files} if empty else None
+        if empty and values['boxes'].shape != (0, 4):
+            values['boxes'] = np.empty((0, 4), dtype=np.float32)
+            np.savez_compressed(masks, **values)
         session_path=run_dir/'sam_image_session.json'
         if session_path.exists():
             session=json.loads(session_path.read_text())
@@ -335,17 +379,22 @@ class ResidentRuntime:
 
         python = sys.executable
         faces_image, faces_json, faces_dir = run_dir / "box_geometry_2d.jpg", run_dir / "box_geometry_2d.json", run_dir / "face_crops"
-        logs["geometry_2d"] = self._stage("geometry_2d", [
+        sam_only = request.get('stop_after') == 'sam'
+        if not sam_only and not empty:
+            logs["geometry_2d"] = self._stage("geometry_2d", [
             python, "pipeline/geometry/recover_box_faces.py", str(source), str(masks),
             "--axis-mode", "none", "--refinement-fallback", "minrect",
             "--max-face-area-ratio", "0.15", "--min-mask-area", "50",
             "--min-iou", "0.45", "--min-line-support", "0.15",
             "--output", str(faces_image), "--json-output", str(faces_json),
             "--faces-dir", str(faces_dir),
-        ], run_dir, timings, samples)
+            ], run_dir, timings, samples)
+        elif not sam_only:
+            faces_json.write_text(json.dumps({'instances': [], 'status': 'NOT_RUN_EMPTY_SEGMENTATION'}), encoding='utf-8')
 
-        if not self.args.comparison:
-            artifacts = {p.name: {"path": str(p), "sha256": sha256(p)} for p in (sam_image, masks, instances, faces_json)}
+        if sam_only or not self.args.comparison:
+            artifacts = {p.name: {"path": str(p), "sha256": sha256(p)} for p in
+                         ((sam_image, masks, instances) if sam_only else (sam_image, masks, instances, faces_json))}
             session_path=run_dir/'sam_image_session.json'
             if session_path.exists():artifacts[session_path.name]={'path':str(session_path),'sha256':sha256(session_path)}
             config = {
@@ -356,6 +405,8 @@ class ResidentRuntime:
                 "upstream_sha": self.upstream_commit,
                 "processing_divisor": getattr(self.args,'processing_divisor',1),
                 "sam_image_reuse": getattr(self.args,'sam_image_reuse',True),
+                "proposal_source": document.get('source'), "stop_after": 'sam' if sam_only else None,
+                "geometry_2d": 'NOT_RUN' if sam_only else 'NOT_RUN_EMPTY_SEGMENTATION' if empty else 'COMPLETED',
             }
             timings["request_total"] = perf_counter() - request_started
             metrics_path = run_dir / "metrics.json"
@@ -454,6 +505,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--output-root", type=Path, required=True)
     result.add_argument("--input-root", type=Path, action="append", required=True)
     result.add_argument("--sam-model", required=True)
+    result.add_argument('--detector-manifest', type=Path)
+    result.add_argument('--detector-config', default='{}')
     result.add_argument('--processing-divisor',type=int,choices=(1,2),default=1)
     result.add_argument('--sam-image-reuse',action=argparse.BooleanOptionalAction,default=True)
     result.add_argument("--sam-model-id", default="facebook/sam-vit-base")

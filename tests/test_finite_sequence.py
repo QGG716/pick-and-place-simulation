@@ -52,7 +52,7 @@ def run(tmp_path,monkeypatch,groups,models):
         calls.append(capture)
         return SimpleNamespace(returncode=code)
     code=run_sequence(groups,output,models=models,config=config,algorithm_python=sys.executable,
-                      vision=tmp_path,delivery=delivery,run_algorithm=inference)
+                      vision=tmp_path,delivery=delivery,run_algorithm=inference,proposal_mode='oracle')
     return code,read_json(output/'progress.json'),calls,delivery
 
 

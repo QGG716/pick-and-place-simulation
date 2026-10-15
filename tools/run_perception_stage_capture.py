@@ -13,6 +13,8 @@ from unloading_perception.finite_sequence import atomic_json, verify_capture, ve
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
+    from perception_sam_pipeline import add_arguments
+    add_arguments(p, include_sam_stop=False)
     p.add_argument('--plan',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--models',type=Path,required=True)
@@ -32,7 +34,7 @@ def main(argv=None):
     atomic_json(a.output/'frozen_plan.json',dict(plan=plan,inputs=inputs,models=models,effective_config=config,
         selection='Both original fixed groups, all modules and instances, serial, no retries',
         visual_selection='First fused object, best candidate by existing rank even if rejected',
-        policy='SIMULATION_CAPTURE / NEW_ALGORITHM_RUN / ORACLE_PROPOSAL / READ_ONLY',enable_hardware=False))
+        policy='SIMULATION_CAPTURE / NEW_ALGORITHM_RUN / '+a.proposal_mode+' / READ_ONLY',enable_hardware=False))
     from workcell_video_worker import RuntimeCache
     from run_workcell_perception_once import main as run_capture
     cache=RuntimeCache();rows=[]
@@ -44,7 +46,9 @@ def main(argv=None):
         try:
             code=run_capture(['--capture',g['capture'],'--vision',str(a.vision),'--models',str(a.models),
                 '--output-directory',str(folder/'algorithm'),'--geometry-backend','subprocess',
-                '--geometry-blas-threads','1','--geometry-timeout','1200','--stage-trace'],runtime_factory=cache)
+                '--geometry-blas-threads','1','--geometry-timeout','1200','--stage-trace',
+                '--proposal-mode',a.proposal_mode,'--detector-config',str(a.detector_config)]
+                + (['--evaluate-gt'] if a.evaluate_gt else []),runtime_factory=cache)
             if code:raise RuntimeError('ALGORITHM_FAILED: '+str(code))
             summary,ref,counts=verify_result(folder/'algorithm/summary.json',inputs[g['name']],models,config,
                                             expected_output=folder/'algorithm')

@@ -91,7 +91,7 @@ def test_resident_model_reused_across_two_real_orchestrations(tmp_path, monkeypa
         with monkeypatch.context() as scope:
             calls = install(scope, capture)  # Explicit CPU substitute for models/geometry only.
             code = runpy.run_path(str(ROOT/'tools/run_workcell_perception_once.py'))['main'](
-                ['--capture', str(capture), '--vision', str(tmp_path), '--models', str(models)], runtime_factory=cache)
+                ['--proposal-mode', 'oracle', '--capture', str(capture), '--vision', str(tmp_path), '--models', str(models)], runtime_factory=cache)
         assert code == 0
         assert sum(stage == 'sam' for stage, _ in calls) == 2
         report = json.loads((capture/'perception-once/summary.json').read_text(encoding='utf-8'))

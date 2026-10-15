@@ -1,0 +1,10 @@
+{
+  "text": "cardboard box.",
+  "box_threshold": 0.25,
+  "text_threshold": 0.25,
+  "duplicate_iou": 0.9,
+  "shortest_edge": 800,
+  "longest_edge": 1333,
+  "max_candidates": 300,
+  "seed": 17
+}

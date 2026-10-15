@@ -1,0 +1,27 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>02 检测提示与 SAM 分割</title>
+<style>body{margin:20px;background:#101820;color:#e7edf2;font:15px system-ui}button,select,label{margin:5px}header{position:sticky;top:0;background:#101820;padding:8px;z-index:2}.views{display:flex;gap:10px}.view{width:33.3%;overflow:auto}canvas{max-width:100%;height:auto}body.native .view{max-height:85vh}body.native canvas{max-width:none}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#1a2734;padding:15px}.focus{overflow:auto;max-height:80vh}h2{font-size:18px}</style>
+<header><h2>02 原始 RGB → Grounding DINO 黄框 → SAM 绿线</h2><div id="identity"></div>
+<select id="selection"><option value="">全部 proposals</option></select>
+<label><input id="white" type="checkbox">白色 mask 外接框</label>
+<label><input id="jitter" type="checkbox">实际五组扰动框</label>
+<label id="gtlabel"><input id="gt" type="checkbox">蓝色 GT（仅评价）</label>
+<label><input id="native" type="checkbox">原生像素 1:1</label></header>
+<div class="views"><div class="view">原始 RGB<canvas id="raw"></canvas></div><div class="view">实际基础提示黄框<canvas id="boxes"></canvas></div><div class="view">SAM 绿色边界 + 黄框<canvas id="masks"></canvas></div></div>
+<h2>选中 proposal：原生像素放大</h2><div class="focus"><canvas id="focus"></canvas></div><pre id="info"></pre><details><summary>检测过滤前候选、抑制原因与配置</summary><pre id="candidates"></pre></details>
+<script src="sam_review_data.js"></script><script>
+const d=window.REVIEW, $=id=>document.getElementById(id), im=new Image();
+$('identity').textContent=`${d.capture_id} / ${d.source} / ${d.proposals.length} proposals / ${d.mask_count} masks / geometry ${d.stages.geometry}；执行 BLOCKED`;
+d.proposals.forEach(p=>{const o=document.createElement('option');o.value=p.proposal_id;o.textContent=`P${p.proposal_id} ${p.label} detector=${p.detector_score??'ORACLE'} → mask ${p.mask_id??'无'} (${p.status})`;$('selection').appendChild(o)});
+$('gtlabel').hidden=!d.evaluation; $('candidates').textContent=JSON.stringify({detector:d.detector,truncated:d.truncated,candidates:d.detector_candidates},null,2);
+function rect(c,b,color,width=2){c.strokeStyle=color;c.lineWidth=width;c.strokeRect(b[0],b[1],b[2]-b[0],b[3]-b[1])}
+function curves(c,lines,color){c.strokeStyle=color;c.lineWidth=2;for(const line of lines){c.beginPath();line.forEach((p,i)=>i?c.lineTo(...p):c.moveTo(...p));c.closePath();c.stroke()}}
+function draw(){document.body.classList.toggle('native',$('native').checked);const selected=d.proposals.filter(p=>!$('selection').value||p.proposal_id===Number($('selection').value));
+ for(const id of ['raw','boxes','masks']){const cv=$(id);cv.width=d.source_size[0];cv.height=d.source_size[1];const c=cv.getContext('2d');c.drawImage(im,0,0);if(id==='raw')continue;
+ for(const p of selected){const b=p.actual_prompt?.base_bbox||p.bbox;rect(c,b,'#ffff00',3);c.font='22px sans-serif';c.fillStyle='#ffff00';c.fillText(`P${p.proposal_id} ${p.label} ${p.detector_score?.toFixed(3)??'ORACLE'}`,b[0]+3,b[1]+24);
+ if($('jitter').checked&&p.actual_prompt)for(const v of p.actual_prompt.variants)rect(c,v,'#ffae35',1);
+ if(id==='masks'){curves(c,p.contours,'#1eff50');if($('white').checked&&p.mask_bbox)rect(c,p.mask_bbox,'white');}}
+ if($('gt').checked&&d.evaluation)for(const g of d.evaluation.gt_objects)curves(c,g.contours,'#3388ff');}
+ const p=selected.length===1?selected[0]:null,cv=$('focus');if(p){const b=p.bbox,x=Math.max(0,Math.floor(b[0])-30),y=Math.max(0,Math.floor(b[1])-30);cv.width=Math.min(im.width,Math.ceil(b[2])+30)-x;cv.height=Math.min(im.height,Math.ceil(b[3])+30)-y;cv.getContext('2d').drawImage($('masks'),x,y,cv.width,cv.height,0,0,cv.width,cv.height)}else{cv.width=1;cv.height=1}
+ $('info').textContent=JSON.stringify(p?{...p,contours:'green contours above'}:{note:d.prompt_note,stages:d.stages,evaluation:d.evaluation?.summary||'NOT_RUN',score_note:'detector_score、SAM predicted IoU、SAM stability 独立展示；无总置信度。'},null,2)}
+ for(const id of ['selection','white','jitter','gt','native'])$(id).onchange=draw;im.onload=draw;im.src=d.rgb;
+</script></html>

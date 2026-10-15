@@ -16,7 +16,7 @@ def file_reference(path):
     return {'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
-def empty_module_observation(payload):
+def empty_module_observation(payload, *, proposal_source='ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL'):
     """Verified SAM returned no masks; absence is explicitly unknown space."""
     m = payload.metadata
     return PerceptionObservation(SCHEMA_VERSION, 'rgbd-empty-' + m.capture_id,
@@ -26,7 +26,7 @@ def empty_module_observation(payload):
         'sam+pinned-plane-cuboid+registered-depth', m.calibration_identity,
         ObservationStatus.PARTIAL, None, None, (),
         (UnknownRegion('empty-' + m.capture_id, 'world', 'EMPTY_SEGMENTATION_UNKNOWN_VOLUME'),),
-        {'proposal_source': 'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL', 'raw_image_automatic': False,
+        {'proposal_source': proposal_source, 'raw_image_automatic': proposal_source == 'GROUNDING_DINO',
          'absence_means_free_space': False, 'input_provenance': payload.input_provenance(),
          'module_binding': {'module_id': payload.camera['module_id'], 'capture_id': m.capture_id,
                             'calibration_identity': m.calibration_identity, 'T_W_C_at_capture': m.T_W_C_at_capture}}, False)
@@ -94,8 +94,8 @@ def load_algorithm_artifact(index_path, expected_sha256):
     if (canonical_fingerprint(observation.coverage['algorithm_run']) != canonical_fingerprint({k: v for k, v in index.items() if k != 'observation'})
             or set(index['module_observations']) != set(observation.coverage['expected_modules'])
             or set(observation.coverage['received_modules']) != set(observation.coverage['expected_modules'])
-            or observation.coverage.get('raw_image_automatic') is not False
-            or observation.coverage.get('proposal_source') != 'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL'
+            or observation.coverage.get('proposal_source') not in ('ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL', 'GROUNDING_DINO')
+            or observation.coverage.get('raw_image_automatic') is not (observation.coverage.get('proposal_source') == 'GROUNDING_DINO')
             or any(c.candidate_eligible for c in observation.cargo)):
         raise ValueError('ALGORITHM_ARTIFACT_PROVENANCE_MISMATCH')
     for reference in (*index['module_observations'].values(), index['fusion_result']):

@@ -46,7 +46,7 @@ def infer(runtime,folder,binding,camera,request_id, *, payload):
     binding = payload.metadata.to_dict()
     camera = payload.camera
     source,proposal=folder/'sensor_rgb.png',folder/'oracle_proposals.json'
-    request={'schema_version':'1.1.0','op':'infer','request_id':request_id,'worker_epoch':'metric-small-scenes',
+    request={'schema_version':'1.1.0','op':'infer','request_id':request_id,'worker_epoch':'metric-small-scenes','proposal_mode':'oracle',
              'proposal_reference':{'uri':proposal.resolve().as_uri(),'sha256':sha256(proposal)},
              'frame':{'source':'isaac-sim-6.0.1','stream':'perception_validation','epoch':binding['sensor_epoch'],
                        'sequence':binding['frame_sequence'],'capture_time':binding['capture_center_time'],

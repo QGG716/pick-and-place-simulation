@@ -1,4 +1,4 @@
-"""One existing oracle-proposal SAM/RGB-D run per new module, without tuning."""
+"""Grounding DINO -> existing SAM -> optional unchanged RGB-D stages."""
 import argparse
 import json
 import os
@@ -163,6 +163,8 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
     from workcell_geometry_process import add_arguments, validate_arguments, effective_config, dispatch_geometry
     p=argparse.ArgumentParser(description=__doc__)
     add_arguments(p)
+    from perception_sam_pipeline import add_arguments as add_vision_arguments
+    add_vision_arguments(p)
     p.add_argument('--stage-trace', action='store_true', help='save read-only stage snapshots; no algorithm changes')
     p.add_argument('--processing-divisor',type=int,choices=(1,2),default=1)
     p.add_argument('--sam-image-reuse',action=argparse.BooleanOptionalAction,default=True)
@@ -172,6 +174,11 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
     p.add_argument('--output-directory',type=Path,help='new isolated run directory; refuse overwrite')
     a=p.parse_args(argv)
     validate_arguments(p, a)
+    if a.proposal_mode == 'grounding-dino' and a.processing_divisor != 1:
+        p.error('Grounding DINO rollout preserves the original SAM working resolution (divisor=1)')
+    if a.stop_after == 'sam':
+        from perception_sam_pipeline import run_sam_only
+        return run_sam_only(a, runtime_factory=runtime_factory)
     try:
         a.capture, a.vision = a.capture.resolve(), a.vision.resolve()
         output=(a.output_directory or a.capture/'perception-once').resolve()
@@ -215,8 +222,8 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         summary['runs'] = [
             {'module': camera.get('module_id'), 'status': 'NOT_RUN', 'stage': 'pending',
              'sam_attempts': 0, 'metric_attempts': 0,
-             'proposal_source': 'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL',
-             'raw_image_automatic': False, 'planning_admissible': False}
+             'proposal_source': 'GROUNDING_DINO' if a.proposal_mode == 'grounding-dino' else 'ISAAC_GROUND_TRUTH_ORACLE_PROPOSAL',
+             'raw_image_automatic': a.proposal_mode == 'grounding-dino', 'planning_admissible': False}
             for camera in manifest.cameras]
         modules = [row['module'] for row in summary['runs']]
         if (not modules or len(set(modules)) != len(modules) or
@@ -255,11 +262,18 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
             expected_modules=modules)
         checkpoint('models')
         models = summary['model_manifest'] = _read_json(a.models)
+        if a.proposal_mode == 'grounding-dino':
+            from unloading_perception.finite_sequence import verify_sam_files
+            verify_sam_files(models)
         checkpoint('config')
         import yaml
         config = yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text(encoding='utf-8'))
         config['vision']['processing_divisor']=a.processing_divisor
         config['vision']['sam_image_reuse']=a.sam_image_reuse
+        if a.proposal_mode == 'grounding-dino':
+            from unloading_perception.proposals import DetectorConfig
+            summary['detector_configuration'] = DetectorConfig(**_read_json(a.detector_config)).to_dict()
+        summary['input_validation_scope'] = 'LEGACY_FULL_RGBD_ARCHIVE_REQUIRES_GT; detector receives RGB only'
         if a.legacy_cuboid_diagnostic is not None:
             config['vision']['legacy_cuboid_diagnostic'] = a.legacy_cuboid_diagnostic
         config = effective_config(config, a.geometry_backend, a.geometry_blas_threads)
@@ -271,10 +285,8 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         from run_isaac_rgbd_geometry import _worker_artifacts
         from vision_resident_worker import ResidentRuntime, parser as worker_parser
         checkpoint('runtime_initialize')
-        runtime=(runtime_factory or ResidentRuntime)(worker_parser().parse_args(['--upstream-root',str(a.vision),
-            '--output-root',str(output/'sam-runs'),'--input-root',str(output),'--sam-model',models['sam']['snapshot_path']]
-            +(['--processing-divisor',str(a.processing_divisor)] if a.processing_divisor!=1 else [])
-            +(['--no-sam-image-reuse'] if not a.sam_image_reuse else [])))
+        from perception_sam_pipeline import runtime_arguments, prepare_proposals, infer_sam
+        runtime=(runtime_factory or ResidentRuntime)(runtime_arguments(a, output, models))
         for camera, row in zip(manifest.cameras, summary['runs']):
             if row['module'] not in prepared:
                 continue
@@ -286,13 +298,17 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
             payload = prepared[module]
             row.update(status='RUNNING', artifact_directory=str(folder))
             try:
-                checkpoint('oracle_proposals', row)
-                binding, annotations, proposals = oracle_proposals(folder, camera, payload=payload)
+                checkpoint('oracle_proposals' if a.proposal_mode == 'oracle' else 'detector_proposals', row)
+                if a.proposal_mode == 'oracle':
+                    binding, annotations, proposals = oracle_proposals(folder, camera, payload=payload)
+                else:
+                    proposals, row['detector_timing_seconds'] = prepare_proposals(runtime, folder, mode=a.proposal_mode)
                 row['proposal_count'] = len(proposals['instances'])
                 checkpoint('sam_inference', row)
                 request_id = summary['run_id'] + '-' + module
                 row['sam_attempts'] += 1
-                response = infer(runtime, folder, binding, camera, request_id, payload=payload)
+                response = (infer(runtime, folder, binding, camera, request_id, payload=payload) if a.proposal_mode == 'oracle'
+                            else infer_sam(runtime, folder, request_id, mode=a.proposal_mode))
                 _check_technical_status(response, 'SAM inference')
                 checkpoint('worker_artifacts', row)
                 response = _read_json(folder/'mode_b1_worker_response.json')
@@ -306,8 +322,18 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
                 for name in ('cargo_masks.npz', 'cargo_instances.json', 'box_geometry_2d.json'):
                     _owned_file(artifacts[name]['path'], metrics_path.parent)
                 count = _mask_count(artifacts)
-                checkpoint('mask_evaluation', row)
-                row['mask_evaluation'] = evaluate_masks(folder, artifacts, folder, payload=payload)
+                if a.evaluate_gt or a.proposal_mode == 'oracle':
+                    checkpoint('mask_evaluation', row)
+                    if a.proposal_mode == 'oracle':
+                        row['mask_evaluation'] = evaluate_masks(folder, artifacts, folder, payload=payload)
+                    else:
+                        from evaluate_detector_sam import evaluate
+                        row['mask_evaluation'] = evaluate(payload.source_directory, folder, artifacts)
+                else:
+                    row['mask_evaluation'] = {'status': 'NOT_RUN'}
+                if a.proposal_mode == 'grounding-dino':
+                    from build_sam_review import build_review
+                    row['sam_review'] = build_review(folder, artifacts)
                 if count == 0:
                     # The existing point-map builder requires at least one mask.
                     # A verified empty segmentation is a legal algorithm result.
@@ -315,7 +341,7 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
                     _write_json(folder/'rgbd_cuboids.json', {'instances': [], 'reason': 'EMPTY_SEGMENTATION',
                                                          'run_id': summary['run_id']})
                     from unloading_perception.algorithm_artifact import empty_module_observation
-                    result = {'observed_face_sets': (), 'observation': empty_module_observation(payload)}
+                    result = {'observed_face_sets': (), 'observation': empty_module_observation(payload, proposal_source=row['proposal_source'])}
                     if a.geometry_backend == 'subprocess':
                         from dataclasses import replace
                         from unloading_contracts import canonical_fingerprint
@@ -338,6 +364,10 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
                 checkpoint('geometry_result', row)
                 geometry = _read_json(_owned_file(folder/'rgbd_cuboids.json', folder))
                 row.update(_algorithm_counts(result, geometry, count))
+                if a.proposal_mode == 'grounding-dino':
+                    row['sam_review'] = build_review(folder, artifacts, stages={
+                        'geometry':'COMPLETED' if count else 'NOT_RUN_EMPTY_SEGMENTATION',
+                        'contacts':'NOT_RUN','fusion':'NOT_RUN','ros':'NOT_RUN','planning':'NOT_RUN','execution':'NOT_RUN'})
                 results[module] = result
                 row.update(status=COMPLETED, stage='completed')
             except SummaryWriteError:

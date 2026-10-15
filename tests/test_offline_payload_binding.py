@@ -197,7 +197,7 @@ def test_real_once_cli_rejects_tampered_input_before_inference(tmp_path, bad_cou
         path = capture/'FULL_STACK_NOMINAL/modules'/module/'metric_depth_m.npy'
         data = np.load(path, allow_pickle=False); data[0, 0] += .125; np.save(path, data)
     launcher = Path(__file__).with_name('workcell_once_cli.py')
-    result = subprocess.run([sys.executable, str(launcher), '--capture', str(capture), '--vision', str(tmp_path),
+    result = subprocess.run([sys.executable, str(launcher), '--proposal-mode', 'oracle', '--capture', str(capture), '--vision', str(tmp_path),
                              '--models', str(models)], capture_output=True, text=True, encoding='utf-8', timeout=20)
     assert result.returncode == 1 and 'HASH_MISMATCH' in result.stderr
     summary = json.loads((capture/'perception-once/summary.json').read_text(encoding='utf-8'))

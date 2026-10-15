@@ -179,8 +179,11 @@ def install(monkeypatch, capture):
 
     def parser():
         result = argparse.ArgumentParser()
-        for key in ("upstream-root", "output-root", "input-root", "sam-model"):
+        for key in ("upstream-root", "output-root", "input-root", "sam-model", "detector-manifest"):
             result.add_argument("--" + key, type=Path)
+        result.add_argument('--detector-config')
+        result.add_argument('--processing-divisor', type=int, default=1)
+        result.add_argument('--no-sam-image-reuse', action='store_true')
         return result
 
     worker.parser = parser

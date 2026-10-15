@@ -192,7 +192,9 @@ def dispatch_geometry(*, backend='inline', blas_threads=None, geometry_python=No
         ids = [int(i) for i in archive['mask_ids']]
     if len(set(ids)) != len(ids): raise ValueError('duplicate mask IDs')
     response = read(source/'mode_b1_worker_response.json')
-    names = [*payload.raw_files, 'oracle_proposals.json', 'mode_b1_worker_response.json']
+    from unloading_perception.proposals import proposal_path
+    names = [*payload.raw_files, proposal_path(source).name, 'mode_b1_worker_response.json']
+    if (source/'proposal_binding.json').exists(): names.append('proposal_binding.json')
     if not replay: names.append('input_provenance.json')
     inputs = {name: reference(source/name) for name in names}
     inputs['sam_metrics'] = response['metrics_reference']

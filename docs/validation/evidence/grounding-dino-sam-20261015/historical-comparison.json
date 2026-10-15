@@ -1,0 +1,212 @@
+{
+  "rows": [
+    {
+      "frame": 32,
+      "module": "module_0_upper",
+      "origin": "HISTORICAL_CONTROL_NOT_NEW_INFERENCE",
+      "source_directory": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/module_0_upper",
+      "artifacts": {
+        "sam_crossvalidated.jpg": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_0_upper/sam_crossvalidated.jpg",
+          "sha256": "15e13fc8e350e816e80c31bbcdbb2666d834d5d18d2bbed6bd6b28bfb268f146"
+        },
+        "cargo_masks.npz": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_0_upper/cargo_masks.npz",
+          "sha256": "96f2a40cb5d39762b750a1f9c66c38fedfce4a105908ab9824a531e787a5bb0e"
+        },
+        "cargo_instances.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_0_upper/cargo_instances.json",
+          "sha256": "7d60b867b2d3aa3f0a7a67a47d8b3606659fe337ea81093b3aa69174d9be0d11"
+        },
+        "box_geometry_2d.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_0_upper/box_geometry_2d.json",
+          "sha256": "a4f4922efea73979af7dbf1b98a1a955991e98b4ec1940c1d041fcc47cdf741d"
+        },
+        "sam_image_session.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_0_upper/sam_image_session.json",
+          "sha256": "a62cb040769b4b6d5ca5bb97682419979126bac59f91776b5adbba19db96ae8d"
+        }
+      },
+      "evaluation": {
+        "gt_count": 16,
+        "detector_count": 16,
+        "matched_count": 16,
+        "precision_iou_0_5": 1.0,
+        "recall_iou_0_5": 1.0,
+        "unmatched_proposal_ids": [],
+        "unmatched_gt_ids": [],
+        "mask_count": 16,
+        "matched_mask_mean_iou": 0.9079404411609705,
+        "mask_iou_sum_over_all_gt": 0.9079404411609706,
+        "merged_mask_count": 0,
+        "split_or_duplicate_gt_ids": [],
+        "masks_without_significant_gt": [],
+        "gt_without_significant_mask": [],
+        "multi_box_proposals": [
+          {
+            "proposal_id": 5,
+            "gt_ids": [
+              "carton_l04_c03",
+              "carton_l05_c03"
+            ]
+          }
+        ],
+        "suppressed_near_identical": 0
+      }
+    },
+    {
+      "frame": 32,
+      "module": "module_1_lower",
+      "origin": "HISTORICAL_CONTROL_NOT_NEW_INFERENCE",
+      "source_directory": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/module_1_lower",
+      "artifacts": {
+        "sam_crossvalidated.jpg": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_1_lower/sam_crossvalidated.jpg",
+          "sha256": "d31f8d148c757b34341018fa188bae5bf5fbff77c8b3e7ed0f3bf20ca7832652"
+        },
+        "cargo_masks.npz": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_1_lower/cargo_masks.npz",
+          "sha256": "473e995caa653823765d8e571e0d7417f68310d544adfdfdb657da8a246f4970"
+        },
+        "cargo_instances.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_1_lower/cargo_instances.json",
+          "sha256": "fe91665ab6f0ac49fae50b80ef753723012e684764a491b163cb247ac6d791f8"
+        },
+        "box_geometry_2d.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_1_lower/box_geometry_2d.json",
+          "sha256": "2dbc6751615d5f9b7f53d847626b984ff60d1dc47f3a4461103037b0fb1838f7"
+        },
+        "sam_image_session.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame32/algorithm/sam-runs/carton-assets-recording-01-000032-735207fa0f3b4ae495b758fa76838f29-module_1_lower/sam_image_session.json",
+          "sha256": "3f558760c43441330a95dcca012bac69c7e708289c5bcedc637a40c2d359fdf2"
+        }
+      },
+      "evaluation": {
+        "gt_count": 31,
+        "detector_count": 31,
+        "matched_count": 31,
+        "precision_iou_0_5": 1.0,
+        "recall_iou_0_5": 1.0,
+        "unmatched_proposal_ids": [],
+        "unmatched_gt_ids": [],
+        "mask_count": 31,
+        "matched_mask_mean_iou": 0.9369679172264367,
+        "mask_iou_sum_over_all_gt": 0.9369679172264367,
+        "merged_mask_count": 0,
+        "split_or_duplicate_gt_ids": [],
+        "masks_without_significant_gt": [],
+        "gt_without_significant_mask": [],
+        "multi_box_proposals": [
+          {
+            "proposal_id": 5,
+            "gt_ids": [
+              "carton_l00_c03",
+              "carton_l01_c03"
+            ]
+          },
+          {
+            "proposal_id": 6,
+            "gt_ids": [
+              "carton_l00_c03",
+              "carton_l01_c04"
+            ]
+          }
+        ],
+        "suppressed_near_identical": 0
+      }
+    },
+    {
+      "frame": 602,
+      "module": "module_0_upper",
+      "origin": "HISTORICAL_CONTROL_NOT_NEW_INFERENCE",
+      "source_directory": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/module_0_upper",
+      "artifacts": {
+        "sam_crossvalidated.jpg": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_0_upper/sam_crossvalidated.jpg",
+          "sha256": "952119d685fcd945e5e0c28f66877ae263f725940a9544116f75a6f9d6ab2e74"
+        },
+        "cargo_masks.npz": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_0_upper/cargo_masks.npz",
+          "sha256": "169f08f53b05bcc76468328ccfaf46e558245c39218dd248eaf76f9221ea4e41"
+        },
+        "cargo_instances.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_0_upper/cargo_instances.json",
+          "sha256": "4335ddd1e9cc727fcc819ccfa422a9064c77eb30f29a1feb86c1cdb05dbbcf7b"
+        },
+        "box_geometry_2d.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_0_upper/box_geometry_2d.json",
+          "sha256": "98655c5812596246f8a3b5c4b52ff328c2996bcc241fe7d3809bd17b8ca06c0a"
+        },
+        "sam_image_session.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_0_upper/sam_image_session.json",
+          "sha256": "38b9b73442fbe28699fb2f4144a68c91706e53e9da89bfd2167db77dc2a59915"
+        }
+      },
+      "evaluation": {
+        "gt_count": 12,
+        "detector_count": 12,
+        "matched_count": 12,
+        "precision_iou_0_5": 1.0,
+        "recall_iou_0_5": 1.0,
+        "unmatched_proposal_ids": [],
+        "unmatched_gt_ids": [],
+        "mask_count": 12,
+        "matched_mask_mean_iou": 0.9604605503760996,
+        "mask_iou_sum_over_all_gt": 0.9604605503760996,
+        "merged_mask_count": 0,
+        "split_or_duplicate_gt_ids": [],
+        "masks_without_significant_gt": [],
+        "gt_without_significant_mask": [],
+        "multi_box_proposals": [],
+        "suppressed_near_identical": 0
+      }
+    },
+    {
+      "frame": 602,
+      "module": "module_1_lower",
+      "origin": "HISTORICAL_CONTROL_NOT_NEW_INFERENCE",
+      "source_directory": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/module_1_lower",
+      "artifacts": {
+        "sam_crossvalidated.jpg": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_1_lower/sam_crossvalidated.jpg",
+          "sha256": "a587e72ad4e3a8b786eef9e14094d16bf167d3c4faf52ef826af8d5b1a526b9d"
+        },
+        "cargo_masks.npz": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_1_lower/cargo_masks.npz",
+          "sha256": "490ebf553ddbe604c0a8407194a35bd9051c4876e6a1772e0c727d4b6feae6f4"
+        },
+        "cargo_instances.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_1_lower/cargo_instances.json",
+          "sha256": "1676e34bf75971d8f150a33bb706ceccfedd34d4b471a645f2d81dc25fad0fa6"
+        },
+        "box_geometry_2d.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_1_lower/box_geometry_2d.json",
+          "sha256": "b8f242ec6fdd017f6ec830c2aced42585499b41954656e6deb9406329335cda0"
+        },
+        "sam_image_session.json": {
+          "path": "/root/autodl-tmp/v05-acceptance/stage-repair-20261002/final-run/frame602/algorithm/sam-runs/carton-assets-recording-01-000602-b11fffb074ea4511b772622caf681d46-module_1_lower/sam_image_session.json",
+          "sha256": "ef8eb5bacdc181b5dc61f9007c372340feb7b6b696666433dfe13f7c9e9d0fc3"
+        }
+      },
+      "evaluation": {
+        "gt_count": 24,
+        "detector_count": 24,
+        "matched_count": 24,
+        "precision_iou_0_5": 1.0,
+        "recall_iou_0_5": 1.0,
+        "unmatched_proposal_ids": [],
+        "unmatched_gt_ids": [],
+        "mask_count": 24,
+        "matched_mask_mean_iou": 0.9604598923047316,
+        "mask_iou_sum_over_all_gt": 0.9604598923047317,
+        "merged_mask_count": 0,
+        "split_or_duplicate_gt_ids": [],
+        "masks_without_significant_gt": [],
+        "gt_without_significant_mask": [],
+        "multi_box_proposals": [],
+        "suppressed_near_identical": 0
+      }
+    }
+  ],
+  "origin": "HISTORICAL_CONTROL_NOT_NEW_INFERENCE"
+}

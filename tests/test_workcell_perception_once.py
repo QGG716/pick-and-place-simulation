@@ -14,7 +14,7 @@ def test_partial_technical_failure_returns_nonzero(tmp_path, monkeypatch):
     capture, models, modules = capture_fixture(tmp_path)
     calls = install(monkeypatch, capture)
     subject = runpy.run_path(str(SCRIPT), run_name="workcell_once_subject")
-    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--capture", str(capture), "--vision", str(tmp_path), "--models", str(models)])
+    monkeypatch.setattr(sys, "argv", [str(SCRIPT), "--proposal-mode", "oracle", "--capture", str(capture), "--vision", str(tmp_path), "--models", str(models)])
     code = subject["main"]()
     summary = json.loads((capture / "perception-once/summary.json").read_text(encoding="utf-8"))
     statuses = [row["status"] for row in summary["runs"]]
@@ -28,7 +28,7 @@ def prepare(tmp_path, monkeypatch, scenarios=('normal', 'normal')):
     capture, models, modules = capture_fixture(tmp_path, scenarios)
     calls = install(monkeypatch, capture)
     subject = runpy.run_path(str(SCRIPT), run_name='workcell_once_subject')
-    argv = ['--capture', str(capture), '--vision', str(tmp_path), '--models', str(models)]
+    argv = ['--proposal-mode', 'oracle', '--capture', str(capture), '--vision', str(tmp_path), '--models', str(models)]
     return capture, modules, calls, subject['main'], argv
 
 
@@ -341,7 +341,7 @@ def test_interrupt_preserves_completed_and_not_run_records(tmp_path, monkeypatch
 def test_real_cli_process_exit_and_summary(tmp_path, scenarios, code):
     capture, models, modules = capture_fixture(tmp_path, scenarios)
     launcher = Path(__file__).with_name('workcell_once_cli.py')
-    process = subprocess.run([sys.executable, str(launcher), '--capture', str(capture),
+    process = subprocess.run([sys.executable, str(launcher), '--proposal-mode', 'oracle', '--capture', str(capture),
                               '--vision', str(tmp_path), '--models', str(models)],
                              capture_output=True, text=True, encoding='utf-8', timeout=20)
     assert process.returncode == code, process.stderr

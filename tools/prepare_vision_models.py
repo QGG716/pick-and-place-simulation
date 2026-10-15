@@ -15,6 +15,8 @@ SAM_ID = "facebook/sam-vit-base"
 SAM_REVISION = "70c1a07f894ebb5b307fd9eaaee97b9dfc16068f"
 MOGE_ID = "Ruicheng/moge-2-vits-normal"
 MOGE_REVISION = "26b477f41595707c5db6770294c0d1721e8ed4ed"
+DINO_ID = 'IDEA-Research/grounding-dino-base'
+DINO_REVISION = '12bdfa3120f3e7ec7b434d90674b3396eccf88eb'
 
 
 def sha256(path: Path) -> str:
@@ -30,10 +32,27 @@ def main() -> int:
     parser.add_argument("--cache-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--endpoint", default=os.environ.get("HF_ENDPOINT"))
+    parser.add_argument('--add-grounding-dino', type=Path,
+                        help='existing SAM manifest to copy and extend; download only pinned DINO')
     args = parser.parse_args()
     args.cache_dir.mkdir(parents=True, exist_ok=True)
     if args.endpoint:
         os.environ["HF_ENDPOINT"] = args.endpoint
+
+    if args.add_grounding_dino:
+        manifest = json.loads(args.add_grounding_dino.read_text(encoding='utf-8'))
+        names = ('config.json', 'preprocessor_config.json', 'model.safetensors',
+                 'special_tokens_map.json', 'tokenizer.json', 'tokenizer_config.json', 'vocab.txt')
+        path = Path(snapshot_download(repo_id=DINO_ID, revision=DINO_REVISION, cache_dir=args.cache_dir,
+                                     endpoint=args.endpoint, allow_patterns=names)).resolve()
+        manifest['grounding_dino'] = dict(repository=DINO_ID, revision=DINO_REVISION, snapshot_path=str(path),
+            files={name: sha256(path/name) for name in names}, weight_source='https://huggingface.co/' + DINO_ID,
+            download_endpoint=args.endpoint or 'https://huggingface.co')
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        with args.output.open('x', encoding='utf-8') as stream:
+            json.dump(manifest, stream, indent=2, sort_keys=True)
+        print(str(args.output))
+        return 0
 
     sam_dir = Path(snapshot_download(
         repo_id=SAM_ID,

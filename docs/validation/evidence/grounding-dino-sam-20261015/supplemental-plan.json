@@ -1,0 +1,10 @@
+{
+  "selection": "First recorded frame after 32 excluding primary frames; frozen before first model run; no tuning",
+  "groups": [
+    {
+      "name": "frame38",
+      "frame": 38,
+      "capture": "/root/autodl-tmp/v05-acceptance/video-demo-20260920/recording-01/frames/000001"
+    }
+  ]
+}

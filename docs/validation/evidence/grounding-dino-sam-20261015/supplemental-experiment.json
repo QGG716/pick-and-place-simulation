@@ -1,0 +1,281 @@
+{
+  "results": [
+    {
+      "name": "frame38",
+      "exit_code": 0,
+      "wall_seconds": 40.4031134955585,
+      "summary": {
+        "run_id": "fedfef11e07e428d9f51ebe9ba19a0ce",
+        "stop_after": "sam",
+        "runs": [
+          {
+            "module": "module_0_upper",
+            "status": "COMPLETED",
+            "proposal_source": "GROUNDING_DINO",
+            "rgb_sha256": "d50152722d1149744ce14843edcbcf4f9ff5e8e2ff2e6db9dd5178c6bb3a0d66",
+            "capture_id": "carton-assets-recording-01:module_0_upper:38",
+            "artifact_directory": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/module_0_upper",
+            "proposal_count": 16,
+            "timings_seconds": {
+              "detector_preprocess": 0.08957266435027122,
+              "detector_inference": 0.5037885531783104,
+              "detector_postprocess": 0.03822214901447296,
+              "proposal_stage_including_io": 2.5498116724193096,
+              "sam": 7.873514302074909,
+              "sam_image_encoding": 0.07018953934311867,
+              "sam_prompt_model_forward": 0.0743548721075058,
+              "sam_image_preprocess": 0.056604716926813126,
+              "request_total": 8.097322449088097,
+              "rgb_to_masks_available": 10.851888742297888,
+              "evaluation_and_review_io": 3.6691978983581066
+            },
+            "artifacts": {
+              "sam_crossvalidated.jpg": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_0_upper/sam_crossvalidated.jpg",
+                "sha256": "e7947fb44af14aa1c6c84613c4ce95c584f3553ddd86475490a03f0ed37630ff"
+              },
+              "cargo_masks.npz": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_0_upper/cargo_masks.npz",
+                "sha256": "b4fae80bc9e96bcab3ded52810406d9e75ff56492685ecf45630d29db03f5261"
+              },
+              "cargo_instances.json": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_0_upper/cargo_instances.json",
+                "sha256": "b7af4ccb7f1f8b46a68ec9bd8bc46ee47c30ea4542a9bbcb13d263af2f10430f"
+              },
+              "sam_image_session.json": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_0_upper/sam_image_session.json",
+                "sha256": "998d7aa6f95af4d3dc813a62e7c959af521b472644b725d82e39910ed840d27f"
+              }
+            },
+            "review": {
+              "path": "../supplemental/frame38/module_0_upper/sam_review.html",
+              "mask_count": 15,
+              "proposal_count": 16
+            },
+            "mask_count": 15,
+            "evaluation": {
+              "gt_count": 16,
+              "detector_count": 16,
+              "matched_count": 15,
+              "precision_iou_0_5": 0.9375,
+              "recall_iou_0_5": 0.9375,
+              "unmatched_proposal_ids": [
+                1
+              ],
+              "unmatched_gt_ids": [
+                "carton_l04_c03"
+              ],
+              "mask_count": 15,
+              "matched_mask_mean_iou": 0.9537278977556746,
+              "mask_iou_sum_over_all_gt": 0.8941199041459449,
+              "merged_mask_count": 0,
+              "split_or_duplicate_gt_ids": [],
+              "masks_without_significant_gt": [],
+              "gt_without_significant_mask": [
+                "carton_l04_c03"
+              ],
+              "multi_box_proposals": [
+                {
+                  "proposal_id": 1,
+                  "gt_ids": [
+                    "carton_l04_c03",
+                    "carton_l05_c00",
+                    "carton_l05_c01",
+                    "carton_l05_c02",
+                    "carton_l05_c03",
+                    "carton_l05_c04",
+                    "carton_l06_c00",
+                    "carton_l06_c01",
+                    "carton_l06_c02",
+                    "carton_l06_c03",
+                    "carton_l06_c04",
+                    "carton_l07_c00",
+                    "carton_l07_c01",
+                    "carton_l07_c02",
+                    "carton_l07_c03",
+                    "carton_l07_c04"
+                  ]
+                }
+              ],
+              "suppressed_near_identical": 0
+            }
+          },
+          {
+            "module": "module_1_lower",
+            "status": "COMPLETED",
+            "proposal_source": "GROUNDING_DINO",
+            "rgb_sha256": "ef33f4b0f6dbf93c33dbeab8ac9dca42bccf3dafbf0779d096a5d21020af9e50",
+            "capture_id": "carton-assets-recording-01:module_1_lower:38",
+            "artifact_directory": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/module_1_lower",
+            "proposal_count": 31,
+            "timings_seconds": {
+              "detector_preprocess": 0.062428683042526245,
+              "detector_inference": 0.10310928523540497,
+              "detector_postprocess": 0.0441373735666275,
+              "proposal_stage_including_io": 0.22705834358930588,
+              "sam": 16.51202715933323,
+              "sam_image_encoding": 0.06646376848220825,
+              "sam_prompt_model_forward": 0.1337217204272747,
+              "sam_image_preprocess": 0.05453497916460037,
+              "request_total": 16.666079983115196,
+              "rgb_to_masks_available": 17.07519618421793,
+              "evaluation_and_review_io": 5.422185555100441
+            },
+            "artifacts": {
+              "sam_crossvalidated.jpg": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_1_lower/sam_crossvalidated.jpg",
+                "sha256": "e3b951c71775adb13829e7a9a36533ffce3a8760264d8225a934fd8d3a657fba"
+              },
+              "cargo_masks.npz": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_1_lower/cargo_masks.npz",
+                "sha256": "6e18ed9ae6db55f144c114ee079870e7ed5a7ae2ca44807c8837b89a7baede25"
+              },
+              "cargo_instances.json": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_1_lower/cargo_instances.json",
+                "sha256": "e5609c24b33496fbb1b99627e1579524f22e695a35a151dce5233ee509b12cae"
+              },
+              "sam_image_session.json": {
+                "path": "/root/autodl-tmp/v05-acceptance/dino-sam-20261015/supplemental/frame38/sam-runs/carton-assets-recording-01-000038-fedfef11e07e428d9f51ebe9ba19a0ce-module_1_lower/sam_image_session.json",
+                "sha256": "645e889d1e3b4522a7b40842ec3c95a9047bc6198841944542cadd004831d955"
+              }
+            },
+            "review": {
+              "path": "../supplemental/frame38/module_1_lower/sam_review.html",
+              "mask_count": 30,
+              "proposal_count": 31
+            },
+            "mask_count": 30,
+            "evaluation": {
+              "gt_count": 31,
+              "detector_count": 31,
+              "matched_count": 29,
+              "precision_iou_0_5": 0.9354838709677419,
+              "recall_iou_0_5": 0.9354838709677419,
+              "unmatched_proposal_ids": [
+                1,
+                26
+              ],
+              "unmatched_gt_ids": [
+                "carton_l00_c03",
+                "carton_l01_c03"
+              ],
+              "mask_count": 30,
+              "matched_mask_mean_iou": 0.9597073453728577,
+              "mask_iou_sum_over_all_gt": 0.8977907424455768,
+              "merged_mask_count": 0,
+              "split_or_duplicate_gt_ids": [],
+              "masks_without_significant_gt": [],
+              "gt_without_significant_mask": [
+                "carton_l00_c03"
+              ],
+              "multi_box_proposals": [
+                {
+                  "proposal_id": 1,
+                  "gt_ids": [
+                    "carton_l00_c03",
+                    "carton_l01_c00",
+                    "carton_l01_c01",
+                    "carton_l01_c02",
+                    "carton_l01_c03",
+                    "carton_l01_c04",
+                    "carton_l02_c00",
+                    "carton_l02_c01",
+                    "carton_l02_c02",
+                    "carton_l02_c03",
+                    "carton_l02_c04",
+                    "carton_l03_c00",
+                    "carton_l03_c01",
+                    "carton_l03_c02",
+                    "carton_l03_c03",
+                    "carton_l03_c04",
+                    "carton_l04_c00",
+                    "carton_l04_c01",
+                    "carton_l04_c02",
+                    "carton_l04_c03",
+                    "carton_l04_c04",
+                    "carton_l05_c00",
+                    "carton_l05_c01",
+                    "carton_l05_c02",
+                    "carton_l05_c03",
+                    "carton_l05_c04",
+                    "carton_l06_c00",
+                    "carton_l06_c01",
+                    "carton_l06_c02",
+                    "carton_l06_c03",
+                    "carton_l06_c04"
+                  ]
+                },
+                {
+                  "proposal_id": 30,
+                  "gt_ids": [
+                    "carton_l00_c03",
+                    "carton_l01_c04"
+                  ]
+                }
+              ],
+              "suppressed_near_identical": 0
+            }
+          }
+        ],
+        "errors": [],
+        "overall_status": "COMPLETED",
+        "input_validation_scope": "RGB_ONLY_NO_GT_OR_DEPTH_READS",
+        "stages": {
+          "geometry_2d": "NOT_RUN",
+          "geometry": "NOT_RUN",
+          "contacts": "NOT_RUN",
+          "fusion": "NOT_RUN",
+          "ros": "NOT_RUN",
+          "planning": "NOT_RUN",
+          "execution": "NOT_RUN"
+        },
+        "absence_means_free_space": false,
+        "planning_admissible": false,
+        "sam_cold_start_seconds": 2.7815937250852585,
+        "detector_cold_start_seconds": 1.2591706700623035,
+        "detector_identity": {
+          "repository": "IDEA-Research/grounding-dino-base",
+          "revision": "12bdfa3120f3e7ec7b434d90674b3396eccf88eb",
+          "files": {
+            "config.json": "eda416dae6f49419ff831b1c190ec430a060b19aae688dbaf2425a075b650608",
+            "model.safetensors": "5548f844c928c4b6f411fa8cbcc2bfa8dbbba437cb1d513975519f93c2a9ed21",
+            "preprocessor_config.json": "8454179ba95e2ad22947835aad7b45862a601fc0055ab88bf1ee70892d3aea60",
+            "special_tokens_map.json": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+            "tokenizer.json": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+            "tokenizer_config.json": "d40ab645b68211910b9170d22433d43186a6ec8ee6fd10ba170524b25bf4fb56",
+            "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+          },
+          "weight_source": "https://huggingface.co/IDEA-Research/grounding-dino-base",
+          "config": {
+            "text": "cardboard box.",
+            "box_threshold": 0.25,
+            "text_threshold": 0.25,
+            "duplicate_iou": 0.9,
+            "shortest_edge": 800,
+            "longest_edge": 1333,
+            "max_candidates": 300,
+            "seed": 17
+          },
+          "config_identity": "c82c38acbb8038e028b1528fdf3a0a51d011f68e44f7976550b05f68a06dbd0e",
+          "dependencies": {
+            "torch": "2.7.1+cu128",
+            "transformers": "4.53.2",
+            "tokenizers": "0.21.2",
+            "huggingface-hub": "0.33.4",
+            "safetensors": "0.5.3"
+          }
+        },
+        "exit_code": 0
+      },
+      "truth_access_guard": "PASSED",
+      "resident_loads": 1
+    }
+  ],
+  "model_reuse_count": 1,
+  "detector_object_id": 139848763497376,
+  "sam_object_id": 139849294454672,
+  "no_gt_test": "isolated four-file module directories plus open interception; actual entrypoint",
+  "geometry": "NOT_RUN",
+  "ros": "NOT_RUN",
+  "planning": "NOT_RUN"
+}
