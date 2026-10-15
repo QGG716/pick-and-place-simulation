@@ -1328,10 +1328,13 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                             or raw["status"].startswith(("INVALID_START", "INVALID_GOAL", "NATIVE_TASK_"))):
                         self.native_evidence.extend(attempts)
                         local_timeout = "TIMEOUT" in raw["status"]
+                        invalid_goal = raw["status"].startswith("INVALID_GOAL")
                         return [], dict(reason=raw["status"], stage=stage, attempts=attempts,
-                            validation=dict(status="CANCELLED" if "CANCEL" in raw["status"] else "INDETERMINATE",
-                                termination_scope="METHOD" if local_timeout else "REQUEST",
-                                can_continue_candidates=local_timeout)), dict(
+                            validation=dict(status="INVALID" if invalid_goal else
+                                "CANCELLED" if "CANCEL" in raw["status"] else "INDETERMINATE",
+                                termination_scope="CANDIDATE" if invalid_goal else
+                                    "METHOD" if local_timeout else "REQUEST",
+                                can_continue_candidates=local_timeout or invalid_goal)), dict(
                             backend="moveit2", success=False, attempts=attempts, connection_scope=connection_scope)
                 if raw["status"].startswith(("INVALID_START","INVALID_GOAL")): break
                 continue

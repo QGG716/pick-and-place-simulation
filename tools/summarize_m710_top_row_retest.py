@@ -153,7 +153,7 @@ def summarize(folder):
         assert [r["stage"] for r in chain] == ["pregrasp", "contact", "extraction", "transit", "transit", "place", "withdrawal"]
         q = box["start_q_rad"]
         assert q == tr["path"][0]
-        calls = {r["stage_id"]:r for r in box["calls"]["stages"]}
+        calls = {r["stage_id"]:r for r in box["calls"]["stages"] if r.get("stage_id") is not None}
         for r in chain:
             assert r["stage_id"].startswith(tr["task_id"]+":")
             call = calls[r["stage_id"]]

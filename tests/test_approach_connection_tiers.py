@@ -182,3 +182,22 @@ def test_attempt_lease_is_restored_even_on_exception(monkeypatch):
     monkeypatch.setattr(LayoutTrajectoryConnector,"_connect_pose",inner)
     with pytest.raises(ValueError,match="stop"):c._connect_pose()
     assert c._approach_direct_attempts is original
+
+def test_invalid_goal_does_not_stop_other_ik_endpoints(monkeypatch):
+    from test_stage_motion_policy import connector as core_connector, START, GOAL
+    core=core_connector();native=connector()
+    goals=[GOAL.copy(),GOAL.copy()];goals[1][3]=.2
+    sent=replies(native,monkeypatch,lambda r:"INVALID_GOAL_CLEARANCE" if r["q_goal"][3]==0 else "SUCCESS")
+    core._transit=native._transit;core._approach_layering_enabled=native._approach_layering_enabled
+    class Stream:
+        index=0
+        def __next__(self):
+            if self.index==len(goals):raise StopIteration
+            q=goals[self.index];self.index+=1
+            return SimpleNamespace(q=q,position_error=0.,orientation_error=0.,search_evidence={})
+        def evidence(self):return dict(seeds_attempted=self.index)
+    monkeypatch.setattr(core,"_ik_stream",lambda *a,**kw:Stream())
+    _,path,failure,trace=core._connect_pose(core.robot.fk(GOAL),[START],START,[],
+        purpose=MotionPurpose.FREE_APPROACH,stage="pregrasp",ik_seed=1,connection_seed=2)
+    assert failure is None and trace["selected_method"]=="JOINT_DIRECT"
+    assert [r["planner_id"] for r in sent]==["CHECKED_JOINT_DIRECT"]*2
