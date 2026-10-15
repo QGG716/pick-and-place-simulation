@@ -1,0 +1,63 @@
+usr/include/fcl/narrowphase/distance_result-inl.h:46: //==============================================================================
+usr/include/fcl/narrowphase/distance_result-inl.h:47: extern template
+usr/include/fcl/narrowphase/distance_result-inl.h:48: struct DistanceResult<double>;
+usr/include/fcl/narrowphase/distance_result-inl.h:49:
+usr/include/fcl/narrowphase/distance_result-inl.h:50: //==============================================================================
+usr/include/fcl/narrowphase/distance_result-inl.h:51: template <typename S>
+usr/include/fcl/narrowphase/distance_result-inl.h:52: FCL_EXPORT
+usr/include/fcl/narrowphase/distance_result-inl.h:53: DistanceResult<S>::DistanceResult(S min_distance_)
+usr/include/fcl/narrowphase/distance_result-inl.h:54:   : min_distance(min_distance_),
+usr/include/fcl/narrowphase/distance_result-inl.h:55:     o1(nullptr),
+usr/include/fcl/narrowphase/distance_result-inl.h:56:     o2(nullptr),
+usr/include/fcl/narrowphase/distance_result-inl.h:57:     b1(NONE),
+usr/include/fcl/narrowphase/distance_result-inl.h:58:     b2(NONE)
+usr/include/fcl/narrowphase/distance_result-inl.h:59: {
+usr/include/fcl/narrowphase/distance_result-inl.h:60:   // Do nothing
+usr/include/fcl/narrowphase/distance_result-inl.h:61: }
+usr/include/fcl/narrowphase/distance_result-inl.h:62:
+usr/include/fcl/narrowphase/distance_result-inl.h:63: //==============================================================================
+usr/include/fcl/narrowphase/distance_result-inl.h:64: template <typename S>
+usr/include/fcl/narrowphase/distance_result-inl.h:65: FCL_EXPORT
+usr/include/fcl/narrowphase/distance_result-inl.h:66: void DistanceResult<S>::update(
+usr/include/fcl/narrowphase/distance_result-inl.h:67:     S distance,
+usr/include/fcl/narrowphase/distance_result-inl.h:68:     const CollisionGeometry<S>* o1_,
+usr/include/fcl/narrowphase/distance_result-inl.h:69:     const CollisionGeometry<S>* o2_,
+usr/include/fcl/narrowphase/distance_result-inl.h:70:     int b1_,
+usr/include/fcl/narrowphase/distance_result-inl.h:71:     int b2_)
+usr/include/fcl/narrowphase/distance_result-inl.h:72: {
+usr/include/fcl/narrowphase/distance_result-inl.h:73:   if(min_distance > distance)
+usr/include/fcl/narrowphase/distance_result-inl.h:74:   {
+usr/include/fcl/narrowphase/distance_result-inl.h:75:     min_distance = distance;
+usr/include/fcl/narrowphase/distance_result-inl.h:76:     o1 = o1_;
+usr/include/fcl/narrowphase/distance_result-inl.h:77:     o2 = o2_;
+usr/include/fcl/narrowphase/distance_result-inl.h:78:     b1 = b1_;
+usr/include/fcl/narrowphase/distance_result-inl.h:79:     b2 = b2_;
+usr/include/fcl/narrowphase/distance_result-inl.h:80:   }
+usr/include/fcl/narrowphase/distance_result-inl.h:81: }
+usr/include/fcl/narrowphase/distance_result-inl.h:82:
+usr/include/fcl/narrowphase/distance_result-inl.h:83: //==============================================================================
+usr/include/fcl/narrowphase/distance_result-inl.h:84: template <typename S>
+usr/include/fcl/narrowphase/distance_result-inl.h:85: FCL_EXPORT
+usr/include/fcl/narrowphase/distance_result-inl.h:86: void DistanceResult<S>::update(
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:206:
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:207: template <typename Shape1, typename Shape2, typename NarrowPhaseSolver>
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:208: typename Shape1::S ShapeShapeDistance(
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:209:     const CollisionGeometry<typename Shape1::S>* o1,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:210:     const Transform3<typename Shape1::S>& tf1,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:211:     const CollisionGeometry<typename Shape1::S>* o2,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:212:     const Transform3<typename Shape1::S>& tf2,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:213:     const NarrowPhaseSolver* nsolver,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:214:     const DistanceRequest<typename Shape1::S>& request,
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:215:     DistanceResult<typename Shape1::S>& result)
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:216: {
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:217:   if(request.isSatisfied(result)) return result.min_distance;
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:218:   ShapeDistanceTraversalNode<Shape1, Shape2, NarrowPhaseSolver> node;
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:219:   const Shape1* obj1 = static_cast<const Shape1*>(o1);
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:220:   const Shape2* obj2 = static_cast<const Shape2*>(o2);
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:221:
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:222:   initialize(node, *obj1, tf1, *obj2, tf2, nsolver, request, result);
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:223:   distance(&node);
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:224:
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:225:   return result.min_distance;
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:226: }
+usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h:485:   distance_matrix[GEOM_BOX][GEOM_BOX] = &ShapeShapeDistance<Box<S>, Box<S>, NarrowPhaseSolver>;

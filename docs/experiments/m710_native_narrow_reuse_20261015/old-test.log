@@ -1,0 +1,54 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found moveit_task_constructor_core: 0.1.3 (/opt/ros/humble/share/moveit_task_constructor_core/cmake)
+-- Found rosidl_generator_c: 3.1.9 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.9 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.9 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: chrono date_time filesystem iostreams program_options regex serialization system thread 
+-- Found rclcpp: 16.0.21 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rmw_implementation_cmake: 6.1.4 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+-- Found FastRTPS: /opt/ros/humble/include  
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found Threads: TRUE  
+-- Found tcb_span: 1.3.2 (/opt/ros/humble/share/tcb_span/cmake)
+-- Found rclcpp_lifecycle: 16.0.21 (/opt/ros/humble/share/rclcpp_lifecycle/cmake)
+-- Found parameter_traits: 0.7.6 (/opt/ros/humble/share/parameter_traits/cmake)
+-- library: /usr/lib/x86_64-linux-gnu/libcurl.so
+-- Found Eigen3: TRUE (found version "3.4.0") 
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread chrono 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: date_time filesystem program_options system thread 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: thread system filesystem regex date_time program_options 
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system filesystem date_time program_options thread 
+-- Found moveit_planners_ompl: 2.5.10 (/opt/ros/humble/share/moveit_planners_ompl/cmake)
+-- Found nlohmann_json: /usr/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake (found version "3.10.5") 
+-- Found pilz_industrial_motion_planner: 2.5.10 (/opt/ros/humble/share/pilz_industrial_motion_planner/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/native-narrow-20261015/build
+[ 50%] Building CXX object CMakeFiles/m710_narrow_reuse_test.dir/src/narrow_reuse_test.cpp.o
+[100%] Linking CXX executable m710_narrow_reuse_test
+[100%] Built target m710_narrow_reuse_test
+{"fcl_reproduction":{"aabb_lower":0.0,"final_min_distance":0.006,"initial":0.006,"old_qualification":false,"returned":0.006,"untruncated_final":0.040000000000000015,"untruncated_initial":1.7976931348623157e+308,"untruncated_returned":0.040000000000000015}}
+[INFO] [1792035558.129117830] [moveit_robot_model.robot_model]: Loading robot model 'narrow'...
+[INFO] [1792035558.129164220] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{"first":{"aabb_skips":0,"aabb_tests":1,"broad_phase_s":4.9e-08,"dynamic_pair_checks":0,"fixed_first_checks":1,"fixed_property_evaluations":1,"fixed_property_reuses":0,"narrow_calls":1,"narrow_s":5.05e-07,"queries":1,"self_narrow":1,"self_narrow_s":5.05e-07,"transform_aabb_update_s":2.93e-07,"world_narrow":0,"world_narrow_s":0.0},"last":{"aabb_skips":0,"aabb_tests":4,"broad_phase_s":1.2699999999999999e-07,"dynamic_pair_checks":0,"fixed_first_checks":1,"fixed_property_evaluations":4,"fixed_property_reuses":0,"narrow_calls":4,"narrow_s":1.827e-06,"queries":4,"self_narrow":4,"self_narrow_s":1.827e-06,"transform_aabb_update_s":6.61e-07,"world_narrow":0,"world_narrow_s":0.0},"reference":{"aabb_skips":0,"aabb_tests":4,"broad_phase_s":1.74e-07,"dynamic_pair_checks":0,"fixed_first_checks":1,"fixed_property_evaluations":4,"fixed_property_reuses":0,"narrow_calls":4,"narrow_s":3.6970000000000003e-06,"queries":4,"self_narrow":4,"self_narrow_s":3.6970000000000003e-06,"transform_aabb_update_s":1.2429999999999998e-06,"world_narrow":0,"world_narrow_s":0.0}}
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  NARROW_QUALIFICATION_NOT_REUSED
+/bin/bash: line 1: 10933 Aborted                 (core dumped) /tmp/native-narrow-20261015/build/m710_narrow_reuse_test

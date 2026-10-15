@@ -1,0 +1,26 @@
+{
+  "packages": "libfcl-dev:amd64\t0.7.0-3\nlibfcl0.7:amd64\t0.7.0-3\n",
+  "header_sha256": {
+    "usr/include/fcl/narrowphase/distance_result.h": "aca40b6e8f1e2e43878da1d2abbf5c59293a72a86937a89f5bd3a80878031f11",
+    "usr/include/fcl/narrowphase/distance_result-inl.h": "dc475cdf197d3ef47417a9a44b3cdd0cb6a5d2af172922926e44b0af482f0de0",
+    "usr/include/fcl/narrowphase/detail/distance_func_matrix-inl.h": "4c02ad117d64dff8a22dd631d390932f9ac05b8df61ffe66e8969ac9e14a949a"
+  },
+  "reproduction": {
+    "aabb_lower": 0.0,
+    "final_min_distance": 0.006,
+    "initial": 0.006,
+    "old_qualification": false,
+    "returned": 0.006,
+    "untruncated_final": 0.040000000000000015,
+    "untruncated_initial": 1.7976931348623157e+308,
+    "untruncated_returned": 0.040000000000000015
+  },
+  "baseline_sha": "d33eabdab489a504a5d548abe79e7355aa4b79eb",
+  "old_regression_failure": "NARROW_QUALIFICATION_NOT_REUSED",
+  "old_checker_source_sha256": "28bad96b2e503f1aed383ef5aaf8557fe3c7c3e5b700eb87a570f6e128790f68",
+  "frozen_input_origin": "docs/experiments/m710_native_reuse_20261015",
+  "inputs": {
+    "model.json": "34c79b09c422cb287139bf5f6dfccde3d0dc4fe4731122d132361cf98ebb5a74",
+    "fixed-input.json": "d1c269450ee2a6f0e14b721262caf7013ae3a0e58620b19e4579108071426b24"
+  }
+}

@@ -1,0 +1,3 @@
+set -e
+source /opt/ros/humble/setup.bash
+python3 /work-native-narrow-20261015/tools/benchmark_m710_native_checks.py --binary /tmp/native-narrow-20261015/build/m710_process_benchmark --model /work-native-narrow-20261015/docs/experiments/m710_native_narrow_reuse_20261015/model.json --input /work-native-narrow-20261015/docs/experiments/m710_native_narrow_reuse_20261015/fixed-input.json --output /work-native-narrow-20261015/docs/experiments/m710_native_narrow_reuse_20261015/formal --source-sha 8df907ec68ccb7929d8e91e422bf02f99ba66930 --baseline-sha d33eabdab489a504a5d548abe79e7355aa4b79eb --narrow-only --pairs 3 --cpu 0

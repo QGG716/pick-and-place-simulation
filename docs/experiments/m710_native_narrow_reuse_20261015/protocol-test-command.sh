@@ -1,0 +1,2 @@
+cd /root/autodl-tmp/m710-moveit2-20260922/rootfs/work-native-narrow-20261015
+PYTHONPATH=src /root/autodl-tmp/m710-official-dynamics-20260910/cpu-venv/bin/python -m pytest -q tests/test_moveit2_native_cold.py -k 'parent_identity_rejects_stale_model_scene_source_and_new_task or parent_context_rejects_wrong_target_world_pose_and_ownership or strict_process_cannot_fall_back_when_worker_lacks_semantics'
