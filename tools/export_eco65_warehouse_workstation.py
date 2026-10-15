@@ -52,12 +52,26 @@ def export(snapshot_path, home_path, config_path, out):
     scene, tool = snapshot['scene'], snapshot['tool']
     c = yaml.safe_load(Path(config_path).read_text(encoding='utf-8'))
     assert len(scene['boxes']) == 4 and c['scope'] == 'STATIC_APPEARANCE_ONLY'
-    home = load_json(home_path)['home_q']
+    home_data = load_json(home_path); home = home_data['home_q']
+    if home_data.get('status') == 'STATIC_POSE_ONLY' and (
+            home_data['source_snapshot_fingerprint'] != expected or
+            home_data['identity'] != snapshot['native_model']['init']['identity']):
+        raise ValueError('STATIC_POSE_IDENTITY_MISMATCH')
     frames = robot_for(tool, scene).named_link_frames(home)
     stage = Usd.Stage.CreateNew(str(path))
     UsdGeom.SetStageUpAxis(stage, 'Z'); UsdGeom.SetStageMetersPerUnit(stage, 1.)
     root = UsdGeom.Xform.Define(stage, '/Workstation').GetPrim(); stage.SetDefaultPrim(root)
     root.SetCustomDataByKey('physics_status', 'NOT_EVALUATED')
+    root.SetCustomDataByKey('home_q_rad', Vt.DoubleArray(home))
+    bindings = {b['id']: b for b in snapshot.get('native_model',{}).get('convex_bindings',[])}
+    collision_records=[]
+
+    def collision_mesh(key, fallback):
+        if not native: return fallback()
+        b=bindings[key]; p=ROOT/b['convex_path']
+        if hashlib.sha256(p.read_bytes()).hexdigest()!=b['convex_sha256']:
+            raise ValueError('PLANNING_COLLISION_MESH_CHANGED:'+key)
+        return trimesh.load(p,process=False)
 
     def pose(prim, T):
         UsdGeom.Xformable(prim).AddTransformOp().Set(Gf.Matrix4d(np.asarray(T).T.tolist()))
@@ -74,6 +88,7 @@ def export(snapshot_path, home_path, config_path, out):
             UsdPhysics.CollisionAPI.Apply(obj.GetPrim())
             UsdPhysics.MeshCollisionAPI.Apply(obj.GetPrim()).CreateApproximationAttr('convexHull')
             obj.CreatePurposeAttr('guide')
+            collision_records.append(dict(path=path,points=np.asarray(m.vertices).tolist(),T_D=np.asarray(T).tolist()))
         elif mat:
             UsdShade.MaterialBindingAPI.Apply(obj.GetPrim()).Bind(mat)
         return obj
@@ -93,14 +108,14 @@ def export(snapshot_path, home_path, config_path, out):
             assert np.allclose(np.fromstring(origin.get('xyz','0 0 0'),sep=' '),0)
             assert np.allclose(np.fromstring(origin.get('rpy','0 0 0'),sep=' '),0)
         mesh('/Workstation/Robot/'+name+'/Visual',m,[.8,.83,.86],frames[name],mat=mats['robot_dark' if name=='base_link' else 'robot'])
-        mesh('/Workstation/Robot/'+name+'/Collision',m.convex_hull,[.2,.7,.8],frames[name],True)
+        mesh('/Workstation/Robot/'+name+'/Collision',collision_mesh('robot_'+name,lambda:m.convex_hull),[.2,.7,.8],frames[name],True)
     flange = frames['link_6']; Ttool = flange @ np.array(tool['T_flange_tool_cad'])
     for p in tool['visual_parts']:
         rgb = p['rgb'] or [.6,.6,.6]
         mat = material(stage,'tool_'+p['id'],rgb,metallic=.2,roughness=.4)
         mesh('/Workstation/Tool/visual_'+p['id'],trimesh.load(ROOT/p['visual'],process=False),rgb,Ttool,mat=mat)
     for p in tool['collisions']:
-        mesh('/Workstation/Tool/collision_'+p['id'],trimesh.load(ROOT/p['mesh'],process=False),[.1,.8,.8],Ttool,True)
+        mesh('/Workstation/Tool/collision_'+p['id'],collision_mesh(p['id'],lambda:trimesh.load(ROOT/p['mesh'],process=False)),[.1,.8,.8],Ttool,True)
     for a in tool['adapter']:
         m = trimesh.creation.box(a['size']) if a['kind']=='box' else trimesh.creation.cylinder(radius=a['radius'],height=2*a['half_length'],sections=48)
         m.apply_translation(a['position'])
@@ -135,12 +150,17 @@ def export(snapshot_path, home_path, config_path, out):
         pose(prim,transform(b['pose'])); prim.SetCustomDataByKey('stable_id',b['id'])
         # This exact layout envelope is the sole carton collision proxy.
         cube('Cartons/'+b['id']+'/Collision',b['size_m'],[0,0,0],mats['table'],True)
+    frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
+    for name,T in frame_transforms.items():
+        pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)
     stage.GetRootLayer().Save()
     manifest = dict(status='STATIC_GEOMETRY_EXPORTED',source_snapshot_fingerprint=expected,
         source_snapshot_sha256=hashlib.sha256(Path(snapshot_path).read_bytes()).hexdigest(),home_q_rad=home,
         table_config=c,cartons=scene['boxes'],base_position_D_m=scene['base_position_m'],
         source_config_sha256=snapshot['config_sha256'], physics='NOT_EVALUATED',planning='NOT_EXECUTED',
         workstation_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    manifest.update(home_source=home_data,frame_transforms_D={k:np.asarray(v).tolist() for k,v in frame_transforms.items()},
+        collision_records=collision_records,obstacles=[o for o in scene['obstacles'] if o['role']!='warehouse_environment'])
     if native:
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
