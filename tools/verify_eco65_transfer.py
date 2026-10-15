@@ -20,7 +20,7 @@ def verify(root, manifest, scope):
     started = perf_counter(); data = load_json(manifest)
     if data['schema'] != 'eco65_private_transfer_v1' or not data['files']:
         raise ValueError('TRANSFER_MANIFEST_INVALID')
-    failures = []
+    failures = []; resource_uris_read = 0
     for name, expected in data['files'].items():
         try:
             actual = hashlib.sha256(resolve_asset(root, name).read_bytes()).hexdigest()
@@ -46,6 +46,7 @@ def verify(root, manifest, scope):
                 rel=path.resolve().relative_to(Path(root).resolve()).as_posix()
                 if hashlib.sha256(path.read_bytes()).hexdigest()!=data['files'].get(rel):
                     failures.append(dict(path=rel,reason='ROOTFS_RESOURCE_IDENTITY_MISMATCH'))
+                resource_uris_read += 1
     if data.get('home_candidate_path') and scope!='ROS_ROOTFS':
         from unloading_sim.eco65.home_candidate import verify_candidate
         from unloading_sim.eco65.native_scene import combined_scene
@@ -59,7 +60,7 @@ def verify(root, manifest, scope):
     return dict(status='PASS' if not failures and audit['status']=='PASS' else 'FAIL',
         scope=scope, platform=platform.system(), local_mount=str(Path(root).resolve()),
         manifest_sha256=hashlib.sha256(Path(manifest).read_bytes()).hexdigest(),
-        files_read=len(data['files']), failures=failures, asset_audit=audit,
+        files_read=len(data['files']), resource_uris_read=resource_uris_read, failures=failures, asset_audit=audit,
         home_candidate_check='BYTE_IDENTITY_ONLY' if scope=='ROS_ROOTFS' else 'SEMANTIC_AND_BYTE_IDENTITY',
         wall_s=perf_counter()-started)
 

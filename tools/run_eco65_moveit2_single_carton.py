@@ -61,6 +61,7 @@ def main():
                     if task:
                         failure.update(native_records=task.records, native_ik_records=task.ik_records, partial_stages=task.stages)
                         failure.update(native_calls=task.native_calls, initial_state_checks=task.home_checks)
+                        failure['extraction_geometry'] = task.extraction_evidence
                     save_json(attempt_out/'failure.json', failure); failures.append(failure)
                 finally:
                     if task: task.close()

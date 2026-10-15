@@ -71,5 +71,3 @@ def asset_inventory(root=ROOT, config=None):
     return dict(status='PASS' if not failures else 'BLOCKED_ASSETS', failures=failures,
                 asset_sha256=hashes, robot_variant=c['robot_variant'],
                 private_geometry_verified=False, dynamics='NOT_EVALUATED')
-
-

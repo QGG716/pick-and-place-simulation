@@ -8,6 +8,9 @@ from unloading_sim.eco65.asset_paths import asset_relative, resolve_asset, resou
 from unloading_sim.eco65.mount_alignment import relative_roll, check_alignment
 from unloading_sim.eco65.home_candidate import make_candidate, verify_candidate
 from unloading_sim.eco65.native_task import NativeTask
+from unloading_sim.eco65.native_task import extraction_goal
+from unloading_sim.eco65.native_scene import combined_scene
+from unloading_sim.eco65.model import transform
 
 
 def test_windows_manifest_to_linux_root_and_uri(tmp_path):
@@ -44,6 +47,16 @@ def test_nonzero_tool_hole_phase_requires_relative_roll():
     assert check_alignment(robot,tool,.086,mount(.08))['status']=='FAIL'
     bad=mount(angle); bad[2,3]+=.001
     assert check_alignment(robot,tool,.086,bad)['status']=='FAIL'
+
+
+def test_extraction_clears_actual_higher_receiver_before_free_transit():
+    scene=combined_scene(); box=scene['box']; pose=transform(box['pose'])
+    goal,evidence=extraction_goal(scene,pose,box['size_m'],transform([.11,-.115,.32]))
+    assert evidence['initial_bottom_m']==pytest.approx(.16)
+    assert evidence['highest_support_m']==pytest.approx(.18)
+    assert evidence['goal_bottom_m']==pytest.approx(.19)
+    assert goal[2,3]==pytest.approx(.35)
+    assert evidence['lift_m']==pytest.approx(.03)
 
 
 def inputs():

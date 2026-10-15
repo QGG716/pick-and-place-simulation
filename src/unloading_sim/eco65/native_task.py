@@ -25,6 +25,24 @@ INDEPENDENT_PHASE = dict(pregrasp='approach', contact='contact', extraction='loa
     transit='loaded_transfer', place='place_contact', withdrawal='retreat', residence='retreat')
 
 
+def extraction_goal(scene, target_pose, size, tcp):
+    """Retain the 10 mm lift clearance above crossed support surfaces."""
+    half=np.asarray(size)/2; start=np.asarray(target_pose)[:3,3]
+    receive=np.asarray(scene['source_equipment_config']['conveyors']['longitudinal']['receive_center_xy_m'])
+    lo=np.minimum(start[:2],receive)-half[:2]; hi=np.maximum(start[:2],receive)+half[:2]
+    bottom=float(start[2]-np.abs(np.asarray(target_pose)[2,:3])@half)
+    crossed=[]
+    for row in scene['obstacles']:
+        if row['id'] not in scene['support_surface_ids']: continue
+        p=np.asarray(row['position_m']); h=np.asarray(row['size_m'])/2
+        if np.all(p[:2]+h[:2]>lo) and np.all(p[:2]-h[:2]<hi):
+            crossed.append(dict(id=row['id'],top_m=float(p[2]+h[2])))
+    highest=max([bottom,*[r['top_m'] for r in crossed]])
+    lift=highest+.01-bottom; goal=np.array(tcp,copy=True);goal[2,3]+=lift
+    return goal,dict(initial_bottom_m=bottom,crossed_supports=crossed,highest_support_m=highest,
+        retained_lift_clearance_m=.01,lift_m=lift,goal_bottom_m=bottom+lift)
+
+
 class NativeTask:
     def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None):
         from .native_io import verify_snapshot
@@ -37,6 +55,7 @@ class NativeTask:
         self.robot = robot_for(snapshot['tool'], self.scene)
         self.home_candidate = None if home_candidate is None else deepcopy(verify_candidate(home_candidate, snapshot['tool'], self.scene))
         self.home_checks = []; self.native_calls = []
+        self.extraction_evidence = None
         self.cancelled = cancelled or (lambda: False)
         self.stage_seconds = stage_seconds; self.deadline = perf_counter()+task_seconds
         self.task_id = 'eco65-'+uuid.uuid4().hex
@@ -139,6 +158,10 @@ class NativeTask:
         goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q, stage)))
         if not constrained:
             goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
+            unique=[]
+            for candidate in goals:
+                if all(np.max(np.abs(candidate-other))>1e-5 for other in unique): unique.append(candidate)
+            goals=unique
         # A first valid IK branch can require a long turn through a wall. Give
         # the existing bounded native IK set its PTP attempts before spending
         # the OMPL budget on any branch; never substitute Python motion search.
@@ -218,7 +241,7 @@ class NativeTask:
         self.attachment = np.linalg.inv(self.robot.named_link_frames(q)['link_6']) @ self.target_pose
         self.events.append(dict(event='ATTACH_PREDICTED', after_stage=self.parent,
             target_id=self.target['id'], flange_from_target=self.attachment.tolist(), q=q.tolist()))
-        lift = self.robot.fk(q).copy(); lift[2, 3] += .01
+        lift, self.extraction_evidence = extraction_goal(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q))
         q = self.motion(q, 'extraction', pose=lift)
         cfg = self.scene['source_equipment_config']['conveyors']
         center = [*cfg['longitudinal']['receive_center_xy_m'], cfg['surface_z_m']+self.target['size_m'][2]/2]
@@ -240,6 +263,7 @@ class NativeTask:
             stages=self.stages, events=self.events, fk_crosscheck=fk,
             native_records=self.records, native_ik_records=self.ik_records,
             native_calls=self.native_calls, initial_state_checks=self.home_checks,
+            extraction_geometry=self.extraction_evidence,
             initial_state_semantics='SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION',
             native_initialization_s=self.initialization_s,
             planning_wall_s=perf_counter()-started, simulated_duration_s=sum(s['times'][-1] for s in self.stages),
