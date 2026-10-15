@@ -53,8 +53,9 @@ def asset_check():
         if "rm_models/ECO65" in e["local_path"]:
             p=OFFICIAL/e["local_path"]
             if hashlib.sha256(p.read_bytes()).hexdigest()!=e["sha256"]:raise ValueError("Official asset hash mismatch: "+str(p))
+    from .asset_paths import resolve_asset
     cad=load_json(ROOT/"assets/tools/desktop_suction/derived/manifests/cad.json")
-    if hashlib.sha256((ROOT/cad["source"]).read_bytes()).hexdigest()!=cad["source_sha256"]:
+    if hashlib.sha256(resolve_asset(ROOT,cad["source"]).read_bytes()).hexdigest()!=cad["source_sha256"]:
         raise ValueError("Private STEP changed: regenerate derived assets")
     return cad
 

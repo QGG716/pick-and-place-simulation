@@ -73,6 +73,7 @@ def extract_cad_contours(tool, root):
     The original tool config and CAD meshes remain immutable.
     """
     import trimesh
+    from .asset_paths import resolve_asset
     if not tool['contact'].get('require_all_seals_fit') or len(tool['seals']) != 12:
         raise ValueError('ALL_12_CAD_SEALS_REQUIRED')
     components = {s['component'] for s in tool['seals']}
@@ -82,7 +83,7 @@ def extract_cad_contours(tool, root):
     parts = {p['id']: p for p in tool['visual_parts']}
     rows = []
     for seal in tool['seals']:
-        path = Path(root)/parts[seal['component']]['visual']
+        path = resolve_asset(root, parts[seal['component']]['visual'])
         if seal.get('contour_method') == 'exact_trimmed_CAD_torus_axial_tangent':
             manifest = Path(root)/'assets/tools/desktop_suction/derived/manifests/cad.json'
             if hashlib.sha256(manifest.read_bytes()).hexdigest() != tool['cad_manifest_sha256']:

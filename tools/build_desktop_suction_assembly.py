@@ -10,6 +10,8 @@ import shutil
 from datetime import datetime, timezone
 import numpy as np
 import trimesh
+from unloading_sim.eco65.mount_alignment import relative_roll, check_alignment
+from unloading_sim.eco65.asset_paths import resolve_asset
 
 ROOT = Path(__file__).resolve().parents[1]
 D = ROOT/'assets/tools/desktop_suction/derived'
@@ -58,7 +60,7 @@ def clipped_hull(mesh, lo, hi):
 
 def build():
     cad_path = D/'manifests/cad.json'; cad = json.loads(cad_path.read_text(encoding='utf-8'))
-    if sha(ROOT/cad['source']) != cad['source_sha256']: raise ValueError('STEP_CHANGED')
+    if sha(resolve_asset(ROOT, cad['source'])) != cad['source_sha256']: raise ValueError('STEP_CHANGED')
     out = ROOT/'configs/local/eco65_desktop/tool.json'
     if out.exists():
         backup = ROOT/'outputs/eco65_native/asset_backups'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
@@ -90,10 +92,12 @@ def build():
     robot_holes = np.array([p[:, :2].mean(axis=0) for p, r in zip(loops, radii) if abs(r-min(radii)) < 1e-6])
     if len(robot_holes) != 6 or np.max(abs(np.linalg.norm(robot_holes, axis=1)-np.linalg.norm(centers, axis=1).mean())) > 1e-6:
         raise ValueError('OFFICIAL_TOOL_BOLT_CIRCLE_MISMATCH')
-    angle = float(np.angle(np.mean(np.exp(6j*np.arctan2(robot_holes[:, 1], robot_holes[:, 0]))))/6)
+    angle = relative_roll(robot_holes, centers)
     c, s = np.cos(angle), np.sin(angle); yaw = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
     basis = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0.]])
     mount = np.eye(4); mount[:3, :3] = yaw@basis; mount[:3, 3] = -mount[:3, :3]@np.array([0, mount_y, 0])
+    alignment = check_alignment(robot_holes, centers, mount_y, mount)
+    if alignment['status'] != 'PASS': raise ValueError('FINAL_FLANGE_HOLES_MISALIGNED:'+str(alignment))
     seals, collisions = [], []
     for p in parts:
         if sha(ROOT/p['visual']) != p['visual_sha256']: raise ValueError('VISUAL_CHANGED')
@@ -127,7 +131,8 @@ def build():
             regions = [(p['id']+'_region_'+str(i), lo, hi, 'conservative_rigid') for i, (lo, hi) in enumerate(zip(cuts, cuts[1:]))]
         for ident, lo, hi, semantic in regions:
             hull, error = clipped_hull(m, lo, hi)
-            path = D/'collision'/(ident+'.obj'); hull.export(path)
+            # Never overwrite converter-owned collision files and stale its hashes.
+            path = D/'collision/assembly'/(ident+'.obj'); path.parent.mkdir(exist_ok=True); hull.export(path)
             collisions.append(dict(id=ident, source_part=p['id'], source_instance=p['instance_id'], mesh=path.relative_to(ROOT).as_posix(),
                 mesh_sha256=sha(path), visual_sha256=p['visual_sha256'], semantic=semantic,
                 axial_slab_m=[None if np.isinf(x) else x for x in (lo, hi)],
@@ -141,7 +146,7 @@ def build():
         adapter=[], mounting_contacts=[dict(robot_link='link_6', tool_collision=contact_part, source_part=flange['id'],
             interface='actual_STEP_flange_outer_installation_face', maximum_penetration_m=.0004)],
         assembly_status='SIMULATION_MOUNT_ASSUMPTION', assembly_assumption='CAD_installation_plane_and_official_mesh_bolt_circle',
-        mounting_evidence=dict(flange_part=flange['id'], flange_instance=flange['instance_id'],
+        mounting_evidence=dict(final_alignment=alignment, flange_part=flange['id'], flange_instance=flange['instance_id'],
             mount_face_cad_index=mount_face['face_index'], mount_point_cad_m=[0, mount_y, 0],
             mount_normal_cad=[0, 1, 0], bolt_centers_cad_xz_m=centers.tolist(), official_bolt_centers_xy_m=robot_holes.tolist(),
             official_flange_mesh_sha256=sha(official), selected_roll_rad=angle,

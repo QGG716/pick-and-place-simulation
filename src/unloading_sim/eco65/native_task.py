@@ -13,6 +13,8 @@ from .model import robot_for, transform, check_transform
 from .native_model import POLICY
 from .native_scene import verify_scene
 from .native_contact import check_contours
+from .home_candidate import verify_candidate
+from .mount_alignment import check_alignment
 from ..moveit2_backend import ResidentMoveItClient, MoveItUnavailable, digest, validate_native_result, native_generation_evidence
 from ..timing import JointMotionLimits, time_parameterize_joint_path, sample_quintic_knots
 from ..moveit2_tcp import audit_linear_tcp
@@ -24,7 +26,7 @@ INDEPENDENT_PHASE = dict(pregrasp='approach', contact='contact', extraction='loa
 
 
 class NativeTask:
-    def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None):
+    def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None):
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
@@ -33,6 +35,8 @@ class NativeTask:
         if not np.isfinite([task_seconds, stage_seconds]).all() or min(task_seconds, stage_seconds) <= 0:
             raise ValueError('INVALID_NATIVE_BUDGET')
         self.robot = robot_for(snapshot['tool'], self.scene)
+        self.home_candidate = None if home_candidate is None else deepcopy(verify_candidate(home_candidate, snapshot['tool'], self.scene))
+        self.home_checks = []; self.native_calls = []
         self.cancelled = cancelled or (lambda: False)
         self.stage_seconds = stage_seconds; self.deadline = perf_counter()+task_seconds
         self.task_id = 'eco65-'+uuid.uuid4().hex
@@ -45,7 +49,8 @@ class NativeTask:
             if self.ready.get('status') != 'READY' or self.ready.get('identity') != self.identity:
                 raise MoveItUnavailable('NATIVE_MODEL_IDENTITY_REJECTED')
             self.initialization_s = perf_counter()-started
-        except Exception:
+        except Exception as error:
+            error.native_calls = self.native_calls
             self.native.close(); raise
 
     def close(self): self.native.close()
@@ -56,7 +61,17 @@ class NativeTask:
         if remaining <= 0: raise MoveItUnavailable('NATIVE_TASK_BUDGET_EXHAUSTED')
         request = deepcopy(request)
         if request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
-        return self.native.request(request, timeout=min(remaining+5, self.stage_seconds+30), cancelled=self.cancelled)
+        started = perf_counter()
+        record = dict(request=request)
+        self.native_calls.append(record)
+        try:
+            result = self.native.request(request, timeout=min(remaining+5, self.stage_seconds+30), cancelled=self.cancelled)
+            record['result'] = result
+            return result
+        except Exception as error:
+            record['error'] = str(error)
+            raise
+        finally: record['wall_s'] = perf_counter()-started
 
     def request(self, q, stage, *, op='check_state_offline', endpoint=False):
         world = [dict(id=o['id'], size=o['size_m'], pose=transform(o['position_m']).tolist(), category='environment')
@@ -111,8 +126,11 @@ class NativeTask:
             result = self.call(req); self.ik_records.append(dict(stage=stage, request=req, result=result))
             if result.get('native_ik_calls') != 1: raise ValueError('NATIVE_IK_EVIDENCE_MISSING')
             if result['status'] == 'SUCCESS':
-                checked = self.call(self.request(result['q'], stage))
-                if checked['status'] == 'SUCCESS': yield np.asarray(result['q'])
+                value = np.asarray(result['q'], float)
+                if value.shape != (6,) or not np.isfinite(value).all(): continue
+                if np.any(value < self.robot.joint_limits[:, 0]) or np.any(value > self.robot.joint_limits[:, 1]): continue
+                checked = self.call(self.request(value, stage))
+                if checked['status'] == 'SUCCESS': yield value
 
     def motion(self, q, stage, *, pose=None, goal=None):
         constrained = stage in {'contact', 'extraction', 'place', 'withdrawal'}
@@ -149,15 +167,41 @@ class NativeTask:
                 return np.asarray(path[-1])
         raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:'+stage)
 
+    def select_home(self, pre):
+        q = np.asarray(self.home_candidate['q_rad'] if self.home_candidate else
+                       self.scene['source_equipment_config']['task']['initial_seed_q_rad'], float)
+        row = dict(source='EXPLICIT_CANDIDATE' if self.home_candidate else 'CONFIGURED_SEED', q_rad=q.tolist(),
+                   scene_fingerprint=self.scene['scene_fingerprint'], candidate=self.home_candidate)
+        self.home_checks.append(row)
+        e = self.snapshot['tool']['mounting_evidence']
+        row['mount_alignment'] = check_alignment(e['official_bolt_centers_xy_m'], e['bolt_centers_cad_xz_m'],
+            e['mount_point_cad_m'][1], self.snapshot['tool']['T_flange_tool_cad'])
+        if row['mount_alignment']['status'] != 'PASS': raise ValueError('HOME_MOUNT_INTERFACE_INVALID')
+        in_limits = (q.shape == (6,) and np.isfinite(q).all() and
+            np.all(q >= self.robot.joint_limits[:, 0]) and np.all(q <= self.robot.joint_limits[:, 1]))
+        row['joint_limits'] = 'PASS' if in_limits else 'FAIL'
+        if in_limits:
+            row['native_state'] = self.call(self.request(q, 'pregrasp'))
+        if not in_limits or row['native_state']['status'] != 'SUCCESS':
+            row['status'] = 'REJECTED'
+            q = next(self.ik(pre, q if in_limits else np.mean(self.robot.joint_limits, axis=1), 'pregrasp', 64), None)
+            if q is None: raise ValueError('NATIVE_HOME_CANDIDATES_EXHAUSTED')
+            row = dict(source='BOUNDED_NATIVE_IK_SEARCH', q_rad=q.tolist(), max_candidates=64,
+                       scene_fingerprint=self.scene['scene_fingerprint'])
+            self.home_checks.append(row)
+        try: row['fk_crosscheck'] = self.check_fk(q)
+        except Exception as error:
+            row.update(status='REJECTED', reason=str(error))
+            raise  # Inconsistent FK is a model/worker failure, not an IK search miss.
+        row['status'] = 'ACCEPTED_SIMULATION_INITIAL_STATE'
+        return q, row['fk_crosscheck']
+
     def run(self):
         started = perf_counter()
-        q = np.asarray(self.scene['source_equipment_config']['task']['initial_seed_q_rad'])
         top = self.target_pose @ transform([0, 0, self.target['size_m'][2]/2], np.diag([1., -1., -1.]))
         pre = top.copy(); pre[2, 3] += .03
-        if self.call(self.request(q, 'pregrasp'))['status'] != 'SUCCESS':
-            q = next(self.ik(pre, q, 'pregrasp', 64), None)
-            if q is None: raise ValueError('NATIVE_HOME_CANDIDATES_EXHAUSTED')
-        home = q.copy(); fk = self.check_fk(home)
+        q, fk = self.select_home(pre)
+        home = q.copy()
         # A legal HOME already at the approach pose is still a state, not a
         # fabricated nonzero motion. Choose a distinct nearby checked approach.
         if np.linalg.norm(self.robot.fk(q)[:3, 3]-pre[:3, 3]) < 1e-4: pre[2, 3] += .005
@@ -190,6 +234,8 @@ class NativeTask:
             identity=self.identity, snapshot_fingerprint=self.snapshot['fingerprint'], home_q=home.tolist(),
             stages=self.stages, events=self.events, fk_crosscheck=fk,
             native_records=self.records, native_ik_records=self.ik_records,
+            native_calls=self.native_calls, initial_state_checks=self.home_checks,
+            initial_state_semantics='SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION',
             native_initialization_s=self.initialization_s,
             planning_wall_s=perf_counter()-started, simulated_duration_s=sum(s['times'][-1] for s in self.stages),
             dynamics='NOT_EVALUATED', hardware_enabled=False, independent_geometry='NOT_EVALUATED')

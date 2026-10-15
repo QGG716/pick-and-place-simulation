@@ -39,7 +39,8 @@ def convert(input_path=None):
            sorted(p for p in RAW.rglob("*") if p.is_file() and p.suffix.lower() in (".step",".stp")))
     if not paths: raise FileNotFoundError("No private STEP/STP in assets/tools/desktop_suction/cad/raw; no demo fallback.")
     if len(paths)!=1: raise ValueError("Multiple STEP inputs: inspect assembly/version relationships before choosing; no implicit duplication.")
-    source=paths[0]; original=source.read_bytes(); digest=hashlib.sha256(original).hexdigest()
+    source=paths[0]; source.relative_to(ROOT)  # Portable manifests never contain host absolute paths.
+    original=source.read_bytes(); digest=hashlib.sha256(original).hexdigest()
     # Preserve every previous generation, including a tool config bound to it.
     if DERIVED.exists():
         backup=ROOT/"outputs/eco65_native/asset_backups"/datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -168,7 +169,7 @@ def convert(input_path=None):
                 solids=count(solid,TopAbs_SOLID),shells=count(solid,TopAbs_SHELL),faces=count(solid,TopAbs_FACE),
                 geometric_volume_m3=vol,geometric_volume_centroid_m=center,actual_mass_kg=None,
                 rgb=[color.Red(),color.Green(),color.Blue()] if has else None,
-                visual=str(path_visual.relative_to(ROOT)).replace("\\","/"),collision=str(path_hull.relative_to(ROOT)).replace("\\","/"),
+                visual=path_visual.relative_to(ROOT).as_posix(),collision=path_hull.relative_to(ROOT).as_posix(),
                 vertices=len(mesh.vertices),triangles=len(mesh.faces),surface_features=surfaces,
                 visual_sha256=hashlib.sha256(path_visual.read_bytes()).hexdigest(),
                 collision_sha256=hashlib.sha256(path_hull.read_bytes()).hexdigest(),
@@ -176,7 +177,7 @@ def convert(input_path=None):
                 conservative_surface_inflation_m=.0002,semantic="unknown_rigid"))
     for i in range(1,free.Length()+1):walk(free.Value(i),TopLoc_Location(),"root")
     lower=np.min([p["bounds_m"][0] for p in parts],axis=0);upper=np.max([p["bounds_m"][1] for p in parts],axis=0)
-    result=dict(schema="eco65_private_cad_v1",source=str(source.relative_to(ROOT)) if source.is_relative_to(ROOT) else str(source),source_sha256=digest,size_bytes=len(original),
+    result=dict(schema="eco65_private_cad_v1",source=source.relative_to(ROOT).as_posix(),source_sha256=digest,size_bytes=len(original),
         format="STEP AP214",reader=f"OCP {OCP.__version__} STEPCAFControl_Reader",file_length_units="millimetres",
         reader_system_length_unit_mm=1.0,reader_output_units="millimetres",normalization_scale_to_m=.001,
         transform_convention="T_A_B converts B to A; translations scaled once, rotations unchanged",

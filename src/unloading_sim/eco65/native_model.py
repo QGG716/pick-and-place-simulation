@@ -9,6 +9,7 @@ import numpy as np
 import yaml
 
 from .model import ROOT, check_transform, load_json, transform, mounting_pairs
+from .asset_paths import resolve_asset, resource_uri
 from .native_contact import extract_cad_contours
 from ..moveit2_backend import digest, _rpy
 
@@ -53,15 +54,20 @@ def asset_inventory(root=ROOT, config=None):
         tool = load_json(root/required[0]); cad = load_json(root/required[1])
         private = {cad['source'], *required}
         private.update(p['visual'] for p in tool['visual_parts'])
+        private.update(p[k] for p in cad['parts'] for k in ('visual', 'collision'))
         private.update(p['mesh'] for p in tool['collisions'])
         for relative in sorted(private):
-            p = root/relative
+            p = resolve_asset(root, relative)
             if not p.is_file(): failures.append(dict(path=relative, reason='MISSING')); continue
             hashes[relative] = hashlib.sha256(p.read_bytes()).hexdigest()
         if hashes.get(cad['source']) != cad['source_sha256'] or tool['source_sha256'] != cad['source_sha256']:
             failures.append(dict(path=cad['source'], reason='CAD_SOURCE_IDENTITY_MISMATCH'))
         if tool.get('cad_manifest_sha256') and hashes.get(required[1]) != tool['cad_manifest_sha256']:
             failures.append(dict(path=required[1], reason='CAD_MANIFEST_IDENTITY_MISMATCH'))
+        for row in cad['parts']:
+            for field in ('visual', 'collision'):
+                if hashes.get(row[field]) != row[field+'_sha256']:
+                    failures.append(dict(path=row[field], reason='CAD_MESH_IDENTITY_MISMATCH'))
         for row in tool['visual_parts']:
             if row.get('visual_sha256') and hashes.get(row['visual']) != row['visual_sha256']:
                 failures.append(dict(path=row['visual'], reason='VISUAL_IDENTITY_MISMATCH'))
@@ -104,7 +110,6 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         values = [float(row[k]) for k in ('lower', 'upper', 'velocity', 'effort')]
         if not np.isfinite(values).all() or values[0] >= values[1] or min(values[2:]) <= 0:
             raise ValueError('OFFICIAL_FINITE_LIMITS_REQUIRED')
-    native_root = Path(native_asset_root) if native_asset_root else root
     output.mkdir(parents=True, exist_ok=True)
     meshes = output/'collision'; meshes.mkdir(exist_ok=True)
     bindings = []
@@ -117,13 +122,13 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         # implicit convexification of a concave source is never compared with
         # unmodified triangle-soup FCL solely by filename.
         p = meshes/(name+'.obj'); hull.export(p)
-        bindings.append(dict(id=name, source=str(Path(source).relative_to(root)),
+        bindings.append(dict(id=name, source=Path(source).relative_to(root).as_posix(),
             source_sha256=hashlib.sha256(Path(source).read_bytes()).hexdigest(),
             convex_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),
             convex_path=p.relative_to(root).as_posix(),
             representation='explicit_convex_hull_of_source_triangle_vertices',
             source_vertices=len(m.vertices), hull_vertices=len(hull.vertices)))
-        return 'file://'+(native_root/p.relative_to(root)).as_posix()
+        return resource_uri(root, p.relative_to(root).as_posix(), native_asset_root)
 
     def fixed(name, parent, T):
         ET.SubElement(urdf, 'link', name=name)
@@ -153,7 +158,7 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         if origin is not None: ET.SubElement(collision, 'origin', **origin.attrib)
         ET.SubElement(ET.SubElement(collision, 'geometry'), 'mesh',
                       filename=convex(source, 'robot_'+link.get('name')))
-        mesh.set('filename', 'file://'+(native_root/source.relative_to(root)).as_posix())
+        mesh.set('filename', resource_uri(root, source.relative_to(root).as_posix(), native_asset_root))
     names, bands = [], []
     for row in tool['collisions']:
         name = row['id']; names.append(name)
@@ -161,7 +166,7 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         elif row['semantic'] != 'conservative_rigid': raise ValueError('UNKNOWN_TOOL_COLLISION_SEMANTIC')
         link = fixed(name, c['flange_link'], flange_to_cad)
         ET.SubElement(ET.SubElement(ET.SubElement(link, 'collision'), 'geometry'), 'mesh',
-                      filename=convex(root/row['mesh'], name))
+                      filename=convex(resolve_asset(root, row['mesh']), name))
     for row in tool['adapter']:
         name = row['id']; names.append(name)
         link = fixed(name, c['flange_link'], transform(row['position']))

@@ -4,6 +4,7 @@ import hashlib
 import numpy as np
 from .model import ROOT, load_json, save_json, transform
 from .native_scene import combined_scene, verify_scene, draw_layout
+from .asset_paths import resolve_asset
 from .native_model import asset_inventory, build_native_model
 from ..moveit2_backend import digest
 
@@ -18,7 +19,7 @@ def verify_snapshot(snapshot, root=ROOT):
         raise ValueError('SNAPSHOT_IDENTITY_INVALID')
     verify_scene(snapshot['scene'])
     for name, sha in {**snapshot['asset_sha256'], **snapshot['config_sha256']}.items():
-        path = (Path(root)/name).resolve(); path.relative_to(Path(root).resolve())
+        path = resolve_asset(root, name)
         if file_hash(path) != sha: raise ValueError('SNAPSHOT_FILE_CHANGED:'+name)
     model = snapshot['native_model']; identity = model['init']['identity']
     if (identity['scene_fingerprint'] != snapshot['scene']['scene_fingerprint'] or

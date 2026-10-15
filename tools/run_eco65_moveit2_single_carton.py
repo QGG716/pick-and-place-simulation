@@ -15,6 +15,7 @@ def main():
     p.add_argument('--snapshot', type=Path); p.add_argument('--plan', type=Path)
     p.add_argument('--environment', type=Path); p.add_argument('--assets', type=Path)
     p.add_argument('--worker-command', help='Existing resident native worker launcher; never a core fallback')
+    p.add_argument('--home-candidate', type=Path, help='Identity-bound simulation initial state; rechecked by the worker')
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
     p.add_argument('--task-seconds', type=float, default=900.)
     p.add_argument('--stage-seconds', type=float, default=60.)
@@ -40,7 +41,8 @@ def main():
                 task = None; begin = perf_counter(); attempt_out = out/f'attempt_{attempt:02d}'
                 try:
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
-                                      stage_seconds=a.stage_seconds, attempt=attempt)
+                                      stage_seconds=a.stage_seconds, attempt=attempt,
+                                      home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
                     review = review_plan(plan, snapshot); save_json(attempt_out/'review.json', review)
                     if review['status'] == 'PASS':
@@ -55,8 +57,10 @@ def main():
                     failures.append(review)
                 except Exception as error:
                     failure = dict(error=str(error), traceback=traceback.format_exc())
+                    if hasattr(error, 'native_calls'): failure['native_calls'] = error.native_calls
                     if task:
                         failure.update(native_records=task.records, native_ik_records=task.ik_records, partial_stages=task.stages)
+                        failure.update(native_calls=task.native_calls, initial_state_checks=task.home_checks)
                     save_json(attempt_out/'failure.json', failure); failures.append(failure)
                 finally:
                     if task: task.close()
