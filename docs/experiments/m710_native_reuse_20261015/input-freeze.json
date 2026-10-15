@@ -1,0 +1,26 @@
+{
+  "baseline": "3a84888f85fd490b538e5ce643aa135c2e8cabdb",
+  "freeze_time": "2026-10-15T11:06:22+08:00",
+  "source": "/root/autodl-tmp/m710-validation-opt-20261002/repo/outputs/native-cold-validation-opt-once/plan/motion.json",
+  "source_sha256": "9825a2c2a9d678cb88dd0db7e07bb74f41a6f00604075c80652b1a57fe78acba",
+  "input_sha256": "d1c269450ee2a6f0e14b721262caf7013ae3a0e58620b19e4579108071426b24",
+  "scope": "archived native states for checker benchmark only; no planning or execution",
+  "ranges": [
+    {
+      "name": "transit",
+      "stage_id": "native-cold-413ade2df3f54675a25f919f9dadda57:10",
+      "edge_range": [
+        0,
+        3
+      ]
+    },
+    {
+      "name": "pregrasp",
+      "stage_id": "native-cold-413ade2df3f54675a25f919f9dadda57:1",
+      "edge_range": [
+        0,
+        3
+      ]
+    }
+  ]
+}

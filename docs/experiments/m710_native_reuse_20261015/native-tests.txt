@@ -1,0 +1,9 @@
+PASS m710_process_geometry_test
+PASS m710_process_policy_test reference
+PASS m710_process_policy_test optimized
+PASS m710_fixed_reuse_test
+PASS m710_clearance_test optimized
+PASS m710_clearance_test optimized reuse
+PASS m710_native_zero_motion_test
+PASS m710_native_semantic_event_test
+PASS m710_static_prior_test

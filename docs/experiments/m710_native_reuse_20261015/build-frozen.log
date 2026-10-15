@@ -1,0 +1,30 @@
+Consolidate compiler generated dependencies of target m710_moveit_worker
+Consolidate compiler generated dependencies of target m710_clearance_test
+[  5%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[ 11%] Building CXX object CMakeFiles/m710_clearance_test.dir/src/clearance_test.cpp.o
+[ 16%] Linking CXX executable m710_clearance_test
+[ 16%] Built target m710_clearance_test
+[ 27%] Built target m710_process_geometry_test
+Consolidate compiler generated dependencies of target m710_process_policy_test
+[ 33%] Building CXX object CMakeFiles/m710_process_policy_test.dir/src/process_policy_test.cpp.o
+[ 38%] Linking CXX executable m710_process_policy_test
+[ 38%] Built target m710_process_policy_test
+[ 50%] Built target m710_native_zero_motion_test
+Consolidate compiler generated dependencies of target m710_native_semantic_event_test
+[ 55%] Building CXX object CMakeFiles/m710_native_semantic_event_test.dir/src/native_semantic_event_test.cpp.o
+[ 61%] Linking CXX executable m710_moveit_worker
+[ 61%] Built target m710_moveit_worker
+Consolidate compiler generated dependencies of target m710_static_prior_test
+[ 66%] Building CXX object CMakeFiles/m710_static_prior_test.dir/src/static_prior_test.cpp.o
+[ 72%] Linking CXX executable m710_native_semantic_event_test
+[ 72%] Built target m710_native_semantic_event_test
+Consolidate compiler generated dependencies of target m710_process_benchmark
+[ 77%] Building CXX object CMakeFiles/m710_process_benchmark.dir/src/process_benchmark.cpp.o
+[ 83%] Linking CXX executable m710_static_prior_test
+[ 83%] Built target m710_static_prior_test
+Consolidate compiler generated dependencies of target m710_fixed_reuse_test
+[ 88%] Building CXX object CMakeFiles/m710_fixed_reuse_test.dir/src/fixed_reuse_test.cpp.o
+[ 94%] Linking CXX executable m710_process_benchmark
+[ 94%] Built target m710_process_benchmark
+[100%] Linking CXX executable m710_fixed_reuse_test
+[100%] Built target m710_fixed_reuse_test
