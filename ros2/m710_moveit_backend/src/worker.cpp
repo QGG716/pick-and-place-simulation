@@ -291,6 +291,18 @@ class Worker {
       const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process,bool diagnostic=false) {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
     m710::validateNativeMotionScope(req);
+    const std::string connection_scope=req.value("connection_scope",std::string());
+    if(!connection_scope.empty()) {
+      if(!planning_only || planning_mode!="static_prior_fast" || req.at("stage")!="pregrasp" ||
+          !req.at("attachment").is_null() || req.value("purpose",std::string())!="FREE_APPROACH" ||
+          req.contains("goal_pose") || !req.contains("q_goal") ||
+          (connection_scope!="DIRECT_ONLY" && connection_scope!="GLOBAL_ALLOWED"))
+        throw std::runtime_error("APPROACH_CONNECTION_SCOPE_INVALID");
+      if(connection_scope=="DIRECT_ONLY" && !(
+          (req.at("pipeline_id")=="static_prior" && req.at("planner_id")=="CHECKED_JOINT_DIRECT") ||
+          (req.at("pipeline_id")=="pilz_industrial_motion_planner" && req.at("planner_id")=="PTP")))
+        throw std::runtime_error("DIRECT_ONLY_GLOBAL_SEARCH_FORBIDDEN");
+    }
     const std::string task_id=req.at("task_id"),stage_id=req.at("stage_id");
     if(diagnostic) {
       const std::string stage=req.at("stage");
@@ -341,6 +353,17 @@ class Worker {
         }
       }
     }
+    if(req.contains("direct_rejection_stage_id")) {
+      const std::string rejected=req.at("direct_rejection_stage_id");
+      if(connection_scope!="GLOBAL_ALLOWED" || req.at("pipeline_id")!="static_prior" ||
+          req.at("planner_id")!="SPARSE_PRM" || !session.records.count(rejected))
+        throw std::runtime_error("DIRECT_REJECTION_RECEIPT_INVALID");
+      const auto& prior=*session.records.at(rejected);
+      if(prior.ready || prior.request.value("planner_id",std::string())!="CHECKED_JOINT_DIRECT" ||
+          prior.result.value("status",std::string())!="DIRECT_CONNECTION_REJECTED" ||
+          m710::StaticPriorGraph::directContext(prior.request)!=m710::StaticPriorGraph::directContext(req))
+        throw std::runtime_error("DIRECT_REJECTION_CONTEXT_CHANGED");
+    }
     size_t common=0;while(common<ancestors.size()&&common<session.active.size()&&ancestors[common]==session.active[common]) ++common;
     session.task->reset();
     if(common<session.active.size()) ++session.backtracks;
@@ -349,19 +372,23 @@ class Worker {
       const auto& req=r.request;const std::string pipeline=req.at("pipeline_id"),planner=req.at("planner_id");
       if(pipeline=="static_prior") {
         const auto begin=Clock::now();const std::string stage=req.at("stage");
-        if(!planning_only || planning_mode!="static_prior_fast" || planner!="SPARSE_PRM" ||
+        const bool direct_only=planner=="CHECKED_JOINT_DIRECT";
+        if(direct_only && req.value("connection_scope",std::string())!="DIRECT_ONLY")
+          throw std::runtime_error("DIRECT_ONLY_SCOPE_REQUIRED");
+        if(!planning_only || planning_mode!="static_prior_fast" || (!direct_only && planner!="SPARSE_PRM") ||
           !req.contains("q_goal") || req.contains("goal_pose") ||
           !(stage=="pregrasp" || stage=="transit" || stage=="residence"))
           throw std::runtime_error("PRIOR_FREE_MOTION_SCOPE_REQUIRED");
         checkPriorContext(req);
         const std::string mode=req.at("attachment").is_null()?"empty":"loaded";
         r.result={{"status","PRIOR_NOT_COVERED"},{"pipeline_id",pipeline},{"planner_id",planner},
-          {"generation_source","STATIC_PRIOR_QUERY"},{"mtc_generation",true},{"generated_during_task",true},
+          {"generation_source",direct_only?"NATIVE_DIRECT_CHECK":"STATIC_PRIOR_QUERY"},{"mtc_generation",true},{"generated_during_task",true},
           {"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},{"parent_stage_id",r.parent},
           {"request_id",req.at("request_id")},{"native_solver_calls",J::object()},{"native_solver_s",0.},
           {"mtc_plan_s",0.},{"pipeline_calls",calls},{"returned_waypoint_count",0},{"trajectory_present",false}};
         if(static_prior_database.is_null() || !static_prior_database.at("modes").contains(mode)) return;
-        auto result=m710::StaticPriorGraph::query(static_prior_database.at("modes").at(mode),req,r.start,*r.clearance,r.process.get());
+        auto result=m710::StaticPriorGraph::query(static_prior_database.at("modes").at(mode),req,r.start,
+          *r.clearance,r.process.get(),direct_only,req.contains("direct_rejection_stage_id"));
         r.result["status"]=result.at("status");r.result["prior_query_s"]=seconds(begin);
         if(result.contains("termination"))r.result["termination"]=result.at("termination");
         if(result.contains("prior_usage")) {r.result["prior_usage"]=result.at("prior_usage");r.result["prior_usage"]["context_bound_by_worker"]=true;}
@@ -569,6 +596,8 @@ class Worker {
     record->result["mtc_attempt_index"]=requests;record->result["task_solve_calls"]=session.solve_calls;record->result["task_backtracks"]=session.backtracks;
     record->result["retained_native_subsolutions"]=session.records.size();record->result["task_stage_ids"]=session.active;
     record->result["diagnostic_only"]=diagnostic;
+    if(req.contains("connection_scope"))record->result["connection_scope"]=req.at("connection_scope");
+    if(req.contains("direct_rejection_stage_id"))record->result["direct_rejection_stage_id"]=req.at("direct_rejection_stage_id");
     if(diagnostic)record->result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
     compactPlanningOnlyReply(record->result,planning_only,planning_mode);
     return record->result;

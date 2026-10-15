@@ -106,7 +106,28 @@ int main(int argc,char** argv) {
     solved.at("path").back()==request.at("q_goal"),"DIRECT_CONNECTOR_ACTUAL_ENDPOINTS");
   require(solved.at("prior_usage").at("prior_edges_reused")==0 && solved.at("prior_usage").at("prior_hit")==false,
     "DIRECT_CONNECTION_NOT_PRIOR_HIT");
+  // Direct-only uses the identical edge checker but never touches graph nodes.
+  auto poisoned=g;poisoned["nodes"]="MUST_NOT_READ";poisoned["edges"]="MUST_NOT_READ";
+  auto direct=m710::StaticPriorGraph::query(poisoned,request,clear,clearance,nullptr,true);
+  require(direct.at("status")=="SUCCESS" && direct.at("path")==solved.at("path") &&
+    direct.at("prior_usage").at("graph_search_performed")==false &&
+    direct.at("prior_usage").at("edge_checks")==1,"DIRECT_NO_GRAPH_TRAVERSAL");
   auto blocked=scene(true);m710::Clearance obstruction(blocked,policy());
+  auto blocked_direct=m710::StaticPriorGraph::query(poisoned,request,blocked,obstruction,nullptr,true);
+  require(blocked_direct.at("status")=="DIRECT_CONNECTION_REJECTED" &&
+    blocked_direct.at("prior_usage").at("state_checks").get<int>()>1 &&
+    blocked_direct.at("prior_usage").at("failed_edge_witnesses").front().at("fraction").get<double>()>0 &&
+    blocked_direct.at("prior_usage").at("failed_edge_witnesses").front().at("fraction").get<double>()<1,
+    "DIRECT_VALID_ENDPOINTS_ILLEGAL_INTERIOR_REJECTED");
+  auto expired_direct_req=request;expired_direct_req["allowed_planning_time_s"]=1e-15;
+  auto expired_direct=m710::StaticPriorGraph::query(poisoned,expired_direct_req,clear,clearance,nullptr,true);
+  require(expired_direct.at("status")=="DIRECT_CONNECTION_TIMEOUT","DIRECT_TIMEOUT_NOT_REJECTION");
+  auto same=request;same["stage_id"]="later";same["planner_id"]="SPARSE_PRM";
+  require(m710::StaticPriorGraph::directContext(request)==m710::StaticPriorGraph::directContext(same),"METHOD_NOT_CONTEXT");
+  for(const auto* key:{"q_goal","world","parent_stage_id","task_id","attachment","clearance_policy","identity"}) {
+    auto changed=request;changed[key]="changed";
+    require(m710::StaticPriorGraph::directContext(request)!=m710::StaticPriorGraph::directContext(changed),"CONTEXT_CHANGE_INVALIDATES");
+  }
   auto failed=m710::StaticPriorGraph::query(g,request,blocked,obstruction,nullptr);
   require(failed.at("status")=="PRIOR_NOT_CONNECTED" && failed.at("termination")=="GRAPH_DISCONNECTED" && failed.at("path").empty() &&
     failed.at("prior_usage").at("rejected_edges").get<size_t>()>0,"NEW_INTERIOR_OBSTACLE_NOT_ACCEPTED");
@@ -129,6 +150,12 @@ int main(int argc,char** argv) {
   require(via_portal.at("status")=="SUCCESS" && via_portal.at("prior_usage").at("prior_nodes_reused")==1 &&
     via_portal.at("prior_usage").at("prior_edges_reused")==0 && via_portal.at("prior_usage").at("prior_hit")==true,
     "SINGLE_REUSED_PORTAL_IS_A_TRUE_PRIOR_HIT_WITHOUT_GRAPH_EDGE");
+  auto skipped_direct=m710::StaticPriorGraph::query(one_portal,request,blocked,obstruction,nullptr,false,true);
+  require(skipped_direct.at("status")=="SUCCESS" &&
+    skipped_direct.at("prior_usage").at("direct_rejection_reused")==true &&
+    skipped_direct.at("prior_usage").at("rejected_by_kind").at("direct_connector")==0 &&
+    skipped_direct.at("prior_usage").at("edge_checks").get<int>()+1==via_portal.at("prior_usage").at("edge_checks").get<int>(),
+    "GLOBAL_REUSES_ONLY_CHECKED_DIRECT_REJECTION");
   auto dense=g;dense["nodes"]=J::array();dense["edges"]=J::array();
   for(size_t side=0;side<2;++side)for(size_t i=0;i<20;++i) {
     const double x=(side==0?-1.:1.)*(.11+.004*i);

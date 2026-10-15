@@ -2117,7 +2117,10 @@ class LayoutTrajectoryConnector:
                     iteration_budget=allocation, attachment=attachment,
                     support_names=support_names, target_contact=target_contact, stage=stage,
                     purpose=purpose, allow_rrt=fallback,
-                    candidates=(() if not fallback or candidate_factory is None else candidate_factory(candidate.q)))
+                    candidates=(() if not fallback or candidate_factory is None else candidate_factory(candidate.q)),
+                    **(dict(connection_scope="GLOBAL_ALLOWED" if fallback else "DIRECT_ONLY")
+                       if getattr(self, "_approach_layering_enabled", lambda **kw: False)(
+                           stage=stage, purpose=purpose, attachment=attachment) else {}))
             consumed = int(connection.get("planning_iterations_consumed", connection.get("iterations", 0)))
             remaining = max(0, remaining - consumed)
             if stage == "transit":

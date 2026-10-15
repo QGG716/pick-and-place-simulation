@@ -148,9 +148,45 @@ public:
       {"interpolation_l1_step_rad",step},{"sampling",portals.empty()?"bounded_Halton_full_declared_joint_limits":"configured_workspace_portals_then_bounded_Halton"},
       {"continuous_swept_proof",false},{"static_geometry_only",true},{"clearance",clearance.evidence()}};
   }
-  static Json query(const Json& graph,const Json& req,const planning_scene::PlanningScenePtr& scene,Clearance& clearance,ProcessPolicy* process) {
-    const auto begin=Clock::now();validate(graph);auto app=applicability(graph.at("context"),req.at("prior_context"));
+  static Json directContext(Json req) {
+    // Scope/method/budget are deliberately different in the deferred request;
+    // every physical, task, parent, candidate and policy field remains exact.
+    for(const auto* key:{"request_id","stage_id","pipeline_id","planner_id","connection_scope",
+        "direct_rejection_stage_id","allowed_planning_time_s","planning_phase"}) req.erase(key);
+    return req;
+  }
+  static Json query(const Json& graph,const Json& req,const planning_scene::PlanningScenePtr& scene,
+      Clearance& clearance,ProcessPolicy* process,bool direct_only=false,bool skip_direct=false) {
+    const auto begin=Clock::now();
+    // The resident database was validated at load. Direct-only never walks
+    // its nodes/edges, constructs adjacency, or enters Dijkstra.
+    if(!direct_only)validate(graph);
+    auto app=applicability(graph.at("context"),req.at("prior_context"));
     if(!app.at("valid").get<bool>())return {{"status","PRIOR_CONTEXT_MISMATCH"},{"termination","CONTEXT_MISMATCH"},{"failure",app}};
+    const double budget=req.at("allowed_planning_time_s"),step=graph.at("interpolation_l1_step_rad");
+    if(!std::isfinite(budget)||budget<=0)return {{"status",direct_only?"DIRECT_CONNECTION_TIMEOUT":"PRIOR_QUERY_TIMEOUT"},
+      {"termination","TIMEOUT"},{"query_s",elapsed(begin)}};
+    if(step<=0||step>std::min(.01,req.at("clearance_policy").at("edge_resolution_rad").get<double>()))
+      throw std::runtime_error("PRIOR_INTERPOLATION_CHANGED");
+    if(direct_only) {
+      auto state=scene->getCurrentState();size_t checks=0;Json path=Json::array(),failure;
+      clearance.phase="prior_online";
+      const bool ok=edge(state,req.at("q_start").get<Q>(),req.at("q_goal").get<Q>(),
+        clearance,process,step,begin,budget,checks,&path,&failure);
+      const bool timed_out=!ok && failure.value("reason",std::string())=="TIMEOUT";
+      if(!ok)path=Json::array();
+      Json witnesses=Json::array();if(!ok){failure["kind"]="direct_connector";witnesses.push_back(failure);}
+      return {{"status",ok?"SUCCESS":timed_out?"DIRECT_CONNECTION_TIMEOUT":"DIRECT_CONNECTION_REJECTED"},
+        {"termination",ok?"COMPLETE":timed_out?"TIMEOUT":"DIRECT_REJECTED"},{"path",path},{"query_s",elapsed(begin)},
+        {"prior_usage",{{"prior_id",graph.at("prior_id")},{"context_checked",true},{"current_geometry_checked",ok},
+          {"route_nodes",ok?Json::array({0,1}):Json::array()},{"prior_nodes_reused",0},{"prior_edges_reused",0},
+          {"connector_edges",ok?1:0},{"prior_hit",false},{"connector_kind","CHECKED_JOINT_INTERPOLATION"},
+          {"connection_scope","DIRECT_ONLY"},{"graph_search_performed",false},{"edge_checks",1},{"edge_check_limit",128},
+          {"rejected_edges",!ok&&!timed_out?1:0},{"timed_out_edges",timed_out?1:0},
+          {"rejected_by_kind",{{"direct_connector",!ok&&!timed_out?1:0},{"graph_edge",0},{"start_connector",0},{"goal_connector",0}}},
+          {"failed_edge_witnesses",witnesses},{"state_checks",checks},{"interpolation_l1_step_rad",step},
+          {"continuous_swept_proof",false},{"static_clearance_inherited",false}}}};
+    }
     auto nodes=graph.at("nodes").get<std::vector<Q>>();const size_t count=nodes.size(),start=count,goal=count+1;
     nodes.push_back(req.at("q_start").get<Q>());nodes.push_back(req.at("q_goal").get<Q>());
     std::vector<std::vector<size_t>> adjacency(nodes.size());
@@ -170,10 +206,8 @@ public:
         add(endpoint,candidate.second);++portal_connections_added;if(++extra==8)break;
       }
     }
-    add(start,goal);std::map<std::pair<size_t,size_t>,bool> validity;
-    const double budget=req.at("allowed_planning_time_s"),step=graph.at("interpolation_l1_step_rad");
-    if(!std::isfinite(budget)||budget<=0)return {{"status","PRIOR_QUERY_TIMEOUT"},{"termination","TIMEOUT"},{"query_s",elapsed(begin)}};
-    if(step<=0||step>std::min(.01,req.at("clearance_policy").at("edge_resolution_rad").get<double>()))throw std::runtime_error("PRIOR_INTERPOLATION_CHANGED");
+    if(!skip_direct)add(start,goal);
+    std::map<std::pair<size_t,size_t>,bool> validity;
     auto state=scene->getCurrentState();size_t checks=0,edge_checks=0,rejected=0;Json route=Json::array(),path=Json::array();clearance.phase="prior_online";
     constexpr size_t edge_limit=128;
     Json rejected_by_kind={{"start_connector",0},{"goal_connector",0},{"graph_edge",0},{"direct_connector",0}};
@@ -226,6 +260,7 @@ public:
       termination=="EDGE_CHECK_LIMIT"?"PRIOR_EDGE_CHECK_LIMIT":"PRIOR_NOT_CONNECTED";
     return {{"status",status},{"termination",termination},{"path",path},
       {"query_s",elapsed(begin)},{"native_solver_s",0.},{"prior_usage",{{"prior_id",graph.at("prior_id")},{"context_checked",true},{"current_geometry_checked",!path.empty()},
+        {"graph_search_performed",true},{"direct_rejection_reused",skip_direct},
         {"route_nodes",route},{"portal_connections_added",portal_connections_added},{"prior_nodes_reused",nodes_reused},{"prior_edges_reused",reused},{"connector_edges",connectors},{"prior_hit",nodes_reused>0},{"connector_kind","CHECKED_JOINT_INTERPOLATION"},{"edge_checks",edge_checks},{"edge_check_limit",edge_limit},{"rejected_edges",rejected},{"rejected_by_kind",rejected_by_kind},{"timed_out_edges",timed_out_edges},
         {"failed_edge_witnesses",failed_edge_witnesses},{"state_checks",checks},
         {"interpolation_l1_step_rad",step},{"continuous_swept_proof",false},{"static_clearance_inherited",false},{"local_repairs",0},{"slow_path",false}}}};

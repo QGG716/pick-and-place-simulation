@@ -497,6 +497,22 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
         expected_collision_shapes={link.attrib["name"]:len(link.findall("collision")) for link in urdf.findall("link") if link.findall("collision")}), tool_names, compliant
 
 
+def native_selected_method(evidence):
+    for record in reversed(evidence.get("attempts", [])):
+        if record.get("status") != "SUCCESS":
+            continue
+        source = record.get("generation_source")
+        if source == "STATIC_PRIOR_REUSE":
+            return GenerationMethod.STATIC_PRIOR_REUSE.value
+        if source == "NATIVE_DIRECT_CONNECTION":
+            return GenerationMethod.JOINT_DIRECT.value
+        if record.get("planner_id") == "PTP":
+            return GenerationMethod.PILZ_PTP.value
+        if record.get("pipeline_id") == "ompl":
+            return GenerationMethod.RRT_CONNECT.value
+    return None
+
+
 def native_generation_evidence(result, submitted, *, planning_mode="cold_from_scratch"):
     """Fail closed for the two explicitly authorized zero-solver sources."""
     source = result.get("generation_source", "NATIVE_GENERATED")
@@ -771,8 +787,20 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         self._cold_counters["legacy_motion_generator_calls"] += 1
         return super()._ik_stream(*args, **kwargs)
 
+    def _approach_layering_enabled(self, *, stage, purpose, attachment=None):
+        return (self.planning_only and getattr(self, "planning_mode", "") == "static_prior_fast"
+            and getattr(self, "static_prior_loaded", False)
+            and getattr(self, "approach_direct_first", True)
+            and stage == "pregrasp" and purpose == MotionPurpose.FREE_APPROACH and attachment is None)
+
     def _connect_pose(self, *args, **kwargs):
-        selected,path,failure,evidence=super()._connect_pose(*args,**kwargs)
+        # A lease for this one lazy IK stream, never a task/global failure cache.
+        previous = getattr(self, "_approach_direct_attempts", None)
+        self._approach_direct_attempts = {}
+        try:
+            selected,path,failure,evidence=super()._connect_pose(*args,**kwargs)
+        finally:
+            self._approach_direct_attempts = previous
         if not getattr(self,"require_native_motion",False) or failure is not None or selected is None:
             return selected,path,failure,evidence
         if not path:
@@ -1144,8 +1172,15 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     def _native_plan(self,start,goal,obstacles,*,seed,attachment=None,support_names=(),target_contact=None,stage,
                      goal_pose=None,initial_proximity=None,allow_ompl=True,max_ompl_attempts=None,purpose=None,
-                     try_ptp=True):
+                     try_ptp=True, connection_scope=None, try_prior=True):
         started=perf_counter(); attempts=[]; seen=set()
+        if connection_scope is not None:
+            if (connection_scope not in {"DIRECT_ONLY", "GLOBAL_ALLOWED"}
+                    or not self._approach_layering_enabled(stage=stage, purpose=purpose, attachment=attachment)
+                    or goal_pose is not None):
+                raise MoveItUnavailable("APPROACH_CONNECTION_SCOPE_INVALID")
+            if connection_scope == "DIRECT_ONLY":
+                allow_ompl = False
         strict = getattr(self, "require_native_motion", False)
         constrained = bool(support_names or target_contact is not None or initial_proximity is not None or
             stage in {"contact", "support-release", "extraction", "place", "withdrawal"})
@@ -1170,6 +1205,12 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             request["parent_state_receipt"] = parent.evidence()
             request["ownership_transition"] = transition
             request["purpose"] = getattr(purpose, "value", purpose)
+        # Include exact scene, target/process, model, task, parent receipt and q.
+        # Only the changing wall-clock allowance is not part of this local key.
+        lease = getattr(self, "_approach_direct_attempts", None) if connection_scope else None
+        direct_key = (digest({k: v for k, v in request.items() if k != "allowed_planning_time_s"})
+                      if lease is not None else None)
+        prior_direct = lease.get(direct_key, {}) if lease is not None else {}
         endpoint_started=perf_counter();endpoints=[]
         for name,q in (("start",start),("goal",goal)):
             if q is None: continue
@@ -1189,12 +1230,20 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 (ompl_attempts if allow_ompl and not constrained else 0))]
         if (getattr(self, "planning_mode", "cold_from_scratch") == "static_prior_fast"
                 and getattr(self, "static_prior_loaded", False) and self.planning_only
-                and stage in {"pregrasp", "transit", "residence"} and goal_pose is None):
-            schedule.insert(0, ("static_prior", "SPARSE_PRM"))
+                and stage in {"pregrasp", "transit", "residence"} and goal_pose is None and try_prior):
+            schedule.insert(0, ("static_prior",
+                "CHECKED_JOINT_DIRECT" if connection_scope == "DIRECT_ONLY" else "SPARSE_PRM"))
+        if connection_scope:
+            schedule = [(pipeline, planner) for pipeline, planner in schedule
+                if not (planner in {"CHECKED_JOINT_DIRECT", "PTP"} and planner in prior_direct)]
         context=self._context_identity(obstacles,attachment=attachment,support_names=support_names,target_contact=target_contact,stage=stage)
         for pipeline,planner in schedule:
             if self._deadline_reached(): break
             submitted={**request,"pipeline_id":pipeline,"planner_id":planner}
+            if connection_scope:
+                submitted["connection_scope"] = connection_scope
+                if planner == "SPARSE_PRM" and "CHECKED_JOINT_DIRECT" in prior_direct:
+                    submitted["direct_rejection_stage_id"] = prior_direct["CHECKED_JOINT_DIRECT"]
             if pipeline == "static_prior":
                 from .static_prior import request_context
                 submitted["prior_context"] = request_context(submitted,
@@ -1220,6 +1269,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             request_round_trip_s=perf_counter()-request_started
             attempt={**raw,"request_round_trip_s":request_round_trip_s,
                 "planning_phase":submitted["planning_phase"],
+                "connection_scope":connection_scope,
+                "direct_rejection_stage_id":submitted.get("direct_rejection_stage_id"),
                 "fast_phase_overrun_s":self._fast_phase_overrun(submitted["planning_phase"]),
                 "connection_elapsed_s":perf_counter()-started,
                 "native_solver_s":raw.get("native_solver_s",raw.get("mtc_plan_s")),
@@ -1247,7 +1298,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 "status", "pipeline_id", "planner_id", "solver_returned_success", "solver_message",
                 "moveit_error_code", "moveit_error_code_source", "returned_waypoint_count",
                 "trajectory_present", "processing_branch", "zero_motion_event", "semantic_event",
-                "generation_source", "prior_usage", "goal_translation_delta_m", "goal_rotation_delta_rad",
+                "generation_source", "prior_usage", "connection_scope", "direct_rejection_stage_id",
+                "goal_translation_delta_m", "goal_rotation_delta_rad",
                 "request_round_trip_s", "connection_elapsed_s", "native_solver_s",
                 "planning_phase", "fast_phase_overrun_s", "requested_planning_time_s",
                 "mtc_plan_s", "task_backtracks", "failure")}
@@ -1261,6 +1313,26 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     stream.write(json.dumps(diagnostic, allow_nan=False)+"\n")
             attempts.append(attempt)
             if raw["status"]!="SUCCESS":
+                if connection_scope:
+                    # Only actual geometric rejection can eliminate a later direct
+                    # edge. Timeout/cancel/protocol failures are never that proof.
+                    geometric = ((planner == "CHECKED_JOINT_DIRECT"
+                        and raw["status"] == "DIRECT_CONNECTION_REJECTED") or
+                        (planner == "PTP" and raw["status"] == "NATIVE_PLANNING_FAILED"
+                         and raw.get("moveit_error_code") == -2))
+                    if geometric and lease is not None:
+                        lease.setdefault(direct_key, {})[planner] = raw.get("stage_id")
+                    if (raw["status"] in {"CANCELLED", "ERROR", "NATIVE_PROCESSING_FAILED"}
+                            or (connection_scope == "DIRECT_ONLY" and "TIMEOUT" in raw["status"])
+                            or "CONTEXT" in raw["status"]
+                            or raw["status"].startswith(("INVALID_START", "INVALID_GOAL", "NATIVE_TASK_"))):
+                        self.native_evidence.extend(attempts)
+                        local_timeout = "TIMEOUT" in raw["status"]
+                        return [], dict(reason=raw["status"], stage=stage, attempts=attempts,
+                            validation=dict(status="CANCELLED" if "CANCEL" in raw["status"] else "INDETERMINATE",
+                                termination_scope="METHOD" if local_timeout else "REQUEST",
+                                can_continue_candidates=local_timeout)), dict(
+                            backend="moveit2", success=False, attempts=attempts, connection_scope=connection_scope)
                 if raw["status"].startswith(("INVALID_START","INVALID_GOAL")): break
                 continue
             if strict and (any(raw.get(key) != submitted.get(key) for key in ("task_id", "stage_id", "parent_stage_id"))
@@ -1331,7 +1403,11 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         reason=attempts[-1]["status"] if attempts and (goal_pose is not None or attempts[-1]["status"].startswith(("INVALID_START","INVALID_GOAL"))) else "MOVEIT2_SEARCH_EXHAUSTED"
         if goal_pose is None and not allow_ompl and reason == "MOVEIT2_SEARCH_EXHAUSTED":
             reason = "DIRECT_CONNECTION_REJECTED"
-        return [],dict(reason=reason,stage=stage,attempts=attempts),dict(backend="moveit2",success=False,attempts=attempts)
+        if connection_scope == "GLOBAL_ALLOWED" and any("TIMEOUT" in a["status"] for a in attempts):
+            reason = "GLOBAL_SEARCH_INCOMPLETE"
+        return [],dict(reason=reason,stage=stage,attempts=attempts),dict(backend="moveit2",success=False,
+            attempts=attempts, connection_scope=connection_scope,
+            reused_direct_attempts=dict(prior_direct) if connection_scope else {})
 
     def history_linear_suffix_requests(self,hint,target,contact_q,obstacles):
         """Pure current process geometry; no prefix/path validity work or planning."""
@@ -1401,7 +1477,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     def _transit(self,start,goal,obstacles,*,purpose,seed,iteration_budget,
                  attachment=None,support_names=(),target_contact=None,stage,
-                 candidates=(),allow_rrt=True):
+                 candidates=(),allow_rrt=True,connection_scope=None):
         purpose=require_purpose(purpose,free=True)
         if target_contact is not None or support_names:
             raise ValueError("free motion cannot carry local contact/support permissions")
@@ -1417,12 +1493,20 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             return [continued],failure,dict(generator="zero_motion_semantic_event",**event,
                 rrt_called=False,rrt_constructed=False,rrt_expanded=False,planning_iterations_consumed=0,
                 selected_method=GenerationMethod.JOINT_DIRECT.value,validation_completed=failure is None)
+        layered = self._approach_layering_enabled(stage=stage, purpose=purpose, attachment=attachment)
+        if layered and connection_scope is None:
+            connection_scope = "GLOBAL_ALLOWED" if allow_rrt else "DIRECT_ONLY"
         options=dict(seed=seed,attachment=attachment,stage=stage,purpose=purpose)
+        if connection_scope is not None:
+            options["connection_scope"] = connection_scope
         path,failure,evidence=self._native_plan(start,goal,obstacles,allow_ompl=False,**options)
         evidence.update(purpose=purpose.value,rrt_called=False,rrt_constructed=False,rrt_expanded=False,
-            selected_method=GenerationMethod.JOINT_DIRECT.value if failure is None else None,
+            selected_method=native_selected_method(evidence) if failure is None else None,
+            connection_scope=connection_scope,
             native_ompl_allowed=bool(allow_rrt),planning_iterations_consumed=0)
-        if failure is None or not allow_rrt or failure.get("reason")!="DIRECT_CONNECTION_REJECTED":
+        if (failure is None or not allow_rrt or connection_scope == "DIRECT_ONLY"
+                or failure.get("reason") not in ({"DIRECT_CONNECTION_REJECTED", "GLOBAL_SEARCH_INCOMPLETE"}
+                    if layered else {"DIRECT_CONNECTION_REJECTED"})):
             return path,failure,evidence
         candidate_evidence=[]
         for method,generate in candidates:
@@ -1452,12 +1536,14 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             return [],dict(reason="NATIVE_CONNECTION_ITERATION_BUDGET_EXHAUSTED",stage=stage),{
                 **evidence,"candidate_attempts":candidate_evidence}
         path,failure,fallback=self._native_plan(start,goal,obstacles,allow_ompl=True,try_ptp=False,
-            max_ompl_attempts=min(int(iteration_budget),self.budget.stage_connection_attempts),**options)
+            max_ompl_attempts=min(int(iteration_budget),self.budget.stage_connection_attempts),
+            **(dict(try_prior=False) if layered else {}), **options)
         consumed=len(fallback.get("attempts",[]))
+        ompl_calls=sum(int(a.get("native_solver_calls",{}).get("OMPL",0)) for a in fallback.get("attempts",[]))
         fallback.update(purpose=purpose.value,candidate_attempts=candidate_evidence,
             direct_attempts=evidence.get("attempts",[]),rrt_called=False,rrt_constructed=False,rrt_expanded=False,
-            native_ompl_allowed=True,native_ompl_calls=consumed,planning_iterations_consumed=consumed,
-            selected_method=GenerationMethod.RRT_CONNECT.value if failure is None else None)
+            native_ompl_allowed=True,native_ompl_calls=ompl_calls,planning_iterations_consumed=consumed,
+            selected_method=native_selected_method(fallback) if failure is None else None)
         return path,failure,fallback
 
     def _cartesian(self,start,destination,obstacles,*,purpose,**kwargs):

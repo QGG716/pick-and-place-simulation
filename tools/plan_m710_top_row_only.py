@@ -136,7 +136,8 @@ def call_summary(c):
             "pipeline_id", "planner_id", "native_solver_calls", "mtc_plan_s", "native_output_check_s",
             "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
             "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
-            "scene_import_s", "native_solver_s", "generation_source", "semantic_event", "prior_usage", "prior_query_s", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
+            "scene_import_s", "native_solver_s", "generation_source", "semantic_event", "prior_usage", "prior_query_s",
+            "connection_scope", "direct_rejection_stage_id", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
             "native_output_status", "authoritative_status", "request_check_evidence", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
@@ -154,7 +155,8 @@ def call_summary(c):
         prior_edges_reused=sum(r.get("prior_usage",{}).get("prior_edges_reused",0) for r in c.native_evidence if r.get("status")=="SUCCESS"),
         prior_query_s=sum(r.get("prior_query_s",0.) for r in c.native_evidence),
         motion_request_round_trip_s=sum(r.get("request_round_trip_s",0.) for r in c.native_evidence),
-        prior_misses=sum(r.get("pipeline_id")=="static_prior" and r.get("status")!="SUCCESS" for r in c.native_evidence),
+        prior_misses=sum(r.get("pipeline_id")=="static_prior" and r.get("planner_id")!="CHECKED_JOINT_DIRECT"
+            and r.get("status")!="SUCCESS" for r in c.native_evidence),
         semantic_events=sum(r.get("generation_source")=="SEMANTIC_EVENT" for r in c.native_evidence),
         local_repairs=0, slow_ompl_calls=counts["OMPL"],
         ik=[{k: r[k] for k in (
@@ -197,6 +199,8 @@ def main():
     parser.add_argument("--seed", type=int, default=71070)
     parser.add_argument("--planning-mode", choices=("cold_from_scratch", "static_prior_fast"), default="cold_from_scratch")
     parser.add_argument("--static-prior", type=Path)
+    parser.add_argument("--legacy-approach-layering", action="store_true",
+        help="Diagnostic A/B only: restore full prior queries in the approach direct round")
     parser.add_argument("--fast-phase-budget-s", type=float, default=1.)
     parser.add_argument("--slow-completion", action="store_true", help="After shared fast phase, continue the same tasks within the unchanged delivery budget")
     parser.add_argument("--stage-budget-s", type=float, default=300.)
@@ -212,6 +216,8 @@ def main():
     if args.fast_phase_budget_s <= 0 or not np.isfinite(args.fast_phase_budget_s):
         parser.error("fast phase budget must be finite and positive")
     diagnostic = json.loads(args.diagnostic_input.read_text()) if args.diagnostic_input else None
+    if args.legacy_approach_layering and diagnostic is None:
+        parser.error("legacy approach layering is diagnostic-only")
     if diagnostic is not None:
         diagnostic_fast_deadline(diagnostic, 0., args.fast_phase_budget_s, args.slow_completion)
         q_input = np.asarray(diagnostic["start_q_rad"], dtype=float)
@@ -236,6 +242,7 @@ def main():
         planning_mode=args.planning_mode,
         native_budget=dict(task_wall_time_s=args.box_budget_s, stage_wall_time_s=args.stage_budget_s,
                            ipc_timeout_s=args.ipc_timeout_s))
+    c.approach_direct_first = not args.legacy_approach_layering
     try:
         c.budget = replace(c.budget, planning_wall_time_s=args.box_budget_s,
             candidate_wall_time_s=None, stage_wall_time_s=args.stage_budget_s,
@@ -280,7 +287,8 @@ def main():
         summary = dict(schema="m710_top_row_planning_only_batch_v1", status=MARKER,
             run_id="planning-only-" + uuid.uuid4().hex, source_commit=args.source_commit,
             command=[sys.executable, *sys.argv], seed=args.seed, budgets=budgets,
-            planning_mode=args.planning_mode, static_prior=getattr(c, "static_prior_metadata", None),
+            planning_mode=args.planning_mode, approach_direct_first=c.approach_direct_first,
+            static_prior=getattr(c, "static_prior_metadata", None),
             fast_phase_budget_s=args.fast_phase_budget_s if args.planning_mode == "static_prior_fast" else None,
             slow_completion_allowed=args.slow_completion,
             environment=dict(python=platform.python_version(), platform=platform.platform(),

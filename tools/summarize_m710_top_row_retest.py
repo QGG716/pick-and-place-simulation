@@ -78,8 +78,8 @@ def summarize(folder):
             native_solver_s=sum(r.get("mtc_plan_s", 0) for r in motion),
             prior_hits=sum(r.get("generation_source") == "STATIC_PRIOR_REUSE" and r["status"] == "SUCCESS" for r in motion),
             direct_connections=sum(r.get("generation_source") == "NATIVE_DIRECT_CONNECTION" and r["status"] == "SUCCESS" for r in motion),
-            prior_queries=sum(r.get("pipeline_id") == "static_prior" for r in motion),
-            prior_failed_queries=sum(r.get("pipeline_id") == "static_prior" and r["status"] != "SUCCESS" for r in motion),
+            prior_queries=sum(r.get("pipeline_id") == "static_prior" and r.get("planner_id") != "CHECKED_JOINT_DIRECT" for r in motion),
+            prior_failed_queries=sum(r.get("pipeline_id") == "static_prior" and r.get("planner_id") != "CHECKED_JOINT_DIRECT" and r["status"] != "SUCCESS" for r in motion),
             prior_timeouts=sum(r["status"] == "PRIOR_QUERY_TIMEOUT" for r in motion),
             failed_candidates=len(box["failed_candidates"]),
             failures=[{k:r.get(k) for k in ("request_id", "stage", "status", "solver_message", "moveit_error_code", "failure", "prior_usage", "request_check_evidence")} for r in motion if r["status"] != "SUCCESS"])
@@ -91,6 +91,7 @@ def summarize(folder):
             clear = r.get("clearance")
             req = {k:r.get(k) for k in ("request_id", "stage_id", "parent_stage_id", "stage", "status",
                 "request_round_trip_s", "prior_query_s", "mtc_plan_s", "pipeline_id",
+                "planner_id", "connection_scope", "direct_rejection_stage_id",
                 "solver_message", "moveit_error_code", "failure", "request_check_evidence")}
             req["target"] = box["target"]
             req.update(request_cost(r))
