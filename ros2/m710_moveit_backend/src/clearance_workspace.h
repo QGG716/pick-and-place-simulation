@@ -2,6 +2,7 @@
 #include <moveit/collision_detection_fcl/collision_env_fcl.h>
 #include <chrono>
 #include <functional>
+#include "pair_profile.h"
 
 namespace m710 {
 // Reuse MoveIt's unpadded FCL assets. Mutable objects and the world snapshot are
@@ -26,6 +27,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     FixedSource source=FixedSource::None;
   };
   bool reuse_=false,qualify_fixed_narrow_=true;
+  const bool pair_profile_enabled_;
   static bool fixedToFlange(const moveit::core::LinkModel* link) {
     while(link && link->getName()!="flange") {
       const auto* joint=link->getParentJointModel();
@@ -55,8 +57,8 @@ public:
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      const std::set<std::string>& tools={},bool reuse=false,bool qualify_fixed_narrow=true)
-    : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()) {
+      const std::set<std::string>& tools={},bool reuse=false,bool qualify_fixed_narrow=true,bool pair_profile_enabled=false)
+    : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),pair_profile_enabled_(pair_profile_enabled),context_(scene->getCurrentState()) {
     reuse_=reuse;qualify_fixed_narrow_=qualify_fixed_narrow;
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
@@ -142,7 +144,7 @@ public:
         if(!p.visited){++stats.fixed_first_checks;p.visited=true;}
         ++stats.fixed_property_evaluations;
       } else ++stats.dynamic_pair_checks;
-      const auto& a=bodies_[p.a];const auto& b=bodies_[p.b];auto broad=Clock::now();++stats.aabb_tests;
+      const auto& a=bodies_[p.a];const auto& b=bodies_[p.b];PairProfileTimer<> broad(pair_profile_enabled_);++stats.aabb_tests;
       const auto& ab=a.object->getAABB();const auto& bb=b.object->getAABB();
       if(!ab.min_.allFinite() || !ab.max_.allFinite() || !bb.min_.allFinite() || !bb.max_.allFinite())
         throw std::runtime_error("UNKNOWN_FCL_AABB");
@@ -151,7 +153,7 @@ public:
       const double lower=ab.distance(bb);
       if(!std::isfinite(lower)) throw std::runtime_error("UNKNOWN_AABB_DISTANCE");
       const bool skip=lower>p.limit+.001;
-      stats.broad_s+=elapsed(broad);
+      if(pair_profile_enabled_)stats.broad_s+=broad.elapsed();
       if(skip) {
         ++stats.aabb_skips;
         if(reuse_&&p.fixed&&bounded_transforms) {
@@ -159,12 +161,14 @@ public:
         }
         continue;
       }
-      auto narrow=Clock::now();++stats.narrow_calls;
+      PairProfileTimer<> narrow(pair_profile_enabled_);++stats.narrow_calls;
       if(p.self) ++stats.self_narrow;else ++stats.world_narrow;
       fcl::DistanceResultd result;result.min_distance=p.limit+.001;
       const double d=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),result);
       auto finish_narrow=[&] {
-        const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
+        if(pair_profile_enabled_) {
+          const double dt=narrow.elapsed();stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
+        }
       };
       // Use the same FCL request/default solver and strict contact rejection as
       // MoveIt's reference callback; no signed-distance or geometry surrogate.

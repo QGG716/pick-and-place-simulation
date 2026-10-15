@@ -836,7 +836,7 @@ public:
       if(req.at("clearance_policy").at("schema")=="m710_native_process_clearance_v1" && !process && op!="build_static_prior")
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       if(req.value("require_native_motion",false) && (op=="plan" || op=="diagnostic_connection") && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
-      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),req.value("native_check_reuse",true));
+      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),req.value("native_check_reuse",true),true,req.value("pair_profile_enabled",false));
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});

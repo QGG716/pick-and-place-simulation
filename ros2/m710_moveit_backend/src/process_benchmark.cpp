@@ -18,12 +18,15 @@ moveit_msgs::msg::CollisionObject object(const J& b,const std::string& frame="wo
   o.primitives.push_back(s);o.primitive_poses.push_back(p);return o;
 }
 int main(int argc,char** argv){
-  if(argc<4)throw std::runtime_error("usage: benchmark model.json fixed-input.json reference|optimized|narrow-baseline [profile]");
+  if(argc<4)throw std::runtime_error("usage: benchmark model.json fixed-input.json reference|optimized|narrow-baseline|pair-profile-on|pair-profile-off [profile]");
   rclcpp::init(argc,argv);const auto init=read(argv[1]),input=read(argv[2]);
   // Diagnostic baseline disables only this round's supplementary qualification.
   // ProcessSealInput, preparsing and AABB certificates remain enabled.
   const bool narrow_baseline=std::string(argv[3])=="narrow-baseline";
-  const bool optimized=std::string(argv[3])=="optimized"||narrow_baseline;
+  const std::string mode=argv[3];
+  const bool pair_profile_comparison=mode=="pair-profile-on"||mode=="pair-profile-off";
+  const bool pair_profile_enabled=mode=="pair-profile-on";
+  const bool optimized=mode=="optimized"||narrow_baseline||pair_profile_comparison;
   if(!optimized&&std::string(argv[3])!="reference")throw std::runtime_error("INVALID_MODE");
   auto load=Clock::now();auto u=urdf::parseURDF(init.at("parameters").at("robot_description"));
   auto srdf=std::make_shared<srdf::Model>();
@@ -56,7 +59,7 @@ int main(int argc,char** argv){
       if(!scene->processAttachedCollisionObjectMsg(a))throw std::runtime_error("ATTACH_IMPORT");
     }
     m710::ProcessPolicy process(scene,req);
-    m710::Clearance clearance(scene,req.at("clearance_policy"),"optimized",optimized,!narrow_baseline);clearance.phase="fixed_fragment";
+    m710::Clearance clearance(scene,req.at("clearance_policy"),"optimized",optimized,!narrow_baseline,pair_profile_enabled);clearance.phase="fixed_fragment";
     auto state=scene->getCurrentState();const double setup=seconds(begin);const auto traversal=Clock::now();
     const auto& path=c.at("path");const double resolution=req.at("clearance_policy").at("edge_resolution_rad");
     J verdicts=J::array();size_t visits=0;double process_s=0,clearance_s=0;

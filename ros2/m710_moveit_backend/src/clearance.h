@@ -23,14 +23,15 @@ class Clearance {
   std::unique_ptr<ClearanceWorkspace> workspace_;
   std::string mode_;
   bool native_check_reuse_,qualify_fixed_narrow_;
+  const bool pair_profile_enabled_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
     double seconds=0,bookkeeping_s=0,witness_s=0;};
   std::map<std::string,Count> counts_;
 public:
   std::string phase = "endpoint";
   Json last_failure = nullptr, rejected_examples = Json::array(), search_gap_witness = nullptr;
-  Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized",bool native_check_reuse=true,bool qualify_fixed_narrow=true)
-    : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode),native_check_reuse_(native_check_reuse),qualify_fixed_narrow_(qualify_fixed_narrow) {
+  Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized",bool native_check_reuse=true,bool qualify_fixed_narrow=true,bool pair_profile_enabled=false)
+    : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode),native_check_reuse_(native_check_reuse),qualify_fixed_narrow_(qualify_fixed_narrow),pair_profile_enabled_(pair_profile_enabled) {
     const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
     if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
        policy.at("source_policy").at("schema")!="m710_poc_pair_collision_policy_v4" ||
@@ -56,7 +57,7 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},tools_,native_check_reuse,qualify_fixed_narrow);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},tools_,native_check_reuse,qualify_fixed_narrow,pair_profile_enabled);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
@@ -156,7 +157,9 @@ public:
   }
   Json workspaceEvidence() const {
     if(!workspace_) return nullptr;
-    Json result={{"prepared_objects",workspace_->stats.prepared_objects},{"eligible_pairs",workspace_->stats.eligible_pairs},
+    Json result={{"pair_profile_enabled",pair_profile_enabled_},
+      {"pair_profile_status",pair_profile_enabled_?"MEASURED":"NOT_MEASURED"},
+      {"prepared_objects",workspace_->stats.prepared_objects},{"eligible_pairs",workspace_->stats.eligible_pairs},
       {"exempt_pairs",workspace_->stats.exempt_pairs},{"prepare_s",workspace_->stats.prepare_s},{"geometry_prepare_s",workspace_->stats.geometry_prepare_s},{"pair_filter_s",workspace_->stats.pair_filter_s},{"phases",Json::object()}};
     for(const auto& entry:workspace_->phases) {const auto& s=entry.second;
       result["phases"][entry.first]={{"queries",s.queries},{"aabb_tests",s.aabb_tests},{"aabb_skips",s.aabb_skips},
@@ -164,8 +167,8 @@ public:
         {"fixed_aabb_qualifications",s.fixed_aabb_qualifications},{"fixed_narrow_qualifications",s.fixed_narrow_qualifications},
         {"fixed_qualification_queries",s.fixed_qualification_queries},{"fixed_aabb_reuses",s.fixed_aabb_reuses},
         {"fixed_narrow_reuses",s.fixed_narrow_reuses},{"fixed_qualification_declines",s.fixed_qualification_declines},
-        {"transform_aabb_update_s",s.update_s},{"broad_phase_s",s.broad_s},{"narrow_s",s.narrow_s},
-        {"self_narrow_s",s.self_s},{"world_narrow_s",s.world_s}};
+        {"transform_aabb_update_s",s.update_s},{"broad_phase_s",pair_profile_enabled_?Json(s.broad_s):Json(nullptr)},{"narrow_s",pair_profile_enabled_?Json(s.narrow_s):Json(nullptr)},
+        {"self_narrow_s",pair_profile_enabled_?Json(s.self_s):Json(nullptr)},{"world_narrow_s",pair_profile_enabled_?Json(s.world_s):Json(nullptr)}};
     }return result;
   }
   Json evidence() const {

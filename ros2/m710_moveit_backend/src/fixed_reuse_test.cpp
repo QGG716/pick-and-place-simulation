@@ -20,7 +20,7 @@ int main(int argc,char** argv) {
   rclcpp::init(argc,argv);size_t compared=0;
   auto p=policy();p["payload_id"]="payload";
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.005999999,.006000001,.02}) {
-    auto s=fixedScene(gap);m710::Clearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);
+    auto s=fixedScene(gap);ProfileComparedClearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);
     auto q=s->getCurrentState();
     for(double angle:{0.,.3,-1.2,2.4}) {
       q.setJointGroupPositions("manipulator",std::vector<double>{angle,.1});q.update();
@@ -30,10 +30,10 @@ int main(int argc,char** argv) {
     }
     if(gap<.006)require(opt.workspaceEvidence()["phases"]["endpoint"]["fixed_property_reuses"]==0,"BOUNDARY_REUSED");
   }
-  auto s=fixedScene();m710::Clearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);auto state=s->getCurrentState();
+  auto s=fixedScene();ProfileComparedClearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);auto state=s->getCurrentState();
   for(double angle:{0.,.5,1.5}) {state.setJointGroupPositions("manipulator",std::vector<double>{angle,0.});state.update();require(ref.check(state)&&opt.check(state),"RIGID_PASS");}
   require(opt.workspaceEvidence()["phases"]["endpoint"]["fixed_property_reuses"].get<int>()>0,"NO_REUSE");
-  m710::Clearance narrow_disabled(s,p,"optimized",true,false);
+  ProfileComparedClearance narrow_disabled(s,p,"optimized",true,false);
   require(narrow_disabled.check(s->getCurrentState())&&narrow_disabled.check(s->getCurrentState()),"BASELINE_AABB_VALID");
   require(narrow_disabled.workspaceEvidence()["phases"]["endpoint"]["fixed_aabb_reuses"]==1,"BASELINE_LOST_AABB");
   auto source=opt.workspaceEvidence()["phases"]["endpoint"];
@@ -43,19 +43,19 @@ int main(int argc,char** argv) {
   require(!ref.check(state)&&!opt.check(state),"ACTIVE_LINK_NOT_CHECKED");require(ref.last_failure.at("pair")==opt.last_failure.at("pair"),"ACTIVE_PAIR");
   for(const std::string name:{"wall","neighbor"}) {
     auto world=fixedScene();world->processCollisionObjectMsg(box(name,.13));
-    m710::Clearance a(world,p,"optimized",false),b(world,p,"optimized",true);auto q=world->getCurrentState();
+    ProfileComparedClearance a(world,p,"optimized",false),b(world,p,"optimized",true);auto q=world->getCurrentState();
     require(a.check(q)&&b.check(q),"WORLD_INITIAL");
     q.setJointGroupPositions("manipulator",std::vector<double>{0.,.05});q.update();
     require(!a.check(q)&&!b.check(q),"PAYLOAD_WORLD_CACHE_LEAK");require(a.last_failure.at("pair")==b.last_failure.at("pair"),"WORLD_FIRST_PAIR");
   }
-  auto moving=fixedScene(.02,true);m710::Clearance mc(moving,p,"optimized",true);
+  auto moving=fixedScene(.02,true);ProfileComparedClearance mc(moving,p,"optimized",true);
   require(mc.check(moving->getCurrentState())&&mc.check(moving->getCurrentState()),"MOVABLE_INITIAL");
   require(mc.workspaceEvidence()["phases"]["endpoint"]["fixed_property_reuses"]==0,"MOVABLE_CACHED");
   auto mq=moving->getCurrentState();mq.setVariablePosition("mount",.03);mq.update();require(!mc.check(mq),"MOVABLE_COLLISION");
   // A new candidate always starts cold, including ownership, geometry and ACM changes.
-  auto change=fixedScene(.004);m710::Clearance changed(change,p,"optimized",true);require(!changed.check(change->getCurrentState()),"NEW_GEOMETRY_REUSED");
+  auto change=fixedScene(.004);ProfileComparedClearance changed(change,p,"optimized",true);require(!changed.check(change->getCurrentState()),"NEW_GEOMETRY_REUSED");
   auto released=fixedScene();released->getCurrentStateNonConst().clearAttachedBody("payload");released->getCurrentStateNonConst().update();
-  m710::Clearance unload(released,p,"optimized",true);require(unload.check(released->getCurrentState()),"RELEASED_INVALID");
+  ProfileComparedClearance unload(released,p,"optimized",true);require(unload.check(released->getCurrentState()),"RELEASED_INVALID");
   require(unload.workspaceEvidence()["phases"]["endpoint"]["fixed_property_reuses"]==0,"RELEASED_REUSED");
   auto stale=s->getCurrentState();stale.clearAttachedBody("payload");stale.update();require(!opt.check(stale),"STALE_OWNERSHIP_ACCEPTED");
   require(opt.last_failure.at("reason")=="DISTANCE_QUERY_FAILED","CONTEXT_ERROR_DISGUISED");

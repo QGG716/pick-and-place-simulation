@@ -19,7 +19,7 @@ planning_scene::PlanningScenePtr narrowScene(double gap=.04,bool movable=false) 
   p.orientation.z=std::sin(angle/2);p.orientation.w=std::cos(angle/2);
   require(s->processAttachedCollisionObjectMsg(a),"ATTACH");return s;
 }
-J phase(const m710::Clearance& c) {return c.workspaceEvidence().at("phases").at("endpoint");}
+J phase(const ProfileComparedClearance& c) {return c.workspaceEvidence().at("phases").at("endpoint");}
 int main(int argc,char** argv) {
   rclcpp::init(argc,argv);
   auto shape=std::make_shared<fcl::Boxd>(1,.01,.01);
@@ -37,7 +37,7 @@ int main(int argc,char** argv) {
   std::cout<<J({{"fcl_reproduction",repro}}).dump()<<std::endl;
   require(repro["aabb_lower"].get<double>()<=.006&&actual>.039&&actual<.041,"REAL_FCL_GEOMETRY");
   auto s=narrowScene();auto p=policy();p["payload_id"]="payload";
-  m710::Clearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);
+  ProfileComparedClearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);
   require(opt.workspaceEvidence()["eligible_pairs"]==1,"NOT_SINGLE_PAIR");
   auto q=s->getCurrentState();require(ref.check(q)&&opt.check(q),"FIRST_VERDICT");
   auto first=phase(opt);
@@ -50,7 +50,7 @@ int main(int argc,char** argv) {
   require(first["fixed_aabb_qualifications"]==0&&first["fixed_narrow_qualifications"]==1&&first["fixed_qualification_queries"]==1,"WRONG_QUALIFICATION_SOURCE");
   require(last["fixed_aabb_reuses"]==0&&last["fixed_narrow_reuses"]==3,"WRONG_REUSE_SOURCE");
   require(first["narrow_calls"]==2&&phase(ref)["narrow_calls"]==4,"ACTUAL_QUERY_COUNT");
-  m710::Clearance baseline(s,p,"optimized",true,false);
+  ProfileComparedClearance baseline(s,p,"optimized",true,false);
   for(double angle:{0.,.2,-.5,1.1}) {
     auto bq=s->getCurrentState();bq.setVariablePosition("J1",angle);bq.update();require(baseline.check(bq),"BASELINE_VERDICT");
   }
@@ -58,7 +58,7 @@ int main(int argc,char** argv) {
   require(baseline.evidence()["native_check_reuse"]==true,"BASELINE_DISABLED_PREVIOUS_REUSE");
   size_t boundaries=0;
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.006-2e-9,.006,.006+2e-9}) {
-    auto bs=narrowScene(gap);m710::Clearance br(bs,p,"optimized",false),bo(bs,p,"optimized",true);
+    auto bs=narrowScene(gap);ProfileComparedClearance br(bs,p,"optimized",false),bo(bs,p,"optimized",true);
     auto bq=bs->getCurrentState();
     for(double angle:{0.,.2,-.5}) {
       bq.setVariablePosition("J1",angle);bq.update();
@@ -76,7 +76,7 @@ int main(int argc,char** argv) {
     Eigen::Vector3d center=Eigen::AngleAxisd(.8+std::acos(-1.)/4,Eigen::Vector3d::UnitZ())*Eigen::Vector3d(.3,.05,0);
     obstacle.primitive_poses[0].position.x=center.x();obstacle.primitive_poses[0].position.y=center.y();
     ws->processCollisionObjectMsg(obstacle);
-    m710::Clearance wr(ws,p,"optimized",false),wo(ws,p,"optimized",true);auto wq=ws->getCurrentState();
+    ProfileComparedClearance wr(ws,p,"optimized",false),wo(ws,p,"optimized",true);auto wq=ws->getCurrentState();
     require(wr.check(wq)&&wo.check(wq)&&phase(wo)["fixed_narrow_qualifications"]==1,"WORLD_NARROW_NOT_ESTABLISHED");
     wq.setVariablePosition("J1",.8);wq.update();
     require(!wr.check(wq)&&!wo.check(wq)&&wr.last_failure==wo.last_failure,"NARROW_WORLD_CACHE_LEAK");
@@ -84,7 +84,7 @@ int main(int argc,char** argv) {
     require(std::find(pair.begin(),pair.end(),"payload")!=pair.end()&&std::find(pair.begin(),pair.end(),name)!=pair.end(),"WRONG_WORLD_WITNESS");
     require(phase(wo)["fixed_narrow_reuses"]==1,"WORLD_DID_NOT_EXERCISE_REUSE");
   }
-  auto ms=narrowScene(.04,true);m710::Clearance movable(ms,p,"optimized",true);auto mq=ms->getCurrentState();
+  auto ms=narrowScene(.04,true);ProfileComparedClearance movable(ms,p,"optimized",true);auto mq=ms->getCurrentState();
   require(movable.check(mq)&&movable.check(mq),"MOVABLE_INITIAL");
   require(phase(movable)["fixed_narrow_qualifications"]==0&&phase(movable)["fixed_qualification_queries"]==0,"MOVABLE_CERTIFIED");
   mq.setVariablePosition("mount",.05);mq.update();require(!movable.check(mq),"MOVABLE_COLLISION_MISSED");
@@ -95,17 +95,17 @@ int main(int argc,char** argv) {
   require(mutation->processAttachedCollisionObjectMsg(attach),"REATTACH");
   require(!opt.check(mutation->getCurrentState())&&opt.last_failure["detail"]=="WORKSPACE_ATTACHMENT_CHANGED","STALE_ATTACHMENT");
   auto other=narrowScene();require(!opt.check(other->getCurrentState())&&opt.last_failure["detail"]=="WORKSPACE_MODEL_CHANGED","STALE_MODEL");
-  auto fresh=narrowScene(.004);m710::Clearance new_candidate(fresh,p,"optimized",true);
+  auto fresh=narrowScene(.004);ProfileComparedClearance new_candidate(fresh,p,"optimized",true);
   require(!new_candidate.check(fresh->getCurrentState()),"NEW_CANDIDATE_REUSED");
   auto released=s->diff();released->decoupleParent();released->getCurrentStateNonConst().clearAttachedBody("payload");
-  released->getCurrentStateNonConst().update();m710::Clearance release(released,p,"optimized",true);
+  released->getCurrentStateNonConst().update();ProfileComparedClearance release(released,p,"optimized",true);
   require(release.check(released->getCurrentState())&&phase(release)["fixed_property_reuses"]==0,"NEW_RELEASE_REUSED");
   // The same model/geometry with changed policy starts a new local workspace.
-  auto altered=p;altered["tool_links"]=J::array();m710::Clearance no_tool(s,altered,"optimized",true);
+  auto altered=p;altered["tool_links"]=J::array();ProfileComparedClearance no_tool(s,altered,"optimized",true);
   require(no_tool.check(s->getCurrentState())&&no_tool.check(s->getCurrentState()),"POLICY_INITIAL");
   require(phase(no_tool)["fixed_narrow_qualifications"]==0&&phase(no_tool)["fixed_property_reuses"]==0,"STALE_POLICY");
   auto acm_scene=s->diff();acm_scene->decoupleParent();acm_scene->getAllowedCollisionMatrixNonConst().setEntry("tool","payload",true);
-  m710::Clearance exempt(acm_scene,p,"optimized",true);require(exempt.check(acm_scene->getCurrentState()),"ACM_INITIAL");
+  ProfileComparedClearance exempt(acm_scene,p,"optimized",true);require(exempt.check(acm_scene->getCurrentState()),"ACM_INITIAL");
   require(exempt.workspaceEvidence()["eligible_pairs"]==0&&phase(exempt)["fixed_narrow_qualifications"]==0,"STALE_ACM");
   std::cout<<J({{"boundary_comparisons",boundaries},{"status","PASS"},{"scope","actual_FCL_narrow_source"}}).dump()<<std::endl;
   rclcpp::shutdown();

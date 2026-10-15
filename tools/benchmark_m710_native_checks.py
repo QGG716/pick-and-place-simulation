@@ -15,6 +15,37 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+PAIR_TIME_FIELDS = ("broad_phase_s", "narrow_s", "self_narrow_s", "world_narrow_s")
+
+
+def pair_geometry_counts(case):
+    """Keep every workspace count; exclude only performance measurements."""
+    def strip(value):
+        if not isinstance(value, dict):
+            return value
+        return {k: strip(v) for k, v in value.items()
+                if not k.endswith("_s") and k not in ("pair_profile_enabled", "pair_profile_status")}
+    return {"visited_states": case["visited_states"], "workspace": strip(case["clearance"]["workspace"]),
+            "process": {k: case["process"][k] for k in (
+                "state_checks", "seal_geometry_evaluations", "compression_sat_evaluations",
+                "ordered_checks", "seal_input_compilations", "fixed_seal_verdict_reuses")}}
+
+
+def check_pair_profile(case, enabled):
+    workspace = case["clearance"]["workspace"]
+    if workspace["pair_profile_enabled"] is not enabled or workspace["pair_profile_status"] != (
+            "MEASURED" if enabled else "NOT_MEASURED"):
+        raise RuntimeError("WRONG_PAIR_PROFILE_MODE")
+    for phase in workspace["phases"].values():
+        for key in PAIR_TIME_FIELDS:
+            value = phase[key]
+            if enabled:
+                if not isinstance(value, (int, float)) or not 0 <= value < float("inf"):
+                    raise RuntimeError("INVALID_MEASURED_PAIR_TIME")
+            elif value is not None:
+                raise RuntimeError("UNMEASURED_PAIR_TIME_MUST_BE_NULL")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--binary", type=Path, required=True)
@@ -23,25 +54,31 @@ def main():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--source-sha", required=True)
     p.add_argument("--pairs", type=int, choices=(1, 2, 3), default=3)
-    p.add_argument("--narrow-only", action="store_true",
+    comparison = p.add_mutually_exclusive_group()
+    comparison.add_argument("--narrow-only", action="store_true",
                    help="Keep all d33eabd optimizations ON; toggle only narrow qualification")
+    comparison.add_argument("--pair-profile-only", action="store_true",
+                            help="Keep all geometry optimizations ON; toggle only pair timers")
     p.add_argument("--baseline-sha")
     p.add_argument("--cpu", type=int, default=0)
     args = p.parse_args()
-    if args.narrow_only and not args.baseline_sha:
-        p.error("--narrow-only requires --baseline-sha")
+    if (args.narrow_only or args.pair_profile_only) and not args.baseline_sha:
+        p.error("Focused comparisons require --baseline-sha")
     modes = ("narrow-baseline", "optimized") if args.narrow_only else ("reference", "optimized")
+    if args.pair_profile_only:
+        modes = ("pair-profile-on", "pair-profile-off")
     args.output.mkdir(parents=True, exist_ok=False)
     os.sched_setaffinity(0, {args.cpu})
     env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1",
                ROS_HOME=str(args.output / "ros"))
-    data = dict(source_sha=args.source_sha, baseline_sha=args.baseline_sha, narrow_only=args.narrow_only, binary_sha256=sha(args.binary),
+    data = dict(source_sha=args.source_sha, baseline_sha=args.baseline_sha, narrow_only=args.narrow_only, pair_profile_only=args.pair_profile_only, binary_sha256=sha(args.binary),
                 model_sha256=sha(args.model), input_sha256=sha(args.input),
                 machine=platform.platform(), cpu_affinity=sorted(os.sched_getaffinity(0)),
                 thread_environment={k: env[k] for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS")},
                 status="CHECKER_BENCHMARK_NOT_EXECUTABLE",
                 qualification_status="NOT_EVALUATED", continuous_swept_proof=False, runs=[])
     canonical = None
+    canonical_geometry = None
     for pair in range(args.pairs):
         for mode in (modes if pair % 2 == 0 else tuple(reversed(modes))):
             command = [str(args.binary), str(args.model), str(args.input), mode]
@@ -62,6 +99,17 @@ def main():
                         raise RuntimeError("PREVIOUS_OPTIMIZATIONS_DISABLED")
                     if c["clearance"]["fixed_narrow_qualification"] != (mode == "optimized"):
                         raise RuntimeError("WRONG_NARROW_DIAGNOSTIC_MODE")
+            if args.pair_profile_only:
+                for c in result["cases"]:
+                    if not (c["process"]["native_check_reuse"] and c["clearance"]["native_check_reuse"]
+                            and c["clearance"]["fixed_narrow_qualification"]):
+                        raise RuntimeError("GEOMETRY_OPTIMIZATIONS_DISABLED")
+                    check_pair_profile(c, mode == "pair-profile-on")
+                geometry = [(c["name"], pair_geometry_counts(c)) for c in result["cases"]]
+                if canonical_geometry is None:
+                    canonical_geometry = geometry
+                if geometry != canonical_geometry:
+                    raise RuntimeError("PAIR_PROFILE_CHANGED_GEOMETRY_WORK")
             verdict = [(c["name"], c["verdicts"], c["process"]["last_seal"])
                        for c in result["cases"]]
             if canonical is None:
@@ -79,6 +127,7 @@ def main():
             print(json.dumps(dict(pair=pair+1, mode=mode, cases=[
                 dict(name=c["name"], setup_s=c["setup_s"], check_s=c["check_s"], total_s=c["total_s"])
                 for c in result["cases"]])), flush=True)
+    data["geometry_counts_identical"] = True if args.pair_profile_only else None
     data["verdicts_and_witnesses_identical"] = True
     data["all_visited_states_valid"] = all(v["clearance"] and v["process"]
                                          for _, states, _ in canonical for v in states)
