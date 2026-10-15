@@ -80,7 +80,9 @@ def warehouse_bounds(assets):
     if (not stage or stage.GetCompositionErrors() or UsdGeom.GetStageUpAxis(stage) != 'Z'
             or UsdGeom.GetStageMetersPerUnit(stage) != 1.):
         raise ValueError('WAREHOUSE_COMPOSITION_OR_UNITS_INVALID')
-    bbox = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ['default', 'render', 'proxy'], useExtentsHint=False)
+    # Real warehouse CollisionPlane has purpose=guide. Purpose is a display
+    # classification, not permission to omit its authored collision geometry.
+    bbox = UsdGeom.BBoxCache(Usd.TimeCode.Default(), ['default', 'render', 'proxy', 'guide'], useExtentsHint=False)
     records, floors = [], []
     for prim in stage.Traverse(Usd.TraverseInstanceProxies()):
         if not (prim.IsA(UsdGeom.Mesh) or prim.HasAPI(UsdPhysics.CollisionAPI)): continue

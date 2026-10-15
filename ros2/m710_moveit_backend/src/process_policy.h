@@ -201,7 +201,8 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
-  Json evidence() const {return {{"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
+  Json evidence() const {return {{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
+    {"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
 };

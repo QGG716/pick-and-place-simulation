@@ -2,6 +2,9 @@
 *.py text eol=lf
 *.yaml text eol=lf
 
+# Preserve this hash-pinned inventory byte-for-byte in checkouts and archives.
+assets/robots/realman_eco65/official/SOURCE_MANIFEST.json -text
+
 *.STEP binary
 *.stl binary
 *.dae binary

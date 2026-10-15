@@ -136,9 +136,14 @@ class NativeTask:
         constrained = stage in {'contact', 'extraction', 'place', 'withdrawal'}
         solvers = [('pilz_industrial_motion_planner', 'LIN' if constrained else 'PTP')]
         if not constrained: solvers.append(('ompl', 'RRTConnectkConfigDefault'))
-        goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else self.ik(pose, q, stage))
-        for joint_goal in goals:
-            for pipeline, planner in solvers:
+        goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q, stage)))
+        if not constrained:
+            goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
+        # A first valid IK branch can require a long turn through a wall. Give
+        # the existing bounded native IK set its PTP attempts before spending
+        # the OMPL budget on any branch; never substitute Python motion search.
+        for pipeline, planner in solvers:
+            for joint_goal in goals:
                 self.counter += 1; req = self.request(q, stage, op='plan')
                 req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner, require_native_motion=True)
                 if constrained: req['goal_pose'] = check_transform(pose).tolist()

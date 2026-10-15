@@ -6,7 +6,7 @@ import tarfile
 from time import perf_counter
 from unloading_sim.eco65.model import ROOT, load_json, save_json
 from unloading_sim.eco65.asset_paths import resolve_asset
-from unloading_sim.eco65.native_model import asset_inventory
+from unloading_sim.eco65.native_model import asset_inventory, load_robot_config
 
 
 def package(output, model_path=None, home_path=None):
@@ -19,6 +19,8 @@ def package(output, model_path=None, home_path=None):
         actual=hashlib.sha256(resolve_asset(ROOT,rel).read_bytes()).hexdigest()
         if expected and actual!=expected: raise ValueError('PACKAGE_BINDING_CHANGED:'+rel)
         files[rel]=actual; return rel
+    config=load_robot_config()
+    add(resolve_asset(ROOT,config['source_manifest']),config['source_manifest_sha256'])
     if model_path:
         manifest['native_model_path']=add(model_path)
         for row in load_json(model_path)['convex_bindings']:

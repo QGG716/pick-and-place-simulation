@@ -13,6 +13,7 @@ class Eco65Process {
   std::string stage_,target_id_;
   ProcessBox target_;
   bool attached_;
+  bool record_distances_=false;
   std::set<std::string> bands_,supports_;
   std::map<std::string,ProcessBox> world_;
   struct Solid {const moveit::core::LinkModel* link;size_t index;std::shared_ptr<fcl::CollisionGeometryd> shape;};
@@ -60,12 +61,13 @@ class Eco65Process {
     if(!std::isfinite(d))throw std::runtime_error("ECO65_SIGNED_DISTANCE_UNKNOWN");return d;
   }
 public:
-  Json failure=nullptr,seal=nullptr;
+  Json failure=nullptr,seal=nullptr,distance_samples=Json::array();
   Eco65Process(const planning_scene::PlanningScenePtr& scene,const Json& req)
     :spec_(req.at("process_policy")),stage_(req.at("stage")),target_id_(spec_.at("target_id")),
      target_(processBox(spec_.at("target"))),attached_(!req.at("attachment").is_null()),
      bands_(req.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
      supports_(spec_.at("support_names").get<std::set<std::string>>()) {
+    record_distances_=req.at("op")=="check_state_offline" && req.value("record_contact_distances",false);
     validateSealContours(spec_);processTransform(spec_.at("flange_from_contact_frame"));
     if(spec_.at("schema")!="eco65_native_process_v1" || spec_.at("stage")!=stage_ ||
        target_id_!=req.at("clearance_policy").at("target_id") || target_.id!=target_id_ ||
@@ -125,7 +127,7 @@ public:
     if(attached_)for(const auto& id:supports_)acm.setEntry(target_id_,id,true);
   }
   bool check(const moveit::core::RobotState& state,bool endpoint) {
-    failure=nullptr;auto target=target_;
+    failure=nullptr;distance_samples=Json::array();auto target=target_;
     if(attached_) {
       const auto* a=state.getAttachedBody(target_id_);
       if(!a || a->getShapes().size()!=1 || a->getShapes()[0]->type!=shapes::BOX)throw std::runtime_error("ECO65_ATTACHMENT_CHANGED");
@@ -141,6 +143,8 @@ public:
     seal=processSealRings(geometry,target,flange);
     const bool fit=seal.at("status")=="PASS";
     auto accept=[&](const std::string& a,const std::string& b,double d,double threshold) {
+      if(record_distances_)distance_samples.push_back({{"pair",{a,b}},{"signed_distance_m",d},
+        {"threshold_m",threshold},{"accepted",eco65DistanceAccepted(d,threshold)},{"query","FCL_signed_distance"}});
       if(!eco65DistanceAccepted(d,threshold)) {failure={{"reason","ECO65_CONTACT_OR_CLEARANCE"},{"pair",{a,b}},
         {"signed_distance_m",d},{"threshold_m",threshold},{"stage",stage_}};return false;}return true;
     };

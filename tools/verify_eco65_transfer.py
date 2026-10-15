@@ -1,14 +1,19 @@
 """Run separately on Linux host and inside ROS rootfs after unpacking assets."""
 import argparse
 import hashlib
+import json
 import platform
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse, unquote
 from pathlib import Path
 from time import perf_counter
 from unloading_sim.eco65.asset_paths import resolve_asset
-from unloading_sim.eco65.model import ROOT, load_json, save_json
-from unloading_sim.eco65.native_model import asset_inventory
+from unloading_sim.eco65.asset_inventory import ROOT, load_json, asset_inventory
+
+
+def save_json(path, value):
+    path=Path(path); path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text(json.dumps(value,indent=2,ensure_ascii=False,allow_nan=False),encoding='utf-8')
 
 
 def verify(root, manifest, scope):
@@ -41,7 +46,7 @@ def verify(root, manifest, scope):
                 rel=path.resolve().relative_to(Path(root).resolve()).as_posix()
                 if hashlib.sha256(path.read_bytes()).hexdigest()!=data['files'].get(rel):
                     failures.append(dict(path=rel,reason='ROOTFS_RESOURCE_IDENTITY_MISMATCH'))
-    if data.get('home_candidate_path'):
+    if data.get('home_candidate_path') and scope!='ROS_ROOTFS':
         from unloading_sim.eco65.home_candidate import verify_candidate
         from unloading_sim.eco65.native_scene import combined_scene
         from unloading_sim.eco65.native_scene import CONFIG
@@ -54,7 +59,9 @@ def verify(root, manifest, scope):
     return dict(status='PASS' if not failures and audit['status']=='PASS' else 'FAIL',
         scope=scope, platform=platform.system(), local_mount=str(Path(root).resolve()),
         manifest_sha256=hashlib.sha256(Path(manifest).read_bytes()).hexdigest(),
-        files_read=len(data['files']), failures=failures, asset_audit=audit, wall_s=perf_counter()-started)
+        files_read=len(data['files']), failures=failures, asset_audit=audit,
+        home_candidate_check='BYTE_IDENTITY_ONLY' if scope=='ROS_ROOTFS' else 'SEMANTIC_AND_BYTE_IDENTITY',
+        wall_s=perf_counter()-started)
 
 
 if __name__ == '__main__':
