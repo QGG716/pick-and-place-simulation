@@ -797,10 +797,14 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         # A lease for this one lazy IK stream, never a task/global failure cache.
         previous = getattr(self, "_approach_direct_attempts", None)
         self._approach_direct_attempts = {}
+        previous_call = getattr(self, "_connection_call_id", None)
+        self._connection_call_sequence = getattr(self, "_connection_call_sequence", 0) + 1
+        self._connection_call_id = self._connection_call_sequence
         try:
             selected,path,failure,evidence=super()._connect_pose(*args,**kwargs)
         finally:
             self._approach_direct_attempts = previous
+            self._connection_call_id = previous_call
         if not getattr(self,"require_native_motion",False) or failure is not None or selected is None:
             return selected,path,failure,evidence
         if not path:
@@ -1270,6 +1274,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             attempt={**raw,"request_round_trip_s":request_round_trip_s,
                 "planning_phase":submitted["planning_phase"],
                 "connection_scope":connection_scope,
+                "connection_call_id":getattr(self, "_connection_call_id", None),
                 "direct_rejection_stage_id":submitted.get("direct_rejection_stage_id"),
                 "fast_phase_overrun_s":self._fast_phase_overrun(submitted["planning_phase"]),
                 "connection_elapsed_s":perf_counter()-started,
@@ -1298,7 +1303,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 "status", "pipeline_id", "planner_id", "solver_returned_success", "solver_message",
                 "moveit_error_code", "moveit_error_code_source", "returned_waypoint_count",
                 "trajectory_present", "processing_branch", "zero_motion_event", "semantic_event",
-                "generation_source", "prior_usage", "connection_scope", "direct_rejection_stage_id",
+                "generation_source", "prior_usage", "connection_scope", "connection_call_id", "direct_rejection_stage_id",
                 "goal_translation_delta_m", "goal_rotation_delta_rad",
                 "request_round_trip_s", "connection_elapsed_s", "native_solver_s",
                 "planning_phase", "fast_phase_overrun_s", "requested_planning_time_s",

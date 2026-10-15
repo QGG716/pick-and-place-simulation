@@ -201,3 +201,94 @@ def test_invalid_goal_does_not_stop_other_ik_endpoints(monkeypatch):
         purpose=MotionPurpose.FREE_APPROACH,stage="pregrasp",ik_seed=1,connection_seed=2)
     assert failure is None and trace["selected_method"]=="JOINT_DIRECT"
     assert [r["planner_id"] for r in sent]==["CHECKED_JOINT_DIRECT"]*2
+
+
+@pytest.mark.parametrize("later_status", [
+    "INVALID_GOAL_CLEARANCE", "INVALID_START_CLEARANCE", "CANCELLED",
+    "PRIOR_CONTEXT_MISMATCH", "DIRECT_CONNECTION_TIMEOUT", "REQUEST_DEADLINE"])
+def test_deferred_valid_a_survives_later_invalid_b(monkeypatch, later_status):
+    """Actual lazy scheduler + adapter dispatch; synthetic replies, no execution claim."""
+    from test_stage_motion_policy import connector as core_connector, START, GOAL
+    from test_moveit2_native_cold import receipt_connector, accepted_state
+    core=core_connector(); core.__class__=MoveItLayoutConnector
+    native=connector(); receipts=receipt_connector()
+    root=receipts.native_root_state(np.zeros(6), [])
+    initial=accepted_state(receipts, root, START, "parent")
+    core.require_native_motion=True
+    core._native_state_receipt=receipts._native_state_receipt
+    core._native_parent_stage_id=receipts._native_parent_stage_id
+    native._build_native_request=lambda start,goal,obs,**kw:dict(
+        q_start=list(start),q_goal=list(goal),allowed_planning_time_s=90.,
+        stage=kw["stage"],seed=kw["seed"],world=list(obs),
+        task_id=receipts.native_task_id,parent_stage_id="parent",attachment=None)
+    goals=[GOAL.copy(),GOAL.copy()];goals[1][3]=.2
+    deadline=[False]
+    def decide(req):
+        if req["q_goal"][3]==.2:
+            if later_status=="REQUEST_DEADLINE":
+                deadline[0]=True
+                return "INVALID_GOAL_CLEARANCE"
+            return later_status
+        return "SUCCESS" if req["planner_id"]=="SPARSE_PRM" else rejection(req)
+    sent=replies(native,monkeypatch,decide)
+    def accept(path,attempt,attempts,*args,**kwargs):
+        emitted=path[-1].copy();emitted[0]=np.nextafter(emitted[0],np.inf)
+        endpoint=accepted_state(receipts,initial,emitted,attempt["stage_id"])
+        return [initial.copy(),endpoint],None,dict(attempts=attempts)
+    native._accept_generated_stage=accept
+    core._transit=native._transit
+    core._approach_layering_enabled=native._approach_layering_enabled
+    core._deadline_reached=lambda:deadline[0]
+    class Stream:
+        index=0
+        def __next__(self):
+            if self.index==len(goals):raise StopIteration
+            q=goals[self.index];self.index+=1
+            return SimpleNamespace(q=q,position_error=0.,orientation_error=0.,search_evidence={})
+        def evidence(self):return dict(seeds_attempted=self.index)
+    monkeypatch.setattr(core,"_ik_stream",lambda *a,**kw:Stream())
+    selected,path,failure,trace=core._connect_pose(core.robot.fk(GOAL),[initial],initial,[],
+        purpose=MotionPurpose.FREE_APPROACH,stage="pregrasp",ik_seed=1,connection_seed=2)
+    continue_a=later_status in {"INVALID_GOAL_CLEARANCE","DIRECT_CONNECTION_TIMEOUT"}
+    assert [r["planner_id"] for r in sent]==[
+        "CHECKED_JOINT_DIRECT","PTP","CHECKED_JOINT_DIRECT"]+(["SPARSE_PRM"] if continue_a else [])
+    assert all(r["q_goal"][3]==0 for r in sent if r["planner_id"]=="SPARSE_PRM")
+    b_failure=trace["attempts"][1]["failure"]
+    if later_status=="INVALID_GOAL_CLEARANCE":
+        assert b_failure["validation"]==dict(status="INVALID",termination_scope="CANDIDATE",
+                                             can_continue_candidates=True)
+    if later_status=="DIRECT_CONNECTION_TIMEOUT":
+        assert b_failure["validation"]["termination_scope"]=="METHOD"
+        # Unfinished B is not added to the geometric-rejection deferred queue.
+        assert trace["attempts"][-1]["candidate_index"]==0
+    if continue_a:
+        assert failure is None and trace["termination"]=="SUCCESS"
+        assert trace["selected_method"]=="STATIC_PRIOR_REUSE"
+        assert [a["candidate_index"] for a in trace["attempts"]]==[0,1,0]
+        assert sent[-1]["direct_rejection_stage_id"]=="s1"
+        assert sent[-1]["task_id"]==receipts.native_task_id
+        assert sent[-1]["parent_stage_id"]=="parent"
+        assert core._native_parent_stage_id(selected)=="s4"
+        assert selected.native_receipt["task_id"]==receipts.native_task_id
+        assert np.array_equal(selected,path[-1]) and not np.array_equal(selected,GOAL)
+        assert trace["returned_endpoint"]["source"]=="NATIVE_PATH_FINAL_SAMPLE"
+        assert trace["attempts"][-1]["connection"]["attempts"][0]["generation_source"]=="STATIC_PRIOR_REUSE"
+    else:
+        assert selected is None and not path and failure is not None
+        assert trace["termination"]==("STAGE_IK_DEADLINE" if later_status=="REQUEST_DEADLINE" else later_status)
+
+
+def test_connection_call_identity_restored_and_never_sent_to_worker(monkeypatch):
+    from unloading_sim.layout_trajectory import LayoutTrajectoryConnector
+    c=connector(); c._connection_call_id=99
+    sent=replies(c,monkeypatch,lambda r:"SUCCESS")
+    seen=[]
+    def inner(*args,**kwargs):
+        seen.append(c._connection_call_id)
+        path,failure,ev=transit(c)
+        assert ev["attempts"][0]["connection_call_id"]==seen[-1]
+        return path[-1],path,failure,ev
+    monkeypatch.setattr(LayoutTrajectoryConnector,"_connect_pose",inner)
+    c._connect_pose();c._connect_pose()
+    assert seen==[1,2] and c._connection_call_id==99
+    assert all("connection_call_id" not in r for r in sent)

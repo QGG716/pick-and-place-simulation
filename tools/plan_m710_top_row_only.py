@@ -137,7 +137,7 @@ def call_summary(c):
             "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
             "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
             "scene_import_s", "native_solver_s", "generation_source", "semantic_event", "prior_usage", "prior_query_s",
-            "connection_scope", "direct_rejection_stage_id", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
+            "connection_scope", "connection_call_id", "direct_rejection_stage_id", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
             "native_output_status", "authoritative_status", "request_check_evidence", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
