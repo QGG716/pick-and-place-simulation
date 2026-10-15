@@ -1,4 +1,114 @@
-# ECO65-B 实际总成接入（2026-10-14）
+# ECO65-B 衔接修补与本地验证（2026-10-15）
+
+从已审查的 `ca71dd64a06f7a032f7184768f2b51edf388a825` 续作，定向 fetch 确认当前远端分支无后续提交。
+实际工作树为 `pick-and-place-simulation-v0.6-eco65-moveit2-native-single-carton`；未改动旧工作树的既有删除。
+代码提交：`73822038d304bd609e0ce704373a1ef6f9870783`。
+当前 SSH 配置入口一次连接返回 `banner exchange: Connection to UNKNOWN port -1: Connection refused`。
+用户随后明确“先在本地开发”，未继续重试其他入口，也未升级 ROS、MoveIt 或 Isaac。
+
+## 路径、身份与受控迁移
+
+资产身份路径现在为仓库相对 POSIX 路径，涵盖 source、visual、collision、工具 mesh、凸体 source/convex_path 和同步清单键。
+普通读取拒绝反斜杠、绝对路径、盘符、目录越界和越界符号链接；只有显式迁移允许将旧 Windows 分隔符转为正斜杠。
+`resolve_asset` 负责当前机器挂载路径，`resource_uri` 单独处理 ROS rootfs 内的绝对 POSIX 挂载根。
+Windows 生成器不再使用 Windows Path 语义拼接 Linux URI。没有全盘查找同名文件。
+
+首次迁移在写入前发现旧清单 collision 哈希过期：历史装配器覆盖了转换器同名碰撞文件，工具分区保有当前文件的精确哈希。
+修复仅接受已有 tool collision 绑定能够证明的相同字节，并在 migration.json 逐项记录旧、新哈希和依据。
+后续装配器写入独立 `collision/assembly/`，不再覆盖转换器文件。
+成功迁移先备份 cad.json/tool.json 原始字节，校验 STEP、全部引用网格，更新 CAD 清单哈希及工具绑定，再复验资产清单。
+STEP 和网格字节均未变，没有重新执行 STEP 转换或装配网格生成。
+原历史报告、旧 HOME 碰撞记录、旧同步包保持原样；新 contact/model/TCP/asset 身份在新目录重新派生。
+
+本次同步包为 **198 文件**（包含新派生的 64 个凸体、模型参数和 HOME 候选），状态 `PREPARED_NOT_SENT`。
+Windows 原目录及本地解包副本均逐文件读取、校验哈希和引用覆盖，结果 PASS。
+**Linux 宿主机、ROS rootfs 实际解包/资源 URI 读取均 NOT_RUN，不能由本地 PASS 推断。**
+准备模型中的 `/work-eco65-20261015` 仅为预备 URI 根，没有声称目标端已挂载；恢复后必须按真实挂载位置生成参数。
+
+## 实际安装与 HOME
+
+安装求解改为机器人六孔相位减工具六孔相位，生成最终变换后做六孔一一匹配，并核对安装平面、中心轴与对向法向。
+重新读取已绑定 CAD 面/圆柱记录和官方 STL 孔边界，确认当前存储孔位确实与实际输入一致。
+当前最大残差 **2.9552844412e-9 m**，均方根残差 **2.5659693872e-9 m**；平面、轴心和法向残差为零。
+**当前 T_flange_tool_cad、T_tool_cad_tcp、T_flange_tcp 均原样保留**。
+六种等价安装角仍与实机唯一定位分开，硬件安装角度 `NOT_VERIFIED`；没有恢复模拟圆盘、横板或支腿。
+
+主入口新增 `plan --home-candidate`，输入包含关节顺序、关节值、当前工具与设备指纹、来源报告/迁移哈希。
+`NativeTask.run()` 读取该候选；在完整快照中重新检查限位、安装接口、原生状态碰撞/净空和 FK/TCP 后才接纳。
+失败保留原生响应及候选拒绝记录，继续原有最多 64 个原生 IK 候选的有界搜索；FK 不一致作为模型故障停止。
+初始化、FK、状态、IK 和规划调用均保留请求、响应或异常及耗时。初始化失败也保留已发出的请求。
+候选明确为 `SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION`，不表示从旧种子移动到新 HOME 的路径已验证。
+
+本次从旧报告提取关节提案，核对迁移前后工具身份和实际几何未变，再运行新的本地四箱设备 MuJoCo 检查：
+限位、碰撞/净空、安装接口均通过；独立 XML FK 最大矩阵误差 3.3307e-16，TCP 组合误差 0。
+范围为 `EQUIPMENT_ONLY_DIAGNOSTIC`。候选入口读取与拒绝搜索的回归已通过，**实际原生 HOME 复查尚未运行**。
+
+## 实际运行与输出
+
+所有以下目录都在忽略的 `outputs/eco65_native/` 下，未公开提交详细资产。
+
+| 项目 | 输出目录/文件 | 本轮实测耗时 |
+|---|---|---:|
+| 元数据迁移与资产复验 | bridge_20261015_migration_run02/migration.json、before/ | 7.251 s |
+| 实际接口重新测量 | bridge_20261015_delivery/actual_interface_remeasurement.json | 0.291 s |
+| 新身份 HOME 本地复查 | bridge_20261015_home/local_home_check.json、home_candidate.json | 2.988 s |
+| 原生参数与凸体准备 | bridge_20261015_home/native_model_prepared.json、model/ | 7.907 s |
+| 私有同步包 | bridge_20261015_delivery/private_assets.tar.gz、private_asset_manifest.json | 39.098 s |
+| 原目录文件/引用校验 | bridge_20261015_delivery/local_verification.json | 1.262 s |
+| 本地解包与逐文件验证 | bridge_20261015_delivery/unpacked_local_verification.json | 9.236 s |
+| 121 项定向回归 | directed_tests_20261015.xml | 14.51 s |
+| 异常记录补丁后的 16 项相关回归 | pytest 终端输出 | 1.16 s |
+| 正式 build 门禁 | bridge_20261015_native_gate/build_report.json | 资产 0.483 s；场景 0.989 s |
+
+新增仅四项小型回归，涵盖 Windows→POSIX→Linux 根路径、越界拒绝、非零工具孔相位、HOME 身份及入口拒绝后有界搜索。
+合成协议测试不作为实际 FCL/worker 验收。当前 build 实测为 assets PASS、environment NOT_EVALUATED、BLOCKED，没有生成完整规划快照。
+完整 worker **未编译、未启动**，真实 FCL 状态/接触查询 **未运行**。
+固定目标 `carton_r00_l01_c00` 顶吸/路线 B 七阶段 **尚未规划**，无选中轨迹独立复核，无仓库回放。
+本轮没有用纯 C++ 标量探针替代 FCL 结果，也没有关闭正式场景校验。
+
+本轮实际命令（PowerShell，复跑时换用新输出目录；迁移备份不可覆盖）：
+
+```powershell
+$env:PYTHONPATH='src'
+$env:OPENBLAS_NUM_THREADS='1'
+.venv/Scripts/python.exe tools/migrate_eco65_asset_paths.py --output outputs/eco65_native/bridge_20261015_migration_run02
+.venv/Scripts/python.exe tools/prepare_eco65_home.py --report outputs/eco65_native/assembly_20261014_run02/report.json --migration outputs/eco65_native/bridge_20261015_migration_run02/migration.json --output outputs/eco65_native/bridge_20261015_home --native-asset-root /work-eco65-20261015
+.venv/Scripts/python.exe tools/package_eco65_assets.py --output outputs/eco65_native/bridge_20261015_delivery --model outputs/eco65_native/bridge_20261015_home/native_model_prepared.json --home-candidate outputs/eco65_native/bridge_20261015_home/home_candidate.json
+.venv/Scripts/python.exe tools/verify_eco65_transfer.py --root . --manifest outputs/eco65_native/bridge_20261015_delivery/private_asset_manifest.json --scope LOCAL --output outputs/eco65_native/bridge_20261015_delivery/local_verification.json
+$env:PYTHONPATH='src;tools'
+.venv/Scripts/python.exe .tmp/audit_bridge_delivery.py
+$env:ECO65_CONTACT_PROBE=(Resolve-Path .tmp/seal_contours_test.exe).Path
+.venv/Scripts/python.exe -m pytest -q tests/test_eco65_bridges.py tests/test_eco65_native.py tests/test_eco65_mounting.py tests/test_moveit2_tcp.py tests/test_moveit2_native_cold.py tests/test_moveit2_backend.py tests/test_planning_only_timing.py --junitxml=outputs/eco65_native/directed_tests_20261015.xml
+.venv/Scripts/python.exe tools/run_eco65_moveit2_single_carton.py build --output outputs/eco65_native/bridge_20261015_native_gate
+```
+
+`.tmp/audit_bridge_delivery.py` 是保留在本机的真实接口重测及解包审计脚本，公共校验入口为 `verify_eco65_transfer.py`。
+初次未成功的迁移目录为 `bridge_20261015_migration`，终端错误 `PRE_MIGRATION_HASH_MISMATCH:.../collision/part_000.obj`；未写入资产。
+
+## 恢复联调所需的最小条件
+
+需要原授权 Linux 的有效入口，以及原有 Humble/MoveIt、CPU/Isaac 环境和完整仓库缓存；不缺 STEP 或 tool.json。
+资产包在真实 Linux 工作副本解包后，先执行宿主机校验，再在原 ROS rootfs 内用对应实际仓库根执行同一校验：
+
+```bash
+# 在 Linux 宿主机；HOST_REPO / MANIFEST / CPU_PYTHON 为恢复后的实际位置。
+"$CPU_PYTHON" tools/verify_eco65_transfer.py --root "$HOST_REPO" --manifest "$MANIFEST" --scope LINUX_HOST --output outputs/eco65_native/host_asset_check.json
+# 在原 ROS rootfs 内执行；资源 URI 必须已按 NATIVE_REPO 重新派生并绑定到同步清单。
+python3 tools/verify_eco65_transfer.py --root "$NATIVE_REPO" --manifest "$MANIFEST_IN_ROOTFS" --scope ROS_ROOTFS --output outputs/eco65_native/rootfs_asset_check.json
+colcon build --base-paths ros2 --packages-select m710_moveit_backend
+```
+
+上述远端命令本轮未执行。rootfs 校验除原件/清单/配置/网格外，还逐项打开 URDF file URI 并核对凸体绑定；错误挂载根不会通过。
+恢复后优先完整常驻 worker init、关节顺序、FK、状态和少量真实 FCL/MuJoCo 对照，可先进行明确标记的设备级诊断。
+完整仓库需实际检查父级聚合 AABB、重复父子对象、空隙及 D/W 变换；本轮没有缓存，未声称这些检查完成。
+随后使用下方历史 bounds/build/plan 命令，给 plan 增加
+`--home-candidate outputs/eco65_native/bridge_20261015_home/home_candidate.json`；保留 900/60 s、两次尝试、原生 IK/PTP/OMPL/LIN。
+完整候选通过一次独立复核后才使用同一轨迹和事件回放。
+始终保持 `PLANNING_ONLY_NOT_EXECUTABLE` / `KINEMATIC_REPLAY` / Dynamics `NOT_EVALUATED`。
+
+---
+
+# 历史：ECO65-B 实际总成接入（2026-10-14）
 
 本轮从已审查的 `455384129665e34ddf3cb2fd2b2ede0f2189bae4` 继续同一分支，fetch 后没有后续远端提交。
 下面的 10 月 13 日记录保留为历史；其中“缺少原件/工具配置”的阻塞已被本轮解除。
