@@ -132,11 +132,11 @@ def compact_failure(value):
 def call_summary(c):
     stages = []
     for record in c.native_evidence:
-        keep = {k: record[k] for k in ("stage", "status", "stage_id", "parent_stage_id",
+        keep = {k: record[k] for k in ("request_id", "request_fingerprint", "task_id", "stage", "status", "stage_id", "parent_stage_id",
             "pipeline_id", "planner_id", "native_solver_calls", "mtc_plan_s", "native_output_check_s",
             "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
             "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
-            "generation_source", "semantic_event", "prior_usage", "prior_query_s", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
+            "scene_import_s", "native_solver_s", "generation_source", "semantic_event", "prior_usage", "prior_query_s", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
             "native_output_status", "authoritative_status", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
@@ -158,7 +158,7 @@ def call_summary(c):
         semantic_events=sum(r.get("generation_source")=="SEMANTIC_EVENT" for r in c.native_evidence),
         local_repairs=0, slow_ompl_calls=counts["OMPL"],
         ik=[{k: r[k] for k in (
-        "stage", "status", "ik_s", "elapsed_s", "request_round_trip_s", "native_solver_s",
+        "request_id", "request_fingerprint", "input_state_sha256", "stage", "status", "ik_s", "elapsed_s", "request_round_trip_s", "native_solver_s",
         "planning_phase", "fast_phase_overrun_s", "batch_status", "batch_seed_index",
         "batch_consume_count", "native_ik_calls", "authority_failure") if k in r} for r in c.native_ik_evidence],
         native_solver_s=sum(r.get("mtc_plan_s", 0) for r in c.native_evidence),

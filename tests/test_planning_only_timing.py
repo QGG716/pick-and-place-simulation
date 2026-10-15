@@ -31,11 +31,13 @@ def test_incomplete_delivery_has_actual_attempted_time_and_no_five_box_claim():
 
 def test_ik_batch_timing_fields_survive_summary_without_duplicate_ipc():
     records = [
-        dict(stage="transit", status="FAILED", native_ik_calls=1, ik_s=.25, elapsed_s=1.,
+        dict(request_id="batch-1", request_fingerprint="batch-hash", input_state_sha256="seed-0",
+            stage="transit", status="FAILED", native_ik_calls=1, ik_s=.25, elapsed_s=1.,
             request_round_trip_s=1., native_solver_s=.25, planning_phase="FAST",
             fast_phase_overrun_s=.2, batch_status="NATIVE_IK_BATCH_TIMEOUT",
             batch_seed_index=0, batch_consume_count=2),
-        dict(stage="transit", status="FAILED", native_ik_calls=1, ik_s=.2, elapsed_s=0.,
+        dict(request_id="batch-1", request_fingerprint="batch-hash", input_state_sha256="seed-1",
+            stage="transit", status="FAILED", native_ik_calls=1, ik_s=.2, elapsed_s=0.,
             request_round_trip_s=0., native_solver_s=.2, planning_phase="FAST",
             fast_phase_overrun_s=0., batch_status="NATIVE_IK_BATCH_TIMEOUT",
             batch_seed_index=1, batch_consume_count=2)]
@@ -46,3 +48,23 @@ def test_ik_batch_timing_fields_survive_summary_without_duplicate_ipc():
     assert result["counts"]["IK"] == 2
     assert result["ik_solver_s"] == pytest.approx(.45)
     assert result["ik_including_ipc_s"] == 1.
+
+
+def test_motion_request_identity_and_existing_metrics_survive_summary():
+    record = dict(request_id="motion-1", request_fingerprint="motion-hash",
+        task_id="task-1", stage_id="task-1:1", parent_stage_id="", stage="pregrasp",
+        status="SUCCESS", native_solver_calls={"PTP": 1}, mtc_plan_s=.2,
+        native_solver_s=.2, request_round_trip_s=.3, scene_import_s=.01,
+        clearance={"policy": {"large": "omitted"}, "workspace": {
+            "pair_profile_enabled": False, "pair_profile_status": "NOT_MEASURED",
+            "phases": {"search": {"broad_phase_s": None, "narrow_s": None}}}})
+    c = SimpleNamespace(native_evidence=[record], native_ik_evidence=[],
+        skipped_calls={}, authority_path_evidence=[], native_verified=[], _cold_counters={})
+    result = entry.call_summary(c)
+    kept = result["stages"][0]
+    for key in ("request_id", "request_fingerprint", "task_id", "stage_id",
+                "scene_import_s", "native_solver_s"):
+        assert kept[key] == record[key]
+    assert kept["clearance"]["workspace"] == record["clearance"]["workspace"]
+    assert "policy" not in kept["clearance"]
+    assert result["motion_request_round_trip_s"] == .3
