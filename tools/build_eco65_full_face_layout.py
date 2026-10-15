@@ -18,17 +18,21 @@ def verify_static(snapshot):
     check=dict(snapshot);fp=check.pop('fingerprint')
     if snapshot['schema']!='eco65_full_face_static_snapshot_v1' or digest(check)!=fp:
         raise ValueError('STATIC_SNAPSHOT_IDENTITY_INVALID')
-    for name,sha in {**snapshot['asset_sha256'],**snapshot['config_sha256']}.items():
+    mast=snapshot['scene'].get('mast')
+    private_sources={mast['source']:mast['source_sha256']} if mast else {}
+    for name,sha in {**snapshot['asset_sha256'],**snapshot['config_sha256'],**private_sources}.items():
         p=(ROOT/name).resolve();p.relative_to(ROOT)
         if file_hash(p)!=sha:raise ValueError('STATIC_ASSET_CHANGED:'+name)
     s=snapshot['scene'];c=s['layout_config'];boxes=s['boxes']
     if len(boxes)!=c['depth_rows']*c['width_columns']*c['height_layers'] or len({b['id'] for b in boxes})!=len(boxes):
         raise ValueError('STATIC_BOX_IDENTITIES_INVALID')
-    if snapshot['status']!='FULL_FACE_TARGET_NOT_MOTION_VALIDATED':raise ValueError('STATIC_SCOPE_INVALID')
+    if snapshot['status']!=c['status']:raise ValueError('STATIC_SCOPE_INVALID')
     return snapshot
 
 
 def geometry(scene,tool,config):
+    if not config.get('roof_enabled',True):
+        return dict(status='NOT_EVALUATED_ROOF_DISABLED',roof_constraint='DISABLED',reachability='NOT_EVALUATED')
     # Contact TCP Z points into the carton; +height is -TCP Z.
     T=np.linalg.inv(np.array(tool['T_tool_cad_tcp']))
     vertices=np.concatenate([np.asarray(trimesh.load(ROOT/p['visual'],process=False).vertices) for p in tool['visual_parts']])
@@ -83,13 +87,20 @@ def build(args):
     cube('cargo_pedestal',[sx,wallwidth,floor],[front+sx/2,0,floor/2],'support')
     for name,sign in [('left',1),('right',-1)]:cube('trailer_'+name,[length,t,roof],[(rear+opening)/2,sign*(inner_width+t)/2,roof/2],'wall')
     cube('trailer_rear',[t,inner_width+2*t,roof],[rear+t/2,0,roof/2],'wall')
-    cube('trailer_roof',[length+t,inner_width+2*t,t],[(rear+opening+t)/2,0,roof+t/2],'roof')
+    if c.get('roof_enabled',True):cube('trailer_roof',[length+t,inner_width+2*t,t],[(rear+opening+t)/2,0,roof+t/2],'roof')
+    if c.get('junction_mode')=='simplified_static_connection':
+        transverse,longitudinal=[np.array(i['belt_bounds_D_m']) for i in conveyors['items']]
+        x0,x1=transverse[0,0],transverse[1,0]
+        y0,y1=longitudinal[1,1],transverse[0,1]
+        if y1<=y0:raise ValueError('JUNCTION_BELTS_OVERLAP')
+        cube('junction_transition_plate',[x1-x0,y1-y0,.003],[(x0+x1)/2,(y0+y1)/2,floor-.0015],'project_static_transition')
+        conveyors.update(junction_mode=c['junction_mode'],transfer_physics='NOT_EVALUATED')
     scene=dict(schema='eco65_full_face_static_scene_v1',layout_id=c['schema'],layout_config=c,
-        status='FULL_FACE_TARGET_NOT_MOTION_VALIDATED',axis_convention=old['scene']['axis_convention'],
+        status=c['status'],axis_convention=old['scene']['axis_convention'],
         base_position_m=old['scene']['base_position_m'],T_W_D=old['scene']['T_W_D'],
         environment=old['scene']['environment'],environment_status=old['scene']['environment_status'],
         boxes=boxes,obstacles=obs,mesh_obstacles=conveyors['items'],conveyors=conveyors,
-        effective_floor_z_D_m=floor,effective_cargo_height_m=height,inner_width_m=inner_width,roof_inner_z_m=roof,
+        effective_floor_z_D_m=floor,effective_cargo_height_m=height,inner_width_m=inner_width,roof_inner_z_m=roof if c.get('roof_enabled',True) else None,
         box_front_x_D_m=front,opening_x_D_m=opening,rear_inner_x_D_m=rear,source_snapshot_fingerprint=old['fingerprint'],
         transport='STATIC_ONLY',dynamics='NOT_EVALUATED',enable_hardware=False)
     for item in conveyors['items']:
@@ -97,13 +108,29 @@ def build(args):
         lo,hi=b[0].copy(),b[1].copy();lo[a]+=c['conveyor']['end_exclusion_m'];hi[a]-=c['conveyor']['end_exclusion_m']
         item['receiving_surface_bounds_D_m']=[lo.tolist(),hi.tolist()]
         item['box_center_receiving_bounds_D_xy_m']=[(lo[:2]+np.array([sx,sy])/2).tolist(),(hi[:2]-np.array([sx,sy])/2).tolist()]
+    if args.mast_config:
+        from unloading_sim.eco65.model import check_transform
+        placement=load_json(args.mast_config);cad_path=ROOT/placement['cad_manifest']
+        if file_hash(cad_path)!=placement['cad_manifest_sha256']:raise ValueError('MAST_MANIFEST_CHANGED')
+        cad=load_json(cad_path)
+        if cad['source_sha256']!=placement['source_sha256']:raise ValueError('MAST_SOURCE_IDENTITY_CHANGED')
+        check_transform(placement['T_D_mast'])
+        scene['mast']={**cad,**placement}
+    elif args.mast_failure:
+
+        scene['mast']=load_json(args.mast_failure)
     scene['top_geometry']=geometry(scene,old['tool'],c)
     scene['scene_fingerprint']=digest(scene)
     assets=dict(old['asset_sha256'])
+    if args.mast_config:
+        mast=scene['mast'];assets[mast['cad_manifest']]=mast['cad_manifest_sha256'];assets[mast['source']]=mast['source_sha256']
+        for part in mast['parts']:
+            for role in ['visual','collision']:assets[part[role]]=part[role+'_sha256']
     for row in lock['dependencies']:
         p=(args.conveyor_cache/row['path']).resolve();assets[p.relative_to(ROOT).as_posix()]=row['sha256']
     for item in conveyors['items']:assets[item['usd_path']]=item['usd_sha256']
     config_hashes={**old['config_sha256'],args.config.resolve().relative_to(ROOT).as_posix():file_hash(args.config),c['conveyor']['asset_lock']:file_hash(ROOT/c['conveyor']['asset_lock'])}
+    if args.mast_config:config_hashes[args.mast_config.resolve().relative_to(ROOT).as_posix()]=file_hash(args.mast_config)
     snapshot=dict(schema='eco65_full_face_static_snapshot_v1',status=scene['status'],scene=scene,tool=old['tool'],
         # Retained only for robot/tool convex identity. No new worker init is fabricated.
         native_model=old['native_model'],asset_sha256=assets,config_sha256=config_hashes,
@@ -111,7 +138,7 @@ def build(args):
     snapshot['fingerprint']=digest(snapshot);verify_static(snapshot);save_json(out/'snapshot.json',snapshot)
     pose=load_json(out/'inherited_accepted_pose.json');pose['source_snapshot_fingerprint']=snapshot['fingerprint']
     pose.update(source='Inherited actual accepted old four-carton HOME; unchanged q, not revalidated in new layout',
-                new_scene_status='FULL_FACE_TARGET_NOT_MOTION_VALIDATED',source_native_snapshot_fingerprint=old['fingerprint'])
+                new_scene_status=c['status'],source_native_snapshot_fingerprint=old['fingerprint'])
     save_json(out/'static_pose.json',pose);save_json(out/'geometry_report.json',scene['top_geometry'])
     print('STATIC_FULL_FACE_BUILT',len(boxes),scene['top_geometry'],flush=True)
 
@@ -120,4 +147,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['snapshot','candidate','failure','conveyor-cache','output']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--config',type=Path,default=ROOT/'configs/workcells/eco65_full_face_layout_v1.yaml')
+    p.add_argument('--mast-failure',type=Path)
+    p.add_argument('--mast-config',type=Path)
     build(p.parse_args())

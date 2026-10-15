@@ -38,3 +38,7 @@ tmp/
 # Private round-1 derived geometry and generated configuration
 /assets/tools/desktop_suction/derived/
 /configs/local/eco65_desktop/
+
+# User-provided private visual mast and independent derived geometry
+/assets/mast/
+/configs/local/eco65_mast/

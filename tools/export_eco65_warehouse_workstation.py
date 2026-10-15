@@ -165,6 +165,15 @@ def export(snapshot_path, home_path, config_path, out):
                 raise ValueError('DERIVED_CONVEYOR_CHANGED')
             prim=UsdGeom.Xform.Define(stage,'/Workstation/'+item['id']).GetPrim()
             prim.GetReferences().AddReference(Path(os.path.relpath(source,out)).as_posix())
+    if scene.get('mast',{}).get('parts'):
+        mast=scene['mast'];T=np.array(mast['T_D_mast'])
+        root_mast=UsdGeom.Xform.Define(stage,'/Workstation/Mast').GetPrim()
+        root_mast.SetCustomDataByKey('placement',mast['placement'])
+        for part in mast['parts']:
+            rgb=part['rgb'] or ([.08,.10,.12] if part['id'] in ['mast_part_006','mast_part_016'] else [.43,.46,.50])
+            mat=material(stage,part['id'],rgb,metallic=.4,roughness=.4)
+            mesh('/Workstation/Mast/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,T,mat=mat)
+            mesh('/Workstation/Mast/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],T,True)
     frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
     for name,T in frame_transforms.items():
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)
@@ -180,7 +189,7 @@ def export(snapshot_path, home_path, config_path, out):
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
     if full_face:
         manifest.update(full_face_static=True,layout_config=c,conveyors=scene['conveyors'],top_geometry=scene['top_geometry'],
-            status='FULL_FACE_TARGET_NOT_MOTION_VALIDATED',native_snapshot=False,frozen_environment=True)
+            mast=scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)
 

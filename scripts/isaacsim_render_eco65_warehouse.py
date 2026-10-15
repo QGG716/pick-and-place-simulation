@@ -166,6 +166,8 @@ def main():
         for name,path,side,expected in [('tabletop','trailer_floor',1,.8),('robot_mount_top','robot_mount_plate',1,.98),
                 ('transverse_belt','conveyor_transverse_belt',1,.98),('longitudinal_belt','conveyor_longitudinal_belt',1,.98),
                 ('trailer_roof_inner','trailer_roof',0,1.45)]:
+            if path=='trailer_roof' and not stage.GetPrimAtPath('/World/Workstation/'+path):
+                heights[name]={'status':'NOT_EVALUATED_ROOF_DISABLED'};continue
             if data.get('full_face_static') and path.startswith('conveyor_'):
                 item=next(r for r in data['conveyors']['items'] if r['id']==path.removesuffix('_belt'))
                 heights[name]=float(item['belt_bounds_D_m'][side][2]+translation[2])
@@ -243,14 +245,14 @@ def main():
         results=[]
         for name,eye,target,focal,ortho_width in views:
             print('RENDERING',name,flush=True)
-            up=Gf.Vec3d(0,1,0) if name=='03_layout_top' else Gf.Vec3d(0,0,1)
+            up=Gf.Vec3d(0,1,0) if name.endswith('layout_top') else Gf.Vec3d(0,0,1)
             camera_transform.Set(Gf.Matrix4d().SetLookAt(Gf.Vec3d(*eye),Gf.Vec3d(*target),up).GetInverse())
             camera.CreateFocalLengthAttr(float(focal))
             camera.CreateProjectionAttr('orthographic' if ortho_width else 'perspective')
             camera.CreateHorizontalApertureAttr(ortho_width*10 if ortho_width else 36.)
             camera.CreateVerticalApertureAttr(ortho_width*10*1080/1920 if ortho_width else 20.25)
             if a.layout_review:
-                display_overlay.MakeVisible() if name=='07_collision_overlay' else display_overlay.MakeInvisible()
+                display_overlay.MakeVisible() if name.endswith('collision_overlay') else display_overlay.MakeInvisible()
                 if data.get('full_face_static'):
                     from eco65_full_face_review import diagnostic_visibility
                     diagnostic_visibility(render_stage,data,name=='08_top_operating_space')

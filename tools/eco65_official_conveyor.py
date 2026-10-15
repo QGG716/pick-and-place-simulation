@@ -9,11 +9,11 @@ from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, Vt
 def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
-def clipped_mesh(mesh, matrix, plane_z):
+def clipped_mesh(mesh, matrix, plane_z, edits=None):
     """Clip polygons and interpolate face-varying UV/normals at the table plane.
 
-    Only lower supports are shortened. All retained parts undergo the same
-    uniform scale; rollers, upper frame, guards and decals are not hidden.
+    The table-plane cut preserves face ownership and attributes. Optional
+    per-face edits come from identified support roles, never a global upper cut.
     """
     vertices=np.array(mesh.GetPointsAttr().Get());vertices=vertices@matrix[:3,:3].T+matrix[:3,3]
     counts=list(mesh.GetFaceVertexCountsAttr().Get());indices=np.array(mesh.GetFaceVertexIndicesAttr().Get())
@@ -27,7 +27,8 @@ def clipped_mesh(mesh, matrix, plane_z):
         attrs['_normal']=normals
     result=[];newcounts=[];mapping={};values={k:[] for k in attrs};offset=0
     for face,n in enumerate(counts):
-        ids=indices[offset:offset+n];v=vertices[ids]
+        ids=indices[offset:offset+n];v=vertices[ids].copy()
+        if edits is not None:v[:,2]+=edits[0][face]
         poly=[(v[i],{k:a[offset+i] for k,a in attrs.items()}) for i in range(n)];offset+=n
         if np.min(v[:,2])<plane_z:
             clipped=[]
@@ -36,6 +37,15 @@ def clipped_mesh(mesh, matrix, plane_z):
                 if inside_a:clipped.append(a)
                 if inside_a!=inside_b:
                     t=(plane_z-a[0][2])/(b[0][2]-a[0][2])
+                    clipped.append((a[0]+t*(b[0]-a[0]),{k:a[1][k]+t*(b[1][k]-a[1][k]) for k in attrs}))
+            poly=clipped
+        if edits is not None and np.isfinite(edits[1][face]):
+            ceiling=edits[1][face];clipped=[]
+            for a,b in zip(poly,poly[1:]+poly[:1]):
+                ia=a[0][2]<=ceiling;ib=b[0][2]<=ceiling
+                if ia:clipped.append(a)
+                if ia!=ib:
+                    t=(ceiling-a[0][2])/(b[0][2]-a[0][2])
                     clipped.append((a[0]+t*(b[0]-a[0]),{k:a[1][k]+t*(b[1][k]-a[1][k]) for k in attrs}))
             poly=clipped
         if len(poly)<3:continue
@@ -75,6 +85,14 @@ def build(cache,lock,config,out):
     tmin_y=ty-(rawhi[0]-center[0])*scale
     ly=tmin_y-config['conveyor']['junction_structure_gap_m']-(center[1]-rawlo[1])*scale
     lx=tx-(center[0]-rawlo[0])*scale
+    lx+=config['conveyor'].get('longitudinal_x_offset_m',0.)
+    support_data={}
+    if config['conveyor'].get('adjust_passive_supports',False):
+        from eco65_conveyor_supports import support_edits
+        for p,m,T,v in records:
+            if '/Belt/' not in str(p.GetPath()) and 'Decal' not in str(p.GetPath()):
+                offsets,upper,audit=support_edits(m,v,high[2],scale,config['conveyor']['support_clearance_below_belt_m'])
+                support_data[str(p.GetPath())]=(offsets,upper+top,audit)
     items=[]
     for name,R,xy in [('transverse',transverse,[tx,ty]),('longitudinal',longitudinal,[lx,ly])]:
         path=out/(name+'.usdc');stage=Usd.Stage.CreateNew(str(path))
@@ -94,7 +112,7 @@ def build(cache,lock,config,out):
         A[:3,3]=np.array([*xy,top])-scale*R@np.array([center[0],center[1],high[2]])
         for p,m,T,v in records:
             target='/Conveyor'+str(p.GetPath()).removeprefix('/World');dest=UsdGeom.Mesh(stage.GetPrimAtPath(target))
-            q,counts,attrs,mapping=clipped_mesh(m,A@T,0.)
+            q,counts,attrs,mapping=clipped_mesh(m,A@T,0.,support_data.get(str(p.GetPath())))
             dest.GetPointsAttr().Set(Vt.Vec3fArray.FromNumpy(q.astype(np.float32)))
             dest.GetFaceVertexCountsAttr().Set(counts);dest.GetFaceVertexIndicesAttr().Set(list(range(len(q))))
             dest.CreateExtentAttr().Set([Gf.Vec3f(*q.min(0)),Gf.Vec3f(*q.max(0))])
@@ -116,7 +134,8 @@ def build(cache,lock,config,out):
         bounds=np.array([r['bounds_D_m'] for r in meshes]);outer=[bounds[:,0].min(0).tolist(),bounds[:,1].max(0).tolist()]
         items.append(dict(id='conveyor_'+name,usd_path=str(path),usd_sha256=sha(path),meshes=meshes,belt_bounds_D_m=b,bounds_D_m=outer,
                           uniform_scale=scale,direction_D=[0,-1,0] if name=='transverse' else [-1,0,0],velocity_m_s=0.,
-                          collision='single_exact_static_triangle_mesh_per_non_decal_source_mesh',cut_plane_D_z_m=0.))
+                          collision='single_exact_static_triangle_mesh_per_non_decal_source_mesh',cut_plane_D_z_m=0.,
+                          support_role_edits=[r for edits in support_data.values() for r in edits[2]]))
     return dict(source=lock['a06'],asset_version='5.0',dependencies_verified=len(lock['dependencies']),
                 source_units_m=1.,source_axis='Z',source_belt_bounds_m=[low.tolist(),high.tolist()],source_bounds_m=[rawlo.tolist(),rawhi.tolist()],
                 adaptation=config['conveyor']['adaptation'],a43_status=lock['a43_status'],items=items,

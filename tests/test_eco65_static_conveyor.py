@@ -26,5 +26,18 @@ class SupportClipTest(unittest.TestCase):
         self.assertTrue(np.allclose(np.asarray(attrs['st'])[vertices[:,2]==0,1],.5))
         self.assertTrue(np.allclose(attrs['_normal'],[0,-1,0]))
 
+    def test_role_cut_leaves_unselected_face_and_interpolates_uv(self):
+        stage=Usd.Stage.CreateInMemory();mesh=UsdGeom.Mesh.Define(stage,'/Support')
+        mesh.CreatePointsAttr([(0,0,0),(1,0,0),(1,0,1),(0,0,1)])
+        mesh.CreateFaceVertexCountsAttr([4,4]);mesh.CreateFaceVertexIndicesAttr([0,1,2,3]*2)
+        mesh.CreateNormalsAttr([Gf.Vec3f(0,-1,0)]*8);mesh.SetNormalsInterpolation('faceVarying')
+        uv=UsdGeom.PrimvarsAPI(mesh).CreatePrimvar('st',Sdf.ValueTypeNames.TexCoord2fArray,'faceVarying')
+        uv.Set([(0,0),(1,0),(1,1),(0,1)]*2)
+        vertices,counts,attrs,mapping=clipped_mesh(mesh,np.eye(4),0.,(np.zeros(2),np.array([.6,np.inf])))
+        self.assertEqual(counts,[4,4]);self.assertEqual(mapping,{0:0,1:1})
+        self.assertAlmostEqual(vertices[:4,2].max(),.6)
+        self.assertAlmostEqual(vertices[4:,2].max(),1.)
+        self.assertTrue(np.allclose(np.asarray(attrs['st'])[:4][vertices[:4,2]==.6,1],.6))
+
 
 if __name__=='__main__':unittest.main()

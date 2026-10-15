@@ -61,6 +61,7 @@ def audit(stage,data):
         if 'Collision' in name or 'collision_' in name:continue
         b=bounds(name)
         for target in ['trailer_roof','trailer_left','trailer_right']:
+            if target not in dims:continue
             other=np.array(dims[target]);overlap=np.minimum(b[1],other[1])-np.maximum(b[0],other[0])
             if np.all(overlap>0):potential.append(dict(pair=[name,target],overlap_m=overlap.tolist(),interpretation='AABB_POTENTIAL_ONLY_NOT_PROVEN_PENETRATION'))
     return dict(status='STATIC_LAYOUT_REVIEW',checks=rows,issues=issues,dimensions_bounds_W_m=dims,
