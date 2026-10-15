@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/tmp/approach-tier-20261015/probe-direct.py", line 30, in <module>
+    raw=c.native.request(req,timeout=100)
+  File "/work-approach-tier-20261015/src/unloading_sim/moveit2_backend.py", line 373, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: [json.exception.out_of_range.403] key 'cups' not found

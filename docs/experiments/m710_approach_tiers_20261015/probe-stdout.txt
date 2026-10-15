@@ -1,0 +1,1 @@
+{"status": "SUCCESS", "source": "NATIVE_DIRECT_CONNECTION", "points": 2, "query_s": 0.003193386, "task_id": "native-cold-46c031cf297d4295bc0f7f4750804991", "stage_id": "native-cold-46c031cf297d4295bc0f7f4750804991:probe", "edge_checks": 1, "graph_search": false, "native_solver_calls": {}}

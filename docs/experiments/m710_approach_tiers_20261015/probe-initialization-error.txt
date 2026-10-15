@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/approach-tier-20261015/probe-direct.py", line 20, in <module>
+    target=scene.target
+AttributeError: 'FrozenLayoutMotionInput' object has no attribute 'target'

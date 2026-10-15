@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________ test_direct_round_does_not_submit_full_graph _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3a3e8d11e0>
+
+    def test_direct_round_does_not_submit_full_graph(monkeypatch):
+        c=connector();sent=[]
+        monkeypatch.setattr("unloading_sim.static_prior.request_context",lambda *a,**k:{})
+        c.native=SimpleNamespace(request=lambda req,**kw:(sent.append(deepcopy(req)) or
+            dict(status="NATIVE_PLANNING_FAILED",pipeline_id=req["pipeline_id"],moveit_error_code=-2)))
+        c._transit(np.zeros(6),np.ones(6)*.1,[],purpose=MotionPurpose.FREE_APPROACH,
+            seed=1,iteration_budget=2,stage="pregrasp",allow_rrt=False)
+>       assert sent[0].get("connection_scope")=="DIRECT_ONLY"
+E       AssertionError: assert None == 'DIRECT_ONLY'
+E        +  where None = <built-in method get of dict object at 0x7f3a3e94f340>('connection_scope')
+E        +    where <built-in method get of dict object at 0x7f3a3e94f340> = {'allowed_planning_time_s': 6.0, 'attachment': None, 'parent_stage_id': '', 'pipeline_id': 'static_prior', ...}.get
+
+tests/test_approach_connection_tiers.py:33: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_approach_connection_tiers.py::test_direct_round_does_not_submit_full_graph
+1 failed in 0.28s

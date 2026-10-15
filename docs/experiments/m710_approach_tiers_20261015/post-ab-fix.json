@@ -1,0 +1,13 @@
+{
+  "code_commit": "3ec35410d98a821b0f722e24c124e3764ee882a7",
+  "formal_commit": "f34443996148062afccbbe7d1f02154b39698b09",
+  "changed_since_formal": {
+    "src/unloading_sim/moveit2_backend.py": "72d6c57c8132ea76cc713b3cf62383d1221bc4ffddff6993d6762b930799976b",
+    "tests/test_approach_connection_tiers.py": "ccf91c7a850bd35ae516f712484e0e885ffeff7fd49ee106ade39a83d270dd25",
+    "tools/summarize_m710_top_row_retest.py": "d82ccfcfe0eee6a9ec58ed9b14ec8543ee89646aa950a703452d0d8b1898712a"
+  },
+  "worker_unchanged": true,
+  "task_level_retest": "NOT_EVALUATED",
+  "full_task_attempts": 4,
+  "python_tests": 127
+}

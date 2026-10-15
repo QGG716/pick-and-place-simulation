@@ -1,0 +1,17 @@
+{
+  "scope": "HISTORICAL_INPUT_SEMANTICS_ONLY_NOT_A_PLANNING_INPUT",
+  "same_start": true,
+  "same_task_parent": true,
+  "goal_delta_q_rad": [
+    -3.871820580814145e-08,
+    1.4070219100936754e-07,
+    1.5138573564166258e-07,
+    3.141591197015128,
+    -1.0016023797420344,
+    -3.1415911983604317
+  ],
+  "goal_fk_position_delta_m": 3.3233425667354476e-07,
+  "goal_fk_orientation_delta_rad": 8.395055544974618e-07,
+  "connection_seed_delta": 1009,
+  "conclusion": "same _connect_pose fixed pose, alternate wrist IK configurations; same target/process context"
+}
