@@ -6,6 +6,7 @@ Private meshes are embedded only in the explicitly supplied ignored output folde
 import argparse
 import hashlib
 import json
+import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -38,8 +39,12 @@ def export(snapshot_path, home_path, config_path, out):
         raise FileExistsError('Use a fresh run directory; historical evidence is immutable')
     snapshot = load_json(snapshot_path)
     check = dict(snapshot); expected = check.pop('fingerprint')
-    native = snapshot.get('schema') == 'eco65_native_snapshot_v1'
-    if native:
+    full_face = snapshot.get('schema') == 'eco65_full_face_static_snapshot_v1'
+    native = snapshot.get('schema') == 'eco65_native_snapshot_v1' or full_face
+    if full_face:
+        from build_eco65_full_face_layout import verify_static
+        verify_static(snapshot)
+    elif native:
         from unloading_sim.eco65.native_io import verify_snapshot
         verify_snapshot(snapshot)
     else:
@@ -51,7 +56,9 @@ def export(snapshot_path, home_path, config_path, out):
             raise ValueError('Snapshot asset changed: ' + relative)
     scene, tool = snapshot['scene'], snapshot['tool']
     c = yaml.safe_load(Path(config_path).read_text(encoding='utf-8'))
-    assert len(scene['boxes']) == 4 and c['scope'] == 'STATIC_APPEARANCE_ONLY'
+    assert c['scope'] == 'STATIC_APPEARANCE_ONLY'
+    if not full_face: assert len(scene['boxes']) == 4
+    elif c != scene['layout_config']: raise ValueError('FULL_FACE_CONFIG_CHANGED')
     home_data = load_json(home_path); home = home_data['home_q']
     if home_data.get('status') == 'STATIC_POSE_ONLY' and (
             home_data['source_snapshot_fingerprint'] != expected or
@@ -150,6 +157,14 @@ def export(snapshot_path, home_path, config_path, out):
         pose(prim,transform(b['pose'])); prim.SetCustomDataByKey('stable_id',b['id'])
         # This exact layout envelope is the sole carton collision proxy.
         cube('Cartons/'+b['id']+'/Collision',b['size_m'],[0,0,0],mats['table'],True)
+        if full_face: prim.SetCustomDataByKey('supported_by', Vt.StringArray(b['supported_by']))
+    if full_face:
+        for item in scene['mesh_obstacles']:
+            source=ROOT/item['usd_path']
+            if hashlib.sha256(source.read_bytes()).hexdigest()!=item['usd_sha256']:
+                raise ValueError('DERIVED_CONVEYOR_CHANGED')
+            prim=UsdGeom.Xform.Define(stage,'/Workstation/'+item['id']).GetPrim()
+            prim.GetReferences().AddReference(Path(os.path.relpath(source,out)).as_posix())
     frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
     for name,T in frame_transforms.items():
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)
@@ -163,6 +178,9 @@ def export(snapshot_path, home_path, config_path, out):
         collision_records=collision_records,obstacles=[o for o in scene['obstacles'] if o['role']!='warehouse_environment'])
     if native:
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
+    if full_face:
+        manifest.update(full_face_static=True,layout_config=c,conveyors=scene['conveyors'],top_geometry=scene['top_geometry'],
+            status='FULL_FACE_TARGET_NOT_MOTION_VALIDATED',native_snapshot=False,frozen_environment=True)
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)
 

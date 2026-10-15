@@ -36,7 +36,7 @@ def main():
             if item['up_axis']!='Z' or item['meters_per_unit']!=1.:
                 raise ValueError('Unexpected official units/up axis; explicit unit conversion required')
         data=json.loads(a.workstation.with_name('workstation_manifest.json').read_text())
-        if data.get('native_snapshot'):
+        if (data.get('native_snapshot') or data.get('frozen_environment')):
             from unloading_sim.eco65.model import ROOT
             warehouse['path']=str(ROOT/data['environment']['warehouse_path'])
             carton['path']=str(ROOT/data['environment']['carton_path'])
@@ -99,13 +99,13 @@ def main():
                 area+=(right-left)*length
             return abs(area-np.prod(high[:2]-low[:2]))<1e-5
         candidates=[]
-        for x in ([] if data.get('native_snapshot') else np.arange(enclosure[0][0]+1.7,enclosure[0][1]-1.1,.25)):
+        for x in ([] if (data.get('native_snapshot') or data.get('frozen_environment')) else np.arange(enclosure[0][0]+1.7,enclosure[0][1]-1.1,.25)):
             for y in np.arange(enclosure[1][0]+1.4,enclosure[1][1]-1.4,.25):
                 low=np.array([x-1.7,y-1.4,.001]);high=np.array([x+1.1,y+1.4,2.1])
                 if not floor_covered(low,high):continue
                 if not any(np.all(high>lo) and np.all(hi>low) for _,lo,hi in obstacles):
                     candidates.append((float((x-.3)**2+y*y),float(x),float(y)))
-        if data.get('native_snapshot'):
+        if (data.get('native_snapshot') or data.get('frozen_environment')):
             translation=np.array(data['T_W_D'])[:3,3].tolist();x,y,_=translation
             if translation!=[.32,-.1,.8]:raise ValueError('NATIVE_PLACEMENT_CHANGED')
             frozen=data['environment']
@@ -166,7 +166,10 @@ def main():
         for name,path,side,expected in [('tabletop','trailer_floor',1,.8),('robot_mount_top','robot_mount_plate',1,.98),
                 ('transverse_belt','conveyor_transverse_belt',1,.98),('longitudinal_belt','conveyor_longitudinal_belt',1,.98),
                 ('trailer_roof_inner','trailer_roof',0,1.45)]:
-            heights[name]=float(bounds(path)[side][2])
+            if data.get('full_face_static') and path.startswith('conveyor_'):
+                item=next(r for r in data['conveyors']['items'] if r['id']==path.removesuffix('_belt'))
+                heights[name]=float(item['belt_bounds_D_m'][side][2]+translation[2])
+            else: heights[name]=float(bounds(path)[side][2])
             if not a.layout_review:assert abs(heights[name]-expected)<2e-6
         if not a.layout_review:assert np.allclose(bounds('trailer_floor')[1][:2]-bounds('trailer_floor')[0][:2],[2,2])
         # Check each actual workstation mesh/collider, not just its design footprint.
@@ -187,6 +190,8 @@ def main():
         review=None
         if a.layout_review:
             from eco65_static_review import audit,overlay,wall_edges,views as review_views,annotate
+            if data.get('full_face_static'):
+                from eco65_full_face_review import audit,views as review_views,annotate
             review=audit(stage,data)
             review['environment_AABB_potential_only']=intersections
             (a.output/'static_checks.json').write_text(json.dumps(review,indent=2))
@@ -246,6 +251,9 @@ def main():
             camera.CreateVerticalApertureAttr(ortho_width*10*1080/1920 if ortho_width else 20.25)
             if a.layout_review:
                 display_overlay.MakeVisible() if name=='07_collision_overlay' else display_overlay.MakeInvisible()
+                if data.get('full_face_static'):
+                    from eco65_full_face_review import diagnostic_visibility
+                    diagnostic_visibility(render_stage,data,name=='08_top_operating_space')
             for _ in range(40):
                 rep.orchestrator.step(delta_time=0.,rt_subframes=4,pause_timeline=True)
             assert not timeline.is_playing() and timeline.get_current_time()==0.
@@ -291,6 +299,7 @@ def main():
             print('RENDERED',path,flush=True)
         if a.layout_review:
             display_overlay.MakeInvisible()
+            if data.get('full_face_static'):diagnostic_visibility(render_stage,data,False)
             review=audit(render_stage,data)
             review['timeline_play_events']=timeline_events.count(int(omni.timeline.TimelineEventType.PLAY))
             if review['timeline_play_events']:raise RuntimeError('STATIC_REVIEW_TIMELINE_PLAYED')
@@ -303,7 +312,7 @@ def main():
             floor_world_z_m=0.,height_checks_m=heights,cartons=carton_records,
             carton_original_bounds_m=[rawlo.tolist(),rawhi.tolist()],carton_visual_scale=scale.tolist(),
             environment_meshes_and_colliders_checked=len(obstacles),environment_colliders=len(colliders),
-            workstation_shapes_checked=checked,intersections=intersections,clearance_reserve_m=None if data.get('native_snapshot') else .4,
+            workstation_shapes_checked=checked,intersections=intersections,clearance_reserve_m=None if (data.get('native_snapshot') or data.get('frozen_environment')) else .4,
             interior_bounds_xy_m=enclosure,environment_removed_prims=[],environment_scale=1.,workstation_scale=1.,
             timeline_time_s=timeline.get_current_time(),physics='NOT_EVALUATED',planning='NOT_EXECUTED',hardware=False,
             renders=results,source_snapshot_fingerprint=data['source_snapshot_fingerprint'])
