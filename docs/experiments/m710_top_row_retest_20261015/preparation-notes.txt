@@ -1,0 +1,10 @@
+Preparation only; no planning probes:
+Optional scipy import failed (not an entry dependency); existing venv runs entry unchanged.
+Prepare 1: asset symlink resolution rejected as outside project root.
+Prepare 2: original Wantai STEP under res/ missing.
+Prepare 3: official audit required scripts/expand_official_m710id70_urdf.py.
+Copied original assets (34 MB), res (18 MB), and referenced expansion script from existing /work-static-prior-20261003. No DB/model/geometry/policy identity edits.
+Prepare 4 succeeded. Formal ran once in a fresh worker.
+M710_MOVEIT_ASSET_ROOT=/work-static-prior-20261003 is the existing legal native mesh URI mechanism.
+Observed during formal: PID 16634 Python, 2 threads; child 16641 worker, 11 threads; taskset reported affinity 0-21.
+No resource changes between boxes. Venv has no pip; lock read using importlib.metadata, no installs.

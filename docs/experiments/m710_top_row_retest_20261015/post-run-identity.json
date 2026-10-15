@@ -1,0 +1,65 @@
+{
+  "source_commit": "8d55861839702128afb457af42ca7ac0be0d62e5",
+  "frozen_file_changes": [],
+  "worker_sha256": "520821740534541ef4d779cbe305397cef35fcd7b26a8469f43c55019d03bbc0",
+  "database_sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+  "model_identity": {
+    "schema": "m710_native_stage_v1",
+    "reviewed_sources": {
+      "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+      "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+    },
+    "scene_version": "m710id70_unloading_layout_v1",
+    "scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+    "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+    "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+    "model_tool_fingerprint": "1df67d9017fa1124f36208b1ecee9a575b85b24bddf2a8a14c903f0a4b191766",
+    "task_tcp_link": "m710_virtual_task_tcp",
+    "flange_from_task_tcp": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+    "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+  },
+  "static_prior_metadata": {
+    "load_s": 0.060375459492206573,
+    "sha256": "df5b0c02c0566542b98607162d2c3bd61871fb0792950200f5ccb61b54754311",
+    "bytes": 238781,
+    "source_kind": "STATIC_PRIOR_DATABASE_LOAD",
+    "file_load_s": 0.060375459492206573,
+    "native_load_s": 0.000507729,
+    "native_request_round_trip_s": 0.020068421959877014,
+    "total_load_s": 0.08068403229117393
+  },
+  "budgets": {
+    "stage_budget_s": 90.0,
+    "box_budget_s": 300.0,
+    "batch_budget_s": 900.0,
+    "ipc_timeout_s": 100.0
+  },
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false
+}

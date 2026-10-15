@@ -1,0 +1,9 @@
+{
+  "status": "PLANNING_ONLY_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "result_file_write_s": 0.15036404132843018,
+  "batch_bookkeeping_s": 0.0009092465043067932,
+  "T_online_5_s": 21.576753858476877,
+  "attempted_online_s": 21.576753858476877,
+  "excluded": "write_timing.json, final timing accounting and final stdout"
+}
