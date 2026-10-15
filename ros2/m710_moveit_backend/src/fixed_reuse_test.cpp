@@ -33,6 +33,12 @@ int main(int argc,char** argv) {
   auto s=fixedScene();m710::Clearance ref(s,p,"optimized",false),opt(s,p,"optimized",true);auto state=s->getCurrentState();
   for(double angle:{0.,.5,1.5}) {state.setJointGroupPositions("manipulator",std::vector<double>{angle,0.});state.update();require(ref.check(state)&&opt.check(state),"RIGID_PASS");}
   require(opt.workspaceEvidence()["phases"]["endpoint"]["fixed_property_reuses"].get<int>()>0,"NO_REUSE");
+  m710::Clearance narrow_disabled(s,p,"optimized",true,false);
+  require(narrow_disabled.check(s->getCurrentState())&&narrow_disabled.check(s->getCurrentState()),"BASELINE_AABB_VALID");
+  require(narrow_disabled.workspaceEvidence()["phases"]["endpoint"]["fixed_aabb_reuses"]==1,"BASELINE_LOST_AABB");
+  auto source=opt.workspaceEvidence()["phases"]["endpoint"];
+  require(source["fixed_aabb_qualifications"]==1&&source["fixed_aabb_reuses"]==2,"AABB_SOURCE_LOST");
+  require(source["fixed_narrow_qualifications"]==0&&source["fixed_qualification_queries"]==0,"AABB_BECAME_NARROW");
   state.setJointGroupPositions("manipulator",std::vector<double>{0.,-.05});state.update();
   require(!ref.check(state)&&!opt.check(state),"ACTIVE_LINK_NOT_CHECKED");require(ref.last_failure.at("pair")==opt.last_failure.at("pair"),"ACTIVE_PAIR");
   for(const std::string name:{"wall","neighbor"}) {

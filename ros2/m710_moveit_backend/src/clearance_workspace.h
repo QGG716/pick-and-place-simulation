@@ -19,8 +19,13 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     std::set<std::string> touch;
     bool fixed_tool=false,fixed_payload=false;
   };
-  struct Pair {size_t a,b;double limit;bool self;bool fixed=false,accepted=false,visited=false;};
-  bool reuse_=false;
+  enum class FixedSource { None, Aabb, Narrow };
+  struct Pair {
+    size_t a,b;double limit;bool self;
+    bool fixed=false,accepted=false,visited=false,qualification_attempted=false;
+    FixedSource source=FixedSource::None;
+  };
+  bool reuse_=false,qualify_fixed_narrow_=true;
   static bool fixedToFlange(const moveit::core::LinkModel* link) {
     while(link && link->getName()!="flange") {
       const auto* joint=link->getParentJointModel();
@@ -40,6 +45,9 @@ public:
     size_t queries=0, aabb_tests=0, aabb_skips=0, narrow_calls=0, self_narrow=0, world_narrow=0;
     size_t prepared_objects=0, eligible_pairs=0, exempt_pairs=0;
     size_t fixed_first_checks=0,fixed_property_evaluations=0,fixed_property_reuses=0,dynamic_pair_checks=0;
+    size_t fixed_aabb_qualifications=0,fixed_narrow_qualifications=0,fixed_qualification_queries=0;
+    size_t fixed_aabb_reuses=0,fixed_narrow_reuses=0;
+    std::map<std::string,size_t> fixed_qualification_declines;
     double prepare_s=0, geometry_prepare_s=0, pair_filter_s=0, update_s=0, broad_s=0, narrow_s=0, self_s=0, world_s=0;
   } stats;
   std::map<std::string,Stats> phases;
@@ -47,9 +55,9 @@ public:
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      const std::set<std::string>& tools={},bool reuse=false)
+      const std::set<std::string>& tools={},bool reuse=false,bool qualify_fixed_narrow=true)
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()) {
-    reuse_=reuse;
+    reuse_=reuse;qualify_fixed_narrow_=qualify_fixed_narrow;
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
@@ -124,7 +132,12 @@ public:
     }
     stats.update_s+=elapsed(updating);
     for(auto& p:pairs_) {
-      if(reuse_ && p.fixed && bounded_transforms && p.accepted){++stats.fixed_property_reuses;continue;}
+      if(reuse_ && p.fixed && bounded_transforms && p.accepted) {
+        ++stats.fixed_property_reuses;
+        if(p.source==FixedSource::Aabb)++stats.fixed_aabb_reuses;
+        else ++stats.fixed_narrow_reuses;
+        continue;
+      }
       if(p.fixed) {
         if(!p.visited){++stats.fixed_first_checks;p.visited=true;}
         ++stats.fixed_property_evaluations;
@@ -141,22 +154,59 @@ public:
       stats.broad_s+=elapsed(broad);
       if(skip) {
         ++stats.aabb_skips;
-        if(reuse_&&p.fixed&&bounded_transforms)p.accepted=true;
+        if(reuse_&&p.fixed&&bounded_transforms) {
+          p.accepted=true;p.source=FixedSource::Aabb;++stats.fixed_aabb_qualifications;
+        }
         continue;
       }
       auto narrow=Clock::now();++stats.narrow_calls;
       if(p.self) ++stats.self_narrow;else ++stats.world_narrow;
       fcl::DistanceResultd result;result.min_distance=p.limit+.001;
       const double d=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),result);
-      const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
+      auto finish_narrow=[&] {
+        const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
+      };
       // Use the same FCL request/default solver and strict contact rejection as
       // MoveIt's reference callback; no signed-distance or geometry surrogate.
       if(!std::isfinite(d) || !std::isfinite(result.min_distance) || d<=0 || d+1e-9<p.limit) {
-        failure={a.name,b.name,d,p.limit,p.self};return false;
+        finish_narrow();failure={a.name,b.name,d,p.limit,p.self};return false;
       }
-      // Keep the existing rejection first. Reuse only a successful distance
-      // more than 1 mm above the threshold; near-boundary pairs always recheck.
-      if(reuse_&&p.fixed&&bounded_transforms&&d>p.limit+.001&&result.min_distance>p.limit+.001)p.accepted=true;
+      // The acceptance query above is deliberately capped at limit + 1 mm.
+      // FCL 0.7 box distance returns that capped minimum; it is NOT a true
+      // separation suitable for certification. Try qualification at most once
+      // per eligible fixed pair, inside this check (no prewarming).
+      if(qualify_fixed_narrow_&&reuse_&&p.fixed&&bounded_transforms&&!p.qualification_attempted) {
+        p.qualification_attempted=true;
+        const double band=p.limit+.001;
+        if(d<band && result.min_distance==d) {
+          ++stats.fixed_qualification_declines["WITHIN_REUSE_GUARD"];
+        } else if(d!=band || result.min_distance!=band) {
+          ++stats.fixed_qualification_declines["INCONSISTENT_CAPPED_RESULT"];
+        } else {
+          ++stats.fixed_qualification_queries;++stats.narrow_calls;
+          if(p.self)++stats.self_narrow;else ++stats.world_narrow;
+          try {
+            fcl::DistanceResultd full; // default max(), never the acceptance band
+            const double distance=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),full);
+            if(!std::isfinite(distance) || !std::isfinite(full.min_distance) ||
+                distance==std::numeric_limits<double>::max() || full.o1!=a.object->collisionGeometry().get() ||
+                full.o2!=b.object->collisionGeometry().get()) {
+              ++stats.fixed_qualification_declines["UNKNOWN_UNCAPPED_RESULT"];
+            } else if(distance!=full.min_distance || std::min(band,distance)!=d) {
+              ++stats.fixed_qualification_declines["INCONSISTENT_UNCAPPED_RESULT"];
+            } else if(distance>band) {
+              p.accepted=true;p.source=FixedSource::Narrow;++stats.fixed_narrow_qualifications;
+            } else {
+              ++stats.fixed_qualification_declines["WITHIN_REUSE_GUARD"];
+            }
+          } catch(const std::exception&) {
+            // Supplementary evidence is optional. Retain the original successful
+            // verdict and future original checks, never a success certificate.
+            ++stats.fixed_qualification_declines["QUALIFICATION_QUERY_EXCEPTION"];
+          }
+        }
+      }
+      finish_narrow();
     }
     return true;
   }
