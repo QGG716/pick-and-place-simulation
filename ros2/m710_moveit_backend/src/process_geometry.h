@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <set>
 #include <vector>
+#include <array>
 
 namespace m710 {
 using ProcessJson = nlohmann::json;
@@ -107,4 +108,78 @@ inline ProcessJson processSealRings(const ProcessJson& policy,const ProcessBox& 
   return {{"status","PASS"},{"computed_geometrically_eligible_mask",eligible},{"computed_actual_contact_mask",contact},{"commanded_count",commanded},
     {"contact_observation","predicted_robot_state_geometry_not_physical_contact"}};
 }
+// Request-local numeric seal input. This compiles data, not a geometric verdict.
+// Geometry is still evaluated at every requested state, including threshold cases.
+class ProcessSealInput {
+  struct Cup {std::string id;Eigen::Vector3d center;double radius;bool active,eligible;};
+  std::array<Cup,72> cups_;
+  int axis_;double sign_,gap_,penetration_,angle_,margin_;
+  Eigen::Isometry3d contact_;
+public:
+  struct Result {
+    std::array<bool,72> eligible{},contact{};
+    size_t visited=0,commanded=0;
+    int failed=-1;
+    bool passed() const {return failed<0&&commanded>0;}
+  };
+  explicit ProcessSealInput(const ProcessJson& policy) {
+    const auto& cups=policy.at("cups");const auto& active=policy.at("commanded_active_mask");
+    if(cups.size()!=72||active.size()!=72)throw std::runtime_error("PROCESS_REQUIRES_72_CUPS");
+    for(const auto key:{"geometrically_eligible_mask","actual_contact_mask"}) {
+      if(policy.at(key).size()!=72)throw std::runtime_error("PROCESS_REQUIRES_72_MASK_BITS");
+      for(const auto& bit:policy.at(key))if(!bit.is_boolean())throw std::runtime_error("PROCESS_MASK_NOT_BOOLEAN");
+    }
+    const std::map<std::string,std::pair<int,double>> faces={{"front",{0,-1}},{"left",{1,1}},{"right",{1,-1}},{"top",{2,1}}};
+    const std::string face=policy.at("target_face");
+    if(!faces.count(face))throw std::runtime_error("PROCESS_TARGET_FACE_INVALID");
+    std::tie(axis_,sign_)=faces.at(face);contact_=processTransform(policy.at("flange_from_physical_contact"));
+    gap_=policy.at("max_attachment_gap_m");penetration_=policy.at("maximum_penetration_m");
+    angle_=policy.at("max_normal_misalignment_rad");margin_=policy.at("suction_edge_margin_m");
+    for(double x:{gap_,penetration_,angle_,margin_})if(!std::isfinite(x)||x<0)throw std::runtime_error("PROCESS_SEAL_TOLERANCE_INVALID");
+    if(angle_>=std::acos(-1.)/2)throw std::runtime_error("PROCESS_SEAL_ANGLE_INVALID");
+    std::set<std::string> ids;
+    for(size_t i=0;i<72;++i){
+      const auto& cup=cups.at(i);auto& c=cups_[i];c.id=cup.at("cup_id");
+      if(cup.at("index").get<size_t>()!=i||!ids.insert(c.id).second)throw std::runtime_error("PROCESS_CUP_IDENTITY_INVALID");
+      if(!active.at(i).is_boolean())throw std::runtime_error("PROCESS_MASK_NOT_BOOLEAN");
+      const auto p=cup.at("center_contact_frame_m").get<std::vector<double>>();c.radius=cup.at("seal_radius_m");
+      if(p.size()!=3||!std::isfinite(c.radius)||c.radius<=0)throw std::runtime_error("PROCESS_CUP_GEOMETRY_INVALID");
+      c.center=Eigen::Vector3d(p[0],p[1],p[2]);
+      if(!c.center.allFinite())throw std::runtime_error("PROCESS_CUP_GEOMETRY_INVALID");
+      c.active=active.at(i).get<bool>();c.eligible=policy.at("geometrically_eligible_mask").at(i).get<bool>();
+    }
+  }
+  Result evaluate(const ProcessBox& target,const Eigen::Isometry3d& flange) const {
+    Result result;const Eigen::Isometry3d local=target.pose.inverse()*flange*contact_;
+    const Eigen::Vector3d ray=local.linear().col(2);const double denom=ray[axis_],alignment=-sign_*denom;
+    for(size_t i=0;i<72;++i){
+      const auto& cup=cups_[i];const Eigen::Vector3d center=local*cup.center;
+      if(!center.allFinite())throw std::runtime_error("PROCESS_CUP_GEOMETRY_INVALID");
+      bool valid=alignment>1e-12&&alignment>=std::cos(angle_);
+      if(valid){
+        const double distance=(sign_*target.half[axis_]-center[axis_])/denom;
+        const double amplitude=cup.radius*std::hypot(local.linear()(axis_,0),local.linear()(axis_,1))/std::abs(denom);
+        valid=distance-amplitude>=-penetration_-1e-12&&distance+amplitude<=gap_+1e-12;
+        const Eigen::Vector3d projected=center+distance*ray;
+        for(int k=0;k<3;++k)if(k!=axis_){
+          const double u=local.linear()(k,0)-local.linear()(axis_,0)*ray[k]/denom;
+          const double v=local.linear()(k,1)-local.linear()(axis_,1)*ray[k]/denom;
+          valid=valid&&std::abs(projected[k])+cup.radius*std::hypot(u,v)+margin_<=target.half[k]+1e-12;
+        }
+      }
+      result.eligible[i]=valid;result.contact[i]=cup.active&&valid;result.commanded+=cup.active;result.visited=i+1;
+      if(cup.active&&(!cup.eligible||!valid)){result.failed=int(i);return result;}
+    }
+    return result;
+  }
+  ProcessJson evidence(const Result& r) const {
+    ProcessJson eligible=ProcessJson::array(),contact=ProcessJson::array();
+    for(size_t i=0;i<r.visited;++i){eligible.push_back(r.eligible[i]);contact.push_back(r.contact[i]);}
+    if(r.failed>=0)return {{"reason","COMMANDED_CUP_SEAL_INVALID"},{"cup_index",r.failed},{"cup_id",cups_[r.failed].id},{"computed_eligible",eligible}};
+    if(r.commanded==0)return {{"reason","NO_COMMANDED_CUP"}};
+    return {{"status","PASS"},{"computed_geometrically_eligible_mask",eligible},{"computed_actual_contact_mask",contact},
+      {"commanded_count",r.commanded},{"contact_observation","predicted_robot_state_geometry_not_physical_contact"}};
+  }
+};
+
 }

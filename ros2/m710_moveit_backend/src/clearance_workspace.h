@@ -17,8 +17,18 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     const moveit::core::LinkModel* link=nullptr;
     size_t shape=0;
     std::set<std::string> touch;
+    bool fixed_tool=false,fixed_payload=false;
   };
-  struct Pair {size_t a,b;double limit;bool self;};
+  struct Pair {size_t a,b;double limit;bool self;bool fixed=false,accepted=false,visited=false;};
+  bool reuse_=false;
+  static bool fixedToFlange(const moveit::core::LinkModel* link) {
+    while(link && link->getName()!="flange") {
+      const auto* joint=link->getParentJointModel();
+      if(!joint || joint->getType()!=moveit::core::JointModel::FIXED)return false;
+      link=joint->getParentLinkModel();
+    }
+    return link!=nullptr;
+  }
   moveit::core::RobotState context_;
   collision_detection::FCLObject robot_;
   std::vector<Body> bodies_;
@@ -29,14 +39,17 @@ public:
   struct Stats {
     size_t queries=0, aabb_tests=0, aabb_skips=0, narrow_calls=0, self_narrow=0, world_narrow=0;
     size_t prepared_objects=0, eligible_pairs=0, exempt_pairs=0;
+    size_t fixed_first_checks=0,fixed_property_evaluations=0,fixed_property_reuses=0,dynamic_pair_checks=0;
     double prepare_s=0, geometry_prepare_s=0, pair_filter_s=0, update_s=0, broad_s=0, narrow_s=0, self_s=0, world_s=0;
   } stats;
   std::map<std::string,Stats> phases;
   struct Failure {std::string a,b;double distance=0,limit=0;bool self=false;};
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
-      const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required)
+      const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
+      const std::set<std::string>& tools={},bool reuse=false)
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()) {
+    reuse_=reuse;
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
@@ -46,6 +59,13 @@ public:
       Body b;b.object=o;b.name=d->getID();b.type=d->type;b.shape=d->shape_index;
       if(b.type==collision_detection::BodyTypes::ROBOT_LINK) b.link=d->ptr.link;
       if(b.type==collision_detection::BodyTypes::ROBOT_ATTACHED) b.touch=d->ptr.ab->getTouchLinks();
+      // Only box tool/payload pairs whose actual model chains are fixed to
+      // the flange qualify. Meshes, active links and world bodies always query.
+      if(o->collisionGeometry()->getNodeType()==fcl::GEOM_BOX) {
+        if(b.link && tools.count(b.name))b.fixed_tool=fixedToFlange(b.link);
+        if(b.type==collision_detection::BodyTypes::ROBOT_ATTACHED)
+          b.fixed_payload=fixedToFlange(d->ptr.ab->getAttachedLink());
+      }
       bodies_.push_back(std::move(b));
     };
     for(const auto& o:robot_.collision_objects_) add(o);
@@ -67,7 +87,8 @@ public:
         (x.type==collision_detection::BodyTypes::ROBOT_LINK && y.type==collision_detection::BodyTypes::ROBOT_ATTACHED && y.touch.count(x.name)) ||
         (y.type==collision_detection::BodyTypes::ROBOT_LINK && x.type==collision_detection::BodyTypes::ROBOT_ATTACHED && x.touch.count(y.name));
       if(exempt) {++stats.exempt_pairs;continue;}
-      pairs_.push_back({a,b,required(x.name,x.type,y.name,y.type),b<moving_});
+      pairs_.push_back({a,b,required(x.name,x.type,y.name,y.type),b<moving_,
+        (x.fixed_tool&&y.fixed_payload)||(y.fixed_tool&&x.fixed_payload),false});
     }
     stats.pair_filter_s=elapsed(filtering);stats.prepared_objects=bodies_.size();stats.eligible_pairs=pairs_.size();stats.prepare_s=elapsed(t);
   }
@@ -85,15 +106,29 @@ public:
       if(a.size()!=b.size()) throw std::runtime_error("WORKSPACE_ATTACHMENT_CHANGED");
       for(size_t i=0;i<a.size();++i) if(a[i].matrix()!=b[i].matrix()) throw std::runtime_error("WORKSPACE_ATTACHMENT_CHANGED");
     }
+    bool bounded_transforms=true;
     for(size_t i=0;i<moving_;++i) {
       auto& b=bodies_[i];
       const auto& transform=b.link?state.getCollisionBodyTransform(b.link,b.shape):
         state.getAttachedBody(b.name)->getGlobalCollisionBodyTransforms().at(b.shape);
       if(!transform.matrix().allFinite()) throw std::runtime_error("INVALID_FCL_TRANSFORM");
+      if(reuse_ && (b.fixed_tool||b.fixed_payload)) {
+        // A guard for numerical reuse, never an acceptance tolerance. Unknown
+        // scales/rotations fall back to exactly the original world-space query.
+        const auto* box=static_cast<const fcl::Boxd*>(b.object->collisionGeometry().get());
+        bounded_transforms=bounded_transforms && transform.translation().cwiseAbs().maxCoeff()<100. &&
+          (transform.linear().transpose()*transform.linear()-Eigen::Matrix3d::Identity()).norm()<1e-10 &&
+          box->side.allFinite() && (box->side.array()>0).all() && box->side.maxCoeff()<10.;
+      }
       b.object->setTransform(collision_detection::transform2fcl(transform));b.object->computeAABB();
     }
     stats.update_s+=elapsed(updating);
-    for(const auto& p:pairs_) {
+    for(auto& p:pairs_) {
+      if(reuse_ && p.fixed && bounded_transforms && p.accepted){++stats.fixed_property_reuses;continue;}
+      if(p.fixed) {
+        if(!p.visited){++stats.fixed_first_checks;p.visited=true;}
+        ++stats.fixed_property_evaluations;
+      } else ++stats.dynamic_pair_checks;
       const auto& a=bodies_[p.a];const auto& b=bodies_[p.b];auto broad=Clock::now();++stats.aabb_tests;
       const auto& ab=a.object->getAABB();const auto& bb=b.object->getAABB();
       if(!ab.min_.allFinite() || !ab.max_.allFinite() || !bb.min_.allFinite() || !bb.max_.allFinite())
@@ -104,7 +139,11 @@ public:
       if(!std::isfinite(lower)) throw std::runtime_error("UNKNOWN_AABB_DISTANCE");
       const bool skip=lower>p.limit+.001;
       stats.broad_s+=elapsed(broad);
-      if(skip) {++stats.aabb_skips;continue;}
+      if(skip) {
+        ++stats.aabb_skips;
+        if(reuse_&&p.fixed&&bounded_transforms)p.accepted=true;
+        continue;
+      }
       auto narrow=Clock::now();++stats.narrow_calls;
       if(p.self) ++stats.self_narrow;else ++stats.world_narrow;
       fcl::DistanceResultd result;result.min_distance=p.limit+.001;
@@ -115,6 +154,9 @@ public:
       if(!std::isfinite(d) || !std::isfinite(result.min_distance) || d<=0 || d+1e-9<p.limit) {
         failure={a.name,b.name,d,p.limit,p.self};return false;
       }
+      // Keep the existing rejection first. Reuse only a successful distance
+      // more than 1 mm above the threshold; near-boundary pairs always recheck.
+      if(reuse_&&p.fixed&&bounded_transforms&&d>p.limit+.001&&result.min_distance>p.limit+.001)p.accepted=true;
     }
     return true;
   }

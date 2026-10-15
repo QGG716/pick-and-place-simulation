@@ -15,6 +15,18 @@ class ProcessPolicy {
   double tolerance_=0,gap_=0;
   size_t state_checks_=0,ordered_checks_=0;
   Json terminal_proximity_=nullptr;
+  bool profile_=false,reuse_=false;
+  std::unique_ptr<ProcessSealInput> seal_input_;
+  ProcessSealInput::Result seal_result_;
+  bool seal_result_ready_=false;
+  double compression_limit_=0;
+  struct CupShape {const moveit::core::LinkModel* link;size_t index;Eigen::Vector3d half;};
+  std::vector<CupShape> cup_shapes_;
+  moveit::core::RobotModelConstPtr bound_model_;
+  mutable std::mutex mutex_;
+  size_t seal_evaluations_=0,compression_evaluations_=0;
+  double seal_s_=0,compression_s_=0;
+  using ProfileClock=std::chrono::steady_clock;
   static double surfaceGap(const ProcessBox& a,const ProcessBox& b) {
     auto sa=std::make_shared<fcl::Boxd>(2*a.half.x(),2*a.half.y(),2*a.half.z());
     auto sb=std::make_shared<fcl::Boxd>(2*b.half.x(),2*b.half.y(),2*b.half.z());
@@ -45,6 +57,9 @@ public:
      compliant_(request.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
      stack_(spec_.at("stack_carton_ids").get<std::set<std::string>>()),supports_(spec_.at("support_names").get<std::set<std::string>>()),
      target_(processBox(spec_.at("target"))) {
+    profile_=request.value("native_process_profile",false);
+    reuse_=request.value("native_check_reuse",true);
+    bound_model_=scene->getRobotModel();
     if(spec_.at("schema")!="m710_native_process_v1" || spec_.at("stage")!=stage_ || spec_.at("collision_policy")!=source_ ||
        target_.id!=target_id_ || request.at("clearance_policy").at("target_id")!=target_id_)
       throw std::runtime_error("PROCESS_CONTEXT_MISMATCH");
@@ -109,23 +124,52 @@ public:
         }
       }
     }
+    if(reuse_) {
+      seal_input_=std::make_unique<ProcessSealInput>(spec_);
+      compression_limit_=source_.at("maximum_compliant_cup_additional_compression_m");
+      if(!std::isfinite(compression_limit_)||compression_limit_<0)throw std::runtime_error("PROCESS_COMPRESSION_LIMIT_INVALID");
+      const bool contact=attached_||stage_=="contact"||stage_=="contact_endpoint"||stage_=="next_contact"||stage_=="withdrawal";
+      if(contact) for(const auto& name:compliant_) {
+        const auto* link=bound_model_->getLinkModel(name);
+        if(!link||link->getShapes().empty())throw std::runtime_error("PROCESS_CUP_GEOMETRY_MISSING");
+        for(size_t i=0;i<link->getShapes().size();++i) {
+          if(link->getShapes()[i]->type!=shapes::BOX)throw std::runtime_error("PROCESS_CUP_GEOMETRY_UNSUPPORTED");
+          const auto* shape=static_cast<const shapes::Box*>(link->getShapes()[i].get());
+          Eigen::Vector3d half(shape->size[0]/2,shape->size[1]/2,shape->size[2]/2);
+          if(!half.allFinite()||(half.array()<=0).any())throw std::runtime_error("PROCESS_CUP_GEOMETRY_INVALID");
+          cup_shapes_.push_back({link,i,half});
+        }
+      }
+    }
   }
   bool check(const moveit::core::RobotState& state,bool endpoint=false) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if(state.getRobotModel()!=bound_model_)throw std::runtime_error("PROCESS_MODEL_CHANGED");
     ++state_checks_;last_failure=nullptr;const auto target=targetAt(state);
     const bool contact=attached_ || stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact" || stage_=="withdrawal";
-    if(contact) for(const auto& name:compliant_) {
+    const auto compression_begin=profile_?ProfileClock::now():ProfileClock::time_point{};
+    if(contact && reuse_) for(const auto& shape:cup_shapes_) {
+      ProcessBox cup;cup.pose=state.getCollisionBodyTransform(shape.link,shape.index);cup.half=shape.half;
+      if(!cup.pose.matrix().allFinite())throw std::runtime_error("PROCESS_CUP_GEOMETRY_INVALID");
+      ++compression_evaluations_;const double d=processSignedGap(cup,target);
+      if(d < -compression_limit_) {
+        last_failure={{"reason","FLEXIBLE_CUP_TARGET_COMPRESSION"},{"pair",{shape.link->getName(),target_id_}},{"signed_distance_m",d}};return false;
+      }
+    }
+    if(contact && !reuse_) for(const auto& name:compliant_) {
       const auto* link=state.getRobotModel()->getLinkModel(name);
       if(!link || link->getShapes().empty()) throw std::runtime_error("PROCESS_CUP_GEOMETRY_MISSING");
       for(size_t i=0;i<link->getShapes().size();++i) {
         if(link->getShapes()[i]->type!=shapes::BOX) throw std::runtime_error("PROCESS_CUP_GEOMETRY_UNSUPPORTED");
         const auto* shape=static_cast<const shapes::Box*>(link->getShapes()[i].get());
         ProcessBox cup;cup.id=name;cup.pose=state.getCollisionBodyTransform(link,i);cup.half=Eigen::Vector3d(shape->size[0],shape->size[1],shape->size[2])/2;
-        const double d=processSignedGap(cup,target);
+        ++compression_evaluations_;const double d=processSignedGap(cup,target);
         if(d < -source_.at("maximum_compliant_cup_additional_compression_m").get<double>()) {
           last_failure={{"reason","FLEXIBLE_CUP_TARGET_COMPRESSION"},{"pair",{name,target_id_}},{"signed_distance_m",d}};return false;
         }
       }
     }
+    if(profile_) compression_s_+=std::chrono::duration<double>(ProfileClock::now()-compression_begin).count();
     if(attached_) {
       for(const auto& name:supports_) if(!(relaxed_&&stack_.count(name)) && !processSupportSeparated(target,world_.at(name),tolerance_)) {
         last_failure=fail("SUPPORT_SIDE_OR_DEEP_PENETRATION",name,processSignedGap(target,world_.at(name)));return false;
@@ -138,8 +182,13 @@ public:
       }
     }
     if(attached_ || (endpoint && (stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact"))) {
-      last_seal=processSealRings(spec_,target,state.getGlobalLinkTransform("flange"));
-      if(last_seal.value("status",std::string())!="PASS") {last_failure=last_seal;return false;}
+      ++seal_evaluations_;const auto seal_begin=profile_?ProfileClock::now():ProfileClock::time_point{};
+      if(reuse_) {
+        seal_result_=seal_input_->evaluate(target,state.getGlobalLinkTransform("flange"));seal_result_ready_=true;
+        if(!seal_result_.passed()) {last_failure=seal_input_->evidence(seal_result_);return false;}
+      } else last_seal=processSealRings(spec_,target,state.getGlobalLinkTransform("flange"));
+      if(profile_) seal_s_+=std::chrono::duration<double>(ProfileClock::now()-seal_begin).count();
+      if(!reuse_ && last_seal.value("status",std::string())!="PASS") {last_failure=last_seal;return false;}
     }
     return true;
   }
@@ -190,8 +239,8 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
-  Json evidence() const {return {{"schema","m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
-    {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
-    {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
+  Json evidence() const {std::lock_guard<std::mutex> lock(mutex_);return {{"schema","m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
+    {"seal_geometry_evaluations",seal_evaluations_},{"compression_sat_evaluations",compression_evaluations_},{"profile_seal_s",seal_s_},{"profile_compression_s",compression_s_},{"profile_enabled",profile_},{"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
+    {"support_names",supports_},{"last_seal",seal_result_ready_?seal_input_->evidence(seal_result_):last_seal},{"native_check_reuse",reuse_},{"seal_input_compilations",seal_input_?1:0},{"fixed_seal_verdict_reuses",0},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
 };
 }

@@ -47,5 +47,35 @@ int main() {
   nominal_cup.pose.translation().z()=.298;
   require(std::abs(m710::processSignedGap(nominal_cup,a)+.012)<1e-12 &&
     m710::processSignedGap(nominal_cup,a)<-.005,"ADDITIONAL_12MM_COMPRESSION_REJECTED");
+
+  // Compiled inputs must preserve complete masks and first-failure witnesses,
+  // including the existing 1e-12 seal comparisons (no new acceptance band).
+  size_t comparisons=0;
+  for(double z:{.2998-2e-12,.2998,.2998+2e-12,.3,.302-2e-12,.302,.302+2e-12})
+    for(double x:{.0785-2e-12,.0785,.0785+2e-12}) {
+      auto policy=sealPolicy();policy["cups"][0]["center_contact_frame_m"]={x,0.,0.};
+      flange.translation().z()=z;
+      m710::ProcessSealInput input(policy);const auto r=input.evaluate(a,flange);
+      require(input.evidence(r)==m710::processSealRings(policy,a,flange),"COMPILED_SEAL_BOUNDARY_DIFFERENCE");++comparisons;
+    }
+  for(double angle:{.08726646259971647-2e-12,.08726646259971647,.08726646259971647+2e-12}) {
+    auto policy=sealPolicy();flange.translation().z()=.3;
+    flange.linear()=(Eigen::AngleAxisd(angle,Eigen::Vector3d::UnitY())*Eigen::AngleAxisd(std::acos(-1.),Eigen::Vector3d::UnitX())).toRotationMatrix();
+    m710::ProcessSealInput input(policy);
+    require(input.evidence(input.evaluate(a,flange))==m710::processSealRings(policy,a,flange),"COMPILED_SEAL_ANGLE");++comparisons;
+  }
+  for(int mutation=0;mutation<7;++mutation) {
+    auto bad=sealPolicy();
+    if(mutation==0)bad["cups"][0]["seal_radius_m"]=-1.;
+    if(mutation==1)bad["cups"][0]["center_contact_frame_m"]={0.,std::numeric_limits<double>::infinity(),0.};
+    if(mutation==2)bad["commanded_active_mask"][0]=1;
+    if(mutation==3)bad["cups"][1]["cup_id"]="cup_0";
+    if(mutation==4)bad["target_face"]="unknown";
+    if(mutation==5)bad["maximum_penetration_m"]=std::numeric_limits<double>::quiet_NaN();
+    if(mutation==6)bad["actual_contact_mask"]=J::array();
+    bool rejected=false;try {m710::ProcessSealInput input(bad);}catch(const std::exception&){rejected=true;}
+    require(rejected,"COMPILED_MALFORMED_ACCEPTED");
+  }
+  std::cout<<J({{"compiled_seal_differential_cases",comparisons},{"malformed_cases",7}}).dump()<<std::endl;
   std::cout<<J({{"status","PASS"},{"scope","synthetic_process_geometry_only"},{"cases",15}}).dump()<<std::endl;
 }

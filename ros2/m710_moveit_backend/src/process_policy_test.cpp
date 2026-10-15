@@ -23,6 +23,7 @@ planning_scene::PlanningScenePtr scene() {
   moveit_msgs::msg::AttachedCollisionObject a;a.link_name="flange";a.object=object(box("target",0.));a.object.header.frame_id="flange";a.touch_links={"cup"};
   require(s->processAttachedCollisionObjectMsg(a),"ATTACH");return s;
 }
+bool optimized=false;
 J request() {
   J source={{"schema","m710_poc_pair_collision_policy_v4"},{"required_pair_clearance_m",.005},{"self_collision_clearance_m",0.},
     {"stack_contact_stages",{"support-release","extraction"}},{"stack_contact_mode","planner_relaxed_physics_checked"},
@@ -38,7 +39,7 @@ J request() {
     {"max_normal_misalignment_rad",.08726646259971647},{"suction_edge_margin_m",0.},{"support_names",J::array()},
     {"stack_carton_ids",{"target","neighbor"}},{"collision_policy",source},
     {"initial_proximity",{{"mode","planner_relaxed_physics_checked"},{"target","target"},{"stack_carton_names",{"neighbor"}},{"fully_released",false}}}};
-  return {{"stage","extraction"},{"process_policy",spec},{"world",J::array({box("neighbor",.2)})},{"allowed_pairs",J::array()},
+  return {{"native_check_reuse",optimized},{"stage","extraction"},{"process_policy",spec},{"world",J::array({box("neighbor",.2)})},{"allowed_pairs",J::array()},
     {"clearance_policy",{{"source_policy",source},{"compliant_tool_links",{"cup"}},{"target_id","target"}}}};
 }
 void checkWorldShapePoses() {
@@ -70,7 +71,7 @@ void checkWorldShapePoses() {
     "ATTACHED_TO_WORLD_POSE_PRESERVED");
 }
 int main(int argc,char** argv) {
-  rclcpp::init(argc,argv);checkWorldShapePoses();auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
+  optimized=argc>1&&std::string(argv[1])=="optimized";rclcpp::init(argc,argv);checkWorldShapePoses();auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
   require(p.check(s->getCurrentState()),"INITIAL_STACK_CONTACT_ALLOWED");
   auto q=s->getCurrentState();q.setJointGroupPositions("manipulator",std::vector<double>{.011});q.update();
   require(!p.check(q) && p.last_failure.at("reason")=="GROSS_PLANNED_STACK_PENETRATION","GROSS_STACK_REJECTED");
@@ -88,5 +89,32 @@ int main(int argc,char** argv) {
   req["process_policy"]["support_names"]={"neighbor"};rejected=false;
   try {m710::ProcessPolicy free_support(scene(),req);} catch(const std::exception& e) {rejected=std::string(e.what())=="NATIVE_FREE_SPACE_SUPPORT_PERMISSION_FORBIDDEN";}
   require(rejected,"FREE_TRANSIT_SUPPORT_PERMISSION_REJECTED");
-  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_and_scene_frames_only"},{"cases",11}}).dump()<<std::endl;rclcpp::shutdown();
+
+  auto mask_scene=scene();auto masks=request();
+  for(int i=0;i<72;++i)masks["process_policy"]["commanded_active_mask"][i]=false;
+  m710::ProcessPolicy no_cups(mask_scene,masks);
+  require(!no_cups.check(mask_scene->getCurrentState())&&no_cups.last_failure.at("reason")=="NO_COMMANDED_CUP","MASK_CHANGE_REUSED");
+  // Compression comparison at both sides of the unchanged 5 mm boundary.
+  for(double shift:{-.005-2e-9,-.005,-.005+2e-9}) {
+    auto cs=scene();auto cr=request();
+    // Move target within the flange frame. Keep request's actual target pose bound.
+    cs->getCurrentStateNonConst().clearAttachedBody("target");
+    auto b=box("target",0.);b["pose"]=transform(0.,-shift);
+    moveit_msgs::msg::AttachedCollisionObject aa;aa.link_name="flange";aa.object=object(b);aa.object.header.frame_id="flange";
+    aa.object.primitive_poses[0].position.z=-shift;aa.touch_links={"cup"};
+    require(cs->processAttachedCollisionObjectMsg(aa),"BOUNDARY_ATTACH");cr["process_policy"]["target"]=b;
+    auto rr=cr;rr["native_check_reuse"]=false;auto oo=cr;oo["native_check_reuse"]=true;
+    m710::ProcessPolicy reference(cs,rr),compiled(cs,oo);
+    require(reference.check(cs->getCurrentState())==compiled.check(cs->getCurrentState()),"COMPRESSION_BOUNDARY_DIFFERENCE");
+    require(reference.last_failure==compiled.last_failure,"COMPRESSION_WITNESS_DIFFERENCE");
+  }
+  for(const std::string stage:{"pregrasp","contact","withdrawal"}) {
+    auto empty=scene();empty->getCurrentStateNonConst().clearAttachedBody("target");
+    require(empty->processCollisionObjectMsg(object(box("target",0.))),"RELEASE_TARGET");
+    auto r=request();r["stage"]=stage;r["process_policy"]["stage"]=stage;r["process_policy"]["initial_proximity"]=nullptr;
+    r["world"].push_back(box("target",0.));
+    m710::ProcessPolicy check_empty(empty,r);require(check_empty.check(empty->getCurrentState(),false),"UNLOADED_CHECK");
+    require(check_empty.evidence().at("seal_geometry_evaluations")==0,"HELD_SEAL_USED_WITHOUT_ATTACHMENT");
+  }
+  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_and_scene_frames_only"},{"cases",18}}).dump()<<std::endl;rclcpp::shutdown();
 }
