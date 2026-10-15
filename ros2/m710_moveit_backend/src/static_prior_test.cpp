@@ -1,3 +1,4 @@
+#include "request_evidence.h"
 // Current-scene edge checks and binding tests, using synthetic kinematics.
 #include "static_prior.h"
 #include <urdf_parser/urdf_parser.h>
@@ -148,6 +149,24 @@ int main(int argc,char** argv) {
     "EXTRA_PORTAL_CONNECTORS_CAPPED_AT_EIGHT_PER_ENDPOINT");
   request["allowed_planning_time_s"]=0.;
   require(m710::StaticPriorGraph::query(g,request,clear,clearance,nullptr).at("status")=="PRIOR_QUERY_TIMEOUT","SHARED_QUERY_BUDGET");
+  // Snapshot actual FCL-backed query aggregates, without any new check.
+  for(auto* record : {&solved,&failed}) {
+    auto& checker=record==&solved?clearance:obstruction;
+    const auto before=checker.evidence().at("counts");
+    auto original_status=record->at("status");int reads=0;
+    m710::completeRequestEvidence(*record,true,false,[&]{++reads;return checker.evidence();},[]{return J(nullptr);});
+    require(reads==1 && record->at("status")==original_status &&
+        checker.evidence().at("counts")==before,"AGGREGATION_DOES_NOT_CHECK_AGAIN");
+    m710::completeRequestEvidence(*record,true,false,[&]{++reads;return checker.evidence();},[]{return J(nullptr);});
+    require(reads==1,"REQUEST_NOT_PARENT_RESNAPSHOT");
+    require(record->at("clearance").at("workspace").at("pair_profile_enabled")==false,"PROFILE_DEFAULT_OFF");
+  }
+  m710::Clearance fresh(clear,policy());
+  auto timeout=m710::StaticPriorGraph::query(g,request,clear,fresh,nullptr);
+  m710::completeRequestEvidence(timeout,true,false,[&]{return fresh.evidence();},[]{return J(nullptr);});
+  require(timeout.at("status")=="PRIOR_QUERY_TIMEOUT" &&
+      timeout.at("request_check_evidence").at("clearance")=="CREATED_NOT_CHECKED" &&
+      timeout.at("request_check_evidence").at("clearance_check_s").is_null(),"TIMEOUT_BEFORE_CHECK_NOT_ZERO_TIME");
   std::cout<<"PASS: prior binding, direct-connection source, newly blocked edge and budget; synthetic checks only\n";
   rclcpp::shutdown();
 }

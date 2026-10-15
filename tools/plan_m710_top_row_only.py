@@ -137,11 +137,11 @@ def call_summary(c):
             "solver_returned_success", "solver_message", "moveit_error_code", "returned_waypoint_count",
             "processing_branch", "goal_translation_delta_m", "goal_rotation_delta_rad", "candidate_id",
             "scene_import_s", "native_solver_s", "generation_source", "semantic_event", "prior_usage", "prior_query_s", "request_round_trip_s", "connection_elapsed_s", "planning_phase",
-            "native_output_status", "authoritative_status", "failure", "clearance", "process_policy") if k in record}
+            "native_output_status", "authoritative_status", "request_check_evidence", "failure", "clearance", "process_policy") if k in record}
         # Each reply repeats the full tool/ACM policy (up to 146 KB). Its
         # identity is already retained at batch level; save counters/witnesses
         # here, not hundreds of copies of this static model metadata.
-        if "clearance" in keep:
+        if isinstance(keep.get("clearance"), dict):
             keep["clearance"] = {k: v for k, v in keep["clearance"].items() if k != "policy"}
         stages.append(keep)
     counts = {name: sum(int(r.get("native_solver_calls", {}).get(name, 0))
@@ -180,6 +180,14 @@ def online_delivery_timing(summary, result_file_write_s):
         excluded="write_timing.json, final timing accounting and final stdout")
 
 
+def diagnostic_fast_deadline(diagnostic, batch_start, fast_budget, slow_allowed):
+    if diagnostic is None or diagnostic.get("planning_phase", "FAST") == "FAST":
+        return batch_start + fast_budget
+    if diagnostic["planning_phase"] != "SLOW_COMPLETION" or not slow_allowed:
+        raise ValueError("INVALID_DIAGNOSTIC_PLANNING_PHASE")
+    return batch_start
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
@@ -205,6 +213,7 @@ def main():
         parser.error("fast phase budget must be finite and positive")
     diagnostic = json.loads(args.diagnostic_input.read_text()) if args.diagnostic_input else None
     if diagnostic is not None:
+        diagnostic_fast_deadline(diagnostic, 0., args.fast_phase_budget_s, args.slow_completion)
         q_input = np.asarray(diagnostic["start_q_rad"], dtype=float)
         if q_input.shape != (6,) or not np.isfinite(q_input).all():
             parser.error("invalid diagnostic starting state")
@@ -288,7 +297,8 @@ def main():
         trajectories, completed = [], []
         batch_start = perf_counter()
         if args.planning_mode == "static_prior_fast":
-            c._fast_phase_deadline_monotonic = batch_start + args.fast_phase_budget_s
+            c._fast_phase_deadline_monotonic = diagnostic_fast_deadline(
+                diagnostic, batch_start, args.fast_phase_budget_s, args.slow_completion)
             c._slow_completion_allowed = args.slow_completion
         fast_completed = 0
         if not args.prepare_only:
@@ -323,6 +333,7 @@ def main():
                 c._deadline_monotonic = c._request_deadline_monotonic
                 c._final_export_reserve_s = 0.
                 c.skipped_calls.clear()
+                c.boundary_costs = {}
                 trajectory = None
                 try:
                     trajectory, detail = plan_box(c, current, target, q, args.seed+index)
@@ -341,6 +352,7 @@ def main():
                     fast_phase_plan_s=fast_plan_s,
                     slow_completion_plan_s=max(0.,elapsed-fast_plan_s),
                     scene_cartons=len(current.cartons), scene_prepared=prepared,
+                    boundary_costs=dict(c.boundary_costs),
                     row_selection=selection.as_dict(), calls=call_summary(c), **detail)
                 if trajectory is not None:
                     if not np.array_equal(q, trajectory["path"][0]):

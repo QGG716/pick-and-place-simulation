@@ -68,3 +68,12 @@ def test_motion_request_identity_and_existing_metrics_survive_summary():
     assert kept["clearance"]["workspace"] == record["clearance"]["workspace"]
     assert "policy" not in kept["clearance"]
     assert result["motion_request_round_trip_s"] == .3
+
+
+def test_diagnostic_slow_context_does_not_restart_fast_phase():
+    assert entry.diagnostic_fast_deadline(None, 100., 1., True) == 101.
+    assert entry.diagnostic_fast_deadline({"planning_phase": "SLOW_COMPLETION"}, 100., 1., True) == 100.
+    with pytest.raises(ValueError):
+        entry.diagnostic_fast_deadline({"planning_phase": "SLOW_COMPLETION"}, 100., 1., False)
+    with pytest.raises(ValueError):
+        entry.diagnostic_fast_deadline({"planning_phase": "UNKNOWN"}, 100., 1., True)

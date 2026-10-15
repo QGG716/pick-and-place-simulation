@@ -1,3 +1,4 @@
+#include "request_evidence.h"
 // JSONL is the sole application IPC. ROS logging goes to stderr, never stdout.
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/robot_model_loader/robot_model_loader.h>
@@ -574,6 +575,23 @@ class Worker {
   }
 public:
   J run(const J& req) {
+    std::shared_ptr<m710::Clearance> clearance;
+    std::shared_ptr<m710::ProcessPolicy> process;
+    J result;
+    const auto op=req.value("op",std::string());
+    try {result=runImpl(req,clearance,process);}
+    catch(const std::exception& e) {
+      if(op!="plan" && op!="diagnostic_connection" && op!="validate") throw;
+      result={{"status","ERROR"},{"detail",e.what()}};
+    }
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate")
+      m710::completeRequestEvidence(result,bool(clearance),bool(process),
+        [&]{return clearance->evidence();},[&]{return process->evidence();});
+    return result;
+  }
+private:
+  J runImpl(const J& req,std::shared_ptr<m710::Clearance>& clearance,
+            std::shared_ptr<m710::ProcessPolicy>& process) {
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
@@ -818,8 +836,6 @@ public:
         {"target_id",target},{"target_in_world",bool(world_target)},{"target_attached",bool(attached_target)},{"target_world_pose",target_pose},
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
-    std::shared_ptr<m710::Clearance> clearance;
-    std::shared_ptr<m710::ProcessPolicy> process;
     if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="build_static_prior") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
@@ -940,7 +956,7 @@ public:
     J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
       {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
       {"attached_id",attached_id},{"task_tcp_identity",identity.at("task_tcp_fingerprint")},{"interpolated_link",req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr)},
-      {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
+      {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"}};
     if(task.solutions().empty()) {
       if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
       std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;
@@ -991,6 +1007,9 @@ int main(int argc,char**argv) {
         answer=workers.at(key)->run(req);
         if(req.at("op")=="init") {answer["context_reused"]=false;startups[key]=answer;init_requests[key]=init_content;}
       }} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
+    if(req.is_object() && (req.value("op",std::string())=="plan" ||
+        req.value("op",std::string())=="diagnostic_connection" || req.value("op",std::string())=="validate"))
+      m710::completeRequestEvidence(answer,false,false,[]{return J(nullptr);},[]{return J(nullptr);});
     answer["request_id"]=req.value("request_id",std::string());std::cout<<answer.dump()<<std::endl;
   }
   rclcpp::shutdown();return 0;

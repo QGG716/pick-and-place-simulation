@@ -62,6 +62,29 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
         self._experiment_complete_segment = None
         return self
 
+    def _boundary_add(self, key, elapsed):
+        if hasattr(self, "boundary_costs"):
+            self.boundary_costs[key] = self.boundary_costs.get(key, 0.) + elapsed
+
+    def _build_native_request(self, *args, **kwargs):
+        started = perf_counter()
+        try:
+            return super()._build_native_request(*args, **kwargs)
+        finally:
+            elapsed = perf_counter()-started
+            self._boundary_add("request_build_s", elapsed)
+            if getattr(self, "_inside_motion_boundary", False):
+                self._boundary_add("motion_request_build_s", elapsed)
+
+    def _native_plan(self, *args, **kwargs):
+        started = perf_counter()
+        self._inside_motion_boundary = True
+        try:
+            return super()._native_plan(*args, **kwargs)
+        finally:
+            self._inside_motion_boundary = False
+            self._boundary_add("motion_connection_inclusive_s", perf_counter()-started)
+
     def _skip(self, name):
         self.skipped_calls[name] = self.skipped_calls.get(name, 0) + 1
 
@@ -96,6 +119,7 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
 
     def _accept_generated_stage(self, path, attempt, attempts, submitted, *,
                                 attachment, initial_proximity, started):
+        accepted_started = perf_counter()
         if attempt.get("native_output_status") != SKIPPED:
             raise MoveItUnavailable("PLANNING_ONLY_OUTPUT_CHECK_NOT_SKIPPED")
         if any(self._state_failure(q, ()) for q in path):
@@ -113,6 +137,7 @@ class PlanningOnlyConnector(MoveItLayoutConnector):
         self.native_generated.append(deepcopy(attempt))
         context = self._native_state_context(submitted, endpoint=path[-1], attachment=attachment)
         path[-1] = self._native_issue_state(path[-1], submitted["stage_id"], context)
+        self._boundary_add("accepted_return_processing_s", perf_counter()-accepted_started)
         return path, None, dict(backend="moveit2", success=True,
             validation_level=MARKER, validation_completed=False, attempts=attempts)
 

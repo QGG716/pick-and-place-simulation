@@ -108,6 +108,12 @@ void checkReplyCompression() {
   require(fast==expected,"FAST_COMPRESSION_PRESERVES_CHECKS_PROFILE_AND_WITNESS");
 }
 int main(int argc,char** argv) {
+  {Worker worker;J req={{"op","plan"}};
+   auto out=worker.run(req);
+   require(out.at("status")=="ERROR" && out.at("request_check_evidence").at("clearance")=="NOT_CREATED",
+       "WORKER_EARLY_FAILURE_NOT_CREATED");
+  }
+
   rclcpp::init(argc,argv);checkReplyCompression();checkScope();checkGoal();checkMtcEvent(true);checkMtcEvent(false);checkMtcEvent(true,true);
   std::cout<<"PASS: semantic place scope, original MoveIt goal tolerance and actual MTC no-motion propagation; synthetic tests only\n";
   rclcpp::shutdown();

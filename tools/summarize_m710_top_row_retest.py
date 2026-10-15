@@ -19,6 +19,16 @@ def unique_records(rows, keys):
     return list(seen.values()), len(rows)-len(seen)
 
 
+def request_cost(record):
+    clear = record.get("clearance")
+    if not clear:
+        return dict(clearance_s=None, workspace_prepare_s=None, clearance_queries=None)
+    queries = sum(p["queries"] for p in clear["counts"].values())
+    return dict(clearance_s=sum(p["seconds"] for p in clear["counts"].values()) if queries else None,
+        workspace_prepare_s=(clear.get("workspace") or {}).get("prepare_s"),
+        clearance_queries=queries)
+
+
 def load(path):
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
@@ -36,7 +46,7 @@ def summarize(folder):
     duplicate_count = 0
     previous = t["initial_q_rad"]
     initial = {b["id"]: b for b in t["initial_cartons"]}
-    removed = []
+    removed = list(t.get("diagnostic_input", {}).get("removed_targets", []))
     for box in t["boxes"]:
         motion, duplicates = unique_records(box["calls"]["stages"], ("request_id",))
         ik, ik_duplicates = unique_records(box["calls"]["ik"], ("request_id", "batch_seed_index"))
@@ -72,7 +82,7 @@ def summarize(folder):
             prior_failed_queries=sum(r.get("pipeline_id") == "static_prior" and r["status"] != "SUCCESS" for r in motion),
             prior_timeouts=sum(r["status"] == "PRIOR_QUERY_TIMEOUT" for r in motion),
             failed_candidates=len(box["failed_candidates"]),
-            failures=[{k:r.get(k) for k in ("request_id", "stage", "status", "failure", "prior_usage")} for r in motion if r["status"] != "SUCCESS"])
+            failures=[{k:r.get(k) for k in ("request_id", "stage", "status", "solver_message", "moveit_error_code", "failure", "prior_usage", "request_check_evidence")} for r in motion if r["status"] != "SUCCESS"])
         row["unattributed_remaining_s"] = row["plan_s"]-row["ik_round_trip_s"]-row["motion_round_trip_s"]
         row["cross_box_start_exact"] = box["start_q_rad"] == previous
         if box["complete"]:
@@ -80,11 +90,10 @@ def summarize(folder):
         for r in motion:
             clear = r.get("clearance")
             req = {k:r.get(k) for k in ("request_id", "stage_id", "parent_stage_id", "stage", "status",
-                "request_round_trip_s", "prior_query_s", "mtc_plan_s", "pipeline_id")}
+                "request_round_trip_s", "prior_query_s", "mtc_plan_s", "pipeline_id",
+                "solver_message", "moveit_error_code", "failure", "request_check_evidence")}
             req["target"] = box["target"]
-            req["clearance_s"] = sum(p["seconds"] for p in clear["counts"].values()) if clear else None
-            req["workspace_prepare_s"] = clear["workspace"]["prepare_s"] if clear else None
-            req["clearance_queries"] = sum(p["queries"] for p in clear["counts"].values()) if clear else None
+            req.update(request_cost(r))
             requests.append(req)
             stages[r["stage"]]["requests"] += 1
             stages[r["stage"]]["request_round_trip_s"] += r["request_round_trip_s"]
@@ -94,21 +103,36 @@ def summarize(folder):
                 continue
             # Every request owns a fresh Clearance; phases are disjoint counters.
             counts["measured_clearance_requests"] += 1
-            counts["clearance_s"] += req["clearance_s"]
+            if req["clearance_s"] is not None:
+                counts["clearance_s"] += req["clearance_s"]
             counts["workspace_prepare_s"] += req["workspace_prepare_s"]
             counts["clearance_queries"] += req["clearance_queries"]
-            stages[r["stage"]]["measured_clearance_s"] += req["clearance_s"]
+            if req["clearance_s"] is not None:
+                stages[r["stage"]]["measured_clearance_s"] += req["clearance_s"]
             ws = clear["workspace"]
             profile_flags.append(ws["pair_profile_enabled"] is False and ws["pair_profile_status"] == "NOT_MEASURED")
             profile_flags.append(clear["native_check_reuse"] is True and clear["fixed_narrow_qualification"] is True and clear["mode"] == "optimized")
-            pp = r["process_policy"]
-            process_flags.append(pp["native_check_reuse"] is True and pp["profile_enabled"] is False and pp["seal_input_compilations"] == 1)
-            counts["seal_input_compilations"] += pp["seal_input_compilations"]
+            pp = r.get("process_policy") or {}
+            process_flags.append(pp.get("native_check_reuse") is True and pp.get("profile_enabled") is False and pp.get("seal_input_compilations") == 1)
+            counts["seal_input_compilations"] += pp.get("seal_input_compilations", 0)
             for p in ws["phases"].values():
                 null_flags.append(all(p[k] is None for k in ("broad_phase_s", "narrow_s", "self_narrow_s", "world_narrow_s")))
                 for k in ("aabb_tests", "aabb_skips", "narrow_calls", "fixed_qualification_queries",
                           "fixed_aabb_qualifications", "fixed_narrow_qualifications", "fixed_aabb_reuses", "fixed_narrow_reuses"):
                     counts[k] += p[k]
+        boundary = box.get("boundary_costs")
+        row["boundary_costs"] = boundary
+        if boundary:
+            # Disjoint partition. Inclusive motion connection is a parent clock.
+            row["boundary_partition_s"] = dict(
+                request_build=boundary.get("request_build_s", 0),
+                accepted_return_processing=boundary.get("accepted_return_processing_s", 0),
+                other_motion_connection=boundary.get("motion_connection_inclusive_s", 0)
+                    -boundary.get("motion_request_build_s", 0)-row["motion_round_trip_s"]
+                    -boundary.get("accepted_return_processing_s", 0),
+                unattributed_outside_motion=box["plan_s"]
+                    -boundary.get("motion_connection_inclusive_s", 0)-row["ik_round_trip_s"]
+                    -(boundary.get("request_build_s", 0)-boundary.get("motion_request_build_s", 0)))
         per.append(row)
     assert len(archive["trajectories"]) == t["completed_count"]
     assert len({tr["task_id"] for tr in archive["trajectories"]}) == t["completed_count"]
@@ -170,6 +194,9 @@ def summarize(folder):
     return dict(status=t["status"], qualification_status="NOT_EVALUATED", continuous_swept_proof=False,
         run_id=t["run_id"], source_commit=t["source_commit"], completed_count=t["completed_count"],
         T_plan_5_s=t["T_plan_5_s"], T_online_5_s=w["T_online_5_s"],
+        T_plan_diagnostic_s=t.get("T_plan_diagnostic_s"),
+        attempted_plan_s=t["cumulative_attempted_plan_s"], attempted_online_s=w["attempted_online_s"],
+        diagnostic_input=t.get("diagnostic_input"),
         initialization_s=t["initialization_s"], inter_box_scene_update_s=t["inter_box_scene_update_s"],
         scene_update_s=t["scene_update_s"], result_file_write_s=w["result_file_write_s"],
         batch_wall_s=t["batch_wall_s"], batch_bookkeeping_s=w["batch_bookkeeping_s"],

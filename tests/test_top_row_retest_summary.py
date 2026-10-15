@@ -23,3 +23,14 @@ def test_conflicting_snapshots_cannot_be_replaced_by_last_or_max():
     b = dict(request_id="1", queries=5)
     with pytest.raises(ValueError, match="conflicting"):
         entry.unique_records([a, b], ("request_id",))
+
+
+def test_missing_not_checked_and_actual_zero_are_distinct():
+    assert entry.request_cost({})["clearance_s"] is None
+    assert entry.request_cost({"clearance": None})["clearance_queries"] is None
+    empty = {"clearance": {"counts": {}, "workspace": {"prepare_s": .1}}}
+    assert entry.request_cost(empty) == dict(clearance_s=None, clearance_queries=0, workspace_prepare_s=.1)
+    checked = {"clearance": {"counts": {"search": {"queries": 2, "seconds": 0.}},
+                            "workspace": {"prepare_s": .1}}}
+    assert entry.request_cost(checked)["clearance_s"] == 0.
+    assert entry.request_cost(checked)["clearance_queries"] == 2
