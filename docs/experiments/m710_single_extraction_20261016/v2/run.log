@@ -1,0 +1,9 @@
+2026-10-16T10:38:29Z
+CASE_START=c02
+CASE_EXIT=c02:0
+{"run_id": "single-contact-06486fdfd4364688839e51e1f8dadce2", "complete": true, "selected_face": "x-", "total_planning_s": 3.682375168427825, "native_calls": {"IK": 1, "OMPL": 1, "LIN": 2, "PTP": 0}, "prior_build_load_query_calls": 0}
+2026-10-16T10:38:35Z
+CASE_START=c04
+CASE_EXIT=c04:0
+{"run_id": "single-contact-18ccc3e412b9405ba79b15add5656916", "complete": true, "selected_face": "x-", "total_planning_s": 14.047260826453567, "native_calls": {"IK": 1, "OMPL": 1, "LIN": 2, "PTP": 0}, "prior_build_load_query_calls": 0}
+CASES_COMPLETE

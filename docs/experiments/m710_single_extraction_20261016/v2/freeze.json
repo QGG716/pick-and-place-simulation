@@ -1,0 +1,57 @@
+{
+  "source_commit": "65035e7ca871645b65f9b5581c3e61d042e248a8",
+  "baseline_commit": "28dfa777827dd44ec7e9147430b1f803ba23010e",
+  "worker_sha256": "5626f8b47186d3de72714e2780dbe90a8832592bb898270ae99cdb2f2bccec0c",
+  "c04_input_sha256": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+  "model_asset_count": 99,
+  "model_assets_match_previous_freeze": true,
+  "source_files_sha256": {
+    "ros2/m710_moveit_backend/src/native_semantic_event_test.cpp": "1f812936fa4eb7527dfca5abab5671725c942bed8533b35dcabe058ca8f4956c",
+    "ros2/m710_moveit_backend/src/worker.cpp": "12b29fa58c70a3de80a2b2e0e3b2e094049598476e8fea2c5a33f490072c8d9b",
+    "src/unloading_sim/single_contact.py": "b28bcd88f50da865267ca508847521bb90616b7aef145e7dc2c98a985a3cec01",
+    "src/unloading_sim/single_extraction.py": "48bbfa028b40ee8d3143d653722e3e8fbbf6d83dd635d2ecbabab40172a09260",
+    "tests/test_single_extraction.py": "632321a6566802bd8ca6aa014da1a712f5988db50226bddf3d5e9df448ba9e14",
+    "tools/plan_m710_approach_contact.py": "4d819eaa6abb356254a926c045e0621258b555fbee0420f4a6d1fb30001ba079"
+  },
+  "build_mode": "Release -O3 -DNDEBUG",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "seed": 71070,
+  "task_budget_s": 300,
+  "stage_budget_s": 90,
+  "ipc_timeout_s": 100,
+  "run_order": [
+    "c02",
+    "c04"
+  ],
+  "no_task_answer_warmup": true,
+  "static_prior_build_load_query_permitted": false,
+  "supersedes_failed_source_commit": "52a50ebcc846c80b12efccb9bbb57107a41fb8c8",
+  "rerun_reason": "Real implementation error: check_extraction_end missing from initialized dispatcher whitelist; v1 failures retained."
+}
