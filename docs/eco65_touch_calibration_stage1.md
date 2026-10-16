@@ -1,5 +1,11 @@
 # Known-tip touch calibration, simulation stage 1
 
+The following records the original stage-one experiment. Its 0.1 mm general
+static-clearance acceptance is superseded by [stage 1.1](eco65_touch_calibration_stage11.md):
+the image estimate remains valid, but the existing probe bracket has only 1 mm
+clearance to tool part_001 and fails the applicable 2.4 mm policy. Do not reuse
+the historical static PASS as a motion endpoint qualification.
+
 This separate entry estimates **T_link_1_camera_optical**, mapping optical-frame
 points into link_1. The existing suction TCP and unloading entry are unchanged.
 It does not calibrate the probe tip, execute touch motion, evaluate forces or
@@ -96,6 +102,7 @@ Reproduction uses the existing authorized Linux Python/worker. Every output
 directory must be new; private prerequisites remain local:
 
 ```bash
+set -e
 export PYTHONPATH=src:tools OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 P=/root/autodl-tmp/envs/isaacsim-clean/bin/python
 R=outputs/eco65_native/touch_calibration_new_run
@@ -103,10 +110,12 @@ R=outputs/eco65_native/touch_calibration_new_run
   --snapshot outputs/eco65_native/j1_mast_20261016_connected_run01/build/snapshot.json \
   --pose outputs/eco65_native/j1_mast_20261016_connected_run01/build/pose_A.json \
   --camera-manifest assets/camera/derived/20261016_xd500_v1/cad.json \
+  --composed-usd outputs/eco65_native/j1_mast_20261016_connected_run01/isaac_A/eco65_desktop_warehouse.usda \
+  --geometry-manifest outputs/eco65_native/j1_mast_20261016_connected_run01/build/usd_A/workstation_manifest.json \
   --worker-command /root/autodl-tmp/eco65-native-20261015/worker.sh --output "$R"
 export OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y OMNI_KIT_ALLOW_ROOT=1
 "$P" scripts/isaacsim_capture_eco65_touch.py --prepared "$R" --output "$R/capture"
-test -f "$R/capture/capture_report.json"
+"$P" -c 'import json,sys; assert json.load(open(sys.argv[1]))["status"] == "RENDERED_SENSOR_IMAGES"' "$R/capture/capture_report.json"
 "$P" tools/solve_touch_calibration.py --observations "$R/capture/observations" --output "$R/capture/solve"
 "$P" tools/evaluate_touch_calibration.py --observations "$R/capture/observations" \
   --result "$R/capture/solve/extrinsics.json" --truth "$R/capture/truth/truth.json" --output "$R/capture/validate"

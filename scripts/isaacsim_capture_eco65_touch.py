@@ -16,14 +16,16 @@ def capture(prepared,output,perturb=False):
         from unloading_sim.moveit2_backend import digest
         from unloading_sim.touch_calibration import intrinsics,OPTICAL_FROM_USD
         from eco65_touch_geometry import accessory_meshes
+        from eco65_touch_sources import verify_scene_sources
         started=time.perf_counter();prepared=prepared.resolve();output=output.resolve();output.relative_to(ROOT/'outputs');output.mkdir(parents=True,exist_ok=False)
         c=load_json(prepared/'configuration.json');s=load_json(ROOT/c['snapshot']);robot=robot_for(s['tool'],s['scene'])
+        sources=verify_scene_sources(c)
         if file_hash(ROOT/c['snapshot'])!=c['snapshot_sha256']:raise ValueError('SNAPSHOT_CHANGED')
         if len(c.get('touches',[]))<9:raise ValueError('PREPARED_TOUCH_SAMPLES_REQUIRED')
         if any(not t['geometry']['accepted'] for t in c['touches']) or any(not p['static_check']['accepted'] for p in c['photos']):
             raise ValueError('DISCRETE_STATIC_GEOMETRY_NOT_ACCEPTED')
         observations=output/'observations';observations.mkdir();(output/'truth').mkdir();(observations/'images').mkdir()
-        source=ROOT/c['base_composed_usd'];stage_path=output/'calibration.usda';stage=Usd.Stage.CreateNew(str(stage_path))
+        source=ROOT/sources['files']['composed_usd']['path'];stage_path=output/'calibration.usda';stage=Usd.Stage.CreateNew(str(stage_path))
         UsdGeom.SetStageUpAxis(stage,'Z');UsdGeom.SetStageMetersPerUnit(stage,1.)
         root=UsdGeom.Xform.Define(stage,'/World').GetPrim();stage.SetDefaultPrim(root)
         root.GetReferences().AddReference(Path(os.path.relpath(source,output)).as_posix(),'/World')

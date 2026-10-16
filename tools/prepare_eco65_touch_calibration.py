@@ -9,13 +9,15 @@ from unloading_sim.eco65.native_io import file_hash
 from unloading_sim.moveit2_backend import ResidentMoveItClient,digest
 from unloading_sim.touch_calibration import points,intrinsics
 from build_eco65_full_face_layout import verify_static
+from eco65_touch_sources import bind_scene_sources,derived_scene_identity
 
 
-def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=480,optical_offset_m=(0,0,0)):
+def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=480,optical_offset_m=(0,0,0),*,composed_usd,geometry_manifest):
     import cv2
     snapshot_path=snapshot_path.resolve();pose_path=pose_path.resolve();camera_manifest=camera_manifest.resolve()
     start=time.perf_counter();out=out.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     s=verify_static(load_json(snapshot_path));pose=load_json(pose_path);cad=load_json(camera_manifest)
+    sources=bind_scene_sources(snapshot_path,composed_usd,geometry_manifest)
     if pose['source_snapshot_fingerprint']!=s['fingerprint']:raise ValueError('STATIC_POSE_IDENTITY')
     if not s['scene']['mast'].get('mount_interface',{}).get('seat'):raise ValueError('LATEST_CONNECTED_MAST_REQUIRED')
     for p,sha in {cad['source']:cad['source_sha256'],**{p[k]:p[k+'_sha256'] for p in cad['parts'] for k in ['visual','collision']}}.items():
@@ -74,9 +76,10 @@ def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=
         limits_rad=robot.joint_limits.tolist(),urdf_sha256=file_hash(URDF),
         joints=[dict(name=j.name,type=j.joint_type,parent=j.parent,child=j.child,origin=j.origin.tolist(),axis=j.axis.tolist()) for j in robot.joints])
     configuration=dict(snapshot=snapshot_path.relative_to(ROOT).as_posix(),snapshot_sha256=file_hash(snapshot_path),source_fingerprint=s['fingerprint'],
-        base_composed_usd='outputs/eco65_native/j1_mast_20261016_connected_run01/isaac_A/eco65_desktop_warehouse.usda',
+        scene_sources=sources,
         camera=camera,probe=probe,board=board_config,thresholds=thresholds,kinematics=kin,display_q=pose['home_q'],
         statuses=['SYNTHETIC_GEOMETRIC_TOUCH','PHYSICAL_CONTACT_NOT_EVALUATED','NO_MOTION_EXECUTED'])
+    configuration['derived_scene_identity']=derived_scene_identity(configuration)
     save_json(out/'configuration.json',configuration) # thresholds written BEFORE search/render/solve
     calls=[];attempts=[];placements=[];touches=[];observations=[]
     client=ResidentMoveItClient(worker,log_path=out/'worker.log');init=s['native_model']['init'];identity=init['identity']
@@ -146,8 +149,9 @@ def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    for arg in ['snapshot','pose','camera-manifest','output']:p.add_argument('--'+arg,type=Path,required=True)
+    for arg in ['snapshot','pose','camera-manifest','output','composed-usd','geometry-manifest']:p.add_argument('--'+arg,type=Path,required=True)
     p.add_argument('--worker-command',required=True);p.add_argument('--width',type=int,default=640);p.add_argument('--height',type=int,default=480)
     p.add_argument('--optical-offset-m',nargs=3,type=float,default=[0.,0.,0.]);a=p.parse_args()
     if min(a.width,a.height)<64:p.error('Simulation image dimensions must be >=64')
-    prepare(a.snapshot,a.pose,a.camera_manifest,a.output,a.worker_command,a.width,a.height,a.optical_offset_m)
+    prepare(a.snapshot,a.pose,a.camera_manifest,a.output,a.worker_command,a.width,a.height,a.optical_offset_m,
+        composed_usd=a.composed_usd,geometry_manifest=a.geometry_manifest)

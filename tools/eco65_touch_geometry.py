@@ -8,7 +8,44 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import trimesh
 from scipy.spatial.transform import Rotation
-from unloading_sim.eco65.model import ROOT,transform,robot_for,load_json,mounting_pairs
+from unloading_sim.eco65.model import ROOT,transform,robot_for,load_json,save_json,mounting_pairs
+from unloading_sim.eco65.native_model import POLICY
+from eco65_touch_sources import verify_scene_sources
+
+
+def pair_rule(a,b,mount):
+    names=frozenset([('robot_'+e['owner']) if e['kind']=='robot' else e['owner'] for e in [a,b]])
+    if names in mount:return dict(name='asset_bound_flange_mount',threshold_m=-POLICY['contact_tolerance_m'],source='tool.mounting_contacts')
+    if names==frozenset(['robot_base_link','robot_mount_plate']):
+        return dict(name='base_installation',threshold_m=-POLICY['contact_tolerance_m'],source='snapshot robot base/installation plate')
+    if names==frozenset(['probe_bracket','part_000']):
+        return dict(name='probe_bracket_rigid_plate',threshold_m=-POLICY['contact_tolerance_m'],source='configuration.probe.plate_source and bracket_T_F')
+    self_pair=a['kind']==b['kind']=='robot'
+    return dict(name='robot_self_clearance' if self_pair else 'general_clearance',
+        threshold_m=POLICY['self_collision_clearance_m' if self_pair else 'required_pair_clearance_m'],source='eco65.native_model.POLICY')
+
+
+def distance_evidence(query,threshold,distmax,analytic_contact=None):
+    """Fail closed on unknown distance; designated analytical contact is mandatory."""
+    try:
+        value=float(query())
+        if not np.isfinite(value):return dict(accepted=False,error='NONFINITE_DISTANCE',raw_value=repr(value),distance_m=None)
+    except Exception as error:
+        return dict(accepted=False,error='DISTANCE_BACKEND_EXCEPTION',detail=type(error).__name__+': '+str(error),distance_m=None)
+    result=dict(distance_m=value,distmax_m=distmax,possibly_truncated=bool(value>=distmax-1e-9))
+    if analytic_contact is not None:
+        return dict(result,accepted=bool(analytic_contact['accepted']),analytic_contact=analytic_contact,
+            decision='DESIGNATED_FINITE_DATUM_ANALYTIC_CHECK',error=None if analytic_contact['accepted'] else 'DESIGNATED_TOUCH_CONDITION_FAILED')
+    return dict(result,accepted=bool(value+1e-9>=threshold),decision='NATIVE_CLEARANCE_POLICY',
+        error=None if value+1e-9>=threshold else 'CLEARANCE_BELOW_POLICY')
+
+
+def index_ranges(indices):
+    ranges=[]
+    for i in map(int,indices):
+        if ranges and i==ranges[-1][1]:ranges[-1][1]=i+1
+        else:ranges.append([i,i+1])
+    return ranges
 
 
 def accessory_meshes(s,c):
@@ -47,15 +84,18 @@ class StaticGeometry:
         import mujoco as mj
         from pxr import Usd,UsdGeom
         self.mj=mj;self.robot=robot_for(s['tool'],s['scene']);self.entries=[]
+        self.sources=verify_scene_sources(c)
+        if s['fingerprint']!=self.sources['files']['snapshot']['fingerprint']:raise ValueError('GEOMETRY_SNAPSHOT_MISMATCH')
         xml=ET.Element('mujoco');ET.SubElement(xml,'compiler',angle='radian')
         assets=ET.SubElement(xml,'asset');world=ET.SubElement(xml,'worldbody')
         def add(name,vertices,frame,T,kind,owner):
+            label=name
             name='g'+str(len(self.entries))
             ET.SubElement(assets,'mesh',name=name,vertex=' '.join(map(str,np.asarray(vertices).reshape(-1))))
             body=ET.SubElement(world,'body',name=name,mocap='true')
             ET.SubElement(body,'geom',name=name,type='mesh',mesh=name,contype='0',conaffinity='0')
-            self.entries.append(dict(name=name,frame=frame,T=np.array(T),kind=kind,owner=owner))
-        manifest=load_json(ROOT/'outputs/eco65_native/j1_mast_20261016_connected_run01/build/usd_A/workstation_manifest.json')
+            self.entries.append(dict(name=name,source_label=label,frame=frame,T=np.array(T),kind=kind,owner=owner))
+        manifest=load_json(ROOT/self.sources['files']['geometry_manifest']['path'])
         old=self.robot.named_link_frames(manifest['home_q_rad']);cad=np.array(s['tool']['T_flange_tool_cad'])
         for row in manifest['collision_records']:
             path=row['path']
@@ -77,7 +117,7 @@ class StaticGeometry:
                     ids=idx[offset:offset+n];offset+=n;faces.extend([[ids[0],ids[k],ids[k+1]] for k in range(1,n-1)])
                 for part in trimesh.Trimesh(v,np.array(faces),process=True).split(only_watertight=False):
                     if len(part.vertices)<4 or np.linalg.matrix_rank(part.vertices-part.vertices.mean(0))<3:continue
-                    add('conveyor',part.convex_hull.vertices,'D',np.eye(4),'environment',item['id']);self.conveyor_count+=1
+                    add(item['id']+':'+row['prim']+':component_'+str(self.conveyor_count),part.convex_hull.vertices,'D',np.eye(4),'environment',item['id']);self.conveyor_count+=1
         self.extra=accessory_meshes(s,c);self.config=c;folder=out/'geometry';folder.mkdir()
         for row in self.extra:
             row['mesh'].export(folder/(row['name']+'.obj'))
@@ -85,17 +125,33 @@ class StaticGeometry:
         self.model=mj.MjModel.from_xml_string(ET.tostring(xml,encoding='unicode'));self.data=mj.MjData(self.model)
         for e in self.entries:e['gid']=self.model.geom(e['name']).id;e['bid']=self.model.body(e['name']).mocapid[0]
         adjacent={frozenset([j.parent,j.child]) for j in self.robot.joints};mount=mounting_pairs(s['tool']);self.pairs=[]
+        skipped=dict(same_rigid_assembly=0,static_environment_internal=0,URDF_adjacent_links=0,named_fixed_interfaces=[])
         for i,a in enumerate(self.entries):
             for b in self.entries[i+1:]:
-                if a['kind']==b['kind'] and a['kind'] in ['environment','tool','accessory','probe','fixture']:continue
-                if a['kind']==b['kind']=='robot' and frozenset([a['owner'],b['owner']]) in adjacent:continue
+                if a['kind']==b['kind']=='environment':skipped['static_environment_internal']+=1;continue
+                if a['kind']==b['kind'] and a['frame']==b['frame'] and a['kind'] in ['tool','accessory','probe','fixture']:
+                    skipped['same_rigid_assembly']+=1;continue
+                if a['kind']==b['kind']=='robot' and frozenset([a['owner'],b['owner']]) in adjacent:skipped['URDF_adjacent_links']+=1;continue
                 owners={a['owner'],b['owner']}
-                if owners in [{'mast_part_001','link_1'},{'mounting_seat','link_1'}]:continue
-                names=frozenset([('robot_'+e['owner']) if e['kind']=='robot' else e['owner'] for e in [a,b]])
-                allowance=names in mount or names==frozenset(['robot_base_link','robot_mount_plate']) or owners=={'probe_bracket','part_000'}
-                self.pairs.append((a,b,-.0004 if allowance else .0001))
+                if owners in [{'mast_part_001','link_1'},{'mounting_seat','link_1'}]:
+                    interface=s['scene']['mast']['mount_interface']
+                    if not interface.get('source') or not interface.get('seat'):raise ValueError('NAMED_MAST_INTERFACE_SOURCE_REQUIRED')
+                    skipped['named_fixed_interfaces'].append(dict(pair=sorted(owners),source=interface,
+                        scope='Existing fixed interface; conformal original-triangle contact not requalified by convex envelopes'))
+                    continue
+                self.pairs.append((a,b,pair_rule(a,b,mount)))
         self.a=np.array([a['gid'] for a,b,t in self.pairs]);self.b=np.array([b['gid'] for a,b,t in self.pairs])
         self.radii=self.model.geom_rbound[self.a]+self.model.geom_rbound[self.b]
+        self.query_horizon=max(POLICY['required_pair_clearance_m'],POLICY['self_collision_clearance_m'],
+            POLICY['contact_tolerance_m'],c['thresholds']['tip_target_m'])+POLICY['mesh_error_reserve_m']
+        self.backend=dict(mujoco_version=mj.__version__,query='mj_geomDistance on compiled convex mesh pairs after mj_forward; no mj_step',
+            enableflags=int(self.model.opt.enableflags),disableflags=int(self.model.opt.disableflags),
+            ccd_iterations=int(self.model.opt.ccd_iterations),ccd_tolerance=float(self.model.opt.ccd_tolerance),distmax_m=self.query_horizon)
+        save_json(out/'pair_catalog.json',dict(policy=POLICY,backend=self.backend,scene_sources=self.sources,
+            derived_scene_identity=c['derived_scene_identity'],skipped=skipped,
+            geometries=[{k:e[k] for k in ['name','source_label','frame','kind','owner']} for e in self.entries],
+            pairs=[dict(index=i,geometries=[a['name'],b['name']],owners=[a['owner'],b['owner']],rule=rule)
+                   for i,(a,b,rule) in enumerate(self.pairs)]))
 
     def check(self,q,P,point_id):
         if not self.robot.within_limits(q):return dict(accepted=False,failures=['joint_limits'])
@@ -103,14 +159,18 @@ class StaticGeometry:
         for e in self.entries:
             T=frames[e['frame']]@e['T'];bid=e['bid']
             self.data.mocap_pos[bid]=T[:3,3];self.data.mocap_quat[bid]=Rotation.from_matrix(T[:3,:3]).as_quat()[[3,0,1,2]]
-        self.mj.mj_forward(self.model,self.data)
+        try:self.mj.mj_forward(self.model,self.data)
+        except Exception as error:return dict(accepted=False,failures=[dict(error='FORWARD_BACKEND_EXCEPTION',detail=str(error))],backend=self.backend)
+        if not np.isfinite(self.data.geom_xpos).all():return dict(accepted=False,failures=[dict(error='NONFINITE_GEOMETRY_POSITIONS')],backend=self.backend)
         lower=np.linalg.norm(self.data.geom_xpos[self.a]-self.data.geom_xpos[self.b],axis=1)-self.radii
-        failures=[];minimum=1.;checked=0;tip_contact=None
-        for index in np.flatnonzero(lower<=.003):
-            a,b,threshold=self.pairs[index]
-            if {a['owner'],b['owner']}=={'probe_tip','stud_'+str(point_id)}:threshold=-.0001
-            d=float(self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],.003,None));checked+=1;minimum=min(minimum,d)
-            if {a['owner'],b['owner']}=={'probe_tip','stud_'+str(point_id)}:
+        if not np.isfinite(lower).all():return dict(accepted=False,failures=[dict(error='NONFINITE_BROADPHASE_BOUND')],backend=self.backend)
+        failures=[];queries=[];tip_contact=None
+        designated=np.array([{a['owner'],b['owner']}=={'probe_tip','stud_'+str(point_id)} for a,b,_ in self.pairs])
+        selected=(lower<=self.query_horizon)|designated
+        for index in np.flatnonzero(selected):
+            a,b,rule=self.pairs[index];threshold=rule['threshold_m'];analytic=None
+            if designated[index]:
+                threshold=-self.config['thresholds']['tip_target_m']
                 # A pointed convex mesh at exactly coincident support planes
                 # can yield an unstable EPA signed distance. Verify the actual
                 # cone vertices against the finite target disk, not a waiver.
@@ -119,10 +179,25 @@ class StaticGeometry:
                 target=np.array(next(p['p_P_m'] for p in self.config['board']['touch_points'] if p['point_id']==point_id))
                 tip=T[:3,:3]@self.config['probe']['p_F_tip_m']+T[:3,3]
                 plane_gap=float(target[2]-v[:,2].max());tip_error=float(np.linalg.norm(tip-target))
-                tip_contact=dict(raw_mujoco_distance_m=d,support_plane_gap_m=plane_gap,tip_error_m=tip_error,
+                radial_error=float(np.linalg.norm(tip[:2]-target[:2]));radius=self.config['board']['stud_radius_m']
+                analytic=dict(accepted=bool(np.isfinite([plane_gap,tip_error,radial_error]).all() and plane_gap>=-self.config['thresholds']['tip_target_m'] and tip_error<self.config['thresholds']['tip_target_m'] and radial_error<=radius),
+                    support_plane_gap_m=plane_gap,tip_error_m=tip_error,finite_datum_radial_error_m=radial_error,finite_datum_radius_m=radius,
                     method='Finite target centre and separating plane of every original cone vertex; designated tip only')
-                if plane_gap>=-self.config['thresholds']['tip_target_m'] and tip_error<self.config['thresholds']['tip_target_m']:continue
-            if d<threshold-1e-9:failures.append(dict(pair=[a['owner'],b['owner']],distance_m=d,threshold_m=threshold))
-        return dict(accepted=not failures,failures=failures[:12],failure_count=len(failures),exact_convex_queries=checked,
-            minimum_queried_distance_m=minimum,tip_contact=tip_contact,conveyor_components=self.conveyor_count,geometry_count=len(self.entries),
-            scope='All original collision objects plus camera, mast, seat, probe and board; conservative convex distances, no dynamics/swept paths')
+            evidence=distance_evidence(lambda:self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],self.query_horizon,None),threshold,self.query_horizon,analytic)
+            row=dict(pair_index=int(index),pair=[a['owner'],b['owner']],geometries=[a['name'],b['name']],
+                rule='designated_tip_datum' if designated[index] else rule['name'],threshold_m=threshold,
+                legacy_threshold_m=(-self.config['thresholds']['tip_target_m'] if designated[index] else (-.0004 if threshold<0 else .0001)),
+                broadphase_lower_bound_m=float(lower[index]),**evidence)
+            queries.append(row)
+            if designated[index]:tip_contact=row
+            if not row['accepted']:failures.append(row)
+        if point_id is not None and tip_contact is None:failures.append(dict(error='DESIGNATED_TOUCH_PAIR_NOT_FOUND',point_id=point_id))
+        raw=[r['distance_m'] for r in queries if r.get('distance_m') is not None and not r.get('possibly_truncated')]
+        excluded=np.flatnonzero(~selected)
+        return dict(accepted=not failures,failures=failures,failure_count=len(failures),distance_queries=queries,
+            broadphase=dict(excluded_pair_index_ranges=index_ranges(excluded),range_convention='start inclusive, end exclusive; indices address pair_catalog.json',
+                excluded_count=len(excluded),tested_count=len(queries),rule='sphere-centre distance minus compiled radii > policy-derived distmax',
+                minimum_excluded_lower_bound_m=float(lower[excluded].min()) if len(excluded) else None),
+            minimum_raw_untruncated_query_m=min(raw) if raw else None,minimum_scope='Queried subset only, includes raw EPA contact output; NOT an exact scene minimum',
+            tip_contact=tip_contact,conveyor_components=self.conveyor_count,geometry_count=len(self.entries),backend=self.backend,policy=POLICY,
+            scope='Discrete static convex distances with named fixed interfaces; no dynamics or swept paths')
