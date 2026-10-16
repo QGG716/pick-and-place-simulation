@@ -18,21 +18,27 @@ MARKER = "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE"
 
 class SingleContactClient:
     """Fail-closed protocol fence, including startup. No old planner entry can hide."""
-    def __init__(self, client, *, extraction_enabled=False):
+    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False):
         self.client, self.records = client, []
         self.forbidden_attempts = 0
-        self.extraction_enabled = extraction_enabled
+        self.preplace_enabled = preplace_enabled
+        self.extraction_enabled = extraction_enabled or preplace_enabled
 
     def request(self, request, **kwargs):
         op = request.get("op")
         allowed = op in {"init", "fk", "inspect", "check_start", "ik", "plan"}
         allowed |= self.extraction_enabled and op == "check_extraction_end"
+        allowed |= self.preplace_enabled and op == "check_transit_end"
         allowed &= request.get("planning_mode") == "cold_from_scratch"
         if op == "plan":
             extraction = self.extraction_enabled and request.get("stage") == "extraction"
             allowed &= (extraction and request.get("purpose") == "EXTRACTION_PROCESS"
                 and request.get("pipeline_id") == "pilz_industrial_motion_planner"
                 and request.get("planner_id") == "LIN") or (
+                self.preplace_enabled and request.get("stage") == "transit"
+                and request.get("purpose") == "FREE_LOADED_TRANSFER"
+                and request.get("pipeline_id") == "ompl"
+                and request.get("planner_id") == "RRTConnectkConfigDefault") or (
                 request.get("attachment") is None and
                 (request.get("stage"), request.get("pipeline_id"), request.get("planner_id")) in {
                 ("pregrasp", "ompl", "RRTConnectkConfigDefault"),
@@ -40,23 +46,29 @@ class SingleContactClient:
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))
-        if op in {"plan","check_start","ik","check_extraction_end"}:
+        if op in {"plan","check_start","ik","check_extraction_end","check_transit_end"}:
             policy=request.get("process_policy",{})
             target=policy.get("target_id")
             world_ids=[b["id"] for b in request.get("world",[])]
             attached=request.get("attachment")
             extraction=self.extraction_enabled and request.get("stage")=="extraction" and op in {"plan","check_extraction_end"}
-            if extraction:
+            transit=self.preplace_enabled and request.get("stage")=="transit" and op in {"plan","ik","check_transit_end"}
+            if extraction or transit:
                 actual=policy.get("actual_contact_mask",[])
                 valid=(attached is not None and attached.get("id")==target and target not in world_ids
                     and policy.get("attached") is True and len(actual)==72 and any(actual)
                     and all(isinstance(x,bool) for x in actual)
                     and actual==policy.get("commanded_active_mask"))
-                if op=="check_extraction_end":
+                if transit:
+                    valid &= (request.get("purpose")=="FREE_LOADED_TRANSFER"
+                        and policy.get("initial_proximity") is None and policy.get("support_names")==[]
+                        and bool(request.get("parent_stage_id"))
+                        and request.get("ownership_transition") is None)
+                if op in {"check_extraction_end","check_transit_end"}:
                     valid &= policy.get("initial_proximity") is None and policy.get("support_names")==[]
                     valid &= bool(request.get("parent_stage_id")) and request.get("ownership_transition") is None
             else:
-                valid=attached is None and policy.get("attached") is False and target in world_ids and op!="check_extraction_end"
+                valid=attached is None and policy.get("attached") is False and target in world_ids and op not in {"check_extraction_end","check_transit_end"}
             if not valid or len(world_ids)!=len(set(world_ids)):
                 raise MoveItUnavailable("SINGLE_CONTACT_TARGET_OWNERSHIP_INVALID")
         began = perf_counter()
@@ -64,13 +76,15 @@ class SingleContactClient:
             "op","task_id","stage_id","parent_stage_id","stage","candidate_id","seed",
             "pipeline_id","planner_id","q_start","q_goal","goal_pose","scene_fingerprint",
             "allowed_planning_time_s","ik_timeout_s")}
-        if op in {"plan","check_start","ik","check_extraction_end"}:
+        if op in {"plan","check_start","ik","check_extraction_end","check_transit_end"}:
             entry.update(attachment=request.get("attachment"),
                 target_id=request["process_policy"]["target_id"],
                 target_in_world=request["process_policy"]["target_id"] in {b["id"] for b in request["world"]},
                 ownership_transition=request.get("ownership_transition"),
                 pair_profile_enabled=request.get("pair_profile_enabled"),
-                native_check_reuse=request.get("native_check_reuse"))
+                native_check_reuse=request.get("native_check_reuse"),
+                process_context={k:deepcopy(policy.get(k)) for k in
+                    ("support_names","initial_proximity","actual_contact_mask","commanded_active_mask")})
         try:
             response = self.client.request(request, **kwargs)
         except Exception as exc:
@@ -172,7 +186,18 @@ class SingleContactConnector(PlanningOnlyConnector):
     def ik_once(self, target, start, obstacles, seed):
         pose=virtual_tcp_from_physical_contact(target.approach_pose,
             self.flange_from_virtual_task_tcp,self.flange_from_physical_contact)
-        request=self._build_native_request(start,None,obstacles,seed=seed,stage="pregrasp",goal_pose=pose)
+        return self.ik_pose_once(pose,start,obstacles,seed,stage="pregrasp")
+
+    def ik_pose_once(self, pose, start, obstacles, seed, *, stage, attachment=None,
+                     purpose=None, residual_reason="APPROACH_IK_FK_RESIDUAL"):
+        request=self._build_native_request(start,None,obstacles,seed=seed,stage=stage,
+            goal_pose=pose,attachment=attachment)
+        if attachment is not None:
+            receipt,_,transition=self._native_parent_for_request(start,request)
+            if transition is not None:
+                raise MoveItUnavailable("LOADED_IK_OWNERSHIP_CHANGED")
+            request.update(parent_stage_id=receipt.stage_id,parent_state_receipt=receipt.evidence(),
+                ownership_transition=None,purpose=getattr(purpose,"value",purpose))
         stage_s,timeout=self._native_limits()
         request.update(op="ik",position_tolerance_m=float(self.ik["position_tolerance_m"]),
             orientation_tolerance_rad=float(self.ik["orientation_tolerance_rad"]),
@@ -189,7 +214,7 @@ class SingleContactConnector(PlanningOnlyConnector):
         pe=float(np.linalg.norm(actual[:3,3]-pose[:3,3]))
         re=float(np.linalg.norm(rotation_vector_from_matrix(actual[:3,:3]@pose[:3,:3].T)))
         if pe>self.ik["position_tolerance_m"] or re>self.ik["orientation_tolerance_rad"]:
-            return None,dict(reason="APPROACH_IK_FK_RESIDUAL",position_m=pe,orientation_rad=re,scope="FACE_ATTEMPT")
+            return None,dict(reason=residual_reason,position_m=pe,orientation_rad=re,scope="FACE_ATTEMPT")
         return q,None
 
     def complete_contact_plan(self, plan, row, contact_end, target, obstacles, suction, seed):

@@ -34,7 +34,7 @@ bool knownInitializedOperation(const std::string& op) {
   return op=="fk" || op=="ik" || op=="ik_batch" || op=="load_static_prior" ||
     op=="build_static_prior" || op=="task_audit" || op=="plan" ||
     op=="diagnostic_connection" || op=="compose" || op=="inspect" ||
-    op=="validate" || op=="check_start" || op=="check_extraction_end";
+    op=="validate" || op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end");
 }
 double seconds(Clock::time_point t) { return std::chrono::duration<double>(Clock::now()-t).count(); }
 Eigen::Isometry3d matrix(const J& j) {
@@ -617,10 +617,10 @@ public:
     const auto op=req.value("op",std::string());
     try {result=runImpl(req,clearance,process);}
     catch(const std::exception& e) {
-      if(op!="plan" && op!="diagnostic_connection" && op!="validate" && op!="check_start" && op!="check_extraction_end") throw;
+      if(op!="plan" && op!="diagnostic_connection" && op!="validate" && op!="check_start" && op!="check_extraction_end" && op!="check_transit_end") throw;
       result={{"status","ERROR"},{"detail",e.what()}};
     }
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || op=="check_extraction_end"))
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end")))
       m710::completeRequestEvidence(result,bool(clearance),bool(process),
         [&]{return clearance->evidence();},[&]{return process->evidence();});
     return result;
@@ -684,9 +684,9 @@ private:
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
-    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_extraction_end") || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
+    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
-    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_extraction_end") || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
+    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
         req.value("planning_mode",std::string("cold_from_scratch"))!=planning_mode)
       throw std::runtime_error("PLANNING_MODE_MISMATCH");
     if(planning_only && (op=="task_audit" || op=="compose" || op=="validate"))
@@ -871,7 +871,7 @@ private:
         {"target_id",target},{"target_in_world",bool(world_target)},{"target_attached",bool(attached_target)},{"target_world_pose",target_pose},
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || op=="check_extraction_end") || op=="build_static_prior") {
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="build_static_prior") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
@@ -892,31 +892,34 @@ private:
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});
     }
-    if(op=="check_extraction_end") {
+    if((op=="check_extraction_end" || op=="check_transit_end")) {
+      const std::string end_stage=op=="check_extraction_end"?"extraction":"transit";
+      const std::string error_prefix=op=="check_extraction_end"?"EXTRACTION_END":"TRANSIT_END";
       // A single endpoint under restored free-space pair rules, not a path audit.
-      if(!planning_only || planning_mode!="cold_from_scratch" || req.at("stage")!="extraction" ||
+      if(!planning_only || planning_mode!="cold_from_scratch" || req.at("stage")!=end_stage ||
          !req.value("require_native_motion",false) || req.at("attachment").is_null() || !process ||
          !req.at("process_policy").at("initial_proximity").is_null() ||
          !req.at("process_policy").at("support_names").empty() ||
-         !req.at("ownership_transition").is_null())
-        throw std::runtime_error("EXTRACTION_END_CHECK_SCOPE_INVALID");
+         !req.at("ownership_transition").is_null() ||
+         (end_stage=="transit" && req.value("purpose",std::string())!="FREE_LOADED_TRANSFER"))
+        throw std::runtime_error(error_prefix+"_CHECK_SCOPE_INVALID");
       const std::string task=req.at("task_id"),parent=req.at("parent_stage_id");
       if(!tasks.count(task) || parent.empty() || !tasks.at(task)->records.count(parent))
-        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_PARENT_MISSING");
+        throw std::runtime_error("NATIVE_TASK_"+error_prefix+"_PARENT_MISSING");
       const auto& previous=*tasks.at(task)->records.at(parent);
-      if(!previous.ready || previous.request.at("stage")!="extraction" || !previous.end ||
+      if(!previous.ready || previous.request.at("stage")!=end_stage || !previous.end ||
          previous.request.at("attachment").is_null())
-        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_PARENT_INVALID");
+        throw std::runtime_error("NATIVE_TASK_"+error_prefix+"_PARENT_INVALID");
       std::vector<double> q;previous.end->getCurrentState().copyJointGroupPositions("manipulator",q);
-      if(req.at("q_start")!=J(q)) throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_STATE_CHANGED");
-      checkTransition(previous.end,scene,req,"extraction_endpoint");
+      if(req.at("q_start")!=J(q)) throw std::runtime_error("NATIVE_TASK_"+error_prefix+"_STATE_CHANGED");
+      checkTransition(previous.end,scene,req,end_stage+"_endpoint");
       const bool valid=clearance->check(scene->getCurrentState());
       const bool process_valid=valid && process->check(scene->getCurrentState(),true);
       const std::string target=req.at("clearance_policy").at("target_id");
       const auto* attached=scene->getCurrentState().getAttachedBody(target);
       if(!attached || scene->getWorld()->hasObject(target))
-        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_OWNERSHIP_INVALID");
-      return {{"status",!valid?"EXTRACTION_END_CLEARANCE_REJECTED":!process_valid?"EXTRACTION_END_PROCESS_REJECTED":"SUCCESS"},
+        throw std::runtime_error("NATIVE_TASK_"+error_prefix+"_OWNERSHIP_INVALID");
+      return {{"status",!valid?error_prefix+"_CLEARANCE_REJECTED":!process_valid?error_prefix+"_PROCESS_REJECTED":"SUCCESS"},
         {"failure",!valid?clearance->last_failure:process->last_failure},
         {"native_solver_calls",J::object()},{"scene_import_s",import_s},{"checked_states",1},
         {"task_id",task},{"parent_stage_id",parent},{"target_id",target},

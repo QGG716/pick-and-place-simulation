@@ -26,8 +26,11 @@ from plan_m710_top_row_only import next_scene
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target",required=True)
-    parser.add_argument("--through-extraction",action="store_true",
+    stages=parser.add_mutually_exclusive_group()
+    stages.add_argument("--through-extraction",action="store_true",
         help="extend contact with planned attachment and one controlled extraction LIN")
+    stages.add_argument("--through-preplace",action="store_true",
+        help="extend extraction with one fixed preplace IK and loaded RRTConnect")
     parser.add_argument("--initial-state",type=Path)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--worker-command",required=True)
@@ -75,13 +78,17 @@ def main():
     if target is None:raise ValueError("UNKNOWN_TARGET")
     scene_prepare_s=perf_counter()-prepared
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
-        extraction_enabled=args.through_extraction)
+        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace)
     connector_type=SingleContactConnector
     marker=MARKER
     if args.through_extraction:
         from unloading_sim.single_extraction import SingleExtractionConnector, MARKER as EXTRACTION_MARKER
         connector_type=SingleExtractionConnector
         marker=EXTRACTION_MARKER
+    if args.through_preplace:
+        from unloading_sim.single_preplace import SinglePreplaceConnector, MARKER as PREPLACE_MARKER
+        connector_type=SinglePreplaceConnector
+        marker=PREPLACE_MARKER
     c=None
     try:
         c=connector_type.from_existing(built.connector,scene,native_client=client,
@@ -111,7 +118,7 @@ def main():
             counts["IK"]+=record.get("response",{}).get("native_ik_calls",0)
         costs=[]
         for record in client.records:
-            if record.get("op") not in ("plan","check_start","check_extraction_end"):continue
+            if record.get("op") not in ("plan","check_start","check_extraction_end","check_transit_end"):continue
             response=record.get("response",{})
             clearance=response.get("clearance",{})
             if clearance:
@@ -119,7 +126,7 @@ def main():
                 assert ws.get("pair_profile_enabled") is False
             costs.append(dict(request_id=response.get("request_id"),op=record["op"],status=record["status"],
                 clearance=clearance,request_check_evidence=response.get("request_check_evidence")))
-        result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction,
+        result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction or args.through_preplace,through_preplace=args.through_preplace,
             qualification_status="NOT_EVALUATED",continuous_swept_proof=False,
             physical_execution="NOT_RUN",execution_ready=False,run_id="single-contact-"+uuid.uuid4().hex,
             source_commit=args.source_commit,command=[sys.executable,*sys.argv],seed=args.seed,

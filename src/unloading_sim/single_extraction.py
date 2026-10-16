@@ -86,6 +86,39 @@ def extraction_sample_check(connector, path, attachment, target, geometry, track
 
 
 class SingleExtractionConnector(SingleContactConnector):
+    def check_attached_end(self, end, target, payload_world, attachment, seed, *, stage):
+        if stage not in {"extraction","transit"}:
+            raise MoveItUnavailable("ATTACHED_ENDPOINT_STAGE_INVALID")
+        prefix = stage.upper()+"_END"
+        request = self._build_native_request(end, end, payload_world, seed=seed,
+            stage=stage, attachment=attachment, support_names=(), initial_proximity=None)
+        receipt, _, transition = self._native_parent_for_request(end, request)
+        if transition is not None:
+            raise MoveItUnavailable(prefix+"_OWNERSHIP_CHANGED")
+        request.update(op="check_"+stage+"_end", parent_stage_id=receipt.stage_id,
+            parent_state_receipt=receipt.evidence(), ownership_transition=None)
+        if stage == "transit":
+            request["purpose"] = MotionPurpose.FREE_LOADED_TRANSFER.value
+        _, timeout = self._native_limits()
+        checked = self.native.request(request, timeout=timeout, cancelled=self._native_cancelled)
+        if checked["status"] != "SUCCESS":
+            return checked
+        if (checked.get("task_id") != self.native_task_id
+                or checked.get("parent_stage_id") != receipt.stage_id
+                or checked.get("target_id") != target.target_id
+                or checked.get("target_attached") is not True or checked.get("target_in_world") is not False
+                or checked.get("free_space_rules_restored") is not True or checked.get("checked_states") != 1):
+            raise MoveItUnavailable(prefix+"_EVIDENCE_IDENTITY_CHANGED")
+        native_pose = np.asarray(checked.get("target_world_pose"), dtype=float)
+        if (native_pose.shape != (4,4) or not np.isfinite(native_pose).all()
+                or not np.allclose(native_pose, attachment.box_at(end).world_from_local, atol=1e-7, rtol=0)):
+            raise MoveItUnavailable(prefix+"_PAYLOAD_POSE_CHANGED")
+        return checked
+
+    def complete_extraction_plan(self, plan, row, end, target, obstacles, attachment, seed):
+        """Called inside the active attachment/mask context; default still stops here."""
+        return plan, row
+
     def complete_contact_plan(self, plan, row, contact_end, target, obstacles, suction, seed):
         # This hook is reached only after the unchanged two-segment checks pass.
         row["contact_complete"] = True
@@ -187,29 +220,11 @@ class SingleExtractionConnector(SingleContactConnector):
             return self._reject_suffix(row, samples["failure"])
         self.check_context(target, obstacles)
         before = perf_counter()
-        request = self._build_native_request(path[-1], path[-1], payload_world, seed=seed,
-            stage="extraction", attachment=attachment, support_names=(), initial_proximity=None)
-        receipt, _, transition = self._native_parent_for_request(path[-1], request)
-        if transition is not None:
-            raise MoveItUnavailable("EXTRACTION_END_OWNERSHIP_CHANGED")
-        request.update(op="check_extraction_end", parent_stage_id=receipt.stage_id,
-            parent_state_receipt=receipt.evidence(), ownership_transition=None)
-        _, timeout = self._native_limits()
-        checked = self.native.request(request, timeout=timeout, cancelled=self._native_cancelled)
+        checked = self.check_attached_end(path[-1], target, payload_world, attachment, seed, stage="extraction")
         row["terminal_separation"] = deepcopy(checked)
         row["times"]["terminal_separation_s"] = perf_counter() - before
         if checked["status"] != "SUCCESS":
             return self._reject_suffix(row, dict(reason=checked["status"], detail=checked.get("failure")))
-        if (checked.get("task_id") != self.native_task_id
-                or checked.get("parent_stage_id") != receipt.stage_id
-                or checked.get("target_id") != target.target_id
-                or checked.get("target_attached") is not True or checked.get("target_in_world") is not False
-                or checked.get("free_space_rules_restored") is not True or checked.get("checked_states") != 1):
-            raise MoveItUnavailable("EXTRACTION_END_EVIDENCE_IDENTITY_CHANGED")
-        native_pose = np.asarray(checked.get("target_world_pose"), dtype=float)
-        if (native_pose.shape != (4,4) or not np.isfinite(native_pose).all()
-                or not np.allclose(native_pose, attachment.box_at(path[-1]).world_from_local, atol=1e-7, rtol=0)):
-            raise MoveItUnavailable("EXTRACTION_END_PAYLOAD_POSE_CHANGED")
         records = self._native_selected_records(path[-1])
         if len(records) != 3 or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]:
             raise MoveItUnavailable("EXTRACTION_PARENT_CHAIN_INVALID")
@@ -225,4 +240,4 @@ class SingleExtractionConnector(SingleContactConnector):
                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records])
         row.update(complete=True, failure=None, actual_end_q_rad=np.asarray(path[-1]).tolist())
         row["times"]["total_s"] = perf_counter() - self._single_face_started
-        return plan, row
+        return self.complete_extraction_plan(plan, row, path[-1], target, obstacles, attachment, seed)

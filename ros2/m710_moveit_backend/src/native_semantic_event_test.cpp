@@ -110,11 +110,11 @@ void checkReplyCompression() {
 int main(int argc,char** argv) {
   for(const auto op:{"fk","ik","ik_batch","load_static_prior","build_static_prior",
       "task_audit","plan","diagnostic_connection","compose","inspect","validate",
-      "check_start","check_extraction_end"})
+      "check_start","check_extraction_end","check_transit_end"})
     require(knownInitializedOperation(op),"INITIALIZED_WORKER_OPERATION_REGISTERED");
   for(const auto op:{"attach","release","unknown_operation"})
     require(!knownInitializedOperation(op),"UNSUPPORTED_WORKER_OPERATION_REJECTED");
-  for(const auto op:{"plan","check_start","check_extraction_end"}) {Worker worker;J req={{"op",op}};
+  for(const auto op:{"plan","check_start","check_extraction_end","check_transit_end"}) {Worker worker;J req={{"op",op}};
    auto out=worker.run(req);
    require(out.at("status")=="ERROR" && out.at("request_check_evidence").at("clearance")=="NOT_CREATED",
        "WORKER_EARLY_FAILURE_NOT_CREATED");
