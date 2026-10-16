@@ -1,0 +1,14 @@
+[INFO] [1792138638.887509224] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792138638.888398552] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792138638.888452480] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[ERROR] [1792138638.888702994] [moveit_robot_model.robot_model]: Link 'missing_tcp' not found in model 'semantic_test'
+[INFO] [1792138638.888805657] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792138638.888812990] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792138638.888826695] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[INFO] [1792138638.889268094] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792138638.889278610] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792138638.889291778] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+[INFO] [1792138638.889440605] [moveit_robot_model.robot_model]: Loading robot model 'semantic_test'...
+[INFO] [1792138638.889448606] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792138638.889459421] [moveit_robot_model.robot_model]: No geometry is associated to any robot links
+PASS: semantic place scope, original MoveIt goal tolerance and actual MTC no-motion propagation; synthetic tests only

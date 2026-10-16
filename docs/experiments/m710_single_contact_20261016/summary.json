@@ -1,0 +1,503 @@
+{
+  "schema": "m710_single_contact_result_summary_v1",
+  "source_commit": "91e6d2caf1a2decb548992a0c38520d08a932379",
+  "status": "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "timing_semantics": "total includes generation/all face attempts; initialization separate; scene_prepare within initialization; IK/pregrasp/contact include request build/round-trip/return processing; native solve/checks nested, not additive",
+  "tests": {
+    "python_passed": 156,
+    "new_cases_passed": 38,
+    "native_passed": [
+      "m710_native_semantic_event_test",
+      "m710_request_evidence_test",
+      "m710_clearance_test"
+    ]
+  },
+  "cases": [
+    {
+      "case": "c02",
+      "run_id": "single-contact-d1bc5021efbd4a4c811cea226d271817",
+      "complete": true,
+      "attempted_faces": [
+        "x-"
+      ],
+      "selected_face": "x-",
+      "initialization_s": 1.7290285490453243,
+      "scene_prepare_s": 0.013113236054778099,
+      "target_generation_s": 0.013635719195008278,
+      "target_geometry_s": 0.014009859412908554,
+      "ik_s": 0.06124916300177574,
+      "pregrasp_s": 1.3503172155469656,
+      "contact_s": 0.2491542398929596,
+      "terminal_check_s": 0.008805256336927414,
+      "total_s": 1.81221735291183,
+      "total_planning_s": 1.830751208588481,
+      "ik_request_round_trip_s": 0.043378887698054314,
+      "ik_solver_s": 0.000246881,
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 1,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "initial_carton_count": 40,
+      "removed_cartons": [],
+      "target": {
+        "target_id": "carton_l07_c02",
+        "frame_id": "world",
+        "scene_revision": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "source": "SIM_GROUND_TRUTH",
+        "face_role": "FRONT",
+        "geometric_face_id": "x-",
+        "legacy_geometric_face": "front",
+        "face_center_m": [
+          0.0,
+          0.0,
+          2.25
+        ],
+        "face_boundary_m": [
+          [
+            0.0,
+            -0.2,
+            2.1
+          ],
+          [
+            0.0,
+            -0.2,
+            2.4
+          ],
+          [
+            0.0,
+            0.2,
+            2.4
+          ],
+          [
+            0.0,
+            0.2,
+            2.1
+          ]
+        ],
+        "outward_normal": [
+          -1.0,
+          -0.0,
+          -0.0
+        ],
+        "in_plane_x": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "contact_pose": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "approach_pose": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            -0.1
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "standoff_m": 0.1,
+        "tool_axes": "X=6 rows (short); Y=12 columns (long); Z=inward",
+        "contact_frame": "nominal_compressed_physical_contact"
+      },
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "pregrasp_end_q_rad": [
+        -0.39798531389350184,
+        -0.31738441200725276,
+        -0.2551142236289311,
+        1.7177477025740602,
+        0.4025703811527387,
+        -4.8719017500807595
+      ],
+      "contact_end_q_rad": [
+        -0.35906436214366644,
+        -0.2156710658977811,
+        -0.1765562975242172,
+        1.6746088703863649,
+        0.36109668593600647,
+        -4.823301136351987
+      ],
+      "waypoint_counts": {
+        "pregrasp": 43,
+        "contact": 31
+      },
+      "parent_and_exact_state_continuity": true,
+      "stationary_stage_boundaries": true,
+      "terminal_planned_geometric_cup_count": 48,
+      "contact_fk_check": {
+        "passed": true,
+        "failure": null,
+        "samples": 31,
+        "additional_samples": 0,
+        "maximum_line_error_m": 9.64948357288201e-06,
+        "maximum_orientation_error_rad": 3.1244596531803142e-06,
+        "start_error_m": 8.34216176417313e-09,
+        "end_error_m": 9.27278845620207e-08,
+        "position_tolerance_m": 0.0001,
+        "orientation_tolerance_rad": 0.0002
+      },
+      "costs": [
+        {
+          "request_id": "5",
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "request_round_trip_s": 0.08363783918321133,
+          "mtc_plan_s": null,
+          "clearance_check_s": 0.000355401,
+          "clearance_states": 1,
+          "workspace_prepare_s": 0.006552035,
+          "process_state_checks": 1,
+          "seal_input_compilations": 1,
+          "aabb_tests": 8248,
+          "aabb_skips": 8233,
+          "narrow_calls": 15,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "request_id": "7",
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "request_round_trip_s": 1.227523323148489,
+          "mtc_plan_s": 1.126048055,
+          "clearance_check_s": 0.2197953030000003,
+          "clearance_states": 768,
+          "workspace_prepare_s": 0.004769526,
+          "process_state_checks": 768,
+          "seal_input_compilations": 1,
+          "aabb_tests": 6334464,
+          "aabb_skips": 6325006,
+          "narrow_calls": 9458,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "request_id": "8",
+          "op": "plan",
+          "stage": "contact",
+          "status": "SUCCESS",
+          "request_round_trip_s": 0.14595122635364532,
+          "mtc_plan_s": 0.043187037,
+          "clearance_check_s": 0.007481514000000001,
+          "clearance_states": 32,
+          "workspace_prepare_s": 0.00504361,
+          "process_state_checks": 32,
+          "seal_input_compilations": 1,
+          "aabb_tests": 261632,
+          "aabb_skips": 261161,
+          "narrow_calls": 471,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ]
+    },
+    {
+      "case": "c04",
+      "run_id": "single-contact-27790e1169b842d5b971dc57c36e584d",
+      "complete": true,
+      "attempted_faces": [
+        "x-"
+      ],
+      "selected_face": "x-",
+      "initialization_s": 1.6824940294027328,
+      "scene_prepare_s": 0.012810355052351952,
+      "target_generation_s": 0.0157880000770092,
+      "target_geometry_s": 0.010578198358416557,
+      "ik_s": 0.05655234679579735,
+      "pregrasp_s": 9.690194200724363,
+      "contact_s": 0.24153546430170536,
+      "terminal_check_s": 0.009012369439005852,
+      "total_s": 10.123163811862469,
+      "total_planning_s": 10.148111993446946,
+      "ik_request_round_trip_s": 0.03888709098100662,
+      "ik_solver_s": 0.000353501,
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 1,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "initial_carton_count": 36,
+      "removed_cartons": [
+        "carton_l07_c02",
+        "carton_l07_c01",
+        "carton_l07_c03",
+        "carton_l07_c00"
+      ],
+      "target": {
+        "target_id": "carton_l07_c04",
+        "frame_id": "world",
+        "scene_revision": "1d6fcda561d78c82bf78b5daa6b888829e53497ceef1feb6fc32d80d131c97a3",
+        "source": "SIM_GROUND_TRUTH",
+        "face_role": "FRONT",
+        "geometric_face_id": "x-",
+        "legacy_geometric_face": "front",
+        "face_center_m": [
+          0.0,
+          0.84,
+          2.25
+        ],
+        "face_boundary_m": [
+          [
+            0.0,
+            0.6399999999999999,
+            2.1
+          ],
+          [
+            0.0,
+            0.6399999999999999,
+            2.4
+          ],
+          [
+            0.0,
+            1.04,
+            2.4
+          ],
+          [
+            0.0,
+            1.04,
+            2.1
+          ]
+        ],
+        "outward_normal": [
+          -1.0,
+          -0.0,
+          -0.0
+        ],
+        "in_plane_x": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "contact_pose": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.84
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "approach_pose": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            -0.1
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.84
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "standoff_m": 0.1,
+        "tool_axes": "X=6 rows (short); Y=12 columns (long); Z=inward",
+        "contact_frame": "nominal_compressed_physical_contact"
+      },
+      "start_q_rad": [
+        -0.9645963630436601,
+        0.34902940305863794,
+        -0.16938280513201223,
+        2.723792554429788e-07,
+        -1.0523838754541985,
+        -2.1769964898998944
+      ],
+      "pregrasp_end_q_rad": [
+        0.5319866229043818,
+        -0.24853592983447007,
+        -0.20289649985459052,
+        -1.6481553538061628,
+        0.5337477005168719,
+        -1.48100039131834
+      ],
+      "contact_end_q_rad": [
+        0.483814666588043,
+        -0.15276307558568655,
+        -0.12357697101645426,
+        -1.6262744401164637,
+        0.4846245248651902,
+        -1.5081163818585408
+      ],
+      "waypoint_counts": {
+        "pregrasp": 248,
+        "contact": 32
+      },
+      "parent_and_exact_state_continuity": true,
+      "stationary_stage_boundaries": true,
+      "terminal_planned_geometric_cup_count": 48,
+      "contact_fk_check": {
+        "passed": true,
+        "failure": null,
+        "samples": 32,
+        "additional_samples": 0,
+        "maximum_line_error_m": 9.299709203453673e-06,
+        "maximum_orientation_error_rad": 5.623473070707238e-06,
+        "start_error_m": 1.97864543722507e-06,
+        "end_error_m": 9.605366747450146e-08,
+        "position_tolerance_m": 0.0001,
+        "orientation_tolerance_rad": 0.0002
+      },
+      "costs": [
+        {
+          "request_id": "5",
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "request_round_trip_s": 0.0771695226430893,
+          "mtc_plan_s": null,
+          "clearance_check_s": 0.000423142,
+          "clearance_states": 1,
+          "workspace_prepare_s": 0.004809464,
+          "process_state_checks": 1,
+          "seal_input_compilations": 1,
+          "aabb_tests": 7700,
+          "aabb_skips": 7664,
+          "narrow_calls": 36,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "request_id": "7",
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "request_round_trip_s": 9.563918443396688,
+          "mtc_plan_s": 9.454833133,
+          "clearance_check_s": 2.3294730410000053,
+          "clearance_states": 9481,
+          "workspace_prepare_s": 0.004710285,
+          "process_state_checks": 6495,
+          "seal_input_compilations": 1,
+          "aabb_tests": 55063829,
+          "aabb_skips": 54786091,
+          "narrow_calls": 277738,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        },
+        {
+          "request_id": "8",
+          "op": "plan",
+          "stage": "contact",
+          "status": "SUCCESS",
+          "request_round_trip_s": 0.14007681980729103,
+          "mtc_plan_s": 0.044489756,
+          "clearance_check_s": 0.007589645999999999,
+          "clearance_states": 33,
+          "workspace_prepare_s": 0.005060483,
+          "process_state_checks": 33,
+          "seal_input_compilations": 1,
+          "aabb_tests": 251724,
+          "aabb_skips": 251230,
+          "narrow_calls": 494,
+          "fixed_qualification_queries": 0,
+          "fixed_aabb_qualifications": 0,
+          "fixed_aabb_reuses": 0,
+          "fixed_narrow_qualifications": 0,
+          "fixed_narrow_reuses": 0
+        }
+      ]
+    }
+  ]
+}
