@@ -29,6 +29,13 @@
 using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
 using Clock = std::chrono::steady_clock;
+// Operations dispatched after init; keep this gate shared with the protocol regression.
+bool knownInitializedOperation(const std::string& op) {
+  return op=="fk" || op=="ik" || op=="ik_batch" || op=="load_static_prior" ||
+    op=="build_static_prior" || op=="task_audit" || op=="plan" ||
+    op=="diagnostic_connection" || op=="compose" || op=="inspect" ||
+    op=="validate" || op=="check_start" || op=="check_extraction_end";
+}
 double seconds(Clock::time_point t) { return std::chrono::duration<double>(Clock::now()-t).count(); }
 Eigen::Isometry3d matrix(const J& j) {
   if (j.size()!=4) throw std::runtime_error("INVALID_TRANSFORM");
@@ -686,8 +693,7 @@ private:
       throw std::runtime_error("PLANNING_ONLY_NOT_EXECUTABLE");
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
-    if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
-      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_start") throw std::runtime_error("UNKNOWN_OPERATION");
+    if(!knownInitializedOperation(op)) throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     if(op=="load_static_prior" || op=="build_static_prior" || op=="ik_batch") {
       if(!planning_only || planning_mode!="static_prior_fast") throw std::runtime_error("STATIC_PRIOR_MODE_REQUIRED");
