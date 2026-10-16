@@ -47,3 +47,21 @@ complete clearance proof. No new HOME or trajectory acceptance is granted.
 Evidence labels: `CAMERA_AXIS_90DEG_CONSTRAINT_APPLIED`,
 `J1_CO_ROTATION_VERIFIED`, `NO_MOTION_EXECUTED`, `Dynamics: NOT_EVALUATED`.
 All CAD, detailed geometry, attachment configuration and images remain ignored.
+
+## October 16 horizontal reversal
+
+The user corrected the silver base orientation: rotate it 180° in the horizontal
+plane about the vertical installation axis. The rigid CAD assembly follows the
+base without changing individual part relationships or mounting height. Relative
+to the previous attachment, `T_link1_mast_new = Rz(pi) @ T_link1_mast_old`.
+The camera heading is now **-90°** from the same link_1 local -X reference.
+This replaces the previous initial-side assumption. Diagnostic labels read the
+signed angle from the final USD instead of assuming a positive sign.
+
+New private evidence: `outputs/eco65_native/j1_mast_20261016_yaw180_run01/`.
+The four joint poses, other scene fields, CAD bytes and mesh asset hashes remain
+unchanged. The directed original-mesh probe no longer finds the previous case-D
+mast/link_3 crossing; this does not qualify full clearance or hardware mounting.
+The new interface close-up shows a gap beneath the connector at the unchanged
+height. The previous envelope-contact assumption is not carried forward as a
+verified fit. This is retained as a visible installation issue for user review.

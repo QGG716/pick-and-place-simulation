@@ -79,10 +79,10 @@ def annotate(pixels,camera,stage,data,review,name):
         square=[p+u*.07,p+(u+v)*.07,p+v*.07]
         draw.line([tuple(project(x)) for x in square],fill='white',width=4)
         label=project(p+(u+v)*.10)
-        text(float(label[0]),float(label[1]),'+90 deg','#60dfef')
+        text(float(label[0]),float(label[1]),f"{r['signed_angle_deg']:+.0f} deg",'#60dfef')
         text(25,110,'ORANGE: arm heading = link_1 local -X','#ffbd53')
         text(25,151,'CYAN: camera optical axis / horizontal projection','#60dfef')
-        text(25,192,'Horizontal angle +90 deg; arrows translated to common height')
+        text(25,192,f"Horizontal angle {r['signed_angle_deg']:+.0f} deg; arrows translated to common height")
         a,b=project(L[:3,3]),project(p);draw.line([tuple(a),tuple(b)],fill='#bbbbbb',width=2)
     elif name=='03_interface_closeup':
         text(25,110,'Silver CAD connector -> black mast -> original CAD camera')
