@@ -235,7 +235,7 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         for camera, row in zip(manifest.cameras, summary['runs']):
             active = row
             module = row['module']
-            source = a.capture/'FULL_STACK_NOMINAL/modules'/module
+            source = a.capture/a.capture_scene/'modules'/module
             folder = output/module
             row.update(status='RUNNING', artifact_directory=str(folder))
             try:
@@ -352,7 +352,7 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
                     row['metric_attempts'] += 1
                     result = dispatch_geometry(backend=a.geometry_backend, blas_threads=a.geometry_blas_threads,
                         geometry_python=a.geometry_python, run_id=summary['run_id'], stop_requested=geometry_stop_requested,
-                        scene='FULL_STACK_NOMINAL', module_dir=folder, manifest=manifest,
+                        scene=a.capture_scene, module_dir=folder, manifest=manifest,
                         artifacts=artifacts, config=config, vision_root=a.vision, upstream_python=Path(sys.executable), timeout=a.geometry_timeout,
                         payload=payload, **({'stage_trace': True} if a.stage_trace else {}))
                     _check_technical_status(result, 'geometry')
@@ -388,7 +388,12 @@ def main(argv=None, *, runtime_factory=None, geometry_stop_requested=None):
         checkpoint('runtime_guard')
         if runtime.moge_model is not None:
             raise RuntimeError('unexpected MoGe model in SAM-only runtime')
-        if all(row['status'] == COMPLETED for row in summary['runs']):
+        if a.stop_after == 'geometry':
+            summary['stop_after'] = 'geometry'
+            summary['stages'] = {s: 'NOT_RUN' for s in
+                ('contacts', 'fusion', 'ros', 'planning', 'execution')}
+            summary['handoff_not_run_reason'] = 'STOP_AFTER_GEOMETRY'
+        elif all(row['status'] == COMPLETED for row in summary['runs']):
             checkpoint('algorithm_handoff')
             from unloading_perception.algorithm_artifact import publish_algorithm_run
             summary['algorithm_artifact'] = publish_algorithm_run(output, results, expected_modules=modules,

@@ -313,6 +313,9 @@ def _observation(
             elif observed_world.complete_cuboid_status == "SUFFICIENT_MULTIFACE_EVIDENCE":
                 reasons = ("COMPLETE_CUBOID_SELF_CONSISTENCY_REJECTED",)
                 geometry_validity = Validity.INVALID
+            elif observed_world.complete_cuboid_status == "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED":
+                reasons = ("MULTIFACE_VOLUME_UNRESOLVED",)
+                geometry_validity = Validity.UNKNOWN
             else:
                 reasons = ("NO_CERTIFIED_OBSERVED_FACE",)
                 geometry_validity = Validity.INVALID

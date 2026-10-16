@@ -137,8 +137,8 @@ def observed_faces_from_geometry_record(
                 shared.append((first.face_id, second.face_id, common))
     complete_status = (
         "SUFFICIENT_MULTIFACE_EVIDENCE" if record.get('accepted') and record.get('complete_observability') == 'OBSERVABLE_METRIC_MULTIFACE'
-        else "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED" if len(faces) >= 2
-        else "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR" if len(faces) == 1
+        else "MULTIFACE_OBSERVED_VOLUME_UNRESOLVED" if record.get('reliable_plane_count', len(faces)) >= 2
+        else "INSUFFICIENT_SINGLE_FACE_WITHOUT_SIZE_PRIOR" if record.get('reliable_plane_count', len(faces)) == 1
         else "NO_CERTIFIED_OBSERVED_FACE"
     )
     return ObservedFaceSet(

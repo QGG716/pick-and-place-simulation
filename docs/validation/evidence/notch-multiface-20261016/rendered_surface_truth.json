@@ -1,0 +1,276 @@
+{
+  "schema_version": "rendered_surface_truth_v1",
+  "objects": [
+    {
+      "simulation_object_id": "carton_l00_c00",
+      "array_prefix": "object_000",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_003_carton_l00_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l00_c01",
+      "array_prefix": "object_001",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_004_carton_l00_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l00_c02",
+      "array_prefix": "object_002",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_005_carton_l00_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l00_c03",
+      "array_prefix": "object_003",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_006_carton_l00_c03/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l00_c04",
+      "array_prefix": "object_004",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_007_carton_l00_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l01_c00",
+      "array_prefix": "object_005",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_008_carton_l01_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l01_c01",
+      "array_prefix": "object_006",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_009_carton_l01_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l01_c02",
+      "array_prefix": "object_007",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_010_carton_l01_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l01_c03",
+      "array_prefix": "object_008",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_011_carton_l01_c03/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l01_c04",
+      "array_prefix": "object_009",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_012_carton_l01_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l02_c00",
+      "array_prefix": "object_010",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_013_carton_l02_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l02_c01",
+      "array_prefix": "object_011",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_014_carton_l02_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l02_c02",
+      "array_prefix": "object_012",
+      "asset_id": "scan05",
+      "source_sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Cardboard/BOX_5_003",
+        "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Tape/BOX_5_012",
+        "/PerceptionValidation/Primitives/p_015_carton_l02_c02/Visual/Orientation/Asset/Visual_Label/BOX_5_006"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l02_c03",
+      "array_prefix": "object_013",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_016_carton_l02_c03/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l02_c04",
+      "array_prefix": "object_014",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_017_carton_l02_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l03_c00",
+      "array_prefix": "object_015",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_018_carton_l03_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l03_c01",
+      "array_prefix": "object_016",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_019_carton_l03_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l03_c02",
+      "array_prefix": "object_017",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_020_carton_l03_c02/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l03_c04",
+      "array_prefix": "object_018",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_021_carton_l03_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l04_c00",
+      "array_prefix": "object_019",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_022_carton_l04_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l04_c01",
+      "array_prefix": "object_020",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_023_carton_l04_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l04_c04",
+      "array_prefix": "object_021",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_024_carton_l04_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l05_c00",
+      "array_prefix": "object_022",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_025_carton_l05_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l05_c01",
+      "array_prefix": "object_023",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_026_carton_l05_c01/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l05_c04",
+      "array_prefix": "object_024",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_027_carton_l05_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l06_c00",
+      "array_prefix": "object_025",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_028_carton_l06_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l06_c04",
+      "array_prefix": "object_026",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_029_carton_l06_c04/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l07_c00",
+      "array_prefix": "object_027",
+      "asset_id": "nvidia_cardbox_d04",
+      "source_sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_030_carton_l07_c00/Visual/Orientation/Asset/SM_CardBoxD_04"
+      ]
+    },
+    {
+      "simulation_object_id": "carton_l07_c04",
+      "array_prefix": "object_028",
+      "asset_id": "scan05",
+      "source_sha256": "3f67cf9ed445fa1c12b061310af897e1754ffb2b1d54bfe1cca2e029353202d5",
+      "mesh_paths": [
+        "/PerceptionValidation/Primitives/p_031_carton_l07_c04/Visual/Orientation/Asset/Visual_Cardboard/BOX_5_003",
+        "/PerceptionValidation/Primitives/p_031_carton_l07_c04/Visual/Orientation/Asset/Visual_Tape/BOX_5_012",
+        "/PerceptionValidation/Primitives/p_031_carton_l07_c04/Visual/Orientation/Asset/Visual_Label/BOX_5_006"
+      ]
+    }
+  ],
+  "mesh_file": "rendered_surface_meshes.npz",
+  "sha256": "8fb4c0bba39669567619399c82b96defd37cb5a19cee51a7c6f7a3e0089b5e2a",
+  "coordinate_frame": "world",
+  "units": "metres",
+  "usage": "SCENE_VISIBILITY_AND_POSTFREEZE_EVALUATION_ONLY; never solver input",
+  "geometry_source": "actual composed visible USD mesh vertices and triangulated topology; not nominal cuboid"
+}

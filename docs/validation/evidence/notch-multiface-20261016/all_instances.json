@@ -1,0 +1,2953 @@
+[
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      2
+    ],
+    "matched_gt": "carton_l07_c04",
+    "mask_iou": 0.9823423940328481,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 1,
+      "matched_gt": "carton_l07_c04",
+      "mask_iou": 0.9823423940328481,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 2,
+    "proposal_ids": [
+      3
+    ],
+    "matched_gt": "carton_l07_c03",
+    "mask_iou": 0.9064229739713915,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 2,
+      "matched_gt": "carton_l07_c03",
+      "mask_iou": 0.9064229739713915,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 3,
+    "proposal_ids": [
+      1,
+      4
+    ],
+    "matched_gt": "carton_l06_c04",
+    "mask_iou": 0.9740355705040004,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 3,
+      "matched_gt": "carton_l06_c04",
+      "mask_iou": 0.9740355705040004,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 4,
+    "proposal_ids": [
+      5
+    ],
+    "matched_gt": "carton_l07_c02",
+    "mask_iou": 0.9567234730687897,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 4,
+      "matched_gt": "carton_l07_c02",
+      "mask_iou": 0.9567234730687897,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "matched_gt": "carton_l07_c01",
+    "mask_iou": 0.9609107970717278,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 5,
+      "matched_gt": "carton_l07_c01",
+      "mask_iou": 0.9609107970717278,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "matched_gt": "carton_l07_c00",
+    "mask_iou": 0.9485933127117396,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 6,
+      "matched_gt": "carton_l07_c00",
+      "mask_iou": 0.9485933127117396,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "matched_gt": "carton_l05_c04",
+    "mask_iou": 0.9787396068070557,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 7,
+      "matched_gt": "carton_l05_c04",
+      "mask_iou": 0.9787396068070557,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 8,
+    "proposal_ids": [
+      9
+    ],
+    "matched_gt": "carton_l06_c03",
+    "mask_iou": 0.93288133915647,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 8,
+      "matched_gt": "carton_l06_c03",
+      "mask_iou": 0.93288133915647,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "matched_gt": "carton_l06_c02",
+    "mask_iou": 0.9487866588560817,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 9,
+      "matched_gt": "carton_l06_c02",
+      "mask_iou": 0.9487866588560817,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "matched_gt": "carton_l06_c00",
+    "mask_iou": 0.9556916869633675,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 10,
+      "matched_gt": "carton_l06_c00",
+      "mask_iou": 0.9556916869633675,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "matched_gt": "carton_l05_c00",
+    "mask_iou": 0.9580196746232441,
+    "initial_components": 7,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 11,
+      "matched_gt": "carton_l05_c00",
+      "mask_iou": 0.9580196746232441,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "matched_gt": "carton_l05_c02",
+    "mask_iou": 0.9453709028177113,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 12,
+      "matched_gt": "carton_l05_c02",
+      "mask_iou": 0.9453709028177113,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "matched_gt": "carton_l06_c01",
+    "mask_iou": 0.9629329980956174,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 13,
+      "matched_gt": "carton_l06_c01",
+      "mask_iou": 0.9629329980956174,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "matched_gt": "carton_l05_c03",
+    "mask_iou": 0.9322609208972845,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 14,
+      "matched_gt": "carton_l05_c03",
+      "mask_iou": 0.9322609208972845,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "matched_gt": "carton_l05_c01",
+    "mask_iou": 0.9618275520902553,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 15,
+      "matched_gt": "carton_l05_c01",
+      "mask_iou": 0.9618275520902553,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 1,
+    "proposal_ids": [
+      2
+    ],
+    "matched_gt": "carton_l05_c04",
+    "mask_iou": 0.9846454435406801,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 1,
+      "matched_gt": "carton_l05_c04",
+      "mask_iou": 0.9846454435406801,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      3
+    ],
+    "matched_gt": "carton_l05_c03",
+    "mask_iou": 0.9493071122885673,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 2,
+      "matched_gt": "carton_l05_c03",
+      "mask_iou": 0.9493071122885673,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 3,
+    "proposal_ids": [
+      4
+    ],
+    "matched_gt": "carton_l06_c04",
+    "mask_iou": 0.9901902497027348,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 3,
+      "matched_gt": "carton_l06_c04",
+      "mask_iou": 0.9901902497027348,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 4,
+    "proposal_ids": [
+      5
+    ],
+    "matched_gt": "carton_l05_c01",
+    "mask_iou": 0.9691426030180212,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 4,
+      "matched_gt": "carton_l05_c01",
+      "mask_iou": 0.9691426030180212,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "matched_gt": "carton_l04_c04",
+    "mask_iou": 0.9823747056844938,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 5,
+      "matched_gt": "carton_l04_c04",
+      "mask_iou": 0.9823747056844938,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "matched_gt": "carton_l05_c00",
+    "mask_iou": 0.9690687561371516,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 6,
+      "matched_gt": "carton_l05_c00",
+      "mask_iou": 0.9690687561371516,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "matched_gt": "carton_l05_c02",
+    "mask_iou": 0.9592123911723021,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 7,
+      "matched_gt": "carton_l05_c02",
+      "mask_iou": 0.9592123911723021,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 8,
+    "proposal_ids": [
+      1,
+      9
+    ],
+    "matched_gt": "carton_l06_c02",
+    "mask_iou": 0.9556208847633046,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 8,
+      "matched_gt": "carton_l06_c02",
+      "mask_iou": 0.9556208847633046,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "matched_gt": "carton_l06_c03",
+    "mask_iou": 0.9243308030363564,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 9,
+      "matched_gt": "carton_l06_c03",
+      "mask_iou": 0.9243308030363564,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "matched_gt": "carton_l02_c01",
+    "mask_iou": 0.9590658377760151,
+    "initial_components": 52,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 10,
+      "matched_gt": "carton_l02_c01",
+      "mask_iou": 0.9590658377760151,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "matched_gt": "carton_l04_c02",
+    "mask_iou": 0.9570009752091567,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 11,
+      "matched_gt": "carton_l04_c02",
+      "mask_iou": 0.9570009752091567,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "matched_gt": "carton_l03_c04",
+    "mask_iou": 0.9737715858847085,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 12,
+      "matched_gt": "carton_l03_c04",
+      "mask_iou": 0.9737715858847085,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "matched_gt": "carton_l02_c04",
+    "mask_iou": 0.9775370956471701,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 13,
+      "matched_gt": "carton_l02_c04",
+      "mask_iou": 0.9775370956471701,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "matched_gt": "carton_l04_c00",
+    "mask_iou": 0.9642512200081333,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 14,
+      "matched_gt": "carton_l04_c00",
+      "mask_iou": 0.9642512200081333,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "matched_gt": "carton_l03_c00",
+    "mask_iou": 0.9607025385184369,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 15,
+      "matched_gt": "carton_l03_c00",
+      "mask_iou": 0.9607025385184369,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 16,
+    "proposal_ids": [
+      17
+    ],
+    "matched_gt": "carton_l03_c03",
+    "mask_iou": 0.930700316662158,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 16,
+      "matched_gt": "carton_l03_c03",
+      "mask_iou": 0.930700316662158,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 17,
+    "proposal_ids": [
+      18
+    ],
+    "matched_gt": "carton_l04_c03",
+    "mask_iou": 0.9412286110682905,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 17,
+      "matched_gt": "carton_l04_c03",
+      "mask_iou": 0.9412286110682905,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 18,
+    "proposal_ids": [
+      19
+    ],
+    "matched_gt": "carton_l04_c01",
+    "mask_iou": 0.9687800376792649,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 18,
+      "matched_gt": "carton_l04_c01",
+      "mask_iou": 0.9687800376792649,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 19,
+    "proposal_ids": [
+      20
+    ],
+    "matched_gt": "carton_l02_c00",
+    "mask_iou": 0.958334140060795,
+    "initial_components": 5,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 19,
+      "matched_gt": "carton_l02_c00",
+      "mask_iou": 0.958334140060795,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      21
+    ],
+    "matched_gt": "carton_l03_c01",
+    "mask_iou": 0.9587799107639055,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 20,
+      "matched_gt": "carton_l03_c01",
+      "mask_iou": 0.9587799107639055,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 21,
+    "proposal_ids": [
+      22
+    ],
+    "matched_gt": "carton_l02_c03",
+    "mask_iou": 0.9348779819029339,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 21,
+      "matched_gt": "carton_l02_c03",
+      "mask_iou": 0.9348779819029339,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      23
+    ],
+    "matched_gt": "carton_l03_c02",
+    "mask_iou": 0.9477600076309179,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 22,
+      "matched_gt": "carton_l03_c02",
+      "mask_iou": 0.9477600076309179,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 23,
+    "proposal_ids": [
+      24
+    ],
+    "matched_gt": "carton_l01_c04",
+    "mask_iou": 0.9723648444578677,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 23,
+      "matched_gt": "carton_l01_c04",
+      "mask_iou": 0.9723648444578677,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 24,
+    "proposal_ids": [
+      25
+    ],
+    "matched_gt": "carton_l02_c02",
+    "mask_iou": 0.9635654863016682,
+    "initial_components": 6,
+    "final_patches": 2,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 24,
+      "matched_gt": "carton_l02_c02",
+      "mask_iou": 0.9635654863016682,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 25,
+    "proposal_ids": [
+      26
+    ],
+    "matched_gt": "carton_l06_c01",
+    "mask_iou": 0.9698453971901393,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 25,
+      "matched_gt": "carton_l06_c01",
+      "mask_iou": 0.9698453971901393,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 26,
+    "proposal_ids": [
+      27
+    ],
+    "matched_gt": "carton_l01_c03",
+    "mask_iou": 0.9107848673066065,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 26,
+      "matched_gt": "carton_l01_c03",
+      "mask_iou": 0.9107848673066065,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 27,
+    "proposal_ids": [
+      28
+    ],
+    "matched_gt": "carton_l06_c00",
+    "mask_iou": 0.9642864292434888,
+    "initial_components": 7,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 27,
+      "matched_gt": "carton_l06_c00",
+      "mask_iou": 0.9642864292434888,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 28,
+    "proposal_ids": [
+      29
+    ],
+    "matched_gt": "carton_l01_c00",
+    "mask_iou": 0.9492872016658658,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 28,
+      "matched_gt": "carton_l01_c00",
+      "mask_iou": 0.9492872016658658,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 29,
+    "proposal_ids": [
+      30
+    ],
+    "matched_gt": "carton_l01_c02",
+    "mask_iou": 0.9315510869927089,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 29,
+      "matched_gt": "carton_l01_c02",
+      "mask_iou": 0.9315510869927089,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 30,
+    "proposal_ids": [
+      31
+    ],
+    "matched_gt": "carton_l01_c01",
+    "mask_iou": 0.9595476597675474,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": null,
+    "evaluation": {
+      "mask_id": 30,
+      "matched_gt": "carton_l01_c01",
+      "mask_iou": 0.9595476597675474,
+      "status": "MATCHED",
+      "planes": "NOT_RUN_NO_COMPOSED_MESH_TRUTH",
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "matched_gt": "carton_l07_c00",
+    "mask_iou": 0.9716883170468377,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 1,
+      "matched_gt": "carton_l07_c00",
+      "mask_iou": 0.9716883170468377,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 1.478779333471098e-06,
+            "position_error_m": 8.311401350491465e-08,
+            "predicted_mean_depth_residual_m": 5.925966428562535e-08,
+            "predicted_p95_depth_residual_m": 1.4414699578413348e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 1.7075472925031877e-06,
+            "position_error_m": 2.9256265399180137e-07,
+            "predicted_mean_depth_residual_m": 1.3190396095480227e-07,
+            "predicted_p95_depth_residual_m": 3.1173141085139017e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 2,
+    "proposal_ids": [
+      2,
+      8
+    ],
+    "matched_gt": "carton_l05_c01",
+    "mask_iou": 0.878079886953554,
+    "initial_components": 14,
+    "final_patches": 4,
+    "reliable_planes": 3,
+    "source_ambiguous": true,
+    "cuboid_status": "BLOCKED_SOURCE_AMBIGUITY",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 3,
+    "evaluation": {
+      "mask_id": 2,
+      "matched_gt": "carton_l05_c01",
+      "mask_iou": 0.878079886953554,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 3,
+        "extracted_reliable_planes": 3,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.009394345034888967,
+            "position_error_m": 7.924965919614557e-08,
+            "predicted_mean_depth_residual_m": 1.1101701794131705e-05,
+            "predicted_p95_depth_residual_m": 2.0676045553602587e-05,
+            "mesh_plane_mean_m": 2.7755575615628914e-17,
+            "mesh_plane_max_m": 2.7755575615628914e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 6,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.007697255157956611,
+            "position_error_m": 1.365467377500984e-06,
+            "predicted_mean_depth_residual_m": 7.517106124721893e-06,
+            "predicted_p95_depth_residual_m": 1.4510934169209566e-05,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 7,
+            "gt_surface": [
+              2,
+              1
+            ],
+            "normal_error_degrees": 0.01211195467886607,
+            "position_error_m": 1.2143892883287322e-05,
+            "predicted_mean_depth_residual_m": 0.0005589544638213418,
+            "predicted_p95_depth_residual_m": 0.0010705046756586789,
+            "mesh_plane_mean_m": 4.440892098500627e-16,
+            "mesh_plane_max_m": 4.440892098500632e-16,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [
+          5
+        ],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 3,
+    "proposal_ids": [
+      3
+    ],
+    "matched_gt": "carton_l06_c04",
+    "mask_iou": 0.9719418960244648,
+    "initial_components": 4,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 3,
+      "matched_gt": "carton_l06_c04",
+      "mask_iou": 0.9719418960244648,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 2,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0,
+            "position_error_m": 9.283621349442939e-08,
+            "predicted_mean_depth_residual_m": 5.8397407650643525e-08,
+            "predicted_p95_depth_residual_m": 1.5198570870733617e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            2,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 4,
+    "proposal_ids": [
+      4
+    ],
+    "matched_gt": "carton_l05_c04",
+    "mask_iou": 0.9778144252909329,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 4,
+      "matched_gt": "carton_l05_c04",
+      "mask_iou": 0.9778144252909329,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 2.561320938754782e-06,
+            "position_error_m": 9.269705825154517e-08,
+            "predicted_mean_depth_residual_m": 5.7417441974507074e-08,
+            "predicted_p95_depth_residual_m": 1.4857554777591984e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 5,
+    "proposal_ids": [
+      5
+    ],
+    "matched_gt": "carton_l07_c04",
+    "mask_iou": 0.9788479752030537,
+    "initial_components": 4,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 5,
+      "matched_gt": "carton_l07_c04",
+      "mask_iou": 0.9788479752030537,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.020447800991369103,
+            "position_error_m": 0.00025273799739876715,
+            "predicted_mean_depth_residual_m": 0.0010311641461313232,
+            "predicted_p95_depth_residual_m": 0.002757023290987214,
+            "mesh_plane_mean_m": 0.0011358712578159568,
+            "mesh_plane_max_m": 0.018994059937557928,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "matched_gt": "carton_l06_c00",
+    "mask_iou": 0.9774755543313594,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 6,
+      "matched_gt": "carton_l06_c00",
+      "mask_iou": 0.9774755543313594,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 2.0913097891518726e-06,
+            "position_error_m": 8.296699866017221e-08,
+            "predicted_mean_depth_residual_m": 6.025447062920906e-08,
+            "predicted_p95_depth_residual_m": 1.4436120743255287e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 1.7075472925031877e-06,
+            "position_error_m": 2.9681943169990177e-07,
+            "predicted_mean_depth_residual_m": 1.3245388511715232e-07,
+            "predicted_p95_depth_residual_m": 3.169000250657914e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 7,
+    "proposal_ids": [
+      7
+    ],
+    "matched_gt": "carton_l05_c00",
+    "mask_iou": 0.9129400702453054,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 7,
+      "matched_gt": "carton_l05_c00",
+      "mask_iou": 0.9129400702453054,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 1.2074182697257333e-06,
+            "position_error_m": 8.261893391647845e-08,
+            "predicted_mean_depth_residual_m": 6.292801495533943e-08,
+            "predicted_p95_depth_residual_m": 1.430469934282641e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 1,
+    "proposal_ids": [
+      1,
+      20
+    ],
+    "matched_gt": "carton_l05_c04",
+    "mask_iou": 0.9825247256541276,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 1,
+      "matched_gt": "carton_l05_c04",
+      "mask_iou": 0.9825247256541276,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.002989798041329139,
+            "position_error_m": 4.1031378246181305e-06,
+            "predicted_mean_depth_residual_m": 0.00014124759803062562,
+            "predicted_p95_depth_residual_m": 0.00026824775398979204,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "matched_gt": "carton_l05_c01",
+    "mask_iou": 0.9879068054633094,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "ACCEPTED_INDEPENDENTLY_VALIDATED",
+    "accepted": true,
+    "baseline_accepted": true,
+    "complete_gt_accuracy_pass": false,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 2,
+      "matched_gt": "carton_l05_c01",
+      "mask_iou": 0.9879068054633094,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.002038956618010413,
+            "position_error_m": 4.214994350437706e-06,
+            "predicted_mean_depth_residual_m": 0.00014121009836839826,
+            "predicted_p95_depth_residual_m": 0.0002687185104908174,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 2.8940282055463577e-05,
+            "position_error_m": 1.792155479851676e-07,
+            "predicted_mean_depth_residual_m": 1.2401266814137647e-07,
+            "predicted_p95_depth_residual_m": 2.940305268706034e-07,
+            "mesh_plane_mean_m": 2.7755575615628914e-17,
+            "mesh_plane_max_m": 2.7755575615628914e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": {
+        "reference": "actual composed mesh bounds; ideal cuboid approximation, not nominal config",
+        "center_error_m": 0.016188342933979114,
+        "sorted_dimension_error_m": [
+          0.008276057825690353,
+          0.01509423406653615,
+          0.02863173523428242
+        ],
+        "orientation_symmetry_error_degrees": 0.002038956618010413,
+        "corner_rms_m": 0.023261317839414708,
+        "corner_max_m": 0.032655392075860434,
+        "symmetry": "all 24 proper signed-axis permutations and one-to-one corner assignment",
+        "accuracy_checks": {
+          "center": false,
+          "dimensions": false,
+          "orientation": true,
+          "corners": false
+        },
+        "external_accuracy_pass": false,
+        "threshold_source": "configs/perception/metric_geometry_acceptance.json; unchanged"
+      }
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 3,
+    "proposal_ids": [
+      3
+    ],
+    "matched_gt": "carton_l04_c04",
+    "mask_iou": 0.9844219953333423,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 3,
+      "matched_gt": "carton_l04_c04",
+      "mask_iou": 0.9844219953333423,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0028802729365200587,
+            "position_error_m": 5.957869762041046e-06,
+            "predicted_mean_depth_residual_m": 0.00015301824988104895,
+            "predicted_p95_depth_residual_m": 0.0002923707691589783,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 4,
+    "proposal_ids": [
+      4
+    ],
+    "matched_gt": "carton_l05_c00",
+    "mask_iou": 0.9727172496742508,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 4,
+      "matched_gt": "carton_l05_c00",
+      "mask_iou": 0.9727172496742508,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0015455519819908936,
+            "position_error_m": 5.404809054754267e-07,
+            "predicted_mean_depth_residual_m": 0.00014116330745545587,
+            "predicted_p95_depth_residual_m": 0.00026782127270060793,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "matched_gt": "carton_l04_c01",
+    "mask_iou": 0.9821393296898663,
+    "initial_components": 3,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 5,
+      "matched_gt": "carton_l04_c01",
+      "mask_iou": 0.9821393296898663,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0023006533748922992,
+            "position_error_m": 3.2315231792146015e-06,
+            "predicted_mean_depth_residual_m": 0.00015296100942144232,
+            "predicted_p95_depth_residual_m": 0.0002916845237795229,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.0007494819749263871,
+            "position_error_m": 7.285833913406314e-07,
+            "predicted_mean_depth_residual_m": 1.7525525657696278e-06,
+            "predicted_p95_depth_residual_m": 3.5955188567027285e-06,
+            "mesh_plane_mean_m": 2.926263383348847e-17,
+            "mesh_plane_max_m": 6.003232588483652e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "matched_gt": "carton_l03_c02",
+    "mask_iou": 0.969401035570828,
+    "initial_components": 4,
+    "final_patches": 3,
+    "reliable_planes": 3,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 3,
+    "evaluation": {
+      "mask_id": 6,
+      "matched_gt": "carton_l03_c02",
+      "mask_iou": 0.969401035570828,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 3,
+        "extracted_reliable_planes": 3,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.004874305758624981,
+            "position_error_m": 6.408118633505211e-07,
+            "predicted_mean_depth_residual_m": 0.00016475426615015292,
+            "predicted_p95_depth_residual_m": 0.00031325604341275737,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              2,
+              1
+            ],
+            "normal_error_degrees": 0.005169407168532698,
+            "position_error_m": 1.2214421470257975e-05,
+            "predicted_mean_depth_residual_m": 0.0005094462236391919,
+            "predicted_p95_depth_residual_m": 0.001016209422104905,
+            "mesh_plane_mean_m": 2.220446049250313e-16,
+            "mesh_plane_max_m": 2.220446049250313e-16,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 2,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.0017841828612535566,
+            "position_error_m": 9.174983423010374e-08,
+            "predicted_mean_depth_residual_m": 2.032841353848418e-06,
+            "predicted_p95_depth_residual_m": 4.382106565770094e-06,
+            "mesh_plane_mean_m": 2.7755575615628914e-17,
+            "mesh_plane_max_m": 2.7755575615628914e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "matched_gt": "carton_l06_c04",
+    "mask_iou": 0.987618601880611,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 7,
+      "matched_gt": "carton_l06_c04",
+      "mask_iou": 0.987618601880611,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0271273824792695,
+            "position_error_m": 1.618285554116916e-06,
+            "predicted_mean_depth_residual_m": 0.00013265771921145558,
+            "predicted_p95_depth_residual_m": 0.00025076466961819753,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 8,
+    "proposal_ids": [
+      9
+    ],
+    "matched_gt": "carton_l03_c04",
+    "mask_iou": 0.9752133754238279,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 8,
+      "matched_gt": "carton_l03_c04",
+      "mask_iou": 0.9752133754238279,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0034728111784849687,
+            "position_error_m": 2.9465904529124565e-06,
+            "predicted_mean_depth_residual_m": 0.0001647744585846338,
+            "predicted_p95_depth_residual_m": 0.00031202002130857885,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "matched_gt": "carton_l06_c00",
+    "mask_iou": 0.9853092783505155,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 9,
+      "matched_gt": "carton_l06_c00",
+      "mask_iou": 0.9853092783505155,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.0008557133509917424,
+            "position_error_m": 3.719313388383938e-07,
+            "predicted_mean_depth_residual_m": 8.340412692958824e-07,
+            "predicted_p95_depth_residual_m": 1.8758048792033577e-06,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.027102650897582615,
+            "position_error_m": 4.5723508013129077e-07,
+            "predicted_mean_depth_residual_m": 0.00013265639041826256,
+            "predicted_p95_depth_residual_m": 0.000250788797296253,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "matched_gt": "carton_l04_c00",
+    "mask_iou": 0.9676771528439784,
+    "initial_components": 3,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 10,
+      "matched_gt": "carton_l04_c00",
+      "mask_iou": 0.9676771528439784,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0023504959105708064,
+            "position_error_m": 6.402021028084626e-06,
+            "predicted_mean_depth_residual_m": 0.0001529685944137385,
+            "predicted_p95_depth_residual_m": 0.0002922821461317504,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "matched_gt": "carton_l03_c00",
+    "mask_iou": 0.9626443109251628,
+    "initial_components": 4,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 11,
+      "matched_gt": "carton_l03_c00",
+      "mask_iou": 0.9626443109251628,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0023753380692514616,
+            "position_error_m": 2.149754373848012e-06,
+            "predicted_mean_depth_residual_m": 0.0001647129759322488,
+            "predicted_p95_depth_residual_m": 0.0003120842394866985,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "matched_gt": "carton_l02_c04",
+    "mask_iou": 0.9810142187885263,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 12,
+      "matched_gt": "carton_l02_c04",
+      "mask_iou": 0.9810142187885263,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0011338159025445797,
+            "position_error_m": 3.4129296808127485e-06,
+            "predicted_mean_depth_residual_m": 0.00017670697821158633,
+            "predicted_p95_depth_residual_m": 0.000334858665972515,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "matched_gt": "carton_l02_c01",
+    "mask_iou": 0.9608935455903783,
+    "initial_components": 4,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 13,
+      "matched_gt": "carton_l02_c01",
+      "mask_iou": 0.9608935455903783,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.00421374090817032,
+            "position_error_m": 4.065906900552196e-06,
+            "predicted_mean_depth_residual_m": 0.00017671846220950518,
+            "predicted_p95_depth_residual_m": 0.00033385963038599085,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.0007724066160262064,
+            "position_error_m": 1.8679349711447912e-07,
+            "predicted_mean_depth_residual_m": 1.8665056089382494e-07,
+            "predicted_p95_depth_residual_m": 4.273914469721251e-07,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "matched_gt": "carton_l02_c00",
+    "mask_iou": 0.9600541900522547,
+    "initial_components": 5,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 14,
+      "matched_gt": "carton_l02_c00",
+      "mask_iou": 0.9600541900522547,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 1,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.008730782740362823,
+            "position_error_m": 4.974624781828307e-06,
+            "predicted_mean_depth_residual_m": 0.00017677086769111414,
+            "predicted_p95_depth_residual_m": 0.0003332943240103581,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "matched_gt": "carton_l02_c03",
+    "mask_iou": 0.9625441943501243,
+    "initial_components": 5,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 3,
+    "evaluation": {
+      "mask_id": 15,
+      "matched_gt": "carton_l02_c03",
+      "mask_iou": 0.9625441943501243,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 3,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.02104461270788532,
+            "position_error_m": 6.338759557744655e-06,
+            "predicted_mean_depth_residual_m": 0.00017776300242956626,
+            "predicted_p95_depth_residual_m": 0.00033819426562208265,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 2,
+            "gt_surface": [
+              2,
+              1
+            ],
+            "normal_error_degrees": 0.021590355545351336,
+            "position_error_m": 2.4520314881981697e-05,
+            "predicted_mean_depth_residual_m": 0.0005450669385694858,
+            "predicted_p95_depth_residual_m": 0.0010402250794384726,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 16,
+    "proposal_ids": [
+      17
+    ],
+    "matched_gt": "carton_l03_c01",
+    "mask_iou": 0.9280977845683728,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 16,
+      "matched_gt": "carton_l03_c01",
+      "mask_iou": 0.9280977845683728,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.003335307809769451,
+            "position_error_m": 4.0424694836005415e-06,
+            "predicted_mean_depth_residual_m": 0.00016475123099173858,
+            "predicted_p95_depth_residual_m": 0.00031321363675111956,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 17,
+    "proposal_ids": [
+      18
+    ],
+    "matched_gt": "carton_l01_c04",
+    "mask_iou": 0.9765625,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 1,
+    "evaluation": {
+      "mask_id": 17,
+      "matched_gt": "carton_l01_c04",
+      "mask_iou": 0.9765625,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 1,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.007800945837001857,
+            "position_error_m": 7.647381037922951e-06,
+            "predicted_mean_depth_residual_m": 0.0001868445807113553,
+            "predicted_p95_depth_residual_m": 0.00035074846742055854,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 18,
+    "proposal_ids": [
+      19
+    ],
+    "matched_gt": "carton_l01_c03",
+    "mask_iou": 0.9147464624722115,
+    "initial_components": 1,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 18,
+      "matched_gt": "carton_l01_c03",
+      "mask_iou": 0.9147464624722115,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.009070449880529723,
+            "position_error_m": 8.065476272023364e-06,
+            "predicted_mean_depth_residual_m": 0.00018695258352292385,
+            "predicted_p95_depth_residual_m": 0.00034986832723711276,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 19,
+    "proposal_ids": [
+      21
+    ],
+    "matched_gt": "carton_l02_c02",
+    "mask_iou": 0.8904031219990601,
+    "initial_components": 6,
+    "final_patches": 2,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 19,
+      "matched_gt": "carton_l02_c02",
+      "mask_iou": 0.8904031219990601,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.11161150837770349,
+            "position_error_m": 0.00041257160272030555,
+            "predicted_mean_depth_residual_m": 0.0009662151257120275,
+            "predicted_p95_depth_residual_m": 0.0023056719637486456,
+            "mesh_plane_mean_m": 0.001135871257815962,
+            "mesh_plane_max_m": 0.01899405993755789,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 5,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 89.99926371067974,
+            "position_error_m": 0.07963982703215515,
+            "predicted_mean_depth_residual_m": 0.00154692947405667,
+            "predicted_p95_depth_residual_m": 0.003441143787880407,
+            "mesh_plane_mean_m": 0.0005693179446848688,
+            "mesh_plane_max_m": 0.36196430131575486,
+            "corresponding_surface": false,
+            "accuracy_pass": false
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "matched_gt": "carton_l01_c02",
+    "mask_iou": 0.9370922646784716,
+    "initial_components": 3,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 3,
+    "evaluation": {
+      "mask_id": 20,
+      "matched_gt": "carton_l01_c02",
+      "mask_iou": 0.9370922646784716,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 3,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.0006729789193236058,
+            "position_error_m": 7.419140697573212e-06,
+            "predicted_mean_depth_residual_m": 0.0001867689248488697,
+            "predicted_p95_depth_residual_m": 0.0003521435736651979,
+            "mesh_plane_mean_m": 3.30872245021211e-24,
+            "mesh_plane_max_m": 3.308722450212114e-24,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.0005073384217845977,
+            "position_error_m": 1.048347756660295e-07,
+            "predicted_mean_depth_residual_m": 9.169016394275681e-08,
+            "predicted_p95_depth_residual_m": 1.8322972744622135e-07,
+            "mesh_plane_mean_m": 5.551115123125783e-17,
+            "mesh_plane_max_m": 5.551115123125783e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            2,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 21,
+    "proposal_ids": [
+      23
+    ],
+    "matched_gt": "carton_l01_c00",
+    "mask_iou": 0.9531255006247797,
+    "initial_components": 2,
+    "final_patches": 1,
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "cuboid_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 21,
+      "matched_gt": "carton_l01_c00",
+      "mask_iou": 0.9531255006247797,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 1,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.00726439743159819,
+            "position_error_m": 2.2533357313392344e-07,
+            "predicted_mean_depth_residual_m": 0.00018687407558649007,
+            "predicted_p95_depth_residual_m": 0.0003500761787533777,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [
+          [
+            1,
+            1
+          ]
+        ],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "matched_gt": "carton_l01_c01",
+    "mask_iou": 0.9622911361495796,
+    "initial_components": 2,
+    "final_patches": 2,
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "cuboid_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "accepted": false,
+    "baseline_accepted": false,
+    "complete_gt_accuracy_pass": null,
+    "expected_visible_faces": 2,
+    "evaluation": {
+      "mask_id": 22,
+      "matched_gt": "carton_l01_c01",
+      "mask_iou": 0.9622911361495796,
+      "status": "MATCHED",
+      "planes": {
+        "expected_reliable_visible_faces": 2,
+        "extracted_reliable_planes": 2,
+        "matched_planes": [
+          {
+            "support_label": 0,
+            "gt_surface": [
+              0,
+              -1
+            ],
+            "normal_error_degrees": 0.002996412727402678,
+            "position_error_m": 1.1354388147644112e-05,
+            "predicted_mean_depth_residual_m": 0.00018686002351073157,
+            "predicted_p95_depth_residual_m": 0.00035225273641961154,
+            "mesh_plane_mean_m": 0.0,
+            "mesh_plane_max_m": 0.0,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          },
+          {
+            "support_label": 1,
+            "gt_surface": [
+              1,
+              1
+            ],
+            "normal_error_degrees": 0.00029149087658400616,
+            "position_error_m": 8.582859362116224e-08,
+            "predicted_mean_depth_residual_m": 9.895327304966666e-08,
+            "predicted_p95_depth_residual_m": 2.2020242753661987e-07,
+            "mesh_plane_mean_m": 2.7755575615628914e-17,
+            "mesh_plane_max_m": 2.7755575615628914e-17,
+            "corresponding_surface": true,
+            "accuracy_pass": true
+          }
+        ],
+        "unmatched_gt_surfaces": [],
+        "unmatched_predicted_support_labels": [],
+        "policy": "one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged"
+      },
+      "complete_box": "NOT_APPLICABLE"
+    }
+  }
+]

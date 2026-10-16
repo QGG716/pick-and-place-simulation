@@ -61,7 +61,8 @@ def main(argv=None):
         try:
             code=run_capture(['--capture',request['capture'],'--vision',str(args.vision),
                 '--models',str(args.models),'--output-directory',request['algorithm_output'],
-                '--proposal-mode',args.proposal_mode,'--detector-config',str(args.detector_config)]
+                '--proposal-mode',args.proposal_mode,'--detector-config',str(args.detector_config),
+                '--capture-scene',args.capture_scene]
                 + (['--stop-after',args.stop_after] if args.stop_after else [])
                 + (['--evaluate-gt'] if args.evaluate_gt else []) + forwarded_arguments(args),
                 runtime_factory=cache, geometry_stop_requested=lambda: (args.output/'stop-worker').exists())

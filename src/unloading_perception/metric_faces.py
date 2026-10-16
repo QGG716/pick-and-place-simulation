@@ -320,6 +320,71 @@ def _boundary_kinds(polygon, normal, offset, depth, K, *, search_px=6, positive_
     return result
 
 
+_COMPLETE_FIELDS = ('corners_3d', 'corners_2d', 'center_3d', 'shape_dimensions',
+                    'orthogonal_axes_3d', 'completion_mode')
+
+
+def distinct_observed_planes(faces, *, angle_degrees=10., distance_m=.006):
+    """Group reliable coplanar patches using normals AND mutual plane position.
+
+    A component/label is provenance, not another face. Complete-link grouping
+    avoids joining a chain of gradually displaced fragments into one plane.
+    """
+    groups = []
+    for face in faces:
+        if face.get('quality', {}).get('geometry_eligible') is False:
+            continue
+        if face.get('final_support', {}).get('status', 'PASS') != 'PASS':
+            continue
+        points = np.asarray(face['corners_3d_m'], float)
+        if points.shape != (4,3) or not np.isfinite(points).all():
+            continue
+        normal = np.cross(points[1]-points[0], points[3]-points[0])
+        length = np.linalg.norm(normal)
+        if length < 1e-10:
+            continue
+        normal /= length
+        item = dict(normal=normal, points=points, label=face['support_label'],
+                    initial_plane_index=face.get('initial_plane', {}).get('initial_plane_index'))
+        def same(other):
+            return (abs(normal @ other['normal']) >= np.cos(np.radians(angle_degrees))
+                    and np.max(np.abs((points-other['points'][0]) @ other['normal'])) <= distance_m
+                    and np.max(np.abs((other['points']-points[0]) @ normal)) <= distance_m)
+        group = next((g for g in groups if all(same(other) for other in g)), None)
+        if group is None: groups.append([item])
+        else: group.append(item)
+    return groups
+
+
+def _completion_evidence(output):
+    groups = distinct_observed_planes(output['camera_facing_faces'])
+    count = len(groups)
+    output['reliable_plane_count'] = count
+    output['reliable_plane_groups'] = [dict(support_labels=[p['label'] for p in g],
+        initial_plane_indices=[p['initial_plane_index'] for p in g]) for g in groups]
+    output['plane_fit_status'] = 'RELIABLE_PLANES' if count else 'NO_RELIABLE_PLANE'
+    output['multiface_relation_status'] = ('NOT_APPLICABLE_SINGLE_PLANE' if count == 1 else
+        'NO_RELIABLE_PLANES' if not count else 'SOURCE_AMBIGUOUS' if output.get('source_ambiguous') else
+        'ORTHOGONAL_PLANES_VALIDATED_BY_DEPTH' if output.get('metric_solver', {}).get('success') else
+        'INCOMPATIBLE_OR_UNVERIFIED_PLANES')
+    if count == 0: return 'NOT_ATTEMPTED_NO_RELIABLE_FACE'
+    if count == 1: return 'NOT_ATTEMPTED_SINGLE_FACE'
+    if output.get('source_ambiguous'): return 'BLOCKED_SOURCE_AMBIGUITY'
+    if not output.get('metric_solver', {}).get('success'): return 'INSUFFICIENT_PLANE_RELATION'
+    normals = [g[0]['normal'] for g in groups]
+    if not any(abs(a @ b) < np.sin(np.radians(10)) for i,a in enumerate(normals) for b in normals[i+1:]):
+        return 'INSUFFICIENT_NONPARALLEL_FACES'
+    if output.get('patch_construction_rejections'): return 'INSUFFICIENT_RELIABLE_PATCHES'
+    return 'BOUNDARY_EVIDENCE_REQUIRED'
+
+
+def _clear_complete_geometry(output):
+    """A rejected complete box cannot remain as a consumable formal geometry."""
+    for key in _COMPLETE_FIELDS: output.pop(key, None)
+    output['accepted'] = False
+    output['complete_observability'] = 'UNRESOLVED_PHYSICAL_BOUNDARIES'
+
+
 def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
                      config=MetricFitConfig(), source_ambiguous=False, phase_seconds=None):
     """Produce observed patches first; complete only supported physical bounds."""
@@ -363,6 +428,9 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
     output['support_capture_binding'] = _binding(depth, mask, K)
     output['frozen_support_regions'] = {str(g['label']): _support_runs(g['region']) for g in groups}
     if not groups:
+        output['cuboid_status'] = _completion_evidence(output)
+        output['cuboid_solver_attempted'] = False
+        output['independent_geometry_validation_status'] = 'NOT_RUN_NO_RELIABLE_FACE'
         return output
     # Do not force unrelated planes into one frame (merged masks remain explicit).
     compatible = all(abs(float(a['normal'] @ b['normal'])) < np.sin(np.radians(config.normal_pair_tolerance_degrees))
@@ -462,9 +530,13 @@ def fit_metric_faces(depth, mask, K, labels, seeds, *, mask_id,
         output['camera_facing_faces'].append(face)
     output['projected_camera_facing_face_count'] = len(output['camera_facing_faces'])
     output['depth_supported_face_count'] = len(output['camera_facing_faces'])
-    if (axes is not None and len(output['camera_facing_faces']) >= 2 and not source_ambiguous
-            and not output.get('patch_construction_rejections')):
+    output['cuboid_status'] = _completion_evidence(output)
+    if axes is not None and output['cuboid_status'] == 'BOUNDARY_EVIDENCE_REQUIRED':
+        output['cuboid_status'] = 'INSUFFICIENT_PHYSICAL_BOUNDARIES'
+        output['cuboid_solver_attempted'] = True
         _complete(output, groups, axes, all_boundary_points, depth, K, config, mask)
+    else:
+        output['cuboid_solver_attempted'] = False
     from time import perf_counter
     validation_started=perf_counter()
     result=validate_metric_record(output, depth, mask, K, maximum_mean_m=config.maximum_mean_m,
@@ -518,8 +590,13 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
         audits.append(audit)
     output['camera_facing_faces']=accepted; output['final_face_validation']=audits
     output['projected_camera_facing_face_count']=len(accepted)
+    output['depth_supported_face_count']=len(accepted)
+    gate = _completion_evidence(output)
+    was_complete = bool(output.get('accepted'))
     if output.get('accepted'):
         try:
+            if gate != 'BOUNDARY_EVIDENCE_REQUIRED':
+                raise ValueError('COMPLETE_CUBOID_LOST_MULTIFACE_EVIDENCE:' + gate)
             center,axes,dimensions,_=coherent_cuboid(output['corners_3d'])
             if len(accepted) != len(record['camera_facing_faces']):
                 raise ValueError('COMPLETE_CUBOID_LOST_OBSERVED_SUPPORT')
@@ -534,11 +611,55 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
                     raise ValueError('COMPLETE_CUBOID_MOVED_FROM_OBSERVED_PLANES')
             output.update(center_3d=center.tolist(),orthogonal_axes_3d=axes.tolist(),shape_dimensions=dimensions.tolist())
             output['complete_cuboid_consistency']={'status':'PASS'}
+            output['cuboid_status']='ACCEPTED_INDEPENDENTLY_VALIDATED'
+            output['independent_geometry_validation_status']='PASS'
         except ValueError as exc:
-            output['accepted']=False
-            output['complete_observability']='UNRESOLVED_PHYSICAL_BOUNDARIES'
+            output['rejected_cuboid_candidate'] = {k:output[k] for k in _COMPLETE_FIELDS if k in output}
+            output['rejected_cuboid_candidate']['status'] = 'REJECTED_DIAGNOSTIC_ONLY'
+            _clear_complete_geometry(output)
             output['complete_cuboid_consistency']={'status':'REJECTED','reason':str(exc)}
+            output['cuboid_status']='REVOKED_SINGLE_FACE' if output['reliable_plane_count']==1 else 'REVOKED_FINAL_VALIDATION'
+            output['independent_geometry_validation_status']='REJECTED'
+    if not output.get('accepted'):
+        _clear_complete_geometry(output)
+        if not was_complete:
+            output['cuboid_status'] = gate if gate != 'BOUNDARY_EVIDENCE_REQUIRED' else 'INSUFFICIENT_PHYSICAL_BOUNDARIES'
+            output['independent_geometry_validation_status']='RELIABLE_SURFACES_ONLY' if accepted else 'NO_RELIABLE_SURFACES'
     return output
+
+
+def _shared_edge_support(edge, first, second, depth, K, *, search_px=6, maximum_residual_m=.006):
+    """Measured two-sided support at 10/15 positions, not an infinite intersection.
+
+    Reuses the boundary search radius and frozen plane residual tolerance. Both
+    labelled surfaces must reach the same 3D segment within that pixel footprint.
+    This does not certify either endpoint or any hidden dimension by itself.
+    """
+    a,b=np.asarray(edge);direction=b-a;length=np.linalg.norm(direction)
+    if length<1e-9:return {'supported':False,'reason':'DEGENERATE_SHARED_SEGMENT'}
+    direction/=length;projected=project(np.array([a,b]),K);votes=[]
+    for t in np.linspace(.15,.85,15):
+        xy=projected[0]+t*(projected[1]-projected[0]);x,y=np.rint(xy).astype(int)
+        cropped=x<=0 or y<=0 or x>=depth.shape[1]-1 or y>=depth.shape[0]-1
+        evidence=[]
+        for group in (first,second):
+            x0,x1=max(0,x-search_px),min(depth.shape[1],x+search_px+1)
+            y0,y1=max(0,y-search_px),min(depth.shape[0],y+search_px+1)
+            yy,xx=np.nonzero(group['region'][y0:y1,x0:x1]);xx+=x0;yy+=y0
+            z=depth[yy,xx];ok=np.isfinite(z)&(z>0)&((xx-xy[0])**2+(yy-xy[1])**2<=search_px**2)
+            points=backproject_pixels(np.c_[xx[ok],yy[ok]],z[ok],K)
+            along=(points-a)@direction;distance=np.linalg.norm(points-a-along[:,None]*direction,axis=1)
+            residual=abs(points@group['normal']+group['offset'])
+            # Pixel footprint plus the existing metric tolerance, not a size prior.
+            bound=maximum_residual_m+search_px*points[:,2]/min(K[0,0],K[1,1])
+            good=(distance<=bound)&(residual<=maximum_residual_m)&(along>=0)&(along<=length)
+            evidence.append(dict(support_label=group['label'],point_count=int(good.sum()),
+                nearest_segment_distance_m=float(distance[good].min()) if good.any() else None))
+        votes.append(dict(pixel=xy.tolist(),supported=bool(not cropped and all(v['point_count'] for v in evidence)),surfaces=evidence))
+    count=sum(v['supported'] for v in votes)
+    return dict(supported=count>=10,supported_samples=count,total_samples=15,search_px=search_px,
+        maximum_plane_residual_m=maximum_residual_m,samples=votes,
+        reason='MEASURED_TWO_SIDED_SHARED_SEGMENT' if count>=10 else 'NO_TWO_SIDED_SEGMENT_SUPPORT')
 
 
 def _complete(output, groups, axes, all_points, depth, K, config, mask):
@@ -597,10 +718,26 @@ def _complete(output, groups, axes, all_points, depth, K, config, mask):
         ids = pairs[axis][side=='high']; p = corners[ids]; polygon = project(p,K)
         boundaries = _boundary_kinds(polygon, g['normal'],g['offset'],depth,K,
                                      positive_infinity_is_no_hit=config.positive_infinity_is_no_hit)
-        # Shared intersection lines are physical edges only when both patches
-        # actually reach them; outside depth change already supplies evidence.
         candidate_faces.append({'axis':axis,'side':side,'corner_indices':ids,'support_label':g['label'],
                                 'corners_2d':polygon.tolist(),'boundary_evidence':boundaries})
+    by_label={g['label']:g for g in groups}
+    for face in candidate_faces:
+        ids=face['corner_indices']
+        for i,boundary in enumerate(face['boundary_evidence']):
+            edge=[ids[i],ids[(i+1)%4]]
+            neighbour=next((f for f in candidate_faces if f is not face and set(edge).issubset(f['corner_indices'])),None)
+            if neighbour is None:continue
+            shared=_shared_edge_support(corners[edge],by_label[face['support_label']],
+                by_label[neighbour['support_label']],depth,K,maximum_residual_m=config.maximum_p95_m)
+            boundary['shared_edge_evidence']=shared
+            # Never reinterpret observed occlusion, image crop or conflicting
+            # foreground evidence as a physical common edge.
+            if (boundary['kind']=='UNCLASSIFIED_BOUNDARY' and not boundary['conflict_sample_indices']
+                    and not boundary['sample_counts']['occlusion'] and not boundary['sample_counts']['crop']
+                    and shared['supported']):
+                boundary['depth_jump_kind']=boundary['kind']
+                boundary['kind']='PHYSICAL_EDGE_SUPPORTED'
+                boundary['reason']='MEASURED_TWO_SIDED_SHARED_SEGMENT'
     physical = all(b['kind']=='PHYSICAL_EDGE_SUPPORTED' for f in candidate_faces for b in f['boundary_evidence'])
     output['completion_diagnostics'] = {'bounds_low':low.tolist(),'bounds_high':high.tolist(),
                                          'candidate_faces':candidate_faces,'all_visible_edges_physical':physical,

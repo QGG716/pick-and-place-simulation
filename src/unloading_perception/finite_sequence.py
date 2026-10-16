@@ -60,7 +60,7 @@ def manifest_groups(path):
     return result
 
 
-def verify_capture(capture):
+def verify_capture(capture, *, scene='FULL_STACK_NOMINAL'):
     """Validate every consumed original buffer, releasing arrays module by module."""
     capture = Path(capture)
     manifest = IsaacSceneManifest.from_dict(read_json(capture/'manifest.json'))
@@ -69,7 +69,7 @@ def verify_capture(capture):
         raise ValueError('finite sequence requires two distinct RGB-D modules')
     provenance, batches = {}, []
     for module in modules:
-        payload = load_capture_payload(capture/'FULL_STACK_NOMINAL/modules'/module,
+        payload = load_capture_payload(capture/scene/'modules'/module,
             manifest, expected_module_id=module, with_instance_masks=True)
         provenance[module] = payload.input_provenance()
         m = payload.metadata

@@ -1,0 +1,21 @@
+{
+  "schema_version": "stack_notch_v1",
+  "scene_name": "STACK_NOTCH_MULTIFACE",
+  "shape": "top-open descending steps in three middle columns; outer columns retained",
+  "coordinate_convention": "+X into trailer, +Y left, +Z up; metres",
+  "columns": [
+    {"center_y_m": -0.42, "remove_top_count": 2},
+    {"center_y_m": 0.0, "remove_top_count": 4},
+    {"center_y_m": 0.42, "remove_top_count": 5}
+  ],
+  "evaluation_target": "carton_l05_c01",
+  "expected_visibility_before_render_check": {
+    "three_faces": ["carton_l05_c01", "carton_l03_c02"],
+    "two_faces": ["carton_l04_c01"],
+    "single_face_controls": ["carton_l04_c00", "carton_l03_c04"]
+  },
+  "camera_policy": "unchanged nominal rig matching normal frame32; no mechanical reachability claim",
+  "retained_objects": "unchanged meshes, materials, dimensions and world poses",
+  "removal_policy": "remove entities from derived snapshot and collision contract, not visibility-only hiding",
+  "solver_inputs": "none of this scene-generation configuration is supplied to fitting or completion"
+}

@@ -1,0 +1,17 @@
+ssssss.............................................s.................... [ 75%]
+
+.......................                                                  [100%]
+
+============================== warnings summary ===============================
+
+.venv310\lib\site-packages\_pytest\cacheprovider.py:469
+
+  D:\code\simulation\pick-and-place-simulation-v0.5-perception-ros2\.venv310\lib\site-packages\_pytest\cacheprovider.py:469: PytestCacheWarning: could not create cache path D:\code\simulation\pick-and-place-simulation-v0.5-perception-ros2\.pytest_cache\v\cache\nodeids: [WinError 5] �ܾ����ʡ�: 'D:\\code\\simulation\\pick-and-place-simulation-v0.5-perception-ros2\\.pytest_cache\\v\\cache'
+
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+88 passed, 7 skipped, 1 warning in 25.44s

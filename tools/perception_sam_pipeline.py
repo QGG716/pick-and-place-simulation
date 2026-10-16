@@ -18,7 +18,8 @@ def add_arguments(parser, *, include_sam_stop=True):
     parser.add_argument('--detector-config', type=Path,
                         default=Path(__file__).resolve().parents[1]/'configs/perception/grounding_dino.json')
     if include_sam_stop:
-        parser.add_argument('--stop-after', choices=('sam',))
+        parser.add_argument('--stop-after', choices=('sam', 'geometry'))
+    parser.add_argument('--capture-scene', default='FULL_STACK_NOMINAL')
     parser.add_argument('--evaluate-gt', action='store_true', help='load GT only after predictions are frozen')
 
 
@@ -98,7 +99,7 @@ def run_sam_only(args, *, runtime_factory=None):
     write(output/'summary.json', summary)
     try:
         models = json.loads(args.models.read_text(encoding='utf-8'))
-        sources = sorted((args.capture/'FULL_STACK_NOMINAL/modules').glob('*'))
+        sources = sorted((args.capture/getattr(args, 'capture_scene', 'FULL_STACK_NOMINAL')/'modules').glob('*'))
         if not sources and (args.capture/'sensor_rgb.png').is_file():
             sources = [args.capture]
         if not sources:

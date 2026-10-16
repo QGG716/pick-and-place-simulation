@@ -39,6 +39,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--appearance-ab", action="store_true", help="Only full-stack A/B material captures; identical mesh, no target highlight, no video")
     result.add_argument("--carton-assets", type=Path, help="Pinned complete USD carton configuration; full-stack image review only")
     result.add_argument("--asset-cache", type=Path, help="External cache containing pinned carton dependencies")
+    result.add_argument('--scene', default='FULL_STACK_NOMINAL', help='named full-stack scene in the supplied bundle')
     result.add_argument("--workcell-asset-cache", type=Path, help="Pinned official conveyor cache for derived workcell")
     result.add_argument("--continuous-frames", type=int, default=0,
                         help="New finite dual RGB-D recording at --fps; move the paired camera rig, keep scene assets unchanged")
@@ -82,6 +83,8 @@ def rgb_data(value):
 
 
 args = parser().parse_args()
+if args.scene != 'FULL_STACK_NOMINAL' and (not args.carton_assets or args.continuous_frames or args.seam_check_recording):
+    raise ValueError('named derived scene requires a standalone pinned carton-asset capture')
 if args.seam_check_recording and (not args.carton_assets or args.continuous_frames):
     raise ValueError('seam check requires carton assets and cannot be a continuous recording')
 if args.seam_inspection_light and not args.carton_assets:
@@ -140,7 +143,7 @@ try:
             raise ValueError("bundle index/manifest identity mismatch")
         manifests.append((record["scene"], manifest))
     if args.visibility_only or args.appearance_ab or args.carton_assets:
-        manifests = [(name, manifest) for name, manifest in manifests if name == "FULL_STACK_NOMINAL"]
+        manifests = [(name, manifest) for name, manifest in manifests if name == args.scene]
         if len(manifests) != 1:
             raise ValueError("visibility diagnostic needs exactly one full-stack manifest")
     if args.geometry_algorithm_only and (args.visibility_only or any(m.provenance.get('validation_scope') != 'GEOMETRY_ALGORITHM_ONLY' for _,m in manifests)):
@@ -886,7 +889,7 @@ try:
         payload.pop('manifest_fingerprint');payload['manifest_fingerprint']=canonical_digest(payload)
         manifest=IsaacSceneManifest.from_dict(payload)
         (args.output/'manifest.json').write_text(json.dumps(payload,indent=2), encoding='utf-8')
-        apply_manifest(manifest,'FULL_STACK_NOMINAL')
+        apply_manifest(manifest,args.scene)
         for _ in range(32): render_at_joint_command(command)
         if args.seam_check_recording:
             from trailer_seam_check import capture_same_poses
@@ -959,7 +962,10 @@ try:
             atomic_json(status_path,{'status':'CONTINUOUS_RGBD_CAPTURE_COMPLETE','frames':len(sequence['frames']),
                 'simulation_real_time_factor':sequence['simulation_real_time_factor'],'planning_admissible':False})
             raise SystemExit(0)
-        captures=[capture_module_artifacts(args.output/'FULL_STACK_NOMINAL','FULL_STACK_NOMINAL',manifest,c,(rgb,d,inst),bundle_scene_records['FULL_STACK_NOMINAL']) for c,rgb,d,inst in cameras[0]]
+        captures=[capture_module_artifacts(args.output/args.scene,args.scene,manifest,c,(rgb,d,inst),bundle_scene_records[args.scene]) for c,rgb,d,inst in cameras[0]]
+        if args.scene == 'STACK_NOTCH_MULTIFACE':
+            from rendered_surface_truth import export_surface_truth
+            export_surface_truth(stage, usd_carton_records, args.output)
         cv2.imwrite(str(args.output/'overview.png'),cv2.cvtColor(np.asarray(rgb_data(overview_annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))
         for name, annotator in detail_cameras:
             cv2.imwrite(str(args.output/(name+'.png')),cv2.cvtColor(np.asarray(rgb_data(annotator.get_data()))[:,:,:3],cv2.COLOR_RGB2BGR))

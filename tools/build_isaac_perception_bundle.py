@@ -35,6 +35,7 @@ def main() -> int:
     parser.add_argument("--perception-commit", default=None)
     parser.add_argument("--isaac-version", default="6.0.1.0")
     parser.add_argument("--run-id", default="isaac-perception-validation")
+    parser.add_argument('--notch-config', type=Path, help='derive a new top-down notch in the existing stack')
     args = parser.parse_args()
 
     config = load_validation_config(args.config)
@@ -45,6 +46,13 @@ def main() -> int:
     if config.get('effective_scene_config'):
         from unloading_perception.effective_scene import derive_effective_scene
         snapshot, contract = derive_effective_scene(snapshot, contract, config, ROOT)
+    notch = None
+    if args.notch_config:
+        from unloading_perception.effective_scene import derive_notch_scene
+        notch = json.loads(args.notch_config.read_text(encoding='utf-8'))
+        snapshot, contract = derive_notch_scene(snapshot, contract, notch)
+        config['scenes'] = [notch['scene_name']]
+        config['target_selection']['simulation_object_id'] = notch['evaluation_target']
     args.output.mkdir(parents=True, exist_ok=True)
     write_json(args.output / 'effective_scene_snapshot.json', snapshot)
     write_json(args.output / 'effective_isaac_contract.json', contract)
@@ -82,6 +90,9 @@ def main() -> int:
         "PARTIAL_OCCLUSION": ({target: {"occluded": True, "state": "PARTIAL_OCCLUSION"}}, 300, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
         "MOTION_TIMESTAMP_TEST": ({}, 350, "sim-j1-mast-v2", -pi / 2.0, "LIGHT_ON_NOMINAL"),
     }
+    if notch:
+        scene_specs[notch['scene_name']] = ({}, 100, args.run_id, -pi / 2., 'LIGHT_ON_NOMINAL')
+        write_json(args.output/'notch_scene_audit.json', snapshot['derivation']['stack_notch'])
 
     args.output.mkdir(parents=True, exist_ok=True)
     records = []

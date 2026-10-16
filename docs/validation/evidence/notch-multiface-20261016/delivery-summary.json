@@ -1,0 +1,62 @@
+{
+  "baseline_commit": "ceda56f80758ec16d8b6f1fe1fe6cd1bfa2f0c12",
+  "total_predictions": 74,
+  "states": {
+    "single_not_attempted": 56,
+    "insufficient_boundaries": 16,
+    "source_ambiguity_blocked": 1,
+    "depth_accepted_complete": 1,
+    "mesh_accuracy_pass": 0
+  },
+  "delivery_sha256": "d9357b064602964cac7256f73bca1763fa545ace74365e53e447cc07b120c4b1",
+  "delivery_bytes": 204153139,
+  "real_capture": "RUN",
+  "real_dino_sam": "RUN",
+  "geometry_before_and_after": "RUN_ON_IDENTICAL_FROZEN_MASKS",
+  "browser_interaction": "NOT_RUN_NO_AVAILABLE_BROWSER",
+  "static_page_resources": "PASS",
+  "javascript_syntax": "PASS",
+  "source_sam_functions_ast": "UNCHANGED",
+  "unknown_contract": [
+    {
+      "module": "frame32\\module_0_upper",
+      "cargo": 15,
+      "unknown": 15,
+      "absence_means_free_space": false
+    },
+    {
+      "module": "frame32\\module_1_lower",
+      "cargo": 30,
+      "unknown": 30,
+      "absence_means_free_space": false
+    },
+    {
+      "module": "stack_notch\\module_0_upper",
+      "cargo": 7,
+      "unknown": 7,
+      "absence_means_free_space": false
+    },
+    {
+      "module": "stack_notch\\module_1_lower",
+      "cargo": 22,
+      "unknown": 21,
+      "absence_means_free_space": false
+    }
+  ],
+  "frozen_geometry_sha256": "9fbfd4f83cfb972e0b606b904883b92df5b28e003062063f07c4a755f894b295",
+  "later_stages": "NOT_RUN",
+  "tests": {
+    "baseline": "1059 passed, 3 failed, 6 skipped, 1 deselected",
+    "final": "1066 passed, 3 same failures, 12 skipped, 1 deselected",
+    "targeted": "88 passed, 7 skipped",
+    "server_cpu": "17 passed"
+  },
+  "environment": {
+    "gpu": "RTX 4080, driver-reported 32760 MiB",
+    "torch": "2.7.1+cu128",
+    "transformers": "4.53.2",
+    "opencv": "4.10.0",
+    "isaacsim": "6.0.1.0"
+  },
+  "test_log_note": "UTF-16 capture converted to UTF-8 with normalized line endings/trailing whitespace for Git; original logs retained under tmp"
+}

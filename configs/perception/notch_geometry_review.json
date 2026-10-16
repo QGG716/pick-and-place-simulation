@@ -1,0 +1,18 @@
+{
+  "schema_version": "notch_geometry_review_v1",
+  "samples": [
+    {"name": "frame32", "scene": "FULL_STACK_NOMINAL", "sensor_epoch": "carton-assets-recording-01", "frame_sequence": 32},
+    {"name": "stack_notch", "scene": "STACK_NOTCH_MULTIFACE"}
+  ],
+  "excluded_capture_groups": [{"sensor_epoch": "carton-assets-recording-01", "frame_sequence": 602,
+    "modules": ["module_0_upper", "module_1_lower"], "capture_id_pattern": "carton-assets-recording-01:{module}:602",
+    "reason": "original recording contains large near-field obstruction; preserve historical archive only"}],
+  "geometry_acceptance": "configs/perception/metric_geometry_acceptance.json",
+  "visibility_check": {"surface_distance_m": 0.006, "minimum_pixels": 50,
+    "minimum_short_span_m": 0.015, "minimum_area_m2": 0.0003,
+    "mesh_normal_cluster_degrees": 10, "rationale": "existing plane P95 and physical-support quality thresholds; fixed before inference"},
+  "instance_matching": "maximum total mask IoU one-to-one assignment; report all unmatched; acceptance IoU >= 0.5",
+  "stop_after": "geometry",
+  "detector_and_sam": "ceda56f settings unchanged; no threshold tuning, no oracle fallback",
+  "selection_policy": "all modules of declared frame32 and new notch; reject excluded identities before inference and page assembly"
+}
