@@ -26,6 +26,8 @@ from plan_m710_top_row_only import next_scene
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target",required=True)
+    parser.add_argument("--through-extraction",action="store_true",
+        help="extend contact with planned attachment and one controlled extraction LIN")
     parser.add_argument("--initial-state",type=Path)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--worker-command",required=True)
@@ -72,10 +74,17 @@ def main():
     target=next((b for b in scene.cartons if b.name==args.target),None)
     if target is None:raise ValueError("UNKNOWN_TARGET")
     scene_prepare_s=perf_counter()-prepared
-    client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")))
+    client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
+        extraction_enabled=args.through_extraction)
+    connector_type=SingleContactConnector
+    marker=MARKER
+    if args.through_extraction:
+        from unloading_sim.single_extraction import SingleExtractionConnector, MARKER as EXTRACTION_MARKER
+        connector_type=SingleExtractionConnector
+        marker=EXTRACTION_MARKER
     c=None
     try:
-        c=SingleContactConnector.from_existing(built.connector,scene,native_client=client,
+        c=connector_type.from_existing(built.connector,scene,native_client=client,
             planning_mode="cold_from_scratch",native_budget=dict(task_wall_time_s=args.task_budget_s,
                 stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
         c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
@@ -102,7 +111,7 @@ def main():
             counts["IK"]+=record.get("response",{}).get("native_ik_calls",0)
         costs=[]
         for record in client.records:
-            if record.get("op") not in ("plan","check_start"):continue
+            if record.get("op") not in ("plan","check_start","check_extraction_end"):continue
             response=record.get("response",{})
             clearance=response.get("clearance",{})
             if clearance:
@@ -110,7 +119,7 @@ def main():
                 assert ws.get("pair_profile_enabled") is False
             costs.append(dict(request_id=response.get("request_id"),op=record["op"],status=record["status"],
                 clearance=clearance,request_check_evidence=response.get("request_check_evidence")))
-        result=dict(schema="m710_single_approach_contact_v1",status=MARKER,
+        result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction,
             qualification_status="NOT_EVALUATED",continuous_swept_proof=False,
             physical_execution="NOT_RUN",execution_ready=False,run_id="single-contact-"+uuid.uuid4().hex,
             source_commit=args.source_commit,command=[sys.executable,*sys.argv],seed=args.seed,
@@ -138,7 +147,7 @@ def main():
             native_calls={k:counts[k] for k in ("IK","OMPL","LIN","PTP")},
             prior_build_load_query_calls=sum("prior" in str(r.get("op")) or r.get("pipeline_id")=="static_prior" for r in client.records),
             forbidden_requests=client.forbidden_attempts,history_and_legacy=c._cold_counters,
-            boundary_costs=c.boundary_costs,checks=costs,events=[])
+            boundary_costs=c.boundary_costs,checks=costs,events=[] if plan is None else plan["events"])
         (args.output/"result.json").write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+"\n")
         with (args.output/"requests.jsonl").open("w") as f:
             for record in client.records:f.write(json.dumps(record,allow_nan=False)+"\n")

@@ -108,7 +108,7 @@ void checkReplyCompression() {
   require(fast==expected,"FAST_COMPRESSION_PRESERVES_CHECKS_PROFILE_AND_WITNESS");
 }
 int main(int argc,char** argv) {
-  for(const auto op:{"plan","check_start"}) {Worker worker;J req={{"op",op}};
+  for(const auto op:{"plan","check_start","check_extraction_end"}) {Worker worker;J req={{"op",op}};
    auto out=worker.run(req);
    require(out.at("status")=="ERROR" && out.at("request_check_evidence").at("clearance")=="NOT_CREATED",
        "WORKER_EARLY_FAILURE_NOT_CREATED");

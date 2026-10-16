@@ -18,35 +18,57 @@ MARKER = "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE"
 
 class SingleContactClient:
     """Fail-closed protocol fence, including startup. No old planner entry can hide."""
-    def __init__(self, client):
+    def __init__(self, client, *, extraction_enabled=False):
         self.client, self.records = client, []
         self.forbidden_attempts = 0
+        self.extraction_enabled = extraction_enabled
 
     def request(self, request, **kwargs):
         op = request.get("op")
         allowed = op in {"init", "fk", "inspect", "check_start", "ik", "plan"}
+        allowed |= self.extraction_enabled and op == "check_extraction_end"
         allowed &= request.get("planning_mode") == "cold_from_scratch"
         if op == "plan":
-            allowed &= request.get("attachment") is None
-            allowed &= (request.get("stage"), request.get("pipeline_id"), request.get("planner_id")) in {
+            extraction = self.extraction_enabled and request.get("stage") == "extraction"
+            allowed &= (extraction and request.get("purpose") == "EXTRACTION_PROCESS"
+                and request.get("pipeline_id") == "pilz_industrial_motion_planner"
+                and request.get("planner_id") == "LIN") or (
+                request.get("attachment") is None and
+                (request.get("stage"), request.get("pipeline_id"), request.get("planner_id")) in {
                 ("pregrasp", "ompl", "RRTConnectkConfigDefault"),
-                ("contact", "pilz_industrial_motion_planner", "LIN")}
+                ("contact", "pilz_industrial_motion_planner", "LIN")})
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))
-        if op in {"plan","check_start","ik"}:
+        if op in {"plan","check_start","ik","check_extraction_end"}:
             policy=request.get("process_policy",{})
-            if (request.get("attachment") is not None or policy.get("attached") is not False
-                    or policy.get("target_id") not in {b["id"] for b in request.get("world",[])}):
+            target=policy.get("target_id")
+            world_ids=[b["id"] for b in request.get("world",[])]
+            attached=request.get("attachment")
+            extraction=self.extraction_enabled and request.get("stage")=="extraction" and op in {"plan","check_extraction_end"}
+            if extraction:
+                actual=policy.get("actual_contact_mask",[])
+                valid=(attached is not None and attached.get("id")==target and target not in world_ids
+                    and policy.get("attached") is True and len(actual)==72 and any(actual)
+                    and all(isinstance(x,bool) for x in actual)
+                    and actual==policy.get("commanded_active_mask"))
+                if op=="check_extraction_end":
+                    valid &= policy.get("initial_proximity") is None and policy.get("support_names")==[]
+                    valid &= bool(request.get("parent_stage_id")) and request.get("ownership_transition") is None
+            else:
+                valid=attached is None and policy.get("attached") is False and target in world_ids and op!="check_extraction_end"
+            if not valid or len(world_ids)!=len(set(world_ids)):
                 raise MoveItUnavailable("SINGLE_CONTACT_TARGET_OWNERSHIP_INVALID")
         began = perf_counter()
         entry = {k: deepcopy(request.get(k)) for k in (
             "op","task_id","stage_id","parent_stage_id","stage","candidate_id","seed",
             "pipeline_id","planner_id","q_start","q_goal","goal_pose","scene_fingerprint",
             "allowed_planning_time_s","ik_timeout_s")}
-        if op in {"plan","check_start","ik"}:
+        if op in {"plan","check_start","ik","check_extraction_end"}:
             entry.update(attachment=request.get("attachment"),
-                target_id=request["process_policy"]["target_id"],target_in_world=True,
+                target_id=request["process_policy"]["target_id"],
+                target_in_world=request["process_policy"]["target_id"] in {b["id"] for b in request["world"]},
+                ownership_transition=request.get("ownership_transition"),
                 pair_profile_enabled=request.get("pair_profile_enabled"),
                 native_check_reuse=request.get("native_check_reuse"))
         try:
@@ -170,6 +192,10 @@ class SingleContactConnector(PlanningOnlyConnector):
             return None,dict(reason="APPROACH_IK_FK_RESIDUAL",position_m=pe,orientation_rad=re,scope="FACE_ATTEMPT")
         return q,None
 
+    def complete_contact_plan(self, plan, row, contact_end, target, obstacles, suction, seed):
+        """Default endpoint remains contact; extensions consume the actual state receipt."""
+        return plan, row
+
     def plan_target(self, target: ContactTarget, start, obstacles, suction, seed):
         began=perf_counter()
         row=dict(target=target.evidence(),complete=False,times=dict(
@@ -254,7 +280,7 @@ class SingleContactConnector(PlanningOnlyConnector):
                             raise MoveItUnavailable("TWO_STAGE_PARENT_CHAIN_INVALID")
                         row.update(complete=True,actual_end_q_rad=np.asarray(contact[-1]).tolist())
                         row["times"]["total_s"]=perf_counter()-began
-                        return dict(status=MARKER,execution_ready=False,qualification_status="NOT_EVALUATED",
+                        plan = dict(status=MARKER,execution_ready=False,qualification_status="NOT_EVALUATED",
                             continuous_swept_proof=False,physical_execution="NOT_RUN",target=target.evidence(),
                             task_id=self.native_task_id,start_q_rad=np.asarray(initial).tolist(),
                             end_q_rad=np.asarray(contact[-1]).tolist(),
@@ -263,7 +289,8 @@ class SingleContactConnector(PlanningOnlyConnector):
                             stages=[{k:deepcopy(r[k]) for k in ("stage","stage_id","parent_stage_id",
                                 "generation_source","pipeline_id","planner_id","points","time_parameterization",
                                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records],
-                            final_state_receipt=contact[-1].native_receipt,events=[]),row
+                            final_state_receipt=contact[-1].native_receipt,events=[])
+                        return self.complete_contact_plan(plan,row,contact[-1],target,obstacles,suction,seed)
         row["times"]["total_s"]=perf_counter()-began
         # Only normal bounded solver/geometry outcomes allow another face.
         reason=(row["failure"] or {}).get("reason","UNKNOWN_FAILURE")

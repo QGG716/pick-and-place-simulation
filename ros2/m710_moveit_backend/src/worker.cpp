@@ -610,10 +610,10 @@ public:
     const auto op=req.value("op",std::string());
     try {result=runImpl(req,clearance,process);}
     catch(const std::exception& e) {
-      if(op!="plan" && op!="diagnostic_connection" && op!="validate" && op!="check_start") throw;
+      if(op!="plan" && op!="diagnostic_connection" && op!="validate" && op!="check_start" && op!="check_extraction_end") throw;
       result={{"status","ERROR"},{"detail",e.what()}};
     }
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_start")
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || op=="check_extraction_end"))
       m710::completeRequestEvidence(result,bool(clearance),bool(process),
         [&]{return clearance->evidence();},[&]{return process->evidence();});
     return result;
@@ -677,9 +677,9 @@ private:
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
-    if((op=="plan" || op=="diagnostic_connection" || op=="check_start" || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
+    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_extraction_end") || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
-    if((op=="plan" || op=="diagnostic_connection" || op=="check_start" || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
+    if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_extraction_end") || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
         req.value("planning_mode",std::string("cold_from_scratch"))!=planning_mode)
       throw std::runtime_error("PLANNING_MODE_MISMATCH");
     if(planning_only && (op=="task_audit" || op=="compose" || op=="validate"))
@@ -865,7 +865,7 @@ private:
         {"target_id",target},{"target_in_world",bool(world_target)},{"target_attached",bool(attached_target)},{"target_world_pose",target_pose},
         {"permissions",permissions},{"base_attached_count",base_bodies.size()}};
     }
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_start" || op=="build_static_prior") {
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || (op=="check_start" || op=="check_extraction_end") || op=="build_static_prior") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
@@ -885,6 +885,38 @@ private:
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});
+    }
+    if(op=="check_extraction_end") {
+      // A single endpoint under restored free-space pair rules, not a path audit.
+      if(!planning_only || planning_mode!="cold_from_scratch" || req.at("stage")!="extraction" ||
+         !req.value("require_native_motion",false) || req.at("attachment").is_null() || !process ||
+         !req.at("process_policy").at("initial_proximity").is_null() ||
+         !req.at("process_policy").at("support_names").empty() ||
+         !req.at("ownership_transition").is_null())
+        throw std::runtime_error("EXTRACTION_END_CHECK_SCOPE_INVALID");
+      const std::string task=req.at("task_id"),parent=req.at("parent_stage_id");
+      if(!tasks.count(task) || parent.empty() || !tasks.at(task)->records.count(parent))
+        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_PARENT_MISSING");
+      const auto& previous=*tasks.at(task)->records.at(parent);
+      if(!previous.ready || previous.request.at("stage")!="extraction" || !previous.end ||
+         previous.request.at("attachment").is_null())
+        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_PARENT_INVALID");
+      std::vector<double> q;previous.end->getCurrentState().copyJointGroupPositions("manipulator",q);
+      if(req.at("q_start")!=J(q)) throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_STATE_CHANGED");
+      checkTransition(previous.end,scene,req,"extraction_endpoint");
+      const bool valid=clearance->check(scene->getCurrentState());
+      const bool process_valid=valid && process->check(scene->getCurrentState(),true);
+      const std::string target=req.at("clearance_policy").at("target_id");
+      const auto* attached=scene->getCurrentState().getAttachedBody(target);
+      if(!attached || scene->getWorld()->hasObject(target))
+        throw std::runtime_error("NATIVE_TASK_EXTRACTION_END_OWNERSHIP_INVALID");
+      return {{"status",!valid?"EXTRACTION_END_CLEARANCE_REJECTED":!process_valid?"EXTRACTION_END_PROCESS_REJECTED":"SUCCESS"},
+        {"failure",!valid?clearance->last_failure:process->last_failure},
+        {"native_solver_calls",J::object()},{"scene_import_s",import_s},{"checked_states",1},
+        {"task_id",task},{"parent_stage_id",parent},{"target_id",target},
+        {"target_attached",true},{"target_in_world",false},
+        {"target_world_pose",serial(attached->getGlobalCollisionBodyTransforms().at(0))},
+        {"free_space_rules_restored",true},{"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"}};
     }
     if(op=="check_start") {
       if(!planning_only || planning_mode!="cold_from_scratch" || req.at("stage")!="pregrasp" ||
