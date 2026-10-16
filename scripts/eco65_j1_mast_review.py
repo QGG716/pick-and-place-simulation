@@ -19,6 +19,19 @@ def audit(stage,data):
     arm/=np.linalg.norm(arm);cam/=np.linalg.norm(cam)
     signed=float(np.degrees(np.arctan2(np.cross(arm,cam)[2],arm@cam)))
     compare('USD_signed_heading_deg',mast['relative_heading_deg'],signed)
+    seat=mast.get('mount_interface',{}).get('seat')
+    if seat:
+        import trimesh
+        from pathlib import Path
+        from pxr import UsdPhysics
+        repo=Path(__file__).resolve().parents[1]
+        original=trimesh.load(repo/seat['mesh'],process=False)
+        for name in ['Visual','Collision']:
+            seat_path='/World/Workstation/Robot/link_1/MountingSeat/'+name
+            compare('seat_transform/'+name,link,matrix(seat_path))
+            compare('seat_vertices/'+name,np.array(original.vertices),np.array(UsdGeom.Mesh(stage.GetPrimAtPath(seat_path)).GetPointsAttr().Get()))
+        p=stage.GetPrimAtPath('/World/Workstation/Robot/link_1/MountingSeat/Collision')
+        if UsdPhysics.MeshCollisionAPI(p).GetApproximationAttr().Get()!='none':report['issues'].append('SEAT_COLLISION_NOT_EXACT_TRIANGLES')
     parent=str(stage.GetPrimAtPath(path).GetParent().GetPath())
     if parent!='/World/Workstation/Robot/link_1':report['issues'].append('WRONG_MAST_PARENT')
     report['j1_mast']=dict(case=data['home_source']['static_case'],parent=parent,
@@ -86,7 +99,10 @@ def annotate(pixels,camera,stage,data,review,name):
         a,b=project(L[:3,3]),project(p);draw.line([tuple(a),tuple(b)],fill='#bbbbbb',width=2)
     elif name=='03_interface_closeup':
         text(25,110,'Silver CAD connector -> black mast -> original CAD camera')
-        text(25,151,'Rigid parent: link_1; mounting fit is a simulation assembly assumption','#ffbc83')
+        label='Rigid parent: link_1; mounting fit is a simulation assembly assumption'
+        if data['mast'].get('mount_interface',{}).get('seat'):
+            label='Original surfaces connected by a project-derived conformal mounting seat'
+        text(25,151,label,'#ffbc83')
     elif name=='04_workstation':text(25,110,'Existing 12-carton / four-layer warehouse; all other layout objects unchanged')
     if r['potential_interference']:text(25,982,'DIAGNOSTIC: mast/robot AABB overlap recorded; not a proven surface penetration','#ffbc83')
     return im

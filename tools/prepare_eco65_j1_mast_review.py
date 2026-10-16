@@ -21,6 +21,11 @@ def prepare(snapshot_path,pose_path,config_path,out):
         if config[key]!=mast[key]:raise ValueError('MAST_IDENTITY_MISMATCH:'+key)
     new=copy.deepcopy(old);new.pop('fingerprint');scene=new['scene'];scene.pop('scene_fingerprint')
     scene['mast'].pop('T_D_mast',None);scene['mast'].update(config)
+    seat=config.get('mount_interface',{}).get('seat')
+    if seat:
+        path=(ROOT/seat['mesh']).resolve();path.relative_to(ROOT/'assets/mast')
+        if file_hash(path)!=seat['sha256']:raise ValueError('MOUNTING_SEAT_CHANGED')
+        new['asset_sha256'][seat['mesh']]=seat['sha256']
     scene['scene_fingerprint']=digest(scene)
     new['config_sha256'][config_path.resolve().relative_to(ROOT).as_posix()]=file_hash(config_path)
     new['source_static_snapshot_fingerprint']=old['fingerprint'];new['fingerprint']=digest(new)

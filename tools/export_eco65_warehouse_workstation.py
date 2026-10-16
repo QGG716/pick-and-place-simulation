@@ -182,6 +182,17 @@ def export(snapshot_path, home_path, config_path, out):
         root_mast.SetCustomDataByKey('attachment',mast['attachment'])
         if attached:
             pose(UsdGeom.Xform.Define(stage,mast_path+'/CameraFrame').GetPrim(),mast['T_mast_camera'])
+            seat=mast.get('mount_interface',{}).get('seat')
+            if seat:
+                if hashlib.sha256((ROOT/seat['mesh']).read_bytes()).hexdigest()!=seat['sha256']:
+                    raise ValueError('MOUNTING_SEAT_CHANGED')
+                seat_mesh=trimesh.load(ROOT/seat['mesh'],process=False)
+                seat_path='/Workstation/Robot/link_1/MountingSeat'
+                seat_mat=material(stage,'mounting_seat',[.43,.46,.50],metallic=.4,roughness=.4)
+                mesh(seat_path+'/Visual',seat_mesh,[.43,.46,.50],np.eye(4),mat=seat_mat)
+                obj=mesh(seat_path+'/Collision',seat_mesh,[.6,.2,.8],np.eye(4),True,world_T=frames['link_1'])
+                UsdPhysics.MeshCollisionAPI(obj.GetPrim()).CreateApproximationAttr('none')
+                stage.GetPrimAtPath(seat_path).SetCustomDataByKey('provenance','PROJECT_DERIVED_CONFORMAL_J1_SEAT_NOT_ORIGINAL_CAD')
         for part in mast['parts']:
             dark=['mast_part_006','mast_part_016']+(['mast_part_019'] if attached else [])
             rgb=part['rgb'] or (([.035,.04,.045] if attached else [.08,.10,.12]) if part['id'] in dark else [.43,.46,.50])
