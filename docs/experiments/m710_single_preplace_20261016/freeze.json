@@ -1,0 +1,58 @@
+{
+  "source_commit": "b14c64e67dd7ff36e9cf5b2aadf234fed2aeee78",
+  "source_files": {
+    "ros2/m710_moveit_backend/src/native_semantic_event_test.cpp": "cb5b554634cc30bd08de3e35293711001bf0855f54980d030629c01c6bd0434d",
+    "ros2/m710_moveit_backend/src/worker.cpp": "a8d222121fee509b61e49dcb41a0915915a8559ef2987787fc4deecaa3c28e4a",
+    "src/unloading_sim/preplace_target.py": "0a0c920a82ef1d7b2b7c8d81be468033db3f74e026a4bab88174364b9aec3f9d",
+    "src/unloading_sim/single_contact.py": "37ab66ba791f06bf2099384c2d2bd385d8fdb70ad5155907336e3ca6fa2b0b3d",
+    "src/unloading_sim/single_extraction.py": "762162545472623a1bf78cbcc8f14a1bea9c6ff8429cf72858898e73370ff214",
+    "src/unloading_sim/single_preplace.py": "8169421656830c0a6e05cdee645c4dcc3f1400ff58831e6d61db6afa98b73d24",
+    "tests/test_single_preplace.py": "fbd53fa0c42384a77f0e7220b9c67d0b191a153bda376cb0a4274f85b2f0bc8d",
+    "tools/plan_m710_approach_contact.py": "0f9b270e00533abb5acf79f5fc9b4680f90dae0b3647aabaebd99b9918619272"
+  },
+  "worker_sha256": "9923c9061983ac3c2162e473c6f99a7d579c9e409baea5afdc5e00f4ba924f5f",
+  "prior_baseline": "fd950d71b2e1adb7b07bd721bc9e8c60b4fc4328",
+  "asset_count": 99,
+  "initial_input_sha256": "5c9571b9c4544f37b53b458f4133cf7452862c5621f384d8d6228435d82daaba",
+  "resource": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "build_type": "Release",
+    "build_jobs": 2
+  },
+  "budgets": {
+    "task_s": 300,
+    "stage_s": 90,
+    "ipc_s": 100
+  },
+  "seed": 71070,
+  "no_prior": true,
+  "pair_profile_enabled": false,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN"
+}
