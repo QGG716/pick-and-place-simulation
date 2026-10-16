@@ -11,7 +11,14 @@ import trimesh
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def convert(source,out):
+def derived_path(path):
+    path=Path(path).resolve()
+    if not any(path.is_relative_to(ROOT/p) for p in ['assets/mast/derived','assets/camera/derived']):
+        raise ValueError('PRIVATE_DERIVED_DIRECTORY_REQUIRED')
+    return path
+
+
+def convert(source,out,part_prefix='mast'):
     from OCP.STEPCAFControl import STEPCAFControl_Reader
     from OCP.IFSelect import IFSelect_RetDone
     from OCP.TDocStd import TDocStd_Document
@@ -33,7 +40,8 @@ def convert(source,out):
     from OCP.GProp import GProp_GProps
     from OCP.Interface import Interface_Static
     import OCP
-    source=Path(source).resolve();source.relative_to(ROOT);out=Path(out).resolve();out.relative_to(ROOT/'assets/mast/derived')
+    source=Path(source).resolve();source.relative_to(ROOT);out=derived_path(out)
+    if not re.fullmatch('[a-z][a-z0-9_]*',part_prefix):raise ValueError('INVALID_PART_PREFIX')
     original=source.read_bytes();sha=hashlib.sha256(original).hexdigest()
     reader=STEPCAFControl_Reader()
     result=reader.ReadFile(str(source))
@@ -70,7 +78,7 @@ def convert(source,out):
         while ex.More():solids.append(ex.Current());ex.Next()
         if not solids:solids=[shape]
         for solid in solids:
-            id=f'mast_part_{len(parts):03}';BRepMesh_IncrementalMesh(solid,.10,False,.15,True)
+            id=f'{part_prefix}_part_{len(parts):03}';BRepMesh_IncrementalMesh(solid,.10,False,.15,True)
             vertices=[];faces=[];planes=[];ex=TopExp_Explorer(solid,TopAbs_FACE)
             while ex.More():
                 face=TopoDS.Face_s(ex.Current());loc=TopLoc_Location();tri=BRep_Tool.Triangulation_s(face,loc)
@@ -116,10 +124,11 @@ def convert(source,out):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--part-prefix',default='mast')
     a=p.parse_args()
-    try:convert(a.input,a.output)
+    try:convert(a.input,a.output,a.part_prefix)
     except Exception as error:
-        destination=a.output.resolve();destination.relative_to(ROOT/'assets/mast/derived')
+        destination=derived_path(a.output)
         destination.mkdir(parents=True,exist_ok=True)
         report=destination/'import_failure.json'
         if not report.exists():

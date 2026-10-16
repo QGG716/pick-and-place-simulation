@@ -42,3 +42,7 @@ tmp/
 # User-provided private visual mast and independent derived geometry
 /assets/mast/
 /configs/local/eco65_mast/
+
+# Private calibration camera originals and derived assets
+/assets/camera/
+/configs/local/eco65_calibration/
