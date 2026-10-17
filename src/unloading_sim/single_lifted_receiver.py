@@ -67,8 +67,8 @@ def release_ready_geometry(box, belt, *, tolerance, expected_bottom, expected_ro
     inside=bool(np.all(np.abs(local[:,:2]) <= belt.half_extents[:2]-.01+tolerance))
     bottom=float(bounds(box)[0][2]);gap=bottom-belt.center[2]-belt.half_extents[2]
     orientation=float(np.max(np.abs(box.rotation-expected_rotation)))
-    valid=inside and abs(gap-.05)<=tolerance and abs(bottom-expected_bottom)<=tolerance and orientation<=2e-4
-    return dict(passed=valid,full_bottom_projection_inside=inside,actual_gap_m=gap,
+    valid=bool(inside and abs(gap-.05)<=tolerance and abs(bottom-expected_bottom)<=tolerance and orientation<=2e-4)
+    return dict(passed=valid,full_bottom_projection_inside=inside,actual_gap_m=float(gap),
         expected_gap_m=.05,actual_box=box_message(box),orientation_max_abs_error=orientation,
         receiver_id=belt.name,receiver_surface_z_m=float(belt.center[2]+belt.half_extents[2]),
         physical_execution="NOT_RUN",qualification_status="NOT_EVALUATED")

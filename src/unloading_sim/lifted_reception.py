@@ -218,7 +218,7 @@ def receiving_region(target, belt, occupied=(), *, edge_reserve_m=.01, clearance
     return dict(rectangles_belt_local_m=rects, polygons_world_m=polygons,
                 projection_center_limits_before_occupancy=list(map(float, limits)),
                 edge_reserve_m=edge_reserve_m, occupied_exclusions=exclusions,
-                geometric_fit=limits[0]<=limits[1] and limits[2]<=limits[3],
+                geometric_fit=bool(limits[0]<=limits[1] and limits[2]<=limits[3]),
                 region_status=("DEFINITE_GEOMETRIC_NO_FIT" if limits[0]>limits[1] or limits[2]>limits[3]
                     else "CONSERVATIVE_OCCUPANCY_NEEDS_CHECK" if exclusions else "GEOMETRIC_REGION_AVAILABLE"),
                 robot_reachability="NOT_EVALUATED",sample_pass_does_not_qualify_region=True,

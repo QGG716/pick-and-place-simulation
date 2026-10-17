@@ -1,6 +1,7 @@
 """Scoped Hmax integration contracts; synthetic responses are not native evidence."""
 from copy import deepcopy
 from itertools import islice, count
+import json
 from types import SimpleNamespace
 import numpy as np
 import pytest
@@ -38,6 +39,7 @@ def test_region_is_not_midpoint_or_old_point_eight_limit(layout):
     target=next(b for b in layout.cartons() if b.name=="carton_l07_c02")
     _,belt=receiver_binding(target,layout.fixed_components()+layout.cartons())
     region=receiving_region(target,belt)
+    json.dumps(region,allow_nan=False)
     samples=list(islice(region_samples(region,belt,target,.0001),9))
     assert samples[:3]==pytest.approx([-.5102,-.5898,-.55])
     assert len(set(samples))==9 and all(target.center[0]-x>.8 for x in samples)
@@ -84,6 +86,8 @@ def test_actual_end_controls_release_ready_and_does_not_release(layout):
     assert ok["physical_execution"]=="NOT_RUN"
     assert not release_ready_geometry(translated(end,[.1,0,0]),belt,**opts)["passed"]
     assert not release_ready_geometry(translated(end,[0,0,-.05]),belt,**opts)["passed"]
+    json.dumps(ok,allow_nan=False)
+    json.dumps(release_ready_geometry(translated(end,[0,0,-.05]),belt,**opts),allow_nan=False)
     assert all(v not in {"PASS","SUCCESS"} for v in DEFERRED.values())
 
 
