@@ -73,3 +73,6 @@ docs/experiments/m710_top_row_planning_only_20261003/** -text -whitespace
 
 # Preserve static-prior planning-only evidence without text conversion.
 docs/experiments/m710_static_prior_fast_20261003/** -text -whitespace
+
+# Preserve actual search records and their recorded SHA-256 hashes.
+docs/experiments/m710_search_replay_20261017/** -text -whitespace
