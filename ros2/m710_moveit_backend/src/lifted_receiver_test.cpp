@@ -36,5 +36,16 @@ int main() {
   rejected([&]{m710::receiverSweep(low,sideways);});
   auto resize=high;resize["size"][0]=.7;
   rejected([&]{m710::receiverSweep(low,resize);});
+  auto chassis=box("chassis",.3);chassis["size"]={2.1,1.5,.6};chassis["pose"][0][3]=-1.94;
+  // Low test belt spans [-.89,-.21]; chassis ends exactly at -.89.
+  binding["designed_contacts"]=J::array({{"chassis","conveyor_transverse"}});
+  assert(m710::receiverDesignedPlaneContact(low,chassis,binding));
+  assert(m710::receiverBoxDistance(sweep,chassis)<=0.);
+  assert(m710::receiverBoxDistance(high,chassis)>.005);
+  auto penetration=chassis;penetration["pose"][0][3]=-1.939;
+  assert(!m710::receiverDesignedPlaneContact(low,penetration,binding));
+  auto undeclared=chassis;undeclared["id"]="wall";
+  assert(!m710::receiverDesignedPlaneContact(low,undeclared,binding));
+  assert(!m710::receiverDesignedPlaneContact(low,chassis,J::object()));
   std::cout<<"PASS exact Z union: endpoint clear / middle rejected; strict transition invariants\n";
 }

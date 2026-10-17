@@ -16,7 +16,7 @@ from .stage_motion_policy import MotionPurpose
 MARKER = "LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE"
 
 
-def receiver_binding(target, obstacles):
+def receiver_binding(target, obstacles, designed_contacts=()):
     matches = [b for b in obstacles if b.name == "conveyor_transverse"]
     if len(matches) != 1:
         raise ValueError("RECEIVER_IDENTITY_INVALID")
@@ -27,7 +27,8 @@ def receiver_binding(target, obstacles):
         raise ValueError("RECEIVER_NOT_HORIZONTAL")
     if high.center[2] <= low.center[2]:
         raise ValueError("POSITIVE_HMAX_LIFT_REQUIRED")
-    return dict(target_id=target.name, low=box_message(low), high=box_message(high)), high
+    contacts=[list(pair) for pair in designed_contacts if low.name in pair]
+    return dict(target_id=target.name, low=box_message(low), high=box_message(high),designed_contacts=contacts), high
 
 
 def region_samples(region, belt, target, tolerance):
@@ -77,7 +78,8 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
     def plan_target(self, target, start, obstacles, suction, seed):
         if target.face_role != "FRONT" or not np.allclose(target.outward_normal,[-1,0,0],atol=1e-12,rtol=0):
             raise MoveItUnavailable("FRONT_HMAX_TEMPLATE_SCOPE_ONLY")
-        self.receiver_binding,self.high_belt=receiver_binding(target.box,obstacles)
+        self.receiver_binding,self.high_belt=receiver_binding(target.box,obstacles,
+            self.native_scene.snapshot["assembly"]["designed_contacts"])
         if self.receiver_binding != self.native.lifted_receiver_binding:
             raise MoveItUnavailable("RECEIVER_BINDING_IDENTITY_CHANGED")
         self.initial_receiver_checks=[]
@@ -97,6 +99,10 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
             reason=(row.get("failure") or {}).get("reason")
             retry=reason in {"NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS","NATIVE_PLANNING_FAILED",
                 "CONTACT_NORMAL_LINE_OR_ORIENTATION","CONTACT_ENDPOINT_FK","TERMINAL_CONTACT_GEOMETRY_NOT_SATISFIED"}
+            if reason=="NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS" and any(
+                    (s["response"].get("failure") or {}).get("reason")=="RECEIVER_WORLD_CLEARANCE"
+                    for s in self.receiver_sync_attempts):
+                retry=False  # The unchanged fixed world cannot improve by changing robot IK.
             if not retry or self._native_cancelled() or perf_counter()>=self._lift_approach_deadline:
                 return None,row
             # Same physical target/root/scene/Task; another numerical approach

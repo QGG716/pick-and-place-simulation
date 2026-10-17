@@ -87,7 +87,7 @@ def main():
     lift_binding=None
     if args.through_lifted_release_ready:
         from unloading_sim.single_lifted_receiver import receiver_binding
-        lift_binding,_=receiver_binding(target,scene.all_obstacles)
+        lift_binding,_=receiver_binding(target,scene.all_obstacles,scene.snapshot["assembly"]["designed_contacts"])
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
         extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace,recovery_enabled=not args.legacy_single_attempts,
         lifted_receiver_binding=lift_binding)

@@ -56,4 +56,25 @@ inline double receiverBoxDistance(const ProcessJson& first,const ProcessJson& se
     throw std::runtime_error("RECEIVER_DISTANCE_UNKNOWN");
   return std::min(value,result.min_distance);
 }
+inline bool receiverDesignedPlaneContact(const ProcessJson& low,const ProcessJson& fixed,const ProcessJson& binding) {
+  // Existing frozen-layout designed contacts only. A separating vertical plane
+  // remains invariant during pure Z lift: contact cannot turn into penetration.
+  const std::string id=fixed.at("id");
+  if(id!="chassis" && id!="conveyor_longitudinal")return false;
+  bool declared=false;
+  for(const auto& pair:binding.value("designed_contacts",ProcessJson::array()))
+    if(pair==ProcessJson::array({"conveyor_transverse",id}) || pair==ProcessJson::array({id,"conveyor_transverse"}))declared=true;
+  if(!declared)return false;
+  const auto a=processBox(low),b=processBox(fixed);
+  const auto relative=a.pose.inverse()*b.pose;
+  if((relative.linear()-Eigen::Matrix3d::Identity()).norm()>1e-12)return false;
+  for(int axis=0;axis<2;++axis) {
+    const double gap=std::abs(relative.translation()[axis])-a.half[axis]-b.half[axis];
+    const int tangent=1-axis;
+    const double overlap=a.half[tangent]+b.half[tangent]-std::abs(relative.translation()[tangent]);
+    const double vertical=a.half.z()+b.half.z()-std::abs(relative.translation().z());
+    if(std::abs(gap)<=1e-9 && overlap>1e-9 && vertical>1e-9)return true;
+  }
+  return false;
+}
 }

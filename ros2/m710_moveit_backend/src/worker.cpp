@@ -398,7 +398,7 @@ class Worker {
         if(!swept_scene->processCollisionObjectMsg(object(swept)))throw std::runtime_error("RECEIVER_SWEEP_IMPORT_FAILED");
         m710::Clearance sweep_clearance(swept_scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),true,true,false);
         const bool valid=sweep_clearance.check(swept_scene->getCurrentState());
-        J failure=valid?J(nullptr):sweep_clearance.last_failure;size_t world_queries=0;
+        J failure=valid?J(nullptr):sweep_clearance.last_failure;size_t world_queries=0;J designed_contacts=J::array();
         // Robot/tool clearance uses the actual model. World boxes use the exact
         // union of all belt positions, not endpoint sampling or a broadphase verdict.
         if(valid) for(const auto& box:req.at("world")) {
@@ -407,6 +407,16 @@ class Worker {
           }
           if(box.at("id")=="conveyor_transverse")continue;
           const double gap=m710::receiverBoxDistance(swept,box);++world_queries;
+          if((gap<=0. || gap+1e-9<.005) && m710::receiverDesignedPlaneContact(receiver_binding.at("low"),box,receiver_binding)) {
+            const double end_gap=m710::receiverBoxDistance(receiver_binding.at("high"),box);++world_queries;
+            if(end_gap+1e-9>=.005) {
+              designed_contacts.push_back({{"pair",{"conveyor_transverse",box.at("id")}},
+                {"rule","EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"},
+                {"nonpenetration_proof","UNCHANGED_VERTICAL_SEPARATING_PLANE"},{"final_gap_m",end_gap},
+                {"normal_final_clearance_restored",true}});
+              continue;
+            }
+          }
           if(gap<=0. || gap+1e-9<.005) {failure={{"reason","RECEIVER_WORLD_CLEARANCE"},
             {"pair",{"conveyor_transverse",box.at("id")}},{"surface_distance_m",gap},{"required_pair_clearance_m",.005}};break;}
         }
@@ -414,6 +424,7 @@ class Worker {
           {"robot_q",req.at("q_start")},{"from",receiver_binding.at("low")},{"to",receiver_binding.at("high")},
           {"swept_volume",swept},{"check_method","EXACT_HORIZONTAL_BOX_Z_UNION_NATIVE_FCL"},
           {"sweep_clearance",sweep_clearance.evidence()},{"world_fcl_queries",world_queries},
+          {"designed_contact_transitions",designed_contacts},
           {"geometry_check_s",seconds(began)},{"before_scene_fingerprint",req.at("scene_fingerprint")},
           {"after_scene_fingerprint",req.at("receiver_end_fingerprint")},{"mechanism_geometry","NOT_MODELED"},
           {"mechanical_travel","UNKNOWN"},{"execution_duration_s",nullptr},{"physical_execution","NOT_RUN"}};

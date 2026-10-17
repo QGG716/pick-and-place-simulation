@@ -27,6 +27,11 @@ def test_binding_preserves_default_and_only_moves_unique_belt(layout):
     assert digest(frozen)!=digest([box_message(b) for b in world])
     with pytest.raises(ValueError,match="IDENTITY"):
         receiver_binding(target,[*original,high])
+    declared=[["chassis","conveyor_transverse"],["chassis","floor"],
+        ["conveyor_transverse","conveyor_longitudinal"]]
+    bound,_=receiver_binding(target,original,declared)
+    assert bound["designed_contacts"]==[declared[0],declared[2]]
+    assert binding["designed_contacts"]==[]  # no inferred permission
 
 
 def test_region_is_not_midpoint_or_old_point_eight_limit(layout):
