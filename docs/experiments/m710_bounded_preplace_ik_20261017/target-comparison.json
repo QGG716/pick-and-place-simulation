@@ -1,0 +1,435 @@
+{
+  "schema": "preplace_fixed_target_comparison_v1",
+  "scope": "OFFLINE_ARCHIVED_INPUT_COMPARISON_NO_NEW_SOLVE",
+  "cases": [
+    {
+      "case": "carton_l07_c02",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "scene_revision": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+      "preplace_box_pose": [
+        [
+          7.531986632564585e-08,
+          0.9999999999999972,
+          -1.0326674161154835e-08,
+          -1.6
+        ],
+        [
+          -2.4366623943626075e-07,
+          -1.0326655829528179e-08,
+          -0.9999999999999705,
+          -0.7500000000000001
+        ],
+        [
+          -0.9999999999999676,
+          7.531986888381116e-08,
+          2.4366623865783186e-07,
+          1.0000000516139
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "physical_contact_pose": [
+        [
+          1.8705928609349473e-25,
+          -1.0,
+          -2.519458742164219e-24,
+          -1.5999999750150276
+        ],
+        [
+          -1.0,
+          5.641790213101605e-25,
+          -4.909440917442686e-23,
+          -0.7499998503125661
+        ],
+        [
+          1.5147210615406004e-24,
+          6.149316470594782e-24,
+          -1.0,
+          1.300000029960618
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "task_tcp_pose": [
+        [
+          1.8705928609349473e-25,
+          -1.0,
+          -2.519458742164219e-24,
+          -1.5999999750150276
+        ],
+        [
+          -1.0,
+          5.641790213101605e-25,
+          -4.909440917442686e-23,
+          -0.7499998503125661
+        ],
+        [
+          1.5147210615406004e-24,
+          6.149316470594782e-24,
+          -1.0,
+          1.267500029960618
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "captured_contact_from_box": [
+        [
+          2.4366623943626075e-07,
+          1.0326655829528179e-08,
+          0.9999999999999705,
+          1.4968743400345375e-07
+        ],
+        [
+          -7.531986632564585e-08,
+          -0.9999999999999972,
+          1.0326674161154835e-08,
+          2.4984972501957666e-08
+        ],
+        [
+          0.9999999999999676,
+          -7.531986888381116e-08,
+          -2.4366623865783186e-07,
+          0.299999978346718
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "q_initial": [
+        -0.8243489251777929,
+        -0.7829360301454509,
+        -0.5045940362629922,
+        1.8196773517385727,
+        0.8593887992859954,
+        -5.083605120051743
+      ],
+      "old_response": {
+        "error_code": 1,
+        "ik_collision_checked": false,
+        "ik_s": 0.000256968,
+        "native_ik_calls": 1,
+        "orientation_error_rad": 5.643221861854579e-07,
+        "position_error_m": 1.484879950008671e-06,
+        "random_restarts": 0,
+        "request_id": "11",
+        "resident_native_ik_calls": 2,
+        "seed": 71070,
+        "solver": "MoveIt_KDL_getPositionIK",
+        "status": "SUCCESS",
+        "transport_and_worker_s": 0.03926924243569374
+      }
+    },
+    {
+      "case": "carton_l07_c04",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "1d6fcda561d78c82bf78b5daa6b888829e53497ceef1feb6fc32d80d131c97a3",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "scene_revision": "1d6fcda561d78c82bf78b5daa6b888829e53497ceef1feb6fc32d80d131c97a3",
+      "preplace_box_pose": [
+        [
+          -2.38058177400034e-09,
+          1.0000000000000002,
+          8.456427737004717e-10,
+          -1.6
+        ],
+        [
+          -1.5672331216063668e-08,
+          8.456427268375144e-10,
+          -1.0000000000000002,
+          -0.7500000000000001
+        ],
+        [
+          -1.0,
+          -2.380581853781415e-09,
+          1.5672331217448888e-08,
+          1.0000000028269662
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "physical_contact_pose": [
+        [
+          3.804947508845605e-26,
+          -1.0,
+          1.3024587370099568e-25,
+          -1.6000000570568544
+        ],
+        [
+          -1.0,
+          -1.2242231623470194e-25,
+          1.7123414246597748e-25,
+          -0.7499999219363579
+        ],
+        [
+          -3.4246828644112514e-25,
+          4.7090600158022405e-26,
+          -1.0,
+          1.2999999803138458
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "task_tcp_pose": [
+        [
+          3.804947508845605e-26,
+          -1.0,
+          1.3024587370099568e-25,
+          -1.6000000570568544
+        ],
+        [
+          -1.0,
+          -1.2242231623470194e-25,
+          1.7123414246597748e-25,
+          -0.7499999219363579
+        ],
+        [
+          -3.4246828644112514e-25,
+          4.7090600158022405e-26,
+          -1.0,
+          1.2674999803138458
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "captured_contact_from_box": [
+        [
+          1.5672331216063668e-08,
+          -8.456427268375144e-10,
+          1.0000000000000002,
+          7.80636422170744e-08
+        ],
+        [
+          2.38058177400034e-09,
+          -1.0000000000000002,
+          -8.456427737004717e-10,
+          -5.705685424128859e-08
+        ],
+        [
+          1.0,
+          2.380581853781415e-09,
+          -1.5672331217448888e-08,
+          0.2999999774868797
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "q_initial": [
+        0.9869346595446897,
+        -0.6632131747692194,
+        -0.45765097729386217,
+        -1.7048483861767756,
+        1.0007819212280729,
+        -1.3259052442146266
+      ],
+      "old_response": {
+        "error_code": -6,
+        "ik_collision_checked": false,
+        "ik_s": 0.00047531,
+        "native_ik_calls": 1,
+        "random_restarts": 0,
+        "request_id": "11",
+        "resident_native_ik_calls": 2,
+        "seed": 71070,
+        "solver": "MoveIt_KDL_getPositionIK",
+        "status": "NATIVE_IK_FAILED",
+        "transport_and_worker_s": 0.037529436871409416
+      }
+    }
+  ],
+  "differences": {
+    "preplace_box_pose": {
+      "max_abs": 2.2799390822019707e-07,
+      "position_m": 4.87869338261504e-08
+    },
+    "physical_contact_pose": {
+      "max_abs": 8.204182688764661e-08,
+      "position_m": 1.1968972764464318e-07
+    },
+    "task_tcp_pose": {
+      "max_abs": 8.204182688764661e-08,
+      "position_m": 1.1968972764464318e-07
+    },
+    "captured_contact_from_box": {
+      "max_abs": 2.2799390822019707e-07,
+      "position_m": 1.0891082685917714e-07
+    }
+  },
+  "q_initial_delta": [
+    1.8112835847224826,
+    0.11972285537623151,
+    0.04694305896912998,
+    -3.524525737915348,
+    0.14139312194207743,
+    3.7576998758371163
+  ],
+  "model_identity_equal": false,
+  "source_archive": "docs/experiments/m710_single_preplace_20261016",
+  "note": "Only the remaining-world fingerprint differs. Captured actual attachment roundoff is preserved; numerical extraction seeds differ substantially. No historical solution q is used as an input.",
+  "identity_differing_fields": [
+    "scene_fingerprint"
+  ],
+  "model_tool_and_tcp_identical": true,
+  "base_transform_identical": true,
+  "joint_limits_identical": true,
+  "base_transform": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -1.325
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.35
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.6
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "joint_limits": [
+    [
+      -3.2288591161895095,
+      3.2288591161895095
+    ],
+    [
+      -1.3089969389957472,
+      2.6179938779914944
+    ],
+    [
+      -1.4049900478554354,
+      3.5779249665883754
+    ],
+    [
+      -6.981317007977318,
+      6.981317007977318
+    ],
+    [
+      -2.181661564992912,
+      2.181661564992912
+    ],
+    [
+      -6.981317007977318,
+      6.981317007977318
+    ]
+  ]
+}

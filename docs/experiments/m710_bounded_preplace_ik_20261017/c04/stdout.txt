@@ -1,0 +1,1 @@
+{"run_id": "single-contact-abce2cdcf70a4415893c82afd9856284", "complete": true, "selected_face": "x-", "total_planning_s": 86.43098791129887, "native_calls": {"IK": 2, "OMPL": 2, "LIN": 2, "PTP": 0}, "prior_build_load_query_calls": 0}
