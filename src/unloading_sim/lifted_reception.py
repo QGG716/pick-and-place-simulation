@@ -218,6 +218,10 @@ def receiving_region(target, belt, occupied=(), *, edge_reserve_m=.01, clearance
     return dict(rectangles_belt_local_m=rects, polygons_world_m=polygons,
                 projection_center_limits_before_occupancy=list(map(float, limits)),
                 edge_reserve_m=edge_reserve_m, occupied_exclusions=exclusions,
+                geometric_fit=limits[0]<=limits[1] and limits[2]<=limits[3],
+                region_status=("DEFINITE_GEOMETRIC_NO_FIT" if limits[0]>limits[1] or limits[2]>limits[3]
+                    else "CONSERVATIVE_OCCUPANCY_NEEDS_CHECK" if exclusions else "GEOMETRIC_REGION_AVAILABLE"),
+                robot_reachability="NOT_EVALUATED",sample_pass_does_not_qualify_region=True,
                 exists=bool(rects), coverage="ALL_8_CORNERS_HORIZONTAL_PROJECTION",
                 scope="RECEPTION_REGION_NOT_ROBOT_REACHABILITY", receiver_id=belt.name)
 
@@ -416,7 +420,9 @@ def process_scheme(layout, target, originals, remaining, scheme, *, tool_in_cont
         out["reasons"].append("DIRECTION_CANNOT_ENTER_FULL_RECEIVING_REGION")
     out["reasons"].extend(scene.height["issues"])
     if out["reasons"]:
-        out["applicability"]="TEMPLATE_NOT_APPLICABLE"
+        conservative=bool(region["occupied_exclusions"] or out.get("channel_screen_blockers"))
+        only_screen=set(out["reasons"]) <= {"NO_FULL_PROJECTION_RECEIVING_REGION","DIRECTION_CANNOT_ENTER_FULL_RECEIVING_REGION"}
+        out["applicability"]="POSSIBLE_INTERFERENCE_NEEDS_CHECK" if conservative and only_screen and region["geometric_fit"] else "TEMPLATE_NOT_APPLICABLE"
         return out
     # One display sample, no IK target. Retain the entire region above.
     a,b,c,d = out["template_region_world_rectangles"][0]

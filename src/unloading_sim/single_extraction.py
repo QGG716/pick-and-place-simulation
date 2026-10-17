@@ -60,7 +60,7 @@ def extraction_sample_check(connector, path, attachment, target, geometry, track
     poses = []
     failure = fk["failure"]
     for index, q in enumerate(path):
-        connector.check_context(target, connector.native_scene.all_obstacles)
+        connector.check_context(target, getattr(connector, "active_obstacles", connector.native_scene.all_obstacles))
         box = attachment.box_at(q)
         poses.append(box.world_from_local.tolist())
         if not np.isfinite(box.world_from_local).all():
@@ -86,6 +86,21 @@ def extraction_sample_check(connector, path, attachment, target, geometry, track
 
 
 class SingleExtractionConnector(SingleContactConnector):
+    def plan_extraction(self, start, target, attachment, payload_world, supports, tracker, seed, row):
+        before = perf_counter()
+        goal, geometry, failure = extraction_geometry(self, target, attachment, start, payload_world, supports)
+        row["times"]["extraction_target_s"] = perf_counter() - before
+        if failure:
+            return [], geometry, failure
+        before = perf_counter()
+        path, failure, _ = self._native_plan(start, None, payload_world, seed=seed,
+            stage="extraction", purpose=MotionPurpose.EXTRACTION_PROCESS,
+            goal_pose=self.virtual_from_physical(goal), attachment=attachment,
+            support_names=supports, initial_proximity=tracker,
+            allow_ompl=False, max_ompl_attempts=0, try_ptp=False, try_prior=False)
+        row["times"]["extraction_s"] = perf_counter() - before
+        return path, geometry, failure
+
     def check_attached_end(self, end, target, payload_world, attachment, seed, *, stage):
         if stage not in {"extraction","transit"}:
             raise MoveItUnavailable("ATTACHED_ENDPOINT_STAGE_INVALID")
@@ -192,20 +207,9 @@ class SingleExtractionConnector(SingleContactConnector):
         if failure:
             return self._reject_suffix(row, failure)
         original_tracker = tracker.clone()
-        before = perf_counter()
-        goal, geometry, failure = extraction_geometry(self, target, attachment, start, payload_world, supports)
+        path, geometry, failure = self.plan_extraction(start, target, attachment, payload_world,
+            supports, tracker, seed, row)
         row["extraction_geometry"] = geometry
-        row["times"]["extraction_target_s"] = perf_counter() - before
-        if failure:
-            return self._reject_suffix(row, failure)
-        self.check_context(target, obstacles)
-        before = perf_counter()
-        path, failure, _ = self._native_plan(start, None, payload_world, seed=seed,
-            stage="extraction", purpose=MotionPurpose.EXTRACTION_PROCESS,
-            goal_pose=self.virtual_from_physical(goal), attachment=attachment,
-            support_names=supports, initial_proximity=tracker,
-            allow_ompl=False, max_ompl_attempts=0, try_ptp=False, try_prior=False)
-        row["times"]["extraction_s"] = perf_counter() - before
         if failure:
             return self._reject_suffix(row, failure)
         if not np.array_equal(path[0], start):
@@ -226,7 +230,7 @@ class SingleExtractionConnector(SingleContactConnector):
         if checked["status"] != "SUCCESS":
             return self._reject_suffix(row, dict(reason=checked["status"], detail=checked.get("failure")))
         records = self._native_selected_records(path[-1])
-        if len(records) != 3 or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]:
+        if len(records) != len(plan["stages"])+1 or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]:
             raise MoveItUnavailable("EXTRACTION_PARENT_CHAIN_INVALID")
         event = dict(event_type="ATTACH", scope="PLANNED_SCENE_TRANSITION_ONLY",
             target_id=target.target_id, q_rad=np.asarray(start).tolist(),
@@ -234,7 +238,7 @@ class SingleExtractionConnector(SingleContactConnector):
             physical_execution="NOT_RUN", measured=False)
         plan.update(status=MARKER, extraction=[np.asarray(q).tolist() for q in path],
             end_q_rad=np.asarray(path[-1]).tolist(), final_state_receipt=path[-1].native_receipt,
-            extraction_geometry=geometry, attachment=row["attachment"], events=[event],
+            extraction_geometry=geometry, attachment=row["attachment"], events=[*plan["events"],event],
             stages=[{k:deepcopy(r[k]) for k in ("stage","stage_id","parent_stage_id",
                 "generation_source","pipeline_id","planner_id","points","time_parameterization",
                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records])

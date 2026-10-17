@@ -33,6 +33,8 @@ def main():
         help="extend contact with planned attachment and one controlled extraction LIN")
     stages.add_argument("--through-preplace",action="store_true",
         help="extend extraction with one fixed preplace IK and loaded RRTConnect")
+    stages.add_argument("--through-lifted-release-ready",action="store_true",
+        help="front Hmax template: native lift coordination and normal LIN into receiver region; remains attached")
     parser.add_argument("--initial-state",type=Path)
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--worker-command",required=True)
@@ -43,6 +45,8 @@ def main():
     parser.add_argument("--stage-budget-s",type=float,default=90.)
     parser.add_argument("--ipc-timeout-s",type=float,default=100.)
     args=parser.parse_args()
+    if args.through_lifted_release_ready and args.legacy_single_attempts:
+        parser.error("Hmax template requires the normal shared-budget recovery policy")
     if (not all(np.isfinite(x) and x>0 for x in (args.task_budget_s,args.stage_budget_s,args.ipc_timeout_s))
             or args.ipc_timeout_s<=args.stage_budget_s):
         parser.error("finite positive budgets and IPC > stage required")
@@ -80,8 +84,13 @@ def main():
     target=next((b for b in scene.cartons if b.name==args.target),None)
     if target is None:raise ValueError("UNKNOWN_TARGET")
     scene_prepare_s=perf_counter()-prepared
+    lift_binding=None
+    if args.through_lifted_release_ready:
+        from unloading_sim.single_lifted_receiver import receiver_binding
+        lift_binding,_=receiver_binding(target,scene.all_obstacles)
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
-        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace,recovery_enabled=not args.legacy_single_attempts)
+        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace,recovery_enabled=not args.legacy_single_attempts,
+        lifted_receiver_binding=lift_binding)
     connector_type=SingleContactConnector
     marker=MARKER
     if args.through_extraction:
@@ -92,6 +101,10 @@ def main():
         from unloading_sim.single_preplace import SinglePreplaceConnector, MARKER as PREPLACE_MARKER
         connector_type=SinglePreplaceConnector
         marker=PREPLACE_MARKER
+    if args.through_lifted_release_ready:
+        from unloading_sim.single_lifted_receiver import SingleLiftedReceiverConnector, MARKER as LIFTED_MARKER
+        connector_type=SingleLiftedReceiverConnector
+        marker=LIFTED_MARKER
     c=None
     try:
         c=connector_type.from_existing(built.connector,scene,native_client=client,
@@ -112,6 +125,9 @@ def main():
         generation=perf_counter()
         targets,screening=simulation_contact_targets(scene,target,c.robot.base_transform[:3,3],
             c.budget.pregrasp_standoff_m)
+        if args.through_lifted_release_ready:
+            targets=[t for t in targets if t.face_role=="FRONT"]
+            screening=dict(upstream=screening,scope="FRONT_HMAX_TEMPLATE_ONLY_OTHER_TEMPLATES_NOT_EVALUATED")
         target_generation_s=perf_counter()-generation
         plan,attempts=plan_faces(c,targets,q,velocity,source,scene.all_obstacles,policy.data["suction"],args.seed)
         total_s=perf_counter()-began
@@ -121,7 +137,7 @@ def main():
             counts["IK"]+=record.get("response",{}).get("native_ik_calls",0)
         costs=[]
         for record in client.records:
-            if record.get("op") not in ("plan","check_start","check_extraction_end","check_transit_end"):continue
+            if record.get("op") not in ("plan","check_start","check_receiver_state","check_extraction_end","check_transit_end"):continue
             response=record.get("response",{})
             clearance=response.get("clearance",{})
             if clearance:
@@ -129,7 +145,8 @@ def main():
                 assert ws.get("pair_profile_enabled") is False
             costs.append(dict(request_id=response.get("request_id"),op=record["op"],status=record["status"],
                 clearance=clearance,request_check_evidence=response.get("request_check_evidence")))
-        result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction or args.through_preplace,through_preplace=args.through_preplace,
+        result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction or args.through_preplace or args.through_lifted_release_ready,through_preplace=args.through_preplace,
+            through_lifted_release_ready=args.through_lifted_release_ready,
             qualification_status="NOT_EVALUATED",continuous_swept_proof=False,
             physical_execution="NOT_RUN",execution_ready=False,run_id=run_id,
             source_commit=args.source_commit,command=[sys.executable,*sys.argv],seed=args.seed,
@@ -171,7 +188,7 @@ def main():
         # Retain actual request evidence even if initialization/output handling fails.
         with (args.output/"requests.jsonl").open("w") as f:
             for record in client.records:f.write(json.dumps(record,allow_nan=False)+"\n")
-        if args.search_trace:
+        if args.search_trace or args.through_lifted_release_ready:
             (args.output/"search-trace.json").write_text(json.dumps(dict(
                 schema="m710_search_run_v1",run_id=run_id,source_commit=args.source_commit,
                 model=client.trace_inputs.get("model"),attempts=client.traces,

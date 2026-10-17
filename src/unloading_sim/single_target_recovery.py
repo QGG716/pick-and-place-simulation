@@ -5,7 +5,7 @@ import numpy as np
 from .moveit2_backend import MoveItUnavailable, digest
 
 
-def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=None,residual_reason):
+def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=None,residual_reason,recovery_state=None):
     stage_s,_=c._native_limits()
     deadline=perf_counter()+stage_s
     previous=getattr(c,'_single_connection_deadline',None)
@@ -17,6 +17,11 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
         receipt,_,transition=c._native_parent_for_request(start,request)
         return digest(dict(request=request,parent=receipt.evidence(),transition=transition))
     context_key=current_context();excluded=[];attempt=0;last_failure=None
+    if recovery_state is not None:
+        if recovery_state and recovery_state.get('context_sha256')!=context_key:
+            raise MoveItUnavailable('FIXED_TARGET_RECOVERY_CONTEXT_CHANGED')
+        recovery_state.setdefault('context_sha256',context_key)
+        excluded=recovery_state.setdefault('attempted_local_ik',[])
     def check_context():
         if c._native_cancelled():raise MoveItUnavailable('REQUEST_CANCELLED_OR_DEADLINE')
         if current_context()!=context_key or not np.array_equal(start,original_q) or not np.array_equal(pose,original_pose):

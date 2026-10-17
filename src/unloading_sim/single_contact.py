@@ -18,7 +18,7 @@ MARKER = "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE"
 
 class SingleContactClient:
     """Fail-closed protocol fence, including startup. No old planner entry can hide."""
-    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False, search_trace_enabled=False, recovery_enabled=True):
+    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False, search_trace_enabled=False, recovery_enabled=True, lifted_receiver_binding=None):
         self.client, self.records = client, []
         self.forbidden_attempts = 0
         self.search_trace_enabled=search_trace_enabled
@@ -26,10 +26,14 @@ class SingleContactClient:
         self.trace_inputs={}
         self.traces=[]
         self.preplace_enabled = preplace_enabled
-        self.extraction_enabled = extraction_enabled or preplace_enabled
+        self.lifted_receiver_binding = deepcopy(lifted_receiver_binding)
+        self.extraction_enabled = extraction_enabled or preplace_enabled or lifted_receiver_binding is not None
 
     def request(self, request, **kwargs):
         op = request.get("op")
+        if op == "init" and self.lifted_receiver_binding is not None:
+            request = dict(request, lifted_receiver_binding=self.lifted_receiver_binding)
+            self.trace_inputs["model"] = deepcopy(request)
         if op == "init" and self.preplace_enabled:
             request = dict(request, bounded_preplace_ik_enabled=True)
         if op=="init" and self.search_trace_enabled:
@@ -60,6 +64,7 @@ class SingleContactClient:
         allowed = op in {"init", "fk", "inspect", "check_start", "ik", "plan"}
         allowed |= self.extraction_enabled and op == "check_extraction_end"
         allowed |= self.preplace_enabled and op == "check_transit_end"
+        allowed |= self.lifted_receiver_binding is not None and op == "check_receiver_state"
         allowed &= request.get("planning_mode") == "cold_from_scratch"
         if op == "plan":
             extraction = self.extraction_enabled and request.get("stage") == "extraction"
@@ -73,11 +78,14 @@ class SingleContactClient:
                 request.get("attachment") is None and
                 (request.get("stage"), request.get("pipeline_id"), request.get("planner_id")) in {
                 ("pregrasp", "ompl", "RRTConnectkConfigDefault"),
-                ("contact", "pilz_industrial_motion_planner", "LIN")})
+                ("contact", "pilz_industrial_motion_planner", "LIN")}) or (
+                self.lifted_receiver_binding is not None and request.get("attachment") is None
+                and request.get("stage") in {"pregrasp", "contact"}
+                and request.get("pipeline_id") == "external_axis" and request.get("planner_id") == "LIFT_Z")
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))
-        if op in {"plan","check_start","ik","check_extraction_end","check_transit_end"}:
+        if op in {"plan","check_start","check_receiver_state","ik","check_extraction_end","check_transit_end"}:
             policy=request.get("process_policy",{})
             target=policy.get("target_id")
             world_ids=[b["id"] for b in request.get("world",[])]
@@ -107,7 +115,7 @@ class SingleContactClient:
             "op","task_id","stage_id","parent_stage_id","stage","candidate_id","seed",
             "pipeline_id","planner_id","q_start","q_goal","goal_pose","scene_fingerprint",
             "allowed_planning_time_s","ik_timeout_s","ik_mode","solver_budget_s","purpose","excluded_ik","ik_dedup_tolerance_rad")}
-        if op in {"plan","check_start","ik","check_extraction_end","check_transit_end"}:
+        if op in {"plan","check_start","check_receiver_state","ik","check_extraction_end","check_transit_end"}:
             entry.update(attachment=request.get("attachment"),
                 target_id=request["process_policy"]["target_id"],
                 target_in_world=request["process_policy"]["target_id"] in {b["id"] for b in request["world"]},
@@ -120,16 +128,17 @@ class SingleContactClient:
             response = self.client.request(request, **kwargs)
         except Exception as exc:
             entry.update(status="TRANSPORT_OR_CANCELLATION_ERROR", detail=str(exc))
-            if self.search_trace_enabled and op=="plan":
+            if (self.search_trace_enabled or self.lifted_receiver_binding is not None) and op=="plan":
                 self.traces.append(dict(request=deepcopy(request),response_identity=dict(status=entry["status"],detail=str(exc)),
                     trace=None,final_timed_path=None,history_status="UNAVAILABLE_INTERRUPTED_REQUEST"))
             raise
         else:
-            if self.search_trace_enabled and op=="plan":
+            if (self.search_trace_enabled or self.lifted_receiver_binding is not None) and op=="plan":
                 trace=response.pop("search_trace",None)
                 self.traces.append(dict(request=deepcopy(request),response_identity={k:response.get(k) for k in
                     ("request_id","task_id","stage_id","parent_stage_id","status","solver_message")},
                     trace=trace,final_timed_path=deepcopy(response.get("points")),
+                    external_axis=deepcopy(response.get("external_axis")),
                     history_status="RECORDED" if trace else "SEARCH_HISTORY_NOT_RECORDED"))
             entry["response"] = {k: deepcopy(v) for k,v in response.items()
                 if k not in {"points","identity","capabilities","frames"}}
@@ -314,6 +323,10 @@ class SingleContactConnector(PlanningOnlyConnector):
         """Default endpoint remains contact; extensions consume the actual state receipt."""
         return plan, row
 
+    def prepare_contact_start(self, start, target, obstacles, seed, row):
+        """Extension boundary; default preserves the original two-segment entry."""
+        return start, obstacles
+
     def plan_target(self, target: ContactTarget, start, obstacles, suction, seed):
         began=perf_counter()
         row=dict(target=target.evidence(),complete=False,times=dict(
@@ -366,11 +379,12 @@ class SingleContactConnector(PlanningOnlyConnector):
                 self.check_context(target,obstacles)
                 if not np.array_equal(prefix[0],initial):
                     raise MoveItUnavailable("PREGRASP_EXACT_START_CHANGED")
+                contact_start, obstacles = self.prepare_contact_start(prefix[-1], target, obstacles, seed, row)
                 # Output samples and receipt remain unchanged, including roundoff.
                 contact_goal=virtual_tcp_from_physical_contact(target.contact_pose,
                     self.flange_from_virtual_task_tcp,self.flange_from_physical_contact)
                 before=perf_counter()
-                contact,failure,ev=self._native_plan(prefix[-1],None,obstacles,seed=seed,stage="contact",
+                contact,failure,ev=self._native_plan(contact_start,None,obstacles,seed=seed,stage="contact",
                     purpose=MotionPurpose.CONTACT_PROCESS,goal_pose=contact_goal,target_contact=target.box,
                     allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
                 row["times"]["contact_s"]=perf_counter()-before
@@ -402,7 +416,8 @@ class SingleContactConnector(PlanningOnlyConnector):
                     row["times"]["terminal_check_s"]=perf_counter()-before
                     if row["failure"] is None:
                         records=self._native_selected_records(contact[-1])
-                        if len(records)!=2 or records[1]["parent_stage_id"]!=records[0]["stage_id"]:
+                        motion_records=[r for r in records if r.get("generation_source")!="NATIVE_EXTERNAL_AXIS"]
+                        if len(motion_records)!=2 or records[-1]["parent_stage_id"]!=records[-2]["stage_id"]:
                             raise MoveItUnavailable("TWO_STAGE_PARENT_CHAIN_INVALID")
                         row.update(complete=True,actual_end_q_rad=np.asarray(contact[-1]).tolist())
                         row["times"]["total_s"]=perf_counter()-began

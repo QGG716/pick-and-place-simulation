@@ -80,3 +80,5 @@ docs/experiments/m710_search_replay_20261017/** -text -whitespace
 # Keep measured geometry identities and offline artifacts byte-identical.
 tools/lifted_reception/*.html text eol=lf
 docs/experiments/m710_lifted_reception_20261017/** -text -whitespace
+tools/search_replay/viewer.html text eol=lf
+docs/experiments/m710_lifted_release_ready_20261017/** -text -whitespace

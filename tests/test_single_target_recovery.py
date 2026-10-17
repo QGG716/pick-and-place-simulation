@@ -94,3 +94,16 @@ def test_budget_success_stops_without_optional_work(monkeypatch):
 def test_exclusions_do_not_cross_connection_calls(monkeypatch):
     c,_,_,iks,motions=fixture(monkeypatch);run(c);run(c)
     assert all(len(i['excluded_ik'])==0 for i in iks)
+
+
+def test_explicit_same_template_recovery_retains_attempts_but_rejects_parent_change(monkeypatch):
+    c,_,context,iks,motions=fixture(monkeypatch)
+    state={}
+    def call():
+        return connect_fixed_target(c,np.eye(4),np.zeros(6),[],71070,stage='pregrasp',
+            purpose='FREE_APPROACH',residual_reason='FK',recovery_state=state)
+    call();call()
+    assert [len(i['excluded_ik']) for i in iks]==[0,1]
+    context['parent']='different-parent'
+    with pytest.raises(MoveItUnavailable,match='RECOVERY_CONTEXT_CHANGED'):call()
+    assert len(motions)==2

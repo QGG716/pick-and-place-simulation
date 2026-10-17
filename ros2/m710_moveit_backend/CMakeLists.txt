@@ -58,4 +58,8 @@ target_compile_definitions(m710_native_ik_probe PRIVATE M710_IK_INPUT_PROBE M710
 add_executable(m710_search_trace_test src/search_trace_test.cpp)
 ament_target_dependencies(m710_search_trace_test moveit_planners_ompl)
 target_link_libraries(m710_search_trace_test m710_search_trace nlohmann_json::nlohmann_json)
+add_executable(m710_lifted_receiver_test src/lifted_receiver_test.cpp)
+ament_target_dependencies(m710_lifted_receiver_test moveit_ros_planning)
+target_link_libraries(m710_lifted_receiver_test nlohmann_json::nlohmann_json)
+target_compile_options(m710_lifted_receiver_test PRIVATE -UNDEBUG)
 ament_package()
