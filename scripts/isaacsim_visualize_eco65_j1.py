@@ -32,7 +32,8 @@ def run(args):
         from unloading_sim.eco65.native_io import file_hash
         from unloading_sim.touch_calibration import intrinsics, OPTICAL_FROM_USD
         from eco65_touch_sources import verify_scene_sources
-        from eco65_j1_visualization import face_angle, schedule
+        from eco65_j1_visualization import face_angle, target_endpoints, schedule
+        from eco65_camera_mount import mount_check
 
         out.relative_to(ROOT/'outputs')
         out.mkdir(parents=True, exist_ok=False)
@@ -85,6 +86,12 @@ def run(args):
             p = stage.GetPrimAtPath(path)
             if not p:
                 raise ValueError('BOUND_PRIM_MISSING:'+path)
+            if p.IsA(UsdGeom.Mesh):
+                # AABB(local points) then rotating that AABB overestimates a
+                # pretransformed support mesh. Measure its actual USD vertices.
+                v=np.asarray(UsdGeom.Mesh(p).GetPointsAttr().Get());T=matrix(path)
+                v=v@T[:3,:3].T+T[:3,3]
+                return np.array([v.min(axis=0),v.max(axis=0)])
             b = UsdGeom.BBoxCache(Usd.TimeCode.Default(),list(purposes),useExtentsHint=False).ComputeWorldBound(p).ComputeAlignedRange()
             return np.array([b.GetMin(),b.GetMax()])
 
@@ -128,7 +135,16 @@ def run(args):
         target=stack_bounds.mean(axis=0)
         joint=ET.parse(URDF).getroot().find("joint[@name='joint_1']/limit")
         limits=[float(joint.get(k)) for k in ('lower','upper')]
-        face,away,solve=face_angle(robot,q_fixed,X,target,limits)
+        face,away,solve=face_angle(robot,q_fixed,X,target,limits,require_away=not args.target_longitudinal)
+        receiving=None
+        if args.target_longitudinal:
+            longitudinal=next(x for x in s['scene']['conveyors']['items'] if x['id']=='conveyor_longitudinal')
+            region=np.asarray(longitudinal['receiving_surface_bounds_D_m'])
+            receiving=region.mean(axis=0);receiving[2]=region[1,2]
+            belt_actual=in_D(bound(station+'/conveyor_longitudinal/Belt/SM_ConveyorBelt_A06_Belt_02'))
+            if np.max(abs(belt_actual-longitudinal['belt_bounds_D_m']))>1e-6:raise ValueError('RECEIVING_REGION_USD_BINDING_MISMATCH')
+            face,away,solve=target_endpoints(robot,q_fixed,X,target,receiving,limits)
+            solve.update(receiving_surface_bounds_D_m=region.tolist(),actual_belt_bounds_D_m=belt_actual.tolist())
         velocity=float(joint.get('velocity'))
         if 'joint_velocity_rad_s' in s['scene']:
             velocity=min(velocity,float(s['scene']['joint_velocity_rad_s']))
@@ -140,7 +156,7 @@ def run(args):
         mount_locals={str(p.GetPath()):local(str(p.GetPath())) for prefix in [station+'/Robot/link_1/Mast',station+'/Robot/link_1/MountingSeat',station+'/Robot/link_6/CalibrationProbe']
                       for p in Usd.PrimRange(stage.GetPrimAtPath(prefix)) if p and p.IsA(UsdGeom.Xformable)}
         initial_board=matrix(station+'/CalibrationBoard')
-        max_errors=dict(camera_link1=0.,FK=0.,static_transform=0.,mount_local=0.,horizontal=0.,upright=0.)
+        max_errors=dict(camera_link1=0.,FK=0.,static_transform=0.,mount_local=0.,configured_pitch=0.,roll=0.,heading=0.)
 
         def set_state(q):
             if not robot.within_limits(np.asarray(q)):
@@ -156,11 +172,12 @@ def run(args):
             for name,T in dict(frames,flange=frames['link_6'],tcp=robot.fk(q),tool_cad=frames['link_6']@s['tool']['T_flange_tool_cad']).items():
                 if stage.GetPrimAtPath(station+'/Frames/'+name):pose(station+'/Frames/'+name,T)
             C=matrix(optical);L=matrix(station+'/Robot/link_1')
+            installation=mount_check(C,L,c['camera'])
             errors=dict(camera_link1=float(np.max(abs(np.linalg.inv(L)@C-X))),
                         FK=max(float(np.max(abs(matrix(station+'/Robot/'+name+'/'+child)-TWD@T))) for name,T in frames.items() for child in ['Visual','Collision']),
                         static_transform=max(float(np.max(abs(matrix(path)-T))) for path,T in static.items()),
                         mount_local=max(float(np.max(abs(local(path)-T))) for path,T in mount_locals.items()),
-                        horizontal=abs(float(C[2,2])),upright=abs(float(C[2,1]+1)))
+                        configured_pitch=installation['errors']['optical_z_error'],roll=installation['errors']['right_axis_vertical_error'],heading=installation['errors']['heading_error_deg'])
             for name,value in errors.items():
                 max_errors[name]=max(max_errors[name],value)
             if max(errors.values())>1e-8:
@@ -185,12 +202,12 @@ def run(args):
                     q_face=face,q_away=away,joint1_limits=limits,face_solver=solve,boxes=boxes,stack_bounds_D_m=stack_bounds.tolist(),
                     conveyors=conveyors,roof_present=bool(stage.GetPrimAtPath(station+'/trailer_roof')),
                     mast_parent=station+'/Robot/link_1',camera=dict(prim=sensor_path,T_W_C=C.tolist(),T_L_C=X.tolist(),
-                        output_resolution=[640,480],fov_deg=[64,50],optical_assumption=c['camera']['optical_assumption']),
+                        output_resolution=[640,480],fov_deg=[64,50],mount=c['camera'].get('mount',{}),mount_readback=mount_check(C,matrix(station+'/Robot/link_1'),c['camera']),optical_assumption=c['camera']['optical_assumption']),
                     temporary_attachments=dict(board_T_W=initial_board.tolist(),board_bounds_W_m=bound(station+'/CalibrationBoard').tolist(),
                         probe_parent=station+'/Robot/link_6',probe_bounds_W_m=bound(station+'/Robot/link_6/CalibrationProbe').tolist(),
-                        support='Existing fixed simulation fixture; preserved from selected camera USD'),
+                        support=c['board'].get('support',{'classification':'Legacy fixed simulation fixture'})),
                     known_issue=dict(pair=['probe_bracket','part_001'],prior_clearance_m=.00099999918447,required_clearance_m=.0024,
-                        status='UNRESOLVED; previous static evidence, not requalified here'),
+                        revision=c['probe'].get('revision'),status='Separate static geometry recheck required; scan is not motion qualification'),
                     measurement_sources='Bounds, poses and dimensions are final composed USD readback; snapshot deltas retained. Direction and timing are configuration. Optical pupil and board support are simulation assumptions.',
                     motion_safety='NOT_EVALUATED',dynamics='NOT_EVALUATED',timing=timing)
         save_json(out/'layout.json',layout)
@@ -212,6 +229,8 @@ def run(args):
         mapx=((xx-K[0,2])/K[0,0]*Ks[0,0]+Ks[0,2]).astype(np.float32)
         mapy=((yy-K[1,2])/K[1,1]*Ks[1,1]+Ks[1,2]).astype(np.float32)
         rp=rep.create.render_product(sensor_path,(1024,1024));rgb=rep.AnnotatorRegistry.get_annotator('rgb');rgb.attach(rp)
+        segmentation=rep.AnnotatorRegistry.get_annotator('instance_id_segmentation_fast');segmentation.attach(rp)
+        depth=rep.AnnotatorRegistry.get_annotator('distance_to_image_plane');depth.attach(rp)
         ext=UsdGeom.Camera.Define(stage,'/World/J1VisualizationExternalCamera')
         ext.CreateHorizontalApertureAttr(36.);ext.CreateVerticalApertureAttr(20.25);ext.CreateFocalLengthAttr(35.)
         ext.CreateClippingRangeAttr(Gf.Vec2f(.005,100.))
@@ -229,6 +248,35 @@ def run(args):
         def write_rgb(path,a):
             if not cv2.imwrite(str(path),cv2.cvtColor(a,cv2.COLOR_RGB2BGR)):
                 raise IOError('IMAGE_WRITE_FAILED:'+str(path))
+
+        def coverage(phase,C,image):
+            seg=segmentation.get_data();labels=seg['info']['idToLabels'];mask=cv2.remap(seg['data'].astype(np.float32),mapx,mapy,cv2.INTER_NEAREST).astype(np.int64)
+            dep=depth.get_data();dep=dep['data'] if isinstance(dep,dict) else dep;dep=cv2.remap(np.asarray(dep),mapx,mapy,cv2.INTER_NEAREST)
+            CTD=np.linalg.inv(C)@TWD;result=[];overlay=image.copy()
+            for box in boxes:
+                bounds=np.array(box['collision_bounds_D_m']);corners=np.array([[x,y,z,1] for x in bounds[:,0] for y in bounds[:,1] for z in bounds[:,2]])
+                cc=(corners@CTD.T)[:,:3];uv=(cc@K.T);uv=uv[:,:2]/uv[:,2,None]
+                geometric=bool(np.all(cc[:,2]>0) and np.all(uv>=[-.5,-.5]) and np.all(uv<=[639.5,479.5]))
+                ids=[int(key) for key,value in labels.items() if '/Cartons/'+box['id']+'/' in str(value)]
+                pixels=np.isin(mask,ids);count=int(pixels.sum())
+                if count:
+                    rr,co=np.where(pixels);cv2.rectangle(overlay,(int(co.min()),int(rr.min())),(int(co.max()),int(rr.max())),(50,220,100),1)
+                    cv2.putText(overlay,box['id'].replace('carton_r00_',''),(int(co.mean()),int(rr.mean())),cv2.FONT_HERSHEY_SIMPLEX,.3,(255,40,40),1)
+                result.append(dict(id=box['id'],projected_bounds_px=[uv.min(0).tolist(),uv.max(0).tolist()],all_corners_in_frame=geometric,rendered_pixels=count,visible=count>=16))
+            receive=[]
+            if receiving is not None:
+                for x in np.linspace(region[0,0],region[1,0],7):
+                    for y in np.linspace(region[0,1],region[1,1],5):
+                        cc=CTD@np.array([x,y,region[1,2],1]);uv=K@cc[:3];uv=uv[:2]/uv[2]
+                        u,v=np.rint(uv).astype(int);inside=bool(cc[2]>0 and 0<=u<640 and 0<=v<480)
+                        error=abs(float(dep[v,u]-cc[2])) if inside and np.isfinite(dep[v,u]) else None
+                        visible=bool(error is not None and error<.005)
+                        if inside:cv2.circle(overlay,(int(u),int(v)),3,(40,220,40) if visible else (255,50,50),-1)
+                        receive.append(dict(point_D=[float(x),float(y),float(region[1,2])],pixel=uv.tolist(),in_frame=inside,depth_error_m=error,surface_visible=visible))
+            record=dict(phase=phase,purpose='GROUND_TRUTH_DIAGNOSTIC_ONLY_NOT_VISUAL_TARGET_INPUT',boxes=result,
+                        all_boxes_projected_in_frame=all(x['all_corners_in_frame'] for x in result),all_boxes_visible=all(x['visible'] for x in result),
+                        receiver_samples=receive,receiver_visible_samples=sum(x['surface_visible'] for x in receive),instance_labels=labels)
+            save_json(out/('coverage_'+phase+'.json'),record);write_rgb(out/('coverage_'+phase+'.png'),overlay)
 
         def view(eye_D,target_D,*,ortho=None,up=(0,0,1),focal=35.):
             eye=(TWD@[*eye_D,1])[:3];target_W=(TWD@[*target_D,1])[:3]
@@ -248,7 +296,16 @@ def run(args):
                ('layout_front',[-3,0,.29],[.33,0,.29],dict(ortho=2.8)),
                ('layout_side',[-.3,-3,.13],[-.3,0,.13],dict(ortho=3.25)),
                ('camera_mount_closeup',(camera_D+np.array([.85,-1.1,.25])).tolist(),
-                ((camera_D+np.array(s['scene']['base_position_m']))/2).tolist(),dict(focal=32.))]
+                ((camera_D+np.array(s['scene']['base_position_m']))/2).tolist(),dict(focal=32.)),
+               ('camera_pitch_detail',camera_D+[-.24,-.30,.14],camera_D+[0,0,-.015],dict(focal=35.))]
+        if c['board'].get('support'):
+            P=TDW@matrix(station+'/CalibrationBoard');centre=P[:3,:3]@np.array([.075,.0625,0])+P[:3,3]
+            foot=in_D(bound(station+'/CalibrationBoard/support_base')).mean(axis=0)
+            views += [('board_support_table_contact',foot+[-.32,-.36,.22],foot+[0,0,.035],dict(focal=40.)),
+                      ('board_support_back_connection',centre+[-.40,-.30,.15],centre,dict(focal=48.)),
+                      ('board_supported_layout',centre+[.75,-.9,.4],centre-[0,0,.18],dict(focal=32.))]
+            support_readback={p['name']:dict(bounds_D_m=in_D(bound(station+'/CalibrationBoard/'+p['name'])).tolist(),T_W=matrix(station+'/CalibrationBoard/'+p['name']).tolist()) for p in c['board']['support']['parts']}
+            save_json(out/'support_readback.json',dict(parts=support_readback,base_table_gap_m=support_readback['support_base']['bounds_D_m'][0][2]-layout['table']['bounds_D_m'][1][2],connections=c['board']['support']['connections']))
         view_records=[]
         for name,eye,target_D,kwargs in views:
             record=view(eye,target_D,**kwargs);_,_,external=render(18)
@@ -289,6 +346,7 @@ def run(args):
                 if row['frame'] in keyframes:
                     name=keyframes[row['frame']];write_rgb(out/'keyframes'/(name+'.png'),a)
                     write_rgb(out/'keyframes'/(name+'_native.png'),native)
+                    if name in ['face_1','away_1']:coverage(name,C,a)
                 if row['frame']%10==0:print('FRAME',row['frame'],'/',len(rows),'REPLAY',row['replay_time_s'],'J1_DEG',float(np.degrees(q[0])),flush=True)
         render_seconds=time.perf_counter()-started
         save_json(out/'frame_readbacks.json',readbacks)
@@ -305,7 +363,8 @@ def run(args):
         assert not timeline.is_playing() and timeline.get_current_time()==0.
         assert int(omni.timeline.TimelineEventType.PLAY) not in events
         videos=[]
-        for directory,name,resolution in [('camera_frames','camera_rgb_raw.mp4',[640,480]),('external_frames','j1_external_reference.mp4',[1280,720])]:
+        main_video='camera_stack_longitudinal_rgb.mp4' if args.target_longitudinal else 'camera_rgb_raw.mp4'
+        for directory,name,resolution in [('camera_frames',main_video,[640,480]),('external_frames','j1_external_reference.mp4',[1280,720])]:
             command=['ffmpeg','-hide_banner','-loglevel','error','-framerate',str(args.fps),'-i',str(out/directory/'%05d.png'),
                      '-c:v','libx264','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',str(out/name)]
             subprocess.run(command,check=True)
@@ -327,14 +386,16 @@ def run(args):
             endpoint_delta_deg=float(np.degrees(away-face)),return_pose_max_error=float(np.max(abs(np.array(held['face_1']['T_W_C'])-held['face_2']['T_W_C']))),
             unique_camera_images=len(set(hashes)),repeat_image_comparison=pairs,videos=videos,external_camera=external_view,
             render_seconds=render_seconds,total_seconds=time.perf_counter()-started,
-            limitations=['Known probe bracket/tool gap below policy; unchanged.','No collision or motion safety qualification.','Camera stays horizontal; stack coverage must be visually reviewed.','Temporary board and all occluders retained.']))
+            endpoint_meaning=dict(face='stack',away='longitudinal receiving region' if args.target_longitudinal else '90 degree away'),
+            limitations=['No collision or motion safety qualification from this scan.','Pitch is checked against the bound installation configuration.','All real occluders retained.']))
         print('J1_VISUALIZATION_COMPLETE',out,flush=True)
     except Exception as error:
         import traceback
         if created:
             (out/'failure.json').write_text(json.dumps(dict(error=str(error),traceback=traceback.format_exc()),indent=2),encoding='utf-8')
         traceback.print_exc()
-        raise
+        import sys
+        sys.stdout.flush();sys.stderr.flush();os._exit(1)
     finally:
         app.close()
 
@@ -346,4 +407,5 @@ if __name__=='__main__':
     p.add_argument('--fps',type=int,default=5);p.add_argument('--turn-seconds',type=float,default=6.)
     p.add_argument('--steps-per-frame',type=int,default=6)
     p.add_argument('--layout-only',action='store_true',help='Render/read back layout only; no replay or video')
+    p.add_argument('--target-longitudinal',action='store_true',help='Aim at bound longitudinal receiving surface rather than an arbitrary 90-degree endpoint')
     run(p.parse_args())

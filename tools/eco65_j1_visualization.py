@@ -4,7 +4,7 @@ import numpy as np
 from scipy.optimize import brentq
 
 
-def face_angle(robot, q_fixed, T_link_camera, target_D, limits):
+def face_angle(robot, q_fixed, T_link_camera, target_D, limits, *, require_away=True):
     """Solve horizontal alignment including the optical centre's J1 orbit."""
     def evaluate(angle):
         q = np.array(q_fixed, float); q[0] = angle
@@ -23,11 +23,26 @@ def face_angle(robot, q_fixed, T_link_camera, target_D, limits):
         raise ValueError('NO_FORWARD_FACING_J1_WITHIN_LIMITS')
     face = min(candidates, key=lambda x: abs(x-q_fixed[0]))
     away = next((face+d for d in [math.pi/2, -math.pi/2] if limits[0] <= face+d <= limits[1]), None)
-    if away is None:
+    if away is None and require_away:
         raise ValueError('NO_90_DEGREE_AWAY_ENDPOINT_WITHIN_LIMITS')
     return face, away, dict(method='73-point 1D bracketing plus scalar root; official FK optical orbit',
                            candidates_rad=candidates, cross_residual_m=evaluate(face)[0],
                            forward_distance_m=evaluate(face)[1])
+
+
+def target_endpoints(robot,q_fixed,X,stack_D,receiving_D,limits):
+    stack,_,stack_evidence=face_angle(robot,q_fixed,X,stack_D,limits,require_away=False)
+    q=np.array(q_fixed,float);q[0]=stack
+    longitudinal,_,receive_evidence=face_angle(robot,q,X,receiving_D,limits,require_away=False)
+    candidates=[]
+    for sign in [-1,1]:
+        angle=stack+sign*np.pi/2;q[0]=angle
+        C=robot.named_link_frames(q)['link_1']@X;v=np.asarray(receiving_D)[:2]-C[:2,3];f=C[:2,2]
+        error=np.degrees(np.arctan2(f[0]*v[1]-f[1]*v[0],f@v))
+        candidates.append(dict(offset_deg=sign*90,q1=angle,within_limits=bool(limits[0]<=angle<=limits[1]),heading_error_deg=float(error)))
+    return stack,longitudinal,dict(stack=stack_evidence,longitudinal=receive_evidence,plus_minus_90_diagnostics=candidates,
+        actual_delta_deg=float(np.degrees(longitudinal-stack)),receiving_target_D=np.asarray(receiving_D).tolist(),
+        selection='Actual receiving-surface centre, not transport direction; exact target heading takes precedence over 90 degrees')
 
 
 def schedule(face, away, *, fps=5, hold=2., turn=6., velocity=3.14):

@@ -14,6 +14,13 @@ def report(out):
     TWD=np.array(layout['T_W_D_readback']);C=np.array(layout['camera']['T_W_C'])
     TDW=np.linalg.inv(TWD);camD=(TDW@C)[:3,3];axisD=(TDW@C)[:3,2]
     base=np.array(layout['base_T_D'])[:3,3];stack=np.array(layout['stack_bounds_D_m']).mean(axis=0)
+    pitch=layout['camera'].get('mount',{}).get('downward_pitch_deg',0.)
+    supported=layout['temporary_attachments']['support']
+    support_text='Connected tabletop support; locked fixture' if isinstance(supported,dict) and supported.get('fixed_to_table') else 'Legacy fixed simulation fixture; no new support qualification'
+    coverage_path=out/'coverage_face_1.json';coverage=json.loads(coverage_path.read_text()) if coverage_path.exists() else None
+    coverage_text=(f"Stack: {sum(b['visible'] for b in coverage['boxes'])}/{len(coverage['boxes'])} boxes visible; whole envelope in frame: {coverage['all_boxes_projected_in_frame']}" if coverage else 'Stack coverage: see original sensor frames; no per-box diagnostic in this legacy run')
+    receiver_path=out/'coverage_away_1.json';receiver=json.loads(receiver_path.read_text()) if receiver_path.exists() else None
+    receiver_text=(f"Receiving surface: {receiver['receiver_visible_samples']}/{len(receiver['receiver_samples'])} diagnostic grid samples visible" if receiver else 'Receiver-specific coverage not recorded in this legacy run')
     font=ImageFont.truetype('DejaVuSans.ttf',24)
     annotations=[]
     for view in views:
@@ -45,8 +52,8 @@ def report(out):
             for belt in layout['conveyors']:
                 p=np.mean(belt['belt_bounds_D_m'],axis=0)
                 arrow(p,p+np.array(belt['nominal_direction_D'])*.22,'belt -Y' if belt['nominal_direction_D'][1] else 'belt -X',(220,220,80))
-        elif view['name']=='camera_mount_closeup':
-            arrow(camD,camD+axisD*.18,'horizontal optical axis',(80,210,255))
+        elif view['name'] in ['camera_mount_closeup','camera_pitch_detail']:
+            arrow(camD,camD+axisD*.10,f'optical axis: {pitch:g} deg down',(80,210,255))
             text([24,62],f"Optical height W: {C[2,3]:.4f} m; rigid parent: link_1")
             text([24,98],'XD500 actual CAD; existing silver mount and J1 seat retained')
         elif view['name']=='layout_front':
@@ -54,27 +61,24 @@ def report(out):
             layers=len({round(b['center_D_m'][2],6) for b in layout['boxes']})
             size=' x '.join(str(round(x*1000)) for x in layout['boxes'][0]['size_m'])
             text([24,62],f"{columns} columns x {layers} layers | {len(layout['boxes'])} cartons | {size} mm")
-            text([24,98],f"Stack W height: {layout['stack_bounds_D_m'][0][2]+TWD[2,3]:.3f} to {layout['stack_bounds_D_m'][1][2]+TWD[2,3]:.3f} m; roof off")
+            text([24,98],f"Stack W height: {layout['stack_bounds_D_m'][0][2]+TWD[2,3]:.3f} to {layout['stack_bounds_D_m'][1][2]+TWD[2,3]:.3f} m; roof present: {layout['roof_present']}")
             text([24,134],'All occluders retained; front view can obscure lower layers')
         elif view['name']=='layout_side':
             text([24,62],f"USD W heights: tabletop {layout['table']['height_W_m']:.3f} m; belt {layout['conveyors'][0]['belt_height_W_m']:.3f} m")
             text([24,98],f"Robot base {TWD[2,3]+base[2]:.3f} m; optical centre {C[2,3]:.4f} m")
-            text([24,134],'Temporary probe and floating calibration board retained')
+            text([24,134],support_text)
         else:
             text([24,62],f"J1 face {np.degrees(layout['q_face']):.3f} deg; other joints fixed")
-            text([24,98],'Known bracket/tool clearance shortfall unresolved; motion safety NOT EVALUATED')
+            text([24,98],'Static scan only; separate native/physical reports govern motion')
         im.save(out/'annotated'/(view['name']+'_annotated.png'))
     (out/'annotation_projection.json').write_text(json.dumps(annotations,indent=2),encoding='utf-8')
-    preview=Image.new('RGB',(1920,1200),(25,29,34));d=ImageDraw.Draw(preview)
-    for i,view in enumerate(views):
-        tile=Image.open(out/(view['name']+'.png'));tile.thumbnail((640,360))
-        x=(i%3)*640;y=(i//3)*400;preview.paste(tile,(x,y));d.text((x+8,y+365),view['name'],font=font,fill='white')
-    tile=Image.open(out/'keyframes/face_1.png');tile.thumbnail((480,360));preview.paste(tile,(1360,400))
-    d.text((1288,765),'Actual mast camera: face_1',font=font,fill='white')
-    d.text((20,840),'Same composed scene; no objects moved for framing.',font=font,fill='white')
-    d.text((20,885),'KINEMATIC_VISUALIZATION | MOTION_SAFETY_NOT_EVALUATED | Dynamics: NOT_EVALUATED',font=font,fill='white')
-    d.text((20,930),'The level mast camera sees only the upper part of the stack; review original sensor frames.',font=font,fill='white')
-    preview.crop((0,0,1920,1000)).save(out/'layout_preview.jpg',quality=94)
+    tiles=[(out/(v['name']+'.png'),v['name']) for v in views]+[(out/'keyframes'/f'{name}.png','Actual mast RGB: '+name) for name in ['face_1','away_1']]
+    rows=(len(tiles)+2)//3;preview=Image.new('RGB',(1920,rows*400+140),(25,29,34));d=ImageDraw.Draw(preview)
+    for i,(path,label) in enumerate(tiles):
+        tile=Image.open(path);tile.thumbnail((640,360));x=(i%3)*640;y=(i//3)*400
+        preview.paste(tile,(x+(640-tile.width)//2,y));d.text((x+8,y+365),label,font=font,fill='white')
+    for i,text in enumerate(['KINEMATIC_VISUALIZATION | Dynamics: NOT_EVALUATED',coverage_text,receiver_text]):d.text((20,rows*400+12+i*40),text,font=font,fill='white')
+    preview.save(out/'layout_preview.jpg',quality=94)
     keys=Image.new('RGB',(1280,1040),(25,29,34));kd=ImageDraw.Draw(keys)
     for i,name in enumerate(['face_1','away_1','face_2','away_2']):
         x=i%2*640;y=i//2*520;keys.paste(Image.open(out/'keyframes'/(name+'.png')),(x,y));kd.text((x+10,y+487),name,font=font,fill='white')
@@ -103,7 +107,7 @@ def report(out):
            'Camera output: 640x480, 64 H x 50 V degrees; actual 1024x1024 64x64-degree render, ray-preserving remap.',
            'Optical assumption: '+layout['camera']['optical_assumption'],
            'Temporary board W transform: '+str(layout['temporary_attachments']['board_T_W']),
-           'Temporary probe remains rigid under link_6. Board is the existing fixed simulation fixture.','',
+           'Temporary probe remains rigid under link_6. '+support_text+'.',f'Configured downward pitch: {pitch} degrees. '+coverage_text+'. '+receiver_text+'.','',
            '## Checks and limits','',
            'Actual Isaac version: '+check['isaac_version']+'. Physical timeline stopped, no PLAY events; replay_time_s is independent.',
            f"Both MP4 files fully decoded: {check['timing']['frames']} frames, {check['timing']['fps']} fps, {check['timing']['duration_s']} seconds.",
@@ -112,8 +116,8 @@ def report(out):
            'Repeated hold-image comparisons: '+str(check['repeat_image_comparison']),
            f"Unique freshly rendered camera PNGs: {check['unique_camera_images']}.",
            f"Rendering/check time: {check['render_seconds']:.2f} s; total with encoding/decode: {check['total_seconds']:.2f} s (not replay time).",'',
-           'Known bracket/tool clearance is about 1 mm against the prior 2.4 mm criterion. It remains unresolved; this entry does not change policy or calibration acceptance.',
-           'The level camera is higher than the stack. Only partial stack coverage is possible. Real occluders and the board were preserved. Image visibility and any suspected interference require visual review; no new collision qualification was run.',
+           'Bracket revision metadata: '+str(layout['known_issue'])+'. This scan does not qualify its clearance; refer to the separately bound native/MuJoCo checks.',
+           coverage_text+'. '+receiver_text+'. Actual occluders and all box identities were retained. Coverage diagnostics are not visual-target inputs.',
            'All positions/sizes above are actual composed USD readback; nominal conveyor directions and replay timing are configuration. Optical pupil and fixed board support are simulation assumptions.','']
     (out/'layout_summary.md').write_text('\n'.join(md),encoding='utf-8')
     files={p.relative_to(out).as_posix():dict(bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in out.rglob('*') if p.is_file() and p.name!='delivery_manifest.json'}

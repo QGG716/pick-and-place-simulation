@@ -50,8 +50,10 @@ public:
       // ECO65's independent MuJoCo world uses convex solids. A triangle BVH
       // cannot prove containment equivalence merely because its file is the
       // same. Construct real FCL convex solids once for this candidate.
-      if(explicit_convex_meshes && b.link) {
-        const auto& shape=b.link->getShapes().at(b.shape);
+      if(explicit_convex_meshes) {
+        const auto shape=b.link?b.link->getShapes().at(b.shape):
+          b.type==collision_detection::BodyTypes::WORLD_OBJECT?scene->getWorld()->getObject(b.name)->shapes_.at(b.shape):shapes::ShapeConstPtr{};
+        if(shape) {
         if(shape->type==shapes::MESH) {
           const auto* mesh=static_cast<const shapes::Mesh*>(shape.get());
           auto vertices=std::make_shared<std::vector<fcl::Vector3d>>();auto faces=std::make_shared<std::vector<int>>();
@@ -59,6 +61,7 @@ public:
           for(size_t i=0;i<mesh->triangle_count;++i){faces->push_back(3);for(int k=0;k<3;++k)faces->push_back(mesh->triangles[3*i+k]);}
           auto convex=std::make_shared<fcl::Convexd>(vertices,mesh->triangle_count,faces,true);
           b.object=std::make_shared<fcl::CollisionObjectd>(convex,o->getTransform());
+        }
         }
       }
       bodies_.push_back(std::move(b));

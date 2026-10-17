@@ -48,6 +48,23 @@ geometry_msgs::msg::Pose pose(const J& value) {
 }
 moveit_msgs::msg::CollisionObject object(const J& b, const std::string& frame="world") {
   moveit_msgs::msg::CollisionObject o; o.header.frame_id=frame; o.id=b.at("id"); o.operation=o.ADD;
+  if(b.contains("convex_mesh")) {
+    const auto& value=b.at("convex_mesh");shape_msgs::msg::Mesh mesh;
+    for(const auto& v:value.at("vertices")) {
+      if(v.size()!=3)throw std::runtime_error("INVALID_CONVEX_VERTEX");
+      geometry_msgs::msg::Point p;p.x=v.at(0);p.y=v.at(1);p.z=v.at(2);
+      if(!std::isfinite(p.x)||!std::isfinite(p.y)||!std::isfinite(p.z))throw std::runtime_error("INVALID_CONVEX_VERTEX");
+      mesh.vertices.push_back(p);
+    }
+    for(const auto& face:value.at("triangles")) {
+      if(face.size()!=3)throw std::runtime_error("INVALID_CONVEX_FACE");
+      shape_msgs::msg::MeshTriangle t;
+      for(size_t i=0;i<3;++i){const int index=face.at(i);if(index<0||size_t(index)>=mesh.vertices.size())throw std::runtime_error("INVALID_CONVEX_INDEX");t.vertex_indices[i]=index;}
+      mesh.triangles.push_back(t);
+    }
+    if(mesh.vertices.size()<4||mesh.triangles.size()<4)throw std::runtime_error("EMPTY_CONVEX_WORLD_MESH");
+    o.meshes.push_back(mesh);o.mesh_poses.push_back(pose(b.at("pose")));return o;
+  }
   shape_msgs::msg::SolidPrimitive s; s.type=s.BOX; auto dimensions=b.at("size").get<std::vector<double>>(); s.dimensions.assign(dimensions.begin(),dimensions.end());
   if(s.dimensions.size()!=3) throw std::runtime_error("INVALID_BOX");
   for(auto d:s.dimensions) if(!std::isfinite(d)||d<=0) throw std::runtime_error("INVALID_BOX");
@@ -243,18 +260,36 @@ class Worker {
       const std::string& location="mtc_compute") {
     const std::string target=req.at("clearance_policy").at("target_id");
     auto ids=before->getWorld()->getObjectIds(),next=after->getWorld()->getObjectIds();
-    std::set<std::string> a(ids.begin(),ids.end()),b(next.begin(),next.end());a.erase(target);b.erase(target);
+    const bool touch=!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1";
+    std::set<std::string> a(ids.begin(),ids.end()),b(next.begin(),next.end());
+    if(!touch){a.erase(target);b.erase(target);}
     if(a!=b) throw std::runtime_error("NATIVE_TASK_WORLD_IDENTITY_CHANGED");
     for(const auto& id:a) {
       const auto x=before->getWorld()->getObject(id),y=after->getWorld()->getObject(id);
       if(x->shapes_.size()!=y->shapes_.size() || x->global_shape_poses_.size()!=x->shapes_.size() ||
          y->global_shape_poses_.size()!=y->shapes_.size()) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
       for(size_t i=0;i<x->shapes_.size();++i) {
+        if(x->shapes_[i]->type==shapes::MESH && y->shapes_[i]->type==shapes::MESH) {
+          const auto* a=static_cast<const shapes::Mesh*>(x->shapes_[i].get());const auto* b=static_cast<const shapes::Mesh*>(y->shapes_[i].get());
+          if(a->vertex_count!=b->vertex_count||a->triangle_count!=b->triangle_count ||
+             !std::equal(a->vertices,a->vertices+3*a->vertex_count,b->vertices)||
+             !std::equal(a->triangles,a->triangles+3*a->triangle_count,b->triangles) ||
+             (x->global_shape_poses_[i].matrix()-y->global_shape_poses_[i].matrix()).cwiseAbs().maxCoeff()>1e-12)
+            throw std::runtime_error("NATIVE_TASK_WORLD_MESH_CHANGED");
+          continue;
+        }
         if(x->shapes_[i]->type!=shapes::BOX || y->shapes_[i]->type!=shapes::BOX) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_UNSUPPORTED");
         const auto* sx=static_cast<const shapes::Box*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Box*>(y->shapes_[i].get());
         for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
         if(!samePose(m710::worldShapePose(*x,i),m710::worldShapePose(*y,i))) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
       }
+    }
+    if(touch) {
+      // The finite datum remains an immutable mesh in the world. Its vertices,
+      // triangles and pose were checked above, including the target itself.
+      if(!a.count(target)||before->getCurrentState().hasAttachedBody(target)||after->getCurrentState().hasAttachedBody(target))
+        throw std::runtime_error("TOUCH_FIXED_DATUM_OWNERSHIP_CHANGED");
+      return;
     }
     auto targetPose=[&](const planning_scene::PlanningSceneConstPtr& s) {
       const auto* attached=s->getCurrentState().getAttachedBody(target);const auto world=s->getWorld()->getObject(target);
@@ -629,6 +664,11 @@ public:
       }
       bound_policy=req.at("collision_policy");bound_tools=req.at("tool_links");
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
+      if(!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
+        if(!planning_only || planning_mode!="cold_from_scratch" || req.at("identity").at("robot_variant")!="ECO65-B" ||
+           req.at("identity").at("task_tcp_link")!="calibration_probe_tcp" || bound_compliant!=J::array({"probe_tip"}))
+          throw std::runtime_error("TOUCH_REQUIRES_BOUND_PROBE_TCP_COLD_SIMULATION");
+      }
       if(!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="cad_seal_contours_v1") {
         if(!planning_only || planning_mode!="cold_from_scratch" || req.at("identity").at("robot_variant")!="ECO65-B")
           throw std::runtime_error("ECO65_REQUIRES_COLD_PLANNING_ONLY");
@@ -663,8 +703,13 @@ public:
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
     if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
-      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline") throw std::runtime_error("UNKNOWN_OPERATION");
+      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="retire_touch_task") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
+    if(op=="retire_touch_task") {
+      if(!planning_only || bound_process_geometry.value("geometry_type",std::string())!="known_tip_finite_datum_v1")throw std::runtime_error("TOUCH_TASK_RETIRE_SCOPE");
+      const std::string task=req.at("task_id");const size_t count=tasks.erase(task);
+      return {{"status","RETIRED"},{"removed",count},{"task_id",task},{"scope","Release cache before replan from measured state; does not authorize execution"}};
+    }
     if(op=="load_static_prior" || op=="build_static_prior" || op=="ik_batch") {
       if(!planning_only || planning_mode!="static_prior_fast") throw std::runtime_error("STATIC_PRIOR_MODE_REQUIRED");
     }
@@ -851,7 +896,8 @@ public:
         if(bound_compliant.empty() || req.at("clearance_policy").at("compliant_tool_links")!=bound_compliant)
           throw std::runtime_error("PROCESS_COLLIDER_OWNERSHIP_MISMATCH");
         if(bound_process_geometry.is_null()) throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_REQUIRED");
-        if(bound_process_geometry.value("geometry_type",std::string())=="cad_seal_contours_v1") {
+        if(bound_process_geometry.value("geometry_type",std::string())=="cad_seal_contours_v1" ||
+           bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
           for(auto it=bound_process_geometry.begin();it!=bound_process_geometry.end();++it)
             if(!req.at("process_policy").contains(it.key()) || req.at("process_policy").at(it.key())!=it.value())
               throw std::runtime_error("PROCESS_CONTOUR_GEOMETRY_BINDING_MISMATCH");

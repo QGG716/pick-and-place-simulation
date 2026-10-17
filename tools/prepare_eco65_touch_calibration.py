@@ -12,7 +12,7 @@ from build_eco65_full_face_layout import verify_static
 from eco65_touch_sources import bind_scene_sources,derived_scene_identity
 
 
-def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=480,optical_offset_m=(0,0,0),*,composed_usd,geometry_manifest):
+def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=480,optical_offset_m=(0,0,0),*,composed_usd,geometry_manifest,installation=None):
     import cv2
     snapshot_path=snapshot_path.resolve();pose_path=pose_path.resolve();camera_manifest=camera_manifest.resolve()
     start=time.perf_counter();out=out.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
@@ -75,10 +75,21 @@ def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=
     kin=dict(active_joint_names=robot.active_joint_names,base_link=robot.base_link,T_D_base=robot.base_transform.tolist(),
         limits_rad=robot.joint_limits.tolist(),urdf_sha256=file_hash(URDF),
         joints=[dict(name=j.name,type=j.joint_type,parent=j.parent,child=j.child,origin=j.origin.tolist(),axis=j.axis.tolist()) for j in robot.joints])
+    fixture_preparation=None
+    if installation is not None:
+        from eco65_touch_sources import verify_scene_sources
+        new=load_json(installation)
+        if verify_scene_sources(new)!=sources:raise ValueError('INSTALLATION_SOURCE_MISMATCH')
+        if (new['camera']['source_sha256']!=camera['source_sha256'] or new['camera']['K']!=camera['K'] or
+            new['camera']['parts']!=camera['parts'] or new['probe']['original_T_flange_tcp']!=probe['original_T_flange_tcp'] or
+            new['board']['touch_points']!=board_config['touch_points']):raise ValueError('INSTALLATION_CHANGES_PINNED_DEFINITION')
+        camera=copy.deepcopy(new['camera']);probe=copy.deepcopy(new['probe']);board_config=copy.deepcopy(new['board'])
+        fixture_preparation=copy.deepcopy(new['fixture_preparation'])
     configuration=dict(snapshot=snapshot_path.relative_to(ROOT).as_posix(),snapshot_sha256=file_hash(snapshot_path),source_fingerprint=s['fingerprint'],
         scene_sources=sources,
         camera=camera,probe=probe,board=board_config,thresholds=thresholds,kinematics=kin,display_q=pose['home_q'],
         statuses=['SYNTHETIC_GEOMETRIC_TOUCH','PHYSICAL_CONTACT_NOT_EVALUATED','NO_MOTION_EXECUTED'])
+    if fixture_preparation:configuration['fixture_preparation']=fixture_preparation
     configuration['derived_scene_identity']=derived_scene_identity(configuration)
     save_json(out/'configuration.json',configuration) # thresholds written BEFORE search/render/solve
     calls=[];attempts=[];placements=[];touches=[];observations=[]
@@ -100,9 +111,12 @@ def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=
         geometry=StaticGeometry(s,configuration,out)
         rng=np.random.default_rng(6516)
         boardR=np.array([[0,0,-1],[1,0,0],[0,-1,0.]])
-        for placement_id,split,offset,indices in [('train_01','train',np.zeros(3),range(6)),('heldout_01','validation',np.array([.015,.025,-.02]),[0,3,5])]:
+        if fixture_preparation:boardR=np.array(fixture_preparation['board_rotation_D'])
+        heldout_offset=np.array(fixture_preparation['heldout_translation_D_m'] if fixture_preparation else [.015,.025,-.02])
+        for placement_id,split,offset,indices in [('train_01','train',np.zeros(3),range(6)),('heldout_01','validation',heldout_offset,[0,3,5])]:
             found=False
             candidates=[[-.73,.20,.70],[-.76,.20,.72],[-.79,.20,.70]] if split=='train' else [placements[0]['center_D_m']]
+            if fixture_preparation and split=='train':candidates=fixture_preparation['candidate_centers_D_m']
             for center in candidates:
                 center=np.array(center)+offset;P=transform(center-boardR@np.array([.075,.0625,0]),boardR)
                 proposed=[];qseed=np.array(pose['home_q'])
@@ -133,8 +147,13 @@ def prepare(snapshot_path,pose_path,camera_manifest,out,worker,width=640,height=
                     placements.append(dict(board_placement_id=placement_id,split=split,T_D_P=P.tolist(),center_D_m=center.tolist()))
                     touches.extend(proposed);found=True;break
             if not found:raise ValueError('BOUNDED_FIXTURE_IK_OR_GEOMETRY_SEARCH_EXHAUSTED:'+placement_id)
-            for i,degree in enumerate([82,90,98]):
-                q=np.array(pose['home_q']);q[0]=np.radians(degree)
+            angles=np.radians([82,90,98])
+            if fixture_preparation:
+                from eco65_j1_visualization import face_angle
+                centre_angle,_,_=face_angle(robot,pose['home_q'],np.array(camera['T_link1_optical']),center,robot.joint_limits[0],require_away=False)
+                angles=centre_angle+np.radians(fixture_preparation['view_offsets_deg'])
+            for i,angle in enumerate(angles):
+                q=np.array(pose['home_q']);q[0]=angle
                 check=geometry.check(q,P,None)
                 observations.append(dict(sample_id=placement_id+'_photo_'+str(i),board_placement_id=placement_id,split=split,q_rad=q.tolist(),static_check=check))
                 if not check['accepted']:raise ValueError('CAPTURE_POSE_STATIC_GEOMETRY_REJECTED')
@@ -151,7 +170,7 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for arg in ['snapshot','pose','camera-manifest','output','composed-usd','geometry-manifest']:p.add_argument('--'+arg,type=Path,required=True)
     p.add_argument('--worker-command',required=True);p.add_argument('--width',type=int,default=640);p.add_argument('--height',type=int,default=480)
-    p.add_argument('--optical-offset-m',nargs=3,type=float,default=[0.,0.,0.]);a=p.parse_args()
+    p.add_argument('--optical-offset-m',nargs=3,type=float,default=[0.,0.,0.]);p.add_argument('--installation',type=Path);a=p.parse_args()
     if min(a.width,a.height)<64:p.error('Simulation image dimensions must be >=64')
     prepare(a.snapshot,a.pose,a.camera_manifest,a.output,a.worker_command,a.width,a.height,a.optical_offset_m,
-        composed_usd=a.composed_usd,geometry_manifest=a.geometry_manifest)
+        composed_usd=a.composed_usd,geometry_manifest=a.geometry_manifest,installation=a.installation)

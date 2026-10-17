@@ -149,3 +149,10 @@ bracket, add an exception, lower clearance or search for replacement poses.
 Even a future static pass would not validate the connecting path.
 
 `NO_MOTION_EXECUTED` / `PHYSICAL_CONTACT_NOT_EVALUATED` / `Dynamics: NOT_EVALUATED`.
+
+
+## 2026-10-17 follow-up
+
+The explicit 30? installation, supported board, bracket repair and fresh calibration
+are recorded in [eco65_tilted_camera_touch.md](eco65_tilted_camera_touch.md).
+The measurements and failures above remain historical evidence for the older installation.

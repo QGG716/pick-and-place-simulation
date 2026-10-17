@@ -13,13 +13,15 @@ from unloading_sim.eco65.native_model import POLICY
 from eco65_touch_sources import verify_scene_sources
 
 
-def pair_rule(a,b,mount):
+def pair_rule(a,b,mount,table_support=False):
     names=frozenset([('robot_'+e['owner']) if e['kind']=='robot' else e['owner'] for e in [a,b]])
     if names in mount:return dict(name='asset_bound_flange_mount',threshold_m=-POLICY['contact_tolerance_m'],source='tool.mounting_contacts')
     if names==frozenset(['robot_base_link','robot_mount_plate']):
         return dict(name='base_installation',threshold_m=-POLICY['contact_tolerance_m'],source='snapshot robot base/installation plate')
     if names==frozenset(['probe_bracket','part_000']):
         return dict(name='probe_bracket_rigid_plate',threshold_m=-POLICY['contact_tolerance_m'],source='configuration.probe.plate_source and bracket_T_F')
+    if table_support and names==frozenset(['support_base','trailer_floor']):
+        return dict(name='named_fixture_base_table_contact',threshold_m=-POLICY['contact_tolerance_m'],source='configuration.board.support.connections')
     self_pair=a['kind']==b['kind']=='robot'
     return dict(name='robot_self_clearance' if self_pair else 'general_clearance',
         threshold_m=POLICY['self_collision_clearance_m' if self_pair else 'required_pair_clearance_m'],source='eco65.native_model.POLICY')
@@ -66,6 +68,8 @@ def accessory_meshes(s,c):
     # original per-part meshes remain the actual visual source.
     camera=trimesh.util.concatenate([trimesh.load(ROOT/p['visual'],process=False) for p in c['camera']['parts']])
     add('camera_body','link_1',camera,T@np.array(c['camera']['T_mast_CAD']))
+    for p in c['camera'].get('pitch_adapter',[]):
+        add(p['name'],'link_1',trimesh.creation.box(p['size_m']),T@p['T_mast'],'camera_adapter')
     p=c['probe'];tip=np.array(p['p_F_tip_m']);start=np.array(p['rod_start_F_m']);cone=p['cone_length_m']
     mid=(tip+start)/2;mid[2]-=cone/2
     add('probe_rod','link_6',trimesh.creation.cylinder(radius=p['radius_m'],height=tip[2]-start[2]-cone,sections=24),transform(mid),'probe')
@@ -76,6 +80,8 @@ def accessory_meshes(s,c):
     for p in b['touch_points']:
         xyz=np.array(p['p_P_m']);xyz[2]/=2
         add('stud_'+p['point_id'],'board',trimesh.creation.cylinder(radius=b['stud_radius_m'],height=b['stud_projection_m'],sections=24),transform(xyz),'fixture')
+    for p in b.get('support',{}).get('parts',[]):
+        add(p['name'],'board',trimesh.creation.box(p['size_m']),np.array(p['T_P']),'fixture')
     return out
 
 
@@ -83,6 +89,8 @@ class StaticGeometry:
     def __init__(self,s,c,out):
         import mujoco as mj
         from pxr import Usd,UsdGeom
+        from build_eco65_full_face_layout import verify_static
+        verify_static(s)
         self.mj=mj;self.robot=robot_for(s['tool'],s['scene']);self.entries=[]
         self.sources=verify_scene_sources(c)
         if s['fingerprint']!=self.sources['files']['snapshot']['fingerprint']:raise ValueError('GEOMETRY_SNAPSHOT_MISMATCH')
@@ -94,7 +102,7 @@ class StaticGeometry:
             ET.SubElement(assets,'mesh',name=name,vertex=' '.join(map(str,np.asarray(vertices).reshape(-1))))
             body=ET.SubElement(world,'body',name=name,mocap='true')
             ET.SubElement(body,'geom',name=name,type='mesh',mesh=name,contype='0',conaffinity='0')
-            self.entries.append(dict(name=name,source_label=label,frame=frame,T=np.array(T),kind=kind,owner=owner))
+            self.entries.append(dict(name=name,source_label=label,frame=frame,T=np.array(T),kind=kind,owner=owner,vertices=np.asarray(vertices)))
         manifest=load_json(ROOT/self.sources['files']['geometry_manifest']['path'])
         old=self.robot.named_link_frames(manifest['home_q_rad']);cad=np.array(s['tool']['T_flange_tool_cad'])
         for row in manifest['collision_records']:
@@ -121,7 +129,7 @@ class StaticGeometry:
         self.extra=accessory_meshes(s,c);self.config=c;folder=out/'geometry';folder.mkdir()
         for row in self.extra:
             row['mesh'].export(folder/(row['name']+'.obj'))
-            add(row['name'],row['mesh'].vertices,row['frame'],np.eye(4),row['category'],row['name'])
+            add(row['name'],row['mesh'].vertices,row['frame'],np.eye(4),'accessory' if row['category']=='camera_adapter' else row['category'],row['name'])
         self.model=mj.MjModel.from_xml_string(ET.tostring(xml,encoding='unicode'));self.data=mj.MjData(self.model)
         for e in self.entries:e['gid']=self.model.geom(e['name']).id;e['bid']=self.model.body(e['name']).mocapid[0]
         adjacent={frozenset([j.parent,j.child]) for j in self.robot.joints};mount=mounting_pairs(s['tool']);self.pairs=[]
@@ -139,7 +147,7 @@ class StaticGeometry:
                     skipped['named_fixed_interfaces'].append(dict(pair=sorted(owners),source=interface,
                         scope='Existing fixed interface; conformal original-triangle contact not requalified by convex envelopes'))
                     continue
-                self.pairs.append((a,b,pair_rule(a,b,mount)))
+                self.pairs.append((a,b,pair_rule(a,b,mount,bool(c['board'].get('support')))))
         self.a=np.array([a['gid'] for a,b,t in self.pairs]);self.b=np.array([b['gid'] for a,b,t in self.pairs])
         self.radii=self.model.geom_rbound[self.a]+self.model.geom_rbound[self.b]
         self.query_horizon=max(POLICY['required_pair_clearance_m'],POLICY['self_collision_clearance_m'],
@@ -153,7 +161,7 @@ class StaticGeometry:
             pairs=[dict(index=i,geometries=[a['name'],b['name']],owners=[a['owner'],b['owner']],rule=rule)
                    for i,(a,b,rule) in enumerate(self.pairs)]))
 
-    def check(self,q,P,point_id):
+    def check(self,q,P,point_id,*,contact_neighborhood=False):
         if not self.robot.within_limits(q):return dict(accepted=False,failures=['joint_limits'])
         frames=self.robot.named_link_frames(q);frames.update(D=np.eye(4),board=P)
         for e in self.entries:
@@ -180,9 +188,10 @@ class StaticGeometry:
                 tip=T[:3,:3]@self.config['probe']['p_F_tip_m']+T[:3,3]
                 plane_gap=float(target[2]-v[:,2].max());tip_error=float(np.linalg.norm(tip-target))
                 radial_error=float(np.linalg.norm(tip[:2]-target[:2]));radius=self.config['board']['stud_radius_m']
-                analytic=dict(accepted=bool(np.isfinite([plane_gap,tip_error,radial_error]).all() and plane_gap>=-self.config['thresholds']['tip_target_m'] and tip_error<self.config['thresholds']['tip_target_m'] and radial_error<=radius),
+                arrival=tip_error<self.config['thresholds']['tip_target_m']
+                analytic=dict(accepted=bool(np.isfinite([plane_gap,tip_error,radial_error]).all() and plane_gap>=-self.config['thresholds']['tip_target_m'] and (arrival or contact_neighborhood) and radial_error<=radius),
                     support_plane_gap_m=plane_gap,tip_error_m=tip_error,finite_datum_radial_error_m=radial_error,finite_datum_radius_m=radius,
-                    method='Finite target centre and separating plane of every original cone vertex; designated tip only')
+                    arrival_required=not contact_neighborhood,method='Finite target centre and separating plane of every original cone vertex; designated tip only')
             evidence=distance_evidence(lambda:self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],self.query_horizon,None),threshold,self.query_horizon,analytic)
             row=dict(pair_index=int(index),pair=[a['owner'],b['owner']],geometries=[a['name'],b['name']],
                 rule='designated_tip_datum' if designated[index] else rule['name'],threshold_m=threshold,

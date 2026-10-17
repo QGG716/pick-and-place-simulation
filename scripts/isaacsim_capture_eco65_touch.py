@@ -3,7 +3,8 @@ import argparse,time,os
 from pathlib import Path
 
 
-def capture(prepared,output,perturb=False):
+def capture(prepared,output,perturb=False,scene_only=False):
+    created=False
     from isaacsim import SimulationApp
     app=SimulationApp({'headless':True,'renderer':'RaytracedLighting','width':1024,'height':1024})
     try:
@@ -17,12 +18,13 @@ def capture(prepared,output,perturb=False):
         from unloading_sim.touch_calibration import intrinsics,OPTICAL_FROM_USD
         from eco65_touch_geometry import accessory_meshes
         from eco65_touch_sources import verify_scene_sources
-        started=time.perf_counter();prepared=prepared.resolve();output=output.resolve();output.relative_to(ROOT/'outputs');output.mkdir(parents=True,exist_ok=False)
+        from eco65_camera_mount import mount_check
+        started=time.perf_counter();prepared=prepared.resolve();output=output.resolve();output.relative_to(ROOT/'outputs');output.mkdir(parents=True,exist_ok=False);created=True
         c=load_json(prepared/'configuration.json');s=load_json(ROOT/c['snapshot']);robot=robot_for(s['tool'],s['scene'])
         sources=verify_scene_sources(c)
         if file_hash(ROOT/c['snapshot'])!=c['snapshot_sha256']:raise ValueError('SNAPSHOT_CHANGED')
-        if len(c.get('touches',[]))<9:raise ValueError('PREPARED_TOUCH_SAMPLES_REQUIRED')
-        if any(not t['geometry']['accepted'] for t in c['touches']) or any(not p['static_check']['accepted'] for p in c['photos']):
+        if not scene_only and len(c.get('touches',[]))<9:raise ValueError('PREPARED_TOUCH_SAMPLES_REQUIRED')
+        if not scene_only and (any(not t['geometry']['accepted'] for t in c['touches']) or any(not p['static_check']['accepted'] for p in c['photos'])):
             raise ValueError('DISCRETE_STATIC_GEOMETRY_NOT_ACCEPTED')
         observations=output/'observations';observations.mkdir();(output/'truth').mkdir();(observations/'images').mkdir()
         source=ROOT/sources['files']['composed_usd']['path'];stage_path=output/'calibration.usda';stage=Usd.Stage.CreateNew(str(stage_path))
@@ -65,6 +67,7 @@ def capture(prepared,output,perturb=False):
         materials={k:material(k,color) for k,color in [('probe',[.3,.4,.5]),('fixture',[.7,.7,.7]),('stud',[.9,.5,.1])]}
         extras=accessory_meshes(s,c)
         for row in extras:
+            if row['category']=='camera_adapter':mesh(station+'/Robot/link_1/CameraPitchAdapter/'+row['name'],row['mesh'],materials['fixture'],collision=True)
             if row['category']=='probe':mesh(station+'/Robot/link_6/CalibrationProbe/'+row['name'],row['mesh'],materials['probe'],collision=True)
             if row['category']=='fixture':mesh(station+'/CalibrationBoard/'+row['name'],row['mesh'],materials['stud' if row['name'].startswith('stud') else 'fixture'],collision=True)
         # Exact planar printed pattern in P, with OpenCV runtime +X right/+Y down.
@@ -79,7 +82,7 @@ def capture(prepared,output,perturb=False):
         texture.CreateInput('st',Sdf.ValueTypeNames.Float2).ConnectToSource(reader.ConnectableAPI(),'result')
         shader.GetInput('emissiveColor').ConnectToSource(texture.ConnectableAPI(),'rgb');UsdShade.MaterialBindingAPI.Apply(pattern.GetPrim()).Bind(mat)
         # Explicit simulator fixture: static rigid board; no physical settling.
-        stage.GetPrimAtPath(station+'/CalibrationBoard').SetCustomDataByKey('support','Fixed simulation fixture, placement is not a hardware mounting claim')
+        stage.GetPrimAtPath(station+'/CalibrationBoard').SetCustomDataByKey('support','Connected fixed tabletop support' if c['board'].get('support') else 'Fixed simulation fixture, placement is not a hardware mounting claim')
         TWD=np.array(s['scene']['T_W_D']);tool=np.array(s['tool']['T_flange_tool_cad']);readbacks=[]
         def state(q,P):
             frames=robot.named_link_frames(q)
@@ -94,15 +97,21 @@ def capture(prepared,output,perturb=False):
             board_world=np.array(cache.GetLocalToWorldTransform(stage.GetPrimAtPath(station+'/CalibrationBoard'))).T
             err=max(float(np.max(np.abs(C-TWD@frames['link_1']@X))),float(np.max(np.abs(render-C@OPTICAL_FROM_USD))),float(np.max(np.abs(board_world-TWD@P))))
             if err>1e-9:raise ValueError('COMPOSED_CAMERA_CHAIN_MISMATCH')
-            if not perturb and (abs(C[2,2])>1e-9 or abs(C[2,1]+1)>1e-9):raise ValueError('CAMERA_NOT_HORIZONTAL_UPRIGHT')
+            if not perturb and not mount_check(C,L,c['camera'])['accepted']:raise ValueError('CAMERA_CONFIGURED_PITCH_OR_ROLL_MISMATCH')
             readbacks.append(dict(q_rad=np.asarray(q).tolist(),T_W_C=C.tolist(),T_L_C=(np.linalg.inv(L)@C).tolist(),max_error=err))
             return C
         placement={p['board_placement_id']:np.array(p['T_D_P']) for p in c['placements']}
-        first=c['photos'][0];state(first['q_rad'],placement[first['board_placement_id']])
+        first=(dict(q_rad=c['display_q'],board_placement_id=c['placements'][0]['board_placement_id']) if scene_only else c['photos'][0])
+        state(first['q_rad'],placement[first['board_placement_id']])
         # Test all J2-J6 independently on the FINAL composed prim chain.
         for joint in range(1,6):
             q=np.array(first['q_rad']);q[joint]+=.03;state(q,placement[first['board_placement_id']])
+        state(first['q_rad'],placement[first['board_placement_id']])
         stage.GetRootLayer().Save();timeline=omni.timeline.get_timeline_interface();timeline.stop();events=[]
+        if scene_only:
+            save_json(output/'scene_report.json',dict(status='STATIC_SCENE_EXPORTED',calibration='NOT_RUN',source_identity=c['derived_scene_identity'],
+                composed_usd_sha256=file_hash(stage_path),readbacks=readbacks,seconds=time.perf_counter()-started))
+            return
         sub=timeline.get_timeline_event_stream().create_subscription_to_pop(lambda e:events.append(int(e.type)))
         omni.usd.get_context().open_stage(str(stage_path))
         for _ in range(30):app.update()
@@ -172,13 +181,16 @@ def capture(prepared,output,perturb=False):
             seconds=time.perf_counter()-started,status='RENDERED_SENSOR_IMAGES',dynamics='NOT_EVALUATED',motion='NO_MOTION_EXECUTED'))
     except Exception as error:
         import json,traceback
-        output.mkdir(parents=True,exist_ok=True)
-        (output/'capture_failure.json').write_text(json.dumps(dict(status='FAILED',error=str(error),traceback=traceback.format_exc()),indent=2))
+        if created:
+            (output/'capture_failure.json').write_text(json.dumps(dict(status='FAILED',error=str(error),traceback=traceback.format_exc()),indent=2))
         traceback.print_exc()
-        raise
+        # SimulationApp.close can terminate Kit with zero and swallow a Python
+        # exception. Save/flush evidence and preserve an unambiguous failure exit.
+        import sys
+        sys.stdout.flush();sys.stderr.flush();os._exit(1)
     finally:app.close()
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--prepared',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--perturb',action='store_true');a=p.parse_args()
-    capture(a.prepared,a.output,a.perturb)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--prepared',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--perturb',action='store_true');p.add_argument('--scene-only',action='store_true');a=p.parse_args()
+    capture(a.prepared,a.output,a.perturb,a.scene_only)

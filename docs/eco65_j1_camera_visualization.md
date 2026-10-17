@@ -72,3 +72,10 @@ Isaac Sim 6.0.1.0 实际完成录像，两个 MP4 均完整解码 130 帧，时�
 安装近景首次裁切了相机顶部，随后仅改变外部观察相机，另行静态渲染；
 修正版布局与原录像的场景身份、固定物体和 q_face 逐字段一致。原录像未重录，
 初版近景和实际录制源码保留在私有诊断目录。
+
+
+## 2026-10-17 follow-up
+
+The explicit 30? installation, supported board, bracket repair and fresh calibration
+are recorded in [eco65_tilted_camera_touch.md](eco65_tilted_camera_touch.md).
+The measurements and failures above remain historical evidence for the older installation.

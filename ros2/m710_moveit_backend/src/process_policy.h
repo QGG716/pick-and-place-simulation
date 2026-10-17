@@ -3,12 +3,14 @@
 #include "process_geometry.h"
 #include "clearance.h"
 #include "eco65_process.h"
+#include "eco65_touch_process.h"
 
 namespace m710 {
 // Candidate-local process permissions. ACM exempts only the named pairs whose
 // geometry is checked here; the ordered verifier restores free-space rules.
 class ProcessPolicy {
   std::unique_ptr<Eco65Process> eco65_;
+  std::unique_ptr<Eco65TouchProcess> touch_;
   Json spec_,source_,initial_;
   std::string stage_,target_id_;
   std::set<std::string> compliant_,stack_,supports_;
@@ -44,10 +46,13 @@ public:
   Json last_failure=nullptr,last_seal=nullptr;
   ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request)
     :spec_(request.at("process_policy")),source_(request.at("clearance_policy").at("source_policy")),
-     initial_(spec_.at("initial_proximity")),stage_(request.at("stage")),target_id_(spec_.at("target_id")),
-     compliant_(request.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
-     stack_(spec_.at("stack_carton_ids").get<std::set<std::string>>()),supports_(spec_.at("support_names").get<std::set<std::string>>()),
-     target_(processBox(spec_.at("target"))) {
+     initial_(spec_.at("initial_proximity")),stage_(request.at("stage")),target_id_(spec_.at("target_id")) {
+    if(spec_.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
+      touch_=std::make_unique<Eco65TouchProcess>(scene,request);return;
+    }
+    compliant_=request.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>();
+    stack_=spec_.at("stack_carton_ids").get<std::set<std::string>>();supports_=spec_.at("support_names").get<std::set<std::string>>();
+    target_=processBox(spec_.at("target"));
     if(spec_.value("geometry_type",std::string())=="cad_seal_contours_v1") {
       attached_=scene->getCurrentState().hasAttachedBody(target_id_);
       eco65_=std::make_unique<Eco65Process>(scene,request);return;
@@ -118,6 +123,7 @@ public:
     }
   }
   bool check(const moveit::core::RobotState& state,bool endpoint=false) {
+    if(touch_) {++state_checks_;const bool ok=touch_->check(state,endpoint);last_failure=touch_->failure;return ok;}
     if(eco65_) {
       ++state_checks_;const bool ok=eco65_->check(state,endpoint);
       last_failure=eco65_->failure;last_seal=eco65_->seal;return ok;
@@ -201,7 +207,7 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
-  Json evidence() const {return {{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
+  Json evidence() const {return {{"touch_process",touch_?touch_->evidence_:Json(nullptr)},{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
     {"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
