@@ -1,0 +1,494 @@
+{
+  "schema": "m710_lifted_reception_preview_v1",
+  "status": "GEOMETRY_PROCESS_PREVIEW",
+  "motion_planning": "MOTION_PLANNING_NOT_RUN",
+  "physical_execution": "PHYSICAL_EXECUTION_NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false,
+  "source_commit": "66f18208a86d291ff6895ca3f0e3b461ad2b7b62",
+  "command": [
+    "/opt/planning-opt-20261003-venv/bin/python",
+    "tools/preview_m710_lifted_reception.py",
+    "--source-commit",
+    "66f18208a86d291ff6895ca3f0e3b461ad2b7b62",
+    "--output",
+    "/tmp/lift-reception-20261017/delivery"
+  ],
+  "layout_fingerprint": "5ad315d60b22fcffdb5fcebc9b28e98dccea8fd0268aa6e6d7164ec944c3d540",
+  "model_identity": {
+    "schema": "m710_native_stage_v1",
+    "reviewed_sources": {
+      "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+      "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+    },
+    "scene_version": "m710id70_unloading_layout_v1",
+    "scene_fingerprint": "06568c5098f63413bcb6ad30751216da85ce875db3f88cf16c58f565c1045829",
+    "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+    "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+    "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+    "task_tcp_link": "m710_virtual_task_tcp",
+    "flange_from_task_tcp": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+    "policy_scope": "native_POC_free_pair_clearance_search_and_edges_plus_existing_authority"
+  },
+  "source_file_sha256": {
+    "src/unloading_sim/lifted_reception.py": "4e67fa342c5ec8bd845d73eeeab3ea259cdb98353651a9bcec4481375d8f811f",
+    "tools/preview_m710_lifted_reception.py": "341a57c194321a4cd41826f6729cea9d353523e98d5c82487968765a97b6ed82",
+    "tools/lifted_reception/viewer.html": "e7ea2e6ee53b8a47725cc5ab8dbf5e52721d691ee4b447838246a35ee0993328",
+    "configs/experiments/m710_lifted_reception_preview.yaml": "bb8a7c87796e6f430581401d7b7b6138e80cf968e835f287b8c5c0b36279190c"
+  },
+  "native_worker_started": false,
+  "native_request_count": 0,
+  "ik_search_count": 0,
+  "motion_search_count": 0,
+  "test_result": {
+    "passed": 85,
+    "new_module_tests": 22,
+    "contact_extraction_regressions": 63
+  },
+  "browser_checks": 22,
+  "geometry_generation_s": 10.20188176073134,
+  "geometry_time_is_not_planning_time": true,
+  "initialization": "EXISTING_CONFIG_GEOMETRY_NOT_PHYSICAL_MEASUREMENT",
+  "cpu_affinity": "0-21",
+  "threads": {
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1
+  },
+  "cases": [
+    {
+      "case_id": "top_middle_front",
+      "target_id": "carton_l07_c02",
+      "scheme": "middle_front",
+      "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l07_c02",
+        "start_box_identity": "852f5e6196324fa059dbaaf9f3cbcaa5deed5681d7fe9354b1a19009e19fd5b2",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.1,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003
+      },
+      "removed_ids": [],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          0.0,
+          0.0
+        ]
+      ],
+      "turn_y_intervals_world_m": [],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "x-",
+      "role": "MIDDLE",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 48,
+      "initial_robot_belt_alerts": 35,
+      "extraction_alerts": [
+        0
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 0.8500000000000001,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": -0.24400000199999994
+    },
+    {
+      "case_id": "top_left_front",
+      "target_id": "carton_l07_c04",
+      "scheme": "left_front",
+      "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l07_c04",
+        "start_box_identity": "7c7c4e322dff80af038baef4a858bfba1a693fe3c1ba0c951e88480f023b114d",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.1,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003
+      },
+      "removed_ids": [],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          0.84,
+          0.84
+        ]
+      ],
+      "turn_y_intervals_world_m": [],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "x-",
+      "role": "LEFT_END",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 48,
+      "initial_robot_belt_alerts": 35,
+      "extraction_alerts": [
+        0
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 0.8500000000000001,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": -0.24400000199999994
+    },
+    {
+      "case_id": "top_left_inner",
+      "target_id": "carton_l07_c04",
+      "scheme": "left_inner",
+      "applicability": "DISPLAY_SAMPLE_GEOMETRIC_SCREEN_CLEAR",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l07_c04",
+        "start_box_identity": "7c7c4e322dff80af038baef4a858bfba1a693fe3c1ba0c951e88480f023b114d",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.1,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003
+      },
+      "removed_ids": [
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03"
+      ],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          -0.18999999999999995,
+          0.839999999
+        ]
+      ],
+      "turn_y_intervals_world_m": [
+        [
+          -0.18999999999999995,
+          0.839999999
+        ]
+      ],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "y-",
+      "role": "LEFT_END",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 72,
+      "initial_robot_belt_alerts": 0,
+      "extraction_alerts": [
+        0,
+        0
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 1.3650000005,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": 0.05599999800000033
+    },
+    {
+      "case_id": "top_right_inner",
+      "target_id": "carton_l07_c00",
+      "scheme": "right_inner",
+      "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l07_c00",
+        "start_box_identity": "f98f5d01c59c27c754c30947e717db69de0bd973f48d9553982a933ee126b050",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.1,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003
+      },
+      "removed_ids": [
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03"
+      ],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          -0.18999999999999995,
+          0.21749999699999972
+        ]
+      ],
+      "turn_y_intervals_world_m": [
+        [
+          -0.18999999999999995,
+          0.21749999699999972
+        ]
+      ],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "y+",
+      "role": "RIGHT_END",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 72,
+      "initial_robot_belt_alerts": 35,
+      "extraction_alerts": [
+        0,
+        0
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 1.7037499985,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": -0.24400000199999994
+    },
+    {
+      "case_id": "left_inner_blocked",
+      "target_id": "carton_l07_c04",
+      "scheme": "left_inner",
+      "applicability": "TEMPLATE_NOT_APPLICABLE",
+      "reasons": [
+        "DIRECTION_CANNOT_ENTER_FULL_RECEIVING_REGION"
+      ],
+      "heights": {
+        "target_id": "carton_l07_c04",
+        "start_box_identity": "7c7c4e322dff80af038baef4a858bfba1a693fe3c1ba0c951e88480f023b114d",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.1,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003
+      },
+      "removed_ids": [],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [],
+      "turn_y_intervals_world_m": [],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "y-",
+      "role": "LEFT_END",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 72,
+      "initial_robot_belt_alerts": 0,
+      "extraction_alerts": [],
+      "drop_alerts": 0,
+      "sample_length_m": null,
+      "old_planner_bound": null,
+      "tool_bottom_minus_landing_top_m": null
+    },
+    {
+      "case_id": "lower_middle_front",
+      "target_id": "carton_l06_c02",
+      "scheme": "middle_front",
+      "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l06_c02",
+        "start_box_identity": "126d9883c92007dff6e19d89bac9c16811213c4b31f9cd4b359a7acb917f1bb5",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 1.7999999999999998,
+        "h_m": 0.3,
+        "d_m": 0.05,
+        "Hmax_world_m": 1.7499999999999998,
+        "Hmin_world_m": 1.4499999999999997,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 1.7499999999999998
+      },
+      "removed_ids": [],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          0.0,
+          0.0
+        ]
+      ],
+      "turn_y_intervals_world_m": [],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "x-",
+      "role": "MIDDLE",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 48,
+      "initial_robot_belt_alerts": 0,
+      "extraction_alerts": [
+        1
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 0.8500000000000001,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": -0.24400000200000016
+    },
+    {
+      "case_id": "taller_middle_front",
+      "target_id": "carton_l07_c02",
+      "scheme": "middle_front",
+      "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK",
+      "reasons": [],
+      "heights": {
+        "target_id": "carton_l07_c02",
+        "start_box_identity": "742446ad9578e5420d0100edd157b4b8c953d032c1f4e2e0ba6953886d127651",
+        "frozen_at": "TASK_START_GEOMETRY",
+        "z_b_m": 2.0999999999999996,
+        "h_m": 0.4,
+        "d_m": 0.05,
+        "Hmax_world_m": 2.05,
+        "Hmin_world_m": 1.6499999999999997,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.45,
+        "low_first_touch_top_world_m": 2.05
+      },
+      "removed_ids": [],
+      "newly_unloaded_count": 0,
+      "template_region_world_rectangles": [
+        [
+          -0.5900000000000001,
+          -0.51,
+          0.0,
+          0.0
+        ]
+      ],
+      "turn_y_intervals_world_m": [],
+      "rejection_scope": "THIS_GEOMETRIC_TEMPLATE_ONLY_NOT_CARTON_UNLOADABILITY",
+      "deferred": {
+        "raised_belt_docking": "DEFERRED_BY_SCOPE",
+        "loaded_belt_lowering_sequence": "DEFERRED_BY_SCOPE",
+        "post_landing_outfeed_length": "DEFERRED_BY_SCOPE",
+        "impact_rebound_tipping_stability": "DEFERRED_BY_SCOPE",
+        "measured_load_capacity": "DEFERRED_BY_SCOPE",
+        "lift_mechanism_collision_geometry": "NOT_MODELED"
+      },
+      "face": "x-",
+      "role": "MIDDLE",
+      "receiver_region_exists": true,
+      "tool_geometry_count": 202,
+      "nominal_eligible_cups": 48,
+      "initial_robot_belt_alerts": 35,
+      "extraction_alerts": [
+        0
+      ],
+      "drop_alerts": 0,
+      "sample_length_m": 0.8500000000000001,
+      "old_planner_bound": {
+        "maximum_extraction_m": 0.8,
+        "sample_exceeds_old_bound": true,
+        "old_planner_changed": false
+      },
+      "tool_bottom_minus_landing_top_m": -0.2940000020000002
+    }
+  ]
+}

@@ -76,3 +76,7 @@ docs/experiments/m710_static_prior_fast_20261003/** -text -whitespace
 
 # Preserve actual search records and their recorded SHA-256 hashes.
 docs/experiments/m710_search_replay_20261017/** -text -whitespace
+
+# Keep measured geometry identities and offline artifacts byte-identical.
+tools/lifted_reception/*.html text eol=lf
+docs/experiments/m710_lifted_reception_20261017/** -text -whitespace

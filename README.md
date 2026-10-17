@@ -1,5 +1,13 @@
 # FANUC M-710iD/70 当前结论（2026-10-17）
 
+已新增**独立升降横带、动态完整投影接收区域及四类几何工艺预览**。当前顶层 Hmax/Hmin 为 2.050/1.750 m，理想落差 0.050/0.350 m。四类主方案有接收方向子区域；左端内侧 Hmin 展示样本保守筛查无干涉提示，Hmax 案例仍保留初态吸具与升高横带的潜在干涉。未清空通道反例保留；没有新增 IK/RRT/LIN、Isaac 或执行试验。
+
+[本轮报告与四张画面](docs/m710_lifted_reception_20261017.md) · [下载离线几何预览](docs/experiments/m710_lifted_reception_20261017/offline-preview.zip)
+
+仅 `GEOMETRY_PROCESS_PREVIEW`，不可执行。真实升降行程未知，机构/对接/冲击/稳定未评估；旧 contact/extraction/preplace 行为不变，固定纵带目标尚未迁移。
+
+## 前轮规划记录（本轮未重新运行）
+
 已交付 c04 **真实 RRT 搜索树、拒绝扩展与机器人/负载轨迹的离线三维查看器**，并将新无先验链路的固定一次限制改为共享预算内恢复。正常模式 c04：51.585→61.717 s（退化），c02：9.676→9.142 s；诊断记录模式新版 c04 未完成，失败完整保留。**性能改进未通过，成功率不退化尚未证明。**
 
 [打开说明与实际画面](docs/m710_search_replay_20261017.md) · [下载离线查看器 ZIP](docs/experiments/m710_search_replay_20261017/c04-offline-viewers.zip) · [播放实际回放 MP4](docs/experiments/m710_search_replay_20261017/c04-planning-replay.mp4)

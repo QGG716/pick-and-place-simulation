@@ -1,0 +1,7 @@
+{"case": "top_middle_front", "receiving_region": true, "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK", "reasons": []}
+{"case": "top_left_front", "receiving_region": true, "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK", "reasons": []}
+{"case": "top_left_inner", "receiving_region": true, "applicability": "DISPLAY_SAMPLE_GEOMETRIC_SCREEN_CLEAR", "reasons": []}
+{"case": "top_right_inner", "receiving_region": true, "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK", "reasons": []}
+{"case": "left_inner_blocked", "receiving_region": true, "applicability": "TEMPLATE_NOT_APPLICABLE", "reasons": ["DIRECTION_CANNOT_ENTER_FULL_RECEIVING_REGION"]}
+{"case": "lower_middle_front", "receiving_region": true, "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK", "reasons": []}
+{"case": "taller_middle_front", "receiving_region": true, "applicability": "POSSIBLE_INTERFERENCE_NEEDS_CHECK", "reasons": []}
