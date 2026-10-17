@@ -40,6 +40,12 @@ from video panels; retain them in evidence. Apply this to all future recordings.
 Historical burned-in overlays remain part of original evidence. The requested
 16x 720P montage is a presentation derivative, not a new recording default.
 
+## Single-target planning principle (2026-10-17)
+- Keep one explicit upstream business pose per face. Solver attempts are not business candidates: do not use one IK, one RRT or one numerical initial guess as a performance requirement.
+- Retain legal numerical recovery and local alternate IK configurations within unchanged shared task/stage deadlines, cancellation and scene/parent identity checks. No prior graph, hidden contact/roll/door scans or changes to geometric/process acceptance.
+- A request without a retained native tree is a restart, not continuation. Keep failures and their cost; never reset the task budget or label incomplete search as global unreachability. Return the first qualified planning candidate without optional extra work.
+- Evaluate time together with success; a small sample does not prove success-rate nonregression.
+
 ## Architecture constraints
 - September 15 persistent user update, overriding the earlier flexible-cup neighbor rules: this round and future rounds do not reject flexible-cup contacts with named non-target stack cartons (`compliant_cup_neighbor_contact_mode=ignore`), in CPU and Isaac contact acceptance. Retain physical collider ownership, target identity, full target seal-ring and target compression checks. This does not exempt rigid inserts, the rigid tool, robot, floor, walls, conveyors, or unknown objects. Physical response is retained; this acceptance assumption does not claim neighbor-contact qualification.
 - Keep `geometry.py`, `robot.py`, `scene.py`, `ik.py`, `planner.py`, and `grasp.py` independently testable.

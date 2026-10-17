@@ -21,6 +21,20 @@ inline bool boundedIkScope(const IkJson& r,bool enabled,bool planning_only,const
   for(const auto& b:r.at("world")) if(b.at("id")==a.at("id") || !ids.insert(b.at("id").get<std::string>()).second)return false;
   return any;
 }
+// Only the no-prior single-target entry opts in. Current q stays the motion start.
+inline bool boundedTargetIkScope(const IkJson& r,bool enabled,bool planning_only,const std::string& mode) {
+  if(!enabled || !planning_only || mode!="cold_from_scratch" || r.value("op","")!="ik" ||
+      r.value("task_id","").empty())return false;
+  if(r.value("stage","")=="transit")return boundedIkScope(r,true,planning_only,mode);
+  if(r.value("stage","")!="pregrasp" || r.value("purpose","")!="FREE_APPROACH" ||
+      !r.at("attachment").is_null() || r.at("process_policy").value("attached",true) ||
+      !r.value("parent_stage_id",std::string()).empty() ||
+      !r.value("ownership_transition",IkJson(nullptr)).is_null())return false;
+  size_t targets=0;std::set<std::string> ids;
+  for(const auto& b:r.at("world")) {if(!ids.insert(b.at("id").get<std::string>()).second)return false;
+    if(b.at("id")==r.at("process_policy").at("target_id"))++targets;}
+  return targets==1;
+}
 inline double boundedIkBudget(double requested,double remaining) {
   if(!std::isfinite(requested)||requested<=0||requested>.10 ||
       !std::isfinite(remaining)) throw std::runtime_error("INVALID_IK_SOLVER_BUDGET");

@@ -1,4 +1,4 @@
-"""One loaded IK and one RRTConnect to a fixed preplace, still attached."""
+"""Budget-scoped loaded connection to one fixed preplace, still attached."""
 from copy import deepcopy
 from time import perf_counter
 import numpy as np
@@ -16,7 +16,7 @@ class SinglePreplaceConnector(SingleExtractionConnector):
     def _reject_transit(self,row,failure):
         self.check_context(self._preplace_contact,self.native_scene.all_obstacles)
         reason=failure.get("reason","UNKNOWN_TRANSIT_FAILURE")
-        if reason not in {"FIXED_PREPLACE_TARGET_NOT_APPLICABLE","NATIVE_IK_FAILED","PREPLACE_IK_FK_RESIDUAL",
+        if reason not in {"SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED","SINGLE_TARGET_NO_NUMERICAL_PROGRESS","FIXED_PREPLACE_TARGET_NOT_APPLICABLE","NATIVE_IK_FAILED","PREPLACE_IK_FK_RESIDUAL",
             "NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT","SEARCH_EXHAUSTED","MOVEIT2_SEARCH_EXHAUSTED",
             "INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS","PREPLACE_ENDPOINT_FK",
             "TRANSIT_END_CLEARANCE_REJECTED","TRANSIT_END_PROCESS_REJECTED"}:
@@ -51,20 +51,27 @@ class SinglePreplaceConnector(SingleExtractionConnector):
         if failure:return self._reject_transit(row,failure)
         self.check_context(target,obstacles)
         before=perf_counter()
-        q,failure=self.ik_pose_once(goal.task_tcp_pose,start,world,seed,stage="transit",
-            attachment=attachment,purpose=MotionPurpose.FREE_LOADED_TRANSFER,
-            residual_reason="PREPLACE_IK_FK_RESIDUAL",ik_mode="bounded_preplace",solver_budget_s=.10)
-        row["times"]["transit_ik_s"]=perf_counter()-before
-        if failure:return self._reject_transit(row,failure)
-        row["preplace_ik_q_rad"]=q.tolist()
-        self.check_context(target,obstacles)
-        before=perf_counter()
-        path,failure,_=self._native_plan(start,q,world,seed=seed,stage="transit",
-            attachment=attachment,support_names=(),initial_proximity=None,
-            purpose=MotionPurpose.FREE_LOADED_TRANSFER,allow_ompl=True,max_ompl_attempts=1,
-            try_ptp=False,try_prior=False)
-        row["times"]["transit_s"]=perf_counter()-before
-        if failure:return self._reject_transit(row,failure)
+        if getattr(self,"single_target_recovery_enabled",False):
+            path,q,failure,cost=self.connect_fixed_target(goal.task_tcp_pose,start,world,seed,stage="transit",
+                attachment=attachment,purpose=MotionPurpose.FREE_LOADED_TRANSFER,residual_reason="PREPLACE_IK_FK_RESIDUAL")
+            row["times"].update(transit_ik_s=cost["ik_s"],transit_s=cost["motion_s"])
+            if failure:return self._reject_transit(row,failure)
+            row["preplace_ik_q_rad"]=q.tolist()
+        else:
+            q,failure=self.ik_pose_once(goal.task_tcp_pose,start,world,seed,stage="transit",
+                attachment=attachment,purpose=MotionPurpose.FREE_LOADED_TRANSFER,
+                residual_reason="PREPLACE_IK_FK_RESIDUAL",ik_mode="bounded_preplace",solver_budget_s=.10)
+            row["times"]["transit_ik_s"]=perf_counter()-before
+            if failure:return self._reject_transit(row,failure)
+            row["preplace_ik_q_rad"]=q.tolist()
+            self.check_context(target,obstacles)
+            before=perf_counter()
+            path,failure,_=self._native_plan(start,q,world,seed=seed,stage="transit",
+                attachment=attachment,support_names=(),initial_proximity=None,
+                purpose=MotionPurpose.FREE_LOADED_TRANSFER,allow_ompl=True,max_ompl_attempts=1,
+                try_ptp=False,try_prior=False)
+            row["times"]["transit_s"]=perf_counter()-before
+            if failure:return self._reject_transit(row,failure)
         if not np.array_equal(path[0],start):
             raise MoveItUnavailable("TRANSIT_PARENT_STATE_CHANGED")
         self.check_context(target,obstacles)

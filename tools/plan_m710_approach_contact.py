@@ -26,6 +26,7 @@ from plan_m710_top_row_only import next_scene
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target",required=True)
+    parser.add_argument("--legacy-single-attempts",action="store_true",help="diagnostic baseline only; not the default product policy")
     parser.add_argument("--search-trace",action="store_true",help="diagnostic buffered native RRT search events; default off")
     stages=parser.add_mutually_exclusive_group()
     stages.add_argument("--through-extraction",action="store_true",
@@ -80,7 +81,7 @@ def main():
     if target is None:raise ValueError("UNKNOWN_TARGET")
     scene_prepare_s=perf_counter()-prepared
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
-        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace)
+        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace,recovery_enabled=not args.legacy_single_attempts)
     connector_type=SingleContactConnector
     marker=MARKER
     if args.through_extraction:
@@ -143,7 +144,7 @@ def main():
             environment=dict(python=platform.python_version(),affinity=sorted(os.sched_getaffinity(0)),
                 OMP_NUM_THREADS=os.environ.get("OMP_NUM_THREADS"),OPENBLAS_NUM_THREADS=os.environ.get("OPENBLAS_NUM_THREADS")),
             budgets=dict(task_s=args.task_budget_s,stage_s=args.stage_budget_s,ipc_s=args.ipc_timeout_s,
-                ik_timeout_field_s=c.native_ik_seconds,ik_timeout_field_is_solver_wall_deadline=False,ik_method="pregrasp/legacy: getPositionIK; preplace: bounded searchPositionIK" if args.through_preplace else "one finite-iteration KDL getPositionIK; shared IPC deadline",
+                ik_timeout_field_s=c.native_ik_seconds,ik_timeout_field_is_solver_wall_deadline=False,ik_method="fixed-target bounded searchPositionIK, shared connection deadline" if not args.legacy_single_attempts else "pregrasp/legacy: getPositionIK; preplace: bounded searchPositionIK" if args.through_preplace else "one finite-iteration KDL getPositionIK; shared IPC deadline",
                 preplace_solver_budget_s=.10 if args.through_preplace else None,
                 ik_counter_scope="native_ik_calls counts API calls, not plugin-internal attempts",
                 standoff_m=c.budget.pregrasp_standoff_m),
@@ -158,6 +159,8 @@ def main():
             native_calls={k:counts[k] for k in ("IK","OMPL","LIN","PTP")},
             prior_build_load_query_calls=sum("prior" in str(r.get("op")) or r.get("pipeline_id")=="static_prior" for r in client.records),
             forbidden_requests=client.forbidden_attempts,history_and_legacy=c._cold_counters,
+            solver_opportunity_policy="LEGACY_SINGLE_ATTEMPT_BASELINE" if args.legacy_single_attempts else "SHARED_BUDGET_FIXED_TARGET_RECOVERY",
+            connection_attempts=c.connection_attempts,
             boundary_costs=c.boundary_costs,checks=costs,events=[] if plan is None else plan["events"])
         (args.output/"result.json").write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+"\n")
         with (args.output/"requests.jsonl").open("w") as f:

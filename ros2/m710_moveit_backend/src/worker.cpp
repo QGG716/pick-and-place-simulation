@@ -190,6 +190,7 @@ class Worker {
   std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
   size_t ik_calls=0;
   bool bounded_preplace_ik_enabled=false;
+  bool single_target_recovery_enabled=false;
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   std::string planning_mode="cold_from_scratch";
   J static_prior_database=nullptr;
@@ -647,10 +648,13 @@ private:
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
       planning_only=req.value("planning_only",false);
       bounded_preplace_ik_enabled=req.value("bounded_preplace_ik_enabled",false);
+      single_target_recovery_enabled=req.value("single_target_recovery_enabled",false);
+      if(single_target_recovery_enabled && (!req.value("planning_only",false) || req.value("planning_mode","")!="cold_from_scratch"))
+        throw std::runtime_error("SINGLE_TARGET_RECOVERY_SCOPE");
       if(bounded_preplace_ik_enabled && (!planning_only ||
           req.value("planning_mode","cold_from_scratch")!="cold_from_scratch"))
         throw std::runtime_error("BOUNDED_PREPLACE_IK_SCOPE");
-      if(bounded_preplace_ik_enabled) {
+      if(bounded_preplace_ik_enabled || single_target_recovery_enabled) {
         const auto& params=req.at("parameters");
         const std::string prefix="robot_description_kinematics.manipulator.";
         if(params.value(prefix+"position_only_ik",false) ||
@@ -837,14 +841,16 @@ private:
       return {{"status","SUCCESS"},{"frames",frames}};
     }
     if(req.value("cancelled",false)) throw std::runtime_error("CANCELLED");
+    if(op!="ik" && req.value("ik_mode",std::string())=="bounded_target") throw std::runtime_error("SINGLE_TARGET_RECOVERY_SCOPE");
     if(op=="ik") {
       if(req.contains("history") || req.contains("path") || req.contains("q_goal")) throw std::runtime_error("NATIVE_IK_FORBIDDEN_INPUT");
       const auto mode=req.value("ik_mode",std::string("single_attempt"));
-      if(mode!="single_attempt" && mode!="bounded_preplace") throw std::runtime_error("UNKNOWN_IK_MODE");
-      const bool bounded=mode=="bounded_preplace";
+      if(mode!="single_attempt" && mode!="bounded_preplace" && mode!="bounded_target") throw std::runtime_error("UNKNOWN_IK_MODE");
+      const bool recovery=mode=="bounded_target";
+      const bool bounded=mode!="single_attempt";
       double budget=0.,stage_budget=0.;
       if(bounded) {
-        if(!m710::boundedIkScope(req,bounded_preplace_ik_enabled,planning_only,planning_mode))
+        if(!(recovery?m710::boundedTargetIkScope(req,single_target_recovery_enabled,planning_only,planning_mode):m710::boundedIkScope(req,bounded_preplace_ik_enabled,planning_only,planning_mode)))
           throw std::runtime_error("BOUNDED_PREPLACE_IK_SCOPE");
         stage_budget=req.at("allowed_planning_time_s");
         budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
@@ -859,6 +865,7 @@ private:
             req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
           throw std::runtime_error("NATIVE_IK_POLICY_IDENTITY_MISMATCH");
 #ifndef M710_IK_INPUT_PROBE
+        if(req.at("stage")=="transit") {
         // Continue this live task's generated extraction endpoint, never an old q.
         const std::string task_id=req.at("task_id"),parent_id=req.at("parent_stage_id");
         if(!tasks.count(task_id) || !tasks.at(task_id)->records.count(parent_id))
@@ -875,6 +882,13 @@ private:
             !parent.end->getCurrentState().hasAttachedBody(a.at("id").get<std::string>()) ||
             req.at("process_policy").at("actual_contact_mask")!=parent.request.at("process_policy").at("actual_contact_mask"))
           throw std::runtime_error("NATIVE_TASK_IK_PARENT_CONTEXT_MISMATCH");
+        } else if(recovery) {
+          const std::string task_id=req.at("task_id");
+          if(tasks.count(task_id) && (tasks.at(task_id)->initial_q!=req.at("q_start") ||
+              tasks.at(task_id)->initial_world!=req.at("world") ||
+              tasks.at(task_id)->target_id!=req.at("process_policy").at("target_id")))
+            throw std::runtime_error("NATIVE_TASK_IK_ROOT_CONTEXT_MISMATCH");
+        }
 #endif
       }
       const auto* group=model->getJointModelGroup("manipulator");const auto& solver=group->getSolverInstance();
@@ -885,9 +899,28 @@ private:
         budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
         if(budget<=0)throw std::runtime_error("NATIVE_IK_REQUEST_DEADLINE");
       }
-      std::vector<double> solution;moveit_msgs::msg::MoveItErrorCodes error;const auto started=Clock::now();++ik_calls;
+      std::vector<double> solution;moveit_msgs::msg::MoveItErrorCodes error;
       // One API call starts with q; plugin-internal retries are not observable.
-      const bool success=m710::invokeIk(*solver,bounded,pose(serial(local)),q,budget,solution,error);
+      std::vector<std::vector<double>> excluded;
+      if(recovery)for(const auto& row:req.value("excluded_ik",J::array())) {
+        auto values=row.get<std::vector<double>>();if(values.size()!=names.size())throw std::runtime_error("INVALID_IK_EXCLUSION");
+        for(auto x:values)if(!std::isfinite(x))throw std::runtime_error("INVALID_IK_EXCLUSION");excluded.push_back(std::move(values));
+      }
+      const double tolerance=req.value("ik_dedup_tolerance_rad",1e-6);
+      if(recovery && (!std::isfinite(tolerance)||tolerance<=0||tolerance>.01))throw std::runtime_error("INVALID_IK_DEDUP_TOLERANCE");
+      if(recovery) {budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
+        if(budget<=0)throw std::runtime_error("NATIVE_IK_REQUEST_DEADLINE");}
+      const auto started=Clock::now();++ik_calls;bool success;
+      if(recovery) {
+        kinematics::KinematicsQueryOptions exact;exact.return_approximate_solution=false;
+        kinematics::KinematicsBase::IKCallbackFn callback=[&](const geometry_msgs::msg::Pose&,const std::vector<double>& candidate,moveit_msgs::msg::MoveItErrorCodes& code) {
+          code.val=moveit_msgs::msg::MoveItErrorCodes::SUCCESS;
+          for(const auto& old:excluded) {bool duplicate=candidate.size()==old.size();
+            for(size_t i=0;duplicate&&i<old.size();++i)duplicate=std::abs(candidate[i]-old[i])<=tolerance;
+            if(duplicate) {code.val=moveit_msgs::msg::MoveItErrorCodes::NO_IK_SOLUTION;return;}}
+        };
+        success=solver->searchPositionIK(pose(serial(local)),q,budget,solution,callback,error,exact);
+      } else success=m710::invokeIk(*solver,bounded,pose(serial(local)),q,budget,solution,error);
       const double actual_ik_s=seconds(started);
       J result={{"status","NATIVE_IK_FAILED"},{"native_ik_calls",1},{"resident_native_ik_calls",ik_calls},
         {"solver",bounded?"MoveIt_KDL_searchPositionIK":"MoveIt_KDL_getPositionIK"},
@@ -904,7 +937,9 @@ private:
 #ifdef M710_IK_INPUT_PROBE
       result["diagnostic_scope"]="IK_INPUT_ONLY_NO_LIVE_TASK_NO_MOTION";
 #endif
+      if(recovery) {result["excluded_local_ik_count"]=excluded.size();result["ik_exclusion_scope"]="THIS_FIXED_TARGET_CONNECTION_ONLY";}
       if(!success || solution.size()!=names.size()) return result;
+      if(recovery)result["solver_candidate_q"]=solution;
       for(double x:solution) if(!std::isfinite(x)) return result;
       state.setJointGroupPositions(group,solution);state.update();if(!state.satisfiesBounds()) return result;
       const auto actual=state.getGlobalLinkTransform(identity.at("task_tcp_link").get<std::string>());

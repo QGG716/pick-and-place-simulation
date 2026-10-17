@@ -46,5 +46,16 @@ int main(){
   if(b=="transition")x["ownership_transition"]="ATTACH";
   require(!m710::boundedIkScope(x,true,true,"cold_from_scratch"),bad);
  }
+
+ require(m710::boundedTargetIkScope(r,true,true,"cold_from_scratch"),"RECOVERY_LOADED");
+ auto approach=r;approach["stage"]="pregrasp";approach["purpose"]="FREE_APPROACH";
+ approach["attachment"]=nullptr;approach["parent_stage_id"]="";
+ approach["world"].push_back({{"id","target"}});approach["process_policy"]["attached"]=false;
+ require(m710::boundedTargetIkScope(approach,true,true,"cold_from_scratch"),"RECOVERY_APPROACH");
+ require(!m710::boundedTargetIkScope(approach,false,true,"cold_from_scratch"),"RECOVERY_DISABLED");
+ for(const char* key:{"stage","purpose","parent_stage_id","task_id"}) {
+   auto x=approach;x[key]=(std::string(key)=="task_id"?"":"wrong");
+   require(!m710::boundedTargetIkScope(x,true,true,"cold_from_scratch"),key);
+ }
  std::cout<<"PASS API dispatch, scope, exact seed/options, positive/clamped budget\n";
 }
