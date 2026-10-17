@@ -1,0 +1,50 @@
+[
+  {
+    "input": "frame32/module_0_upper/rgbd_cuboids.json",
+    "instances": 15,
+    "planes_unchanged": true,
+    "labels_and_binding_unchanged": true,
+    "complete": 0,
+    "single": 15,
+    "no_stale_box_fields": true,
+    "cargo": 15,
+    "unknown": 15,
+    "absence_means_free_space": false
+  },
+  {
+    "input": "frame32/module_1_lower/rgbd_cuboids.json",
+    "instances": 30,
+    "planes_unchanged": true,
+    "labels_and_binding_unchanged": true,
+    "complete": 0,
+    "single": 23,
+    "no_stale_box_fields": true,
+    "cargo": 30,
+    "unknown": 30,
+    "absence_means_free_space": false
+  },
+  {
+    "input": "stack_notch/module_0_upper/rgbd_cuboids.json",
+    "instances": 7,
+    "planes_unchanged": true,
+    "labels_and_binding_unchanged": true,
+    "complete": 0,
+    "single": 4,
+    "no_stale_box_fields": true,
+    "cargo": 7,
+    "unknown": 7,
+    "absence_means_free_space": false
+  },
+  {
+    "input": "stack_notch/module_1_lower/rgbd_cuboids.json",
+    "instances": 22,
+    "planes_unchanged": true,
+    "labels_and_binding_unchanged": true,
+    "complete": 0,
+    "single": 14,
+    "no_stale_box_fields": true,
+    "cargo": 22,
+    "unknown": 22,
+    "absence_means_free_space": false
+  }
+]

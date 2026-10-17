@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import sys
 import uuid
+from datetime import datetime, timezone
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'src'),str(ROOT/'packages/unloading_contracts/src')]
 
@@ -24,12 +25,25 @@ def main():
     a.output.mkdir(parents=True,exist_ok=False);rows=[]
     plan=read_json(a.baseline/'frozen_plan.json')
     atomic_json(a.output/'frozen_plan.json',plan)
+    code_files=['tools/replay_notch_geometry.py','tools/workcell_geometry_process.py',
+        'tools/run_isaac_rgbd_geometry.py','tools/metric_depth_runner.py',
+        'src/unloading_perception/metric_faces.py','src/unloading_perception/physical_bounds.py',
+        'src/unloading_perception/metric_support.py','src/unloading_perception/final_geometry.py',
+        'configs/perception/metric_geometry_acceptance.json','configs/isaac/perception_validation.yaml']
+    atomic_json(a.output/'geometry_run_identity.json',dict(started_utc=datetime.now(timezone.utc).isoformat(),
+        source_directory=str(ROOT),frozen_model_run=str(a.baseline.resolve()),
+        frozen_plan_sha256=hashlib.sha256((a.baseline/'frozen_plan.json').read_bytes()).hexdigest(),
+        code_sha256={f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in code_files if (ROOT/f).exists()},
+        config=config,solver_inputs='RGB-D, SAM masks, calibration, frozen algorithm config; no GT geometry',
+        archive_gt_validation='legacy capture loader verifies archive; GT never enters fit_metric_faces'))
     for group in plan['groups']:
         manifest=IsaacSceneManifest.from_dict(read_json(Path(group['capture'])/'manifest.json'))
         destination=a.output/group['name'];destination.mkdir()
         for camera in manifest.cameras:
             module=camera['module_id'];source=(a.baseline/group['name']/module).resolve()
             payload=load_capture_payload(source,manifest,expected_module_id=module,with_instance_masks=True)
+            from unloading_perception.review_selection import validate_review_capture
+            validate_review_capture(read_json(source/'capture_metadata.json'),module,plan['policy'])
             artifacts=_worker_artifacts(source,payload=payload)
             frozen={k:hashlib.sha256(Path(v['path']).read_bytes()).hexdigest() for k,v in artifacts.items()}
             row=dict(group=group['name'],module=module,frozen_sam_artifacts=frozen,detector_and_sam='REUSED_EXACT_BASELINE_OUTPUTS')

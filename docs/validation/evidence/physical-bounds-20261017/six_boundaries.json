@@ -1,0 +1,2820 @@
+[
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -2.606172279816853,
+      -1.3249997696781124
+    ],
+    "stable_fit_sample_range_m": [
+      -1.9031316916249001,
+      -1.3249998874180111
+    ],
+    "frozen_label_range_m": [
+      -1.9031319747632354,
+      -1.3250000345067614
+    ],
+    "quantile_initial_m": -1.8961925716876231,
+    "before_optimized_m": -1.8972329680404454,
+    "final_m": null,
+    "reference_m": -1.924999979891159,
+    "diagnostic_outline_projection_m": -1.9153989413200259,
+    "diagnostic_outline_signed_error_m": 0.009601038571133147,
+    "before_signed_error_m": 0.02776701185071362,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9171626618842033,
+          -1.9136352207558485
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -1.9153989413200259
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.9031319747632354
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -2.606172279816853,
+      -1.3249997696781124
+    ],
+    "stable_fit_sample_range_m": [
+      -1.9031316916249001,
+      -1.3249998874180111
+    ],
+    "frozen_label_range_m": [
+      -1.9031319747632354,
+      -1.3250000345067614
+    ],
+    "quantile_initial_m": -1.3250000345067616,
+    "before_optimized_m": -1.3250000345067618,
+    "final_m": -1.3250000345067616,
+    "reference_m": -1.3249999466218416,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -8.788492023015237e-08,
+    "final_signed_error_m": -8.788492000810777e-08,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3250000345067616,
+      -1.3250000345067616
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3250000345067614
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.8999996658715774,
+      -1.3899992047355825
+    ],
+    "stable_fit_sample_range_m": [
+      -1.7734647454520016,
+      -1.3899992420249547
+    ],
+    "frozen_label_range_m": [
+      -1.7734644638034862,
+      -1.3899997446992534
+    ],
+    "quantile_initial_m": -1.771693656183615,
+    "before_optimized_m": -1.772506258029516,
+    "final_m": null,
+    "reference_m": -1.7900000524687676,
+    "diagnostic_outline_projection_m": -1.7796622929787993,
+    "diagnostic_outline_signed_error_m": 0.01033775948996829,
+    "before_signed_error_m": 0.017493794439251698,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.7805476971157579,
+          -1.7787768888418407
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.7796622929787993
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.7734644638034862
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.8999996658715774,
+      -1.3899992047355825
+    ],
+    "stable_fit_sample_range_m": [
+      -1.7734647454520016,
+      -1.3899992420249547
+    ],
+    "frozen_label_range_m": [
+      -1.7734644638034862,
+      -1.3899997446992534
+    ],
+    "quantile_initial_m": -1.3899997446992538,
+    "before_optimized_m": -1.3899997446992545,
+    "final_m": -1.3899997446992538,
+    "reference_m": -1.3900000284217455,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 2.837224910567926e-07,
+    "final_signed_error_m": 2.837224917229264e-07,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3899997446992538,
+      -1.3899997446992538
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3899997446992534
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.0013250309894637376,
+      0.39714318199200915
+    ],
+    "stable_fit_sample_range_m": [
+      0.016066001289205847,
+      0.28276707850808114
+    ],
+    "frozen_label_range_m": [
+      0.0030686265024209404,
+      0.2952916821382635
+    ],
+    "quantile_initial_m": 0.004729195087194592,
+    "before_optimized_m": 0.004775347372174943,
+    "final_m": null,
+    "reference_m": -4.048591672273746e-08,
+    "diagnostic_outline_projection_m": -2.832273804260142e-08,
+    "diagnostic_outline_signed_error_m": 1.2163178680136042e-08,
+    "before_signed_error_m": 0.004775387858091665,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 2,
+        "coherent_samples": 13,
+        "edge_index": 0,
+        "interval_m": [
+          -0.00043424666896531517,
+          0.00043418763224284206
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -2.951836123657015e-08
+      },
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.000511414501000247,
+          0.0005113602467705498
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -2.712711484863269e-08
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 0.0030686265024209404
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.0013250309894637376,
+      0.39714318199200915
+    ],
+    "stable_fit_sample_range_m": [
+      0.016066001289205847,
+      0.28276707850808114
+    ],
+    "frozen_label_range_m": [
+      0.0030686265024209404,
+      0.2952916821382635
+    ],
+    "quantile_initial_m": 0.2939649820247292,
+    "before_optimized_m": 0.29406165026576014,
+    "final_m": null,
+    "reference_m": 0.29999997915560833,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.005938328889848188,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 0.2952916821382635
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9079220000035908,
+      -1.324999765718463
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8996561413892457,
+      -1.3249997657369896
+    ],
+    "frozen_label_range_m": [
+      -1.8996559318604307,
+      -1.3250000327150608
+    ],
+    "quantile_initial_m": -1.8996559271573485,
+    "before_optimized_m": -1.9011126279045858,
+    "final_m": null,
+    "reference_m": -1.9249999821172812,
+    "diagnostic_outline_projection_m": -1.9153989325021241,
+    "diagnostic_outline_signed_error_m": 0.009601049615157065,
+    "before_signed_error_m": 0.02388735421269539,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9171626530570833,
+          -1.913635211947165
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -1.9153989325021241
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.8996559318604307
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9079220000035908,
+      -1.324999765718463
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8996561413892457,
+      -1.3249997657369896
+    ],
+    "frozen_label_range_m": [
+      -1.8996559318604307,
+      -1.3250000327150608
+    ],
+    "quantile_initial_m": -1.325000032715061,
+    "before_optimized_m": -1.3250000327150606,
+    "final_m": -1.325000032715061,
+    "reference_m": -1.3249999410779776,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -9.163708303283613e-08,
+    "final_signed_error_m": -9.163708347692534e-08,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.325000032715061,
+      -1.325000032715061
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3250000327150608
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.7787770156178884,
+      -1.389999202394011
+    ],
+    "stable_fit_sample_range_m": [
+      -1.7752355586538064,
+      -1.3899992023999268
+    ],
+    "frozen_label_range_m": [
+      -1.7752352806549065,
+      -1.3899997463001048
+    ],
+    "quantile_initial_m": -1.7734644699254747,
+    "before_optimized_m": -1.7734342027010435,
+    "final_m": null,
+    "reference_m": -1.7900000588121894,
+    "diagnostic_outline_projection_m": -1.7796622984232204,
+    "diagnostic_outline_signed_error_m": 0.010337760388968942,
+    "before_signed_error_m": 0.016565856111145916,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.7805477025691707,
+          -1.7787768942772701
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.7796622984232204
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.7752352806549065
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.7787770156178884,
+      -1.389999202394011
+    ],
+    "stable_fit_sample_range_m": [
+      -1.7752355586538064,
+      -1.3899992023999268
+    ],
+    "frozen_label_range_m": [
+      -1.7752352806549065,
+      -1.3899997463001048
+    ],
+    "quantile_initial_m": -1.3899997463001053,
+    "before_optimized_m": -1.389999746300105,
+    "final_m": -1.3899997463001053,
+    "reference_m": -1.390000033717546,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 2.8741744095839294e-07,
+    "final_signed_error_m": 2.8741744073634834e-07,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3899997463001053,
+      -1.3899997463001053
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3899997463001048
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.30029980561259645,
+      0.5980312823631733
+    ],
+    "stable_fit_sample_range_m": [
+      0.31654424929728425,
+      0.583153658207562
+    ],
+    "frozen_label_range_m": [
+      0.2997300922683252,
+      0.5921348610125452
+    ],
+    "quantile_initial_m": 0.3017269108851085,
+    "before_optimized_m": 0.30216786497702053,
+    "final_m": null,
+    "reference_m": 0.29999996190905404,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.0021679030679664923,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 0.2997300922683252
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.30029980561259645,
+      0.5980312823631733
+    ],
+    "stable_fit_sample_range_m": [
+      0.31654424929728425,
+      0.583153658207562
+    ],
+    "frozen_label_range_m": [
+      0.2997300922683252,
+      0.5921348610125452
+    ],
+    "quantile_initial_m": 0.5909695222712484,
+    "before_optimized_m": 0.5912173601851989,
+    "final_m": null,
+    "reference_m": 0.5999999885029854,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.008782628317786534,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 0.5921348610125452
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9085983674904068,
+      -1.3247136040392014
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8980067709788604,
+      -1.3247136365261216
+    ],
+    "frozen_label_range_m": [
+      -1.89895444452389,
+      -1.3227692015407733
+    ],
+    "quantile_initial_m": -1.8941426424755206,
+    "before_optimized_m": -1.8963627376437346,
+    "final_m": null,
+    "reference_m": -1.925003615027193,
+    "diagnostic_outline_projection_m": -1.9140761877588175,
+    "diagnostic_outline_signed_error_m": 0.010927427268375478,
+    "before_signed_error_m": 0.02864087738345833,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9164104287512957,
+          -1.9117419467663392
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -1.9140761877588175
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.89895444452389
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9085983674904068,
+      -1.3247136040392014
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8980067709788604,
+      -1.3247136365261216
+    ],
+    "frozen_label_range_m": [
+      -1.89895444452389,
+      -1.3227692015407733
+    ],
+    "quantile_initial_m": -1.3249944490361591,
+    "before_optimized_m": -1.3249944490361591,
+    "final_m": -1.3249944490361591,
+    "reference_m": -1.3249937306330666,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -7.184030925699858e-07,
+    "final_signed_error_m": -7.184030925699858e-07,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3249944490361591,
+      -1.3249944490361591
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3227692015407733
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.399168535742842,
+      -0.9700001520281438
+    ],
+    "stable_fit_sample_range_m": [
+      -1.354865376180835,
+      -0.9700001766300926
+    ],
+    "frozen_label_range_m": [
+      -1.3563629045044434,
+      -0.9700006344818507
+    ],
+    "quantile_initial_m": -1.3544382887314177,
+    "before_optimized_m": -1.3549064063757796,
+    "final_m": null,
+    "reference_m": -1.3700009722827056,
+    "diagnostic_outline_projection_m": -1.3588460117441337,
+    "diagnostic_outline_signed_error_m": 0.0111549605385719,
+    "before_signed_error_m": 0.015094565906925927,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.3596558127243843,
+          -1.358036210763883
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.3588460117441337
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.3563629045044434
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.399168535742842,
+      -0.9700001520281438
+    ],
+    "stable_fit_sample_range_m": [
+      -1.354865376180835,
+      -0.9700001766300926
+    ],
+    "frozen_label_range_m": [
+      -1.3563629045044434,
+      -0.9700006344818507
+    ],
+    "quantile_initial_m": -0.9700006344818509,
+    "before_optimized_m": -0.9700006344818511,
+    "final_m": -0.9700006344818509,
+    "reference_m": -0.9700006701433067,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 3.566145556632705e-08,
+    "final_signed_error_m": 3.5661455788371654e-08,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.9700006344818509,
+      -0.9700006344818509
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.9700006344818507
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      -0.17014910726569463,
+      0.12895685760346962
+    ],
+    "stable_fit_sample_range_m": [
+      -0.15546311238005836,
+      0.11269799410736406
+    ],
+    "frozen_label_range_m": [
+      -0.16700022099867526,
+      0.12595969176859617
+    ],
+    "quantile_initial_m": -0.16630196065026442,
+    "before_optimized_m": -0.1663887919957342,
+    "final_m": null,
+    "reference_m": -0.17072689791848747,
+    "diagnostic_outline_projection_m": -0.16902190140464723,
+    "diagnostic_outline_signed_error_m": 0.0017049965138402345,
+    "before_signed_error_m": 0.0043381059227532714,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.1697905223942318,
+          -0.16909337704430827
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -0.16944194971927004
+      },
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.16913998584545703,
+          -0.16806372033459188
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -0.16860185309002446
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -0.16700022099867526
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      -0.17014910726569463,
+      0.12895685760346962
+    ],
+    "stable_fit_sample_range_m": [
+      -0.15546311238005836,
+      0.11269799410736406
+    ],
+    "frozen_label_range_m": [
+      -0.16700022099867526,
+      0.12595969176859617
+    ],
+    "quantile_initial_m": 0.1251390402449937,
+    "before_optimized_m": 0.1253351620995045,
+    "final_m": null,
+    "reference_m": 0.12929368290415233,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.0039585208046478415,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 0.12595969176859617
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9095512098318634,
+      -1.3246859942966993
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8947129135900846,
+      -1.324687082736728
+    ],
+    "frozen_label_range_m": [
+      -1.8997879382669722,
+      -1.3231869270746843
+    ],
+    "quantile_initial_m": -1.8928908630877943,
+    "before_optimized_m": -1.8959867497965177,
+    "final_m": null,
+    "reference_m": -1.925002944618866,
+    "diagnostic_outline_projection_m": -1.9140158367458309,
+    "diagnostic_outline_signed_error_m": 0.010987107873035029,
+    "before_signed_error_m": 0.029016194822348185,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9165080015599942,
+          -1.9115236719316675
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -1.9140158367458309
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.8997879382669722
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9095512098318634,
+      -1.3246859942966993
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8947129135900846,
+      -1.324687082736728
+    ],
+    "frozen_label_range_m": [
+      -1.8997879382669722,
+      -1.3231869270746843
+    ],
+    "quantile_initial_m": -1.324998691483197,
+    "before_optimized_m": -1.3249986914831975,
+    "final_m": -1.324998691483197,
+    "reference_m": -1.3249876662378226,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -1.1025245374884918e-05,
+    "final_signed_error_m": -1.1025245374440829e-05,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.324998691483197,
+      -1.324998691483197
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3231869270746843
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3928603516777165,
+      -0.9700168881872415
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3551266922948353,
+      -0.970017017671435
+    ],
+    "frozen_label_range_m": [
+      -1.356759113092319,
+      -0.9700202849710966
+    ],
+    "quantile_initial_m": -1.354782827242195,
+    "before_optimized_m": -1.3553815455562923,
+    "final_m": null,
+    "reference_m": -1.3700249760296552,
+    "diagnostic_outline_projection_m": -1.359021009906943,
+    "diagnostic_outline_signed_error_m": 0.01100396612271215,
+    "before_signed_error_m": 0.014643430473362917,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.3599055066847314,
+          -1.358122185820458
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.359021009906943
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.356759113092319
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3928603516777165,
+      -0.9700168881872415
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3551266922948353,
+      -0.970017017671435
+    ],
+    "frozen_label_range_m": [
+      -1.356759113092319,
+      -0.9700202849710966
+    ],
+    "quantile_initial_m": -0.9700202849710969,
+    "before_optimized_m": -0.9700202849710972,
+    "final_m": -0.9700202849710969,
+    "reference_m": -0.9700173132695464,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -2.9717015507246813e-06,
+    "final_signed_error_m": -2.9717015505026367e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.9700202849710969,
+      -0.9700202849710969
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.9700202849710966
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.13041527031169456,
+      0.42806003487660493
+    ],
+    "stable_fit_sample_range_m": [
+      0.14540942729443387,
+      0.4140369963881624
+    ],
+    "frozen_label_range_m": [
+      0.13917407119407949,
+      0.42260036443047916
+    ],
+    "quantile_initial_m": 0.14465920921779665,
+    "before_optimized_m": 0.1444655548566232,
+    "final_m": null,
+    "reference_m": 0.12926888986676607,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.01519666498985714,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 0.13917407119407949
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.13041527031169456,
+      0.42806003487660493
+    ],
+    "stable_fit_sample_range_m": [
+      0.14540942729443387,
+      0.4140369963881624
+    ],
+    "frozen_label_range_m": [
+      0.13917407119407949,
+      0.42260036443047916
+    ],
+    "quantile_initial_m": 0.42164578901167193,
+    "before_optimized_m": 0.4218991450558226,
+    "final_m": null,
+    "reference_m": 0.42929098131455534,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.007391836258732742,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 0.42260036443047916
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9134622350364305,
+      -1.3246150481173065
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8893449480234483,
+      -1.3246151780128563
+    ],
+    "frozen_label_range_m": [
+      -1.8881972319072953,
+      -1.322194383240677
+    ],
+    "quantile_initial_m": -1.8825710918983547,
+    "before_optimized_m": -1.885005175980424,
+    "final_m": null,
+    "reference_m": -1.9249677940266945,
+    "diagnostic_outline_projection_m": -1.9158170253288447,
+    "diagnostic_outline_signed_error_m": 0.00915076869784981,
+    "before_signed_error_m": 0.03996261804627044,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9225436290229478,
+          -1.916735842201774
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -1.919639735612361
+      },
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9165466714686201,
+          -1.9074419586220368
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 2,
+        "total_samples": 15,
+        "value_m": -1.9119943150453285
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.8881972319072953
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.9134622350364305,
+      -1.3246150481173065
+    ],
+    "stable_fit_sample_range_m": [
+      -1.8893449480234483,
+      -1.3246151780128563
+    ],
+    "frozen_label_range_m": [
+      -1.8881972319072953,
+      -1.322194383240677
+    ],
+    "quantile_initial_m": -1.3249556678541903,
+    "before_optimized_m": -1.3249556678541903,
+    "final_m": -1.3249556678541903,
+    "reference_m": -1.3249425228054865,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -1.3145048703755435e-05,
+    "final_signed_error_m": -1.3145048703755435e-05,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3249556678541903,
+      -1.3249556678541903
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.322194383240677
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      -0.7253520606421218,
+      -0.4283141941206262
+    ],
+    "stable_fit_sample_range_m": [
+      -0.7113854033749688,
+      -0.4283146747400501
+    ],
+    "frozen_label_range_m": [
+      -0.7189433695996378,
+      -0.4294429876592169
+    ],
+    "quantile_initial_m": -0.7178382489996339,
+    "before_optimized_m": -0.7158003282216975,
+    "final_m": null,
+    "reference_m": -0.7294864760825795,
+    "diagnostic_outline_projection_m": -0.7145882393268033,
+    "diagnostic_outline_signed_error_m": 0.014898236755776284,
+    "before_signed_error_m": 0.01368614786088207,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.7159893968841118,
+          -0.7128156299191104
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 2,
+        "total_samples": 15,
+        "value_m": -0.7145882393268033
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -0.7189433695996378
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      -0.7253520606421218,
+      -0.4283141941206262
+    ],
+    "stable_fit_sample_range_m": [
+      -0.7113854033749688,
+      -0.4283146747400501
+    ],
+    "frozen_label_range_m": [
+      -0.7189433695996378,
+      -0.4294429876592169
+    ],
+    "quantile_initial_m": -0.429442987659217,
+    "before_optimized_m": -0.42944298765921707,
+    "final_m": -0.429442987659217,
+    "reference_m": -0.4294258619534536,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -1.7125705763454402e-05,
+    "final_signed_error_m": -1.712570576339889e-05,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.429442987659217,
+      -0.429442987659217
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.4294429876592169
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -0.9758209360138568,
+      -0.5500023955691097
+    ],
+    "stable_fit_sample_range_m": [
+      -0.9360067412045249,
+      -0.5500027340193634
+    ],
+    "frozen_label_range_m": [
+      -0.9388814886262414,
+      -0.5500081776679265
+    ],
+    "quantile_initial_m": -0.9364231095896625,
+    "before_optimized_m": -0.9356436202426753,
+    "final_m": null,
+    "reference_m": -0.9500141660653953,
+    "diagnostic_outline_projection_m": -0.9400583078939996,
+    "diagnostic_outline_signed_error_m": 0.00995585817139577,
+    "before_signed_error_m": 0.014370545822720016,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.9429778602296186,
+          -0.9410275758823539
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -0.9420027180559862
+      },
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.9405524116216186,
+          -0.9356753838424072
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 1,
+        "total_samples": 15,
+        "value_m": -0.9381138977320129
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -0.9388814886262414
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -0.9758209360138568,
+      -0.5500023955691097
+    ],
+    "stable_fit_sample_range_m": [
+      -0.9360067412045249,
+      -0.5500027340193634
+    ],
+    "frozen_label_range_m": [
+      -0.9388814886262414,
+      -0.5500081776679265
+    ],
+    "quantile_initial_m": -0.5500081776679268,
+    "before_optimized_m": -0.5500081776679268,
+    "final_m": -0.5500081776679268,
+    "reference_m": -0.5500025047622492,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -5.6729056775450815e-06,
+    "final_signed_error_m": -5.6729056775450815e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 2
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.5500081776679268,
+      -0.5500081776679268
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.5500081776679265
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.90000714809584,
+      -1.3900053907640886
+    ],
+    "stable_fit_sample_range_m": [
+      -1.775661285161578,
+      -1.3900057047028633
+    ],
+    "frozen_label_range_m": [
+      -1.7773742749291448,
+      -1.3899847274741464
+    ],
+    "quantile_initial_m": -1.7742989828688174,
+    "before_optimized_m": -1.7755847332530905,
+    "final_m": null,
+    "reference_m": -1.7900119448046738,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.01442721155158333,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.7773742749291448
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.90000714809584,
+      -1.3900053907640886
+    ],
+    "stable_fit_sample_range_m": [
+      -1.775661285161578,
+      -1.3900057047028633
+    ],
+    "frozen_label_range_m": [
+      -1.7773742749291448,
+      -1.3899847274741464
+    ],
+    "quantile_initial_m": -1.390007961726309,
+    "before_optimized_m": -1.390007961726309,
+    "final_m": -1.390007961726309,
+    "reference_m": -1.390004100191983,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -3.861534326077276e-06,
+    "final_signed_error_m": -3.861534326077276e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.390007961726309,
+      -1.390007961726309
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3899847274741464
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.909622379842358,
+      -1.324825145674684
+    ],
+    "stable_fit_sample_range_m": [
+      -1.902443730649447,
+      -1.3248253678638293
+    ],
+    "frozen_label_range_m": [
+      -1.9034042057719833,
+      -1.3251014371062355
+    ],
+    "quantile_initial_m": -1.9001612035473612,
+    "before_optimized_m": -1.894763847463599,
+    "final_m": null,
+    "reference_m": -1.925205245117613,
+    "diagnostic_outline_projection_m": -1.913891783745378,
+    "diagnostic_outline_signed_error_m": 0.01131346137223499,
+    "before_signed_error_m": 0.03044139765401388,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 12,
+        "edge_index": 3,
+        "interval_m": [
+          -1.9154440149743055,
+          -1.9123395525164502
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.913891783745378
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.9034042057719833
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.909622379842358,
+      -1.324825145674684
+    ],
+    "stable_fit_sample_range_m": [
+      -1.902443730649447,
+      -1.3248253678638293
+    ],
+    "frozen_label_range_m": [
+      -1.9034042057719833,
+      -1.3251014371062355
+    ],
+    "quantile_initial_m": -1.3251014371062357,
+    "before_optimized_m": -1.325101437106236,
+    "final_m": -1.3251014371062357,
+    "reference_m": -1.3250739266747773,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -2.751043145865495e-05,
+    "final_signed_error_m": -2.7510431458432905e-05,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3251014371062357,
+      -1.3251014371062357
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3251014371062355
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      0.17044060281405124,
+      0.42127124740798777
+    ],
+    "stable_fit_sample_range_m": [
+      0.18592604875574203,
+      0.41791930372252395
+    ],
+    "frozen_label_range_m": [
+      0.17053191949331808,
+      0.4179191262527267
+    ],
+    "quantile_initial_m": 0.1719258493458681,
+    "before_optimized_m": 0.17768233741359088,
+    "final_m": null,
+    "reference_m": 0.1697716488782645,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.007910688535326393,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 0.17053191949331808
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      0.17044060281405124,
+      0.42127124740798777
+    ],
+    "stable_fit_sample_range_m": [
+      0.18592604875574203,
+      0.41791930372252395
+    ],
+    "frozen_label_range_m": [
+      0.17053191949331808,
+      0.4179191262527267
+    ],
+    "quantile_initial_m": 0.40866229986755537,
+    "before_optimized_m": 0.4118982753815182,
+    "final_m": null,
+    "reference_m": 0.47004983578248605,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.05815156040096786,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 0.4179191262527267
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.402764385548279,
+      -1.3247247425635382
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3930742048573168,
+      -1.3247249386047752
+    ],
+    "frozen_label_range_m": [
+      -1.3930746993182113,
+      -1.3250053795222685
+    ],
+    "quantile_initial_m": -1.38965339317117,
+    "before_optimized_m": -1.386629946359763,
+    "final_m": null,
+    "reference_m": -1.92509171835558,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.5384617719958169,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.3930746993182113
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.402764385548279,
+      -1.3247247425635382
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3930742048573168,
+      -1.3247249386047752
+    ],
+    "frozen_label_range_m": [
+      -1.3930746993182113,
+      -1.3250053795222685
+    ],
+    "quantile_initial_m": -1.3250751699993861,
+    "before_optimized_m": -1.3250751699993863,
+    "final_m": -1.3250751699993861,
+    "reference_m": -1.3250669590493276,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -8.210950058762378e-06,
+    "final_signed_error_m": -8.210950058540334e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3250751699993861,
+      -1.3250751699993861
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3250053795222685
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3899818064528737,
+      -0.9699810299790446
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3535901196191678,
+      -0.9699810533950051
+    ],
+    "frozen_label_range_m": [
+      -1.3545846090524922,
+      -0.9699817131715386
+    ],
+    "quantile_initial_m": -1.3535292220053412,
+    "before_optimized_m": -1.3540009926401828,
+    "final_m": null,
+    "reference_m": -1.369982323595908,
+    "diagnostic_outline_projection_m": -1.3581636602783023,
+    "diagnostic_outline_signed_error_m": 0.011818663317605838,
+    "before_signed_error_m": 0.015981330955725292,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.35919884508745,
+          -1.3571284754691546
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.3581636602783023
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.3545846090524922
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3899818064528737,
+      -0.9699810299790446
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3535901196191678,
+      -0.9699810533950051
+    ],
+    "frozen_label_range_m": [
+      -1.3545846090524922,
+      -0.9699817131715386
+    ],
+    "quantile_initial_m": -0.9699817131715389,
+    "before_optimized_m": -0.9699817131715389,
+    "final_m": -0.9699817131715389,
+    "reference_m": -0.9699744417530557,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -7.271418483223435e-06,
+    "final_signed_error_m": -7.271418483223435e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.9699817131715389,
+      -0.9699817131715389
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.9699817131715386
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.7298331692112856,
+      1.030264909930478
+    ],
+    "stable_fit_sample_range_m": [
+      0.7431256936476984,
+      1.0128921541601348
+    ],
+    "frozen_label_range_m": [
+      0.7267739677346223,
+      1.0158972669048676
+    ],
+    "quantile_initial_m": 0.7419621947894788,
+    "before_optimized_m": 0.7425684307777527,
+    "final_m": null,
+    "reference_m": 0.7292023745926722,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.013366056185080466,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 0.7267739677346223
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      0.7298331692112856,
+      1.030264909930478
+    ],
+    "stable_fit_sample_range_m": [
+      0.7431256936476984,
+      1.0128921541601348
+    ],
+    "frozen_label_range_m": [
+      0.7267739677346223,
+      1.0158972669048676
+    ],
+    "quantile_initial_m": 1.0158960096042695,
+    "before_optimized_m": 1.014949420368975,
+    "final_m": null,
+    "reference_m": 1.029244288477461,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.014294868108486014,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 1.0158972669048676
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -4.027188856506769,
+      -1.3249481351731545
+    ],
+    "stable_fit_sample_range_m": [
+      -1.9045306645222986,
+      -1.3249485422758958
+    ],
+    "frozen_label_range_m": [
+      -1.9048683627039067,
+      -1.3221965343820294
+    ],
+    "quantile_initial_m": -1.9011114926982935,
+    "before_optimized_m": -1.9028731288997176,
+    "final_m": null,
+    "reference_m": -1.9253804721438719,
+    "diagnostic_outline_projection_m": -1.9179977229626604,
+    "diagnostic_outline_signed_error_m": 0.007382749181211512,
+    "before_signed_error_m": 0.022507343244154265,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 0,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.919890447553814,
+          -1.9161049983715066
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 2,
+        "total_samples": 15,
+        "value_m": -1.9179977229626604
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.9048683627039067
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -4.027188856506769,
+      -1.3249481351731545
+    ],
+    "stable_fit_sample_range_m": [
+      -1.9045306645222986,
+      -1.3249485422758958
+    ],
+    "frozen_label_range_m": [
+      -1.9048683627039067,
+      -1.3221965343820294
+    ],
+    "quantile_initial_m": -1.3253219015452378,
+    "before_optimized_m": -1.3253219015452369,
+    "final_m": -1.3253219015452378,
+    "reference_m": -1.3252749128579104,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -4.698868732644357e-05,
+    "final_signed_error_m": -4.6988687327331746e-05,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3253219015452378,
+      -1.3253219015452378
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.3221965343820294
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      -1.6290060332261023,
+      -0.727357341032033
+    ],
+    "stable_fit_sample_range_m": [
+      -1.0118929756371946,
+      -0.7275100719772951
+    ],
+    "frozen_label_range_m": [
+      -1.0167103980778027,
+      -0.7287431503879193
+    ],
+    "quantile_initial_m": -1.0166942541043815,
+    "before_optimized_m": -1.0171605927673082,
+    "final_m": null,
+    "reference_m": -1.028838750458111,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.011678157690802715,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.0167103980778027
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Z",
+    "raw_valid_observed_range_m": [
+      -1.6290060332261023,
+      -0.727357341032033
+    ],
+    "stable_fit_sample_range_m": [
+      -1.0118929756371946,
+      -0.7275100719772951
+    ],
+    "frozen_label_range_m": [
+      -1.0167103980778027,
+      -0.7287431503879193
+    ],
+    "quantile_initial_m": -0.7287431503879194,
+    "before_optimized_m": -0.728743150387919,
+    "final_m": -0.7287431503879194,
+    "reference_m": -0.7285943648905095,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.0001487854974094871,
+    "final_signed_error_m": -0.00014878549740982017,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 2
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.7287431503879194,
+      -0.7287431503879194
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.7287431503879193
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.1634075977600133,
+      -0.1300416460182158
+    ],
+    "stable_fit_sample_range_m": [
+      -0.5168598929523205,
+      -0.1482312157061672
+    ],
+    "frozen_label_range_m": [
+      -0.5204769770896909,
+      -0.13507032222651322
+    ],
+    "quantile_initial_m": -0.518415506462924,
+    "before_optimized_m": -0.5158386022309709,
+    "final_m": null,
+    "reference_m": -0.5300661777380581,
+    "diagnostic_outline_projection_m": -0.5224532788672469,
+    "diagnostic_outline_signed_error_m": 0.00761289887081118,
+    "before_signed_error_m": 0.014227575507087198,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.5266950089512903,
+          -0.5246338036627585
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -0.5256644063070244
+      },
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 0,
+        "interval_m": [
+          -0.5206262419457264,
+          -0.518186799099597
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 2,
+        "total_samples": 15,
+        "value_m": -0.5192421514274695
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -0.5204769770896909
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.1634075977600133,
+      -0.1300416460182158
+    ],
+    "stable_fit_sample_range_m": [
+      -0.5168598929523205,
+      -0.1482312157061672
+    ],
+    "frozen_label_range_m": [
+      -0.5204769770896909,
+      -0.13507032222651322
+    ],
+    "quantile_initial_m": -0.14410677918339845,
+    "before_optimized_m": -0.14456650551865594,
+    "final_m": null,
+    "reference_m": -0.13003394488936657,
+    "diagnostic_outline_projection_m": -0.12742007167758523,
+    "diagnostic_outline_signed_error_m": 0.0026138732117813313,
+    "before_signed_error_m": -0.01453256062928937,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 2,
+        "coherent_samples": 15,
+        "edge_index": 2,
+        "interval_m": [
+          -0.12845807057810738,
+          -0.1263900048130682
+        ],
+        "side": "high",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -0.12742007167758523
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.13507032222651322
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.3723144083009722,
+      -1.124876837586304
+    ],
+    "stable_fit_sample_range_m": [
+      -1.35846677609228,
+      -1.3246477408459667
+    ],
+    "frozen_label_range_m": [
+      -1.3614013788650627,
+      -1.312331445803453
+    ],
+    "quantile_initial_m": -1.354548159667943,
+    "before_optimized_m": -1.353493134920347,
+    "final_m": null,
+    "reference_m": -1.9250184761011697,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.5715253411808228,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.3614013788650627
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.3723144083009722,
+      -1.124876837586304
+    ],
+    "stable_fit_sample_range_m": [
+      -1.35846677609228,
+      -1.3246477408459667
+    ],
+    "frozen_label_range_m": [
+      -1.3614013788650627,
+      -1.312331445803453
+    ],
+    "quantile_initial_m": -1.3250079060006137,
+    "before_optimized_m": -1.3250079060006141,
+    "final_m": -1.3250079060006137,
+    "reference_m": -1.3250130116825594,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 5.105681945227758e-06,
+    "final_signed_error_m": 5.105681945671847e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3250079060006137,
+      -1.3250079060006137
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.312331445803453
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -0.9498230279908165,
+      -0.46792610515249605
+    ],
+    "stable_fit_sample_range_m": [
+      -0.9350632117001317,
+      -0.5499879612391871
+    ],
+    "frozen_label_range_m": [
+      -0.937597859327619,
+      -0.5499882402848204
+    ],
+    "quantile_initial_m": -0.9367900702540287,
+    "before_optimized_m": -0.9371284464910155,
+    "final_m": null,
+    "reference_m": -0.9499884741941427,
+    "diagnostic_outline_projection_m": -0.9422131631002523,
+    "diagnostic_outline_signed_error_m": 0.007775311093890402,
+    "before_signed_error_m": 0.01286002770312722,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -0.9433062242397132,
+          -0.9411201019607913
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -0.9422131631002523
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -0.937597859327619
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -0.9498230279908165,
+      -0.46792610515249605
+    ],
+    "stable_fit_sample_range_m": [
+      -0.9350632117001317,
+      -0.5499879612391871
+    ],
+    "frozen_label_range_m": [
+      -0.937597859327619,
+      -0.5499882402848204
+    ],
+    "quantile_initial_m": -0.5499882402848206,
+    "before_optimized_m": -0.5499882402848207,
+    "final_m": -0.5499882402848206,
+    "reference_m": -0.549983291291709,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -4.948993111764111e-06,
+    "final_signed_error_m": -4.948993111653088e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.5499882402848206,
+      -0.5499882402848206
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.5499882402848204
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      1.028556251774667,
+      1.2321013415673454
+    ],
+    "stable_fit_sample_range_m": [
+      1.0473353782057973,
+      1.22202298338349
+    ],
+    "frozen_label_range_m": [
+      1.01862331458399,
+      1.2220231903578136
+    ],
+    "quantile_initial_m": 1.043540171525063,
+    "before_optimized_m": 1.044397212037907,
+    "final_m": null,
+    "reference_m": 1.0293262011495363,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.015071010888370706,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 1.01862331458399
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      1.028556251774667,
+      1.2321013415673454
+    ],
+    "stable_fit_sample_range_m": [
+      1.0473353782057973,
+      1.22202298338349
+    ],
+    "frozen_label_range_m": [
+      1.01862331458399,
+      1.2220231903578136
+    ],
+    "quantile_initial_m": 1.210850819021922,
+    "before_optimized_m": 1.2086561095248989,
+    "final_m": null,
+    "reference_m": 1.3293307602239792,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.12067465069908034,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 1.2220231903578136
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 0,
+    "side": "low",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.3918570673897386,
+      -1.1245974406449575
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3754781911858973,
+      -1.3246846314427005
+    ],
+    "frozen_label_range_m": [
+      -1.3854839647575092,
+      -1.322225019989067
+    ],
+    "quantile_initial_m": -1.3775809096795362,
+    "before_optimized_m": -1.3645123984570235,
+    "final_m": null,
+    "reference_m": -1.9250634999081409,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 0.5605511014511173,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.3854839647575092
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 0,
+    "side": "high",
+    "world_direction": "-X",
+    "raw_valid_observed_range_m": [
+      -1.3918570673897386,
+      -1.1245974406449575
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3754781911858973,
+      -1.3246846314427005
+    ],
+    "frozen_label_range_m": [
+      -1.3854839647575092,
+      -1.322225019989067
+    ],
+    "quantile_initial_m": -1.3250413316256182,
+    "before_optimized_m": -1.325041331625618,
+    "final_m": -1.3250413316256182,
+    "reference_m": -1.325047418966528,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 6.087340910010397e-06,
+    "final_signed_error_m": 6.087340909788352e-06,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 0
+      }
+    ],
+    "uncertainty_interval_m": [
+      -1.3250413316256182,
+      -1.3250413316256182
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -1.322225019989067
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 1,
+    "side": "low",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3900072959892817,
+      -0.8257202053914079
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3543837859683312,
+      -0.9700070087951959
+    ],
+    "frozen_label_range_m": [
+      -1.355136710789289,
+      -0.9700072482072436
+    ],
+    "quantile_initial_m": -1.354316086955277,
+    "before_optimized_m": -1.3545289085557894,
+    "final_m": null,
+    "reference_m": -1.3700103376239998,
+    "diagnostic_outline_projection_m": -1.3588632652635517,
+    "diagnostic_outline_signed_error_m": 0.011147072360448096,
+    "before_signed_error_m": 0.015481429068210373,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL",
+    "constraint_sources": [
+      {
+        "axis": 1,
+        "coherent_samples": 15,
+        "edge_index": 3,
+        "interval_m": [
+          -1.3599608929248235,
+          -1.3577334834410426
+        ],
+        "side": "low",
+        "source": "LOCATED_PHYSICAL_OUTLINE",
+        "support_label": 0,
+        "total_samples": 15,
+        "value_m": -1.3588632652635517
+      }
+    ],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": -1.355136710789289
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 1,
+    "side": "high",
+    "world_direction": "+Y",
+    "raw_valid_observed_range_m": [
+      -1.3900072959892817,
+      -0.8257202053914079
+    ],
+    "stable_fit_sample_range_m": [
+      -1.3543837859683312,
+      -0.9700070087951959
+    ],
+    "frozen_label_range_m": [
+      -1.355136710789289,
+      -0.9700072482072436
+    ],
+    "quantile_initial_m": -0.9700072482072438,
+    "before_optimized_m": -0.9700072482072436,
+    "final_m": -0.9700072482072438,
+    "reference_m": -0.9700072724748553,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": 2.4267611697936786e-08,
+    "final_signed_error_m": 2.426761147589218e-08,
+    "constraint_status": "CONSTRAINED",
+    "constraint_sources": [
+      {
+        "source": "MEASURED_PLANE",
+        "support_label": 1
+      }
+    ],
+    "uncertainty_interval_m": [
+      -0.9700072482072438,
+      -0.9700072482072438
+    ],
+    "containment": {
+      "operator": ">=",
+      "value_m": -0.9700072482072436
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 2,
+    "side": "low",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      1.0261246510363489,
+      1.2307318441333643
+    ],
+    "stable_fit_sample_range_m": [
+      1.0472762057724532,
+      1.2250141846156228
+    ],
+    "frozen_label_range_m": [
+      1.0222095495765704,
+      1.2250143117661112
+    ],
+    "quantile_initial_m": 1.0247269662679437,
+    "before_optimized_m": 1.0266464222044651,
+    "final_m": null,
+    "reference_m": 1.029240901714887,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.002594479510421799,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": "<=",
+      "value_m": 1.0222095495765704
+    }
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "axis": 2,
+    "side": "high",
+    "world_direction": "-Z",
+    "raw_valid_observed_range_m": [
+      1.0261246510363489,
+      1.2307318441333643
+    ],
+    "stable_fit_sample_range_m": [
+      1.0472762057724532,
+      1.2250141846156228
+    ],
+    "frozen_label_range_m": [
+      1.0222095495765704,
+      1.2250143117661112
+    ],
+    "quantile_initial_m": 1.2167322571894055,
+    "before_optimized_m": 1.20864567095319,
+    "final_m": null,
+    "reference_m": 1.3292711779042743,
+    "diagnostic_outline_projection_m": null,
+    "diagnostic_outline_signed_error_m": null,
+    "before_signed_error_m": -0.1206255069510842,
+    "final_signed_error_m": null,
+    "constraint_status": "UNRESOLVED",
+    "constraint_sources": [],
+    "uncertainty_interval_m": null,
+    "containment": {
+      "operator": ">=",
+      "value_m": 1.2250143117661112
+    }
+  }
+]

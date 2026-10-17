@@ -609,6 +609,9 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
                 full=np.asarray(output['corners_3d'])[candidate['corner_indices']]
                 if np.max(np.abs(full@n+d))>maximum_mean_m:
                     raise ValueError('COMPLETE_CUBOID_MOVED_FROM_OBSERVED_PLANES')
+            if 'boundary_constraints' in output:
+                from .physical_bounds import validate_complete_constraints
+                output['finite_boundary_validation'] = validate_complete_constraints(output, depth, mask, K)
             output.update(center_3d=center.tolist(),orthogonal_axes_3d=axes.tolist(),shape_dimensions=dimensions.tolist())
             output['complete_cuboid_consistency']={'status':'PASS'}
             output['cuboid_status']='ACCEPTED_INDEPENDENTLY_VALIDATED'
@@ -628,7 +631,7 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
     return output
 
 
-def _shared_edge_support(edge, first, second, depth, K, *, search_px=6, maximum_residual_m=.006):
+def _shared_edge_support(edge, first, second, depth, K, *, search_px=6, maximum_residual_m=.006, maximum_mean_m=.003):
     """Measured two-sided support at 10/15 positions, not an infinite intersection.
 
     Reuses the boundary search radius and frozen plane residual tolerance. Both
@@ -637,7 +640,7 @@ def _shared_edge_support(edge, first, second, depth, K, *, search_px=6, maximum_
     """
     a,b=np.asarray(edge);direction=b-a;length=np.linalg.norm(direction)
     if length<1e-9:return {'supported':False,'reason':'DEGENERATE_SHARED_SEGMENT'}
-    direction/=length;projected=project(np.array([a,b]),K);votes=[]
+    direction/=length;projected=project(np.array([a,b]),K);votes=[];crease_errors=[]
     for t in np.linspace(.15,.85,15):
         xy=projected[0]+t*(projected[1]-projected[0]);x,y=np.rint(xy).astype(int)
         cropped=x<=0 or y<=0 or x>=depth.shape[1]-1 or y>=depth.shape[0]-1
@@ -653,19 +656,38 @@ def _shared_edge_support(edge, first, second, depth, K, *, search_px=6, maximum_
             # Pixel footprint plus the existing metric tolerance, not a size prior.
             bound=maximum_residual_m+search_px*points[:,2]/min(K[0,0],K[1,1])
             good=(distance<=bound)&(residual<=maximum_residual_m)&(along>=0)&(along<=length)
+            shown=np.flatnonzero(good)
+            shown=shown[np.argsort(distance[shown],kind='stable')[:8]]
             evidence.append(dict(support_label=group['label'],point_count=int(good.sum()),
+                point_pixels=np.c_[xx[ok],yy[ok]][shown].tolist(),
                 nearest_segment_distance_m=float(distance[good].min()) if good.any() else None))
-        votes.append(dict(pixel=xy.tolist(),supported=bool(not cropped and all(v['point_count'] for v in evidence)),surfaces=evidence))
+        # Nearby planar patches can terminate on either side of a bevel. They
+        # do not demonstrate that the theoretical crease is an observed edge.
+        crease_error=None
+        if not cropped and np.isfinite(depth[y,x]) and depth[y,x]>0:
+            actual=backproject_pixels(np.array([[x,y]]),[depth[y,x]],K)[0]
+            crease_error=float(max(abs(actual@g['normal']+g['offset']) for g in (first,second)))
+            crease_errors.append(crease_error)
+        votes.append(dict(pixel=xy.tolist(),supported=bool(not cropped and all(v['point_count'] for v in evidence)),
+            crease_pixel=[int(x),int(y)],crease_max_plane_distance_m=crease_error,surfaces=evidence))
     count=sum(v['supported'] for v in votes)
-    return dict(supported=count>=10,supported_samples=count,total_samples=15,search_px=search_px,
+    mean=float(np.mean(crease_errors)) if crease_errors else None
+    p95=float(np.percentile(crease_errors,95)) if crease_errors else None
+    crease_ok=len(crease_errors)>=10 and mean<=maximum_mean_m and p95<=maximum_residual_m
+    return dict(supported=bool(count>=10 and crease_ok),supported_samples=count,total_samples=15,search_px=search_px,
+        crease_depth_check=dict(status='PASS' if crease_ok else 'REJECTED',valid_samples=len(crease_errors),
+            mean_max_plane_distance_m=mean,p95_max_plane_distance_m=p95,maximum_mean_m=maximum_mean_m,
+            maximum_p95_m=maximum_residual_m,selection='all finite sampled crease pixels; no residual trimming'),
         maximum_plane_residual_m=maximum_residual_m,samples=votes,
-        reason='MEASURED_TWO_SIDED_SHARED_SEGMENT' if count>=10 else 'NO_TWO_SIDED_SEGMENT_SUPPORT')
+        reason=('MEASURED_TWO_SIDED_SHARED_SEGMENT' if crease_ok else 'THEORETICAL_CREASE_NOT_ON_MEASURED_SURFACE')
+               if count>=10 else 'NO_TWO_SIDED_SEGMENT_SUPPORT')
 
 
 def _complete(output, groups, axes, all_points, depth, K, config, mask):
     """Shared bounds from measured planes and visible silhouette endpoints."""
     coordinates = np.concatenate(all_points) @ axes.T
     low, high = np.quantile(coordinates, [.001, .999], axis=0)
+    quantile_bounds = [low.tolist(), high.tolist()]
     accepted_labels = {f['support_label'] for f in output['camera_facing_faces']}
     observed = {}
     for g in groups:
@@ -728,7 +750,7 @@ def _complete(output, groups, axes, all_points, depth, K, config, mask):
             neighbour=next((f for f in candidate_faces if f is not face and set(edge).issubset(f['corner_indices'])),None)
             if neighbour is None:continue
             shared=_shared_edge_support(corners[edge],by_label[face['support_label']],
-                by_label[neighbour['support_label']],depth,K,maximum_residual_m=config.maximum_p95_m)
+                by_label[neighbour['support_label']],depth,K,maximum_residual_m=config.maximum_p95_m,maximum_mean_m=config.maximum_mean_m)
             boundary['shared_edge_evidence']=shared
             # Never reinterpret observed occlusion, image crop or conflicting
             # foreground evidence as a physical common edge.
@@ -738,18 +760,101 @@ def _complete(output, groups, axes, all_points, depth, K, config, mask):
                 boundary['depth_jump_kind']=boundary['kind']
                 boundary['kind']='PHYSICAL_EDGE_SUPPORTED'
                 boundary['reason']='MEASURED_TWO_SIDED_SHARED_SEGMENT'
-    physical = all(b['kind']=='PHYSICAL_EDGE_SUPPORTED' for f in candidate_faces for b in f['boundary_evidence'])
+    # The legacy label-contour fit is an initializer/diagnostic only. Its
+    # neighbourhood depth votes never locate an unobserved physical bound.
+    legacy_faces = candidate_faces
+    legacy_bounds = [low.tolist(), high.tolist()]
+    if 'boundary_fit' in output['metric_solver']:
+        output['metric_solver']['boundary_fit']['authority']='INITIALIZER_ONLY_NOT_DIMENSION_MEASUREMENT'
+    from .physical_bounds import resolve_bounds, FACE_IDS
+    measured_groups = [g for g in groups if g['label'] in accepted_labels]
+    finite = resolve_bounds(measured_groups, axes, low, high, observed, depth, mask, K, config)
+    raw_groups = {g['label']:g for g in finite.pop('boundary_regions')}
+    raw_points, _ = _points(depth, mask & np.isfinite(depth) & (depth > 0), K)
+    stable = np.concatenate([g['fit_points'] for g in measured_groups]) @ axes.T
+    raw_coordinates = raw_points @ axes.T
+    finite.update(quantile_initial_bounds_m=quantile_bounds, silhouette_optimized_bounds_m=legacy_bounds,
+        raw_valid_observation_range_m=[raw_coordinates.min(0).tolist(), raw_coordinates.max(0).tolist()],
+        stable_fit_sample_range_m=[stable.min(0).tolist(), stable.max(0).tolist()],
+        frozen_lifted_label_range_m=[coordinates.min(0).tolist(), coordinates.max(0).tolist()],
+        initial_range_authority='CONTAINMENT_ONLY_NOT_PHYSICAL_BOUNDS')
+    for bound in finite['bounds']:
+        axis, side = bound['axis'], bound['side']
+        bound['containment_inequality'] = dict(operator='<=' if side == 'low' else '>=',
+            value_m=float(coordinates[:,axis].min() if side == 'low' else coordinates[:,axis].max()))
+        if bound['value_m'] is not None:
+            (low if side == 'low' else high)[axis] = bound['value_m']
+    corners = (low+(SIGNS+1)/2*(high-low)) @ axes
+    candidate_faces = []
+    for (axis, side), g in observed.items():
+        ids = FACE_IDS[axis][side == 'high']
+        candidate_faces.append(dict(axis=axis, side=side, corner_indices=ids, support_label=g['label'],
+            corners_2d=project(corners[ids], K).tolist(), boundary_evidence=[]))
+    shared = []
+    for i, face in enumerate(candidate_faces):
+        for other in candidate_faces[i+1:]:
+            edge = sorted(set(face['corner_indices']) & set(other['corner_indices']))
+            if len(edge) != 2: continue
+            evidence = _shared_edge_support(corners[edge], raw_groups[face['support_label']],
+                raw_groups[other['support_label']], depth, K, maximum_residual_m=config.maximum_p95_m, maximum_mean_m=config.maximum_mean_m)
+            evidence.update(support_labels=[face['support_label'], other['support_label']],
+                corner_indices=edge, corners_2d=project(corners[edge], K).tolist(),
+                support_domain='RAW_BOUNDARY_ONLY; frozen plane fit/validation labels unchanged')
+            shared.append(evidence)
+    # Every observed plane must connect to the same measured finite solid.
+    connected = {candidate_faces[0]['support_label']}
+    for _ in candidate_faces:
+        for edge in shared:
+            if edge['supported'] and connected.intersection(edge['support_labels']):
+                connected.update(edge['support_labels'])
+    relation = len(connected) == len(candidate_faces)
+    outline_parameters_located=finite['complete']
+    # Projecting a silhouette onto a flat face only determines the opposing
+    # box plane under the sharp-cuboid model. A measured bevel/gap invalidates
+    # that implication; keep its projection as diagnostic evidence, not a size.
+    if not relation:
+        for bound in finite['bounds']:
+            if (bound['axis'],bound['side']) not in observed and bound['value_m'] is not None:
+                bound.update(outline_projection_m=bound['value_m'],value_m=None,
+                    outline_projection_interval_m=bound.get('interval_m'),interval_m=None,
+                    status='UNRESOLVED_BOX_BOUND_UNVERIFIED_SHARP_MODEL')
+    finite['complete']=all(b['status']=='CONSTRAINED' for b in finite['bounds'])
+    finite.update(shared_edges=shared, measured_adjacency_connected=relation,
+        all_outline_parameters_located=outline_parameters_located,
+        box_model_status='OBSERVED_ORTHOGONAL_CREASES' if relation else 'UNVERIFIED_SHARP_CUBOID_MODEL',
+        missing_bounds=[dict(axis=b['axis'], side=b['side'], reason=b['status'])
+                        for b in finite['bounds'] if b['status'] != 'CONSTRAINED'])
+    physical = bool(finite['complete'] and relation and np.min(high-low) > .01)
+    output['boundary_constraints'] = finite
+    for face in candidate_faces:
+        for edge_index in range(4):
+            ids=face['corner_indices']; edge={ids[edge_index], ids[(edge_index+1)%4]}
+            joint=next((v for v in shared if edge==set(v['corner_indices'])), None)
+            located=next((v for v in finite['edges'] if v['support_label']==face['support_label'] and v['edge_index']==edge_index), None)
+            if joint is not None:
+                kind='PHYSICAL_EDGE_SUPPORTED' if joint['supported'] else 'UNCLASSIFIED_BOUNDARY'
+                evidence=dict(kind=kind, reason=joint['reason'], shared_edge_evidence=joint)
+            else:
+                kind='PHYSICAL_EDGE_SUPPORTED' if located and located['status']=='CONSTRAINED' else 'UNCLASSIFIED_BOUNDARY'
+                evidence=dict(kind=kind, reason='LOCATED_PHYSICAL_OUTLINE' if kind=='PHYSICAL_EDGE_SUPPORTED' else 'NO_LOCAL_PHYSICAL_CONSTRAINT',
+                              finite_edge_evidence=located)
+            face['boundary_evidence'].append(evidence)
     output['completion_diagnostics'] = {'bounds_low':low.tolist(),'bounds_high':high.tolist(),
-                                         'candidate_faces':candidate_faces,'all_visible_edges_physical':physical,
+                                         'candidate_faces':candidate_faces,
+                                         'all_visible_edges_physical':all(b['kind']=='PHYSICAL_EDGE_SUPPORTED' for f in candidate_faces for b in f['boundary_evidence']),
+                                         'six_bounds_constrained':finite['complete'],
+                                         'legacy_label_contour_candidate':dict(bounds=legacy_bounds, candidate_faces=legacy_faces),
                                          'silhouette_bound_parameters':free,
-                                         'observed_plane_bounds':len(observed),'hidden_bound_constraints':'OBSERVED_SILHOUETTE_ENDPOINTS'}
+                                         'observed_plane_bounds':len(observed),'hidden_bound_constraints':'LOCATED_RAW_DEPTH_FINITE_CONSTRAINTS'}
     if not physical:
         output['completion_diagnostics'].update(
-            rejection='UNSUPPORTED_PHYSICAL_BOUNDARY',
+            rejection='UNVERIFIED_FINITE_FACE_ADJACENCY' if not relation else 'UNRESOLVED_SIX_BOUNDS',
             rejected_boundaries=[{'support_label': f['support_label'], 'axis': f['axis'], 'side': f['side'],
                                  'edge_index': i, 'kind': b['kind'], 'reason': b['reason']}
                                 for f in candidate_faces for i, b in enumerate(f['boundary_evidence'])
                                 if b['kind'] != 'PHYSICAL_EDGE_SUPPORTED'])
+        output['rejected_cuboid_candidate'] = dict(corners_3d=corners.tolist(), status='REJECTED_DIAGNOSTIC_ONLY',
+            warning='unresolved bounds use the legacy initializer only for diagnosis; not a volume measurement')
         return
     output.update(accepted=True, corners_3d=corners.tolist(), corners_2d=project(corners,K).tolist(),
                   orthogonal_axes_3d=axes.tolist(), shape_dimensions=(high-low).tolist(),

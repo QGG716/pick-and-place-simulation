@@ -1,0 +1,201 @@
+{
+  "crop_xyxy": [
+    1461,
+    734,
+    1839,
+    1238
+  ],
+  "source": "sensor_rgb.png",
+  "native_pixels": true,
+  "edges": [
+    {
+      "file": "outline-0.png",
+      "support_label": 0,
+      "edge_index": 0,
+      "status": "CONSTRAINED",
+      "reasons": [
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE"
+      ]
+    },
+    {
+      "file": "outline-1.png",
+      "support_label": 0,
+      "edge_index": 3,
+      "status": "UNRESOLVED",
+      "reasons": [
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT",
+        "MASK_OR_LABEL_LIMIT"
+      ]
+    },
+    {
+      "file": "outline-2.png",
+      "support_label": 1,
+      "edge_index": 0,
+      "status": "CONSTRAINED",
+      "reasons": [
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE"
+      ]
+    },
+    {
+      "file": "outline-3.png",
+      "support_label": 1,
+      "edge_index": 3,
+      "status": "CONSTRAINED",
+      "reasons": [
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE"
+      ]
+    },
+    {
+      "file": "outline-4.png",
+      "support_label": 2,
+      "edge_index": 0,
+      "status": "CONSTRAINED",
+      "reasons": [
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE"
+      ]
+    },
+    {
+      "file": "outline-5.png",
+      "support_label": 2,
+      "edge_index": 3,
+      "status": "CONSTRAINED",
+      "reasons": [
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE",
+        "PHYSICAL_OUTLINE"
+      ]
+    },
+    {
+      "file": "joint-0.png",
+      "support_labels": [
+        0,
+        1
+      ],
+      "reason": "THEORETICAL_CREASE_NOT_ON_MEASURED_SURFACE",
+      "crease_depth_check": {
+        "maximum_mean_m": 0.003,
+        "maximum_p95_m": 0.006,
+        "mean_max_plane_distance_m": 0.00868933616725783,
+        "p95_max_plane_distance_m": 0.008690028013293927,
+        "selection": "all finite sampled crease pixels; no residual trimming",
+        "status": "REJECTED",
+        "valid_samples": 15
+      }
+    },
+    {
+      "file": "joint-1.png",
+      "support_labels": [
+        0,
+        2
+      ],
+      "reason": "THEORETICAL_CREASE_NOT_ON_MEASURED_SURFACE",
+      "crease_depth_check": {
+        "maximum_mean_m": 0.003,
+        "maximum_p95_m": 0.006,
+        "mean_max_plane_distance_m": 0.007826437164562484,
+        "p95_max_plane_distance_m": 0.008447518592949742,
+        "selection": "all finite sampled crease pixels; no residual trimming",
+        "status": "REJECTED",
+        "valid_samples": 15
+      }
+    },
+    {
+      "file": "joint-2.png",
+      "support_labels": [
+        1,
+        2
+      ],
+      "reason": "THEORETICAL_CREASE_NOT_ON_MEASURED_SURFACE",
+      "crease_depth_check": {
+        "maximum_mean_m": 0.003,
+        "maximum_p95_m": 0.006,
+        "mean_max_plane_distance_m": 0.006986687987489678,
+        "p95_max_plane_distance_m": 0.0075625265744645115,
+        "selection": "all finite sampled crease pixels; no residual trimming",
+        "status": "REJECTED",
+        "valid_samples": 15
+      }
+    }
+  ]
+}

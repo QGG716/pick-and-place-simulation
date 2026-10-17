@@ -5,9 +5,10 @@ pinned visual JSON and isolated workers, and a ROS 2 Humble replay/mock bridge.
 Start with [`docs/vision_ros2_integration.md`](docs/vision_ros2_integration.md);
 the geometric core remains ROS/GPU independent.
 
-当前感知评审：[箱堆豁口与多面几何验证（2026-10-16）](docs/validation/notch_multiface_20261016.md)。
-使用 frame32 和新采集的台阶豁口，冻结 Grounding DINO/SAM；仅运行到几何，单面不恢复完整体。
-本地轻量入口：[`outputs/notch-multiface-20261016/review-final/index.html`](outputs/notch-multiface-20261016/review-final/index.html)。
+当前感知评审：[双面 / 三面有限边界定位（2026-10-17）](docs/validation/physical_bounds_20261017.md)。
+复用冻结豁口采集和 DINO/SAM，只重新求解几何；区分物理轮廓、圆角、遮挡与未确定尺寸，不以拒绝全部候选宣称恢复精度通过。
+本地轻量入口：[`outputs/physical-bounds-20261017/review-final/index.html`](outputs/physical-bounds-20261017/review-final/index.html)。
+前轮采集记录：[箱堆豁口与多面几何验证](docs/validation/notch_multiface_20261016.md)。
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP
 > 变换、实际刚体附着、完整路径检查和解析时间参数化，验收入口为

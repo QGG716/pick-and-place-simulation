@@ -1,0 +1,52 @@
+[
+  {
+    "file": "tools/replay_notch_geometry.py",
+    "byte_match": true,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "tools/workcell_geometry_process.py",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "tools/run_isaac_rgbd_geometry.py",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "tools/metric_depth_runner.py",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "src/unloading_perception/metric_faces.py",
+    "byte_match": true,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "src/unloading_perception/physical_bounds.py",
+    "byte_match": true,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "src/unloading_perception/metric_support.py",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "src/unloading_perception/final_geometry.py",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "configs/perception/metric_geometry_acceptance.json",
+    "byte_match": false,
+    "lf_normalized_match": true
+  },
+  {
+    "file": "configs/isaac/perception_validation.yaml",
+    "byte_match": false,
+    "lf_normalized_match": true
+  }
+]

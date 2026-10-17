@@ -1,0 +1,215 @@
+{
+  "files": {
+    "baseline\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 108317,
+      "sha256": "f6f6c9028dc4a1e5a8a67fb99c5c271f3a10550d619261a190722c9f13544f27"
+    },
+    "baseline\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 322658,
+      "sha256": "279fb0764126c4132040a82bc92046da32394f3c07203a4ea91ba45c7a99bf4c"
+    },
+    "baseline\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 105336,
+      "sha256": "3b384bd2f5bd8abdbec5fc28ae0b58745cdd021c2236a693ee4708f0833c605e"
+    },
+    "baseline\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 295342,
+      "sha256": "6aa09e886afb91848e5deef33907f5db322a1eb576811f0f7696dfece42820f5"
+    },
+    "baseline-crease-regression.json": {
+      "bytes": 158,
+      "sha256": "13ab655f1eca91712ecc0ae6cf5acceac27989c4ccbdaa1b50f605e456f69a52"
+    },
+    "baseline-reproduction.json": {
+      "bytes": 493,
+      "sha256": "2b236bc815ff995c2cd33daa488c15d7ea3d9a44b79be951e761aa36b170f942"
+    },
+    "delivery-geometry\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 108322,
+      "sha256": "d0838bf1812710523d0517dd3fbf5eef1062ec648a6b5caf9f26cc876575b7c8"
+    },
+    "delivery-geometry\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 515179,
+      "sha256": "1ec0d52ca61acbee88ac218ba23fe64227c18456c52f51a9ed694c5aaa1b25d7"
+    },
+    "delivery-geometry\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 163546,
+      "sha256": "531d26b0e5d1b5f39c38ac7f45966a22d9bf463f1d45b7f555f042be997fca84"
+    },
+    "delivery-geometry\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 566097,
+      "sha256": "d243df74228a95562af13265d6f8c55105e0e516aade7fcef56a97be460ecf5b"
+    },
+    "delivery-tests.txt": {
+      "bytes": 113,
+      "sha256": "cdab72db59f14b1f193a40b6e86a3ed38a49aaa4e3232ece903a16a8b270e4c3"
+    },
+    "execution-audit.json": {
+      "bytes": 2764,
+      "sha256": "56a9e20db08b5da818ebbdd68e48b4557768c51a7dafe9b65366e2a41138f571"
+    },
+    "final-invariants.json": {
+      "bytes": 1218,
+      "sha256": "d1c656577ffb289894db9bb205c8d3d325240051d20b5992d6932116063e4301"
+    },
+    "finite-v1\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 108318,
+      "sha256": "3bd824f92293533b3397daf03989797571231c54f8538054b79a08c71d246500"
+    },
+    "finite-v1\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 461250,
+      "sha256": "230e60212792b8bce338e935710a7d456e650034c1ed3f45938cfa9b3e8e3945"
+    },
+    "finite-v1\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 152682,
+      "sha256": "e123a05a440a6b2a75adef889c14c8c8acaeee6ef47c649bc48cf37aaa122f11"
+    },
+    "finite-v1\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 499932,
+      "sha256": "da17413eee5fba7d915ac78525eb8296ed5caeed4dc4e8f71bdfb7b8bb46fb22"
+    },
+    "geometry_run_identity.json": {
+      "bytes": 8107,
+      "sha256": "d1816663de7c5db8b76a3ebdfa63ee998a5ae5a5d0040cc2aa0a07947cbdd623"
+    },
+    "local-source-check.json": {
+      "bytes": 1251,
+      "sha256": "539f0c52607310b2d29e3ef4742358e7be47adc90b8a60db8c099b900e3a2caa"
+    },
+    "mask-2-edges\\before.png": {
+      "bytes": 165758,
+      "sha256": "118f565d5ac792593976b3cc4757b519fadc8871e21d481491841be83502ccb4"
+    },
+    "mask-2-edges\\index.json": {
+      "bytes": 4159,
+      "sha256": "c2165cbbe80c62227cba587ac2bed9b2416501946abd34d5015e8d4517f4e087"
+    },
+    "mask-2-edges\\joint-0.png": {
+      "bytes": 164820,
+      "sha256": "143ec78b8565f8e2dc3d355030f486ada95ed2464861d47d291fc3d33dea1988"
+    },
+    "mask-2-edges\\outline-0.png": {
+      "bytes": 162684,
+      "sha256": "25e42cd16ef413d8ae5f598b8b251a5950479cf443836ab32ae3abdb792dfe9e"
+    },
+    "mask-2-edges\\outline-1.png": {
+      "bytes": 163349,
+      "sha256": "f0ffb4d9cf076ee9b74432fd2f1aa8b350e5a7168c754719cb51ad4682ec5812"
+    },
+    "mask-2-edges\\outline-2.png": {
+      "bytes": 163465,
+      "sha256": "a84593d01b127cf6c44f92dbfdae3ba4f38a9b9e3e267e2d41082b82426c0c30"
+    },
+    "mask-2-edges\\outline-3.png": {
+      "bytes": 163528,
+      "sha256": "5bec97be05da8707306bd3fa4c2fdf9e6bfb944122a60582f7a7d8f305ee3410"
+    },
+    "mask-2-edges\\outline-4.png": {
+      "bytes": 164303,
+      "sha256": "edd8649b9a24171a96fc62b20e53bc34aa78b34b23546290af59e0bdf9c1904b"
+    },
+    "mask-2-edges\\outline-5.png": {
+      "bytes": 163450,
+      "sha256": "33049f11b91204cd78813d1423cfc8aebfbe7d2b618dbed67298dffb0235bd39"
+    },
+    "mask-2-edges\\raw.png": {
+      "bytes": 162819,
+      "sha256": "bcc09ef5477c3d13366cf5679fcd459135ec8b570694fdb7d5775a2b6f23b0d9"
+    },
+    "mask-6-edges\\before.png": {
+      "bytes": 154041,
+      "sha256": "11a87fdf5b351835e7d7326879a499e242ede4f0d74992108a9d80fe7a968063"
+    },
+    "mask-6-edges\\index.json": {
+      "bytes": 5149,
+      "sha256": "fe22a71630bdad60af59e331eb7592d40057b88855ed0715ec96a059050e88d0"
+    },
+    "mask-6-edges\\joint-0.png": {
+      "bytes": 155909,
+      "sha256": "fe835d5a5030bc5efe2ac9d32cee79834d820e70f5e1e28f9e0a3e582f475158"
+    },
+    "mask-6-edges\\joint-1.png": {
+      "bytes": 156230,
+      "sha256": "e6c0b6e0984be393c6c0554eec1c0af8e499551bcca3abcc8c494b832aec93da"
+    },
+    "mask-6-edges\\joint-2.png": {
+      "bytes": 156905,
+      "sha256": "a547db23191f5be9e01718c1012f9ac5db9dd62f6877a22d8d557c171ca367dc"
+    },
+    "mask-6-edges\\outline-0.png": {
+      "bytes": 155303,
+      "sha256": "9e26add5755dadbb7f23065e6f2306a823be7bbcf2b58d8b1707ffac6098726c"
+    },
+    "mask-6-edges\\outline-1.png": {
+      "bytes": 155335,
+      "sha256": "ba3af1fc961ed77f6a10c4219e1a3a39f5d5e0c1b445563919a43018b4a7d6fe"
+    },
+    "mask-6-edges\\outline-2.png": {
+      "bytes": 155907,
+      "sha256": "13dad4b5dd060a9506d84572042a9b2eeaff781157ee7af008ba3970e434de06"
+    },
+    "mask-6-edges\\outline-3.png": {
+      "bytes": 155083,
+      "sha256": "bb1c37ba50380f31e2975c35fe2198ecd9af941213c559e720734d3eb9bbe19a"
+    },
+    "mask-6-edges\\outline-4.png": {
+      "bytes": 154742,
+      "sha256": "f17115fe527fe9c140aec98f8064e521d74b69036d7e6fbbafb8826e88365d54"
+    },
+    "mask-6-edges\\outline-5.png": {
+      "bytes": 155177,
+      "sha256": "9788f32e2b9c4360cdeed5dc42614cb2f191ea2ddea5bfd210deea402d593247"
+    },
+    "mask-6-edges\\raw.png": {
+      "bytes": 154768,
+      "sha256": "b152a8c72cbce1d4cedb723dccbf20493113ca561e37ee3e0c2da1375050d955"
+    },
+    "mesh_model_audit.json": {
+      "bytes": 136406,
+      "sha256": "18b0239f4c12b960de99c535bb5142ae389ce0f8801b1584022838af0a0d1350"
+    },
+    "pytest-baseline.txt": {
+      "bytes": 13869,
+      "sha256": "c852fdd884576c79af49803109aeda52aafef17566954ebd62b1e91ab4def5da"
+    },
+    "pytest-final.txt": {
+      "bytes": 13869,
+      "sha256": "98f9b0bcd3f14ccdf6762a46570cb53925976aac5b65a7c446430d42afc4e443"
+    },
+    "README.md": {
+      "bytes": 1593,
+      "sha256": "6fb9ee041c82bf0d21720a37efa9aef10ec94b612c422887ce32fe04497c126a"
+    },
+    "regression.csv": {
+      "bytes": 16459,
+      "sha256": "6c4881eccfd92c4923cd66c05c667b2fca3a573cb9ca59746c56004a81e862ff"
+    },
+    "regression.json": {
+      "bytes": 48171,
+      "sha256": "ea157863cbb4bacab7f2ba570a4b49e3c783fc403b1db764f9b47c5b598aca18"
+    },
+    "six_boundaries.csv": {
+      "bytes": 30433,
+      "sha256": "e99ef9a47e30d2b344fe5f8671f4fd48eace3e749486bb8ef57e81af03e37a5f"
+    },
+    "six_boundaries.json": {
+      "bytes": 73396,
+      "sha256": "9d0b3fbd75830cacad6ccda4184f00afb8816f4bd7c2ae8e21db015fb3181b6e"
+    },
+    "summary.json": {
+      "bytes": 1905,
+      "sha256": "e5d89e04148d5b679a43add6b9123ebecc349fa636f88df7430131bff2b8af09"
+    },
+    "viewer-check.json": {
+      "bytes": 374,
+      "sha256": "c4e0f9f88a32a6999b7641f346f2cc87faf343a277dcaf8c05f642f168128057"
+    }
+  },
+  "full_archive": {
+    "path": "outputs/physical-bounds-20261017/delivery-final.tar.gz",
+    "bytes": 201014675,
+    "sha256": "37807370cf960e00887e7e31f0893745febd41a69e5e0e8e3536ea02a7ba6722"
+  },
+  "inputs": "Reuse previously delivered notch-multiface-20261016 raw captures and frozen DINO/SAM arrays. No new capture or inference.",
+  "scope": "Exact JSON from actual production geometry replay; gzip is lossless. Full HTML/data/raw-array geometry artifacts are in the archive."
+}

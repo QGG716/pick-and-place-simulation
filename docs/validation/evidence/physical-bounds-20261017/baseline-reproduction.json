@@ -1,0 +1,22 @@
+[
+  {
+    "input": "frame32/module_0_upper/rgbd_cuboids.json",
+    "count": 15,
+    "exact_record_reproduction": true
+  },
+  {
+    "input": "frame32/module_1_lower/rgbd_cuboids.json",
+    "count": 30,
+    "exact_record_reproduction": true
+  },
+  {
+    "input": "stack_notch/module_0_upper/rgbd_cuboids.json",
+    "count": 7,
+    "exact_record_reproduction": true
+  },
+  {
+    "input": "stack_notch/module_1_lower/rgbd_cuboids.json",
+    "count": 22,
+    "exact_record_reproduction": true
+  }
+]

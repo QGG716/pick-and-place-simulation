@@ -20,6 +20,17 @@ def read(path):return json.loads(Path(path).read_text(encoding='utf-8'))
 def write(path,data):Path(path).write_text(json.dumps(data,indent=2,allow_nan=False),encoding='utf-8')
 
 
+def acceptance_config():
+    return read(ROOT/'configs/perception/metric_geometry_acceptance.json')
+
+
+def review_capture(plan, visibility):
+    """Use the bound input inventory, not the producer's former working directory."""
+    candidates=[Path(g['capture']) for g in plan['groups'] if g['scene']==visibility['scene']]
+    if len(candidates)!=1:raise ValueError('REVIEW_CAPTURE_SCENE_NOT_UNIQUE')
+    return candidates[0]
+
+
 def box_errors(corners,T,vertices):
     from scipy.optimize import linear_sum_assignment
     world=np.asarray(corners)@T[:3,:3].T+T[:3,3]
@@ -37,10 +48,11 @@ def box_errors(corners,T,vertices):
         sorted_dimension_error_m=abs(np.sort(dimensions)-np.sort(high-low)).tolist(),
         orientation_symmetry_error_degrees=float(min(angles)),corner_rms_m=float(np.sqrt(np.mean(distance[a,b]**2))),
         corner_max_m=float(distance[a,b].max()),symmetry='all 24 proper signed-axis permutations and one-to-one corner assignment')
-    result['accuracy_checks'] = dict(center=result['center_error_m']<=.015,
-        dimensions=max(result['sorted_dimension_error_m'])<=.02,
-        orientation=result['orientation_symmetry_error_degrees']<=1,
-        corners=result['corner_max_m']<=.015)
+    thresholds=acceptance_config()
+    result['accuracy_checks'] = dict(center=result['center_error_m']<=thresholds['gt_complete_center_m'],
+        dimensions=max(result['sorted_dimension_error_m'])<=thresholds['gt_complete_dimension_m'],
+        orientation=result['orientation_symmetry_error_degrees']<=thresholds['gt_complete_orientation_degrees'],
+        corners=result['corner_max_m']<=thresholds['gt_certified_corner_m'])
     result['external_accuracy_pass']=all(result['accuracy_checks'].values())
     result['threshold_source']='configs/perception/metric_geometry_acceptance.json; unchanged'
     return result
@@ -66,7 +78,9 @@ def evaluate_planes(record,visible,T):
     a,b=linear_sum_assignment(costs);used=set()
     for i,j in zip(a,b):
         item=pairs[i,j];item['corresponding_surface']=item['normal_error_degrees']<=10 and item['position_error_m']<=.006
-        item['accuracy_pass']=item['normal_error_degrees']<=1 and item['position_error_m']<=.005
+        thresholds=acceptance_config()
+        item['accuracy_pass']=(item['normal_error_degrees']<=thresholds['gt_normal_degrees']
+                               and item['position_error_m']<=thresholds['gt_plane_position_m'])
         if item['corresponding_surface']:used.add(j)
         metrics.append(item)
     return dict(expected_reliable_visible_faces=len(truth),extracted_reliable_planes=record.get('reliable_plane_count'),
@@ -75,12 +89,13 @@ def evaluate_planes(record,visible,T):
         policy='one-to-one plane assignment after one-to-one mask matching; 1 degree / 5 mm accuracy gates unchanged')
 
 
-def build(baseline,final,visibility,output):
+def build(baseline,final,visibility,output,before_geometry=None):
     from scipy.optimize import linear_sum_assignment
     baseline,final,output=map(Path,(baseline,final,output));output.mkdir(parents=True,exist_ok=False)
     plan=read(baseline/'frozen_plan.json');policy=plan['policy'];visibility=read(visibility)
     visible={(r['module'],r['simulation_object_id']):r for r in visibility['all_objects']}
-    capture=Path(visibility['capture']);mesh=read(capture/'rendered_surface_truth.json')
+    capture=review_capture(plan,visibility);mesh=read(capture/'rendered_surface_truth.json')
+    if mesh['sha256']!=visibility['mesh_truth_sha256']:raise ValueError('VISIBILITY_MESH_BINDING_MISMATCH')
     meshpath=capture/mesh['mesh_file']
     if hashlib.sha256(meshpath.read_bytes()).hexdigest()!=mesh['sha256']:raise ValueError('MESH_TRUTH_HASH_MISMATCH')
     with np.load(meshpath) as arrays:vertices={o['simulation_object_id']:arrays[o['array_prefix']+'_vertices_world_m'] for o in mesh['objects']}
@@ -95,7 +110,8 @@ def build(baseline,final,visibility,output):
                 shutil.copy2(source/filename,target/filename)
             shutil.copytree(source/'instances',target/'instances')
             review=read(source/'sam_review.json');records=read(geometry/'rgbd_cuboids.json')['instances']
-            old={r['mask_id']:r for r in read(source/'rgbd_cuboids.json')['instances']}
+            before_source=Path(before_geometry)/name/module if before_geometry is not None else source
+            old={r['mask_id']:r for r in read(before_source/'rgbd_cuboids.json')['instances']}
             response=read(source/'mode_b1_worker_response.json');metrics=read(response['metrics_reference']['path'])
             # Cargo mask path is declared in the worker metrics, checked by the
             # actual runtime before this read-only post-freeze review.
@@ -137,7 +153,7 @@ def build(baseline,final,visibility,output):
                     expected_visible_faces=evaluation['planes'].get('expected_reliable_visible_faces') if isinstance(evaluation['planes'],dict) else None)
                 table.append(row);evaluations.append(dict(**row,evaluation=evaluation))
                 instance_data.append(dict(**row,record=record,initial=initial,initial_cloud=initial_cloud,
-                    proposals=associated,evaluation=evaluation,before=before,
+                    proposals=associated,evaluation=evaluation,before=before,before_record=oldrecord,
                     gt_contours=next((g['contours'] for g in review.get('evaluation',{}).get('gt_objects',[]) if match and g['id']==match[0]),[])))
             matched_gt={m[0] for m in matching.values()}
             unmatched=[g for g in gtids if g not in matched_gt]
@@ -149,6 +165,7 @@ def build(baseline,final,visibility,output):
             write(target/'geometry_review.json',data)
             (target/'geometry_review_data.js').write_text('window.GEOMETRY='+json.dumps(data,allow_nan=False).replace('</','<\\/')+';',encoding='utf-8')
             shutil.copy2(ROOT/'tools/notch_geometry_review.html',target/'index.html')
+            shutil.copy2(ROOT/'tools/geometry_bounds_review.js',target/'geometry_bounds_review.js')
             pages.append(dict(name=name,module=module,href=f'{name}/{module}/index.html',masks=len(records),
                 proposals=len(review['proposals']),complete=sum(r['accepted'] for r in records),unmatched_gt=unmatched))
             pages[-1]['complete_mesh_accuracy_pass']=sum(r['complete_gt_accuracy_pass'] is True for r in instance_data)

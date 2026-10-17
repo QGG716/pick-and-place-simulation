@@ -1,0 +1,94 @@
+{
+  "baseline_commit": "50a9701e19a24ef602735a0e022edfae49eee4ca",
+  "baseline_source_sha256": "fb6048243d111dfab3776e7050fa320fd32f80c7f57bedbf42c57bd47f2a7923",
+  "frozen_sam_artifacts_unchanged": true,
+  "environment": {
+    "numpy": "1.26.4",
+    "scipy": "1.14.1",
+    "torch": "2.7.1+cu128",
+    "transformers": "4.53.2",
+    "opencv": "4.10.0"
+  },
+  "actual_geometry_runs": [
+    "baseline",
+    "finite-v1",
+    "final",
+    "qualified-final",
+    "delivery-geometry"
+  ],
+  "detector_sam": "NOT_RUN_REUSED_EXISTING",
+  "capture": "NOT_RUN_REUSED_EXISTING",
+  "browser": "NOT_RUN_NO_AVAILABLE_BROWSER",
+  "representatives": {
+    "capture": {
+      "schema_version": "rgbd_capture_metadata_v1",
+      "capture_id": "carton-assets-capture-design1c:module_1_lower:100",
+      "sensor_epoch": "carton-assets-capture-design1c",
+      "frame_sequence": 100,
+      "requested_time": 1.6666666666666667,
+      "capture_start": 1.6666666666666667,
+      "capture_center_time": 1.6666666666666667,
+      "capture_end": 1.6666666666666667,
+      "clock_domain": "ros_sim_time",
+      "rgb_frame_id": "module_1_lower_rgb_optical",
+      "depth_frame_id": "module_1_lower_depth_optical",
+      "calibration_identity": "e6318d1f0cd52b9c8a12ca8df80192da9f5a4cdf7602fcc7b5d0473cd5bf180b",
+      "illumination_state": "LIGHT_ON_NOMINAL",
+      "j1_state_identity": "a7d4c7ddf2222aba85abc6c9d9e85d9aa11b8017efc45fb9898adcea5bfcc622",
+      "q1_at_capture_rad": -1.5707963267948966,
+      "T_W_C_at_capture": [
+        [
+          0.0,
+          -0.3420201433256687,
+          0.9396926207859084,
+          -1.325
+        ],
+        [
+          -1.0,
+          -0.0,
+          0.0,
+          0.75
+        ],
+        [
+          0.0,
+          -0.9396926207859084,
+          -0.3420201433256687,
+          1.6293411964178086
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "sync_status": "SYNCHRONIZED"
+    },
+    "rgb_sha256": "c2dfed76508e8027da543a640212cc2117c394fb2ae7da43c68ed4f3607c6645",
+    "depth_sha256": "b9d2ae8355df0f559fed787447d34a647fe7cf45711689cc584fbb2ba01abbe2",
+    "cargo_instances_sha256": "2a99aa5d082086edd712f6348caef6142074e74199a6775d3f89457fd6e8a924",
+    "cargo_masks_sha256": "002f0371f2817c800f663c0573603f44e3bc8d8a4f36023ae84b06f19c801d03",
+    "mapping": [
+      {
+        "mask_id": 2,
+        "proposal_id": 2,
+        "bbox": [
+          1688.8348388671875,
+          181.3115234375,
+          2151.155517578125,
+          577.6785278320312
+        ]
+      },
+      {
+        "mask_id": 6,
+        "proposal_id": 7,
+        "bbox": [
+          1496.2733154296875,
+          769.1425170898438,
+          1803.2071533203125,
+          1202.1845703125
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "instances": 74,
+  "draw_paths": 1216,
+  "scope": "JS with DOM/canvas stubs; not real browser rendering or interaction",
+  "html_resources_verified": 9,
+  "browser": "NOT_RUN: no browser providers; iab create returned unavailable",
+  "static_visual_review": [
+    "mask-6-edges/before.png",
+    "mask-2-edges/joint-0.png",
+    "mask-6-edges/joint-0.png"
+  ]
+}
