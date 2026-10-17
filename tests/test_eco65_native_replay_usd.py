@@ -214,3 +214,20 @@ def test_real_usd_preserves_carton_ids_and_attachment_release_poses(usd_scene):
                 expected = initial_target
             np.testing.assert_allclose(_world(stage, path), W @ expected, atol=1e-12, rtol=0)
     assert np.linalg.norm(release[:3, 3] - initial_target[:3, 3]) > .05
+
+
+def test_compound_j1_collision_children_receive_fk_once(usd_scene):
+    stage, snapshot, robot, _, _ = usd_scene
+    stage.RemovePrim(PREFIX+'/Robot/link_1/Collision')
+    rows = [dict(id='robot_link_1__convex_000'), dict(id='robot_link_1__convex_001')]
+    snapshot['scene']['robot_collision_components'] = {'link_1': rows}
+    for row in rows:
+        _mesh(stage, PREFIX+'/Robot/link_1/Collision_'+row['id'], np.eye(4))
+    for q in [Q_A, Q_B]:
+        state = dict(frames=robot.named_link_frames(q),
+            cartons={box['id']: _matrix(box['pose']) for box in snapshot['scene']['boxes']})
+        result = apply_display_state(stage, snapshot, state)
+        assert result['max_matrix_error'] < 1e-12
+        for row in rows:
+            np.testing.assert_allclose(_world(stage, PREFIX+'/Robot/link_1/Collision_'+row['id']),
+                np.asarray(snapshot['scene']['T_W_D'])@state['frames']['link_1'], atol=1e-12, rtol=0)

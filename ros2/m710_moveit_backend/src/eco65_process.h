@@ -23,10 +23,11 @@ class Eco65Process {
   std::vector<Solid> bands;
   std::vector<Pair> mount_pairs;
   Solid base_solid;
-  static Solid solid(const moveit::core::RobotState& state,const std::string& name) {
+  static Solid solid(const moveit::core::RobotState& state,const std::string& name,size_t index=0,bool compound=false) {
     const auto* link=state.getRobotModel()->getLinkModel(name);
-    if(!link || link->getShapes().size()!=1) throw std::runtime_error("ECO65_SINGLE_CONVEX_SOLID_REQUIRED:"+name);
-    auto shape=link->getShapes()[0];std::shared_ptr<fcl::CollisionGeometryd> result;
+    if(!link || index>=link->getShapes().size() || (!compound && link->getShapes().size()!=1))
+      throw std::runtime_error("ECO65_SINGLE_CONVEX_SOLID_REQUIRED:"+name);
+    auto shape=link->getShapes()[index];std::shared_ptr<fcl::CollisionGeometryd> result;
     if(shape->type==shapes::MESH) {
       const auto* m=static_cast<const shapes::Mesh*>(shape.get());
       auto points=std::make_shared<std::vector<fcl::Vector3d>>();
@@ -39,7 +40,7 @@ class Eco65Process {
     } else if(shape->type==shapes::CYLINDER) {
       auto* c=static_cast<const shapes::Cylinder*>(shape.get());result=std::make_shared<fcl::Cylinderd>(c->radius,c->length);
     } else throw std::runtime_error("ECO65_CONTACT_SOLID_UNSUPPORTED");
-    return {link,0,result};
+    return {link,index,result};
   }
   static double distance(const Solid& a,const moveit::core::RobotState& state,const ProcessBox& b) {
     fcl::CollisionObjectd oa(a.shape,state.getCollisionBodyTransform(a.link,a.index));
@@ -196,17 +197,32 @@ public:
     }
     if(spec_.contains("fixed_attachment_interfaces")) {
       const auto& interfaces=spec_.at("fixed_attachment_interfaces");
-      const std::set<std::string> expected={"eco65_mast_mast_part_001","eco65_mast_mounting_seat"};
+      auto expected=[](const std::string& name) {
+        for(const std::string base:{"eco65_mast_mast_part_001","eco65_mast_mounting_seat"}) {
+          if(name==base)return true;
+          const auto prefix=base+"__convex_";
+          if(name.size()==prefix.size()+3 && name.compare(0,prefix.size(),prefix)==0 &&
+             name.find_first_not_of("0123456789",prefix.size())==std::string::npos)return true;
+        }
+        return false;
+      };
       std::set<std::string> seen;
-      if(!contracted || !interfaces.is_array() || interfaces.size()>expected.size())
+      std::map<std::string,std::vector<Solid>> parent_solids;
+      if(!contracted || !interfaces.is_array())
         throw std::runtime_error("ECO65_FIXED_ATTACHMENT_INTERFACES_INVALID");
       for(const auto& mount:interfaces) {
         const std::string robot=mount.at("parent_link"),attachment=mount.at("attachment_id");
-        if(robot!="link_1" || !expected.count(attachment) || !seen.insert(attachment).second ||
+        if(robot!="link_1" || !expected(attachment) || !seen.insert(attachment).second ||
            !mount.contains("source") || mount.at("source").empty() ||
            mount.at("maximum_penetration_m")!=.0004 || owned.count(attachment) || bands_.count(attachment))
           throw std::runtime_error("ECO65_FIXED_ATTACHMENT_INTERFACE_UNBOUND");
-        mount_pairs.push_back({solid(state,robot),solid(state,attachment)});
+        const auto* parent=state.getRobotModel()->getLinkModel(robot);
+        if(!parent || parent->getShapes().empty())throw std::runtime_error("ECO65_FIXED_PARENT_GEOMETRY_MISSING");
+        const auto child=solid(state,attachment);
+        auto& parents=parent_solids[robot];
+        if(parents.empty())for(size_t i=0;i<parent->getShapes().size();++i)
+          parents.push_back(solid(state,robot,i,true));
+        for(const auto& piece:parents)mount_pairs.push_back({piece,child});
         // Restore the finite fixed-contact predicate below instead of an
         // unconditional SRDF exemption or a wider request-level ACM entry.
         acm.setEntry(robot,attachment,true);
@@ -237,7 +253,14 @@ public:
         {"signed_distance_m",d},{"threshold_m",threshold},{"stage",stage_}};return false;}return true;
     };
     if(!accept(nativeFrames().base_link,"robot_mount_plate",distance(base_solid,state,world_.at("robot_mount_plate")),-.0004))return false;
-    for(const auto& pair:mount_pairs)if(!accept(pair.a.link->getName(),pair.b.link->getName(),distance(pair,state),-.0004))return false;
+    for(const auto& pair:mount_pairs) {
+      const bool valid=accept(pair.a.link->getName(),pair.b.link->getName(),distance(pair,state),-.0004);
+      if(record_distances_) {
+        distance_samples.back()["robot_shape_index"]=pair.a.index;
+        distance_samples.back()["attachment_shape_index"]=pair.b.index;
+      }
+      if(!valid) {failure["robot_shape_index"]=pair.a.index;failure["attachment_shape_index"]=pair.b.index;return false;}
+    }
     for(const auto& band:bands)if(!accept(band.link->getName(),target_id_,distance(band,state,target),fit?-.0004:.0024))return false;
     if(attached_)for(const auto& id:supports_) {
       const auto& support=world_.at(id);

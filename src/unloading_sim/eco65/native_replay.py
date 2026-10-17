@@ -55,7 +55,9 @@ def apply_display_state(stage, snapshot, state):
         # Writing FK on those children again doubles the installation transform
         # and leaves J1-mounted accessories behind when the robot moves.
         put('Robot/'+name, T)
-        for role in ['Visual', 'Collision']:
+        components = snapshot['scene'].get('robot_collision_components', {}).get(name)
+        roles = ['Visual']+(['Collision_'+row['id'] for row in components] if components else ['Collision'])
+        for role in roles:
             path = 'Robot/'+name+'/'+role
             prim = stage.GetPrimAtPath(prefix+path)
             if not prim: raise ValueError('REPLAY_PRIM_MISSING:'+path)

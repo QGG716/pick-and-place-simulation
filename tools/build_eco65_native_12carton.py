@@ -35,7 +35,17 @@ def _convex(mesh):
         vertices = np.vstack([vertices-normal*thickness/2, vertices+normal*thickness/2])
     elif rank < 2:
         raise ValueError('SOURCE_COMPONENT_HAS_NO_SURFACE')
-    hull = trimesh.convex.convex_hull(vertices)
+    # Keep Qhull's closed topology. Trimesh's default hull postprocessing
+    # drops very small seat facets and can leave this real mesh open.
+    from scipy.spatial import ConvexHull
+    vertices = np.unique(vertices, axis=0)
+    boundary = ConvexHull(vertices)
+    faces = boundary.simplices.copy(); triangles = vertices[faces]
+    normals = np.cross(triangles[:, 1]-triangles[:, 0], triangles[:, 2]-triangles[:, 0])
+    reverse = np.einsum('ij,ij->i', normals, boundary.equations[:, :3]) < 0
+    faces[reverse] = faces[reverse][:, ::-1]
+    hull = trimesh.Trimesh(vertices, faces, process=False)
+    hull.remove_unreferenced_vertices()
     if not hull.is_watertight or not hull.is_convex:
         raise ValueError('INVALID_DERIVED_CONVEX_COMPONENT')
     return hull, thickness
@@ -93,6 +103,53 @@ def prepare_conveyors(scene):
     return objects, records, surfaces
 
 
+def prepare_j1_collision(output):
+    """Decompose the unchanged official J1 surface for its conformal seat."""
+    import coacd
+    import trimesh
+    import xml.etree.ElementTree as ET
+    from unloading_sim.eco65.asset_inventory import load_robot_config
+    config = load_robot_config()
+    visual = ET.parse(ROOT/config['urdf']).find("link[@name='link_1']/visual")
+    uri = visual.find('geometry/mesh').get('filename')
+    path = ROOT/config['package_root']/uri.removeprefix('package://ECO65-B/')
+    original = trimesh.load(path, force='mesh', process=True)
+    folder = Path(output); folder.mkdir(parents=True, exist_ok=False)
+    rows, assets = [], {}
+    shells = original.split(only_watertight=False)
+    outer = [m for m in shells if m.volume > 0]
+    cavities = [m for m in shells if m.volume <= 0]
+    if any(not m.is_watertight for m in shells) or not outer:
+        raise ValueError('OFFICIAL_J1_CLOSED_SURFACE_REQUIRED')
+    # Negative-wound, completely enclosed shells describe voids, not separate
+    # solids. Filling only those enclosed voids is conservative; decomposing
+    # them as solids is invalid and can make CoACD subdivide indefinitely.
+    for cavity in cavities:
+        samples = np.vstack([cavity.vertices, cavity.triangles_center])
+        if not np.all(np.logical_or.reduce([m.contains(samples) for m in outer])):
+            raise ValueError('J1_NEGATIVE_SHELL_NOT_ENCLOSED')
+    for component in outer:
+        pieces = ([(component.vertices, component.faces)] if component.is_convex else
+            coacd.run_coacd(coacd.Mesh(component.vertices, component.faces), threshold=.01,
+                preprocess_mode='off', resolution=2000, mcts_iterations=100,
+                merge=True, decimate=False, seed=6518))
+        for vertices, faces in pieces:
+            hull, _ = _convex(trimesh.Trimesh(vertices, faces, process=False))
+            name = f'robot_link_1__convex_{len(rows):03d}'; dest = folder/(name+'.obj')
+            hull.export(dest, digits=17)
+            restored = trimesh.load(dest, force='mesh', process=False)
+            if not restored.is_watertight or not restored.is_convex:
+                raise ValueError('J1_CONVEX_ROUNDTRIP_INVALID')
+            relative = dest.relative_to(ROOT).as_posix(); sha = file_hash(dest)
+            assets[relative] = sha
+            rows.append(dict(id=name, mesh=relative, mesh_sha256=sha,
+                source=path.relative_to(ROOT).as_posix(), source_sha256=file_hash(path),
+                representation='official_outer_shell_CoACD_enclosed_voids_conservatively_filled',
+                enclosed_void_count=len(cavities)))
+    if not rows: raise ValueError('OFFICIAL_J1_DECOMPOSITION_EMPTY')
+    return rows, assets
+
+
 def prepare_attachments(scene, camera, output):
     """Retain source CAD, J1 mounting seat and optional current camera installation."""
     import trimesh
@@ -106,7 +163,12 @@ def prepare_attachments(scene, camera, output):
         ident = re.sub(r'[^A-Za-z0-9_]', '_', ident)
         if ident in {r['id'] for r in rows}: raise ValueError('PERMANENT_ATTACHMENT_ID_DUPLICATE')
         hull, thickness = _convex(mesh)
-        path = folder/(ident+'.obj'); hull.export(path)
+        # Default OBJ precision can turn nearly coplanar hull facets concave
+        # after reload. Preserve the computed boundary and validate its bytes.
+        path = folder/(ident+'.obj'); hull.export(path, digits=17)
+        restored = trimesh.load(path, force='mesh', process=False)
+        if not restored.is_watertight or not restored.is_convex:
+            raise ValueError('DERIVED_ATTACHMENT_ROUNDTRIP_INVALID:'+ident)
         relative = path.relative_to(ROOT).as_posix(); sha = file_hash(path)
         assets[relative] = sha
         row = dict(id=ident, parent_link='link_1', T_parent_local=check_transform(T).tolist(),
@@ -115,21 +177,58 @@ def prepare_attachments(scene, camera, output):
         records.append(dict(id=ident, source=deepcopy(source), source_triangles=len(mesh.faces),
             planar_envelope_thickness_m=thickness, representation='source_solid_conservative_convex_hull'))
         return ident
+    def interface(ident):
+        interfaces.append(dict(parent_link='link_1', attachment_id=ident,
+            maximum_penetration_m=.0004, source=deepcopy(mast['mount_interface'])))
     for part in mast['parts']:
         if part['id'] in replaced: continue
-        path = resolve_asset(ROOT, part['collision'])
-        if file_hash(path) != part['collision_sha256']: raise ValueError('SOURCE_MAST_MESH_CHANGED')
+        # The connected silver bracket is concave. Decompose its original
+        # surface, never its already-filled single-hull collision proxy.
+        kind = 'visual' if part['id'] == 'mast_part_001' else 'collision'
+        path = resolve_asset(ROOT, part[kind])
+        if file_hash(path) != part[kind+'_sha256']: raise ValueError('SOURCE_MAST_MESH_CHANGED')
+        original = trimesh.load(path, force='mesh', process=True)
+        if part['id'] == 'mast_part_001' and not original.is_convex:
+            import coacd
+            pieces = coacd.run_coacd(coacd.Mesh(original.vertices, original.faces),
+                threshold=.01, preprocess_mode='off', resolution=2000,
+                mcts_iterations=100, merge=True, decimate=False, seed=6518)
+            if not pieces: raise ValueError('MOUNT_DECOMPOSITION_EMPTY')
+            for index, (vertices, faces) in enumerate(pieces):
+                ident = add(f'eco65_mast_mast_part_001__convex_{index:03d}',
+                    trimesh.Trimesh(vertices, faces, process=True), M, 'permanent_mast',
+                    dict(part_id=part['id'], mesh=part[kind], sha256=part[kind+'_sha256'],
+                         decomposition='CoACD_no_preprocessing_no_decimation', component=index))
+                interface(ident)
+            continue
         ident = add('eco65_mast_'+part['id'], trimesh.load(path, force='mesh', process=False), M,
-            'permanent_mast', dict(part_id=part['id'], mesh=part['collision'], sha256=part['collision_sha256']))
+            'permanent_mast', dict(part_id=part['id'], mesh=part[kind], sha256=part[kind+'_sha256']))
         if part['id'] == 'mast_part_001':
-            interfaces.append(dict(parent_link='link_1', attachment_id=ident,
-                maximum_penetration_m=.0004, source=deepcopy(mast['mount_interface'])))
+            interface(ident)
     seat = mast['mount_interface']['seat']; path = resolve_asset(ROOT, seat['mesh'])
     if file_hash(path) != seat['sha256']: raise ValueError('SOURCE_MOUNTING_SEAT_CHANGED')
-    ident = add('eco65_mast_mounting_seat', trimesh.load(path, force='mesh', process=False), np.eye(4),
-        'permanent_mounting_seat', dict(mesh=seat['mesh'], sha256=seat['sha256']))
-    interfaces.append(dict(parent_link='link_1', attachment_id=ident,
-        maximum_penetration_m=.0004, source=deepcopy(mast['mount_interface'])))
+    seat_mesh = trimesh.load(path, force='mesh', process=False)
+    if seat_mesh.is_convex:
+        interface(add('eco65_mast_mounting_seat', seat_mesh, np.eye(4),
+            'permanent_mounting_seat', dict(mesh=seat['mesh'], sha256=seat['sha256'])))
+    else:
+        # The source is a collection of closed conformal cells. Keep every
+        # cell; spatially local conservative hulls avoid filling the full seat
+        # cavity. The unchanged 0.4 mm FCL gate checks every resulting piece.
+        cells = seat_mesh.split(only_watertight=False); groups = {}
+        for index, cell in enumerate(cells):
+            if not cell.is_watertight or not cell.is_convex:
+                raise ValueError('SOURCE_SEAT_CLOSED_CONVEX_CELL_REQUIRED')
+            key = tuple(np.floor(cell.vertices.mean(0)[:2]/.005).astype(int))
+            groups.setdefault(key, []).append(index)
+        for index, key in enumerate(sorted(groups)):
+            indices = groups[key]
+            joined = trimesh.util.concatenate([cells[i] for i in indices])
+            ident = add(f'eco65_mast_mounting_seat__convex_{index:03d}', joined, np.eye(4),
+                'permanent_mounting_seat', dict(mesh=seat['mesh'], sha256=seat['sha256'],
+                    decomposition='source_cells_local_conservative_hulls', cell_indices=indices,
+                    source_cell_count=len(cells), grouping_pitch_m=.005))
+            interface(ident)
     if camera:
         for name in ('source', 'cad_manifest'):
             path = resolve_asset(ROOT, camera[name]); expected = camera[name+'_sha256']
@@ -185,6 +284,14 @@ def build_from_static(snapshot_path, home_path, output, *, camera_configuration=
     receiver['box_pose_D'] = transform([*((bounds[0, :2]+bounds[1, :2])/2), bounds[1, 2]+size[2]/2]).tolist()
     scene = adapt_static_scene(source, native_world, attachments, receiver, q, config=config,
         config_sha256=hashes, permanent_camera=camera, fixed_attachment_interfaces=interfaces)
+    j1, j1_assets = prepare_j1_collision(out/'robot_collision')
+    scene['robot_collision_components'] = {'link_1': j1}
+    assets.update(j1_assets)
+    from eco65_mount_convex import refine_seat
+    refined_assets, refined_records, refinement = refine_seat(scene, out/'refined_seat')
+    assets.update(refined_assets)
+    current_ids = {r['id'] for r in scene['moving_attachments'] if r['role'] != 'permanent_mounting_seat'}
+    attachment_records = [r for r in attachment_records if r['id'] in current_ids]+refined_records
     scene['receiving_surfaces'] = surfaces
     scene['scene_fingerprint'] = digest({k: v for k, v in scene.items() if k != 'scene_fingerprint'})
     model = build_native_model(scene, out/'model', native_asset_root=native_asset_root)
@@ -201,8 +308,8 @@ def build_from_static(snapshot_path, home_path, output, *, camera_configuration=
         dict(source='SOURCE_STATIC_DISPLAY_POSE_REQUIRES_CURRENT_NATIVE_ACCEPTANCE',
              source_snapshot_fingerprint=source['fingerprint'], source_home_sha256=file_hash(home_path)))
     save_json(out/'home_candidate.json', candidate)
-    save_json(out/'scene_geometry.json', dict(conveyor_components=conveyor_records,
-        permanent_attachments=attachment_records, interfaces=interfaces, receiving_surfaces=surfaces,
+    save_json(out/'scene_geometry.json', dict(conveyor_components=conveyor_records, seat_refinement=refinement,
+        permanent_attachments=attachment_records, interfaces=scene['fixed_attachment_interfaces'], receiving_surfaces=surfaces,
         source_snapshot_path=snapshot_path.relative_to(ROOT).as_posix(), source_snapshot_sha256=file_hash(snapshot_path),
         target=scene['box'], all_carton_ids=[b['id'] for b in scene['boxes']],
         calibration_fixtures_included=False, permanent_camera_mode='CURRENT_SOURCE_CONFIGURATION' if camera else 'ORIGINAL_MAST_ASSEMBLY'))
@@ -210,7 +317,7 @@ def build_from_static(snapshot_path, home_path, output, *, camera_configuration=
         snapshot=str(out/'snapshot.json'), native_model_prepared=str(out/'native_model_prepared.json'),
         home_candidate=str(out/'home_candidate.json'),
         target_id=scene['target_box_id'], cartons=12, conveyor_components=len(native_world),
-        permanent_attachment_count=len(attachments), native_initialization='NOT_RUN',
+        permanent_attachment_count=len(scene['moving_attachments']), native_initialization='NOT_RUN',
         planning='NOT_RUN', independent_review='NOT_RUN', replay='NOT_RUN', dynamics='NOT_EVALUATED',
         wall_s=perf_counter()-started)
     save_json(out/'build_report.json', report)

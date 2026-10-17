@@ -7,6 +7,8 @@ from __future__ import annotations
 from copy import deepcopy
 from time import perf_counter
 import uuid
+import json
+from pathlib import Path
 import numpy as np
 
 from .model import robot_for, transform, check_transform
@@ -53,7 +55,8 @@ def extraction_goal(scene, target_pose, size, tcp):
 
 
 class NativeTask:
-    def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None):
+    def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None,
+                 progress_path=None):
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
@@ -69,6 +72,8 @@ class NativeTask:
         self.robot = robot_for(snapshot['tool'], self.scene)
         self.home_candidate = None if home_candidate is None else deepcopy(verify_candidate(home_candidate, snapshot['tool'], self.scene))
         self.home_checks = []; self.native_calls = []
+        self.progress_path = Path(progress_path) if progress_path else None
+        if self.progress_path: self.progress_path.parent.mkdir(parents=True, exist_ok=True)
         self.extraction_evidence = None
         self.grasp_geometry = None; self.grasp_failures = []; self.grasp_home_rejections = []
         self.grasp_search = dict(status='NOT_STARTED', candidate_count=0,
@@ -100,12 +105,25 @@ class NativeTask:
         started = perf_counter()
         record = dict(request=request)
         self.native_calls.append(record)
+        def progress(event, **extra):
+            if self.progress_path:
+                with self.progress_path.open('a', encoding='utf-8') as stream:
+                    stream.write(json.dumps(dict(event=event, call_index=len(self.native_calls)-1,
+                        op=request['op'], stage=request.get('stage'), stage_id=request.get('stage_id'),
+                        **extra), allow_nan=False)+'\n')
+        progress('STARTED')
         try:
-            result = self.native.request(request, timeout=min(remaining+5, self.stage_seconds+30), cancelled=self.cancelled)
+            # Native solve time excludes scene import and the final dense
+            # FCL path audit. The RPC watchdog must cover those operations.
+            result = self.native.request(request, timeout=min(remaining+30, max(180., 4*self.stage_seconds)), cancelled=self.cancelled)
             record['result'] = result
+            progress('COMPLETED', status=result.get('status'), wall_s=perf_counter()-started,
+                process_failure=(result.get('process') or {}).get('last_failure'),
+                clearance_failures=(result.get('clearance') or {}).get('rejected_examples'))
             return result
         except Exception as error:
             record['error'] = str(error)
+            progress('FAILED', error=str(error), wall_s=perf_counter()-started)
             raise
         finally: record['wall_s'] = perf_counter()-started
 
@@ -235,6 +253,11 @@ class NativeTask:
         row['joint_limits'] = 'PASS' if in_limits else 'FAIL'
         if in_limits:
             row['native_state'] = self.call(self.request(q, 'pregrasp'))
+            failure = (row['native_state'].get('process') or {}).get('last_failure') or {}
+            fixed = {r['attachment_id'] for r in self.scene.get('fixed_attachment_interfaces', [])}
+            if 'link_1' in failure.get('pair', []) and fixed.intersection(failure.get('pair', [])):
+                row['status'] = 'REJECTED'
+                raise ValueError('FIXED_J1_MOUNT_REPRESENTATION_REJECTED:'+str(failure))
         if not in_limits or row['native_state']['status'] != 'SUCCESS':
             row['status'] = 'REJECTED'
             q = next(self.ik(pre, q if in_limits else np.mean(self.robot.joint_limits, axis=1), 'pregrasp', 64), None)

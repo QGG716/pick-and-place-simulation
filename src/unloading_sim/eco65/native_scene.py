@@ -27,14 +27,15 @@ def world_objects(scene):
 
 
 def validate_fixed_interfaces(scene):
-    """Only the two source-bound J1 mount pairs may use contact tolerance."""
+    """Only components of the two source-bound J1 interfaces use contact tolerance."""
     rows = scene.get('fixed_attachment_interfaces', [])
-    expected = {'eco65_mast_mast_part_001', 'eco65_mast_mounting_seat'}
+    import re
+    expected = re.compile(r'eco65_mast_(?:mast_part_001|mounting_seat)(?:__convex_[0-9]{3})?')
     permanent = {row['id'] for row in scene.get('moving_attachments', [])}
     seen = set()
     for row in rows:
         name = row['attachment_id']; source = row.get('source')
-        if (row['parent_link'] != 'link_1' or name not in expected or name not in permanent
+        if (row['parent_link'] != 'link_1' or not expected.fullmatch(name) or name not in permanent
                 or name in seen or not source or not source.get('source') or not source.get('seat')
                 or source != scene.get('mast', {}).get('mount_interface')
                 or row.get('maximum_penetration_m') != .0004):

@@ -67,7 +67,9 @@ class NativeSceneWorld(UnloadingTaskWorld):
         for row in validate_fixed_interfaces(scene):
             if row['attachment_id'] not in self.geoms:
                 raise ValueError('NATIVE_REVIEW_FIXED_INTERFACE_UNBOUND')
-            interfaces.add(frozenset(['robot_'+row['parent_link'], row['attachment_id']]))
+            for entry in self.entries:
+                if entry['kind'] == 'robot' and entry['owner'] == row['parent_link']:
+                    interfaces.add(frozenset([entry['name'], row['attachment_id']]))
         self._fixed_attachment_pairs = interfaces
         # The parent validates every named mount pair with mj_geomDistance
         # against -contact_tolerance_m. Keep these pairs in the query list.
@@ -80,7 +82,7 @@ class NativeSceneWorld(UnloadingTaskWorld):
                 if a['kind'] == b['kind'] == 'environment': continue
                 if a['kind'] in tool_kinds and b['kind'] in tool_kinds: continue
                 if (a['kind'] == b['kind'] == 'robot'
-                        and frozenset([a['owner'], b['owner']]) in self.adjacent): continue
+                        and (a['owner'] == b['owner'] or frozenset([a['owner'], b['owner']]) in self.adjacent)): continue
                 if (a['kind'] == b['kind'] == 'permanent_attachment'
                         and a['parent_frame'] == b['parent_frame']): continue
                 self.pairs.append((a, b))

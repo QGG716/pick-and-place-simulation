@@ -129,7 +129,18 @@ class World:
             xyz=[float(x) for x in org.attrib.get("xyz","0 0 0").split()];rpy=[float(x) for x in org.attrib.get("rpy","0 0 0").split()]
             T=transform(xyz,Rotation.from_euler("xyz",rpy).as_matrix())
             file=URDF.parents[1]/geo.find("geometry/mesh").attrib["filename"].split("package://ECO65-B/")[1]
-            mesh_geom(body(name),"robot_"+name,file,[.80,.83,.86,1],"robot",name,T)
+            b = body(name)
+            components = scene.get('robot_collision_components', {}).get(name)
+            if components:
+                from .asset_paths import resolve_asset
+                for row in components:
+                    prepared = resolve_asset(ROOT, row['mesh'])
+                    if (hashlib.sha256(Path(file).read_bytes()).hexdigest() != row['source_sha256'] or
+                            hashlib.sha256(prepared.read_bytes()).hexdigest() != row['mesh_sha256']):
+                        raise ValueError('INDEPENDENT_ROBOT_COMPONENT_IDENTITY_CHANGED')
+                    mesh_geom(b,row['id'],prepared,[.80,.83,.86,1],"robot",name,T)
+            else:
+                mesh_geom(b,"robot_"+name,file,[.80,.83,.86,1],"robot",name,T)
         for j in self.robot.joints:self.adjacent.add(frozenset([j.parent,j.child]))
         for p in tool["visual_parts"]:
             b=body("tool_"+p["id"])
@@ -158,7 +169,7 @@ class World:
                 ta=a["kind"] in ("adapter","conservative_rigid","terminal_contact_band")
                 tb=b["kind"] in ("adapter","conservative_rigid","terminal_contact_band")
                 if ta and tb:continue
-                if a["kind"]==b["kind"]=="robot" and frozenset([a["owner"],b["owner"]]) in self.adjacent:continue
+                if a["kind"]==b["kind"]=="robot" and (a['owner']==b['owner'] or frozenset([a["owner"],b["owner"]]) in self.adjacent):continue
                 self.pairs.append((a,b))
         self.pair_a=np.array([a["gid"] for a,b in self.pairs]);self.pair_b=np.array([b["gid"] for a,b in self.pairs])
         self.radii=self.model.geom_rbound[self.pair_a]+self.model.geom_rbound[self.pair_b]

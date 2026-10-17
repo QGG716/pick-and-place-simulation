@@ -60,6 +60,7 @@ def main():
                 try:
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
                                       stage_seconds=a.stage_seconds, attempt=attempt,
+                                      progress_path=attempt_out/'native_progress.jsonl',
                                       home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
                     review = review_plan(plan, snapshot); save_json(attempt_out/'review.json', review)

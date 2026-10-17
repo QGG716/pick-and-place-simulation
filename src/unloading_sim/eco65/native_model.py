@@ -98,11 +98,31 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         if not uri.startswith('package://ECO65-B/'): raise ValueError('OFFICIAL_PACKAGE_MISMATCH')
         source = root/c['package_root']/uri.removeprefix('package://ECO65-B/')
         for old in list(link.findall('collision')): link.remove(old)
-        collision = ET.SubElement(link, 'collision')
         origin = visual.find('origin')
-        if origin is not None: ET.SubElement(collision, 'origin', **origin.attrib)
-        ET.SubElement(ET.SubElement(collision, 'geometry'), 'mesh',
-                      filename=convex(source, 'robot_'+link.get('name')))
+        components = scene.get('robot_collision_components', {}).get(link.get('name'))
+        if components:
+            original_vertex_count = len(trimesh.load(source, force='mesh', process=True).vertices)
+            for row in components:
+                prepared = resolve_asset(root, row['mesh'])
+                if (row['source'] != source.relative_to(root).as_posix() or
+                        hashlib.sha256(source.read_bytes()).hexdigest() != row['source_sha256'] or
+                        hashlib.sha256(prepared.read_bytes()).hexdigest() != row['mesh_sha256']):
+                    raise ValueError('OFFICIAL_COLLISION_DECOMPOSITION_SOURCE_CHANGED')
+                hull = trimesh.load(prepared, force='mesh', process=False)
+                if not hull.is_convex or not hull.is_watertight:
+                    raise ValueError('OFFICIAL_COLLISION_COMPONENT_NOT_CONVEX')
+                collision = ET.SubElement(link, 'collision')
+                if origin is not None: ET.SubElement(collision, 'origin', **origin.attrib)
+                ET.SubElement(ET.SubElement(collision, 'geometry'), 'mesh',
+                    filename=resource_uri(root, row['mesh'], native_asset_root))
+                bindings.append(dict(id=row['id'], source=row['source'], source_sha256=row['source_sha256'],
+                    convex_path=row['mesh'], convex_sha256=row['mesh_sha256'], representation=row['representation'],
+                    source_vertices=original_vertex_count, hull_vertices=len(hull.vertices)))
+        else:
+            collision = ET.SubElement(link, 'collision')
+            if origin is not None: ET.SubElement(collision, 'origin', **origin.attrib)
+            ET.SubElement(ET.SubElement(collision, 'geometry'), 'mesh',
+                          filename=convex(source, 'robot_'+link.get('name')))
         mesh.set('filename', resource_uri(root, source.relative_to(root).as_posix(), native_asset_root))
     names, bands = [], []
     for row in tool['collisions']:

@@ -123,7 +123,13 @@ def export(snapshot_path, home_path, config_path, out):
             assert np.allclose(np.fromstring(origin.get('rpy','0 0 0'),sep=' '),0)
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Robot/'+name).GetPrim(),frames[name])
         mesh('/Workstation/Robot/'+name+'/Visual',m,[.8,.83,.86],np.eye(4),mat=mats['robot_dark' if name=='base_link' else 'robot'])
-        mesh('/Workstation/Robot/'+name+'/Collision',collision_mesh('robot_'+name,lambda:m.convex_hull),[.2,.7,.8],np.eye(4),True,world_T=frames[name])
+        components = scene.get('robot_collision_components', {}).get(name)
+        if native and components:
+            for row in components:
+                mesh('/Workstation/Robot/'+name+'/Collision_'+row['id'],
+                    collision_mesh(row['id'],lambda:m.convex_hull),[.2,.7,.8],np.eye(4),True,world_T=frames[name])
+        else:
+            mesh('/Workstation/Robot/'+name+'/Collision',collision_mesh('robot_'+name,lambda:m.convex_hull),[.2,.7,.8],np.eye(4),True,world_T=frames[name])
     flange = frames['link_6']; Ttool = flange @ np.array(tool['T_flange_tool_cad'])
     for p in tool['visual_parts']:
         rgb = p['rgb'] or [.6,.6,.6]
