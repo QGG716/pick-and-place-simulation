@@ -55,9 +55,16 @@ def export(snapshot_path, home_path, config_path, out):
         if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != digest:
             raise ValueError('Snapshot asset changed: ' + relative)
     scene, tool = snapshot['scene'], snapshot['tool']
-    c = yaml.safe_load(Path(config_path).read_text(encoding='utf-8'))
+    if config_path is None:
+        c = scene.get('layout_config')
+        if c is None:
+            c = yaml.safe_load((ROOT/'configs/workcells/eco65_desktop_warehouse_v1.yaml').read_text(encoding='utf-8'))
+    else:
+        c = yaml.safe_load(Path(config_path).read_text(encoding='utf-8'))
     assert c['scope'] == 'STATIC_APPEARANCE_ONLY'
-    if not full_face: assert len(scene['boxes']) == 4
+    native_12carton = native and not full_face and scene.get('schema') == 'eco65_native_12carton_scene_v1'
+    actual_layout = full_face or native_12carton
+    if not actual_layout: assert len(scene['boxes']) == 4
     elif c != scene['layout_config']: raise ValueError('FULL_FACE_CONFIG_CHANGED')
     home_data = load_json(home_path); home = home_data['home_q']
     if home_data.get('status') == 'STATIC_POSE_ONLY' and (
@@ -158,14 +165,15 @@ def export(snapshot_path, home_path, config_path, out):
         pose(prim,transform(b['pose'])); prim.SetCustomDataByKey('stable_id',b['id'])
         # This exact layout envelope is the sole carton collision proxy.
         cube('Cartons/'+b['id']+'/Collision',b['size_m'],[0,0,0],mats['table'],True)
-        if full_face: prim.SetCustomDataByKey('supported_by', Vt.StringArray(b['supported_by']))
-    if full_face:
+        if actual_layout: prim.SetCustomDataByKey('supported_by', Vt.StringArray(b['supported_by']))
+    if actual_layout:
         for item in scene['mesh_obstacles']:
             source=ROOT/item['usd_path']
             if hashlib.sha256(source.read_bytes()).hexdigest()!=item['usd_sha256']:
                 raise ValueError('DERIVED_CONVEYOR_CHANGED')
             prim=UsdGeom.Xform.Define(stage,'/Workstation/'+item['id']).GetPrim()
             prim.GetReferences().AddReference(Path(os.path.relpath(source,out)).as_posix())
+    permanent_camera = scene.get('permanent_camera')
     if scene.get('mast',{}).get('parts'):
         mast=dict(scene['mast']);attached=mast.get('attachment')=='link_1'
         if attached:
@@ -181,7 +189,8 @@ def export(snapshot_path, home_path, config_path, out):
         root_mast.SetCustomDataByKey('placement',mast['placement'])
         root_mast.SetCustomDataByKey('attachment',mast['attachment'])
         if attached:
-            pose(UsdGeom.Xform.Define(stage,mast_path+'/CameraFrame').GetPrim(),mast['T_mast_camera'])
+            camera_frame = permanent_camera['T_mast_optical'] if permanent_camera else mast['T_mast_camera']
+            pose(UsdGeom.Xform.Define(stage,mast_path+'/CameraFrame').GetPrim(),camera_frame)
             seat=mast.get('mount_interface',{}).get('seat')
             if seat:
                 if hashlib.sha256((ROOT/seat['mesh']).read_bytes()).hexdigest()!=seat['sha256']:
@@ -190,15 +199,48 @@ def export(snapshot_path, home_path, config_path, out):
                 seat_path='/Workstation/Robot/link_1/MountingSeat'
                 seat_mat=material(stage,'mounting_seat',[.43,.46,.50],metallic=.4,roughness=.4)
                 mesh(seat_path+'/Visual',seat_mesh,[.43,.46,.50],np.eye(4),mat=seat_mat)
-                obj=mesh(seat_path+'/Collision',seat_mesh,[.6,.2,.8],np.eye(4),True,world_T=frames['link_1'])
-                UsdPhysics.MeshCollisionAPI(obj.GetPrim()).CreateApproximationAttr('none')
+                if not native_12carton:
+                    obj=mesh(seat_path+'/Collision',seat_mesh,[.6,.2,.8],np.eye(4),True,world_T=frames['link_1'])
+                    UsdPhysics.MeshCollisionAPI(obj.GetPrim()).CreateApproximationAttr('none')
                 stage.GetPrimAtPath(seat_path).SetCustomDataByKey('provenance','PROJECT_DERIVED_CONFORMAL_J1_SEAT_NOT_ORIGINAL_CAD')
         for part in mast['parts']:
+            if permanent_camera and part['id'] in permanent_camera['replaced_mast_parts']:
+                continue
             dark=['mast_part_006','mast_part_016']+(['mast_part_019'] if attached else [])
             rgb=part['rgb'] or (([.035,.04,.045] if attached else [.08,.10,.12]) if part['id'] in dark else [.43,.46,.50])
             mat=material(stage,part['id'],rgb,metallic=.4,roughness=.4)
             mesh(mast_path+'/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,np.eye(4),mat=mat)
-            mesh(mast_path+'/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],np.eye(4),True,world_T=T)
+            if not native_12carton:
+                mesh(mast_path+'/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],np.eye(4),True,world_T=T)
+        if permanent_camera:
+            if not attached: raise ValueError('PERMANENT_CAMERA_REQUIRES_J1_ATTACHMENT')
+            camera_path=mast_path+'/PermanentCamera'
+            pose(UsdGeom.Xform.Define(stage,camera_path).GetPrim(),permanent_camera['T_mast_CAD'])
+            for part in permanent_camera['parts']:
+                source=ROOT/part['visual']
+                if hashlib.sha256(source.read_bytes()).hexdigest()!=part['visual_sha256']:
+                    raise ValueError('PERMANENT_CAMERA_VISUAL_CHANGED')
+                rgb=part['rgb'] or [.3,.3,.3]
+                mat=material(stage,'permanent_camera_'+part['id'],rgb,metallic=.25,roughness=.4)
+                mesh(camera_path+'/visual_'+part['id'],trimesh.load(source,process=False),rgb,np.eye(4),mat=mat)
+            for part in permanent_camera.get('pitch_adapter',[]):
+                local=np.asarray(mast['T_link1_mast'])@np.asarray(part['T_mast'])
+                mesh('/Workstation/Robot/link_1/CameraPitchAdapter/'+part['name'],
+                     trimesh.creation.box(part['size_m']),[.43,.46,.50],local,mat=mats['frame'])
+    if native_12carton:
+        # Display the exact conservative collision solids used by both native
+        # planning and independent review, alongside the original CAD visuals.
+        for row in scene['moving_attachments']:
+            local=np.asarray(row['T_parent_local']); parent=row['parent_link']
+            mesh('/Workstation/Robot/'+parent+'/NativeCollision/'+row['id'],
+                 collision_mesh(row['id'],lambda:None),[.6,.2,.8],local,True,
+                 world_T=frames[parent]@local)
+        for row in scene['native_world_objects']:
+            if 'convex_mesh' not in row: raise ValueError('NATIVE_CONVEYOR_CONVEX_REQUIRED')
+            convex=row['convex_mesh']
+            mesh('/Workstation/NativeWorldCollision/'+row['id'],
+                 trimesh.Trimesh(vertices=convex['vertices'],faces=convex['triangles'],process=False),
+                 [.2,.7,.8],np.asarray(row['pose']),True)
     frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
     for name,T in frame_transforms.items():
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)
@@ -215,6 +257,10 @@ def export(snapshot_path, home_path, config_path, out):
     if full_face:
         manifest.update(full_face_static=True,layout_config=c,conveyors=scene['conveyors'],top_geometry=scene['top_geometry'],
             mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)
+    elif native_12carton:
+        manifest.update(native_12carton=True,layout_config=c,conveyors=scene['conveyors'],
+            top_geometry=scene['top_geometry'],mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),
+            permanent_camera=scene.get('permanent_camera'),status='NATIVE_GEOMETRY_EXPORTED',frozen_environment=True)
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)
 
@@ -222,6 +268,6 @@ def export(snapshot_path, home_path, config_path, out):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--snapshot',type=Path,required=True);p.add_argument('--home',type=Path,required=True)
-    p.add_argument('--config',type=Path,default=ROOT/'configs/workcells/eco65_desktop_warehouse_v1.yaml')
+    p.add_argument('--config',type=Path,help='Optional exact layout config; defaults to the frozen snapshot layout')
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();export(a.snapshot,a.home,a.config,a.output)

@@ -32,6 +32,13 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     if not np.allclose(flange_to_cad@cad_to_tcp, tcp, atol=1e-10, rtol=0):
         raise ValueError('TOOL_TRANSFORM_CHAIN_MISMATCH')
     geometry = extract_cad_contours(tool, root)
+    from .native_scene import validate_fixed_interfaces
+    fixed_interfaces = validate_fixed_interfaces(scene)
+    if fixed_interfaces:
+        geometry['fixed_attachment_interfaces'] = fixed_interfaces
+    if 'native_task' in scene:
+        from .native_contact import bind_task_contract
+        geometry = bind_task_contract(geometry, scene)
     if not mounting_pairs(tool): raise ValueError('ASSET_BOUND_MOUNT_CONTACT_REQUIRED')
     contact_to_tcp = np.linalg.inv(cad_to_tcp)
     for row in geometry['contours']:
@@ -112,6 +119,26 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         if row['kind'] == 'box': ET.SubElement(g, 'box', size=' '.join(map(str, row['size'])))
         elif row['kind'] == 'cylinder': ET.SubElement(g, 'cylinder', radius=str(row['radius']), length=str(2*row['half_length']))
         else: raise ValueError('ADAPTER_GEOMETRY_UNSUPPORTED')
+    permanent = []
+    for row in scene.get('moving_attachments', []):
+        name = row['id']; parent = row['parent_link']
+        if parent != 'link_1' or urdf.find(f"link[@name='{name}']") is not None:
+            raise ValueError('PERMANENT_ATTACHMENT_LINK_INVALID')
+        source = resolve_asset(root, row['mesh'])
+        if hashlib.sha256(source.read_bytes()).hexdigest() != row['mesh_sha256']:
+            raise ValueError('PERMANENT_ATTACHMENT_MESH_CHANGED:'+name)
+        hull = trimesh.load(source, force='mesh', process=False)
+        if (not len(hull.faces) or not np.isfinite(hull.vertices).all()
+                or not hull.is_convex or not hull.is_watertight):
+            raise ValueError('PERMANENT_ATTACHMENT_EXPLICIT_CONVEX_REQUIRED:'+name)
+        link = fixed(name, parent, check_transform(row['T_parent_local']))
+        ET.SubElement(ET.SubElement(ET.SubElement(link, 'collision'), 'geometry'), 'mesh',
+            filename=resource_uri(root, row['mesh'], native_asset_root))
+        bindings.append(dict(id=name, source=row['mesh'], source_sha256=row['mesh_sha256'],
+            convex_path=row['mesh'], convex_sha256=row['mesh_sha256'],
+            representation='source_bound_permanent_attachment_convex',
+            source_vertices=len(hull.vertices), hull_vertices=len(hull.vertices)))
+        permanent.append(name)
     if len(bands) != 12: raise ValueError('TWELVE_CONTACT_BANDS_REQUIRED')
     fixed(c['task_tcp_link'], c['flange_link'], tcp)
     srdf = ET.Element('robot', name=urdf.get('name'))
@@ -122,7 +149,10 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
                       link2=joint.find('child').get('link'), reason='Adjacent_official_chain')
     for a, b in itertools.combinations(names, 2):
         ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b, reason='Owned_tool_assembly')
-    # Named flange/mount contact is checked geometrically by Eco65Process.
+    for a, b in itertools.combinations(permanent, 2):
+        ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b, reason='Owned_J1_permanent_assembly')
+    # Named flange and J1 mount contacts are checked geometrically by
+    # Eco65Process at the contact tolerance; they are not SRDF exemptions.
     params = {'robot_description': ET.tostring(urdf, encoding='unicode'),
               'robot_description_semantic': ET.tostring(srdf, encoding='unicode')}
     pg = c['planning_group']; limits = c['simulation_limits']
@@ -152,6 +182,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         collision_policy=POLICY, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',
         expected_collision_shapes={l.get('name'): len(l.findall('collision')) for l in urdf.findall('link') if l.findall('collision')})
+    if permanent:
+        init['permanent_attachment_links'] = sorted(permanent)
     return dict(init=init, tool=tool, asset_audit=audit, convex_bindings=bindings,
                 official_limits=official_limits, simulation_limits=limits,
                 hardware_capability='NOT_EVALUATED')

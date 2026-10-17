@@ -6,7 +6,7 @@
 
 namespace m710 {
 // Separate ECO65 policy: no circular masks, neighbor permission, or FANUC wrist
-// exemption. Only the terminal bands, two named mounts and target supports are
+// exemption. Only the terminal bands, bound mount interfaces and target supports are
 // removed from ordinary clearance and checked here at every candidate state.
 class Eco65Process {
   Json spec_;
@@ -16,6 +16,8 @@ class Eco65Process {
   bool record_distances_=false;
   std::set<std::string> bands_,supports_;
   std::map<std::string,ProcessBox> world_;
+  struct WorldSolid {std::shared_ptr<fcl::CollisionGeometryd> shape;Eigen::Isometry3d pose;};
+  std::map<std::string,WorldSolid> world_solids_;
   struct Solid {const moveit::core::LinkModel* link;size_t index;std::shared_ptr<fcl::CollisionGeometryd> shape;};
   struct Pair {Solid a;Solid b;};
   std::vector<Solid> bands;
@@ -60,6 +62,53 @@ class Eco65Process {
     const double d=fcl::distance(&oa,&ob,request,result);
     if(!std::isfinite(d))throw std::runtime_error("ECO65_SIGNED_DISTANCE_UNKNOWN");return d;
   }
+  static double distance(const ProcessBox& a,const WorldSolid& b) {
+    fcl::CollisionObjectd oa(std::make_shared<fcl::Boxd>(2*a.half.x(),2*a.half.y(),2*a.half.z()),a.pose);
+    fcl::CollisionObjectd ob(b.shape,b.pose);
+    fcl::DistanceRequestd request(true,true);fcl::DistanceResultd result;
+    const double d=fcl::distance(&oa,&ob,request,result);
+    if(!std::isfinite(d))throw std::runtime_error("ECO65_SIGNED_DISTANCE_UNKNOWN");return d;
+  }
+  void importWorld(const Json& row) {
+    const std::string id=row.at("id");
+    if(world_.count(id))throw std::runtime_error("DUPLICATE_PROCESS_OBJECT");
+    if(!row.contains("convex_mesh")) {
+      auto box=processBox(row);world_.emplace(id,box);
+      if(supports_.count(id))world_solids_.emplace(id,WorldSolid{
+        std::make_shared<fcl::Boxd>(2*box.half.x(),2*box.half.y(),2*box.half.z()),box.pose});
+      return;
+    }
+    // The finite conveyor pieces remain real FCL convex solids. Their world
+    // envelope below is only a conservative top-contact condition; it never
+    // replaces the actual target-to-conveyor signed-distance query.
+    const auto pose=processTransform(row.at("pose"));const auto& mesh=row.at("convex_mesh");
+    auto vertices=std::make_shared<std::vector<fcl::Vector3d>>();auto faces=std::make_shared<std::vector<int>>();
+    Eigen::Vector3d low=Eigen::Vector3d::Constant(INFINITY),high=Eigen::Vector3d::Constant(-INFINITY);
+    for(const auto& item:mesh.at("vertices")) {
+      const auto p=item.get<std::vector<double>>();
+      if(p.size()!=3)throw std::runtime_error("ECO65_WORLD_CONVEX_VERTEX_INVALID");
+      Eigen::Vector3d v(p[0],p[1],p[2]);if(!v.allFinite())throw std::runtime_error("ECO65_WORLD_CONVEX_VERTEX_INVALID");
+      vertices->push_back(v);const Eigen::Vector3d transformed=pose*v;
+      low=low.cwiseMin(transformed);high=high.cwiseMax(transformed);
+    }
+    for(const auto& item:mesh.at("triangles")) {
+      const auto triangle=item.get<std::vector<int>>();
+      if(triangle.size()!=3)throw std::runtime_error("ECO65_WORLD_CONVEX_FACE_INVALID");
+      faces->push_back(3);
+      for(int index:triangle) {
+        if(index<0 || size_t(index)>=vertices->size())throw std::runtime_error("ECO65_WORLD_CONVEX_INDEX_INVALID");
+        faces->push_back(index);
+      }
+    }
+    if(vertices->size()<4 || faces->size()<16 || (high-low).minCoeff()<=0)
+      throw std::runtime_error("ECO65_WORLD_CONVEX_EMPTY");
+    ProcessBox envelope;envelope.id=id;envelope.pose.translation()=(low+high)/2;envelope.half=(high-low)/2;
+    world_.emplace(id,envelope);
+    // Clearance already owns every world solid. This policy needs an extra
+    // FCL shape only for the named support pairs it checks independently.
+    if(supports_.count(id))world_solids_.emplace(id,WorldSolid{
+      std::make_shared<fcl::Convexd>(vertices,int(mesh.at("triangles").size()),faces,true),pose});
+  }
 public:
   Json failure=nullptr,seal=nullptr,distance_samples=Json::array();
   Eco65Process(const planning_scene::PlanningScenePtr& scene,const Json& req)
@@ -78,12 +127,33 @@ public:
     if(stage_!="pregrasp" && stage_!="contact" && stage_!="extraction" && stage_!="transit" &&
        stage_!="place" && stage_!="withdrawal" && stage_!="residence") throw std::runtime_error("ECO65_PROCESS_STAGE_INVALID");
     if((stage_=="transit" || stage_=="residence")&&!supports_.empty())throw std::runtime_error("ECO65_FREE_SUPPORT_FORBIDDEN");
-    if(target_id_!="carton_r00_l01_c00")throw std::runtime_error("ECO65_FIXED_TARGET_REQUIRED");
-    const std::set<std::string> allowed_supports=stage_=="extraction"?
-      std::set<std::string>{"carton_r00_l00_c00"}:stage_=="place"?
-      std::set<std::string>{"conveyor_longitudinal_belt"}:std::set<std::string>{};
+    std::set<std::string> cartons,original_supports,receiver_supports;
+    const bool contracted=spec_.contains("task_contract");
+    if(contracted) {
+      // Worker initialization binds every task_contract field to the scene's
+      // contact geometry. A motion request cannot widen these permissions.
+      const auto& task=spec_.at("task_contract");
+      if(task.at("schema")!="eco65_single_carton_task_v1" || task.at("target_id")!=target_id_ || task.at("target_face")!="top")
+        throw std::runtime_error("ECO65_TASK_CONTRACT_MISMATCH");
+      cartons=task.at("stack_carton_ids").get<std::set<std::string>>();
+      original_supports=task.at("original_support_names").get<std::set<std::string>>();
+      receiver_supports=task.at("receiving").at("support_ids").get<std::set<std::string>>();
+      if(cartons.size()!=12 || task.at("stack_carton_ids").size()!=12 || !cartons.count(target_id_) ||
+         original_supports.empty() || original_supports.count(target_id_) || receiver_supports.empty() ||
+         task.at("original_support_names").size()!=original_supports.size() ||
+         task.at("receiving").at("support_ids").size()!=receiver_supports.size())
+        throw std::runtime_error("ECO65_TASK_IDENTITIES_INVALID");
+      for(const auto& id:receiver_supports)if(cartons.count(id))throw std::runtime_error("ECO65_RECEIVER_IS_CARTON");
+    } else {
+      if(target_id_!="carton_r00_l01_c00")throw std::runtime_error("ECO65_FIXED_TARGET_REQUIRED");
+      cartons={"carton_r00_l00_c00","carton_r00_l00_c01","carton_r00_l01_c00","carton_r00_l01_c01"};
+      original_supports={"carton_r00_l00_c00"};receiver_supports={"conveyor_longitudinal_belt"};
+    }
+    const std::set<std::string> allowed_supports=stage_=="extraction"?original_supports:
+      stage_=="place"?receiver_supports:std::set<std::string>{};
+    if(contracted && supports_!=allowed_supports)throw std::runtime_error("ECO65_SUPPORT_CONTRACT_CHANGED");
     for(const auto& id:supports_)if(!allowed_supports.count(id))throw std::runtime_error("ECO65_SUPPORT_PERMISSION_INVALID");
-    for(const auto& row:req.at("world")) {auto b=processBox(row);if(!world_.emplace(b.id,b).second)throw std::runtime_error("DUPLICATE_PROCESS_OBJECT");}
+    for(const auto& row:req.at("world")) importWorld(row);
     for(const auto& id:supports_)if(!world_.count(id)||id==target_id_)throw std::runtime_error("ECO65_SUPPORT_MISSING");
     if(req.at("allowed_pairs")!=Json::array({Json::array({"base_link","robot_mount_plate"})}))
       throw std::runtime_error("ECO65_UNSCOPED_ACM_PERMISSION");
@@ -105,9 +175,9 @@ public:
          (world_.at(target_id_).pose.matrix()-target_.pose.matrix()).cwiseAbs().maxCoeff()>1e-7)
         throw std::runtime_error("ECO65_TARGET_GEOMETRY_OR_POSE_CHANGED");
     }
-    const std::set<std::string> cartons={"carton_r00_l00_c00","carton_r00_l00_c01","carton_r00_l01_c00","carton_r00_l01_c01"};
     if(spec_.at("stack_carton_ids").get<std::set<std::string>>()!=cartons)
-      throw std::runtime_error("ECO65_FOUR_CARTONS_REQUIRED");
+      throw std::runtime_error(contracted?"ECO65_TWELVE_CARTONS_REQUIRED":"ECO65_FOUR_CARTONS_REQUIRED");
+    if(spec_.at("stack_carton_ids").size()!=cartons.size())throw std::runtime_error("ECO65_CARTON_ID_DUPLICATE");
     for(const auto& id:cartons)if(id!=target_id_ && !world_.count(id))throw std::runtime_error("ECO65_OTHER_CARTON_MISSING");
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& id:bands_) {bands.push_back(solid(state,id));acm.setEntry(id,target_id_,true);}
@@ -123,6 +193,24 @@ public:
         throw std::runtime_error("ECO65_MOUNT_IDENTITY_INVALID");
       mount_pairs.push_back({solid(state,robot),solid(state,tool)});
       acm.setEntry(robot,tool,true);
+    }
+    if(spec_.contains("fixed_attachment_interfaces")) {
+      const auto& interfaces=spec_.at("fixed_attachment_interfaces");
+      const std::set<std::string> expected={"eco65_mast_mast_part_001","eco65_mast_mounting_seat"};
+      std::set<std::string> seen;
+      if(!contracted || !interfaces.is_array() || interfaces.size()>expected.size())
+        throw std::runtime_error("ECO65_FIXED_ATTACHMENT_INTERFACES_INVALID");
+      for(const auto& mount:interfaces) {
+        const std::string robot=mount.at("parent_link"),attachment=mount.at("attachment_id");
+        if(robot!="link_1" || !expected.count(attachment) || !seen.insert(attachment).second ||
+           !mount.contains("source") || mount.at("source").empty() ||
+           mount.at("maximum_penetration_m")!=.0004 || owned.count(attachment) || bands_.count(attachment))
+          throw std::runtime_error("ECO65_FIXED_ATTACHMENT_INTERFACE_UNBOUND");
+        mount_pairs.push_back({solid(state,robot),solid(state,attachment)});
+        // Restore the finite fixed-contact predicate below instead of an
+        // unconditional SRDF exemption or a wider request-level ACM entry.
+        acm.setEntry(robot,attachment,true);
+      }
     }
     if(attached_)for(const auto& id:supports_)acm.setEntry(target_id_,id,true);
   }
@@ -160,7 +248,7 @@ public:
         std::max(target.pose.translation()[k]-extent[k],support.pose.translation()[k]-support.half[k]);
       const bool top=overlap && (support.pose.linear()-Eigen::Matrix3d::Identity()).norm()<1e-8 &&
         processSupportSeparated(target,support,.0004);
-      if(!accept(target_id_,id,distance(target,support),top?-.0004:.0024))return false;
+      if(!accept(target_id_,id,distance(target,world_solids_.at(id)),top?-.0004:.0024))return false;
     }
     if(attached_ || (endpoint&&stage_=="contact")) {
       geometry["max_attachment_gap_m"]=.0004;geometry["maximum_penetration_m"]=.0004;

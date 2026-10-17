@@ -39,7 +39,7 @@ def state_at(snapshot, plan, robot, time_s):
 
 
 def apply_display_state(stage, snapshot, state):
-    """Set the existing USD leaves, read back D/W transforms, timeline stopped."""
+    """Update link parents once; keep their mesh and accessory transforms local."""
     from pxr import UsdGeom, Gf
     prefix = '/World/Workstation/'
     expected = {}
@@ -51,13 +51,43 @@ def apply_display_state(stage, snapshot, state):
             raise ValueError('REPLAY_TRANSFORM_STACK_CHANGED:'+path)
         ops[0].Set(Gf.Matrix4d(np.asarray(T).T.tolist())); expected[path] = np.asarray(T)
     for name, T in state['frames'].items():
-        for role in ['Visual', 'Collision']: put('Robot/'+name+'/'+role, T)
+        # The exporter stores FK on Robot/<link>, with identity mesh children.
+        # Writing FK on those children again doubles the installation transform
+        # and leaves J1-mounted accessories behind when the robot moves.
+        put('Robot/'+name, T)
+        for role in ['Visual', 'Collision']:
+            path = 'Robot/'+name+'/'+role
+            prim = stage.GetPrimAtPath(prefix+path)
+            if not prim: raise ValueError('REPLAY_PRIM_MISSING:'+path)
+            ops = UsdGeom.Xformable(prim).GetOrderedXformOps()
+            if (len(ops) != 1 or ops[0].GetOpType() != UsdGeom.XformOp.TypeTransform
+                    or not np.allclose(np.asarray(ops[0].Get()), np.eye(4), atol=1e-12, rtol=0)):
+                raise ValueError('REPLAY_LINK_MESH_LOCAL_TRANSFORM_CHANGED:'+path)
+            expected[path] = np.asarray(T)
     flange = state['frames']['link_6']; tool = snapshot['tool']; cad = flange@np.array(tool['T_flange_tool_cad'])
     for p in tool['visual_parts']: put('Tool/visual_'+p['id'], cad)
     for p in tool['collisions']: put('Tool/collision_'+p['id'], cad)
     for p in tool['adapter']:
         put('Adapter/'+p['id'], flange); put('Adapter/'+p['id']+'_collision', flange)
     for name, T in state['cartons'].items(): put('Cartons/'+name, T)
+    for name, T in dict(state['frames'], flange=flange, tool_cad=cad,
+                        tcp=flange@np.asarray(tool['T_flange_tcp'])).items():
+        put('Frames/'+name, T)
+    for row in snapshot['scene'].get('moving_attachments', []):
+        path = 'Robot/'+row['parent_link']+'/NativeCollision/'+row['id']
+        prim = stage.GetPrimAtPath(prefix+path)
+        if not prim: raise ValueError('REPLAY_PERMANENT_ATTACHMENT_MISSING:'+row['id'])
+        ops = UsdGeom.Xformable(prim).GetOrderedXformOps()
+        local = np.asarray(row['T_parent_local'])
+        if (len(ops) != 1 or ops[0].GetOpType() != UsdGeom.XformOp.TypeTransform
+                or not np.allclose(np.asarray(ops[0].Get()).T, local, atol=1e-12, rtol=0)):
+            raise ValueError('REPLAY_PERMANENT_ATTACHMENT_LOCAL_CHANGED:'+row['id'])
+        expected[path] = state['frames'][row['parent_link']]@local
+    for row in snapshot['scene'].get('native_world_objects', []):
+        path = 'NativeWorldCollision/'+row['id']
+        prim = stage.GetPrimAtPath(prefix+path)
+        if not prim: raise ValueError('REPLAY_STATIC_CONVEX_MISSING:'+row['id'])
+        expected[path] = np.asarray(row['pose'])
     cache = UsdGeom.XformCache(); W = np.asarray(snapshot['scene']['T_W_D']); maximum = 0.
     for path, T in expected.items():
         actual = np.array(cache.GetLocalToWorldTransform(stage.GetPrimAtPath(prefix+path))).T

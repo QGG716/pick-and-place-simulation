@@ -53,6 +53,7 @@ def main():
         product=rep.create.render_product(str(camera.GetPath()),(640,360))
         rgb=rep.AnnotatorRegistry.get_annotator('rgb');rgb.attach(product)
         preparation_s=perf_counter()-started;render_started=perf_counter();records=[]
+        target=snapshot['scene']['target_box_id']
         duration=plan['simulated_duration_s'];samples=np.unique(np.r_[np.arange(0,duration,.2),duration])
         with imageio.get_writer(str(out/'kinematic_replay.mp4'),fps=5,codec='libx264',macro_block_size=1) as writer:
             for t in samples:
@@ -64,7 +65,7 @@ def main():
                 if pixels.shape!=(360,640,3) or np.std(pixels)<5:raise ValueError('INVALID_REPLAY_RENDER')
                 im=Image.fromarray(pixels);draw=ImageDraw.Draw(im)
                 draw.rectangle([0,302,640,360],fill='#172432')
-                draw.text((8,305),f"carton_r00_l01_c00 | {state['phase']} | {t:.2f}s | attached={state['attached']}",fill='white')
+                draw.text((8,305),f"{target} | {state['phase']} | {t:.2f}s | attached={state['attached']}",fill='white')
                 draw.text((8,321),'KINEMATIC_REPLAY | PLANNING_ONLY_NOT_EXECUTABLE',fill='white')
                 draw.text((8,337),'Dynamics: NOT_EVALUATED | ideal outfeed: 0',fill='white')
                 writer.append_data(np.asarray(im))
@@ -72,6 +73,7 @@ def main():
                 records.append(dict(time_s=float(t),q_rad=state['q'].tolist(),phase=state['phase'],readback=readback))
         save_json(out/'replay_report.json',dict(status='KINEMATIC_REPLAY',planning_status=plan['status'],
             dynamics='NOT_EVALUATED',hardware=False,plan_fingerprint=plan['fingerprint'],snapshot_fingerprint=snapshot['fingerprint'],
+            target_id=target,carton_count=len(snapshot['scene']['boxes']),
             frame_rate=5,simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,
             fk_readback=checks,frames=records,ideal_outfeed_count=0))
     except Exception as error:

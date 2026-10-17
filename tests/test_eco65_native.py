@@ -226,3 +226,232 @@ def test_same_quintic_replay_keeps_all_cartons():
             assert np.array_equal(before['cartons'][name],after['cartons'][name])
     assert len(after['cartons'])==4 and np.array_equal(after['cartons'][target],plan['events'][1]['pose'])
     assert after['dynamics']=='NOT_EVALUATED' and after['planning_status']=='PLANNING_ONLY_NOT_EXECUTABLE'
+
+
+def synthetic_twelve_carton_scene():
+    """Geometry/protocol fixture only; never an actual planning success."""
+    boxes = []
+    for layer in range(4):
+        for column in range(3):
+            boxes.append(dict(id=f'carton_r00_l{layer:02d}_c{column:02d}',
+                size_m=[.25, .21, .10], pose=[.20, (column-1)*.22, .23+layer*.10],
+                layer=layer, column=column, row=0,
+                supported_by=[f'carton_r00_l{layer-1:02d}_c{column:02d}' if layer else 'cargo_pedestal'],
+                supports=[f'carton_r00_l{layer+1:02d}_c{column:02d}'] if layer < 3 else []))
+    target = next(b for b in boxes if b['id'] == 'carton_r00_l03_c01')
+    # A genuine closed convex cube input exercises mesh preservation in the
+    # request protocol. It is explicitly synthetic, not an official belt asset.
+    vertices = [[x, y, z] for x in (-.85, -.35) for y in (-.30, 0.) for z in (.17, .18)]
+    triangles = [[0,2,3],[0,3,1],[4,5,7],[4,7,6],[0,1,5],[0,5,4],
+                 [2,6,7],[2,7,3],[0,4,6],[0,6,2],[1,3,7],[1,7,5]]
+    mesh = dict(id='synthetic_real_belt_piece', pose=np.eye(4).tolist(), category='environment',
+                convex_mesh=dict(vertices=vertices, triangles=triangles))
+    obstacles = [dict(id='cargo_pedestal', size_m=[.25,.65,.18], position_m=[.2,0,.09],
+                      owner='cargo_pedestal', role='support')]
+    task = dict(schema='eco65_single_carton_task_v1', target_id=target['id'], target_face='top',
+        stack_carton_ids=[b['id'] for b in boxes], original_support_names=target['supported_by'],
+        receiving=dict(region_id='conveyor_longitudinal', support_ids=[mesh['id']],
+            box_pose_D=transform([-.60,-.15,.23]).tolist(), bounds_D_m=[[-.85,-.30,.18],[-.35,0.,.18]]),
+        preapproach_m=.03, preplace_m=.03, withdrawal_m=.03, minimum_lift_m=.01)
+    return dict(schema='eco65_native_12carton_scene_v1', boxes=boxes, box=copy.deepcopy(target),
+        target_box_id=target['id'], obstacles=obstacles, native_world_objects=[mesh],
+        support_surface_ids=['cargo_pedestal',mesh['id']], native_task=task)
+
+
+def test_twelve_carton_contract_uses_actual_top_center_and_bound_support():
+    from unloading_sim.eco65.native_contact import bind_task_contract, validate_task_contract
+    scene = synthetic_twelve_carton_scene()
+    geometry = synthetic_geometry(); bound = bind_task_contract(geometry, scene)
+    assert bound['task_contract']['target_id'] == 'carton_r00_l03_c01'
+    assert bound['task_contract']['original_support_names'] == ['carton_r00_l02_c01']
+    assert 'task_contract' not in geometry
+    assert validate_task_contract(scene) == scene['native_task']
+    # Reorder the population: selection must be geometric, never list position.
+    scene['boxes'].reverse()
+    assert validate_task_contract(scene)['target_id'] == 'carton_r00_l03_c01'
+    bound['task_contract']['target_id'] = 'changed'
+    assert scene['native_task']['target_id'] == 'carton_r00_l03_c01'
+
+
+@pytest.mark.parametrize('case', ['lower_target','wrong_support','missing_carton','front_face','unsupported_receiver','zero_lift'])
+def test_twelve_carton_task_contract_rejects_invalid_geometry_and_permissions(case):
+    from unloading_sim.eco65.native_contact import validate_task_contract
+    scene = synthetic_twelve_carton_scene(); task = scene['native_task']
+    if case == 'lower_target':
+        b = next(b for b in scene['boxes'] if b['id'] == 'carton_r00_l02_c01')
+        task['target_id'] = scene['target_box_id'] = b['id']; scene['box'] = copy.deepcopy(b)
+    elif case == 'wrong_support':
+        for b in scene['boxes']:
+            if b['id'] == task['target_id']: b['supported_by'] = ['carton_r00_l03_c00']
+        scene['box']['supported_by'] = task['original_support_names'] = ['carton_r00_l03_c00']
+    elif case == 'missing_carton': scene['boxes'].pop(0)
+    elif case == 'front_face': task['target_face'] = 'front'
+    elif case == 'unsupported_receiver': task['receiving']['box_pose_D'][1][3] = -.28
+    elif case == 'zero_lift': task['minimum_lift_m'] = 0.
+    with pytest.raises(ValueError): validate_task_contract(scene)
+
+
+def test_twelve_carton_requests_preserve_convex_geometry_and_all_other_cartons():
+    from types import SimpleNamespace
+    from unloading_sim.eco65.native_contact import bind_task_contract
+    scene = synthetic_twelve_carton_scene(); task = NativeTask.__new__(NativeTask)
+    task.scene=scene;task.target=scene['box'];task.target_pose=transform(task.target['pose'])
+    task.identity={'flange_from_task_tcp':np.eye(4).tolist()};task.parent='contact-real-parent';task.counter=0
+    task.task_id='synthetic-request-only';task.attachment=task.target_pose.copy()
+    task.robot=SimpleNamespace(named_link_frames=lambda q:{'link_6':np.eye(4)})
+    task.init=dict(process_geometry=bind_task_contract(synthetic_geometry(),scene),
+                   compliant_tool_links=[f'band_{i}' for i in range(12)],tool_links=['rigid'])
+    task.snapshot={'tool':{'contact':{'normal_tolerance_rad':.01}}}
+    request=task.request(np.zeros(6),'extraction')
+    world={o['id']:o for o in request['world']}
+    assert len([i for i in world if i.startswith('carton_')]) == 11
+    assert scene['target_box_id'] not in world
+    mesh=scene['native_world_objects'][0]
+    assert world[mesh['id']]['convex_mesh'] == mesh['convex_mesh']
+    assert request['process_policy']['support_names'] == ['carton_r00_l02_c01']
+    assert request['process_policy']['task_contract'] == scene['native_task']
+    request=task.request(np.zeros(6),'place')
+    assert request['process_policy']['support_names'] == [mesh['id']]
+
+
+def test_twelve_carton_lift_and_receiving_do_not_use_legacy_four_carton_config():
+    from unloading_sim.eco65.native_task import extraction_goal
+    scene=synthetic_twelve_carton_scene(); pose=transform(scene['box']['pose'])
+    tcp=transform([.2,0,.58]); goal,evidence=extraction_goal(scene,pose,scene['box']['size_m'],tcp)
+    assert abs(evidence['initial_bottom_m']-.48) < 1e-12
+    assert abs(evidence['goal_bottom_m']-.49) < 1e-12
+    assert abs(goal[2,3]-.59) < 1e-12
+    assert supported(scene,transform([-.6,-.15,.23]))
+    assert not supported(scene,transform([-.6,-.28,.23]))
+    assert not supported(scene,transform([-.6,-.15,.231]))
+
+
+def test_native_ik_deduplicates_before_repeating_full_scene_checks():
+    from types import SimpleNamespace
+    task=NativeTask.__new__(NativeTask);task.counter=0;task.identity={};task.ik_records=[]
+    task.robot=SimpleNamespace(joint_limits=np.array([[-3.,3.]]*6))
+    checked=[]
+    def call(request):
+        if request['op']=='ik':return dict(status='SUCCESS',native_ik_calls=1,q=[.1]*6)
+        checked.append(request);return {'status':'SUCCESS'}
+    task.call=call;task.request=lambda q,stage:dict(op='check_state_offline',q=np.asarray(q).tolist())
+    candidates=list(task.ik(np.eye(4),np.zeros(6),'pregrasp',count=4))
+    assert len(task.ik_records)==4 and len(candidates)==1 and len(checked)==1
+
+
+def test_plan_contract_detects_changed_mesh_even_when_world_hash_is_recomputed():
+    from unloading_sim.eco65.native_task import validate_plan_contract
+    snapshot,plan=synthetic_plan_fixture();mesh=synthetic_twelve_carton_scene()['native_world_objects'][0]
+    snapshot['scene']['native_world_objects']=[mesh]
+    for stage in plan['stages']:
+        request=stage['native_request'];request['world'].append(copy.deepcopy(mesh))
+        request['scene_fingerprint']=digest(request['world'])
+    plan['fingerprint']=digest({k:v for k,v in plan.items() if k!='fingerprint'})
+    assert validate_plan_contract(plan,snapshot)
+    request=plan['stages'][3]['native_request'];request['world'][-1]['convex_mesh']['vertices'][0][0]+=.001
+    request['scene_fingerprint']=digest(request['world'])
+    plan['fingerprint']=digest({k:v for k,v in plan.items() if k!='fingerprint'})
+    with pytest.raises(ValueError,match='PLAN_WORLD_CHANGED'): validate_plan_contract(plan,snapshot)
+
+
+def test_plan_contract_rejects_model_mount_interfaces_from_another_scene():
+    from unloading_sim.eco65.native_task import validate_plan_contract
+    snapshot,plan=synthetic_plan_fixture()
+    snapshot['native_model']['init']['process_geometry']['fixed_attachment_interfaces']=[dict(
+        parent_link='link_1',attachment_id='eco65_mast_mounting_seat',source={'synthetic':'different scene'},
+        maximum_penetration_m=.0004)]
+    with pytest.raises(ValueError,match='PLAN_FIXED_ATTACHMENT_INTERFACES_CHANGED'):
+        validate_plan_contract(plan,snapshot)
+
+
+def synthetic_top_geometry():
+    geometry = synthetic_geometry()
+    # The real tool builder proves that its normals are +Z in task TCP. The
+    # top-grasp transform then points them into the carton, along target -Z.
+    for row in geometry['contours']: row['normal'] = [0,0,1]
+    return geometry
+
+
+def test_top_grasps_shift_inside_all_twelve_contours_and_rank_near_base():
+    from unloading_sim.eco65.native_contact import top_grasp_candidates
+    geometry = synthetic_top_geometry(); original = copy.deepcopy(geometry)
+    target = transform([.20,0,.53]); base = [-.36,.10,.18]
+    proposal = top_grasp_candidates(geometry,target,[.25,.21,.10],np.eye(4),base)
+    candidates = proposal['candidates']
+    assert len(candidates) > 4 and proposal['checked_contour_count'] == 12
+    assert proposal['edge_margin_m'] == .003 and proposal['proposal_inset_m'] == .0001
+    assert {round(c['roll_rad'],8) for c in candidates} == {0.,round(np.pi/2,8),round(-np.pi/2,8),round(np.pi,8)}
+    centered = next(c for c in candidates if c['kind']=='face_center' and c['roll_rad']==0.)
+    closest = next(c for c in candidates if c['kind']=='nearest_base' and c['roll_rad']==0.)
+    # Literal limits of this asymmetric synthetic polygon population; these
+    # prove translation, not just rotation about an assumed face centre.
+    assert np.allclose(closest['allowed_tcp_xy_m'],[[-.048,-.043],[.047,.045]],atol=1e-12,rtol=0)
+    assert np.allclose(closest['offset_tcp_xy_m'],[-.0479,.0449],atol=1e-12,rtol=0)
+    assert closest['flange_distance_from_base_m_heuristic'] < centered['flange_distance_from_base_m_heuristic']
+    distances=[c['flange_distance_from_base_m_heuristic'] for c in candidates]
+    assert distances == sorted(distances)
+    for candidate in candidates:
+        assert candidate['qualification'] == 'GEOMETRY_ONLY_NOT_IK_OR_PATH_VALIDATED'
+        actual = check_contours(geometry,np.asarray(candidate['tcp_pose_D']),target,[.25,.21,.10],gap=.0004,penetration=.0004)
+        assert actual['status']=='PASS' and actual['checked_count']==12
+        assert {r['id'] for r in actual['contours']} == set(geometry['expected_contour_ids'])
+    assert geometry == original
+
+
+def test_top_grasps_reject_all_rolls_when_twelve_contours_cannot_fit():
+    from unloading_sim.eco65.native_contact import top_grasp_candidates
+    proposal=top_grasp_candidates(synthetic_top_geometry(),np.eye(4),[.10,.10,.10],np.eye(4),[-.36,.1,.18])
+    assert proposal['candidates'] == [] and len(proposal['rejected']) == 4
+    assert {r['reason'] for r in proposal['rejected']} == {'TWELVE_CONTOURS_EXCEED_FACE'}
+
+
+def test_top_grasps_use_actual_flange_to_tcp_transform():
+    from unloading_sim.eco65.native_contact import top_grasp_candidates
+    geometry=synthetic_top_geometry();target=transform([.20,0,.53]);base=[-.36,.1,.18]
+    original=top_grasp_candidates(geometry,target,[.25,.21,.10],np.eye(4),base)
+    flange_from_tcp=transform([.031,-.042,.142],Rotation.from_euler('xyz',[.3,-.5,.7]).as_matrix())
+    geometry['flange_from_contact_frame']=flange_from_tcp.tolist()
+    changed=top_grasp_candidates(geometry,target,[.25,.21,.10],flange_from_tcp,base)
+    indexed=lambda proposal:{(c['roll_rad'],c['kind']):c for c in proposal['candidates']}
+    a,b=indexed(original),indexed(changed)
+    assert set(a)==set(b)
+    for key,candidate in b.items():
+        assert np.allclose(a[key]['tcp_pose_D'],candidate['tcp_pose_D'],atol=1e-12,rtol=0)
+        flange=np.asarray(candidate['tcp_pose_D'])@np.linalg.inv(flange_from_tcp)
+        assert check_contours(geometry,flange,target,[.25,.21,.10],gap=.0004,penetration=.0004)['status']=='PASS'
+
+
+def test_grasp_backtracking_preserves_initial_state_and_stops_on_worker_timeout():
+    """Protocol rejection only: neither branch supplies a fake success path."""
+    from unittest.mock import patch
+    from unloading_sim.eco65.native_contact import bind_task_contract, top_grasp_candidates
+    task=NativeTask.__new__(NativeTask);task.scene=synthetic_twelve_carton_scene()
+    task.scene['base_position_m']=[-.36,.1,.18]
+    task.target=task.scene['box'];task.target_pose=transform(task.target['pose'])
+    initial_target=task.target_pose.copy();home=np.array([-.8,-.3,.1,.2,.4,.6])
+    task.identity={'flange_from_task_tcp':np.eye(4).tolist()}
+    task.init={'process_geometry':bind_task_contract(synthetic_top_geometry(),task.scene)}
+    task.snapshot={'tool':{'contact':{'normal_tolerance_rad':.01}}}
+    task.counter=0;task.records=[];task.ik_records=[];task.native_calls=[]
+    task.grasp_failures=[];task.grasp_home_rejections=[]
+    task.select_home=lambda pre:(home.copy(),[])
+    attempts=[]
+    def reject_branch(grasp,q):
+        assert np.array_equal(q,home) and np.array_equal(task.target_pose,initial_target)
+        assert task.parent=='' and task.attachment is None and task.stages==[] and task.events==[]
+        task.counter+=1;attempts.append(task.counter)
+        if len(attempts)==1:
+            task.parent='discarded-prefix';task.attachment=np.eye(4);task.target_pose=transform([9,9,9])
+            task.stages.append({'stage_id':'discarded-prefix'});task.events.append({'event':'synthetic-partial'})
+            raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit')
+        raise MoveItUnavailable('synthetic-worker-timeout')
+    task.run_grasp=reject_branch
+    proposal=top_grasp_candidates(task.init['process_geometry'],initial_target,task.target['size_m'],np.eye(4),task.scene['base_position_m'])
+    assert len(proposal['candidates']) > 2
+    with patch('unloading_sim.eco65.native_task.top_grasp_candidates',return_value=proposal):
+        with pytest.raises(MoveItUnavailable,match='synthetic-worker-timeout'): task.run()
+    assert attempts==[1,2] and task.grasp_search['attempted_indices']==[0,1]
+    assert task.grasp_search['status']=='INTERRUPTED' and task.grasp_search['unsearched_indices'][0]==2
+    assert task.grasp_failures[0]['recoverable_geometry_failure'] is True
+    assert task.grasp_failures[0]['partial_stages']==[{'stage_id':'discarded-prefix'}]
+    assert task.grasp_failures[1]['recoverable_geometry_failure'] is False

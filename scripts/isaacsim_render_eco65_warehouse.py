@@ -164,15 +164,44 @@ def main():
         def bounds(path):
             r=bbox.ComputeWorldBound(stage.GetPrimAtPath('/World/Workstation/'+path)).ComputeAlignedRange()
             return np.array(r.GetMin()),np.array(r.GetMax())
-        heights={}
+        heights={};belt_readback={}
         for name,path,side,expected in [('tabletop','trailer_floor',1,.8),('robot_mount_top','robot_mount_plate',1,.98),
                 ('transverse_belt','conveyor_transverse_belt',1,.98),('longitudinal_belt','conveyor_longitudinal_belt',1,.98),
                 ('trailer_roof_inner','trailer_roof',0,1.45)]:
             if path=='trailer_roof' and not stage.GetPrimAtPath('/World/Workstation/'+path):
                 heights[name]={'status':'NOT_EVALUATED_ROOF_DISABLED'};continue
-            if data.get('full_face_static') and path.startswith('conveyor_'):
+            if (data.get('full_face_static') or data.get('native_12carton')) and path.startswith('conveyor_'):
                 item=next(r for r in data['conveyors']['items'] if r['id']==path.removesuffix('_belt'))
-                heights[name]=float(item['belt_bounds_D_m'][side][2]+translation[2])
+                from unloading_sim.eco65.model import ROOT
+                source_path=(ROOT/item['usd_path']).resolve();source_path.relative_to(ROOT)
+                if hashlib.sha256(source_path.read_bytes()).hexdigest()!=item['usd_sha256']:
+                    raise ValueError('FROZEN_CONVEYOR_ASSET_CHANGED:'+item['id'])
+                conveyor_stage=Usd.Stage.Open(str(source_path))
+                if not conveyor_stage or not conveyor_stage.GetDefaultPrim():
+                    raise ValueError('FROZEN_CONVEYOR_REFERENCE_INVALID:'+item['id'])
+                source_root=str(conveyor_stage.GetDefaultPrim().GetPath())
+                belt_source=data['conveyors']['source']['belt_prim']
+                actual_bounds=[]
+                for row in item['meshes']:
+                    if row['source_prim']!=belt_source:continue
+                    if not row['prim'].startswith(source_root+'/'):
+                        raise ValueError('FROZEN_CONVEYOR_PRIM_OUTSIDE_REFERENCE')
+                    composed='/World/Workstation/'+item['id']+row['prim'][len(source_root):]
+                    prim=stage.GetPrimAtPath(composed)
+                    if not prim or not prim.IsA(UsdGeom.Mesh):
+                        raise ValueError('FROZEN_BELT_PRIM_MISSING:'+composed)
+                    r=bbox.ComputeWorldBound(prim).ComputeAlignedRange()
+                    if r.IsEmpty():raise ValueError('FROZEN_BELT_BOUNDS_EMPTY')
+                    actual_bounds.append([np.array(r.GetMin()),np.array(r.GetMax())])
+                if not actual_bounds:raise ValueError('FROZEN_BELT_SOURCE_MISSING:'+item['id'])
+                actual=np.array([np.min([r[0] for r in actual_bounds],axis=0),
+                                 np.max([r[1] for r in actual_bounds],axis=0)])
+                expected_bounds=np.asarray(item['belt_bounds_D_m'])+np.asarray(translation)
+                if not np.allclose(actual,expected_bounds,atol=2e-6,rtol=0):
+                    raise ValueError('FROZEN_BELT_GEOMETRY_MISMATCH:'+item['id'])
+                heights[name]=float(actual[side,2])
+                belt_readback[item['id']]=dict(bounds_W_m=actual.tolist(),
+                    source_mesh_count=len(actual_bounds),source_sha256=item['usd_sha256'])
             else: heights[name]=float(bounds(path)[side][2])
             if not a.layout_review:assert abs(heights[name]-expected)<2e-6
         if not a.layout_review:assert np.allclose(bounds('trailer_floor')[1][:2]-bounds('trailer_floor')[0][:2],[2,2])
@@ -211,7 +240,8 @@ def main():
         stage.GetRootLayer().Save()
         print('COMPOSITION_VALIDATED',translation,heights,flush=True)
         if a.compose_only:
-            (a.output/'composition_check.json').write_text(json.dumps(dict(translation_W_D_m=translation,height_checks_m=heights,cartons=carton_records,environment_colliders=len(colliders),intersections=intersections),indent=2))
+            (a.output/'composition_check.json').write_text(json.dumps(dict(translation_W_D_m=translation,height_checks_m=heights,
+                belt_geometry_readback=belt_readback,cartons=carton_records,environment_colliders=len(colliders),intersections=intersections),indent=2))
             print('COMPOSITION_PASS',translation,heights,flush=True)
             return
         import omni.usd

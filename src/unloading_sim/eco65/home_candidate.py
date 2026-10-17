@@ -7,9 +7,15 @@ from ..moveit2_backend import digest
 def equipment_identity(scene):
     # Warehouse restoration adds obstacles but does not invalidate the equipment
     # proposal. Acceptance still requires the complete current planning scene.
-    return digest(dict(config_sha256=scene['config_sha256'], base_position_m=scene['base_position_m'],
+    identity = dict(config_sha256=scene['config_sha256'], base_position_m=scene['base_position_m'],
         T_W_D=scene['T_W_D'], boxes=scene['boxes'],
-        obstacles=[o for o in scene['obstacles'] if o['owner'] != 'warehouse']))
+        obstacles=[o for o in scene['obstacles'] if o['owner'] != 'warehouse'])
+    if scene.get('schema') == 'eco65_native_12carton_scene_v1':
+        identity.update(native_world_objects=scene['native_world_objects'],
+            moving_attachments=scene['moving_attachments'],
+            fixed_attachment_interfaces=scene['fixed_attachment_interfaces'],
+            permanent_camera=scene.get('permanent_camera'), native_task=scene['native_task'])
+    return digest(identity)
 
 
 def make_candidate(q, tool, scene, provenance):

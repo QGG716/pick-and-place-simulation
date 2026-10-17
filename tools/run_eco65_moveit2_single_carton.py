@@ -14,6 +14,12 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--snapshot', type=Path); p.add_argument('--plan', type=Path)
     p.add_argument('--environment', type=Path); p.add_argument('--assets', type=Path)
+    p.add_argument('--static-snapshot', type=Path,
+                   help='Frozen current twelve-carton scene, including its J1-mounted accessories')
+    p.add_argument('--static-home', type=Path,
+                   help='Same-source display pose used only as a freshly checked initial-state proposal')
+    p.add_argument('--camera-configuration', type=Path,
+                   help='Source-bound permanent camera installation; calibration board/probe are not task equipment')
     p.add_argument('--worker-command', help='Existing resident native worker launcher; never a core fallback')
     p.add_argument('--home-candidate', type=Path, help='Identity-bound simulation initial state; rechecked by the worker')
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
@@ -23,10 +29,22 @@ def main():
     a = p.parse_args(); out = a.output.resolve(); out.relative_to(ROOT/'outputs')
     if out.exists(): raise FileExistsError('Use a fresh output directory')
     if not 1 <= a.attempts <= 3: p.error('--attempts must be 1..3')
+    if a.static_snapshot and (a.action != 'build' or not a.static_home):
+        p.error('--static-snapshot requires build and --static-home')
+    if (a.static_home or a.camera_configuration) and not a.static_snapshot:
+        p.error('--static-home/--camera-configuration require --static-snapshot')
+    if a.static_snapshot and a.environment:
+        p.error('The static snapshot already binds its complete warehouse environment')
     started = perf_counter()
     try:
         if a.action == 'build':
-            result = build_snapshot(out, load_json(a.environment) if a.environment else None, a.native_asset_root)
+            if a.static_snapshot:
+                from build_eco65_native_12carton import build_from_static
+                result = build_from_static(a.static_snapshot, a.static_home, out,
+                    camera_configuration=a.camera_configuration,
+                    native_asset_root=a.native_asset_root)
+            else:
+                result = build_snapshot(out, load_json(a.environment) if a.environment else None, a.native_asset_root)
             print(result); return 0 if result['status'] != 'BLOCKED' else 2
         out.mkdir(parents=True)
         if a.action == 'bounds':
@@ -62,6 +80,8 @@ def main():
                         failure.update(native_records=task.records, native_ik_records=task.ik_records, partial_stages=task.stages)
                         failure.update(native_calls=task.native_calls, initial_state_checks=task.home_checks)
                         failure['extraction_geometry'] = task.extraction_evidence
+                        for name in ('grasp_geometry', 'grasp_search', 'grasp_failures', 'grasp_home_rejections'):
+                            if hasattr(task, name): failure[name] = getattr(task, name)
                     save_json(attempt_out/'failure.json', failure); failures.append(failure)
                 finally:
                     if task: task.close()
@@ -79,7 +99,7 @@ def main():
             from unloading_sim.eco65.native_task import validate_plan_contract
             validate_plan_contract(plan, snapshot)
             from export_eco65_warehouse_workstation import export
-            export(a.snapshot, a.plan, ROOT/'configs/workcells/eco65_desktop_warehouse_v1.yaml', out)
+            export(a.snapshot, a.plan, None, out)
             save_json(out/'export_timing.json', dict(usd_export_s=perf_counter()-started, dynamics='NOT_EVALUATED'))
             return 0
     except Exception as error:

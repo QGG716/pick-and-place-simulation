@@ -1,0 +1,16 @@
+schema: eco65_native_12carton_config_v1
+layout_id: eco65_native_12carton_v1
+source_layout: eco65_desktop_4layer_v1
+target_id: carton_r00_l03_c01
+target_face: top
+receiving_region: conveyor_longitudinal
+preapproach_m: 0.030
+preplace_m: 0.030
+withdrawal_m: 0.030
+minimum_lift_m: 0.010
+enable_hardware: false
+planning_status: PLANNING_ONLY_NOT_EXECUTABLE
+replay_mode: KINEMATIC_REPLAY
+dynamics: NOT_EVALUATED
+permanent_equipment: [J1_mast, camera, mounting_seat, conveyors, warehouse]
+source_policy: preserve_existing_geometry_and_all_twelve_cartons

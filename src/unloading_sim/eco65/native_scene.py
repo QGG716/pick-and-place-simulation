@@ -11,6 +11,133 @@ from .unloading_layout import build_scene
 from ..moveit2_backend import digest
 
 CONFIG = ROOT/'configs/workcells/eco65_native_warehouse_v1.yaml'
+TWELVE_CONFIG = ROOT/'configs/workcells/eco65_native_12carton_v1.yaml'
+TWELVE_SCHEMA = 'eco65_native_12carton_scene_v1'
+
+
+def world_objects(scene):
+    """Static native objects only; callers manage carton attachment ownership."""
+    objects = [dict(id=o['id'], size=o['size_m'],
+                    pose=transform(o['position_m']).tolist(), category='environment')
+               for o in scene['obstacles']]
+    objects.extend(deepcopy(scene.get('native_world_objects', [])))
+    ids = [o['id'] for o in objects]
+    if len(ids) != len(set(ids)): raise ValueError('NATIVE_WORLD_DUPLICATE_OBJECT')
+    return objects
+
+
+def validate_fixed_interfaces(scene):
+    """Only the two source-bound J1 mount pairs may use contact tolerance."""
+    rows = scene.get('fixed_attachment_interfaces', [])
+    expected = {'eco65_mast_mast_part_001', 'eco65_mast_mounting_seat'}
+    permanent = {row['id'] for row in scene.get('moving_attachments', [])}
+    seen = set()
+    for row in rows:
+        name = row['attachment_id']; source = row.get('source')
+        if (row['parent_link'] != 'link_1' or name not in expected or name not in permanent
+                or name in seen or not source or not source.get('source') or not source.get('seat')
+                or source != scene.get('mast', {}).get('mount_interface')
+                or row.get('maximum_penetration_m') != .0004):
+            raise ValueError('PERMANENT_ATTACHMENT_INTERFACE_UNBOUND')
+        seen.add(name)
+    return deepcopy(rows)
+
+
+def adapt_static_scene(snapshot, native_world_objects, moving_attachments, receiving,
+                       home_q, *, config=None, config_sha256=None, permanent_camera=None,
+                       fixed_attachment_interfaces=None):
+    """Bind the existing twelve cartons and permanent equipment to a new task.
+
+    Mesh preparation is supplied by the source-verifying builder. This function
+    never changes a carton pose, reconstructs the layout, or accepts a HOME.
+    """
+    config = deepcopy(config or yaml.safe_load(TWELVE_CONFIG.read_text(encoding='utf-8')))
+    check = deepcopy(snapshot); expected = check.pop('fingerprint')
+    if (snapshot.get('schema') != 'eco65_full_face_static_snapshot_v1'
+            or digest(check) != expected):
+        raise ValueError('TWELVE_SOURCE_SNAPSHOT_INVALID')
+    source = snapshot['scene']; boxes = deepcopy(source['boxes'])
+    expected_ids = {f'carton_r00_l{layer:02d}_c{col:02d}' for layer in range(4) for col in range(3)}
+    if (len(boxes) != 12 or {b['id'] for b in boxes} != expected_ids
+            or any(b['size_m'] != [.25, .21, .10] for b in boxes)):
+        raise ValueError('TWELVE_CARTON_SOURCE_LAYOUT_REQUIRED')
+    if (config.get('schema') != 'eco65_native_12carton_config_v1'
+            or config.get('target_id') != 'carton_r00_l03_c01'
+            or config.get('target_face') != 'top'
+            or config.get('enable_hardware') is not False):
+        raise ValueError('TWELVE_TASK_CONFIG_INVALID')
+    target = next(b for b in boxes if b['id'] == config['target_id'])
+    if (target.get('row') != 0 or target.get('layer') != 3 or target.get('column') != 1
+            or target.get('supports') or target.get('supported_by') != ['carton_r00_l02_c01']
+            or abs(target['pose'][1]) > 1e-10
+            or not np.isclose(target['pose'][2], .53, atol=1e-10, rtol=0)):
+        raise ValueError('TOP_MIDDLE_CARTON_GEOMETRY_INVALID')
+    if (source.get('enable_hardware') is not False
+            or source.get('environment_status') != 'ALL_BOUNDS_INCLUDED_CONSERVATIVELY'
+            or source.get('T_W_D') != transform([.32, -.1, .8]).tolist()):
+        raise ValueError('TWELVE_SOURCE_ENVIRONMENT_INVALID')
+    if not source.get('mast', {}).get('parts') or source['mast'].get('attachment') != 'link_1':
+        raise ValueError('PERMANENT_J1_MAST_REQUIRED')
+    if any(k in source for k in ('probe', 'board', 'calibration_fixture', 'touch_points')):
+        raise ValueError('CALIBRATION_FIXTURE_NOT_AN_UNLOADING_SOURCE')
+    conveyor_ids = {item['id'] for item in source['conveyors']['items']}
+    for obj in source['obstacles']:
+        if (obj['id'].startswith(('conveyor_', 'mast_', 'probe_', 'calibration_'))
+                or obj.get('owner') in conveyor_ids or obj.get('role') in ('mast', 'calibration_fixture')):
+            raise ValueError('SOURCE_HAS_DUPLICATE_OR_TEMPORARY_EQUIPMENT_PROXY:'+obj['id'])
+    if not native_world_objects or not moving_attachments:
+        raise ValueError('PERMANENT_EQUIPMENT_GEOMETRY_REQUIRED')
+    q = np.asarray(home_q, float)
+    if q.shape != (6,) or not np.isfinite(q).all(): raise ValueError('HOME_PROPOSAL_INVALID')
+    receiver = deepcopy(receiving)
+    bounds = np.asarray(receiver['bounds_D_m'], float)
+    pose = np.asarray(receiver['box_pose_D'], float)
+    if (receiver['region_id'] != config['receiving_region'] or not receiver['support_ids']
+            or bounds.shape != (2, 3) or not np.isfinite(bounds).all()
+            or np.any(bounds[1]-bounds[0] <= 0) or pose.shape != (4, 4)
+            or not np.isfinite(pose).all()):
+        raise ValueError('RECEIVING_GEOMETRY_REQUIRED')
+    half = np.asarray(target['size_m'])/2
+    if (not np.allclose(pose[:3, :3], np.eye(3), atol=1e-12, rtol=0)
+            or not np.allclose(pose[3], [0, 0, 0, 1], atol=1e-12, rtol=0)
+            or np.any(pose[:2, 3]-half[:2] < bounds[0, :2]-1e-9)
+            or np.any(pose[:2, 3]+half[:2] > bounds[1, :2]+1e-9)
+            or abs(pose[2, 3]-half[2]-bounds[1, 2]) > 1e-9):
+        raise ValueError('TARGET_NOT_FULLY_SUPPORTED_IN_RECEIVING_REGION')
+    world_ids = {o['id'] for o in native_world_objects}
+    if not set(receiver['support_ids']) <= world_ids:
+        raise ValueError('RECEIVING_SUPPORT_MESH_NOT_BOUND')
+    scene = deepcopy(source); scene.pop('scene_fingerprint', None)
+    scene.update(schema=TWELVE_SCHEMA, layout_id=config['layout_id'],
+        source_static_snapshot_fingerprint=expected, source_static_scene_fingerprint=source['scene_fingerprint'],
+        source_layout_id=source['layout_id'], box=deepcopy(target), target_box_id=target['id'],
+        boxes=boxes, execution_mode='simulation', enable_hardware=False, planning_frame='D',
+        status='PLANNING_ONLY_NOT_EXECUTABLE', transport='NATIVE_PLANNING_PREDICTED_EVENTS',
+        native_world_objects=deepcopy(native_world_objects), moving_attachments=deepcopy(moving_attachments),
+        fixed_attachment_interfaces=deepcopy(fixed_attachment_interfaces or []),
+        margin_m=.002, mesh_error_reserve_m=.0002, contact_tolerance_m=.0004,
+        permanent_camera=deepcopy(permanent_camera), config_sha256=deepcopy(config_sha256 or snapshot['config_sha256']))
+    for obj in scene['obstacles']:
+        obj.setdefault('owner', obj['id'])
+        obj.setdefault('role', 'static_equipment')
+    scene['native_task'] = dict(schema='eco65_single_carton_task_v1', target_id=target['id'],
+        target_face=config['target_face'], stack_carton_ids=sorted(expected_ids),
+        original_support_names=list(target['supported_by']), receiving=receiver,
+        preapproach_m=config['preapproach_m'], preplace_m=config['preplace_m'],
+        withdrawal_m=config['withdrawal_m'], minimum_lift_m=config['minimum_lift_m'])
+    # Compatibility values are derived from this snapshot, never the old four-
+    # carton placement. They do not certify the seed or conveyor transport.
+    scene['source_equipment_config'] = dict(task=dict(initial_seed_q_rad=q.tolist()),
+        conveyors=dict(surface_z_m=float(bounds[1, 2]),
+            longitudinal=dict(receive_center_xy_m=pose[:2, 3].tolist())))
+    scene['source_config'] = deepcopy(scene['source_equipment_config'])
+    scene['support_surface_ids'] = ['cargo_pedestal', *receiver['support_ids']]
+    scene['occupancy'] = {receiver['region_id']: []}
+    scene['components_by_id'] = {o['id']: dict(role=o['role'], owner=o['owner']) for o in scene['obstacles']}
+    scene['environment_asset_sha256'] = deepcopy(scene['environment']['asset_sha256'])
+    world_objects(scene)
+    scene['scene_fingerprint'] = digest(scene)
+    return verify_scene(scene)
 
 
 def combined_scene(config=CONFIG, *, root=ROOT, environment=None):
@@ -82,6 +209,23 @@ def verify_scene(scene, *, require_environment=True):
     if digest(check) != expected: raise ValueError('SCENE_FINGERPRINT_MISMATCH')
     if require_environment and scene['environment_status'] != 'ALL_BOUNDS_INCLUDED_CONSERVATIVELY':
         raise ValueError('WAREHOUSE_ENVIRONMENT_NOT_EVALUATED')
+    if scene.get('schema') == TWELVE_SCHEMA:
+        from .native_contact import validate_task_contract
+        expected_ids = {f'carton_r00_l{l:02d}_c{c:02d}' for l in range(4) for c in range(3)}
+        task = scene['native_task']
+        if (len(scene['boxes']) != 12 or {b['id'] for b in scene['boxes']} != expected_ids
+                or set(task['stack_carton_ids']) != expected_ids
+                or task['target_id'] != 'carton_r00_l03_c01'
+                or scene['target_box_id'] != task['target_id'] or scene['box']['id'] != task['target_id']
+                or task['target_face'] != 'top' or not scene['moving_attachments']
+                or not scene['native_world_objects'] or scene.get('enable_hardware') is not False
+                or scene.get('execution_mode') != 'simulation' or scene.get('planning_frame') != 'D'
+                or scene.get('T_W_D') != transform([.32, -.1, .8]).tolist()):
+            raise ValueError('TWELVE_TASK_SCENE_BINDING_INVALID')
+        validate_task_contract(scene)
+        validate_fixed_interfaces(scene)
+        world_objects(scene)
+        return scene
     expected_ids = {f'carton_r00_l{l:02d}_c{c:02d}' for l in range(2) for c in range(2)}
     if {b['id'] for b in scene['boxes']} != expected_ids or len(scene['boxes']) != 4:
         raise ValueError('FOUR_CARTON_IDENTITY_MISMATCH')
