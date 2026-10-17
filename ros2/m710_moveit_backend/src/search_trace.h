@@ -19,6 +19,8 @@ struct SearchTrace {
 extern std::shared_ptr<SearchTrace> active_search_trace;
 extern thread_local TraceJson validity_witness;
 extern thread_local bool witness_requested;
+using SampleRecorder=std::function<void(const std::vector<double>&,bool,const char*,const TraceJson&)>;
+extern thread_local SampleRecorder* extension_recorder;
 void traceFailure(const char* checker,const TraceJson& original);
 class TraceRRTConnect : public ompl::geometric::RRTConnect {
  public:
@@ -35,6 +37,7 @@ class TraceRRTConnect : public ompl::geometric::RRTConnect {
   std::vector<Sample> samples_;
   size_t event_count_=0,sample_count_=0,event_sample_begin_=0;
   bool in_extension_=false;
+  SampleRecorder recorder_;
   std::vector<double> values(const ompl::base::State* s) const;
   void extension(const ompl::base::State* from,const ompl::base::State* to,bool start,bool accepted,const char* outcome);
   void snapshot(const ompl::base::PlannerStatus& status);

@@ -46,6 +46,7 @@ namespace m710 {
 std::shared_ptr<SearchTrace> active_search_trace;
 thread_local TraceJson validity_witness=nullptr;
 thread_local bool witness_requested=false;
+thread_local SampleRecorder* extension_recorder=nullptr;
 void traceFailure(const char* checker,const TraceJson& original) {
   if(witness_requested) validity_witness={{"checker",checker},{"original",original}};
 }
@@ -57,33 +58,19 @@ void TraceRRTConnect::extension(const base::State* from,const base::State* to,bo
   if(events_.size()<trace_->event_limit)
     events_.push_back({sequence,start,accepted,values(from),values(to),event_sample_begin_,samples_.size(),outcome});
 }
-class RecordedValidity : public base::StateValidityChecker {
-  base::StateValidityCheckerPtr original_;
-  std::function<void(const base::State*,bool,const TraceJson&)> record_;
- public:
-  RecordedValidity(const base::SpaceInformationPtr& si,base::StateValidityCheckerPtr original,
-    std::function<void(const base::State*,bool,const TraceJson&)> record)
-    :base::StateValidityChecker(si),original_(std::move(original)),record_(std::move(record)) {specs_=original_->getSpecs();}
-  bool isValid(const base::State* state) const override {
-    validity_witness=nullptr;witness_requested=true;
-    const bool valid=original_->isValid(state);
-    witness_requested=false;
-    record_(state,valid,validity_witness);validity_witness=nullptr;
-    return valid;
-  }
-};
 base::PlannerStatus TraceRRTConnect::solve(const base::PlannerTerminationCondition& ptc) {
+  // MoveIt assumes its concrete StateValidityChecker; never replace it.
+  // A cached OMPL context must bind this solve's request, not its creation request.
+  if(active_search_trace)trace_=active_search_trace;
+  if(!trace_)throw std::runtime_error("SEARCH_TRACE_REQUEST_MISSING");
   events_.clear();samples_.clear();event_count_=sample_count_=0;
-  auto original=si_->getStateValidityChecker();
-  auto recorder=std::make_shared<RecordedValidity>(si_,original,[this](const base::State* s,bool valid,const TraceJson& witness){
-    if(!in_extension_)return;
+  recorder_=[this](const std::vector<double>& q,bool valid,const char* checker,const TraceJson& original) {
     ++sample_count_;
-    if(samples_.size()<trace_->sample_limit) samples_.push_back({values(s),valid,witness});
-  });
-  si_->setStateValidityChecker(recorder);
+    if(samples_.size()<trace_->sample_limit) samples_.push_back({q,valid,valid?TraceJson(nullptr):TraceJson{{"checker",checker},{"original",original}}});
+  };
   try {
-    auto status=solveRecorded(ptc);si_->setStateValidityChecker(original);snapshot(status);return status;
-  } catch(...) {si_->setStateValidityChecker(original);witness_requested=false;throw;}
+    auto status=solveRecorded(ptc);extension_recorder=nullptr;snapshot(status);return status;
+  } catch(...) {extension_recorder=nullptr;throw;}
 }
 void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
   base::PlannerData data(si_);getPlannerData(data);
@@ -93,7 +80,7 @@ void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
     {"checked_samples",TraceJson::array()},{"raw_solution",nullptr},
     {"simplified_path",nullptr},{"simplified_path_status","NOT_EXPOSED_AT_PLANNER_SOLVE_BOUNDARY"},
     {"planner_data_vertices",data.numVertices()},{"planner_data_edges",data.numEdges()},
-    {"total_extensions",event_count_},{"total_extension_validity_calls",sample_count_},
+    {"total_extensions",event_count_},{"total_extension_custom_checks",sample_count_},
     {"truncated",event_count_>events_.size()||sample_count_>samples_.size()},
     {"event_limit",trace_->event_limit},{"sample_limit",trace_->sample_limit}};
   for(unsigned i=0;i<data.numVertices();++i) {
@@ -113,7 +100,7 @@ void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
     if(path) {j["raw_solution"]=TraceJson::array();for(auto s:path->getStates())j["raw_solution"].push_back(values(s));}
     j["raw_solution_approximate"]=pdef_->hasApproximateSolution();
   }
-  j["witness_semantics"]="Only original same-call Clearance/ProcessPolicy failures. Null means UNKNOWN (MoveIt validity/cache/constraint/bounds); no extra geometry query. Samples are actual validity calls, not tree nodes or ordered swept proof.";
+  j["witness_semantics"]="Only original same-call Clearance/ProcessPolicy failures. Null means UNKNOWN (MoveIt validity/cache/constraint/bounds); no extra geometry query. Samples are actual custom feasibility checks; ordinary MoveIt rejections and cached checks can have no sample. Samples are not all validity calls, not tree nodes or ordered swept proof.";
   j["truncation"]={{"events_missing_from",event_count_>events_.size()?TraceJson(events_.size()):TraceJson(nullptr)},
     {"samples_missing_from",sample_count_>samples_.size()?TraceJson(samples_.size()):TraceJson(nullptr)}};
   std::lock_guard<std::mutex> lock(trace_->mutex);trace_->planners.push_back(std::move(j));
@@ -149,11 +136,11 @@ m710::TraceRRTConnect::GrowState m710::TraceRRTConnect::growTree(TreeData &tree,
         reach = false;
     }
 
-    event_sample_begin_=samples_.size();in_extension_=true;
+    event_sample_begin_=samples_.size();extension_recorder=&recorder_;
     bool validMotion = tgi.start ? si_->checkMotion(nmotion->state, dstate) :
                                    si_->isValid(dstate) && si_->checkMotion(dstate, nmotion->state);
 
-    in_extension_=false;
+    extension_recorder=nullptr;
     extension(nmotion->state,dstate,tgi.start,validMotion,validMotion?"ACCEPTED":"REJECTED");
     if (!validMotion)
         return TRAPPED;

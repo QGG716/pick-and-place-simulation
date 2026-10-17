@@ -979,9 +979,14 @@ private:
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
-        if(!clearance->check(current,verbose)) {m710::traceFailure("CLEARANCE",clearance->last_failure);return false;}
-        if(process && !process->check(current)) {m710::traceFailure("PROCESS_POLICY",process->last_failure);return false;}
-        return true;
+        auto record=[&](bool valid,const char* checker,const J& failure) {
+          if(m710::extension_recorder) {std::vector<double> q;current.copyJointGroupPositions("manipulator",q);
+            (*m710::extension_recorder)(q,valid,checker,failure);}
+          return valid;
+        };
+        if(!clearance->check(current,verbose)) return record(false,"CLEARANCE",clearance->last_failure);
+        if(process && !process->check(current)) return record(false,"PROCESS_POLICY",process->last_failure);
+        return record(true,"CUSTOM_FEASIBILITY",J(nullptr));
       });
     }
     if((op=="check_extraction_end" || op=="check_transit_end")) {
