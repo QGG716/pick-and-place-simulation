@@ -1,0 +1,6 @@
+{
+  "source_commit": "1a2407a18961aa2729bdc96dc2dd1a7c27402acd",
+  "worker_sha256": "412b5614cabd19a017c672b68c192a7b9c2ddf9f736b0faa5e43a7166036b576",
+  "trace_library_sha256": "73fb85b74a715870e4631e24b0512ae718b585f365c815e5ea2a1a8f5643743c",
+  "strategy": "BASELINE_SINGLE_ATTEMPT"
+}

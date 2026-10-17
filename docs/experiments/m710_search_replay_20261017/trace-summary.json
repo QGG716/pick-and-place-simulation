@@ -1,0 +1,86 @@
+[
+  {
+    "name": "baseline-c04-v2",
+    "run_id": "single-contact-da190c035e23441cbf82102173af1ce2",
+    "complete": true,
+    "requests": [
+      {
+        "stage": "pregrasp",
+        "candidate": "single-contact:x-",
+        "request_id": "7",
+        "status": "SUCCESS",
+        "nodes": 546,
+        "edges": 536,
+        "stored_extensions": 4324,
+        "total_extensions": 4324,
+        "rejected": 3789,
+        "custom_check_samples": 6474,
+        "truncated": false,
+        "final_points": 317
+      },
+      {
+        "stage": "transit",
+        "candidate": "single-contact:x-",
+        "request_id": "12",
+        "status": "SUCCESS",
+        "nodes": 6051,
+        "edges": 6041,
+        "stored_extensions": 77183,
+        "total_extensions": 77183,
+        "rejected": 71143,
+        "custom_check_samples": 101389,
+        "truncated": false,
+        "final_points": 290
+      }
+    ]
+  },
+  {
+    "name": "revised-c04-trace",
+    "run_id": "single-contact-7c5cc963775e495b96ea699950983e23",
+    "complete": false,
+    "requests": [
+      {
+        "stage": "pregrasp",
+        "candidate": "single-contact:x-",
+        "request_id": "7",
+        "status": "SUCCESS",
+        "nodes": 773,
+        "edges": 763,
+        "stored_extensions": 6729,
+        "total_extensions": 6729,
+        "rejected": 5967,
+        "custom_check_samples": 9784,
+        "truncated": false,
+        "final_points": 289
+      },
+      {
+        "stage": "transit",
+        "candidate": "single-contact:x-",
+        "request_id": "12",
+        "status": "SUCCESS",
+        "nodes": 6877,
+        "edges": 6867,
+        "stored_extensions": 77143,
+        "total_extensions": 77143,
+        "rejected": 70277,
+        "custom_check_samples": 104651,
+        "truncated": false,
+        "final_points": 470
+      },
+      {
+        "stage": "pregrasp",
+        "candidate": "single-contact:y-",
+        "request_id": "445",
+        "status": "SUCCESS",
+        "nodes": 221,
+        "edges": 211,
+        "stored_extensions": 1066,
+        "total_extensions": 1066,
+        "rejected": 856,
+        "custom_check_samples": 1904,
+        "truncated": false,
+        "final_points": 114
+      }
+    ]
+  }
+]

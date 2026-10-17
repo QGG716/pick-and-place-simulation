@@ -1,0 +1,13 @@
+........................................................................ [ 50%]
+........................................................................ [100%]
+144 passed in 1.90s
+[ 60%] Built target m710_search_trace
+Consolidate compiler generated dependencies of target m710_moveit_worker
+[ 80%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[100%] Linking CXX executable m710_moveit_worker
+[100%] Built target m710_moveit_worker
+Consolidate compiler generated dependencies of target m710_bounded_ik_test
+[ 50%] Building CXX object CMakeFiles/m710_bounded_ik_test.dir/src/bounded_ik_test.cpp.o
+[100%] Linking CXX executable m710_bounded_ik_test
+[100%] Built target m710_bounded_ik_test
+PASS API dispatch, scope, exact seed/options, positive/clamped budget

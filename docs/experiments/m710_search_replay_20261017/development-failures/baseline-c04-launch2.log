@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/work-single-contact-20261016/tools/plan_m710_approach_contact.py", line 181, in <module>
+    main()
+  File "/work-single-contact-20261016/tools/plan_m710_approach_contact.py", line 96, in main
+    c=connector_type.from_existing(built.connector,scene,native_client=client,
+  File "/work-single-contact-20261016/src/unloading_sim/planning_only.py", line 55, in from_existing
+    self = super().from_existing(*args, **kwargs)
+  File "/work-single-contact-20261016/src/unloading_sim/moveit2_backend.py", line 691, in from_existing
+    self.native_startup=self.native.request(init)
+  File "/work-single-contact-20261016/src/unloading_sim/single_contact.py", line 109, in request
+    response = self.client.request(request, **kwargs)
+  File "/work-single-contact-20261016/src/unloading_sim/moveit2_backend.py", line 373, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: ament_index_cpp::get_resource() resource name must not be empty

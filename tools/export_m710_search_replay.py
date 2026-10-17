@@ -85,6 +85,7 @@ def main():
     assert raw['run_id']==result['run_id'] and raw['source_commit']==result['source_commit']
     checks=[validate_attempt(a) for a in raw['attempts']]
     data=dict(schema='m710_replay_display_v1',label=args.label,raw=raw,result=result,model=export_model(raw['model']),checks=checks,
+        request_log=[json.loads(line) for line in (args.run/'requests.jsonl').read_text().splitlines()],
         status='PLANNING_REPLAY_NOT_PHYSICAL_EXECUTION',qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN')
     template=(ROOT/'tools/search_replay/viewer.html').read_text()
     vendor=ROOT/'tools/search_replay/vendor'
