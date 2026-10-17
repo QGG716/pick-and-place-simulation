@@ -53,7 +53,7 @@ class SinglePreplaceConnector(SingleExtractionConnector):
         before=perf_counter()
         q,failure=self.ik_pose_once(goal.task_tcp_pose,start,world,seed,stage="transit",
             attachment=attachment,purpose=MotionPurpose.FREE_LOADED_TRANSFER,
-            residual_reason="PREPLACE_IK_FK_RESIDUAL")
+            residual_reason="PREPLACE_IK_FK_RESIDUAL",ik_mode="bounded_preplace",solver_budget_s=.10)
         row["times"]["transit_ik_s"]=perf_counter()-before
         if failure:return self._reject_transit(row,failure)
         row["preplace_ik_q_rad"]=q.tolist()

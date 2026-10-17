@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include "clearance.h"
+#include "bounded_ik.h"
 #include "process_policy.h"
 #include "scene_geometry.h"
 #include "native_zero_motion.h"
@@ -187,6 +188,7 @@ class Worker {
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
   std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
   size_t ik_calls=0;
+  bool bounded_preplace_ik_enabled=false;
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   std::string planning_mode="cold_from_scratch";
   J static_prior_database=nullptr;
@@ -632,6 +634,17 @@ private:
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
       planning_only=req.value("planning_only",false);
+      bounded_preplace_ik_enabled=req.value("bounded_preplace_ik_enabled",false);
+      if(bounded_preplace_ik_enabled && (!planning_only ||
+          req.value("planning_mode","cold_from_scratch")!="cold_from_scratch"))
+        throw std::runtime_error("BOUNDED_PREPLACE_IK_SCOPE");
+      if(bounded_preplace_ik_enabled) {
+        const auto& params=req.at("parameters");
+        const std::string prefix="robot_description_kinematics.manipulator.";
+        if(params.value(prefix+"position_only_ik",false) ||
+            params.value(prefix+"orientation_vs_position",1.)<=0.)
+          throw std::runtime_error("BOUNDED_PREPLACE_REQUIRES_FULL_POSE_IK");
+      }
       planning_mode=req.value("planning_mode",std::string("cold_from_scratch"));
       prior_placement_policy_sha256=req.value("placement_policy_sha256",std::string());
       if(planning_mode!="cold_from_scratch" && planning_mode!="static_prior_fast")
@@ -683,6 +696,10 @@ private:
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
+#ifdef M710_IK_INPUT_PROBE
+    // This non-installed diagnostic build cannot generate or import motion.
+    if(op!="ik" && op!="fk") throw std::runtime_error("IK_INPUT_PROBE_NO_MOTION");
+#endif
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
     if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
@@ -805,17 +822,71 @@ private:
     if(req.value("cancelled",false)) throw std::runtime_error("CANCELLED");
     if(op=="ik") {
       if(req.contains("history") || req.contains("path") || req.contains("q_goal")) throw std::runtime_error("NATIVE_IK_FORBIDDEN_INPUT");
+      const auto mode=req.value("ik_mode",std::string("single_attempt"));
+      if(mode!="single_attempt" && mode!="bounded_preplace") throw std::runtime_error("UNKNOWN_IK_MODE");
+      const bool bounded=mode=="bounded_preplace";
+      double budget=0.,stage_budget=0.;
+      if(bounded) {
+        if(!m710::boundedIkScope(req,bounded_preplace_ik_enabled,planning_only,planning_mode))
+          throw std::runtime_error("BOUNDED_PREPLACE_IK_SCOPE");
+        stage_budget=req.at("allowed_planning_time_s");
+        budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
+        if(stage_budget<=0 || budget<=0) throw std::runtime_error("NATIVE_IK_REQUEST_DEADLINE");
+        for(const auto* key:{"position_tolerance_m","orientation_tolerance_rad"}) {
+          const double x=req.at(key);if(!std::isfinite(x)||x<=0)throw std::runtime_error("INVALID_IK_TOLERANCE");
+        }
+        if(req.at("clearance_policy").at("source_policy")!=bound_policy ||
+            req.at("clearance_policy").at("tool_links")!=bound_tools ||
+            req.at("process_policy").at("target_id")!=req.at("clearance_policy").at("target_id") ||
+            req.at("process_policy").at("cups")!=bound_process_geometry.at("cups") ||
+            req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
+          throw std::runtime_error("NATIVE_IK_POLICY_IDENTITY_MISMATCH");
+#ifndef M710_IK_INPUT_PROBE
+        // Continue this live task's generated extraction endpoint, never an old q.
+        const std::string task_id=req.at("task_id"),parent_id=req.at("parent_stage_id");
+        if(!tasks.count(task_id) || !tasks.at(task_id)->records.count(parent_id))
+          throw std::runtime_error("NATIVE_TASK_IK_PARENT_UNKNOWN");
+        const auto& parent=*tasks.at(task_id)->records.at(parent_id);
+        std::vector<double> end;
+        if(!parent.ready || !parent.end || parent.request.at("stage")!="extraction")
+          throw std::runtime_error("NATIVE_TASK_IK_PARENT_INVALID");
+        parent.end->getCurrentState().copyJointGroupPositions("manipulator",end);
+        const auto& a=req.at("attachment");const auto& old=parent.request.at("attachment");
+        if(q!=end || req.at("world")!=parent.request.at("world") || a.at("id")!=old.at("id") ||
+            a.at("size")!=old.at("size") || a.at("touch_links")!=old.at("touch_links") ||
+            !samePose(matrix(a.at("pose")),matrix(old.at("pose"))) ||
+            !parent.end->getCurrentState().hasAttachedBody(a.at("id").get<std::string>()) ||
+            req.at("process_policy").at("actual_contact_mask")!=parent.request.at("process_policy").at("actual_contact_mask"))
+          throw std::runtime_error("NATIVE_TASK_IK_PARENT_CONTEXT_MISMATCH");
+#endif
+      }
       const auto* group=model->getJointModelGroup("manipulator");const auto& solver=group->getSolverInstance();
       if(!solver || solver->getJointNames()!=names || solver->getTipFrame()!=identity.at("task_tcp_link").get<std::string>()) throw std::runtime_error("NATIVE_IK_SOLVER_CONTEXT_MISMATCH");
       const auto target=matrix(req.at("goal_pose"));const auto base_frame=solver->getBaseFrame();
       const auto local=state.getGlobalLinkTransform(base_frame).inverse()*target;
+      if(bounded) {
+        budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
+        if(budget<=0)throw std::runtime_error("NATIVE_IK_REQUEST_DEADLINE");
+      }
       std::vector<double> solution;moveit_msgs::msg::MoveItErrorCodes error;const auto started=Clock::now();++ik_calls;
-      // getPositionIK performs one seed-directed solve; do not call the
-      // timeout-based random-restart searchPositionIK API in native-cold.
-      const bool success=solver->getPositionIK(pose(serial(local)),q,solution,error);
+      // One API call starts with q; plugin-internal retries are not observable.
+      const bool success=m710::invokeIk(*solver,bounded,pose(serial(local)),q,budget,solution,error);
+      const double actual_ik_s=seconds(started);
       J result={{"status","NATIVE_IK_FAILED"},{"native_ik_calls",1},{"resident_native_ik_calls",ik_calls},
-        {"solver","MoveIt_KDL_getPositionIK"},{"ik_collision_checked",false},{"ik_s",seconds(started)},{"error_code",error.val},
-        {"seed",req.at("seed")},{"random_restarts",0}};
+        {"solver",bounded?"MoveIt_KDL_searchPositionIK":"MoveIt_KDL_getPositionIK"},
+        {"solver_api",bounded?"searchPositionIK":"getPositionIK"},{"ik_mode",mode},
+        {"bounded_search",bounded},{"solver_api_calls",1},{"ik_request_count",1},
+        {"requested_solver_budget_s",bounded?req.at("solver_budget_s"):J(nullptr)},
+        {"effective_solver_budget_s",bounded?J(budget):J(nullptr)},
+        {"internal_attempts",bounded?J(nullptr):J(1)},
+        {"internal_attempts_observability",bounded?"NOT_OBSERVABLE":"SINGLE_INITIAL_ATTEMPT"},
+        {"ik_collision_checked",false},{"ik_s",actual_ik_s},{"actual_ik_s",actual_ik_s},{"error_code",error.val},
+        {"seed",req.at("seed")},{"seed_scope","OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED"},
+        {"random_restarts",bounded?J(nullptr):J(0)}};
+      if(bounded && seconds(begin)>=stage_budget) {result["status"]="NATIVE_IK_REQUEST_DEADLINE";return result;}
+#ifdef M710_IK_INPUT_PROBE
+      result["diagnostic_scope"]="IK_INPUT_ONLY_NO_LIVE_TASK_NO_MOTION";
+#endif
       if(!success || solution.size()!=names.size()) return result;
       for(double x:solution) if(!std::isfinite(x)) return result;
       state.setJointGroupPositions(group,solution);state.update();if(!state.satisfiesBounds()) return result;

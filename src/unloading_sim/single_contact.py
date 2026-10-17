@@ -26,6 +26,20 @@ class SingleContactClient:
 
     def request(self, request, **kwargs):
         op = request.get("op")
+        if op == "init" and self.preplace_enabled:
+            request = dict(request, bounded_preplace_ik_enabled=True)
+        mode = request.get("ik_mode", "single_attempt")
+        if mode not in {"single_attempt", "bounded_preplace"}:
+            raise MoveItUnavailable("UNKNOWN_IK_MODE")
+        if mode == "bounded_preplace":
+            budget = request.get("solver_budget_s")
+            if not (self.preplace_enabled and op == "ik" and
+                    request.get("planning_only") is True and request.get("stage") == "transit"
+                    and request.get("purpose") == "FREE_LOADED_TRANSFER"):
+                raise MoveItUnavailable("BOUNDED_PREPLACE_IK_SCOPE")
+            if (isinstance(budget, bool) or not isinstance(budget, (int, float))
+                    or not np.isfinite(budget) or not 0 < budget <= .10):
+                raise MoveItUnavailable("INVALID_IK_SOLVER_BUDGET")
         allowed = op in {"init", "fk", "inspect", "check_start", "ik", "plan"}
         allowed |= self.extraction_enabled and op == "check_extraction_end"
         allowed |= self.preplace_enabled and op == "check_transit_end"
@@ -75,7 +89,7 @@ class SingleContactClient:
         entry = {k: deepcopy(request.get(k)) for k in (
             "op","task_id","stage_id","parent_stage_id","stage","candidate_id","seed",
             "pipeline_id","planner_id","q_start","q_goal","goal_pose","scene_fingerprint",
-            "allowed_planning_time_s","ik_timeout_s")}
+            "allowed_planning_time_s","ik_timeout_s","ik_mode","solver_budget_s")}
         if op in {"plan","check_start","ik","check_extraction_end","check_transit_end"}:
             entry.update(attachment=request.get("attachment"),
                 target_id=request["process_policy"]["target_id"],
@@ -189,7 +203,20 @@ class SingleContactConnector(PlanningOnlyConnector):
         return self.ik_pose_once(pose,start,obstacles,seed,stage="pregrasp")
 
     def ik_pose_once(self, pose, start, obstacles, seed, *, stage, attachment=None,
-                     purpose=None, residual_reason="APPROACH_IK_FK_RESIDUAL"):
+                     purpose=None, residual_reason="APPROACH_IK_FK_RESIDUAL", ik_mode="single_attempt",
+                     solver_budget_s=None):
+        bounded = ik_mode == "bounded_preplace"
+        if ik_mode not in {"single_attempt", "bounded_preplace"}:
+            raise MoveItUnavailable("UNKNOWN_IK_MODE")
+        if bounded:
+            if (stage != "transit" or attachment is None
+                    or getattr(purpose,"value",purpose) != "FREE_LOADED_TRANSFER"):
+                raise MoveItUnavailable("BOUNDED_PREPLACE_IK_SCOPE")
+            if (isinstance(solver_budget_s,bool) or not isinstance(solver_budget_s,(int,float))
+                    or not np.isfinite(solver_budget_s) or not 0 < solver_budget_s <= .10):
+                raise MoveItUnavailable("INVALID_IK_SOLVER_BUDGET")
+            if self._native_cancelled():
+                raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
         request=self._build_native_request(start,None,obstacles,seed=seed,stage=stage,
             goal_pose=pose,attachment=attachment)
         if attachment is not None:
@@ -203,8 +230,15 @@ class SingleContactConnector(PlanningOnlyConnector):
             orientation_tolerance_rad=float(self.ik["orientation_tolerance_rad"]),
             allowed_planning_time_s=stage_s,ik_timeout_s=min(stage_s,self.native_ik_seconds),
             collision_check_in_native_ik=False)
+        if bounded:
+            request.update(ik_mode=ik_mode,solver_budget_s=min(solver_budget_s,stage_s))
+        if bounded and self._native_cancelled():
+            raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
+        dispatched = perf_counter()
         raw=self.native.request(request,timeout=timeout,cancelled=self._native_cancelled)
         self.native_ik_evidence.append(deepcopy(raw))
+        if bounded and (self._native_cancelled() or perf_counter()-dispatched >= stage_s):
+            raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
         if raw["status"]!="SUCCESS":
             return None,dict(reason=raw["status"],scope="FACE_ATTEMPT",native=raw)
         q=np.asarray(raw.get("q"),dtype=float)
@@ -215,6 +249,8 @@ class SingleContactConnector(PlanningOnlyConnector):
         re=float(np.linalg.norm(rotation_vector_from_matrix(actual[:3,:3]@pose[:3,:3].T)))
         if pe>self.ik["position_tolerance_m"] or re>self.ik["orientation_tolerance_rad"]:
             return None,dict(reason=residual_reason,position_m=pe,orientation_rad=re,scope="FACE_ATTEMPT")
+        if bounded and (self._native_cancelled() or perf_counter()-dispatched >= stage_s):
+            raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
         return q,None
 
     def complete_contact_plan(self, plan, row, contact_end, target, obstacles, suction, seed):
