@@ -1,0 +1,10 @@
+schema: m710_lifted_reception_preview_v1
+motion_policy: configs/validation/m710id70_proof_of_concept.yaml
+gap_m: 0.05
+edge_reserve_m: 0.01
+external_clearance_m: 0.005
+# No hardware travel specification has been supplied. No invented clamp.
+mechanical_surface_limits_world_m: null
+lift_mechanism_geometry: NOT_MODELED
+# UI range only; explicitly not a mechanical capability or acceptance limit.
+display_surface_range_world_m: [-0.40, 2.50]
