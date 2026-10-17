@@ -1,0 +1,342 @@
+{
+  "measured_source_commit": "f896a9d84675125678dd32208de1183b2fb8dadb",
+  "baseline_commit": "49766dfd3972e0f803c595612601e83fccde5e9e",
+  "native_build_source_commit": "613755433a5b04e2b7ec0cbd16ef3874eb119e85",
+  "native_source_unchanged_through_measured_source": true,
+  "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+  "trace_library_sha256": "a6eb1664348b38b06d9fb22f08f141361f087fcaf44635f1174b4edf34733031",
+  "build": {
+    "mode": "Release",
+    "cxx_flags": "-O3 -DNDEBUG",
+    "native_test_assertions": "-UNDEBUG",
+    "compiler": "/usr/bin/c++"
+  },
+  "environment_record_note": "environment.txt was captured before the corrected worker build; its 404da5b1 worker digest belongs to 8427071. Final worker identity is above, worker.sha256, and final results.",
+  "final_case_inputs": [
+    {
+      "target": "carton_l07_c02",
+      "run_id": "single-contact-cd96b32c59f14e87917f05d472b23796",
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "initial_carton_count": 40,
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c02",
+        "--seed",
+        "71070",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "f896a9d84675125678dd32208de1183b2fb8dadb",
+        "--output",
+        "/tmp/lift-native-20261017/c02-final"
+      ]
+    },
+    {
+      "target": "carton_l07_c04",
+      "run_id": "single-contact-48b5495bea26425a85407c48cd987143",
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "initial_carton_count": 40,
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c04",
+        "--seed",
+        "71070",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "f896a9d84675125678dd32208de1183b2fb8dadb",
+        "--output",
+        "/tmp/lift-native-20261017/c04-final"
+      ]
+    }
+  ],
+  "measured_source_files_sha256": {
+    "ros2/m710_moveit_backend/CMakeLists.txt": "740bb00228a2cb0143b3d1ca289af78fc5824e01f7d7411fb0e3f84ea2dbf52b",
+    "ros2/m710_moveit_backend/src/lifted_receiver.h": "01e6bdd4c324de947a5f409e28a3664123522e06faa7b0323c4b5ccc21cc47db",
+    "ros2/m710_moveit_backend/src/lifted_receiver_test.cpp": "5a8cc22cc172228869ec6ddf636eb447b218310616e2b854b417bb6ea3b3e2d9",
+    "ros2/m710_moveit_backend/src/worker.cpp": "77eb0bd9bd2da181bdd007f37f8bc587ff7358e626f7a546f68dd24777e1ada8",
+    "src/unloading_sim/lifted_reception.py": "573bc33e05a2a75f845be90bb1a9387b5ca2c0b15a6014d26b27d5445002ed54",
+    "src/unloading_sim/single_contact.py": "1ba8e3d75f309b0d18e3dc2daafbcb30e72883250ec6258c8b483d6d7245b148",
+    "src/unloading_sim/single_extraction.py": "f9485c069e1fd75862675220fd0b56d5d74195eec60e23d92b86f1a2fcc60273",
+    "src/unloading_sim/single_lifted_receiver.py": "2b06f0bdf1053f1be6f432005c098edfbbc18b3c8a2ea359f401250add5d425f",
+    "src/unloading_sim/single_target_recovery.py": "e339292bb19e680b957b190e6615fe4bdf1fdc3daffcfa1cf4e714899f0f6081",
+    "tests/test_single_lifted_receiver.py": "7cffa90063054635b2861fdb48ded38d34be5800956688cad34ce44062701522",
+    "tests/test_single_target_recovery.py": "a07838789b3e18ac8b0ef45c5e9bb904c391b662ff87a685077433d0db576209",
+    "tools/lifted_reception/viewer.html": "caf52fa16e776985b919ac2fa4151eb6bbda372d657b32dbd81080859a5caf19",
+    "tools/plan_m710_approach_contact.py": "fd85ef18b3ca6071117d36855b5f417dd4d2a768cea26689a8ba2b8c9e34bc8f",
+    "tools/search_replay/viewer.html": "8e2b71c30f1e965e20a29c67f99438e93eb891a18d6bc9ebad9c6a594be3cebe",
+    "tools/summarize_m710_lifted_release_ready.py": "25d7de47144ef33d614c753144562e72dc1631711ca556e809031df3e8379924"
+  },
+  "report_delivery_scope": "Only viewer presentation, read-only summary and documentation changed after measured source; delivery SHA is the Git commit containing this file.",
+  "viewers": {
+    "c02-replay.html": {
+      "bytes": 6678054,
+      "sha256": "8f9ddf777641884a7206a44e54cc80a0921cb977bcd94aaeb3adf64490023d9e"
+    },
+    "c04-replay.html": {
+      "bytes": 6732202,
+      "sha256": "dbfcecb4694fdd0fa4fc8fd11de985801f85edabc422b1e099b20139f5182264"
+    },
+    "geometry-preview-legend-fixed.html": {
+      "bytes": 2436273,
+      "sha256": "8f22e05023a14f9eb99fba98f8c56c58952ffd1b8d30ebcedbdaa297f5870321"
+    },
+    "README.txt": {
+      "bytes": 1283,
+      "sha256": "61c4cf21215e7d69b6acb4fa6996a079656d81ab073fec47b2987bbde2085279"
+    },
+    "LICENSE.three": {
+      "bytes": 1102,
+      "sha256": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84"
+    },
+    "LICENSE.fanuc.txt": {
+      "bytes": 10280,
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff"
+    }
+  },
+  "artifacts": {
+    "raw-records.zip": {
+      "bytes": 3343457,
+      "sha256": "826d0e795881d47f2fc0e2950547848898157aeb38fb5511875c4f6e3161e59b"
+    },
+    "raw-identities.json": {
+      "bytes": 4863,
+      "sha256": "9e0f09d17c845d6256c6fe8fe9aada124f20bf81cfb7ce757f75a16a6aedeac6"
+    },
+    "offline-viewers.zip": {
+      "bytes": 2109202,
+      "sha256": "5a279105ef8f480a857d1f857b2a421be0a7c5e5bae25c5f1cc1ca97696e8d77"
+    },
+    "summary.json": {
+      "bytes": 51251,
+      "sha256": "b301896900d8797ae06e0f567eb2781bd3549219120030b300579316d213042c"
+    },
+    "timing.csv": {
+      "bytes": 244,
+      "sha256": "ee12b5fbe80a67547807268bdea6bb02da54e214cd0a318f1460a00e4749d7f2"
+    },
+    "c02-browser-checks.json": {
+      "bytes": 635,
+      "sha256": "314aa9f3cdf24894c82625d38abdc8ace70f86acc128d07c0a3cf58537bdd280"
+    },
+    "c04-browser-checks.json": {
+      "bytes": 635,
+      "sha256": "8a8bed4b6ac9dbd92ea7fe3e89ba511215cad4d252f01eb927878e9d6d544c45"
+    },
+    "c02-release-ready.png": {
+      "bytes": 266058,
+      "sha256": "31708fa36303a491dc5cc373affd1d7aac74d8ed03074c87f3c908d8c96d1c53"
+    },
+    "c04-release-ready.png": {
+      "bytes": 267248,
+      "sha256": "ad77ad9cbb257fa3f8bceecec15141a7b625ddb35776f1455460030d9f711816"
+    },
+    "c02-lift-midpoint.png": {
+      "bytes": 256120,
+      "sha256": "16e38ec5453d1a3625bf6d8e2a3e39651cd5ce0346a50604abb31557a1ee79fa"
+    }
+  },
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN"
+}

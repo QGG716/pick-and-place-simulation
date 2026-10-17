@@ -1,5 +1,13 @@
 # FANUC M-710iD/70 当前结论（2026-10-17）
 
+已接入**正面抓取＋Hmax 横带的真实原生释放准备规划**。最终版 c02 / c04 均从完整 40 箱配置初态重新完成接近、受检查升带、接触、规划附着与 −X LIN 抽离，规划耗时 **4.390 / 5.451 s**。原生检查确认配置初态与 Hmax 干涉；两例在本次接近末态停臂升带，再进入实际接收区域。目标仍附着，未释放、未物理执行。
+
+[本轮报告、耗时与失败记录](docs/m710_lifted_release_ready_20261017.md) · [下载真实关节轨迹离线回放](docs/experiments/m710_lifted_release_ready_20261017/offline-viewers.zip)
+
+`LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE`；qualification_status=NOT_EVALUATED，continuous_swept_proof=false，physical_execution=NOT_RUN。升降机构与运动参数未知；没有完整作业周期或成功率结论，未接侧抓/Hmin 释放及后续取放。
+
+## 前轮升降横带几何预览（原记录保留）
+
 已新增**独立升降横带、动态完整投影接收区域及四类几何工艺预览**。当前顶层 Hmax/Hmin 为 2.050/1.750 m，理想落差 0.050/0.350 m。四类主方案有接收方向子区域；左端内侧 Hmin 展示样本保守筛查无干涉提示，Hmax 案例仍保留初态吸具与升高横带的潜在干涉。未清空通道反例保留；没有新增 IK/RRT/LIN、Isaac 或执行试验。
 
 [本轮报告与四张画面](docs/m710_lifted_reception_20261017.md) · [下载离线几何预览](docs/experiments/m710_lifted_reception_20261017/offline-preview.zip)

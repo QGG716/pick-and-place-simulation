@@ -4,6 +4,15 @@ import argparse, csv, hashlib, json
 from collections import Counter
 
 
+def compact_evidence(value):
+    """Keep measured aggregates; full repeated static policies stay in raw records."""
+    if isinstance(value, list):
+        return [compact_evidence(item) for item in value]
+    if isinstance(value, dict):
+        return {key: compact_evidence(item) for key, item in value.items() if key != 'policy'}
+    return value
+
+
 def summarize(directory):
     result=json.loads((directory/'result.json').read_text())
     requests=[json.loads(line) for line in (directory/'requests.jsonl').read_text().splitlines()]
@@ -21,6 +30,8 @@ def summarize(directory):
         clearance=r.get('response',{}).get('clearance')
         if clearance and clearance.get('workspace'):
             assert clearance['workspace']['pair_profile_enabled'] is False
+            for phase in clearance['workspace']['phases'].values():
+                assert phase['broad_phase_s'] is None and phase['narrow_s'] is None
     rows=[]
     for row in result['attempts']:
         rows.extend(row.get('previous_prefix_attempts',[]));rows.append(row)
@@ -46,7 +57,11 @@ def summarize(directory):
         planning_s=result['total_planning_s'],row_times_s=dict(times),request_round_trip_s=dict(request_cost),
         request_counts=dict(calls),native_calls=result['native_calls'],prior_calls=result['prior_build_load_query_calls'],
         pair_profile_enabled=False,exact_selected_q_and_parent_continuity=continuity,
-        initial_receiver_checks=rows[0].get('initial_receiver_checks',[]),external_axis_attempts=external,
+        initial_receiver_checks=compact_evidence(rows[0].get('initial_receiver_checks',[])),
+        external_axis_attempts=compact_evidence(external),
+        receiver_sync_attempts=[{key: item[key] for key in
+            ('sync_stage','parent_stage_id','q_rad','status','round_trip_s')}
+            for row in rows for item in row.get('receiver_sync_attempts',[])],
         prefix_attempt_count=len(rows),region_attempts=[a for row in rows for a in row.get('region_attempts',[])],
         failure=result['attempts'][-1].get('failure'),release_ready=None if not plan else plan['release_ready'],
         status=result['status'],qualification_status='NOT_EVALUATED',continuous_swept_proof=False,
