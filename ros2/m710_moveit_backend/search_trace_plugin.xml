@@ -1,0 +1,1 @@
+<library path="m710_search_trace"><class name="m710/RecordedOMPLPlanner" type="ompl_interface::RecordedOMPLPlannerManager" base_class_type="planning_interface::PlannerManager"><description>Opt-in diagnostic OMPL 1.7 RRTConnect event capture</description></class></library>

@@ -1,4 +1,5 @@
 #include "request_evidence.h"
+#include "search_trace.h"
 // JSONL is the sole application IPC. ROS logging goes to stderr, never stdout.
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/robot_model_loader/robot_model_loader.h>
@@ -479,6 +480,11 @@ class Worker {
           return;
         }
       }
+      std::shared_ptr<m710::SearchTrace> trace;
+      if(pipeline=="ompl" && pipelines.at(pipeline)->getPlannerPluginName()=="m710/RecordedOMPLPlanner") {
+        trace=std::make_shared<m710::SearchTrace>();trace->input=req;
+      }
+      m710::active_search_trace=trace;
       auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
       solver->setPlannerId(planner);solver->setProperty("goal_joint_tolerance",1e-12);solver->setProperty("goal_position_tolerance",m710::kNativeGoalPositionToleranceM);
       solver->setProperty("goal_orientation_tolerance",m710::kNativeGoalOrientationToleranceRad);solver->setProperty("max_velocity_scaling_factor",req.at("velocity_scale").get<double>());
@@ -499,6 +505,12 @@ class Worker {
       r.result={{"status","NATIVE_PLANNING_FAILED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_plan_s",seconds(begin)},
         {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
         {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
+      if(trace) {
+        r.result["search_trace"]={{"schema","m710_rrt_search_v1"},{"input",trace->input},{"planners",trace->planners},
+          {"marker","PLANNING_REPLAY_NOT_PHYSICAL_EXECUTION"},{"qualification_status","NOT_EVALUATED"},
+          {"continuous_swept_proof",false},{"physical_execution","NOT_RUN"}};
+      }
+      m710::active_search_trace.reset();
       r.result["solver_returned_success"]=result.success;
       r.result["solver_message"]=result.message;
       // MTC exposes the original error name on failure, but drops the numeric
@@ -655,8 +667,13 @@ private:
       static bool seeded=false;static uint32_t process_seed=0;
       if(!seeded) {ompl::RNG::setSeed(seed);process_seed=seed;seeded=true;}
       else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
+      if(req.value("search_trace_enabled",false) && (!planning_only || planning_mode!="cold_from_scratch"))
+        throw std::runtime_error("SEARCH_TRACE_SCOPE_INVALID");
       std::vector<rclcpp::Parameter> params;
       for(auto it=req.at("parameters").begin(); it!=req.at("parameters").end(); ++it) {
+        if(req.value("search_trace_enabled",false) && it.key()=="ompl.planning_plugin") {
+          params.emplace_back(it.key(),std::string("m710/RecordedOMPLPlanner"));continue;
+        }
         const auto& v=it.value();
         if(v.is_string()) params.emplace_back(it.key(),v.get<std::string>());
         else if(v.is_boolean()) params.emplace_back(it.key(),v.get<bool>());
@@ -961,7 +978,11 @@ private:
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),req.value("native_check_reuse",true),true,req.value("pair_profile_enabled",false));
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
-      scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});
+      scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
+        if(!clearance->check(current,verbose)) {m710::traceFailure("CLEARANCE",clearance->last_failure);return false;}
+        if(process && !process->check(current)) {m710::traceFailure("PROCESS_POLICY",process->last_failure);return false;}
+        return true;
+      });
     }
     if((op=="check_extraction_end" || op=="check_transit_end")) {
       const std::string end_stage=op=="check_extraction_end"?"extraction":"transit";

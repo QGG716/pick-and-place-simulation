@@ -26,6 +26,7 @@ from plan_m710_top_row_only import next_scene
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target",required=True)
+    parser.add_argument("--search-trace",action="store_true",help="diagnostic buffered native RRT search events; default off")
     stages=parser.add_mutually_exclusive_group()
     stages.add_argument("--through-extraction",action="store_true",
         help="extend contact with planned attachment and one controlled extraction LIN")
@@ -49,6 +50,7 @@ def main():
     os.environ["M710_MOVEIT_LOG"]=str(args.output/"worker.log")
     os.environ.pop("M710_MOVEIT_REQUEST_LOG",None)
     os.environ.pop("M710_MOVEIT_DIAGNOSTICS",None)
+    run_id="single-contact-"+uuid.uuid4().hex
     initialized=perf_counter()
     policy=load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
     original=build_verified_motion_input(policy,ROOT)
@@ -78,7 +80,7 @@ def main():
     if target is None:raise ValueError("UNKNOWN_TARGET")
     scene_prepare_s=perf_counter()-prepared
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
-        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace)
+        extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace)
     connector_type=SingleContactConnector
     marker=MARKER
     if args.through_extraction:
@@ -128,7 +130,7 @@ def main():
                 clearance=clearance,request_check_evidence=response.get("request_check_evidence")))
         result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction or args.through_preplace,through_preplace=args.through_preplace,
             qualification_status="NOT_EVALUATED",continuous_swept_proof=False,
-            physical_execution="NOT_RUN",execution_ready=False,run_id="single-contact-"+uuid.uuid4().hex,
+            physical_execution="NOT_RUN",execution_ready=False,run_id=run_id,
             source_commit=args.source_commit,command=[sys.executable,*sys.argv],seed=args.seed,
             target_id=args.target,complete=plan is not None,
             selected_face=None if plan is None else plan["target"]["geometric_face_id"],
@@ -166,6 +168,12 @@ def main():
         # Retain actual request evidence even if initialization/output handling fails.
         with (args.output/"requests.jsonl").open("w") as f:
             for record in client.records:f.write(json.dumps(record,allow_nan=False)+"\n")
+        if args.search_trace:
+            (args.output/"search-trace.json").write_text(json.dumps(dict(
+                schema="m710_search_run_v1",run_id=run_id,source_commit=args.source_commit,
+                model=client.trace_inputs.get("model"),attempts=client.traces,
+                marker="PLANNING_REPLAY_NOT_PHYSICAL_EXECUTION",qualification_status="NOT_EVALUATED",
+                continuous_swept_proof=False,physical_execution="NOT_RUN"),allow_nan=False))
         client.close()
 
 

@@ -18,9 +18,12 @@ MARKER = "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE"
 
 class SingleContactClient:
     """Fail-closed protocol fence, including startup. No old planner entry can hide."""
-    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False):
+    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False, search_trace_enabled=False):
         self.client, self.records = client, []
         self.forbidden_attempts = 0
+        self.search_trace_enabled=search_trace_enabled
+        self.trace_inputs={}
+        self.traces=[]
         self.preplace_enabled = preplace_enabled
         self.extraction_enabled = extraction_enabled or preplace_enabled
 
@@ -28,6 +31,9 @@ class SingleContactClient:
         op = request.get("op")
         if op == "init" and self.preplace_enabled:
             request = dict(request, bounded_preplace_ik_enabled=True)
+        if op=="init" and self.search_trace_enabled:
+            request=dict(request,search_trace_enabled=True)
+            self.trace_inputs["model"]=deepcopy(request)
         mode = request.get("ik_mode", "single_attempt")
         if mode not in {"single_attempt", "bounded_preplace"}:
             raise MoveItUnavailable("UNKNOWN_IK_MODE")
@@ -105,6 +111,12 @@ class SingleContactClient:
             entry.update(status="TRANSPORT_OR_CANCELLATION_ERROR", detail=str(exc))
             raise
         else:
+            if self.search_trace_enabled and op=="plan":
+                trace=response.pop("search_trace",None)
+                self.traces.append(dict(request=deepcopy(request),response_identity={k:response.get(k) for k in
+                    ("request_id","task_id","stage_id","parent_stage_id","status","solver_message")},
+                    trace=trace,final_timed_path=deepcopy(response.get("points")),
+                    history_status="RECORDED" if trace else "SEARCH_HISTORY_NOT_RECORDED"))
             entry["response"] = {k: deepcopy(v) for k,v in response.items()
                 if k not in {"points","identity","capabilities","frames"}}
             if isinstance(entry["response"].get("clearance"), dict):
