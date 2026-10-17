@@ -36,8 +36,18 @@ class MetricFitConfig:
     minimum_geometry_area_m2: float = .0003
     maximum_normal_condition_ratio: float = .20
     local_normal_radius_px: int = 3
+    approximate_cuboid_mode: str = 'raw_boundary'
+    approximate_surface_scale_m: float = .003
+    approximate_stability_m: float = .006
+    approximate_outlier_m: float = .03
+    approximate_outlier_fraction: float = .05
 
     def __post_init__(self):
+        if self.approximate_cuboid_mode not in ('off','outline_projection','raw_boundary'):
+            raise ValueError('INVALID_APPROXIMATE_CUBOID_MODE')
+        values=[self.approximate_surface_scale_m,self.approximate_stability_m,self.approximate_outlier_m,self.approximate_outlier_fraction]
+        if not np.isfinite(values).all() or min(values)<=0 or self.approximate_outlier_fraction>=1:
+            raise ValueError('INVALID_APPROXIMATE_MODEL_SCALES')
         if (not np.isfinite([self.minimum_geometry_short_m,self.minimum_geometry_area_m2,self.maximum_normal_condition_ratio]).all()
                 or min(self.minimum_geometry_short_m,self.minimum_geometry_area_m2,self.maximum_normal_condition_ratio)<=0):
             raise ValueError('INVALID_PHYSICAL_FACE_QUALITY_CONFIG')
@@ -628,6 +638,9 @@ def validate_metric_record(record, depth, mask, K, *, maximum_mean_m=.003, minim
         if not was_complete:
             output['cuboid_status'] = gate if gate != 'BOUNDARY_EVIDENCE_REQUIRED' else 'INSUFFICIENT_PHYSICAL_BOUNDARIES'
             output['independent_geometry_validation_status']='RELIABLE_SURFACES_ONLY' if accepted else 'NO_RELIABLE_SURFACES'
+    if 'approximate_cuboid' in output:
+        from .approximate_cuboid import validate
+        output['approximate_cuboid']=validate(output,depth,mask,K)
     return output
 
 
@@ -846,6 +859,9 @@ def _complete(output, groups, axes, all_points, depth, K, config, mask):
                                          'legacy_label_contour_candidate':dict(bounds=legacy_bounds, candidate_faces=legacy_faces),
                                          'silhouette_bound_parameters':free,
                                          'observed_plane_bounds':len(observed),'hidden_bound_constraints':'LOCATED_RAW_DEPTH_FINITE_CONSTRAINTS'}
+    if config.approximate_cuboid_mode!='off' and output['reliable_plane_count']==3:
+        from .approximate_cuboid import estimate
+        output['approximate_cuboid']=estimate(output,depth,mask,K)
     if not physical:
         output['completion_diagnostics'].update(
             rejection='UNVERIFIED_FINITE_FACE_ADJACENCY' if not relation else 'UNRESOLVED_SIX_BOUNDS',

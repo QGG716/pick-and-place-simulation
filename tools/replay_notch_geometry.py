@@ -12,7 +12,8 @@ sys.path[:0]=[str(ROOT/'src'),str(ROOT/'packages/unloading_contracts/src')]
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--baseline',type=Path,required=True)
-    p.add_argument('--output',type=Path,required=True);p.add_argument('--vision',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--output',type=Path,required=True);p.add_argument('--vision',type=Path,required=True)
+    p.add_argument('--approximate-mode',choices=['off','outline_projection','raw_boundary']);a=p.parse_args()
     from unloading_perception.finite_sequence import read_json,atomic_json
     from unloading_perception.isaac_payload import load_capture_payload
     from unloading_perception.isaac_validation import IsaacSceneManifest
@@ -21,6 +22,7 @@ def main():
     import yaml
     config=yaml.safe_load((ROOT/'configs/isaac/perception_validation.yaml').read_text())
     config['vision'].update(legacy_cuboid_diagnostic=False,processing_divisor=1,sam_image_reuse=True)
+    if a.approximate_mode:config['vision'].setdefault('face_quality',{})['approximate_cuboid_mode']=a.approximate_mode
     config=effective_config(config,'subprocess',1)
     a.output.mkdir(parents=True,exist_ok=False);rows=[]
     plan=read_json(a.baseline/'frozen_plan.json')
@@ -28,6 +30,7 @@ def main():
     code_files=['tools/replay_notch_geometry.py','tools/workcell_geometry_process.py',
         'tools/run_isaac_rgbd_geometry.py','tools/metric_depth_runner.py',
         'src/unloading_perception/metric_faces.py','src/unloading_perception/physical_bounds.py',
+        'src/unloading_perception/approximate_cuboid.py','configs/perception/approximate_cuboid_review.json',
         'src/unloading_perception/metric_support.py','src/unloading_perception/final_geometry.py',
         'configs/perception/metric_geometry_acceptance.json','configs/isaac/perception_validation.yaml']
     atomic_json(a.output/'geometry_run_identity.json',dict(started_utc=datetime.now(timezone.utc).isoformat(),

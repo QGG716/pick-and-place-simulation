@@ -1,0 +1,196 @@
+{
+  "files": {
+    "delivery-tests.txt": {
+      "bytes": 114,
+      "sha256": "9755e6af90555e2e6961505273386f97f5328504e514c5654a3cfd608ef592e7",
+      "sha256_lf_normalized": "9755e6af90555e2e6961505273386f97f5328504e514c5654a3cfd608ef592e7"
+    },
+    "execution-audit.json": {
+      "bytes": 12073,
+      "sha256": "62ca6ebec530c036c978f72d6294934256a87e899defe9339f59cf25b848b4b8",
+      "sha256_lf_normalized": "62ca6ebec530c036c978f72d6294934256a87e899defe9339f59cf25b848b4b8"
+    },
+    "final\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 109106,
+      "sha256": "090df4c3d6c36132f8394d39d12992cbd2283029d2c5eee7f3ff29e660c53d71",
+      "sha256_lf_normalized": null
+    },
+    "final\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 516758,
+      "sha256": "e020a5ae6cf9eff4c614beb6f3fac318ddd0bb22bd8f1b4e705645bf23c893a4",
+      "sha256_lf_normalized": null
+    },
+    "final\\geometry_run_identity.json": {
+      "bytes": 8408,
+      "sha256": "7d735f40287e8ae83ef488cd0f8b5301bafa780bdddda995d71732b065e5481c",
+      "sha256_lf_normalized": "7d735f40287e8ae83ef488cd0f8b5301bafa780bdddda995d71732b065e5481c"
+    },
+    "final\\progress.json": {
+      "bytes": 5393,
+      "sha256": "d7db8723153649e1621ccdebf9cc242c826b61447041df39c31e40760259512e",
+      "sha256_lf_normalized": "d7db8723153649e1621ccdebf9cc242c826b61447041df39c31e40760259512e"
+    },
+    "final\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 163924,
+      "sha256": "ff87d5ff61ff6c428c624a1d04bdf06ec9e9a8651fa0a8851dec63e86c2fbe7e",
+      "sha256_lf_normalized": null
+    },
+    "final\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 598179,
+      "sha256": "9995f6c654e164babcd73ab4abf820c4e1920f4108023c1fc54c85001f8b076a",
+      "sha256_lf_normalized": null
+    },
+    "final-invariants.json": {
+      "bytes": 1483,
+      "sha256": "c315a4f1e5204284dde99aee917f53b52930ea03c5fe3f9fab75073482771f05",
+      "sha256_lf_normalized": "c315a4f1e5204284dde99aee917f53b52930ea03c5fe3f9fab75073482771f05"
+    },
+    "local-source-check.json": {
+      "bytes": 1519,
+      "sha256": "2d07920bb99f10d7415754dd3af668f4a647c5c094097588404669929b3d2c8f",
+      "sha256_lf_normalized": "b82e04c9ea3d39e0736735d2657171a5f22a780455e158ced44ce8b60ac6550e"
+    },
+    "primary-approximate.png": {
+      "bytes": 152466,
+      "sha256": "bba175800f10188a90dcf36c14d7a69ae3e83175bca4d77392e40f93343157e5",
+      "sha256_lf_normalized": null
+    },
+    "primary-model-cloud.png": {
+      "bytes": 35656,
+      "sha256": "ee97f07e06015b0c04750c657ee931aff84efc44b6a9421bbb7093ee583abc10",
+      "sha256_lf_normalized": null
+    },
+    "primary-raw.png": {
+      "bytes": 154768,
+      "sha256": "b152a8c72cbce1d4cedb723dccbf20493113ca561e37ee3e0c2da1375050d955",
+      "sha256_lf_normalized": null
+    },
+    "primary_result.json": {
+      "bytes": 312584,
+      "sha256": "eef194ca717ed2624998d775c8b3830daea82523295ddc13cd1fd45b5423a67e",
+      "sha256_lf_normalized": "eef194ca717ed2624998d775c8b3830daea82523295ddc13cd1fd45b5423a67e"
+    },
+    "pytest-baseline.txt": {
+      "bytes": 13869,
+      "sha256": "7ecdfbe7b1fd56f9141cc9b29f45023a2a59c7d19800aa97784b5059783156bf",
+      "sha256_lf_normalized": "7ecdfbe7b1fd56f9141cc9b29f45023a2a59c7d19800aa97784b5059783156bf"
+    },
+    "pytest-final.txt": {
+      "bytes": 13869,
+      "sha256": "f15420ec627f7174004fa39acf618ef849ad2df8c80a43f1de65bbcc3e66775d",
+      "sha256_lf_normalized": "f15420ec627f7174004fa39acf618ef849ad2df8c80a43f1de65bbcc3e66775d"
+    },
+    "README.md": {
+      "bytes": 1666,
+      "sha256": "384e3d36713b264761a4d9c392cfca63ecbcd2437f25c7adea5753b7ceb12f2f",
+      "sha256_lf_normalized": "384e3d36713b264761a4d9c392cfca63ecbcd2437f25c7adea5753b7ceb12f2f"
+    },
+    "refinement-probe-initial.json.gz": {
+      "bytes": 27998,
+      "sha256": "7120a48ff6d6baec0ae597480ea7b024e14001ab175edaf886d01a21be4df17e",
+      "sha256_lf_normalized": null
+    },
+    "refinement-probe.json.gz": {
+      "bytes": 28813,
+      "sha256": "9b86893e012322ab7a2678c8e67b17679163659b62d6f8e88e8dd556dd1173c5",
+      "sha256_lf_normalized": null
+    },
+    "regression.csv": {
+      "bytes": 7554,
+      "sha256": "19b50b9466e8fbb59dfa2bcadbde9e91c116db52b2e10b02cad5f67f8ddf2e63",
+      "sha256_lf_normalized": "8df13ee4ff10548e4b924cf2758793e63a498e89a52dd0d01b040e4afc0f047c"
+    },
+    "regression.json": {
+      "bytes": 33405,
+      "sha256": "86d7f5e4faf91d04f3554f244fb411ef09a04533939e118e211efa2500c7438f",
+      "sha256_lf_normalized": "86d7f5e4faf91d04f3554f244fb411ef09a04533939e118e211efa2500c7438f"
+    },
+    "six_boundaries.csv": {
+      "bytes": 31304,
+      "sha256": "a845cdab5626d518959e570b608d72305ec0e355f272eaf202d43b81a22102de",
+      "sha256_lf_normalized": "0b27781a6e351714c1cfe5680e03055fa8b2e3ab67d521c85aca2fd35fa00a1e"
+    },
+    "six_boundaries.json": {
+      "bytes": 74401,
+      "sha256": "beed1176a653334b46e999729cca6b6bc9278f36925bc31867af81b1a064c904",
+      "sha256_lf_normalized": "beed1176a653334b46e999729cca6b6bc9278f36925bc31867af81b1a064c904"
+    },
+    "strict-baseline\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 108326,
+      "sha256": "505baf6498562fbdc80a2e0f2f55487ae5504e3a58f76af4c79c3546af172473",
+      "sha256_lf_normalized": null
+    },
+    "strict-baseline\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 515180,
+      "sha256": "d8884b61d34512a2ce1c646c645f0c48e63d6b64ef51fad555cfe45fc6081458",
+      "sha256_lf_normalized": null
+    },
+    "strict-baseline\\geometry_run_identity.json": {
+      "bytes": 8110,
+      "sha256": "67c6c4ad0cb852ecd5c972132ae03230c64b0ba11734c109baa08a5f2bcfdd78",
+      "sha256_lf_normalized": "67c6c4ad0cb852ecd5c972132ae03230c64b0ba11734c109baa08a5f2bcfdd78"
+    },
+    "strict-baseline\\progress.json": {
+      "bytes": 5397,
+      "sha256": "0b0c381fca8ea49d9c7e136f4367586654d09d0ca3d3467a87ddf1eab9fe1461",
+      "sha256_lf_normalized": "0b0c381fca8ea49d9c7e136f4367586654d09d0ca3d3467a87ddf1eab9fe1461"
+    },
+    "strict-baseline\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 163547,
+      "sha256": "2d111a299ad1836105f66e153c018efbf057ecc8882387d0de4791c9b51d463a",
+      "sha256_lf_normalized": null
+    },
+    "strict-baseline\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 566098,
+      "sha256": "861b658af1410cf6dfa919d2907faa6f2dec726db770fd0e39d5f4df1c7e9d4c",
+      "sha256_lf_normalized": null
+    },
+    "summary.json": {
+      "bytes": 2539,
+      "sha256": "e606607d5a10120885ddfa7909699aabc45b2717372e7ee3241fed7813f329e0",
+      "sha256_lf_normalized": "e606607d5a10120885ddfa7909699aabc45b2717372e7ee3241fed7813f329e0"
+    },
+    "uncoupled\\frame32\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 108694,
+      "sha256": "479fcb9bcaccd86bc4161c8b23abccbf12076e9b0675dc7843b576812bf499e8",
+      "sha256_lf_normalized": null
+    },
+    "uncoupled\\frame32\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 515906,
+      "sha256": "6a2b6b838a2444164b5de0a1c2b3f2b4bd6fa6efecee9d814b40570aa605d895",
+      "sha256_lf_normalized": null
+    },
+    "uncoupled\\geometry_run_identity.json": {
+      "bytes": 8415,
+      "sha256": "6cc1afe45b65bbec60558e94bf26c571ed5f334d32cff8519607ef3251993301",
+      "sha256_lf_normalized": "6cc1afe45b65bbec60558e94bf26c571ed5f334d32cff8519607ef3251993301"
+    },
+    "uncoupled\\progress.json": {
+      "bytes": 5398,
+      "sha256": "6687e0cade11b8b23ce2ef0cc0ddf362601897b4b6869afaca8ef2c926943df6",
+      "sha256_lf_normalized": "6687e0cade11b8b23ce2ef0cc0ddf362601897b4b6869afaca8ef2c926943df6"
+    },
+    "uncoupled\\stack_notch\\module_0_upper\\rgbd_cuboids.json.gz": {
+      "bytes": 163736,
+      "sha256": "01ccc2b31a279af1b86a2085947ac18d22d015375d9675782fca0973189bc9e2",
+      "sha256_lf_normalized": null
+    },
+    "uncoupled\\stack_notch\\module_1_lower\\rgbd_cuboids.json.gz": {
+      "bytes": 594046,
+      "sha256": "bb53f84e66d8374e933f4e3e680674a282e79c8d569383c7c90e230bb98c5f05",
+      "sha256_lf_normalized": null
+    },
+    "viewer-check.json": {
+      "bytes": 325,
+      "sha256": "ae8fadd480155b618e7de20d24547e258ef3e7836effb49a6fbc092a72aba9e0",
+      "sha256_lf_normalized": "2d0210556e1c2b26a880b942b36714ac2945e08d86b0de0ba8bcdec964ed8f0b"
+    }
+  },
+  "full_archive": {
+    "path": "outputs\\approximate-cuboid-20261017\\delivery-final.tar.gz",
+    "bytes": 206801076,
+    "sha256": "a4b876643e4fa74d959eccd0553eb29b815643bc30119fa3a92403e628e29f32"
+  },
+  "text_line_endings": "Git may convert CRLF; LF-normalized hashes supplied. Gzip JSON is byte-exact to actual solver outputs.",
+  "original_inputs": "Previous notch-multiface-20261016 frozen capture and SAM arrays are required to rerun; no models in this package."
+}

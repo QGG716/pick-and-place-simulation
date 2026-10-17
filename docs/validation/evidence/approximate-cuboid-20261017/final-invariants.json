@@ -1,0 +1,48 @@
+[
+  {
+    "input": "frame32/module_0_upper/rgbd_cuboids.json",
+    "instances": 15,
+    "strict_baseline_exactly_reproduced": true,
+    "planes_labels_bindings_unchanged": true,
+    "strict_complete": 0,
+    "approximate_generated": 0,
+    "approximate_survived_observation_adapter": [],
+    "unknown": 15,
+    "execution_blocked": true
+  },
+  {
+    "input": "frame32/module_1_lower/rgbd_cuboids.json",
+    "instances": 30,
+    "strict_baseline_exactly_reproduced": true,
+    "planes_labels_bindings_unchanged": true,
+    "strict_complete": 0,
+    "approximate_generated": 0,
+    "approximate_survived_observation_adapter": [],
+    "unknown": 30,
+    "execution_blocked": true
+  },
+  {
+    "input": "stack_notch/module_0_upper/rgbd_cuboids.json",
+    "instances": 7,
+    "strict_baseline_exactly_reproduced": true,
+    "planes_labels_bindings_unchanged": true,
+    "strict_complete": 0,
+    "approximate_generated": 0,
+    "approximate_survived_observation_adapter": [],
+    "unknown": 7,
+    "execution_blocked": true
+  },
+  {
+    "input": "stack_notch/module_1_lower/rgbd_cuboids.json",
+    "instances": 22,
+    "strict_baseline_exactly_reproduced": true,
+    "planes_labels_bindings_unchanged": true,
+    "strict_complete": 0,
+    "approximate_generated": 1,
+    "approximate_survived_observation_adapter": [
+      "carton-assets-capture-design1c/module_1_lower/carton-assets-capture-design1c%3Amodule_1_lower%3A100/6"
+    ],
+    "unknown": 22,
+    "execution_blocked": true
+  }
+]

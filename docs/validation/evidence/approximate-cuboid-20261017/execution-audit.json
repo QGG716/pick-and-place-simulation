@@ -1,0 +1,307 @@
+{
+  "baseline_commit": "d75483e0f5d837512b30cd4ad5cc4c6d189769db",
+  "primary_selection": {
+    "schema": "approximate_cuboid_development_review_v1",
+    "baseline_commit": "d75483e0f5d837512b30cd4ad5cc4c6d189769db",
+    "primary": {
+      "scene": "stack_notch",
+      "module": "module_1_lower",
+      "capture_id": "carton-assets-capture-design1c:module_1_lower:100",
+      "mask_id": 6,
+      "proposal_id": 7,
+      "rgb_sha256": "c2dfed76508e8027da543a640212cc2117c394fb2ae7da43c68ed4f3607c6645",
+      "depth_sha256": "b9d2ae8355df0f559fed787447d34a647fe7cf45711689cc584fbb2ba01abbe2"
+    },
+    "negative_regression": {
+      "scene": "stack_notch",
+      "module": "module_1_lower",
+      "mask_id": 2,
+      "proposal_id": 2
+    },
+    "run_modes": [
+      "off",
+      "outline_projection",
+      "raw_boundary"
+    ],
+    "selection_usage": "Review and binding only; never a solver condition",
+    "accuracy_config": "configs/perception/metric_geometry_acceptance.json",
+    "capture_detector_sam": "FROZEN_NOT_RUN",
+    "later_stages": "NOT_RUN"
+  },
+  "source_hashes": {
+    "sensor_rgb.png": "c2dfed76508e8027da543a640212cc2117c394fb2ae7da43c68ed4f3607c6645",
+    "metric_depth_m.npy": "b9d2ae8355df0f559fed787447d34a647fe7cf45711689cc584fbb2ba01abbe2",
+    "camera_info.json": "6aeb2e91b81b0883b222674f7060e0b859aa2acca2666f5a6fef86b7339438f3",
+    "capture_metadata.json": "60fa90b9ccc96877206b50cc7e4d054ee9fa2cd0abf0c1b5b37ccb070934cf6d"
+  },
+  "sam_hashes": {
+    "cargo_instances.json": "2a99aa5d082086edd712f6348caef6142074e74199a6775d3f89457fd6e8a924",
+    "cargo_masks.npz": "002f0371f2817c800f663c0573603f44e3bc8d8a4f36023ae84b06f19c801d03"
+  },
+  "proposal_mask_mapping": {
+    "id": 7,
+    "instance_id": 6,
+    "proposal_id": 7,
+    "bbox": [
+      1496.2733154296875,
+      769.1425170898438,
+      1803.2071533203125,
+      1202.1845703125
+    ],
+    "bbox_xyxy": [
+      1496.2733154296875,
+      769.1425170898438,
+      1803.2071533203125,
+      1202.1845703125
+    ],
+    "raw_text_label": "cardboard box",
+    "label": "box",
+    "detector_score": 0.43085330724716187,
+    "proposal_source": "GROUNDING_DINO",
+    "filter_candidate_id": 7,
+    "sam_iou_score": 0.98487,
+    "sam_variant_scores": [
+      0.98493,
+      0.98397,
+      0.98533,
+      0.98487,
+      0.98487
+    ],
+    "sam_prompt_stability": 0.99674,
+    "auto_match_iou": 0.0,
+    "auto_mask_index": null,
+    "mask_area": 104354,
+    "mask_box_area_ratio": 0.78512,
+    "person_mask_overlap": 0.0,
+    "person_box_iou": 0.0,
+    "boundary_source": "stable_multi_box_prompt_sam",
+    "validation_score": 0.8407,
+    "validation_status": "verified"
+  },
+  "input_reused": "Frozen capture and DINO/SAM arrays, never rerun",
+  "environment": {
+    "numpy": "1.26.4",
+    "scipy": "1.14.1",
+    "opencv": "4.10.0"
+  },
+  "baseline_code_archive_sha256": "87fbe247ce328183e9362e13c7b24925170c7dccfe7ff1e49656fe235305141f",
+  "code_identity": {
+    "started_utc": "2026-10-17T06:28:59.522008+00:00",
+    "source_directory": "/root/autodl-tmp/v05-acceptance/approximate-cuboid-20261017/delivery-code",
+    "frozen_model_run": "/root/autodl-tmp/v05-acceptance/notch-multiface-20261016/baseline",
+    "frozen_plan_sha256": "2dba8949db2a534223561d2692dc2ea99a2580a55173e33889040505c96d6456",
+    "code_sha256": {
+      "tools/replay_notch_geometry.py": "9c91bfba91925f94d3910539822d1d4add32b64cb749cb988250c428777de231",
+      "tools/workcell_geometry_process.py": "cdd86b5001094fcbcabd9c79917ae3bd323b5c7b09dda245afe97306836911dc",
+      "tools/run_isaac_rgbd_geometry.py": "dcf23bd4d93c212c07301ebec922a6d178cc2935f3dfceae12d9a29c9264e136",
+      "tools/metric_depth_runner.py": "9b0cba1a40722bc852cddac33f60ce24aa45a3f1e6edc7f14643bbdf8760ee66",
+      "src/unloading_perception/metric_faces.py": "87f7432f5c16987490a4deba74db7bb7d95de56197495e7e2b39f8810ae3d733",
+      "src/unloading_perception/physical_bounds.py": "960cd46f1a51a4f946624f3c0ed7cd3b1ef7f33667aa7b567cfb5510d8486ce9",
+      "src/unloading_perception/approximate_cuboid.py": "03520109fcac7946e1af9170e736b33d0c81e6695ee7db2e3b04d084956af74d",
+      "configs/perception/approximate_cuboid_review.json": "ec0ad02a2438df341eedea1f215c13c74686dbd592329e4d042243c9bac3f004",
+      "src/unloading_perception/metric_support.py": "0db777007144d535401e4bbbc3c3e8b1559bcdd014fd7a93244aeba1b4b64e52",
+      "src/unloading_perception/final_geometry.py": "7efeffcc4af968ae1da2452e711da4f0e627ca5bfe3664ba8abb3ecc47d7bb22",
+      "configs/perception/metric_geometry_acceptance.json": "43ee1170d7e467d915aa0157583bdc7213da9436f6c391634072536879186be3",
+      "configs/isaac/perception_validation.yaml": "34efa6473c7ff9dde2a5dc91d352b9caedae44f384538ce37317eac2302952d2"
+    },
+    "config": {
+      "schema_version": "isaac_perception_validation_v2",
+      "rig_id": "m710id70_j1_perception_mast_v5",
+      "effective_scene_config": "configs/isaac/workcell_v2.yaml",
+      "vision_rig_config": "configs/isaac/perception_sensing_pose.yaml",
+      "modes": [
+        "ISAAC_GT",
+        "STAGED_RGBD",
+        "STAGED_MONOCULAR_MOGE"
+      ],
+      "primary_mode": "STAGED_RGBD",
+      "comparison_mode": "STAGED_MONOCULAR_MOGE",
+      "raw_image_automatic": false,
+      "proposal_source": "ISAAC_GT_ORACLE_PROPOSAL",
+      "detector_metrics": "NOT_EVALUATED",
+      "layout_bundle": {
+        "snapshot": "integration/isaac_scene_contract/m710id70_layout_v1/scene_snapshot.json",
+        "isaac_contract": "integration/isaac_scene_contract/m710id70_layout_v1/isaac_layout_contract.json",
+        "archived_snapshot_reference_commit": "f84578a3c9a91364b747560b994f2e6e9b5d65a2",
+        "feasibility_reference_commit": "648e177a03d2a5a5d8a2f11e9141c57763325805",
+        "robot_base_xyz_A_m": [
+          0.625,
+          0.0,
+          0.6
+        ],
+        "latest_layout_binding_status": "READ_ONLY_COMPATIBILITY_REFERENCE",
+        "official_robot_asset": {
+          "repository_path": "assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf",
+          "sha256": "2a813af47694819c44c888fe54e0041b045355ffb5273b012e3ff995b4999bcf",
+          "source_status": "LATEST_FEASIBILITY_OFFICIAL_URDF"
+        }
+      },
+      "historical_cameras": [
+        {
+          "camera_id": "front_validation_camera",
+          "status": "SUPERSEDED_BY_J1_MOUNTED_PERCEPTION_MAST_V2",
+          "resolution_px": [
+            640,
+            480
+          ],
+          "publish_rate_hz": 10.0,
+          "acceptance_eligible": false
+        }
+      ],
+      "scenes": [
+        "MECHANICAL_TOP_VIEW",
+        "J1_ROTATION_SWEEP",
+        "FULL_STACK_NOMINAL",
+        "DARK_LIGHT_OFF",
+        "DARK_LIGHT_ON",
+        "RGBD_CALIBRATION_BOX",
+        "PARTIAL_OCCLUSION",
+        "MOTION_TIMESTAMP_TEST"
+      ],
+      "target_selection": {
+        "strategy": "manifest_stable_id",
+        "simulation_object_id": "carton_l07_c02"
+      },
+      "perturbations": {
+        "known_translation_m": [
+          0.05,
+          0.0,
+          0.0
+        ],
+        "known_rotation_rpy_rad": [
+          0.0,
+          0.0,
+          0.17453292519943295
+        ],
+        "occluder_size_xyz_m": [
+          0.18,
+          0.7,
+          0.9
+        ]
+      },
+      "rendering": {
+        "sensor_target_highlight": false,
+        "carton_asset_config": "configs/isaac/carton_assets.json",
+        "carton_asset_entry": "scripts/isaacsim_perception_capture.py --carton-assets configs/isaac/carton_assets.json --asset-cache CACHE",
+        "carton_asset_review_policy": "RAW_IMAGES_FIRST_THEN_ONE_EXISTING_PIPELINE_RUN_PER_MODULE",
+        "appearance_ab_entry": "scripts/isaacsim_perception_capture.py --appearance-ab",
+        "appearance_ab_scope": "FULL_STACK_NOMINAL_SAME_GEOMETRY_A_PLAIN_B_SHARED_PAPER_ATLAS",
+        "physics_hz": 60,
+        "sensor_acquisition_hz": 30,
+        "capture_trigger_hz": 2,
+        "vision_processing_hz": 2,
+        "smoke_frames": 18,
+        "renderer": "RaytracedLighting",
+        "full_resolution_px": [
+          2592,
+          1944
+        ],
+        "visual_demo_resolution_px": [
+          1280,
+          720
+        ],
+        "visual_demo_fps": 20,
+        "visual_demo_seconds": 12
+      },
+      "vision": {
+        "keyframes": [
+          0,
+          50,
+          100
+        ],
+        "resident_worker_timeout_s": 90.0,
+        "registered_depth_source": "ISAAC_IDEAL_REGISTERED_DEPTH",
+        "depth_unavailable_fallback": "DEPTH_UNAVAILABLE_MOGE",
+        "fallback_scale_status": "MONOCULAR_SCALE_UNVERIFIED",
+        "legacy_cuboid_diagnostic": false,
+        "processing_divisor": 1,
+        "sam_image_reuse": true,
+        "measurement_support_policy": "MEASUREMENT_PARENT_V2",
+        "face_quality": {
+          "minimum_geometry_short_m": 0.015,
+          "minimum_geometry_area_m2": 0.0003,
+          "maximum_normal_condition_ratio": 0.2,
+          "approximate_cuboid_mode": "raw_boundary"
+        },
+        "pointcloud_filter": {
+          "boundary_erosion_px": 2,
+          "depth_percentile_low": 1.0,
+          "depth_percentile_high": 99.0,
+          "discontinuity_mad_scale": 6.0,
+          "discontinuity_floor_m": 0.02,
+          "local_depth_component_selection": true,
+          "retain_multiple_depth_components": true,
+          "minimum_component_points": 8,
+          "minimum_points": 50
+        },
+        "calibration_gate": {
+          "max_center_translation_error_m": 0.1,
+          "max_orientation_error_deg": 20.0,
+          "max_full_dimension_abs_error_m": 0.15
+        }
+      },
+      "illumination": {
+        "geometry_status": "SIMULATION_LIGHT_PROXY",
+        "comparison_modes": [
+          "LIGHT_OFF",
+          "LIGHT_ON_NOMINAL"
+        ],
+        "controlled_variables": [
+          "scene",
+          "camera_pose",
+          "exposure",
+          "proposal",
+          "depth"
+        ]
+      },
+      "ros": {
+        "use_sim_time": true,
+        "topics": {
+          "clock": "/clock",
+          "modules": {
+            "module_0_upper": {
+              "rgb": "/isaac/vision_mast/module_0_upper/rgb",
+              "depth": "/isaac/vision_mast/module_0_upper/depth",
+              "camera_info": "/isaac/vision_mast/module_0_upper/camera_info",
+              "capture_metadata": "/isaac/vision_mast/module_0_upper/capture_metadata",
+              "pointcloud": "/isaac/vision_mast/module_0_upper/pointcloud_on_demand"
+            },
+            "module_1_lower": {
+              "rgb": "/isaac/vision_mast/module_1_lower/rgb",
+              "depth": "/isaac/vision_mast/module_1_lower/depth",
+              "camera_info": "/isaac/vision_mast/module_1_lower/camera_info",
+              "capture_metadata": "/isaac/vision_mast/module_1_lower/capture_metadata",
+              "pointcloud": "/isaac/vision_mast/module_1_lower/pointcloud_on_demand"
+            }
+          },
+          "tf": "/tf",
+          "tf_static": "/tf_static",
+          "joint_states": "/joint_states",
+          "gt_2d": "/isaac/ground_truth/detections_2d",
+          "gt_3d": "/isaac/ground_truth/detections_3d"
+        }
+      },
+      "metric_runtime_policy": {
+        "schema_version": "metric_blas_policy_v1",
+        "requested_blas_threads": 1,
+        "scope": "standalone_metric_geometry_process",
+        "targets": [
+          "numpy",
+          "scipy"
+        ],
+        "mechanism": "native_openblas_runtime_api",
+        "non_target_thread_settings": "unchanged"
+      },
+      "geometry_runtime": {
+        "backend": "subprocess",
+        "protocol": "workcell_geometry_v1"
+      }
+    },
+    "solver_inputs": "RGB-D, SAM masks, calibration, frozen algorithm config; no GT geometry",
+    "archive_gt_validation": "legacy capture loader verifies archive; GT never enters fit_metric_faces"
+  },
+  "intermediate_semantics": "Fresh outline_projection production replay, not relabelled finite-v1",
+  "technical_failure_preserved": "refined: production second validation flat-K TypeError; final fixes and tests this path",
+  "browser": "NOT_RUN_NO_AVAILABLE_BROWSER",
+  "later_stages": "NOT_RUN"
+}

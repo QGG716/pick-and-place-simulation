@@ -1,0 +1,112 @@
+{
+  "groups": [
+    {
+      "group": "frame32",
+      "module": "module_0_upper",
+      "frozen_sam_artifacts": {
+        "sam_crossvalidated.jpg": "38065a6cd4a7b7a9e276ddd7500b6c94019a08751c758b7f295fa39e86fa1f98",
+        "cargo_masks.npz": "976feda99a62ad6600a2001ade80e69db280e199fc232d5cac65cdb344402aad",
+        "cargo_instances.json": "de089184cb56bad9f1c749e0f5b804c953d5f33e61fc6f639d8cae1cc245f602",
+        "box_geometry_2d.json": "d729e233b43334be9f413128ee95b293de18a7d555fd888b752fe2ce2c9fcac8",
+        "sam_image_session.json": "9962cdd329484fb89eb85b700b6ebd4f1d3802e242c88d43b6ba17e49874b5c2"
+      },
+      "detector_and_sam": "REUSED_EXACT_BASELINE_OUTPUTS",
+      "status": "COMPLETED",
+      "timing": {
+        "input_validation_and_snapshot": 0.04672407917678356,
+        "pointmap_build_including_filter_audits": 3.5390257835388184e-07,
+        "pointmap_write": 0.00021952390670776367,
+        "legacy_geometry": 26.526217298582196,
+        "legacy_cuboid_diagnostic": 0.0,
+        "final_metric_faces": 26.52060043811798,
+        "final_validation_and_observation": 7.684140849858522,
+        "evaluation_and_observation_write": 0.2770959921181202,
+        "filter_audit_json_write": 6.391666829586029e-05,
+        "module_total_before_timing_record": 34.56174047291279
+      }
+    },
+    {
+      "group": "frame32",
+      "module": "module_1_lower",
+      "frozen_sam_artifacts": {
+        "sam_crossvalidated.jpg": "bab132a7565495674ea4ef3a169df13541d2ec77fa86444ea401448d30594238",
+        "cargo_masks.npz": "05eb255a8e7f3de9de9172c551ba0880d11a9e61797f9ffe090923d0381cc605",
+        "cargo_instances.json": "b8ae1a6f4ed57a7932654dca2df2241ec2551fc9cfdf36d1dc2be05b184cc638",
+        "box_geometry_2d.json": "dd26dba85e551d36973e36ba13aeb242c5543daa994a7dd0e2f334feb6130e92",
+        "sam_image_session.json": "de24b4f4d97c847f883ca9d9560112436d83e3c8a6ab6944b4062cfe1270c881"
+      },
+      "detector_and_sam": "REUSED_EXACT_BASELINE_OUTPUTS",
+      "status": "COMPLETED",
+      "timing": {
+        "input_validation_and_snapshot": 0.04868151247501373,
+        "pointmap_build_including_filter_audits": 3.948807716369629e-07,
+        "pointmap_write": 0.0002512708306312561,
+        "legacy_geometry": 60.88164100423455,
+        "legacy_cuboid_diagnostic": 0.0,
+        "final_metric_faces": 60.84658339433372,
+        "final_validation_and_observation": 17.617205383256078,
+        "evaluation_and_observation_write": 0.855318870395422,
+        "filter_audit_json_write": 6.851926445960999e-05,
+        "module_total_before_timing_record": 79.4311909172684
+      }
+    },
+    {
+      "group": "stack_notch",
+      "module": "module_0_upper",
+      "frozen_sam_artifacts": {
+        "sam_crossvalidated.jpg": "04fa91b701c29a4b8d6418811f9d14e07070e95a40d704b4d1dc2058da85a505",
+        "cargo_masks.npz": "62a70eed799e4f9ccace0c9a78714ce47adca34b4be3763996f1f25b947ec264",
+        "cargo_instances.json": "07cbfe16f43bc957c662be28d6d79473d16a8d32fcc81b0be5f5f448cc0850cc",
+        "box_geometry_2d.json": "bfcb3c86ce06d3cebfbb61ee42b2be191ad4770c05a1d74d8ca72df3122b1097",
+        "sam_image_session.json": "73ec7e512ce9844f2477054674c0bdfaf004e06b84b8064e7bc3cf962b3fc34f"
+      },
+      "detector_and_sam": "REUSED_EXACT_BASELINE_OUTPUTS",
+      "status": "COMPLETED",
+      "timing": {
+        "input_validation_and_snapshot": 0.04430008679628372,
+        "pointmap_build_including_filter_audits": 2.7567148208618164e-07,
+        "pointmap_write": 0.00021689198911190033,
+        "legacy_geometry": 17.687876168638468,
+        "legacy_cuboid_diagnostic": 0.0,
+        "final_metric_faces": 17.68229059316218,
+        "final_validation_and_observation": 4.568711852654815,
+        "evaluation_and_observation_write": 0.26528625190258026,
+        "filter_audit_json_write": 5.69317489862442e-05,
+        "module_total_before_timing_record": 22.593098370358348
+      }
+    },
+    {
+      "group": "stack_notch",
+      "module": "module_1_lower",
+      "frozen_sam_artifacts": {
+        "sam_crossvalidated.jpg": "5bb6d9ed931d46a83ee7979dc8065fc145666a9365aa7ba4cabedbe631896397",
+        "cargo_masks.npz": "002f0371f2817c800f663c0573603f44e3bc8d8a4f36023ae84b06f19c801d03",
+        "cargo_instances.json": "2a99aa5d082086edd712f6348caef6142074e74199a6775d3f89457fd6e8a924",
+        "box_geometry_2d.json": "5880c595bf6e18df98f8bbb6a0dfff56c74922c358de8b27517c4ae07a8e2766",
+        "sam_image_session.json": "212fcbae21222f3daec62f0911c0485e6c0eb016332bd1e2bc5b2d6ae6770ef2"
+      },
+      "detector_and_sam": "REUSED_EXACT_BASELINE_OUTPUTS",
+      "status": "COMPLETED",
+      "timing": {
+        "input_validation_and_snapshot": 0.045154158025979996,
+        "pointmap_build_including_filter_audits": 2.849847078323364e-07,
+        "pointmap_write": 0.00022673793137073517,
+        "legacy_geometry": 49.59824983403087,
+        "legacy_cuboid_diagnostic": 0.0,
+        "final_metric_faces": 49.5846380610019,
+        "final_validation_and_observation": 14.911035487428308,
+        "evaluation_and_observation_write": 0.8034189660102129,
+        "filter_audit_json_write": 6.617791950702667e-05,
+        "module_total_before_timing_record": 65.38667993247509
+      }
+    }
+  ],
+  "stop_after": "geometry",
+  "later_stages": {
+    "contacts": "NOT_RUN",
+    "fusion": "NOT_RUN",
+    "ros": "NOT_RUN",
+    "planning": "NOT_RUN",
+    "execution": "NOT_RUN"
+  }
+}

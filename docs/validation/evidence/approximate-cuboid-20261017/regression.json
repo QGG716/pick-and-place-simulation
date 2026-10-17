@@ -1,0 +1,1338 @@
+[
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      2
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 2,
+    "proposal_ids": [
+      3
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 3,
+    "proposal_ids": [
+      1,
+      4
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 4,
+    "proposal_ids": [
+      5
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 8,
+    "proposal_ids": [
+      9
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_0_upper",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 1,
+    "proposal_ids": [
+      2
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      3
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 3,
+    "proposal_ids": [
+      4
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 4,
+    "proposal_ids": [
+      5
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 8,
+    "proposal_ids": [
+      1,
+      9
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 16,
+    "proposal_ids": [
+      17
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 17,
+    "proposal_ids": [
+      18
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 18,
+    "proposal_ids": [
+      19
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 19,
+    "proposal_ids": [
+      20
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      21
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 21,
+    "proposal_ids": [
+      22
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      23
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 23,
+    "proposal_ids": [
+      24
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 24,
+    "proposal_ids": [
+      25
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 25,
+    "proposal_ids": [
+      26
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 26,
+    "proposal_ids": [
+      27
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 27,
+    "proposal_ids": [
+      28
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 28,
+    "proposal_ids": [
+      29
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 29,
+    "proposal_ids": [
+      30
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "frame32",
+    "module": "module_1_lower",
+    "mask_id": 30,
+    "proposal_ids": [
+      31
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 1,
+    "proposal_ids": [
+      1
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 2,
+    "proposal_ids": [
+      2,
+      8
+    ],
+    "reliable_planes": 3,
+    "source_ambiguous": true,
+    "strict_status": "BLOCKED_SOURCE_AMBIGUITY",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 3,
+    "proposal_ids": [
+      3
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 4,
+    "proposal_ids": [
+      4
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 5,
+    "proposal_ids": [
+      5
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 6,
+    "proposal_ids": [
+      6
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_0_upper",
+    "mask_id": 7,
+    "proposal_ids": [
+      7
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 1,
+    "proposal_ids": [
+      1,
+      20
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": true,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 2,
+    "proposal_ids": [
+      2
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 3,
+    "proposal_ids": [
+      3
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 4,
+    "proposal_ids": [
+      4
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 5,
+    "proposal_ids": [
+      6
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 6,
+    "proposal_ids": [
+      7
+    ],
+    "reliable_planes": 3,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "VALIDATED_OBSERVATION_MODEL",
+    "model_stability": "PASS",
+    "external_accuracy": true,
+    "center_error_m": 0.0051225172427602885,
+    "corner_max_m": 0.010256396002042924,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 7,
+    "proposal_ids": [
+      8
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 8,
+    "proposal_ids": [
+      9
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 9,
+    "proposal_ids": [
+      10
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 10,
+    "proposal_ids": [
+      11
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 11,
+    "proposal_ids": [
+      12
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 12,
+    "proposal_ids": [
+      13
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 13,
+    "proposal_ids": [
+      14
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 14,
+    "proposal_ids": [
+      15
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 15,
+    "proposal_ids": [
+      16
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 16,
+    "proposal_ids": [
+      17
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 17,
+    "proposal_ids": [
+      18
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 18,
+    "proposal_ids": [
+      19
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 19,
+    "proposal_ids": [
+      21
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 20,
+    "proposal_ids": [
+      22
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 21,
+    "proposal_ids": [
+      23
+    ],
+    "reliable_planes": 1,
+    "source_ambiguous": false,
+    "strict_status": "NOT_ATTEMPTED_SINGLE_FACE",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  },
+  {
+    "group": "stack_notch",
+    "module": "module_1_lower",
+    "mask_id": 22,
+    "proposal_ids": [
+      24
+    ],
+    "reliable_planes": 2,
+    "source_ambiguous": false,
+    "strict_status": "INSUFFICIENT_PHYSICAL_BOUNDARIES",
+    "strict_accepted": false,
+    "approximate_status": "NOT_ATTEMPTED",
+    "model_stability": null,
+    "external_accuracy": null,
+    "center_error_m": null,
+    "corner_max_m": null,
+    "execution_eligible": false
+  }
+]

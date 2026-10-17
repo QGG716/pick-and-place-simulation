@@ -5,9 +5,10 @@ pinned visual JSON and isolated workers, and a ROS 2 Humble replay/mock bridge.
 Start with [`docs/vision_ros2_integration.md`](docs/vision_ros2_integration.md);
 the geometric core remains ROS/GPU independent.
 
-当前感知评审：[双面 / 三面有限边界定位（2026-10-17）](docs/validation/physical_bounds_20261017.md)。
-复用冻结豁口采集和 DINO/SAM，只重新求解几何；区分物理轮廓、圆角、遮挡与未确定尺寸，不以拒绝全部候选宣称恢复精度通过。
-本地轻量入口：[`outputs/physical-bounds-20261017/review-final/index.html`](outputs/physical-bounds-20261017/review-final/index.html)。
+当前感知评审：[三面纸箱近似长方体（2026-10-17）](docs/validation/approximate_cuboid_20261017.md)。
+复用冻结豁口采集和 DINO/SAM，只重新求解几何；近似模型独立于尖角诊断，明确区分观测拟合、独立精度和执行资格。
+本地轻量入口：[`outputs/approximate-cuboid-20261017/review/index.html`](outputs/approximate-cuboid-20261017/review/index.html)。
+严格路径对照：[双面 / 三面有限边界定位](docs/validation/physical_bounds_20261017.md)。
 前轮采集记录：[箱堆豁口与多面几何验证](docs/validation/notch_multiface_20261016.md)。
 
 > 当前工作分支增加了 **M-710iD/70 V3 技术验证修复**。V3 使用完整 TCP

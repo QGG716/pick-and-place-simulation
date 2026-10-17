@@ -2,6 +2,8 @@
 (() => {
   if (!D.instances.some(r => r.record.boundary_constraints || r.boundary_comparison)) return;
   const view = $('view');
+  const hasApproximate=D.instances.some(r=>r.record.approximate_cuboid);
+  if(hasApproximate){const option=document.createElement('option');option.value='approximate';option.textContent='近似长方体与原图（非碰撞包络）';view.append(option);view.value='approximate';}
   for (const [value, label] of [['bounds','物理边与两侧原始支持'], ['before_edges','修改前候选边（诊断）']]) {
     const option = document.createElement('option'); option.value=value; option.textContent=label; view.append(option);
   }
@@ -17,7 +19,7 @@
   focusButton.onclick=focusInstance;
   const before=document.createElement('label'); before.innerHTML='<input type="checkbox" id="beforebox"> 橙色修改前候选（诊断）'; $('reset').before(before);
   const section=document.createElement('section'); section.className='panel';
-  section.innerHTML='<h3>六边界约束与有符号误差</h3><p>行轴坐标 q = camera_xyz × axesᵀ；误差为预测 − 实际网格参考。单位 mm。空缺表示未确定，不使用薄盒占位。</p><div class="scroll"><table id="boundsTable"></table></div><p id="boundSummary"></p>';
+  section.innerHTML='<h3>六边界参数、来源与有符号误差</h3><p>行轴坐标 q = camera_xyz × axesᵀ；误差为预测 − 实际网格参考。单位 mm。近似参数包含明确模型假设，不是精确物理边界。空缺表示未确定，不使用薄盒占位。</p><div class="scroll"><table id="boundsTable"></table></div><p id="boundSummary"></p>';
   document.querySelector('.grid').after(section);
   const oldDraw=draw, oldSelect=select;
   const mm=v=>v==null?'未确定':(v*1000).toFixed(2);
@@ -73,15 +75,20 @@
   select=function(){
     oldSelect();choices(); const r=current(), c=r.boundary_comparison;
     if(c){
-      $('boundsTable').innerHTML='<tr><th>轴 / 端</th><th>初始分位数</th><th>旧优化后</th><th>正式约束</th><th>轮廓投影（仅诊断）</th><th>网格参考</th><th>旧误差</th><th>正式误差</th><th>诊断投影误差</th><th>来源 / 状态</th></tr>'+c.bounds.map(b=>`<tr><td>${b.axis} (${b.world_direction}) / ${b.side}</td><td>${mm(b.quantile_initial_m)}</td><td>${mm(b.before_optimized_m)}</td><td>${mm(b.final_m)}</td><td>${mm(b.diagnostic_outline_projection_m)}</td><td>${mm(b.reference_m)}</td><td>${mm(b.before_signed_error_m)}</td><td>${mm(b.final_signed_error_m)}</td><td>${mm(b.diagnostic_outline_signed_error_m)}</td><td>${esc(b.constraint_sources.map(s=>s.source+' / 面 '+s.support_label).join('; '))}<br>${esc(b.constraint_status)}</td></tr>`).join('');
+      $('boundsTable').innerHTML='<tr><th>轴 / 端</th><th>初始分位数</th><th>旧优化后</th><th>当前参数</th><th>轮廓投影（仅诊断）</th><th>网格参考</th><th>旧误差</th><th>当前误差</th><th>诊断投影误差</th><th>来源 / 状态</th></tr>'+c.bounds.map(b=>`<tr><td>${b.axis} (${b.world_direction}) / ${b.side}</td><td>${mm(b.quantile_initial_m)}</td><td>${mm(b.before_optimized_m)}</td><td>${mm(b.final_m)}</td><td>${mm(b.diagnostic_outline_projection_m)}</td><td>${mm(b.reference_m)}</td><td>${mm(b.before_signed_error_m)}</td><td>${mm(b.final_signed_error_m)}</td><td>${mm(b.diagnostic_outline_signed_error_m)}</td><td>${esc(b.constraint_sources.map(s=>s.source+' / 面 '+s.support_label).join('; '))}<br>${esc(b.constraint_status)}</td></tr>`).join('');
       const describe=b=>b?`中心 ${mm(b.center_error_m)} mm，最大尺寸 ${mm(Math.max(...b.sorted_dimension_error_m))} mm，最大角点 ${mm(b.corner_max_m)} mm，精度 ${b.external_accuracy_pass?'通过':'未通过'}`:'未接受完整体；只输出可靠表面及已确定边界';
-      $('boundSummary').textContent='修改前：'+describe(c.before_box)+'。本轮：'+describe(c.current_box)+'。'+(c.rejected_diagnostic_box?'拒绝候选（仅诊断）：'+describe(c.rejected_diagnostic_box)+'。':'');
+      $('boundSummary').textContent=(c.approximate_model?'严格路径候选（未接受）：':'修改前：')+describe(c.before_box)+'。'+(c.intermediate_box?'仅解除耦合：'+describe(c.intermediate_box)+'。':'')+(c.approximate_model?'本轮近似模型：':'本轮：')+describe(c.current_box)+'。'+(c.rejected_diagnostic_box?'拒绝候选（仅诊断）：'+describe(c.rejected_diagnostic_box)+'。':'');
       $('details').textContent=JSON.stringify({dimensions_in_corresponding_axes:c.dimensions,missing_constraints:r.record.boundary_constraints?.missing_bounds,planes:r.evaluation.planes},null,2);
     }else{$('boundsTable').textContent='该实例没有完整体求解，或没有本次实际 mesh 参考。';$('boundSummary').textContent=''}
+    const model=r.record.approximate_cuboid;
+    if(model){
+      $('status').style.color='';$('status').textContent=model.status==='VALIDATED_OBSERVATION_MODEL'?'近似长方体已生成 · 非碰撞包络 · '+(c?.current_box?c.current_box.external_accuracy_pass?'独立精度达标（仅本开发样本）':'独立精度未达标':'独立精度未评价'):'近似模型：'+model.status+' · '+(model.reason||'');
+      $('details').textContent=JSON.stringify({dimensions_m:model.shape_dimensions,center_camera_m:model.center_3d,stability:model.stability,model_observation_residuals:model.raw_boundary_fit?.residuals,assumptions:model.assumptions,final_validation:model.final_validation,planning_eligible:false,execution_eligible:false},null,2);
+    }
     draw();
   };
   chooser.onchange=draw;$('beforebox').onchange=draw;
-  for(const id of ['view','gt','native','initial3d','rejected'])$(id).onchange=draw;
+  for(const id of ['view','gt','native','initial3d','rejected','approximate','raw3d'])if($(id))$(id).onchange=draw;
   rgb.onload=draw;depth.onload=draw;
   choice.onchange=select;
   const wanted=new URLSearchParams(location.search).get('mask');

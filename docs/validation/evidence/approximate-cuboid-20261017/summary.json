@@ -1,0 +1,59 @@
+{
+  "all_predictions": 74,
+  "approximate_generated": 1,
+  "approximate_accuracy_pass": 1,
+  "selection": {
+    "schema": "approximate_cuboid_development_review_v1",
+    "baseline_commit": "d75483e0f5d837512b30cd4ad5cc4c6d189769db",
+    "primary": {
+      "scene": "stack_notch",
+      "module": "module_1_lower",
+      "capture_id": "carton-assets-capture-design1c:module_1_lower:100",
+      "mask_id": 6,
+      "proposal_id": 7,
+      "rgb_sha256": "c2dfed76508e8027da543a640212cc2117c394fb2ae7da43c68ed4f3607c6645",
+      "depth_sha256": "b9d2ae8355df0f559fed787447d34a647fe7cf45711689cc584fbb2ba01abbe2"
+    },
+    "negative_regression": {
+      "scene": "stack_notch",
+      "module": "module_1_lower",
+      "mask_id": 2,
+      "proposal_id": 2
+    },
+    "run_modes": [
+      "off",
+      "outline_projection",
+      "raw_boundary"
+    ],
+    "selection_usage": "Review and binding only; never a solver condition",
+    "accuracy_config": "configs/perception/metric_geometry_acceptance.json",
+    "capture_detector_sam": "FROZEN_NOT_RUN",
+    "later_stages": "NOT_RUN"
+  },
+  "accuracy_thresholds": {
+    "schema": "metric_geometry_acceptance_v1",
+    "scope": "GEOMETRY_ALGORITHM_ONLY",
+    "frozen_before_algorithm_execution": true,
+    "plane_mean_depth_residual_m": 0.003,
+    "plane_p95_depth_residual_m": 0.006,
+    "gt_plane_position_m": 0.005,
+    "gt_normal_degrees": 1.0,
+    "gt_patch_boundary_outside_m": 0.01,
+    "gt_certified_corner_m": 0.015,
+    "gt_complete_center_m": 0.015,
+    "gt_complete_dimension_m": 0.02,
+    "gt_complete_orientation_degrees": 1.0,
+    "minimum_points": 50,
+    "boundary_erosion_px": 2,
+    "discontinuity_m": 0.02,
+    "plane_noise_scale_m": 0.001,
+    "boundary_noise_scale_px": 2.0,
+    "boundary_auxiliary_weight": 0.05,
+    "seed": 17,
+    "rationale": "Keep the existing 3 mm mean-depth gate. At 2-4 m and fx about 748 px, horizontal sampling is about 2.7-5.3 mm/pixel; fy about 1526 px provides finer vertical sampling. Two-pixel sampling/edge ambiguity motivates 10 mm patch, 15 mm corner/center and 20 mm dimension tolerances, with no GT-derived per-instance tuning. Ideal depth permits 1 mm robust-loss scale; 6 mm P95 exposes tails. One-degree normal/orientation accuracy is the application assumption. Calibration, resolution, SI depth and all fusion thresholds remain fixed."
+  },
+  "mesh_truth_sha256": "8fb4c0bba39669567619399c82b96defd37cb5a19cee51a7c6f7a3e0089b5e2a",
+  "detector_sam_capture": "NOT_RUN_FROZEN",
+  "later_stages": "NOT_RUN",
+  "execution_eligible": false
+}
