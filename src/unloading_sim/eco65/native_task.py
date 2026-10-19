@@ -8,13 +8,16 @@ from copy import deepcopy
 from time import perf_counter
 import uuid
 import json
+import gzip
+import hashlib
 from pathlib import Path
 import numpy as np
 
-from .model import robot_for, transform, check_transform
+from .model import robot_for, transform, check_transform, ROOT
 from .native_model import POLICY
 from .native_scene import verify_scene, world_objects, validate_fixed_interfaces
-from .native_contact import check_contours, validate_task_contract, top_grasp_candidates
+from .native_contact import check_contours, validate_task_contract, top_grasp_candidates, face_outward, selected_ids, INDEPENDENT
+from .native_cups import grasp_candidates
 from .home_candidate import verify_candidate
 from .mount_alignment import check_alignment
 from ..moveit2_backend import ResidentMoveItClient, MoveItUnavailable, digest, validate_native_result, native_generation_evidence
@@ -27,7 +30,7 @@ INDEPENDENT_PHASE = dict(pregrasp='approach', contact='contact', extraction='loa
     transit='loaded_transfer', place='place_contact', withdrawal='retreat', residence='retreat')
 
 
-def extraction_goal(scene, target_pose, size, tcp):
+def extraction_goal(scene, target_pose, size, tcp, face='top'):
     """Retain the 10 mm lift clearance above crossed support surfaces."""
     half=np.asarray(size)/2; start=np.asarray(target_pose)[:3,3]
     task = scene.get('native_task')
@@ -50,13 +53,15 @@ def extraction_goal(scene, target_pose, size, tcp):
     highest=max([bottom,*[r['top_m'] for r in crossed]])
     clearance = task['minimum_lift_m'] if task else .01
     lift=highest+clearance-bottom; goal=np.array(tcp,copy=True);goal[2,3]+=lift
+    if face == 'front':
+        goal[:3,3] += face_outward(target_pose, face)*(size[0]+clearance)
     return goal,dict(initial_bottom_m=bottom,crossed_supports=crossed,highest_support_m=highest,
         retained_lift_clearance_m=clearance,lift_m=lift,goal_bottom_m=bottom+lift)
 
 
 class NativeTask:
     def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None,
-                 progress_path=None):
+                 progress_path=None, rpc_seconds=180.):
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
@@ -67,22 +72,25 @@ class NativeTask:
             raise ValueError('MODEL_TASK_CONTRACT_MISMATCH')
         if self.init['process_geometry'].get('fixed_attachment_interfaces', []) != validate_fixed_interfaces(self.scene):
             raise ValueError('MODEL_FIXED_ATTACHMENT_INTERFACES_MISMATCH')
-        if not np.isfinite([task_seconds, stage_seconds]).all() or min(task_seconds, stage_seconds) <= 0:
+        if not np.isfinite([task_seconds, stage_seconds,rpc_seconds]).all() or min(task_seconds, stage_seconds,rpc_seconds) <= 0:
             raise ValueError('INVALID_NATIVE_BUDGET')
         self.robot = robot_for(snapshot['tool'], self.scene)
         self.home_candidate = None if home_candidate is None else deepcopy(verify_candidate(home_candidate, snapshot['tool'], self.scene))
         self.home_checks = []; self.native_calls = []
-        self.progress_path = Path(progress_path) if progress_path else None
+        self.progress_path = Path(progress_path).resolve() if progress_path else None
         if self.progress_path: self.progress_path.parent.mkdir(parents=True, exist_ok=True)
+        self.call_archive = self.progress_path.with_name('native_calls.jsonl.gz') if self.progress_path else None
         self.extraction_evidence = None
         self.grasp_geometry = None; self.grasp_failures = []; self.grasp_home_rejections = []
         self.grasp_search = dict(status='NOT_STARTED', candidate_count=0,
                                  attempted_indices=[], unsearched_indices=[])
         self.cancelled = cancelled or (lambda: False)
-        self.stage_seconds = stage_seconds; self.deadline = perf_counter()+task_seconds
+        self.stage_seconds = stage_seconds; self.rpc_seconds=rpc_seconds; self.deadline = perf_counter()+task_seconds
         self.task_id = 'eco65-'+uuid.uuid4().hex
         self.counter = 10000*attempt; self.parent = ''; self.attachment = None
         self.target = deepcopy(self.scene['box']); self.target_pose = transform(self.target['pose'])
+        self.face = 'top'; self.active_ids = list(self.init['process_geometry']['expected_contour_ids'])
+        self.candidate_id = 'INITIAL_STATE_DIAGNOSTIC'
         self.records = []; self.ik_records = []; self.stages = []; self.events = []
         started = perf_counter(); self.native = ResidentMoveItClient(command)
         try:
@@ -104,7 +112,10 @@ class NativeTask:
         if request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
         started = perf_counter()
         record = dict(request=request)
-        self.native_calls.append(record)
+        summary = (dict(request={k:request[k] for k in ('op','stage','stage_id') if k in request},
+                        archive_index=len(self.native_calls), request_sha256=digest(request))
+                   if self.call_archive else record)
+        self.native_calls.append(summary)
         def progress(event, **extra):
             if self.progress_path:
                 with self.progress_path.open('a', encoding='utf-8') as stream:
@@ -115,7 +126,7 @@ class NativeTask:
         try:
             # Native solve time excludes scene import and the final dense
             # FCL path audit. The RPC watchdog must cover those operations.
-            result = self.native.request(request, timeout=min(remaining+30, max(180., 4*self.stage_seconds)), cancelled=self.cancelled)
+            result = self.native.request(request, timeout=min(remaining+30, max(self.rpc_seconds, 4*self.stage_seconds)), cancelled=self.cancelled)
             record['result'] = result
             progress('COMPLETED', status=result.get('status'), wall_s=perf_counter()-started,
                 process_failure=(result.get('process') or {}).get('last_failure'),
@@ -125,7 +136,21 @@ class NativeTask:
             record['error'] = str(error)
             progress('FAILED', error=str(error), wall_s=perf_counter()-started)
             raise
-        finally: record['wall_s'] = perf_counter()-started
+        finally:
+            record['wall_s'] = perf_counter()-started
+            if self.call_archive:
+                # Preserve every complete request/response, without duplicating
+                # the multi-megabyte immutable world in every failure/report.
+                with gzip.open(self.call_archive,'at',encoding='utf-8',compresslevel=1) as stream:
+                    stream.write(json.dumps(record,separators=(',',':'),allow_nan=False)+'\n')
+                summary.update(wall_s=record['wall_s'],archive=self.call_archive.relative_to(ROOT).as_posix())
+                if 'result' in record:summary.update(result_sha256=digest(record['result']),result={'status':record['result'].get('status')})
+                if 'error' in record:summary['error']=record['error']
+
+    def call_archive_info(self):
+        if not self.call_archive or not self.call_archive.exists():return None
+        return dict(schema='LOSSLESS_NATIVE_CALLS_GZIP_JSONL_V1',path=self.call_archive.relative_to(ROOT).as_posix(),
+                    sha256=hashlib.sha256(self.call_archive.read_bytes()).hexdigest(),records=len(self.native_calls))
 
     def request(self, q, stage, *, op='check_state_offline', endpoint=False):
         world = world_objects(self.scene)
@@ -143,10 +168,12 @@ class NativeTask:
         support_receiver = task['receiving']['support_ids'] if task else ['conveyor_longitudinal_belt']
         supports = support_source if stage == 'extraction' else support_receiver if stage == 'place' else []
         process = dict(self.init['process_geometry'], schema='eco65_native_process_v1', stage=stage,
-            target_id=self.target['id'], target=target, target_face='top', support_names=supports,
+            target_id=self.target['id'], target=target, target_face=self.face, support_names=supports,
             stack_carton_ids=[b['id'] for b in self.scene['boxes']], initial_proximity=None,
             max_attachment_gap_m=.0004, maximum_penetration_m=.0004, suction_edge_margin_m=.003,
             max_normal_misalignment_rad=self.snapshot['tool']['contact']['normal_tolerance_rad'], collision_policy=POLICY)
+        if self.init['process_geometry'].get('cup_selection_mode') == INDEPENDENT:
+            process.update(active_ids=self.active_ids, selection_binding=self.selection_binding())
         clearance = dict(schema='eco65_native_process_clearance_v1', source_policy=POLICY, stage=stage,
             tool_links=self.init['tool_links'], compliant_tool_links=self.init['compliant_tool_links'],
             target_id=self.target['id'], payload_id='' if attached is None else self.target['id'],
@@ -160,6 +187,15 @@ class NativeTask:
             clearance_mode='optimized', endpoint=endpoint, cancelled=False,
             flange_from_task_tcp=self.identity['flange_from_task_tcp'], planning_only=True,
             planning_mode='cold_from_scratch', history_enabled=False, velocity_scale=.5, acceleration_scale=.5)
+
+    def selection_binding(self):
+        return dict(active_ids=list(self.active_ids), target_id=self.target['id'], target_face=self.face,
+                    candidate_id=self.candidate_id, task_id=self.task_id, identity=self.identity)
+
+    def select_grasp(self, grasp):
+        self.face = grasp.get('target_face', 'top')
+        self.active_ids = selected_ids(self.init['process_geometry'], grasp.get('active_ids'))
+        self.candidate_id = grasp.get('candidate_id', 'LEGACY_ALL_CUPS')
 
     def check_fk(self, home):
         reports = []
@@ -194,11 +230,11 @@ class NativeTask:
                 checked = self.call(self.request(value, stage))
                 if checked['status'] == 'SUCCESS': yield value
 
-    def motion(self, q, stage, *, pose=None, goal=None):
+    def motion(self, q, stage, *, pose=None, goal=None, ik_seed=None):
         constrained = stage in {'contact', 'extraction', 'place', 'withdrawal'}
         solvers = [('pilz_industrial_motion_planner', 'LIN' if constrained else 'PTP')]
         if not constrained: solvers.append(('ompl', 'RRTConnectkConfigDefault'))
-        goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q, stage)))
+        goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q if ik_seed is None else ik_seed, stage)))
         if not constrained:
             goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
             unique=[]
@@ -276,21 +312,35 @@ class NativeTask:
         """Generate one complete branch from the frozen initial state."""
         contract = self.scene.get('native_task')
         top = check_transform(grasp['tcp_pose_D'])
-        pre = top.copy(); pre[2, 3] += contract['preapproach_m'] if contract else .03
+        self.select_grasp(grasp)
+        pre = top.copy(); pre[:3, 3] += face_outward(self.target_pose,self.face)*(contract['preapproach_m'] if contract else .03)
         q = home.copy()
+        # A free pregrasp can be reachable while inactive cups collide with
+        # lower/neighbor cartons at contact. Check the actual contact IK and
+        # complete world before spending a dense audit on the free approach.
+        contact_seed=None
+        for value in self.ik(top,home,'contact'):
+            probe=check_contours(self.init['process_geometry'],self.robot.named_link_frames(value)['link_6'],
+                self.target_pose,self.target['size_m'],gap=.0004,penetration=.0004,
+                angle=self.snapshot['tool']['contact']['normal_tolerance_rad'],face=self.face,active_ids=self.active_ids)
+            if probe['status']=='PASS':contact_seed=value;break
+        if contact_seed is None:raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:contact_pose')
         # A legal HOME already at the approach pose is still a state, not a
         # fabricated nonzero motion. Choose a distinct nearby checked approach.
-        if np.linalg.norm(self.robot.fk(q)[:3, 3]-pre[:3, 3]) < 1e-4: pre[2, 3] += .005
-        q = self.motion(q, 'pregrasp', pose=pre)
+        if np.linalg.norm(self.robot.fk(q)[:3, 3]-pre[:3, 3]) < 1e-4:
+            pre[:3,3] += face_outward(self.target_pose,self.face)*.005
+        q = self.motion(q, 'pregrasp', pose=pre,ik_seed=contact_seed)
         q = self.motion(q, 'contact', pose=top)
         seal = check_contours(self.init['process_geometry'], self.robot.named_link_frames(q)['link_6'],
                               self.target_pose, self.target['size_m'], gap=.0004, penetration=.0004,
-                              angle=self.snapshot['tool']['contact']['normal_tolerance_rad'])
+                              angle=self.snapshot['tool']['contact']['normal_tolerance_rad'],
+                              face=self.face, active_ids=self.active_ids)
         if seal['status'] != 'PASS': raise ValueError('CONTACT_ENDPOINT_CONTOURS_REJECTED')
         self.attachment = np.linalg.inv(self.robot.named_link_frames(q)['link_6']) @ self.target_pose
         self.events.append(dict(event='ATTACH_PREDICTED', after_stage=self.parent,
-            target_id=self.target['id'], flange_from_target=self.attachment.tolist(), q=q.tolist()))
-        lift, self.extraction_evidence = extraction_goal(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q))
+            target_id=self.target['id'], flange_from_target=self.attachment.tolist(), q=q.tolist(),
+            selection_binding=self.selection_binding(), actual_sealed_ids=seal['actual_sealed_ids']))
+        lift, self.extraction_evidence = extraction_goal(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face)
         q = self.motion(q, 'extraction', pose=lift)
         if contract:
             place_box = check_transform(contract['receiving']['box_pose_D'])
@@ -305,19 +355,27 @@ class NativeTask:
         self.target_pose = self.robot.named_link_frames(q)['link_6'] @ self.attachment
         if not supported(self.scene, self.target_pose): raise ValueError('SUPPORTED_RELEASE_REJECTED')
         self.events.append(dict(event='SUPPORTED_RELEASE_PREDICTED', after_stage=self.parent,
-            target_id=self.target['id'], pose=self.target_pose.tolist(), q=q.tolist()))
+            target_id=self.target['id'], pose=self.target_pose.tolist(), q=q.tolist(), selection_binding=self.selection_binding()))
         self.attachment = None
-        retreat = self.robot.fk(q).copy(); retreat[2, 3] += contract['withdrawal_m'] if contract else .03
+        retreat = self.robot.fk(q).copy()
+        retreat[:3, 3] += face_outward(self.target_pose,self.face)*(contract['withdrawal_m'] if contract else .03)
         q = self.motion(q, 'withdrawal', pose=retreat)
         q = self.motion(q, 'residence', goal=home)
         return seal
 
     def run(self):
+        if self.task_contract and self.task_contract.get('coverage_context'):
+            raise ValueError('CONDITIONAL_COVERAGE_IS_NOT_A_COMPLETE_TASK')
         started = perf_counter()
         contract = self.scene.get('native_task')
         initial_target_pose = self.target_pose.copy()
         normal_tolerance = self.snapshot['tool']['contact']['normal_tolerance_rad']
-        if contract:
+        if contract and contract.get('cup_selection_mode') == INDEPENDENT:
+            self.grasp_geometry = grasp_candidates(self.init['process_geometry'],initial_target_pose,
+                self.target['size_m'],self.identity['flange_from_task_tcp'],self.scene['base_position_m'],
+                target_id=self.target['id'],faces=contract['allowed_faces'],angle=normal_tolerance,
+                neighbor_boxes=self.scene['boxes'])
+        elif contract:
             self.grasp_geometry = top_grasp_candidates(self.init['process_geometry'],
                 initial_target_pose, self.target['size_m'], self.identity['flange_from_task_tcp'],
                 self.scene['base_position_m'], margin=.003, angle=normal_tolerance)
@@ -334,13 +392,17 @@ class NativeTask:
                 rejected=[] if seal['status'] == 'PASS' else [seal], checked_contour_count=12,
                 edge_margin_m=.003, method='LEGACY_CENTRED_TOP_GRASP')
         candidates = self.grasp_geometry['candidates']
+        if getattr(self,'progress_path',None):
+            self.progress_path.with_name('grasp_candidates.json').write_text(
+                json.dumps(self.grasp_geometry,separators=(',',':'),allow_nan=False),encoding='utf-8')
         self.grasp_search = dict(status='HOME_SEARCH', candidate_count=len(candidates),
                                  attempted_indices=[], unsearched_indices=list(range(len(candidates))))
-        if not candidates: raise ValueError('NOMINAL_TWELVE_CONTOUR_TARGET_FIT_REJECTED')
+        if not candidates: raise ValueError('NO_NONEMPTY_FULL_SEAL_CANDIDATE')
         home = None
         for index, grasp in enumerate(candidates):
+            self.select_grasp(grasp)
             pre = check_transform(grasp['tcp_pose_D']).copy()
-            pre[2, 3] += contract['preapproach_m'] if contract else .03
+            pre[:3, 3] += face_outward(initial_target_pose,self.face)*(contract['preapproach_m'] if contract else .03)
             try:
                 home, fk = self.select_home(pre)
                 home = home.copy()
@@ -361,6 +423,12 @@ class NativeTask:
             self.grasp_search.update(status='SEARCHING', active_index=index)
             self.grasp_search['attempted_indices'].append(index)
             self.grasp_search['unsearched_indices'] = list(range(index+1, len(candidates)))
+            if getattr(self,'progress_path',None):
+                with self.progress_path.open('a',encoding='utf-8') as stream:
+                    stream.write(json.dumps(dict(event='GRASP_BRANCH_STARTED',candidate_index=index,
+                        candidate_count=len(candidates),candidate_id=grasp.get('candidate_id'),
+                        target_face=grasp.get('target_face','top'),active_ids=grasp.get('active_ids'),
+                        ranking_cost=grasp.get('ranking_cost')))+'\n')
             branch_started = perf_counter()
             record_start, ik_start, call_start = len(self.records), len(self.ik_records), len(self.native_calls)
             try:
@@ -390,7 +458,10 @@ class NativeTask:
             stages=self.stages, events=self.events, fk_crosscheck=fk,
             native_records=self.records, native_ik_records=self.ik_records,
             native_calls=self.native_calls, initial_state_checks=self.home_checks,
-            target_face='top', nominal_contact_geometry=selected['nominal_contact_geometry'],
+            native_calls_archive=self.call_archive_info(),
+            target_face=self.face, active_ids=self.active_ids, selection_binding=self.selection_binding(),
+            independent_control_assumed=bool(contract and contract.get('cup_selection_mode') == INDEPENDENT),
+            nominal_contact_geometry=selected['nominal_contact_geometry'],
             actual_contact_geometry=actual_seal, selected_grasp=selected, grasp_geometry=self.grasp_geometry,
             grasp_search=self.grasp_search, grasp_failures=self.grasp_failures,
             grasp_home_rejections=self.grasp_home_rejections,
@@ -420,6 +491,8 @@ def supported(scene, pose):
 
 
 def validate_plan_contract(plan, snapshot):
+    if snapshot['scene'].get('native_task',{}).get('coverage_context'):
+        raise ValueError('CONDITIONAL_COVERAGE_IS_NOT_A_COMPLETE_TASK')
     expected = dict(plan); fingerprint = expected.pop('fingerprint')
     if digest(expected) != fingerprint or plan['status'] != STATUS or plan['hardware_enabled']:
         raise ValueError('PLAN_IDENTITY_OR_MODE_MISMATCH')
@@ -431,6 +504,18 @@ def validate_plan_contract(plan, snapshot):
     previous = np.asarray(plan['home_q']); parent = ''; seen = set()
     model = snapshot['native_model']; joints = model['init']['joint_names']; limits = model['simulation_limits']
     contract = validate_task_contract(snapshot['scene'])
+    independent = bool(contract and contract.get('cup_selection_mode') == INDEPENDENT)
+    if independent:
+        ids = selected_ids(model['init']['process_geometry'],plan['active_ids'])
+        binding = dict(active_ids=ids,target_id=contract['target_id'],target_face=plan['target_face'],
+                       candidate_id=plan['selected_grasp']['candidate_id'],task_id=plan['task_id'],identity=plan['identity'])
+        expected_candidate=digest(dict(target_id=contract['target_id'],target_face=plan['target_face'],
+            active_ids=ids,tcp_pose_D=plan['selected_grasp']['tcp_pose_D']))
+        if (plan['selection_binding'] != binding or plan['selected_grasp']['active_ids'] != ids or
+                plan['selected_grasp']['target_face']!=plan['target_face'] or binding['candidate_id']!=expected_candidate):
+            raise ValueError('PLAN_CUP_SELECTION_BINDING_CHANGED')
+        for event in plan['events']:
+            if event.get('selection_binding') != binding: raise ValueError('PLAN_EVENT_CUP_SELECTION_CHANGED')
     if model['init']['process_geometry'].get('task_contract') != contract:
         raise ValueError('PLAN_TASK_CONTRACT_CHANGED')
     if model['init']['process_geometry'].get('fixed_attachment_interfaces', []) != validate_fixed_interfaces(snapshot['scene']):
@@ -460,6 +545,9 @@ def validate_plan_contract(plan, snapshot):
                 np.any(60*d/dt**3 > limits['joint_jerk_rad_s3']+1e-8)):
             raise ValueError('PLAN_SIMULATION_LIMIT')
         raw, req = s['native_result'], s['native_request']
+        if independent and (req['process_policy'].get('selection_binding') != binding or
+                req['process_policy'].get('active_ids') != ids or req['process_policy'].get('target_face') != plan['target_face']):
+            raise ValueError('PLAN_CUP_SELECTION_CHANGED_WITHIN_BRANCH')
         if s['stage'] in {'contact', 'extraction', 'place', 'withdrawal'} and (
                 req.get('pipeline_id') != 'pilz_industrial_motion_planner' or req.get('planner_id') != 'LIN'
                 or 'goal_pose' not in req): raise ValueError('PLAN_PROCESS_REQUIRES_LIN')
@@ -510,7 +598,7 @@ def review_plan(plan, snapshot):
         world = NativeSceneWorld(snapshot['tool'], snapshot['scene'])
     else:
         world = UnloadingTaskWorld(snapshot['tool'], snapshot['scene'])
-    world.select_target(snapshot['scene']['target_box_id'], face='top')
+    world.select_target(snapshot['scene']['target_box_id'], face=plan.get('target_face','top'))
     world.receiving_region = (snapshot['scene']['native_task']['receiving']['region_id']
                               if snapshot['scene'].get('native_task') else 'conveyor_longitudinal')
     checks = 0
@@ -518,6 +606,7 @@ def review_plan(plan, snapshot):
     # script's fitted circles. This also governs the source contact permission.
     world.tool = deepcopy(snapshot['tool'])
     world.tool['native_contact_geometry'] = snapshot['native_model']['init']['process_geometry']
+    world.tool['active_seal_ids'] = selected_ids(world.tool['native_contact_geometry'],plan.get('active_ids'))
     try:
         for stage in plan['stages']:
             phase = INDEPENDENT_PHASE[stage['stage']]
@@ -545,6 +634,8 @@ def review_plan(plan, snapshot):
                 if not np.allclose(pose, plan['events'][1]['pose'], atol=1e-8, rtol=0):
                     raise ValueError('INDEPENDENT_RELEASE_TRANSFORM_MISMATCH')
         return dict(status='PASS', checked_states=checks, wall_s=perf_counter()-started,
+                    fixed_mount_actual_mujoco_queries=getattr(world,'fixed_distance_queries',None),
+                    fixed_mount_query_scope='RIGID_INTERFACE_INVARIANT_WITHIN_SAME_REVIEW_WORLD',
                     plan_fingerprint=plan['fingerprint'], snapshot_fingerprint=snapshot['fingerprint'],
                     target_id=world.box_id, release_pose=world.released_pose.tolist(),
                     other_cartons_preserved=True, continuous_sweep_proof=False, dynamics='NOT_EVALUATED')

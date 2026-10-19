@@ -214,11 +214,13 @@ def verify_scene(scene, *, require_environment=True):
         from .native_contact import validate_task_contract
         expected_ids = {f'carton_r00_l{l:02d}_c{c:02d}' for l in range(4) for c in range(3)}
         task = scene['native_task']
-        if (len(scene['boxes']) != 12 or {b['id'] for b in scene['boxes']} != expected_ids
+        coverage=task.get('coverage_context')
+        if coverage is not None:expected_ids-=set(coverage['removed_carton_ids'])
+        if (len(scene['boxes']) != len(expected_ids) or {b['id'] for b in scene['boxes']} != expected_ids
                 or set(task['stack_carton_ids']) != expected_ids
-                or task['target_id'] != 'carton_r00_l03_c01'
+                or (coverage is None and task['target_id'] != 'carton_r00_l03_c01')
                 or scene['target_box_id'] != task['target_id'] or scene['box']['id'] != task['target_id']
-                or task['target_face'] != 'top' or not scene['moving_attachments']
+                or task['target_face'] not in ('top','front') or not scene['moving_attachments']
                 or not scene['native_world_objects'] or scene.get('enable_hardware') is not False
                 or scene.get('execution_mode') != 'simulation' or scene.get('planning_frame') != 'D'
                 or scene.get('T_W_D') != transform([.32, -.1, .8]).tolist()):

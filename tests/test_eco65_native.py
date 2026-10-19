@@ -159,7 +159,7 @@ def synthetic_plan_fixture():
     model=dict(init=init,simulation_limits=load_robot_config()['simulation_limits'],
                official_limits={j:dict(lower=-3,upper=3,velocity=1) for j in init['joint_names']})
     snapshot=dict(scene=scene,native_model=model,fingerprint='synthetic_snapshot_only',tool={'contact':{'normal_tolerance_rad':.01}})
-    task=object.__new__(NativeTask);task.scene=scene;task.snapshot=snapshot;task.init=init;task.identity=identity
+    task=object.__new__(NativeTask);task.scene=scene;task.snapshot=snapshot;task.init=init;task.identity=identity;task.face='top'
     task.target=scene['box'];task.target_pose=transform(task.target['pose']);task.parent='';task.counter=0
     task.task_id='synthetic_contract_only';task.robot=SimpleNamespace(named_link_frames=lambda q:{'link_6':np.eye(4)})
     release=transform([-.5,-.22,.26]).tolist();stages=[];previous=np.zeros(6)
@@ -294,7 +294,7 @@ def test_twelve_carton_task_contract_rejects_invalid_geometry_and_permissions(ca
 def test_twelve_carton_requests_preserve_convex_geometry_and_all_other_cartons():
     from types import SimpleNamespace
     from unloading_sim.eco65.native_contact import bind_task_contract
-    scene = synthetic_twelve_carton_scene(); task = NativeTask.__new__(NativeTask)
+    scene = synthetic_twelve_carton_scene(); task = NativeTask.__new__(NativeTask); task.face='top'
     task.scene=scene;task.target=scene['box'];task.target_pose=transform(task.target['pose'])
     task.identity={'flange_from_task_tcp':np.eye(4).tolist()};task.parent='contact-real-parent';task.counter=0
     task.task_id='synthetic-request-only';task.attachment=task.target_pose.copy()
@@ -433,6 +433,7 @@ def test_grasp_backtracking_preserves_initial_state_and_stops_on_worker_timeout(
     task.init={'process_geometry':bind_task_contract(synthetic_top_geometry(),task.scene)}
     task.snapshot={'tool':{'contact':{'normal_tolerance_rad':.01}}}
     task.counter=0;task.records=[];task.ik_records=[];task.native_calls=[]
+    task.task_contract=task.init['process_geometry'].get('task_contract')
     task.grasp_failures=[];task.grasp_home_rejections=[]
     task.select_home=lambda pre:(home.copy(),[])
     attempts=[]

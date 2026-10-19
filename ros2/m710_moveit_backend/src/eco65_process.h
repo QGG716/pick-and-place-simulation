@@ -14,12 +14,13 @@ class Eco65Process {
   ProcessBox target_;
   bool attached_;
   bool record_distances_=false;
+  bool fixed_mounts_accepted_=false;
   std::set<std::string> bands_,supports_;
   std::map<std::string,ProcessBox> world_;
   struct WorldSolid {std::shared_ptr<fcl::CollisionGeometryd> shape;Eigen::Isometry3d pose;};
   std::map<std::string,WorldSolid> world_solids_;
   struct Solid {const moveit::core::LinkModel* link;size_t index;std::shared_ptr<fcl::CollisionGeometryd> shape;};
-  struct Pair {Solid a;Solid b;};
+  struct Pair {Solid a;Solid b;double fixed_distance=0.;bool fixed_chain=false;};
   std::vector<Solid> bands;
   std::vector<Pair> mount_pairs;
   Solid base_solid;
@@ -123,7 +124,7 @@ public:
        target_id_!=req.at("clearance_policy").at("target_id") || target_.id!=target_id_ ||
        spec_.at("collision_policy")!=req.at("clearance_policy").at("source_policy") ||
        spec_.at("maximum_penetration_m")!=.0004 || spec_.at("suction_edge_margin_m")!=.003 ||
-       spec_.at("target_face")!="top" || bands_.size()!=12)
+       (spec_.at("target_face")!="top" && spec_.at("target_face")!="front") || bands_.size()!=12)
       throw std::runtime_error("ECO65_PROCESS_CONTEXT_MISMATCH");
     if(stage_!="pregrasp" && stage_!="contact" && stage_!="extraction" && stage_!="transit" &&
        stage_!="place" && stage_!="withdrawal" && stage_!="residence") throw std::runtime_error("ECO65_PROCESS_STAGE_INVALID");
@@ -134,12 +135,33 @@ public:
       // Worker initialization binds every task_contract field to the scene's
       // contact geometry. A motion request cannot widen these permissions.
       const auto& task=spec_.at("task_contract");
-      if(task.at("schema")!="eco65_single_carton_task_v1" || task.at("target_id")!=target_id_ || task.at("target_face")!="top")
+      const bool independent=task.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS";
+      if(task.at("schema")!="eco65_single_carton_task_v1" || task.at("target_id")!=target_id_ ||
+         (!independent && (task.at("target_face")!="top" || spec_.at("target_face")!="top")))
         throw std::runtime_error("ECO65_TASK_CONTRACT_MISMATCH");
+      if(independent) {
+        if(spec_.value("cup_selection_mode",std::string())!="SIMULATED_INDEPENDENT_CUPS" ||
+           task.at("allowed_faces")!=Json::array({"top","front"}) || !spec_.contains("active_ids") ||
+           !spec_.contains("selection_binding"))throw std::runtime_error("ECO65_CUP_SELECTION_REQUIRED");
+        const auto& binding=spec_.at("selection_binding");
+        if(binding.at("active_ids")!=spec_.at("active_ids") || binding.at("target_id")!=target_id_ ||
+           binding.at("target_face")!=spec_.at("target_face") || binding.at("task_id")!=req.at("task_id") ||
+           binding.at("identity")!=req.at("identity") || binding.at("candidate_id").get<std::string>().empty())
+          throw std::runtime_error("ECO65_CUP_SELECTION_BINDING_MISMATCH");
+      }
       cartons=task.at("stack_carton_ids").get<std::set<std::string>>();
       original_supports=task.at("original_support_names").get<std::set<std::string>>();
       receiver_supports=task.at("receiving").at("support_ids").get<std::set<std::string>>();
-      if(cartons.size()!=12 || task.at("stack_carton_ids").size()!=12 || !cartons.count(target_id_) ||
+      const bool coverage=task.contains("coverage_context");
+      if(coverage) {
+        const auto& context=task.at("coverage_context");
+        auto declared=context.at("remaining_carton_ids").get<std::set<std::string>>();
+        auto removed=context.at("removed_carton_ids").get<std::set<std::string>>();
+        if(context.at("scope")!="CONDITIONAL_COVERAGE_DIAGNOSTIC_NOT_COMPLETE_TASK" || declared!=cartons ||
+           declared.size()+removed.size()!=12)throw std::runtime_error("ECO65_COVERAGE_CONTEXT_INVALID");
+        for(const auto& id:removed)if(cartons.count(id))throw std::runtime_error("ECO65_COVERAGE_CARTON_DUPLICATE");
+      }
+      if((!coverage && cartons.size()!=12) || task.at("stack_carton_ids").size()!=cartons.size() || !cartons.count(target_id_) ||
          original_supports.empty() || original_supports.count(target_id_) || receiver_supports.empty() ||
          task.at("original_support_names").size()!=original_supports.size() ||
          task.at("receiving").at("support_ids").size()!=receiver_supports.size())
@@ -229,6 +251,20 @@ public:
       }
     }
     if(attached_)for(const auto& id:supports_)acm.setEntry(target_id_,id,true);
+    // These interfaces consist solely of fixed joints below one moving link.
+    // Query real FCL once at request import, then reuse that rigid invariant
+    // through this request's path. No articulated pair gets this optimization.
+    for(auto& pair:mount_pairs) {
+      auto* child=pair.b.link;
+      while(child && child!=pair.a.link) {
+        const auto* joint=child->getParentJointModel();
+        if(!joint || joint->getType()!=moveit::core::JointModel::FIXED)break;
+        child=child->getParentLinkModel();
+      }
+      pair.fixed_chain=child==pair.a.link;
+      if(!pair.fixed_chain)throw std::runtime_error("ECO65_MOUNT_NOT_A_FIXED_JOINT_CHAIN");
+      pair.fixed_distance=distance(pair,state);
+    }
   }
   bool check(const moveit::core::RobotState& state,bool endpoint) {
     failure=nullptr;distance_samples=Json::array();auto target=target_;
@@ -253,15 +289,30 @@ public:
         {"signed_distance_m",d},{"threshold_m",threshold},{"stage",stage_}};return false;}return true;
     };
     if(!accept(nativeFrames().base_link,"robot_mount_plate",distance(base_solid,state,world_.at("robot_mount_plate")),-.0004))return false;
-    for(const auto& pair:mount_pairs) {
-      const bool valid=accept(pair.a.link->getName(),pair.b.link->getName(),distance(pair,state),-.0004);
+    if(!fixed_mounts_accepted_ || record_distances_) for(const auto& pair:mount_pairs) {
+      const bool valid=accept(pair.a.link->getName(),pair.b.link->getName(),pair.fixed_distance,-.0004);
       if(record_distances_) {
         distance_samples.back()["robot_shape_index"]=pair.a.index;
         distance_samples.back()["attachment_shape_index"]=pair.b.index;
+        distance_samples.back()["query_scope"]="FCL_AT_REQUEST_IMPORT_FIXED_JOINT_CHAIN_INVARIANT";
       }
       if(!valid) {failure["robot_shape_index"]=pair.a.index;failure["attachment_shape_index"]=pair.b.index;return false;}
     }
-    for(const auto& band:bands)if(!accept(band.link->getName(),target_id_,distance(band,state,target),fit?-.0004:.0024))return false;
+    fixed_mounts_accepted_=true;
+    for(const auto& band:bands) {
+      bool contact=fit;
+      if(spec_.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS") {
+        contact=false;
+        for(const auto& row:seal.at("contours")) {
+          if(spec_.at("terminal_band_by_contour").at(row.at("id").get<std::string>())==band.link->getName())
+            contact=row.at("face_contact").get<bool>();
+        }
+      }
+      // Every band, enabled or disabled, still gets a real signed-distance
+      // query. Face-aligned terminal contact permits only the original .4 mm;
+      // it grants no neighbor, rigid-tool or other-face permission.
+      if(!accept(band.link->getName(),target_id_,distance(band,state,target),contact?-.0004:.0024))return false;
+    }
     if(attached_)for(const auto& id:supports_) {
       const auto& support=world_.at(id);
       const Eigen::Vector3d extent=target.pose.linear().cwiseAbs()*target.half;

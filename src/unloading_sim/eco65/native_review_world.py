@@ -9,6 +9,7 @@ import hashlib
 import xml.etree.ElementTree as ET
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from .asset_paths import resolve_asset
 from .model import ROOT, check_transform, transform
@@ -90,16 +91,89 @@ class NativeSceneWorld(UnloadingTaskWorld):
         self.pair_b = np.array([b['gid'] for a, b in self.pairs])
         self.radii = self.model.geom_rbound[self.pair_a]+self.model.geom_rbound[self.pair_b]
         self._extra_ready = True
+        # Verified source-bound mounts consist only of rigid joints below J1
+        # or the flange. Keep their first real MuJoCo query within this world;
+        # articulated, target/support and all environment pairs stay dynamic.
+        self.fixed_distance_cache = {}
+        self.fixed_distance_queries = 0
+        self.fixed_mounts_reference_q = None
+        self.use_group_bounds = True
+        self.use_batch_poses = True
+        groups={};members=[];group_by_geom={}
+        for e in entries:
+            key=('rigid',e['owner']) if e['kind']=='robot' else (
+                ('rigid',e['parent_frame']) if e['kind']=='permanent_attachment' else
+                ('rigid','link_6') if e['kind'] in tool_kinds else ('object',e['name']))
+            if key not in groups:groups[key]=len(groups);members.append([])
+            group_by_geom[e['gid']]=groups[key];members[groups[key]].append(e['gid'])
+        self._group_geoms=np.concatenate(members)
+        self._group_starts=np.r_[0,np.cumsum([len(x) for x in members])[:-1]]
+        ga=np.array([group_by_geom[i] for i in self.pair_a]);gb=np.array([group_by_geom[i] for i in self.pair_b])
+        keys=ga*len(groups)+gb;ordered=np.argsort(keys,kind='stable')
+        unique,starts=np.unique(keys[ordered],return_index=True)
+        self._group_pair_a=unique//len(groups);self._group_pair_b=unique%len(groups)
+        self._group_pair_rows=np.split(ordered,starts[1:])
+        self._mount_pair_mask=np.array([frozenset([a['name'],b['name']]) in self.mounting_pairs for a,b in self.pairs])
         self.set_state(np.asarray(self.current_q), 'initial')
+
+    def candidate_pair_indices(self,centers,margin):
+        """Conservative rigid-group bounds before the unchanged sphere/FCL-independent query.
+
+        Each bound encloses all MuJoCo geom bounding spheres in the group.
+        No geometry, distance threshold or path sample is removed. Full-scan
+        mode remains available for actual-query parity diagnostics.
+        """
+        if not self.use_group_bounds:
+            distance=np.linalg.norm(centers[self.pair_a]-centers[self.pair_b],axis=1)-self.radii
+            return np.flatnonzero(distance<=margin)
+        gids=self._group_geoms;r=self.model.geom_rbound[gids,None]
+        lo=np.minimum.reduceat(centers[gids]-r,self._group_starts)
+        hi=np.maximum.reduceat(centers[gids]+r,self._group_starts)
+        ga,gb=self._group_pair_a,self._group_pair_b
+        separation=np.maximum(0,np.maximum(lo[ga]-hi[gb],lo[gb]-hi[ga]))
+        near=np.flatnonzero(np.linalg.norm(separation,axis=1)<=margin+1e-12)
+        if not len(near):return np.empty(0,dtype=int)
+        candidates=np.sort(np.concatenate([self._group_pair_rows[i] for i in near]))
+        # After one full valid state, every fixed mount has either a real
+        # accepted MuJoCo distance or a separating bounding-sphere proof.
+        # Fixed local mounts make both invariant throughout this same world.
+        if self.fixed_mounts_reference_q is not None:candidates=candidates[~self._mount_pair_mask[candidates]]
+        distance=np.linalg.norm(centers[self.pair_a[candidates]]-centers[self.pair_b[candidates]],axis=1)-self.radii[candidates]
+        return candidates[distance<=margin]
 
     def valid(self, q, phase='initial', detail=False):
         accepted = super().valid(q, phase, detail)
+        if accepted and self.fixed_mounts_reference_q is None:self.fixed_mounts_reference_q=np.asarray(q).tolist()
         if (self.last_failure and frozenset(self.last_failure.get('pair', []))
                 in self._fixed_attachment_pairs):
             self.last_failure['allowance'] = 'source_bound_J1_mount_interface'
         return accepted
 
     def set_state(self, q, phase):
+        if self._extra_ready and self.use_batch_poses:
+            self.current_q=np.asarray(q,float).copy();self.phase=phase
+            self.active_pose=self.box_pose(q,phase)
+            frames=self.robot.named_link_frames(q);flange=frames['link_6'];cad=flange@self.flange_cad
+            if not hasattr(self,'_dynamic_body_indices'):
+                # Fixed warehouse/conveyor bodies are authored once in this
+                # frozen world; moving bodies retain their exact local mounts.
+                for o in self.scene['obstacles']:self.pose_body(o['id'],transform(o['position_m']))
+                rows=[(name,name,np.eye(4)) for name in frames]
+                rows += [('tool_'+p['id'],'link_6',self.flange_cad) for p in self.tool['visual_parts']]
+                rows += [(a['id'],'link_6',np.eye(4)) for a in self.tool['adapter']]
+                for row in self._extra_bodies:
+                    if row['parent']=='D':self.pose_body(row['body'],row['T'])
+                    else:rows.append((row['body'],row['parent'],row['T']))
+                self._dynamic_parents=list(dict.fromkeys(r[1] for r in rows))
+                self._dynamic_parent_indices=np.array([self._dynamic_parents.index(r[1]) for r in rows])
+                self._dynamic_body_indices=np.array([self.model.body(r[0]).mocapid[0] for r in rows])
+                self._dynamic_local=np.stack([r[2] for r in rows])
+            poses=np.stack([frames[p] for p in self._dynamic_parents])[self._dynamic_parent_indices]@self._dynamic_local
+            self.data.mocap_pos[self._dynamic_body_indices]=poses[:,:3,3]
+            self.data.mocap_quat[self._dynamic_body_indices]=Rotation.from_matrix(poses[:,:3,:3]).as_quat()[:,[3,0,1,2]]
+            for name,carton in self.boxes.items():self.pose_body(name,self.active_pose if name==self.box_id else transform(carton['pose']))
+            self.mj.mj_forward(self.model,self.data)
+            return cad,self.active_pose
         result = super().set_state(q, phase)
         if self._extra_ready:
             frames = self.robot.named_link_frames(q); frames['D'] = np.eye(4)

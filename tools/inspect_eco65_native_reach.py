@@ -15,6 +15,8 @@ from unloading_sim.eco65.native_io import verify_snapshot
 
 def inspect(snapshot):
     verify_snapshot(snapshot)
+    if snapshot['scene'].get('native_task',{}).get('cup_selection_mode') == 'SIMULATED_INDEPENDENT_CUPS':
+        raise ValueError('ALL_CUP_TCP_HULL_BOUND_NOT_APPLICABLE_TO_INDEPENDENT_SELECTION')
     config = load_robot_config(); path = ROOT/config['urdf']
     joints = {j.get('name'): j for j in ET.parse(path).findall('joint')}
     def origin(index):

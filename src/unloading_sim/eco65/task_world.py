@@ -50,6 +50,13 @@ class UnloadingTaskWorld(UnloadingWorld):
         return False
     def valid(self,q,phase='initial',detail=False):
         self.phase=phase
+        if self.attached and hasattr(self,'attached_seal_ids'):
+            if self.tool.get('active_seal_ids') != self.attached_seal_ids:
+                raise ValueError('ACTIVE_SELECTION_CHANGED_WHILE_ATTACHED')
+            good,report=self.seal_fit(q,self.box_pose(q,phase))
+            if not good:
+                self.last_failure=dict(reason='ATTACHED_ACTIVE_SEAL_LOST',report=report)
+                return False
         if hasattr(self,'initial_scene'):
             for original in self.initial_scene['boxes']:
                 if original['id']!=self.box_id and self.boxes[original['id']]['pose']!=original['pose']:raise ValueError('Non-target carton moved')
@@ -66,6 +73,7 @@ class UnloadingTaskWorld(UnloadingWorld):
         if not good:raise ValueError('Actual rings do not seal: '+str(report))
         self.payload_relative=np.linalg.inv(self.robot.fk(q))@self.active_pose
         self.attached=True;self.box_states[self.box_id]='ATTACHED'
+        self.attached_seal_ids=copy.deepcopy(self.tool.get('active_seal_ids'))
         return self.payload_relative.copy()
     def support_report(self,pose):
         half=np.array(self.boxes[self.box_id]['size_m'])/2

@@ -103,14 +103,15 @@ def prepare_conveyors(scene):
     return objects, records, surfaces
 
 
-def prepare_j1_collision(output):
-    """Decompose the unchanged official J1 surface for its conformal seat."""
+def prepare_robot_collision(output, link_name='link_1'):
+    """Decompose an unchanged official surface; reuse verified results thereafter."""
     import coacd
     import trimesh
     import xml.etree.ElementTree as ET
     from unloading_sim.eco65.asset_inventory import load_robot_config
     config = load_robot_config()
-    visual = ET.parse(ROOT/config['urdf']).find("link[@name='link_1']/visual")
+    if link_name not in {f'link_{i}' for i in range(1,7)}: raise ValueError('OFFICIAL_LINK_REQUIRED')
+    visual = ET.parse(ROOT/config['urdf']).find(f"link[@name='{link_name}']/visual")
     uri = visual.find('geometry/mesh').get('filename')
     path = ROOT/config['package_root']/uri.removeprefix('package://ECO65-B/')
     original = trimesh.load(path, force='mesh', process=True)
@@ -135,7 +136,7 @@ def prepare_j1_collision(output):
                 merge=True, decimate=False, seed=6518))
         for vertices, faces in pieces:
             hull, _ = _convex(trimesh.Trimesh(vertices, faces, process=False))
-            name = f'robot_link_1__convex_{len(rows):03d}'; dest = folder/(name+'.obj')
+            name = f'robot_{link_name}__convex_{len(rows):03d}'; dest = folder/(name+'.obj')
             hull.export(dest, digits=17)
             restored = trimesh.load(dest, force='mesh', process=False)
             if not restored.is_watertight or not restored.is_convex:
@@ -148,6 +149,10 @@ def prepare_j1_collision(output):
                 enclosed_void_count=len(cavities)))
     if not rows: raise ValueError('OFFICIAL_J1_DECOMPOSITION_EMPTY')
     return rows, assets
+
+
+def prepare_j1_collision(output):
+    return prepare_robot_collision(output, 'link_1')
 
 
 def prepare_attachments(scene, camera, output):

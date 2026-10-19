@@ -126,6 +126,8 @@ public:
     if(touch_) {++state_checks_;const bool ok=touch_->check(state,endpoint);last_failure=touch_->failure;return ok;}
     if(eco65_) {
       ++state_checks_;const bool ok=eco65_->check(state,endpoint);
+      if(std::getenv("ECO65_TRACE_CHECKS") && state_checks_%100==0)
+        std::cerr<<"ECO65_PROCESS_PROGRESS "<<stage_<<" checks="<<state_checks_<<std::endl;
       last_failure=eco65_->failure;last_seal=eco65_->seal;return ok;
     }
     ++state_checks_;last_failure=nullptr;const auto target=targetAt(state);

@@ -3,7 +3,12 @@ The current user request supersedes branch-specific FANUC instructions below.
 Work only on feat/v0.6-eco65-moveit2-native-single-carton, rooted at 3a84888.
 Use ECO65-B assets and scene definitions pinned at c07fb73; no source branch writes.
 Preserve resident native MoveIt/MTC/Pilz/OMPL generation and FANUC regressions.
-Use all 12 verified CAD seal contours; no FANUC wrist/neighbor exemptions for ECO65.
+Preserve all 12 physical cups, stable IDs and verified CAD contours. Current small-carton
+tasks use SIMULATED_INDEPENDENT_CUPS: a nonempty selected subset must fully seal on
+one target face at actual FK; unselected cups retain all collision geometry. Hardware
+independent_control_verified remains evidence, never inferred from simulation authorization.
+No FANUC wrist/neighbor exemptions for ECO65. The 2026-10-19 user authorizes 150x100x100 mm
+cartons, narrower conveyors and finite robot/stack layout changes; regenerate all identities.
 Keep private assets and generated snapshots/USD/images/videos ignored.
 Use one combined compact/warehouse scene and a newly generated cold single-carton plan.
 No hardware or SDK; offline replay stays PLANNING_ONLY_NOT_EXECUTABLE / KINEMATIC_REPLAY.

@@ -25,6 +25,7 @@ def main():
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
     p.add_argument('--task-seconds', type=float, default=900.)
     p.add_argument('--stage-seconds', type=float, default=60.)
+    p.add_argument('--rpc-seconds',type=float,default=180.,help='Bounded watchdog including scene import and dense FCL audit; does not extend solver time')
     p.add_argument('--attempts', type=int, default=2, help='Bounded cold retries after search/review failure (1..3)')
     a = p.parse_args(); out = a.output.resolve(); out.relative_to(ROOT/'outputs')
     if out.exists(): raise FileExistsError('Use a fresh output directory')
@@ -59,7 +60,7 @@ def main():
                 task = None; begin = perf_counter(); attempt_out = out/f'attempt_{attempt:02d}'
                 try:
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
-                                      stage_seconds=a.stage_seconds, attempt=attempt,
+                                      stage_seconds=a.stage_seconds, attempt=attempt,rpc_seconds=a.rpc_seconds,
                                       progress_path=attempt_out/'native_progress.jsonl',
                                       home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
@@ -80,6 +81,7 @@ def main():
                     if task:
                         failure.update(native_records=task.records, native_ik_records=task.ik_records, partial_stages=task.stages)
                         failure.update(native_calls=task.native_calls, initial_state_checks=task.home_checks)
+                        failure['native_calls_archive']=task.call_archive_info()
                         failure['extraction_geometry'] = task.extraction_evidence
                         for name in ('grasp_geometry', 'grasp_search', 'grasp_failures', 'grasp_home_rejections'):
                             if hasattr(task, name): failure[name] = getattr(task, name)

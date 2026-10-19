@@ -362,6 +362,11 @@ class Worker {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
     } else {
       const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
+      if(req.contains("process_policy") && req.at("process_policy").contains("selection_binding")) {
+        if(!previous.request.at("process_policy").contains("selection_binding") ||
+           previous.request.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
+          throw std::runtime_error("ECO65_ACTIVE_SELECTION_CHANGED_WITHIN_BRANCH");
+      }
       if(previous.process && req.contains("process_policy") && !req.at("process_policy").at("initial_proximity").is_null()) {
         const auto terminal=previous.process->terminalProximity();const auto& next=req.at("process_policy").at("initial_proximity");
         if(!terminal.is_null() && terminal.value("fully_released",false) && !next.value("fully_released",false))
@@ -606,6 +611,11 @@ class Worker {
     record->result["mtc_attempt_index"]=requests;record->result["task_solve_calls"]=session.solve_calls;record->result["task_backtracks"]=session.backtracks;
     record->result["retained_native_subsolutions"]=session.records.size();record->result["task_stage_ids"]=session.active;
     record->result["diagnostic_only"]=diagnostic;
+    // Solver failures still need the actual search-state clearance/process
+    // evidence. In particular, INVALID_MOTION_PLAN alone hides which inactive
+    // cup or neighboring carton rejected the contact trajectory.
+    if(!record->result.contains("clearance"))record->result["clearance"]=record->clearance->evidence();
+    if(record->process && !record->result.contains("process_policy"))record->result["process_policy"]=record->process->evidence();
     if(diagnostic)record->result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
     compactPlanningOnlyReply(record->result,planning_only,planning_mode);
     return record->result;

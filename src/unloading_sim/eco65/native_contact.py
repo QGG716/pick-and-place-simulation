@@ -11,6 +11,24 @@ from .model import check_transform
 
 TYPE = 'cad_seal_contours_v1'
 TASK_TYPE = 'eco65_single_carton_task_v1'
+INDEPENDENT = 'SIMULATED_INDEPENDENT_CUPS'
+FACE_AXES = {'top': (2, 1.), 'front': (0, -1.)}
+
+
+def selected_ids(geometry, active_ids=None):
+    expected = geometry['expected_contour_ids']
+    active = list(expected) if active_ids is None else active_ids
+    if (not isinstance(active, list) or not active or
+            any(not isinstance(i, str) or i not in expected for i in active) or
+            len(set(active)) != len(active)):
+        raise ValueError('CONTACT_ACTIVE_SELECTION_INVALID')
+    return [i for i in expected if i in active]
+
+
+def face_outward(target, face):
+    if face not in FACE_AXES: raise ValueError('CONTACT_TARGET_FACE_INVALID')
+    axis, sign = FACE_AXES[face]
+    return check_transform(target)[:3, axis]*sign
 
 
 def validate_task_contract(scene):
@@ -23,17 +41,24 @@ def validate_task_contract(scene):
     contract = scene.get('native_task')
     if contract is None:
         return None
-    if contract.get('schema') != TASK_TYPE or contract.get('target_face') != 'top':
+    if contract.get('schema') != TASK_TYPE or contract.get('target_face') not in FACE_AXES:
         raise ValueError('NATIVE_TASK_CONTRACT_OR_FACE_INVALID')
+    if contract.get('cup_selection_mode') == INDEPENDENT:
+        if contract.get('allowed_faces') != ['top', 'front']:
+            raise ValueError('NATIVE_TASK_ALLOWED_FACES_INVALID')
+    elif contract.get('target_face') != 'top':
+        raise ValueError('NATIVE_TASK_LEGACY_TOP_FACE_REQUIRED')
     boxes = scene['boxes']; by_id = {b['id']: b for b in boxes}
-    if len(boxes) != 12 or len(by_id) != 12:
+    coverage=contract.get('coverage_context')
+    expected_count=12 if coverage is None else len(coverage['remaining_carton_ids'])
+    if len(boxes) != expected_count or len(by_id) != expected_count:
         raise ValueError('NATIVE_TASK_TWELVE_CARTONS_REQUIRED')
     declared = contract.get('stack_carton_ids', [])
-    if len(declared) != 12 or len(set(declared)) != 12 or set(declared) != set(by_id):
+    if len(declared) != expected_count or len(set(declared)) != expected_count or set(declared) != set(by_id):
         raise ValueError('NATIVE_TASK_CARTON_IDENTITIES_CHANGED')
     positions = np.asarray([b['pose'] for b in boxes], float)
     sizes = np.asarray([b['size_m'] for b in boxes], float)
-    if (positions.shape != (12, 3) or sizes.shape != (12, 3) or
+    if (positions.shape != (expected_count, 3) or sizes.shape != (expected_count, 3) or
             not np.isfinite(positions).all() or not np.isfinite(sizes).all() or np.any(sizes <= 0)):
         raise ValueError('NATIVE_TASK_CARTON_GEOMETRY_INVALID')
     tops = positions[:, 2]+sizes[:, 2]/2
@@ -43,10 +68,17 @@ def validate_task_contract(scene):
     selected = highest[np.flatnonzero(np.abs(centered-np.min(centered)) <= 1e-8)]
     if len(selected) != 1:
         raise ValueError('NATIVE_TASK_TOP_CENTER_AMBIGUOUS')
-    target = boxes[int(selected[0])]
+    target = boxes[int(selected[0])] if coverage is None else by_id[contract['target_id']]
     if (contract.get('target_id') != target['id'] or scene.get('target_box_id') != target['id']
             or scene.get('box') != target or target.get('supports')):
         raise ValueError('NATIVE_TASK_TARGET_IS_NOT_TOP_CENTER')
+    if coverage is not None:
+        universe={f'carton_r00_l{l:02d}_c{c:02d}' for l in range(4) for c in range(3)}
+        removed={f'carton_r00_l{l:02d}_c{c:02d}' for l in range(target['layer']+1,4) for c in range(3)}
+        if (set(coverage['removed_carton_ids'])!=removed or set(declared)!=universe-removed or
+                coverage['remaining_carton_ids']!=declared or not coverage.get('source_snapshot_fingerprint') or
+                coverage['scope']!='CONDITIONAL_COVERAGE_DIAGNOSTIC_NOT_COMPLETE_TASK'):
+            raise ValueError('COVERAGE_EXPOSURE_STATE_INVALID')
     supports = contract.get('original_support_names', [])
     if (not supports or len(set(supports)) != len(supports) or
             set(supports) != set(target.get('supported_by', [])) or target['id'] in supports):
@@ -103,6 +135,8 @@ def bind_task_contract(geometry, scene):
             raise ValueError('NATIVE_TASK_CONTRACT_WITHOUT_SCENE')
     else:
         result['task_contract'] = contract
+        if contract.get('cup_selection_mode') == INDEPENDENT:
+            result['cup_selection_mode'] = INDEPENDENT
     return result
 
 
@@ -130,14 +164,17 @@ def validate_geometry(geometry):
 
 
 def check_contours(geometry, flange, target, size, *, gap, penetration,
-                   margin=.003, angle=.01):
-    """Independent array implementation, top face only, metres/radians.
+                   margin=.003, angle=.01, face='top', active_ids=None):
+    """All physical contours evaluated; only the explicit enabled subset must seal.
 
     A rectangular target face is convex: testing every polygon vertex proves
     containment of every straight boundary edge. CAD tessellation error is
     reserved separately by the collision policy, not added a second time here.
     """
     validate_geometry(geometry)
+    active = selected_ids(geometry, active_ids)
+    if face not in FACE_AXES: raise ValueError('CONTACT_TARGET_FACE_INVALID')
+    axis, sign = FACE_AXES[face]; others = [i for i in range(3) if i != axis]
     tolerances = np.asarray([gap, penetration, margin, angle])
     if not np.isfinite(tolerances).all() or np.any(tolerances < 0) or angle >= np.pi/2:
         raise ValueError('CONTACT_TOLERANCE_INVALID')
@@ -150,14 +187,19 @@ def check_contours(geometry, flange, target, size, *, gap, penetration,
     for row in geometry['contours']:
         pts = np.asarray(row['points_m']) @ local[:3, :3].T + local[:3, 3]
         n = local[:3, :3] @ row['normal']
-        errors = pts[:, 2]-half[2]
-        reserve = float(np.min(half[:2]-np.abs(pts[:, :2])))
-        good = bool(-n[2] >= np.cos(angle) and errors.min() >= -penetration-1e-12
-                    and errors.max() <= gap+1e-12 and reserve >= margin-1e-12)
+        errors = sign*pts[:, axis]-half[axis]
+        reserve = float(np.min(half[others]-np.abs(pts[:, others])))
+        face_contact = bool(-sign*n[axis] >= np.cos(angle) and errors.min() >= -penetration-1e-12
+                            and errors.max() <= gap+1e-12)
+        good = bool(face_contact and reserve >= margin-1e-12)
         results.append(dict(id=row['id'], valid=good, min_gap_m=float(errors.min()),
-                            max_gap_m=float(errors.max()), edge_margin_m=reserve))
-    return dict(status='PASS' if all(r['valid'] for r in results) else 'FAIL',
+                            max_gap_m=float(errors.max()), edge_margin_m=reserve,
+                            face_contact=face_contact, active=row['id'] in active))
+    actual = [r['id'] for r in results if r['valid']]
+    return dict(status='PASS' if set(active) <= set(actual) else 'FAIL',
                 contours=results, checked_count=12,
+                target_face=face, active_ids=active, geometrically_eligible_ids=actual,
+                actual_sealed_ids=actual,
                 contact_observation='predicted_geometry_not_physical_contact')
 
 
@@ -235,7 +277,7 @@ def extract_cad_contours(tool, root):
     """
     import trimesh
     from .asset_paths import resolve_asset
-    if not tool['contact'].get('require_all_seals_fit') or len(tool['seals']) != 12:
+    if len(tool['seals']) != 12:
         raise ValueError('ALL_12_CAD_SEALS_REQUIRED')
     components = {s['component'] for s in tool['seals']}
     bands = [p for p in tool['collisions'] if p['semantic'] == 'terminal_contact_band']
@@ -324,6 +366,8 @@ def extract_cad_contours(tool, root):
     result = dict(geometry_type=TYPE, max_normal_misalignment_rad=tool['contact']['normal_tolerance_rad'],
                   expected_contour_ids=[r['id'] for r in rows],
                   contours=rows, flange_from_contact_frame=tool['T_flange_tool_cad'])
+    result['terminal_band_by_contour'] = {s['id']: next(b['id'] for b in bands
+        if b['source_part'] == s['component']) for s in tool['seals']}
     if 'mounting_contacts' in tool:
         result['mounting_contacts'] = tool['mounting_contacts']
     return validate_geometry(result)

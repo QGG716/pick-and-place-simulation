@@ -48,22 +48,36 @@ inline nlohmann::json checkSealContours(const nlohmann::json& geometry,
   for(double x:{gap,penetration,margin,angle})
     if(!std::isfinite(x)||x<0)throw std::runtime_error("CONTACT_TOLERANCE_INVALID");
   if(angle>=std::acos(-1.)/2)throw std::runtime_error("CONTACT_TOLERANCE_INVALID");
+  const std::string face=geometry.value("target_face",std::string("top"));
+  if(face!="top" && face!="front")throw std::runtime_error("CONTACT_TARGET_FACE_INVALID");
+  const int axis=face=="top"?2:0;const double sign=face=="top"?1.:-1.;
+  const auto active=geometry.contains("active_ids")?geometry.at("active_ids"):geometry.at("expected_contour_ids");
+  std::set<std::string> enabled;const auto expected=geometry.at("expected_contour_ids").get<std::set<std::string>>();
+  if(!active.is_array() || active.empty())throw std::runtime_error("CONTACT_ACTIVE_SELECTION_INVALID");
+  for(const auto& id:active)if(!id.is_string() || !expected.count(id.get<std::string>()) || !enabled.insert(id.get<std::string>()).second)
+    throw std::runtime_error("CONTACT_ACTIVE_SELECTION_INVALID");
+  nlohmann::json actual=nlohmann::json::array(),ordered=nlohmann::json::array();
   nlohmann::json results=nlohmann::json::array();bool passed=true;
   for(const auto& row:geometry.at("contours")) {
     const auto nv=row.at("normal").get<std::vector<double>>();
     const Eigen::Vector3d normal=local.linear()*Eigen::Vector3d(nv[0],nv[1],nv[2]);
-    bool valid=-normal.z()>=std::cos(angle);double lo=INFINITY,hi=-INFINITY,reserve=INFINITY;
+    bool valid=-sign*normal[axis]>=std::cos(angle);double lo=INFINITY,hi=-INFINITY,reserve=INFINITY;
     for(const auto& point:row.at("points_m")) {
       const auto p=point.get<std::vector<double>>();
       const Eigen::Vector3d x=local*Eigen::Vector3d(p[0],p[1],p[2]);
-      const double d=x.z()-half.z();lo=std::min(lo,d);hi=std::max(hi,d);
-      reserve=std::min({reserve,half.x()-std::abs(x.x()),half.y()-std::abs(x.y())});
+      const double d=sign*x[axis]-half[axis];lo=std::min(lo,d);hi=std::max(hi,d);
+      for(int k=0;k<3;++k)if(k!=axis)reserve=std::min(reserve,half[k]-std::abs(x[k]));
     }
-    valid=valid && lo>=-penetration-1e-12 && hi<=gap+1e-12 && reserve>=margin-1e-12;
-    passed=passed&&valid;
-    results.push_back({{"id",row.at("id")},{"valid",valid},{"min_gap_m",lo},{"max_gap_m",hi},{"edge_margin_m",reserve}});
+    const bool contact=valid && lo>=-penetration-1e-12 && hi<=gap+1e-12;
+    valid=contact && reserve>=margin-1e-12;
+    const bool on=enabled.count(row.at("id").get<std::string>());
+    if(on){passed=passed&&valid;ordered.push_back(row.at("id"));}
+    if(valid)actual.push_back(row.at("id"));
+    results.push_back({{"id",row.at("id")},{"valid",valid},{"min_gap_m",lo},{"max_gap_m",hi},{"edge_margin_m",reserve},
+      {"active",on},{"face_contact",contact}});
   }
   return {{"status",passed?"PASS":"FAIL"},{"contours",results},{"checked_count",results.size()},
+    {"target_face",face},{"active_ids",ordered},{"geometrically_eligible_ids",actual},{"actual_sealed_ids",actual},
     {"contact_observation","predicted_geometry_not_physical_contact"}};
 }
 }

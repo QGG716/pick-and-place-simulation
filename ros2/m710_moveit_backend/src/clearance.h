@@ -5,6 +5,8 @@
 #include <chrono>
 #include <mutex>
 #include <set>
+#include <iostream>
+#include <cstdlib>
 #include "clearance_workspace.h"
 
 namespace m710 {
@@ -100,7 +102,10 @@ public:
 
         if(rejected_examples.size()<8) { auto detail=last_failure; detail["phase"]=phase; std::vector<double> q;input.copyJointGroupPositions(m710::nativeFrames().planning_group,q);detail["q_rad"]=q;rejected_examples.push_back(detail); }
       }
-      c.bookkeeping_s+=elapsed(bookkeeping);c.seconds+=elapsed(start);return valid;
+      c.bookkeeping_s+=elapsed(bookkeeping);c.seconds+=elapsed(start);
+      if(eco65_ && std::getenv("ECO65_TRACE_CHECKS") && c.queries%100==0)
+        std::cerr<<"ECO65_CLEARANCE_PROGRESS "<<phase<<" queries="<<c.queries<<" seconds="<<c.seconds<<std::endl;
+      return valid;
     };
     if(!input.satisfiesBounds()) {last_failure={{"reason","JOINT_BOUNDS"}};return finish(false);}
     auto copying=Clock::now();
@@ -171,6 +176,7 @@ public:
       {"exempt_pairs",workspace_->stats.exempt_pairs},{"prepare_s",workspace_->stats.prepare_s},{"geometry_prepare_s",workspace_->stats.geometry_prepare_s},{"pair_filter_s",workspace_->stats.pair_filter_s},{"phases",Json::object()}};
     for(const auto& entry:workspace_->phases) {const auto& s=entry.second;
       result["phases"][entry.first]={{"queries",s.queries},{"aabb_tests",s.aabb_tests},{"aabb_skips",s.aabb_skips},
+        {"hierarchy_nodes_visited",s.hierarchy_nodes_visited},
         {"narrow_calls",s.narrow_calls},{"self_narrow",s.self_narrow},{"world_narrow",s.world_narrow},
         {"transform_aabb_update_s",s.update_s},{"broad_phase_s",s.broad_s},{"narrow_s",s.narrow_s},
         {"self_narrow_s",s.self_s},{"world_narrow_s",s.world_s}};

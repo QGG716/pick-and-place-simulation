@@ -166,6 +166,7 @@ def test_named_j1_interface_still_rejects_real_penetration(tmp_path, monkeypatch
         # Isolate the named pair to prove its numerical gate, without treating
         # this synthetic arrangement as a complete accepted task scene.
         world.pairs = pairs
+        world.use_group_bounds = False  # This test intentionally replaces the frozen pair inventory.
         world.pair_a = np.array([pairs[0][0]['gid']]); world.pair_b = np.array([pairs[0][1]['gid']])
         world.radii = world.model.geom_rbound[world.pair_a]+world.model.geom_rbound[world.pair_b]
         assert not world.valid(np.zeros(6))

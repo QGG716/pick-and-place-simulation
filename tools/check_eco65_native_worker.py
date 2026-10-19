@@ -37,7 +37,7 @@ def diagnose(model_path, home_path, command, output):
         if ready.get('status')!='READY' or ready.get('identity')!=init['identity']: raise ValueError('NATIVE_INIT_REJECTED')
         context=SimpleNamespace(scene=scene,snapshot={'tool':model['tool']},init=init,identity=init['identity'],
             robot=robot_for(model['tool'],scene),target=scene['box'],target_pose=transform(scene['box']['pose']),
-            attachment=None,task_id='eco65-equipment-diagnostic',parent='',counter=0,call=call)
+            attachment=None,face='top',task_id='eco65-equipment-diagnostic',parent='',counter=0,call=call)
         result['fk']=NativeTask.check_fk(context,np.asarray(candidate['q_rad']))
         result['states']=[]
         for name,q in [('candidate_HOME',candidate['q_rad']),('historical_seed',scene['source_equipment_config']['task']['initial_seed_q_rad']),

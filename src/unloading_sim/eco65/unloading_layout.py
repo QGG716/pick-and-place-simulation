@@ -104,14 +104,14 @@ def face_tcp(box_pose,size,face):
 def seal_check(tool,tcp,box_pose,size,face,edge=.003,tolerance=.0004):
     if 'native_contact_geometry' in tool:
         from .native_contact import check_contours
-        if face!='top':raise ValueError('Native ECO65 task requires top contact')
         flange=check_transform(tcp)@np.linalg.inv(check_transform(tool['T_flange_tcp']))
         report=check_contours(tool['native_contact_geometry'],flange,box_pose,size,
-            gap=tolerance,penetration=tolerance,margin=edge,angle=tool['contact']['normal_tolerance_rad'])
+            gap=tolerance,penetration=tolerance,margin=edge,angle=tool['contact']['normal_tolerance_rad'],
+            face=face,active_ids=tool.get('active_seal_ids'))
         return dict(fits=report['status']=='PASS',rings=report['checked_count'],
             max_plane_error_m=max(max(abs(r['min_gap_m']),abs(r['max_gap_m'])) for r in report['contours']),
             min_edge_clearance_m=min(r['edge_margin_m'] for r in report['contours']),
-            independent_control_assumed=False,contour_report=report)
+            independent_control_assumed=tool['native_contact_geometry'].get('cup_selection_mode')=='SIMULATED_INDEPENDENT_CUPS',contour_report=report)
     axis,sign=FACE_AXES[face];others=[i for i in range(3) if i!=axis];half=np.array(size)/2
     cad=check_transform(tcp)@np.linalg.inv(check_transform(tool['T_tool_cad_tcp']))
     local=np.linalg.inv(box_pose)@cad;normal=(np.linalg.inv(box_pose)@tcp)[:3,2]
@@ -242,9 +242,14 @@ class UnloadingWorld(World):
         self.calls+=1;self.last_failure=None
         if not np.isfinite(q).all() or not self.robot.within_limits(q):self.last_failure=dict(reason='joint_limits');return False
         self.set_state(q,phase);margin=self.scene['margin_m']+2*self.scene['mesh_error_reserve_m']
-        centers=self.data.geom_xpos;distances=np.linalg.norm(centers[self.pair_a]-centers[self.pair_b],axis=1)-self.radii
+        centers=self.data.geom_xpos
+        if hasattr(self,'candidate_pair_indices'):
+            candidates=self.candidate_pair_indices(centers,margin)
+        else:
+            distances=np.linalg.norm(centers[self.pair_a]-centers[self.pair_b],axis=1)-self.radii
+            candidates=np.flatnonzero(distances<=margin)
         seal=None
-        for index in np.flatnonzero(distances<=margin):
+        for index in candidates:
             a,b=self.pairs[index];pair={a['name'],b['name']};allowance=None
             if pair=={'robot_base_link','robot_mount_plate'}:allowance='fixed_mount_interface'
             elif frozenset(pair) in self.mounting_pairs:allowance='measured_flange_interface'
@@ -253,9 +258,20 @@ class UnloadingWorld(World):
                 other=b if a['name']==self.box_id else a
                 if other['kind']=='terminal_contact_band':
                     if seal is None:seal=seal_check(self.tool,self.robot.fk(q),self.active_pose,self.boxes[self.box_id]['size_m'],self.active_face,tolerance=margin if phase in ('approach','contact','retreat') else self.scene['contact_tolerance_m'])
-                    if seal['fits']:allowance='actual_target_seals_'+self.active_face
+                    contact=seal['fits']
+                    if self.tool.get('native_contact_geometry',{}).get('cup_selection_mode')=='SIMULATED_INDEPENDENT_CUPS':
+                        mapping=self.tool['native_contact_geometry']['terminal_band_by_contour']
+                        contact=any(mapping[r['id']]==other['name'] and r['face_contact']
+                                    for r in seal['contour_report']['contours'])
+                    if contact:allowance='actual_target_terminal_face_contact_'+self.active_face
             threshold=-self.scene['contact_tolerance_m'] if allowance else margin
-            distance=self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],margin,None)
+            key=frozenset(pair)
+            cache=getattr(self,'fixed_distance_cache',None)
+            invariant=cache is not None and key in self.mounting_pairs
+            if invariant and key in cache:distance=cache[key]
+            else:
+                distance=self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],margin,None)
+                if invariant:cache[key]=float(distance);self.fixed_distance_queries+=1
             if not distance_accepted(distance,threshold):
                 self.last_failure=dict(reason='collision',pair=[a['name'],b['name']],distance_m=float(distance),threshold_m=threshold,allowance=allowance)
                 return False

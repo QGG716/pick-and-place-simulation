@@ -35,6 +35,8 @@ def state_at(snapshot, plan, robot, time_s):
     if loaded: cartons[target] = frames['link_6']@np.asarray(plan['events'][0]['flange_from_target'])
     elif s['stage'] in {'withdrawal', 'residence'}: cartons[target] = np.asarray(plan['events'][1]['pose'])
     return dict(q=q[0], frames=frames, cartons=cartons, phase=s['stage'], attached=loaded, time_s=time_s,
+                active_ids=plan.get('active_ids',[]),target_face=plan.get('target_face','top'),
+                released=s['stage'] in {'withdrawal','residence'},
                 status='KINEMATIC_REPLAY', planning_status=STATUS, dynamics='NOT_EVALUATED')
 
 
