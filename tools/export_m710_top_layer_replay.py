@@ -51,7 +51,7 @@ def export(run,seed,output):
                 assert stage['planner_id']=='NOMINAL_DROP_RELEASE' and stage['terminal_q']==q
                 drop=cycle['nominal_release'];duration=drop['samples'][-1]['t'];drop_time+=duration
                 add(dict(base,kind='drop',phase='释放 / 名义下落',q=q,world=mechanism(height),
-                    drop=drop,source='IDEAL_GRAVITY_NOT_PHYSICS'),duration)
+                    drop={k:v for k,v in drop.items() if k!='native'},source='IDEAL_GRAVITY_NOT_PHYSICS'),duration)
                 add(dict(base,kind='landed',phase='名义首次触带',q=q,world=mechanism(height),landed=cycle['landed_box'],
                     source='NOMINAL_FIRST_CONTACT'),.6);event_time+=.6
             else:
@@ -72,6 +72,8 @@ def export(run,seed,output):
         lower_count=len(protocol['original_cartons'])-result['target_count'],duration=time,times=dict(native_trajectory_s=native_time,lift_demo_s=mechanism_time,nominal_drop_s=drop_time,
             event_display_s=event_time,hardware_lift_s=None),physical_execution='NOT_RUN',execution_ready=False,
         qualification_status='NOT_EVALUATED',continuous_swept_proof=False)
+    robot=layout.robot()
+    data['fk_witnesses']=[robot.named_link_frames(np.asarray(s['points'][0]['q'] if s['kind']=='motion' else s['q']))['flange'].T.reshape(-1).tolist() for s in segments]
     vendor=ROOT/'tools/search_replay/vendor'
     html=(ROOT/'tools/lifted_reception/batch_viewer.html').read_text(encoding='utf-8')
     html=html.replace('/*__VENDOR__*/',(vendor/'three.min.js').read_text()+'\n'+(vendor/'OrbitControls.js').read_text())

@@ -63,11 +63,12 @@ try{
     await fs.writeFile(path.join(output,name),Buffer.from(r.data,'base64'));
   };
   await screenshot('initial.png');
-  const timeline=await evaluate('({duration:batchData.duration,segments:batchData.segments.map(s=>({start:s.start,duration:s.duration,kind:s.kind,completed:s.completed,q:s.q||s.points[0].q})),count:batchData.result.completed_count})');
+  const timeline=await evaluate('({duration:batchData.duration,segments:batchData.segments.map(s=>({start:s.start,duration:s.duration,kind:s.kind,completed:s.completed,q:s.q||s.points[0].q})),fk:batchData.fk_witnesses,count:batchData.result.completed_count})');
   const checks=[];
   for(const [i,s] of timeline.segments.entries()){
     const actual=await evaluate(`setBatchTime(${s.start});window.previewState`);
     assert.equal(actual.completed_count,s.completed);
+    assert.ok(actual.flange_matrix_column_major.every((x,k)=>Math.abs(x-timeline.fk[i][k])<1e-7),'Rendered FK mismatch');
     assert.ok(actual.q_rad.every((x,k)=>Math.abs(x-s.q[k])<1e-9));
     assert.equal(actual.carton_count,40-s.completed);
     checks.push({segment:i,kind:s.kind,time:s.start,completed:actual.completed_count,cartons:actual.carton_count});
@@ -82,7 +83,7 @@ try{
     document.querySelector('#source').style.fontSize='10px';resizeBatch();
   })()`);
   await fs.mkdir(path.join(output,'frames'),{recursive:true});
-  const frames=Math.ceil(timeline.duration*5)+1;
+  const frames=process.argv.includes('--check-only')?0:Math.ceil(timeline.duration*5)+1;
   for(let frame=0;frame<frames;frame++){
     await evaluate(`setBatchTime(${Math.min(timeline.duration,frame/5)})`);
     await screenshot(`frames/frame-${String(frame).padStart(5,'0')}.png`);
