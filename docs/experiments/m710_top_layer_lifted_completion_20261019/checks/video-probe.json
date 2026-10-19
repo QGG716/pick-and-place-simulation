@@ -1,0 +1,18 @@
+{
+    "programs": [
+
+    ],
+    "streams": [
+        {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 360,
+            "r_frame_rate": "5/1",
+            "nb_frames": "1205"
+        }
+    ],
+    "format": {
+        "duration": "241.000000",
+        "size": "670549"
+    }
+}

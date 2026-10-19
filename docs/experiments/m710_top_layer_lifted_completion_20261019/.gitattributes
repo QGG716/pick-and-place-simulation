@@ -1,0 +1,5 @@
+* -text whitespace=cr-at-eol
+*.log -diff
+*.html -diff
+*.tar.gz binary
+*.part-* binary

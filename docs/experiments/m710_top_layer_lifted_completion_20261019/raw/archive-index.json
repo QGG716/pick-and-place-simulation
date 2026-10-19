@@ -1,0 +1,47 @@
+[
+  {
+    "archive": "dev-01.tar.gz",
+    "bytes": 8527754,
+    "sha256": "5b9b94f2dab1f780660616e936e663b0756201847fa989826b0592e9c8839d37",
+    "parts": []
+  },
+  {
+    "archive": "dev-02.tar.gz",
+    "bytes": 11212553,
+    "sha256": "864c9b910651e4292d7ad2f353fe8b47fbffb5b1d9f262573b97018225a3d63a",
+    "parts": []
+  },
+  {
+    "archive": "dev-03.tar.gz",
+    "bytes": 14095574,
+    "sha256": "6556be570819861d687a1fd46a8c3328df5e5aee2d16eea20b20d59a269b775e",
+    "parts": []
+  },
+  {
+    "archive": "dev-04.tar.gz",
+    "bytes": 16426124,
+    "sha256": "e7040519d5b22c5c79e734d4a6ca5928e999a62ea4c44d8df1f424216b93d826",
+    "parts": []
+  },
+  {
+    "archive": "formal-disk-abort.tar.gz",
+    "bytes": 22079494,
+    "sha256": "91dc54d20d3ca59a1bb6b628380a58c6bcd6c163bb6d7f432e3275b61ce8441c",
+    "parts": []
+  },
+  {
+    "archive": "interval-diagnostic.tar.gz",
+    "bytes": 12290842,
+    "sha256": "11f3d0cba2b3d856d66488d5819eeea33717ada0f04433601f1acf60f1bf8eba",
+    "parts": []
+  },
+  {
+    "archive": "formal-complete.tar.gz",
+    "bytes": 55862785,
+    "sha256": "e31090e4671e323809fcf84c328a091f6a091db06b87cccf09fc7ff977cd321e",
+    "parts": [
+      "formal-complete.tar.gz.part-000",
+      "formal-complete.tar.gz.part-001"
+    ]
+  }
+]

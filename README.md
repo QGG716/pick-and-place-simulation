@@ -1,4 +1,14 @@
-# 横纵带剪叉与倾斜联动（2026-10-19）
+# 当前结论：顶层连续抓放两批均完成 5/5（2026-10-19）
+
+已在 `feat/v0.5-moveit2-native-single-carton` 实现并运行完整顶层批次入口。预定种子 71070、71071 从完整 40 箱及配置初态分别连续完成 **5/5**，包括释放、名义首次触带、工具分离和箱间实际末态衔接；下方 35 箱保留。联动横带、旋转纵带、剪叉及修正支座真实进入原生碰撞场景。
+
+结果依赖简化重力下落与 **IDEAL_RECEIVER_DRAIN**，没有物理执行。`qualification_status=NOT_EVALUATED`、`continuous_swept_proof=false`、`physical_execution=NOT_RUN`、`execution_ready=false`。166 项定向 Python 测试、原生机构检查、1190 个实际构型行程样本及两批保存后连续性核对通过；失败分支和磁盘中断证据保留。
+
+[本轮完整报告](docs/m710_top_layer_lifted_completion_20261019.md) · [连续视频：640×360 / 5 fps / 正常时间](docs/experiments/m710_top_layer_lifted_completion_20261019/seed-71070.mp4) · [离线查看器 ZIP](docs/experiments/m710_top_layer_lifted_completion_20261019/offline-viewers.zip) · [原始证据](docs/experiments/m710_top_layer_lifted_completion_20261019/README.md)
+
+以下均为历史阶段记录，原有结论只适用于各自当时的源码、场景和范围。
+
+# 历史：横纵带剪叉与倾斜联动（2026-10-19）
 
 已增加显式剪叉机构场景与 USD 接口：横带升降，纵带远端固定、近端随动倾斜，刚性长度不变。0.60 → 2.05 m 时倾角 31.19°、近端后移 404.7 mm。31 项几何回归、5 项 USD 测试及 101 个高度状态位姿核对通过；旧布局测试另有 4 项失败，报告保留。
 
@@ -6,7 +16,7 @@
 
 当前为机构运动学模型，未做动力学/承载/扫掠碰撞资格验收，未把旧纯 Z 原生规划许可套用到新机构。`qualification_status=NOT_EVALUATED`，`physical_execution=NOT_RUN`。以下保留上一轮原生规划结果。
 
-# FANUC M-710iD/70 当前结论（2026-10-19）
+# 历史：FANUC M-710iD/70 右内侧抓取（2026-10-19）
 
 已接入显式**右端内侧 +Y → −X / Hmax 两段规划后缀**，但本轮两个开放通道原生案例均未完成接近：各16个IK候选被 `J4_link / carton_l06_c02` 目标相交检查拒绝，90.063 / 90.074 s 后预算耗尽，RRT、contact及两段LIN均未到达。没有宣称侧抓贯通或箱体全局不可卸。
 

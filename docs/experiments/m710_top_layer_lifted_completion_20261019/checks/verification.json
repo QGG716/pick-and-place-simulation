@@ -1,0 +1,31 @@
+{
+  "source_commit": "bf3766514fb22b6cc6613e90e6a0ffd039d26f2a",
+  "runs": [
+    {
+      "seed": 71070,
+      "status": "PASS_SAVED_LINEAGE_AND_CONTINUITY",
+      "completed": 5,
+      "targets": 5,
+      "native_stages": 33,
+      "coupled_native_samples": 413,
+      "nominal_drop_samples": 431,
+      "lower_cartons_unchanged": 35,
+      "failed_attempts": 2,
+      "planning_wall_s": 345.64189733192325
+    },
+    {
+      "seed": 71071,
+      "status": "PASS_SAVED_LINEAGE_AND_CONTINUITY",
+      "completed": 5,
+      "targets": 5,
+      "native_stages": 33,
+      "coupled_native_samples": 413,
+      "nominal_drop_samples": 431,
+      "lower_cartons_unchanged": 35,
+      "failed_attempts": 2,
+      "planning_wall_s": 354.41735338047147
+    }
+  ],
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

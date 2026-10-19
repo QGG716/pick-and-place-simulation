@@ -1,0 +1,4 @@
+PASS synchronized native world samples=587 old geometry rejected; release pose, velocity, footprint guards
+PASS API dispatch, scope, exact seed/options, positive/clamped budget
+side_transfer_test PASS (synthetic geometry, real FCL)
+PASS exact Z union: endpoint clear / middle rejected; strict transition invariants
