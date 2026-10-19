@@ -192,6 +192,7 @@ class Worker {
   moveit::core::RobotModelPtr model;
   planning_scene::PlanningScenePtr base;
   std::map<std::string,planning_pipeline::PlanningPipelinePtr> pipelines;
+  planning_interface::PlannerConfigurationMap original_ompl_configurations;
   std::vector<std::string> names;
   J identity, scene_content, bound_policy, bound_tools, bound_compliant, bound_process_geometry; std::string scene_key;
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
@@ -442,6 +443,31 @@ class Worker {
       const std::string stage=req.at("stage");
       if(pipeline=="ompl" && (req.contains("goal_pose") || !(stage=="pregrasp" || stage=="transit" || stage=="residence")))
         throw std::runtime_error("CONSTRAINED_PROCESS_OMPL_FORBIDDEN");
+      bool ompl_interpolate=true;
+      if(req.contains("ompl_interpolate_output")) {
+        if(!req.at("ompl_interpolate_output").is_boolean() || req.at("ompl_interpolate_output")!=false ||
+            pipeline!="ompl" || !planning_only || planning_mode!="cold_from_scratch" ||
+            identity.value("robot_variant",std::string())!="ECO65-B" ||
+            bound_process_geometry.value("cup_selection_mode",std::string())!="SIMULATED_INDEPENDENT_CUPS")
+          throw std::runtime_error("INVALID_OMPL_OUTPUT_INTERPOLATION_SCOPE");
+        ompl_interpolate=false;
+      }
+      if(pipeline=="ompl") {
+        // Reapply the immutable original map on every request. Only native
+        // output interpolation changes; search resolution and dense FCL
+        // output/process checks below retain their original policy.
+        auto configurations=original_ompl_configurations;
+        size_t configured=0;
+        for(auto& entry:configurations) if(entry.second.group==m710::nativeFrames().planning_group) {
+          if(!ompl_interpolate)entry.second.config["interpolate"]="0";
+          ++configured;
+        }
+        if(configured==0)throw std::runtime_error("OMPL_GROUP_CONFIGURATION_MISSING");
+        auto manager=pipelines.at(pipeline)->getPlannerManager();manager->setPlannerConfigurations(configurations);
+        if(!ompl_interpolate)for(const auto& entry:manager->getPlannerConfigurations())
+          if(entry.second.group==m710::nativeFrames().planning_group && entry.second.config.at("interpolate")!="0")
+            throw std::runtime_error("OMPL_OUTPUT_INTERPOLATION_READBACK_MISMATCH");
+      }
       const auto event_begin=Clock::now();
       const std::string target_id=req.at("clearance_policy").at("target_id");
       const auto& current=r.start->getCurrentState();
@@ -504,6 +530,7 @@ class Worker {
         {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
         {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
       r.result["solver_returned_success"]=result.success;
+      r.result["ompl_output_interpolation"]=pipeline=="ompl"?J(ompl_interpolate):J(nullptr);
       r.result["solver_message"]=result.message;
       // MTC exposes the original error name on failure, but drops the numeric
       // response and the successful response message. Never invent that code.
@@ -665,6 +692,7 @@ public:
         p->displayComputedMotionPlans(false); p->publishReceivedRequests(false);
         pipelines[name]=p;
       }
+      original_ompl_configurations=pipelines.at("ompl")->getPlannerManager()->getPlannerConfigurations();
       for(auto it=req.at("expected_collision_shapes").begin();it!=req.at("expected_collision_shapes").end();++it) {
         const auto* link=model->getLinkModel(it.key());
         if(!link || link->getShapes().size()!=it.value().get<size_t>()) throw std::runtime_error("COLLISION_GEOMETRY_MISSING:"+it.key());

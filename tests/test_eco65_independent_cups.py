@@ -86,3 +86,14 @@ def test_shorter_approach_restarts_from_home_without_retaining_failed_path(monke
     assert [a['status'] for a in task.approach_attempts]==['REJECTED','REJECTED','HOME_APPROACH_AND_CONTACT_PASS']
     assert task.stages==['pregrasp-0.01','contact-0.01']
     assert len(task.events)==1 and task.events[0]['after_stage']=='contact-0.01'
+
+
+def test_native_interpolation_option_requires_matching_worker_evidence():
+    from unloading_sim.eco65.native_task import verify_ompl_output_interpolation
+    request=dict(ompl_interpolate_output=False,pipeline_id='ompl',stage='pregrasp')
+    verify_ompl_output_interpolation({}, {})  # Historical native results.
+    verify_ompl_output_interpolation(request,dict(ompl_output_interpolation=False))
+    for changed,result in [(request,{}),(request,dict(ompl_output_interpolation=True)),
+            (dict(request,stage='contact'),dict(ompl_output_interpolation=False))]:
+        with pytest.raises(ValueError,match='NATIVE_OMPL_OUTPUT_INTERPOLATION_MISMATCH'):
+            verify_ompl_output_interpolation(changed,result)

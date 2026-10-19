@@ -30,6 +30,14 @@ INDEPENDENT_PHASE = dict(pregrasp='approach', contact='contact', extraction='loa
     transit='loaded_transfer', place='place_contact', withdrawal='retreat', residence='retreat')
 
 
+def verify_ompl_output_interpolation(request,result):
+    if 'ompl_interpolate_output' in request and (
+            request['ompl_interpolate_output'] is not False or request.get('pipeline_id')!='ompl' or
+            request.get('stage') not in ('pregrasp','transit','residence') or
+            result.get('ompl_output_interpolation') is not False):
+        raise ValueError('NATIVE_OMPL_OUTPUT_INTERPOLATION_MISMATCH')
+
+
 def extraction_goal(scene, target_pose, size, tcp, face='top', outward_m=None):
     """Retain the 10 mm lift clearance above crossed support surfaces."""
     half=np.asarray(size)/2; start=np.asarray(target_pose)[:3,3]
@@ -298,11 +306,17 @@ class NativeTask:
                     require_native_motion=True,velocity_scale=scale,acceleration_scale=scale)
                 if pipeline=='ompl' and stage=='transit':
                     req['clearance_policy']['search_payload_reserve_m']=.001
+                if pipeline=='ompl' and self.init['process_geometry'].get('cup_selection_mode')==INDEPENDENT:
+                    # Keep the native simplified path, without expanding it
+                    # into thousands of extra timing knots. Search precision,
+                    # dense FCL output checks and independent review remain.
+                    req['ompl_interpolate_output']=False
                 if constrained: req['goal_pose'] = check_transform(pose).tolist()
                 else: req['q_goal'] = joint_goal.tolist()
                 started = perf_counter(); raw = self.call(req)
                 self.records.append(dict(request=req, result=raw, wall_s=perf_counter()-started))
                 if raw['status'] != 'SUCCESS': continue
+                verify_ompl_output_interpolation(req,raw)
                 if (not native_generation_evidence(raw, req) or raw.get('mtc_generation') is not True
                         or raw.get('generated_during_task') is not True or raw.get('task_id') != self.task_id
                         or raw.get('parent_stage_id') != self.parent or raw.get('stage_id') != req['stage_id']):
@@ -629,6 +643,7 @@ def validate_plan_contract(plan, snapshot):
                 np.any(60*d/dt**3 > limits['joint_jerk_rad_s3']+1e-8)):
             raise ValueError('PLAN_SIMULATION_LIMIT')
         raw, req = s['native_result'], s['native_request']
+        verify_ompl_output_interpolation(req,raw)
         if independent and (req['process_policy'].get('selection_binding') != binding or
                 req['process_policy'].get('active_ids') != ids or req['process_policy'].get('target_face') != plan['target_face']):
             raise ValueError('PLAN_CUP_SELECTION_CHANGED_WITHIN_BRANCH')
