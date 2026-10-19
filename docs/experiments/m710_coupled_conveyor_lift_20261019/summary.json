@@ -1,0 +1,1732 @@
+{
+  "status": "COUPLED_CONVEYOR_KINEMATIC_MODEL_NOT_EXECUTABLE",
+  "source_commit": "c9e0555fc42a796148d8d6c0a3af3bb45b5cf579",
+  "layout_fingerprint": "5ad315d60b22fcffdb5fcebc9b28e98dccea8fd0268aa6e6d7164ec944c3d540",
+  "command": [
+    "tools/preview_m710_conveyor_lift.py",
+    "--output",
+    "/root/autodl-tmp/m710-coupled-lift-20261019",
+    "--source-commit",
+    "c9e0555fc42a796148d8d6c0a3af3bb45b5cf579",
+    "--usd-asset-cache",
+    "/root/autodl-tmp/v05-assets/workcell/mirror"
+  ],
+  "qualification_status": "NOT_EVALUATED",
+  "physical_execution": "NOT_RUN",
+  "continuous_swept_proof": false,
+  "sample_parameter": "HEIGHT_NOT_TIME",
+  "official_resources": {
+    "conveyor_manifest": "configs/isaac/conveyor_assets.json",
+    "articulations": "https://docs.omniverse.nvidia.com/kit/docs/omni_physics/110.0/dev_guide/rigid_bodies_articulations/articulations.html",
+    "conveyor": "https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.asset.gen.conveyor/docs/index.html"
+  },
+  "usd_validation": {
+    "status": "PASS_GEOMETRY_ONLY",
+    "states": 101,
+    "assets": [
+      {
+        "source": {
+          "id": "nvidia_a06",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02"
+        },
+        "source_belt_bounds_m": [
+          [
+            -1.2207031250266454e-06,
+            -0.4500317085937504,
+            1.741493606567383
+          ],
+          [
+            1.999434814453125,
+            0.449967070703125,
+            1.7805298614501954
+          ]
+        ],
+        "source_belt_thickness_m": 0.03903625488281248,
+        "segments": [
+          {
+            "mesh_path": "/CoupledConveyors/Bodies/conveyor_transverse/OfficialVisual/A06Segment0/Belt/SM_ConveyorBelt_A06_Belt_02",
+            "vertices": 440,
+            "material": "/CoupledConveyors/Bodies/conveyor_transverse/OfficialVisual/A06Segment0/Looks/M_ConveyorBelt_A01_Belt",
+            "unit_bounds": [
+              [
+                -0.5,
+                -0.49999999999999983,
+                0.17469787597656264
+              ],
+              [
+                0.5,
+                0.5,
+                0.5
+              ]
+            ],
+            "segment_length_m": 1.5
+          }
+        ],
+        "adaptation": "OFFICIAL_BELT_SUBASSEMBLY_ON_PROJECT_LOW_FRAME",
+        "excluded_source_content": [
+          "tall_integrated_frame",
+          "frame_decals"
+        ],
+        "collision_proxy": "/CoupledConveyors/Bodies/conveyor_transverse/OfficialVisual/Collision",
+        "velocity_m_s": 0.0,
+        "turning_function": "NOT_IMPLEMENTED_OR_TESTED"
+      },
+      {
+        "source": {
+          "id": "nvidia_a06",
+          "path": "Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "sha256": "0e1b606d4cfbfbc2ce51300b7773f08cb4656771faa105d3366dc85745f042dc",
+          "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.0/Isaac/Props/Conveyors/ConveyorBelt_A06.usd",
+          "belt_prim": "/World/Belt/SM_ConveyorBelt_A06_Belt_02"
+        },
+        "source_belt_bounds_m": [
+          [
+            -1.2207031250266454e-06,
+            -0.4500317085937504,
+            1.741493606567383
+          ],
+          [
+            1.999434814453125,
+            0.449967070703125,
+            1.7805298614501954
+          ]
+        ],
+        "source_belt_thickness_m": 0.03903625488281248,
+        "segments": [
+          {
+            "mesh_path": "/CoupledConveyors/Bodies/conveyor_longitudinal/OfficialVisual/A06Segment0/Belt/SM_ConveyorBelt_A06_Belt_02",
+            "vertices": 440,
+            "material": "/CoupledConveyors/Bodies/conveyor_longitudinal/OfficialVisual/A06Segment0/Looks/M_ConveyorBelt_A01_Belt",
+            "unit_bounds": [
+              [
+                -0.5,
+                -0.5,
+                0.17469787597656264
+              ],
+              [
+                0.0,
+                0.5,
+                0.5
+              ]
+            ],
+            "segment_length_m": 1.4
+          },
+          {
+            "mesh_path": "/CoupledConveyors/Bodies/conveyor_longitudinal/OfficialVisual/A06Segment1/Belt/SM_ConveyorBelt_A06_Belt_02",
+            "vertices": 440,
+            "material": "/CoupledConveyors/Bodies/conveyor_longitudinal/OfficialVisual/A06Segment1/Looks/M_ConveyorBelt_A01_Belt",
+            "unit_bounds": [
+              [
+                0.0,
+                -0.5,
+                0.17469787597656264
+              ],
+              [
+                0.5,
+                0.5,
+                0.5
+              ]
+            ],
+            "segment_length_m": 1.4
+          }
+        ],
+        "adaptation": "OFFICIAL_BELT_SUBASSEMBLY_ON_PROJECT_LOW_FRAME",
+        "excluded_source_content": [
+          "tall_integrated_frame",
+          "frame_decals"
+        ],
+        "collision_proxy": "/CoupledConveyors/Bodies/conveyor_longitudinal/OfficialVisual/Collision",
+        "velocity_m_s": 0.0,
+        "turning_function": "NOT_IMPLEMENTED_OR_TESTED"
+      }
+    ],
+    "physics_steps": 0
+  },
+  "reference_q_rad": [
+    -0.4738507840476061,
+    -0.46642585435191586,
+    -0.35455135903520246,
+    1.7851535539041579,
+    0.48589729025839207,
+    -3.3829904117272847
+  ],
+  "robot_reference_status": "STATIC_CONFIG_Q_NOT_CHECKED_WITH_NEW_MECHANISM",
+  "low": {
+    "schema": "m710_coupled_scissor_v1",
+    "height_m": 0.6000000000000001,
+    "tilt_rad": 0.0,
+    "longitudinal_length_m": 2.8,
+    "rear_hinge_world": [
+      -3.0,
+      -0.7500000000000001,
+      0.6000000000000001
+    ],
+    "near_tip_world": [
+      -0.20000000000000018,
+      -0.7500000000000001,
+      0.6000000000000001
+    ],
+    "near_tip_slide_x_m": 0.0,
+    "rear_fixed": true,
+    "near_tip_within_transverse_x": true,
+    "coupling": "FIXED_REAR_PIVOT_NEAR_HEIGHT_FOLLOW_WITH_X_SLIDE",
+    "moving_object_ids": [
+      "conveyor_transverse",
+      "conveyor_longitudinal",
+      "lift_transverse_left_arm_0_0",
+      "lift_transverse_left_arm_0_1",
+      "lift_transverse_left_pin_0",
+      "lift_transverse_left_arm_1_0",
+      "lift_transverse_left_arm_1_1",
+      "lift_transverse_left_pin_1",
+      "lift_transverse_left_end_pin_0_0",
+      "lift_transverse_left_end_pin_0_1",
+      "lift_transverse_left_end_pin_1_0",
+      "lift_transverse_left_end_pin_1_1",
+      "lift_transverse_left_end_pin_2_0",
+      "lift_transverse_left_end_pin_2_1",
+      "lift_transverse_left_head_rail",
+      "lift_transverse_left_mount",
+      "lift_transverse_right_arm_0_0",
+      "lift_transverse_right_arm_0_1",
+      "lift_transverse_right_pin_0",
+      "lift_transverse_right_arm_1_0",
+      "lift_transverse_right_arm_1_1",
+      "lift_transverse_right_pin_1",
+      "lift_transverse_right_end_pin_0_0",
+      "lift_transverse_right_end_pin_0_1",
+      "lift_transverse_right_end_pin_1_0",
+      "lift_transverse_right_end_pin_1_1",
+      "lift_transverse_right_end_pin_2_0",
+      "lift_transverse_right_end_pin_2_1",
+      "lift_transverse_right_head_rail",
+      "lift_transverse_right_mount",
+      "lift_longitudinal_rear_arm_0_0",
+      "lift_longitudinal_rear_arm_0_1",
+      "lift_longitudinal_rear_pin_0",
+      "lift_longitudinal_rear_arm_1_0",
+      "lift_longitudinal_rear_arm_1_1",
+      "lift_longitudinal_rear_pin_1",
+      "lift_longitudinal_rear_arm_2_0",
+      "lift_longitudinal_rear_arm_2_1",
+      "lift_longitudinal_rear_pin_2",
+      "lift_longitudinal_rear_arm_3_0",
+      "lift_longitudinal_rear_arm_3_1",
+      "lift_longitudinal_rear_pin_3",
+      "lift_longitudinal_rear_end_pin_0_0",
+      "lift_longitudinal_rear_end_pin_0_1",
+      "lift_longitudinal_rear_end_pin_1_0",
+      "lift_longitudinal_rear_end_pin_1_1",
+      "lift_longitudinal_rear_end_pin_2_0",
+      "lift_longitudinal_rear_end_pin_2_1",
+      "lift_longitudinal_rear_end_pin_3_0",
+      "lift_longitudinal_rear_end_pin_3_1",
+      "lift_longitudinal_rear_end_pin_4_0",
+      "lift_longitudinal_rear_end_pin_4_1",
+      "lift_longitudinal_rear_head_rail",
+      "lift_longitudinal_rear_swivel_head",
+      "lift_longitudinal_near_arm_0_0",
+      "lift_longitudinal_near_arm_0_1",
+      "lift_longitudinal_near_pin_0",
+      "lift_longitudinal_near_arm_1_0",
+      "lift_longitudinal_near_arm_1_1",
+      "lift_longitudinal_near_pin_1",
+      "lift_longitudinal_near_arm_2_0",
+      "lift_longitudinal_near_arm_2_1",
+      "lift_longitudinal_near_pin_2",
+      "lift_longitudinal_near_arm_3_0",
+      "lift_longitudinal_near_arm_3_1",
+      "lift_longitudinal_near_pin_3",
+      "lift_longitudinal_near_end_pin_0_0",
+      "lift_longitudinal_near_end_pin_0_1",
+      "lift_longitudinal_near_end_pin_1_0",
+      "lift_longitudinal_near_end_pin_1_1",
+      "lift_longitudinal_near_end_pin_2_0",
+      "lift_longitudinal_near_end_pin_2_1",
+      "lift_longitudinal_near_end_pin_3_0",
+      "lift_longitudinal_near_end_pin_3_1",
+      "lift_longitudinal_near_end_pin_4_0",
+      "lift_longitudinal_near_end_pin_4_1",
+      "lift_longitudinal_near_head_rail",
+      "lift_longitudinal_near_swivel_head"
+    ],
+    "fixed_structure_ids": [
+      "lift_transverse_left_base_rail",
+      "lift_transverse_left_foot_0",
+      "lift_transverse_left_foot_1",
+      "lift_transverse_right_base_rail",
+      "lift_transverse_right_foot_0",
+      "lift_transverse_right_foot_1",
+      "lift_longitudinal_rear_base_rail",
+      "lift_longitudinal_rear_foot_0",
+      "lift_longitudinal_rear_foot_1",
+      "lift_longitudinal_near_base_rail",
+      "lift_longitudinal_near_foot_0",
+      "lift_longitudinal_near_foot_1",
+      "lift_rear_stand_0",
+      "lift_rear_stand_2",
+      "lift_rear_bearing"
+    ],
+    "handoff_qualification": "NOT_EVALUATED",
+    "stacks": [
+      {
+        "id": "lift_transverse_left",
+        "stages": 2,
+        "span_m": 1.2403527723998524,
+        "stage_rise_m": 0.15500000000000003,
+        "angle_rad": 0.12431998972196544,
+        "bars": [
+          {
+            "id": "lift_transverse_left_arm_0_0",
+            "endpoints": [
+              [
+                -0.767,
+                -0.275,
+                0.1
+              ],
+              [
+                -0.767,
+                0.9653527723998524,
+                0.255
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_0_1",
+            "endpoints": [
+              [
+                -0.793,
+                0.9653527723998524,
+                0.1
+              ],
+              [
+                -0.793,
+                -0.275,
+                0.255
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_1_0",
+            "endpoints": [
+              [
+                -0.767,
+                -0.275,
+                0.255
+              ],
+              [
+                -0.767,
+                0.9653527723998524,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_1_1",
+            "endpoints": [
+              [
+                -0.793,
+                0.9653527723998524,
+                0.255
+              ],
+              [
+                -0.793,
+                -0.275,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 1.25
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_transverse_left_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_left_arm_0_0",
+              "lift_transverse_left_arm_0_1"
+            ],
+            "position": [
+              -0.78,
+              0.3451763861999262,
+              0.17750000000000002
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_transverse_left_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_left_arm_1_0",
+              "lift_transverse_left_arm_1_1"
+            ],
+            "position": [
+              -0.78,
+              0.3451763861999262,
+              0.3325
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.009647227600147579,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_transverse_right",
+        "stages": 2,
+        "span_m": 1.2403527723998524,
+        "stage_rise_m": 0.15500000000000003,
+        "angle_rad": 0.12431998972196544,
+        "bars": [
+          {
+            "id": "lift_transverse_right_arm_0_0",
+            "endpoints": [
+              [
+                -0.30700000000000005,
+                -0.275,
+                0.1
+              ],
+              [
+                -0.30700000000000005,
+                0.9653527723998524,
+                0.255
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_0_1",
+            "endpoints": [
+              [
+                -0.3330000000000001,
+                0.9653527723998524,
+                0.1
+              ],
+              [
+                -0.3330000000000001,
+                -0.275,
+                0.255
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_1_0",
+            "endpoints": [
+              [
+                -0.30700000000000005,
+                -0.275,
+                0.255
+              ],
+              [
+                -0.30700000000000005,
+                0.9653527723998524,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_1_1",
+            "endpoints": [
+              [
+                -0.3330000000000001,
+                0.9653527723998524,
+                0.255
+              ],
+              [
+                -0.3330000000000001,
+                -0.275,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 1.25
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_transverse_right_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_right_arm_0_0",
+              "lift_transverse_right_arm_0_1"
+            ],
+            "position": [
+              -0.32000000000000006,
+              0.3451763861999262,
+              0.17750000000000002
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_transverse_right_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_right_arm_1_0",
+              "lift_transverse_right_arm_1_1"
+            ],
+            "position": [
+              -0.32000000000000006,
+              0.3451763861999262,
+              0.3325
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.009647227600147579,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_longitudinal_rear",
+        "stages": 4,
+        "span_m": 0.5949737389162651,
+        "stage_rise_m": 0.07750000000000001,
+        "angle_rad": 0.1295285603779565,
+        "bars": [
+          {
+            "id": "lift_longitudinal_rear_arm_0_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.1
+              ],
+              [
+                -1.1483,
+                -0.4550262610837349,
+                0.17750000000000002
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_0_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.4550262610837349,
+                0.1
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.17750000000000002
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_1_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.17750000000000002
+              ],
+              [
+                -1.1483,
+                -0.4550262610837349,
+                0.255
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_1_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.4550262610837349,
+                0.17750000000000002
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.255
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_2_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.255
+              ],
+              [
+                -1.1483,
+                -0.4550262610837349,
+                0.3325
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_2_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.4550262610837349,
+                0.255
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.3325
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_3_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.3325
+              ],
+              [
+                -1.1483,
+                -0.4550262610837349,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_3_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.4550262610837349,
+                0.3325
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 0.6
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_longitudinal_rear_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_0_0",
+              "lift_longitudinal_rear_arm_0_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.7525131305418675,
+              0.13875
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_1_0",
+              "lift_longitudinal_rear_arm_1_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.7525131305418675,
+              0.21625000000000003
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_2",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_2_0",
+              "lift_longitudinal_rear_arm_2_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.7525131305418675,
+              0.29375
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_3",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_3_0",
+              "lift_longitudinal_rear_arm_3_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.7525131305418675,
+              0.37125
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.005026261083734829,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_longitudinal_near",
+        "stages": 4,
+        "span_m": 0.5949737389162651,
+        "stage_rise_m": 0.07750000000000001,
+        "angle_rad": 0.1295285603779565,
+        "bars": [
+          {
+            "id": "lift_longitudinal_near_arm_0_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.1
+              ],
+              [
+                -0.9083000000000002,
+                -0.4550262610837349,
+                0.17750000000000002
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_0_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.4550262610837349,
+                0.1
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.17750000000000002
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_1_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.17750000000000002
+              ],
+              [
+                -0.9083000000000002,
+                -0.4550262610837349,
+                0.255
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_1_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.4550262610837349,
+                0.17750000000000002
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.255
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_2_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.255
+              ],
+              [
+                -0.9083000000000002,
+                -0.4550262610837349,
+                0.3325
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_2_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.4550262610837349,
+                0.255
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.3325
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_3_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.3325
+              ],
+              [
+                -0.9083000000000002,
+                -0.4550262610837349,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_3_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.4550262610837349,
+                0.3325
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.41000000000000003
+              ]
+            ],
+            "length_m": 0.6
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_longitudinal_near_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_0_0",
+              "lift_longitudinal_near_arm_0_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.7525131305418675,
+              0.13875
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_1_0",
+              "lift_longitudinal_near_arm_1_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.7525131305418675,
+              0.21625000000000003
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_2",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_2_0",
+              "lift_longitudinal_near_arm_2_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.7525131305418675,
+              0.29375
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_3",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_3_0",
+              "lift_longitudinal_near_arm_3_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.7525131305418675,
+              0.37125
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.005026261083734829,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      }
+    ],
+    "geometry_origin": "PROJECT_CONCEPT_NOT_NVIDIA_COMPLETE_SCISSOR_ASSET",
+    "mechanical_stroke_rating": "UNKNOWN",
+    "actuator_force_speed": "UNKNOWN",
+    "mass_inertia": "NOT_SPECIFIED",
+    "full_sweep_collision": "NOT_EVALUATED",
+    "native_receiver_transition": "UNSUPPORTED_BY_LEGACY_PURE_Z_CONTRACT"
+  },
+  "high": {
+    "schema": "m710_coupled_scissor_v1",
+    "height_m": 2.0500000000000003,
+    "tilt_rad": 0.544344148880204,
+    "longitudinal_length_m": 2.8,
+    "rear_hinge_world": [
+      -3.0,
+      -0.7500000000000001,
+      0.6000000000000001
+    ],
+    "near_tip_world": [
+      -0.6046920865993037,
+      -0.7500000000000001,
+      2.05
+    ],
+    "near_tip_slide_x_m": -0.40469208659930356,
+    "rear_fixed": true,
+    "near_tip_within_transverse_x": true,
+    "coupling": "FIXED_REAR_PIVOT_NEAR_HEIGHT_FOLLOW_WITH_X_SLIDE",
+    "moving_object_ids": [
+      "conveyor_transverse",
+      "conveyor_longitudinal",
+      "lift_transverse_left_arm_0_0",
+      "lift_transverse_left_arm_0_1",
+      "lift_transverse_left_pin_0",
+      "lift_transverse_left_arm_1_0",
+      "lift_transverse_left_arm_1_1",
+      "lift_transverse_left_pin_1",
+      "lift_transverse_left_end_pin_0_0",
+      "lift_transverse_left_end_pin_0_1",
+      "lift_transverse_left_end_pin_1_0",
+      "lift_transverse_left_end_pin_1_1",
+      "lift_transverse_left_end_pin_2_0",
+      "lift_transverse_left_end_pin_2_1",
+      "lift_transverse_left_head_rail",
+      "lift_transverse_left_mount",
+      "lift_transverse_right_arm_0_0",
+      "lift_transverse_right_arm_0_1",
+      "lift_transverse_right_pin_0",
+      "lift_transverse_right_arm_1_0",
+      "lift_transverse_right_arm_1_1",
+      "lift_transverse_right_pin_1",
+      "lift_transverse_right_end_pin_0_0",
+      "lift_transverse_right_end_pin_0_1",
+      "lift_transverse_right_end_pin_1_0",
+      "lift_transverse_right_end_pin_1_1",
+      "lift_transverse_right_end_pin_2_0",
+      "lift_transverse_right_end_pin_2_1",
+      "lift_transverse_right_head_rail",
+      "lift_transverse_right_mount",
+      "lift_longitudinal_rear_arm_0_0",
+      "lift_longitudinal_rear_arm_0_1",
+      "lift_longitudinal_rear_pin_0",
+      "lift_longitudinal_rear_arm_1_0",
+      "lift_longitudinal_rear_arm_1_1",
+      "lift_longitudinal_rear_pin_1",
+      "lift_longitudinal_rear_arm_2_0",
+      "lift_longitudinal_rear_arm_2_1",
+      "lift_longitudinal_rear_pin_2",
+      "lift_longitudinal_rear_arm_3_0",
+      "lift_longitudinal_rear_arm_3_1",
+      "lift_longitudinal_rear_pin_3",
+      "lift_longitudinal_rear_end_pin_0_0",
+      "lift_longitudinal_rear_end_pin_0_1",
+      "lift_longitudinal_rear_end_pin_1_0",
+      "lift_longitudinal_rear_end_pin_1_1",
+      "lift_longitudinal_rear_end_pin_2_0",
+      "lift_longitudinal_rear_end_pin_2_1",
+      "lift_longitudinal_rear_end_pin_3_0",
+      "lift_longitudinal_rear_end_pin_3_1",
+      "lift_longitudinal_rear_end_pin_4_0",
+      "lift_longitudinal_rear_end_pin_4_1",
+      "lift_longitudinal_rear_head_rail",
+      "lift_longitudinal_rear_swivel_head",
+      "lift_longitudinal_near_arm_0_0",
+      "lift_longitudinal_near_arm_0_1",
+      "lift_longitudinal_near_pin_0",
+      "lift_longitudinal_near_arm_1_0",
+      "lift_longitudinal_near_arm_1_1",
+      "lift_longitudinal_near_pin_1",
+      "lift_longitudinal_near_arm_2_0",
+      "lift_longitudinal_near_arm_2_1",
+      "lift_longitudinal_near_pin_2",
+      "lift_longitudinal_near_arm_3_0",
+      "lift_longitudinal_near_arm_3_1",
+      "lift_longitudinal_near_pin_3",
+      "lift_longitudinal_near_end_pin_0_0",
+      "lift_longitudinal_near_end_pin_0_1",
+      "lift_longitudinal_near_end_pin_1_0",
+      "lift_longitudinal_near_end_pin_1_1",
+      "lift_longitudinal_near_end_pin_2_0",
+      "lift_longitudinal_near_end_pin_2_1",
+      "lift_longitudinal_near_end_pin_3_0",
+      "lift_longitudinal_near_end_pin_3_1",
+      "lift_longitudinal_near_end_pin_4_0",
+      "lift_longitudinal_near_end_pin_4_1",
+      "lift_longitudinal_near_head_rail",
+      "lift_longitudinal_near_swivel_head"
+    ],
+    "fixed_structure_ids": [
+      "lift_transverse_left_base_rail",
+      "lift_transverse_left_foot_0",
+      "lift_transverse_left_foot_1",
+      "lift_transverse_right_base_rail",
+      "lift_transverse_right_foot_0",
+      "lift_transverse_right_foot_1",
+      "lift_longitudinal_rear_base_rail",
+      "lift_longitudinal_rear_foot_0",
+      "lift_longitudinal_rear_foot_1",
+      "lift_longitudinal_near_base_rail",
+      "lift_longitudinal_near_foot_0",
+      "lift_longitudinal_near_foot_1",
+      "lift_rear_stand_0",
+      "lift_rear_stand_2",
+      "lift_rear_bearing"
+    ],
+    "handoff_qualification": "NOT_EVALUATED",
+    "stacks": [
+      {
+        "id": "lift_transverse_left",
+        "stages": 2,
+        "span_m": 0.8877499647986475,
+        "stage_rise_m": 0.88,
+        "angle_rad": 0.7810141072234416,
+        "bars": [
+          {
+            "id": "lift_transverse_left_arm_0_0",
+            "endpoints": [
+              [
+                -0.767,
+                -0.275,
+                0.1
+              ],
+              [
+                -0.767,
+                0.6127499647986475,
+                0.98
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_0_1",
+            "endpoints": [
+              [
+                -0.793,
+                0.6127499647986475,
+                0.1
+              ],
+              [
+                -0.793,
+                -0.275,
+                0.98
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_1_0",
+            "endpoints": [
+              [
+                -0.767,
+                -0.275,
+                0.98
+              ],
+              [
+                -0.767,
+                0.6127499647986475,
+                1.8599999999999999
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_left_arm_1_1",
+            "endpoints": [
+              [
+                -0.793,
+                0.6127499647986475,
+                0.98
+              ],
+              [
+                -0.793,
+                -0.275,
+                1.8599999999999999
+              ]
+            ],
+            "length_m": 1.25
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_transverse_left_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_left_arm_0_0",
+              "lift_transverse_left_arm_0_1"
+            ],
+            "position": [
+              -0.78,
+              0.16887498239932375,
+              0.54
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_transverse_left_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_left_arm_1_0",
+              "lift_transverse_left_arm_1_1"
+            ],
+            "position": [
+              -0.78,
+              0.16887498239932375,
+              1.42
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.36225003520135246,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_transverse_right",
+        "stages": 2,
+        "span_m": 0.8877499647986475,
+        "stage_rise_m": 0.88,
+        "angle_rad": 0.7810141072234416,
+        "bars": [
+          {
+            "id": "lift_transverse_right_arm_0_0",
+            "endpoints": [
+              [
+                -0.30700000000000005,
+                -0.275,
+                0.1
+              ],
+              [
+                -0.30700000000000005,
+                0.6127499647986475,
+                0.98
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_0_1",
+            "endpoints": [
+              [
+                -0.3330000000000001,
+                0.6127499647986475,
+                0.1
+              ],
+              [
+                -0.3330000000000001,
+                -0.275,
+                0.98
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_1_0",
+            "endpoints": [
+              [
+                -0.30700000000000005,
+                -0.275,
+                0.98
+              ],
+              [
+                -0.30700000000000005,
+                0.6127499647986475,
+                1.8599999999999999
+              ]
+            ],
+            "length_m": 1.25
+          },
+          {
+            "id": "lift_transverse_right_arm_1_1",
+            "endpoints": [
+              [
+                -0.3330000000000001,
+                0.6127499647986475,
+                0.98
+              ],
+              [
+                -0.3330000000000001,
+                -0.275,
+                1.8599999999999999
+              ]
+            ],
+            "length_m": 1.25
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_transverse_right_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_right_arm_0_0",
+              "lift_transverse_right_arm_0_1"
+            ],
+            "position": [
+              -0.32000000000000006,
+              0.16887498239932375,
+              0.54
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_transverse_right_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_transverse_right_arm_1_0",
+              "lift_transverse_right_arm_1_1"
+            ],
+            "position": [
+              -0.32000000000000006,
+              0.16887498239932375,
+              1.42
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.36225003520135246,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_longitudinal_rear",
+        "stages": 4,
+        "span_m": 0.486697491228988,
+        "stage_rise_m": 0.3508925078017614,
+        "angle_rad": 0.6246591797815354,
+        "bars": [
+          {
+            "id": "lift_longitudinal_rear_arm_0_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.1
+              ],
+              [
+                -1.1483,
+                -0.5633025087710121,
+                0.4508925078017614
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_0_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.5633025087710121,
+                0.1
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.4508925078017614
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_1_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.4508925078017614
+              ],
+              [
+                -1.1483,
+                -0.5633025087710121,
+                0.8017850156035228
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_1_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.5633025087710121,
+                0.4508925078017614
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                0.8017850156035228
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_2_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                0.8017850156035228
+              ],
+              [
+                -1.1483,
+                -0.5633025087710121,
+                1.1526775234052842
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_2_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.5633025087710121,
+                0.8017850156035228
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                1.1526775234052842
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_3_0",
+            "endpoints": [
+              [
+                -1.1483,
+                -1.05,
+                1.1526775234052842
+              ],
+              [
+                -1.1483,
+                -0.5633025087710121,
+                1.5035700312070457
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_rear_arm_3_1",
+            "endpoints": [
+              [
+                -1.1717000000000002,
+                -0.5633025087710121,
+                1.1526775234052842
+              ],
+              [
+                -1.1717000000000002,
+                -1.05,
+                1.5035700312070457
+              ]
+            ],
+            "length_m": 0.6
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_longitudinal_rear_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_0_0",
+              "lift_longitudinal_rear_arm_0_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.806651254385506,
+              0.27544625390088073
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_1_0",
+              "lift_longitudinal_rear_arm_1_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.806651254385506,
+              0.6263387617026421
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_2",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_2_0",
+              "lift_longitudinal_rear_arm_2_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.806651254385506,
+              0.9772312695044034
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_rear_hinge_3",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_rear_arm_3_0",
+              "lift_longitudinal_rear_arm_3_1"
+            ],
+            "position": [
+              -1.1600000000000001,
+              -0.806651254385506,
+              1.328123777306165
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.113302508771012,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      },
+      {
+        "id": "lift_longitudinal_near",
+        "stages": 4,
+        "span_m": 0.45832924028111877,
+        "stage_rise_m": 0.38721351668470005,
+        "angle_rad": 0.7014890503501621,
+        "bars": [
+          {
+            "id": "lift_longitudinal_near_arm_0_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.1
+              ],
+              [
+                -0.9083000000000002,
+                -0.5916707597188813,
+                0.48721351668470003
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_0_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.5916707597188813,
+                0.1
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.48721351668470003
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_1_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.48721351668470003
+              ],
+              [
+                -0.9083000000000002,
+                -0.5916707597188813,
+                0.8744270333694001
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_1_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.5916707597188813,
+                0.48721351668470003
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                0.8744270333694001
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_2_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                0.8744270333694001
+              ],
+              [
+                -0.9083000000000002,
+                -0.5916707597188813,
+                1.2616405500541001
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_2_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.5916707597188813,
+                0.8744270333694001
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                1.2616405500541001
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_3_0",
+            "endpoints": [
+              [
+                -0.9083000000000002,
+                -1.05,
+                1.2616405500541004
+              ],
+              [
+                -0.9083000000000002,
+                -0.5916707597188813,
+                1.6488540667388003
+              ]
+            ],
+            "length_m": 0.6
+          },
+          {
+            "id": "lift_longitudinal_near_arm_3_1",
+            "endpoints": [
+              [
+                -0.9317000000000003,
+                -0.5916707597188813,
+                1.2616405500541004
+              ],
+              [
+                -0.9317000000000003,
+                -1.05,
+                1.6488540667388003
+              ]
+            ],
+            "length_m": 0.6
+          }
+        ],
+        "hinges": [
+          {
+            "id": "lift_longitudinal_near_hinge_0",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_0_0",
+              "lift_longitudinal_near_arm_0_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.8208353798594407,
+              0.29360675834235006
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_1",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_1_0",
+              "lift_longitudinal_near_arm_1_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.8208353798594407,
+              0.68082027502705
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_2",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_2_0",
+              "lift_longitudinal_near_arm_2_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.8208353798594407,
+              1.0680337917117502
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "id": "lift_longitudinal_near_hinge_3",
+            "type": "REVOLUTE",
+            "bodies": [
+              "lift_longitudinal_near_arm_3_0",
+              "lift_longitudinal_near_arm_3_1"
+            ],
+            "position": [
+              -0.9200000000000003,
+              -0.8208353798594407,
+              1.4552473083964503
+            ],
+            "axis": [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "sliding_pin_travel_m": 0.1416707597188812,
+        "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+      }
+    ],
+    "geometry_origin": "PROJECT_CONCEPT_NOT_NVIDIA_COMPLETE_SCISSOR_ASSET",
+    "mechanical_stroke_rating": "UNKNOWN",
+    "actuator_force_speed": "UNKNOWN",
+    "mass_inertia": "NOT_SPECIFIED",
+    "full_sweep_collision": "NOT_EVALUATED",
+    "native_receiver_transition": "UNSUPPORTED_BY_LEGACY_PURE_Z_CONTRACT"
+  },
+  "source_file_sha256": {
+    "src/unloading_sim/conveyor_lift.py": "68bb8bb56eead1cc2c9848de84fb2bff70b71ca1ef3a710f986b223910fb9ec1",
+    "scripts/coupled_conveyor_usd.py": "0ea8cdc49355bb11744d84241acc3b0146ba648f290549cba6da27c9e21835c7",
+    "tools/preview_m710_conveyor_lift.py": "52a7ae4bbe520aee3462f4b97a568e5247eacd3c93ada05080c543b2db03cfea",
+    "tools/lifted_reception/coupled_view.js": "21b9296957f3d04c0f51c5e25eb1afc2d1c1e5bfb6c6ded99ee64aa911792f03",
+    "tools/lifted_reception/viewer.html": "bb551945c434685c9954b1e0e0112f43514317e8c496682782880613afde5e1a"
+  },
+  "environment": {
+    "isaacsim_installed": "6.0.1.0",
+    "usd_version": [
+      0,
+      26,
+      8
+    ],
+    "python": "/root/autodl-tmp/envs/isaacsim-clean/bin/python",
+    "simulation_app_started": false,
+    "dependencies_upgraded": false
+  },
+  "source_hashes_verified_after_fast_forward": true
+}

@@ -1,0 +1,42 @@
+{
+  "source_commit": "c9e0555fc42a796148d8d6c0a3af3bb45b5cf579",
+  "core_tests": {
+    "passed": 31,
+    "seconds": 1.18,
+    "command": "python -m pytest -q tests/test_conveyor_lift.py tests/test_lifted_reception.py"
+  },
+  "usd_tests": {
+    "passed": 5,
+    "seconds": 0.933,
+    "command": "python tests/test_conveyor_lift_usd.py"
+  },
+  "usd_state_roundtrip": {
+    "states": 101,
+    "objects": 139,
+    "status": "PASS_GEOMETRY_ONLY",
+    "physics_steps": 0
+  },
+  "legacy_layout_tests": {
+    "passed": 9,
+    "failed": 4,
+    "changed_files": false,
+    "failures": [
+      "test_assembly_is_a_rigid_transform_and_fixed_identity_ignores_placement",
+      "test_initial_state_is_collision_checked_and_seeded_witness_is_reproducible",
+      "test_invalid_home_refuses_snapshot_and_freezes_only_diagnostic_geometry",
+      "test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults"
+    ],
+    "scope": "UNCHANGED_LEGACY_TEST_AND_DEPENDENCIES; NOT_FIXED_THIS_ROUND"
+  },
+  "browser": {
+    "checked_states": [
+      0,
+      50,
+      100
+    ],
+    "script_errors": []
+  },
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN"
+}

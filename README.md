@@ -1,3 +1,11 @@
+# 横纵带剪叉与倾斜联动（2026-10-19）
+
+已增加显式剪叉机构场景与 USD 接口：横带升降，纵带远端固定、近端随动倾斜，刚性长度不变。0.60 → 2.05 m 时倾角 31.19°、近端后移 404.7 mm。31 项几何回归、5 项 USD 测试及 101 个高度状态位姿核对通过；旧布局测试另有 4 项失败，报告保留。
+
+[本轮报告](docs/m710_coupled_conveyor_lift_20261019.md) · [下载交互预览与 USD](docs/experiments/m710_coupled_conveyor_lift_20261019/viewer-and-usd.zip)
+
+当前为机构运动学模型，未做动力学/承载/扫掠碰撞资格验收，未把旧纯 Z 原生规划许可套用到新机构。`qualification_status=NOT_EVALUATED`，`physical_execution=NOT_RUN`。以下保留上一轮原生规划结果。
+
 # FANUC M-710iD/70 当前结论（2026-10-19）
 
 已接入显式**右端内侧 +Y → −X / Hmax 两段规划后缀**，但本轮两个开放通道原生案例均未完成接近：各16个IK候选被 `J4_link / carton_l06_c02` 目标相交检查拒绝，90.063 / 90.074 s 后预算耗尽，RRT、contact及两段LIN均未到达。没有宣称侧抓贯通或箱体全局不可卸。
