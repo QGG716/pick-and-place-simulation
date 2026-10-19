@@ -25,6 +25,10 @@ def main():
     p.add_argument('--evaluation-profile', choices=PROFILES,
                    help='Default: strict for planning; export/review inherit the fingerprinted plan profile')
     p.add_argument('--home-candidate', type=Path, help='Identity-bound simulation initial state; rechecked by the worker')
+    p.add_argument('--search-trace',action='store_true',help='Record actual selected OMPL solves; ordinary runs default off')
+    p.add_argument('--trace-stage',action='append',help='Record these semantic stages (default transit)')
+    p.add_argument('--trace-request',action='append',help='Optional exact stage_id filter')
+    p.add_argument('--preferred-candidate-id',help='Prioritize a current geometric candidate; regenerate every motion')
     p.add_argument('--preferred-grasp-face',choices=['top','front'],
                    help='Stable face priority for independent cups; retains all candidates and regenerates every path')
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
@@ -67,6 +71,8 @@ def main():
                 try:
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
                                       evaluation_profile=a.evaluation_profile or STRICT,
+                                      search_trace=a.search_trace,trace_stages=a.trace_stage or ('transit',),
+                                      trace_requests=a.trace_request or (),preferred_candidate_id=a.preferred_candidate_id,
                                       stage_seconds=a.stage_seconds, attempt=attempt,rpc_seconds=a.rpc_seconds,
                                       progress_path=attempt_out/'native_progress.jsonl',
                                       preferred_grasp_face=a.preferred_grasp_face,

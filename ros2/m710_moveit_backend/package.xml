@@ -9,6 +9,7 @@
   <depend>moveit_task_constructor_core</depend><depend>moveit_ros_planning</depend>
   <depend>moveit_planners_ompl</depend><depend>nlohmann_json</depend>
   <depend>pilz_industrial_motion_planner</depend>
+  <depend>pluginlib</depend>
   <exec_depend>moveit_kinematics</exec_depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

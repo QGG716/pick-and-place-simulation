@@ -24,6 +24,7 @@ from ..moveit2_backend import ResidentMoveItClient, MoveItUnavailable, digest, v
 from ..timing import JointMotionLimits, time_parameterize_joint_path, sample_quintic_knots
 from ..moveit2_tcp import audit_linear_tcp
 from .evaluation import evaluation_profile as checked_profile, validate_output_evaluation, STRICT, CHAIN, INTERPOLATION
+from .transfer_policy import J1_POLICY, J1_EPSILON, j1_direction, j1_valid, stage_chain_valid, endpoint_fk, request_budgets, clear_stack_extractions, transfer_waypoints
 
 STATUS = 'PLANNING_ONLY_NOT_EXECUTABLE'
 PHASES = ['pregrasp', 'contact', 'extraction', 'transit', 'place', 'withdrawal', 'residence']
@@ -122,13 +123,20 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
 
 class NativeTask:
     def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None,
-                 progress_path=None, rpc_seconds=180., preferred_grasp_face=None, evaluation_profile=STRICT):
+                 progress_path=None, rpc_seconds=180., preferred_grasp_face=None, evaluation_profile=STRICT, search_trace=False, trace_stages=('transit',), trace_requests=(), preferred_candidate_id=None):
         self.evaluation_profile = checked_profile(evaluation_profile)
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
         self.model = snapshot['native_model']; self.init = deepcopy(self.model['init']); self.identity = self.init['identity']
         self.init['evaluation_profile'] = self.evaluation_profile
+        self.directed_j1=self.evaluation_profile==CHAIN
+        self.init['directed_j1_enabled']=self.directed_j1
+        self.init['search_trace_enabled']=bool(search_trace)
+        self.trace_stages=tuple(trace_stages);self.trace_requests=tuple(trace_requests)
+        self.preferred_candidate_id=preferred_candidate_id
+        self.extraction_branch_id=None
+        self.final_home=None
         if self.identity['scene_fingerprint'] != self.scene['scene_fingerprint']: raise ValueError('MODEL_SCENE_MISMATCH')
         self.task_contract = validate_task_contract(self.scene)
         if preferred_grasp_face is not None and (not self.task_contract or
@@ -183,9 +191,13 @@ class NativeTask:
         if checked_profile(request.get('evaluation_profile', profile)) != profile:
             raise ValueError('EVALUATION_PROFILE_MISMATCH')
         request['evaluation_profile'] = profile
-        if request['op'] == 'plan' and profile == CHAIN:
-            request['output_check_timeout_s'] = min(remaining, self.rpc_seconds)
-        if request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
+        if request['op'] in ('plan','diagnostic_connection') and profile == CHAIN:
+            request.update(request_budgets(remaining,self.stage_seconds,self.rpc_seconds))
+        elif request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
+        if request['op']=='plan' and self.init.get('search_trace_enabled'):
+            request['search_trace']=(request['stage'] in self.trace_stages and
+                (not self.trace_requests or request['stage_id'] in self.trace_requests))
+        request['extraction_branch_id']=getattr(self,'extraction_branch_id',None)
         started = perf_counter()
         record = dict(request=request)
         summary = (dict(request={k:request[k] for k in ('op','stage','stage_id','evaluation_profile') if k in request},
@@ -203,7 +215,20 @@ class NativeTask:
         try:
             # Native solve time excludes scene import and the profile's output
             # path check. The RPC watchdog must cover those operations.
-            result = self.native.request(request, timeout=min(remaining+30, max(self.rpc_seconds, 4*self.stage_seconds)), cancelled=self.cancelled)
+            result = self.native.request(request, timeout=request.get('request_budget_s',min(remaining,self.rpc_seconds))+10., cancelled=self.cancelled)
+            if request['op'] in ('plan','diagnostic_connection'):
+                self._last_motion_request=dict(request,request_id=result.get('request_id'))
+            if 'search_trace' in result:
+                result['search_trace'].update(resident_seed=self.ready['seed'],request_seed=request.get('seed'),
+                    rng_semantics='OMPL_RNG_SEEDED_ONCE_AT_RESIDENT_INIT_REQUEST_SEED_IS_A_REQUEST_LABEL',
+                    resident_seed_source='SAME_RESIDENT_READY_RESPONSE')
+            if 'search_trace' in result and self.progress_path:
+                archive_started=perf_counter()
+                trace=result.pop('search_trace');directory=self.progress_path.parent/'search_traces';directory.mkdir(exist_ok=True)
+                path=directory/(request['stage_id']+'.json.gz')
+                with gzip.open(path,'wt',encoding='utf-8') as stream:json.dump(trace,stream,separators=(',',':'),allow_nan=False)
+                result['search_trace_ref']=dict(path=path.relative_to(ROOT).as_posix(),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                    status=trace['status'],request_id=result.get('request_id'),archive_wall_s=perf_counter()-archive_started)
             record['result'] = result
             if checked_profile(result.get('evaluation_profile', STRICT)) != profile:
                 raise ValueError('NATIVE_RESPONSE_EVALUATION_PROFILE_MISMATCH')
@@ -265,6 +290,8 @@ class NativeTask:
             parent_stage_id=self.parent, seed=6518+self.counter, start_velocity=[0.]*6, path_constraints={},
             allowed_pairs=[['base_link', 'robot_mount_plate']], process_policy=process, clearance_policy=clearance,
             clearance_mode='optimized', endpoint=endpoint, cancelled=False,
+            j1_direction=j1_direction(stage) if getattr(self,'directed_j1',False) else 0,
+            extraction_branch_id=getattr(self,'extraction_branch_id',None),
             flange_from_task_tcp=self.identity['flange_from_task_tcp'], planning_only=True,
             planning_mode='cold_from_scratch', history_enabled=False, velocity_scale=.5, acceleration_scale=.5)
 
@@ -311,7 +338,7 @@ class NativeTask:
                 checked = self.call(self.request(value, stage))
                 if checked['status'] == 'SUCCESS': yield value
 
-    def motion(self, q, stage, *, pose=None, goal=None, ik_seed=None):
+    def motion(self, q, stage, *, pose=None, goal=None, ik_seed=None, return_compatible=False):
         constrained = stage in {'contact', 'extraction', 'place', 'withdrawal'}
         solvers = [('pilz_industrial_motion_planner', 'LIN' if constrained else 'PTP', .5)]
         # Pilz can reject a valid Cartesian branch on a joint velocity or
@@ -319,17 +346,43 @@ class NativeTask:
         # rate, provenance and profile-specific output checks.
         if constrained: solvers.append(('pilz_industrial_motion_planner', 'LIN', .25))
         else: solvers.append(('ompl', 'RRTConnectkConfigDefault', .5))
+        if constrained: solvers.append(('pilz_industrial_motion_planner','LIN',.125))
         goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q if ik_seed is None else ik_seed, stage)))
         if not constrained:
+            if stage=='transit' and pose is not None and self.evaluation_profile==CHAIN:
+                # Finite elbow/wrist seeds cover both shoulder branches, including
+                # the negative-J1 preplace branch needed for a monotone HOME return.
+                # Only native IK and the unchanged state checker produce goals.
+                home_seed=getattr(self,'final_home',None)
+                for elbow in (-1.,1.):
+                    for wrist in (-1.,1.):
+                        seed=np.array([q[0] if home_seed is None else home_seed[0],1.5,elbow*1.5,
+                                       -elbow*1.5,wrist*np.pi/2,q[5]])
+                        seed=np.clip(seed,self.robot.joint_limits[:,0],self.robot.joint_limits[:,1])
+                        goals.extend(self.ik(pose,seed,stage,count=1))
+                # Ask native IK for a closer finite wrist branch. These are seeds,
+                # never edited solutions or +/-2pi post-processing of a path.
+                for value in list(goals)[:8]:
+                    seed=value.copy();seed[3]=q[3];seed[5]=q[5]
+                    goals.extend(self.ik(pose,seed,stage,count=1))
             goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
             unique=[]
             for candidate in goals:
-                if all(np.max(np.abs(candidate-other))>1e-5 for other in unique): unique.append(candidate)
+                # IK numerical replicas are one branch, not repeated expensive
+                # OMPL attempts. This does not change endpoint acceptance.
+                if all(np.max(np.abs(candidate-other))>1e-4 for other in unique): unique.append(candidate)
             goals=unique
+            if getattr(self,'directed_j1',False):
+                goals=[candidate for candidate in goals if j1_valid([q,candidate],j1_direction(stage))]
+                # Preplace must allow the *subsequent* nondecreasing return to fixed HOME.
+                if return_compatible and getattr(self,'final_home',None) is not None:
+                    goals=[candidate for candidate in goals if candidate[0]<=self.final_home[0]+J1_EPSILON]
         # A first valid IK branch can require a long turn through a wall. Give
         # the existing bounded native IK set its PTP attempts before spending
         # the OMPL budget on any branch; never substitute Python motion search.
         for pipeline, planner, scale in solvers:
+            if scale==.125 and (not self.records or (self.records[-1]['result'].get('failure') or {}).get('reason')!='OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH'):
+                continue
             for joint_goal in goals:
                 self.counter += 1; req = self.request(q, stage, op='plan')
                 req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner,
@@ -344,7 +397,16 @@ class NativeTask:
                 if constrained: req['goal_pose'] = check_transform(pose).tolist()
                 else: req['q_goal'] = joint_goal.tolist()
                 started = perf_counter(); raw = self.call(req)
-                self.records.append(dict(request=req, result=raw, wall_s=perf_counter()-started))
+                submitted=getattr(self,'_last_motion_request',{})
+                if submitted.get('stage_id')==req['stage_id']:req=submitted
+                record=dict(request=req,result=raw,wall_s=perf_counter()-started)
+                if self.evaluation_profile==CHAIN and getattr(self,'call_archive',None):
+                    # Full immutable requests/results live once in the lossless
+                    # archive; candidate backtracking carries small references.
+                    record.update(request={k:req[k] for k in ('stage','stage_id','parent_stage_id','q_start','q_goal','goal_pose','pipeline_id','planner_id') if k in req},
+                        result={k:raw[k] for k in ('status','solver_message','native_output_status','failure','basic_path_check','search_trace_ref','native_solver_s') if k in raw},
+                        archive_index=len(self.native_calls)-1,archive=self.call_archive.relative_to(ROOT).as_posix())
+                self.records.append(record)
                 if raw['status'] != 'SUCCESS': continue
                 verify_ompl_output_interpolation(req,raw)
                 if (not native_generation_evidence(raw, req) or raw.get('mtc_generation') is not True
@@ -427,9 +489,9 @@ class NativeTask:
         # Real contact IK can pass while the 30 mm normal-offset pose fails.
         # Every shorter approach still requires a new complete HOME connection
         # and native LIN contact. This never imports a diagnostic short path.
-        approach_parent=self.parent;approach_stages=deepcopy(self.stages)
+        approach_parent=self.parent;approach_stages=list(self.stages)
         for offset in offsets:
-            self.parent=approach_parent;self.stages=deepcopy(approach_stages)
+            self.parent=approach_parent;self.stages=list(approach_stages)
             pre=top.copy();pre[:3,3]+=face_outward(self.target_pose,self.face)*offset
             # Keep a distinct approach if the configured HOME already equals it.
             if np.linalg.norm(self.robot.fk(home)[:3,3]-pre[:3,3])<1e-4:
@@ -462,17 +524,24 @@ class NativeTask:
             place_box = transform(center)
         place_tcp = place_box @ np.linalg.inv(self.attachment) @ np.asarray(self.identity['flange_from_task_tcp'])
         preplace = place_tcp.copy(); preplace[2, 3] += contract['preplace_m'] if contract else .03
-        contact_q=q.copy();contact_parent=self.parent;contact_stages=deepcopy(self.stages)
+        contact_q=q.copy();contact_parent=self.parent;contact_stages=list(self.stages)
+        self.final_home=np.asarray(home)
         last_error='NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction'
-        for lift,evidence in extraction_candidates(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face):
-            self.parent=contact_parent;self.stages=deepcopy(contact_stages)
+        lifts=extraction_candidates(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face)
+        if self.evaluation_profile==CHAIN:
+            front_lifts=clear_stack_extractions(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face)
+            front_lifts.sort(key=lambda item:-item[1].get('turn_envelope_extra_m',0.))
+            lifts=front_lifts+lifts
+        for extraction_index,(lift,evidence) in enumerate(lifts):
+            self.extraction_branch_id=f'{self.candidate_id}:extraction-{extraction_index}'
+            self.parent=contact_parent;self.stages=list(contact_stages)
             self.extraction_evidence=None
             attempt=dict(geometry=evidence,goal_tcp_D=lift.tolist(),native_record_start=len(self.records),status='SEARCHING')
             self.extraction_attempts.append(attempt)
             try:
                 value=self.motion(contact_q,'extraction',pose=lift)
                 self.extraction_evidence=evidence
-                q=self.motion(value,'transit',pose=preplace)
+                q=self.transfer(value,preplace)
                 attempt.update(status='EXTRACTION_AND_TRANSIT_PASS',native_record_end=len(self.records));break
             except ValueError as error:
                 if str(error) not in ('NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction','NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit'):raise
@@ -490,6 +559,30 @@ class NativeTask:
         q = self.motion(q, 'withdrawal', pose=retreat)
         q = self.motion(q, 'residence', goal=home)
         return seal
+
+    def transfer(self,q,preplace,*,skip_direct=False):
+        """Each route edge is a separate native MTC stage, with its real parent."""
+        prefix=list(self.stages);parent=self.parent
+        routes=[]
+        if self.evaluation_profile==CHAIN:
+            if self.final_home is not None:
+                # Current legal HOME supplies a reachable pose proposal, not a
+                # historical motion. Loaded IK, all edges and each native parent
+                # are regenerated with the current attachment/world.
+                routes.append(dict(tcp_pose=self.robot.fk(self.final_home),seed=self.final_home,
+                    basis='CURRENT_HOME_POSE_WITH_CURRENT_PAYLOAD_RECHECKED'))
+            if not skip_direct:routes.append(None)
+            routes+=transfer_waypoints(self.scene,self.target['size_m'],self.attachment,np.asarray(self.identity['flange_from_task_tcp']))
+        elif not skip_direct:routes.append(None)
+        for route in routes:
+            self.stages=list(prefix);self.parent=parent
+            try:
+                value=q
+                if route is not None:value=self.motion(value,'transit',pose=route['tcp_pose'],ik_seed=route.get('seed'))
+                return self.motion(value,'transit',pose=preplace,return_compatible=True)
+            except ValueError as error:
+                if str(error)!='NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit':raise
+        raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit')
 
     def run(self):
         if self.task_contract and self.task_contract.get('coverage_context'):
@@ -521,6 +614,9 @@ class NativeTask:
                 edge_margin_m=.003, method='LEGACY_CENTRED_TOP_GRASP')
         self.grasp_geometry=prioritize_grasp_face(self.grasp_geometry,getattr(self,'preferred_grasp_face',None))
         candidates = self.grasp_geometry['candidates']
+        if getattr(self,'preferred_candidate_id',None):
+            if not any(g.get('candidate_id')==self.preferred_candidate_id for g in candidates):raise ValueError('PREFERRED_CANDIDATE_NOT_IN_CURRENT_GEOMETRY')
+            candidates.sort(key=lambda g:g.get('candidate_id')!=self.preferred_candidate_id)
         if getattr(self,'progress_path',None):
             self.progress_path.with_name('grasp_candidates.json').write_text(
                 json.dumps(self.grasp_geometry,separators=(',',':'),allow_nan=False),encoding='utf-8')
@@ -573,7 +669,8 @@ class NativeTask:
                 self.grasp_failures.append(dict(candidate_index=index, candidate=grasp, reason=str(error),
                     recoverable_geometry_failure=recoverable, planning_wall_s=perf_counter()-branch_started,
                     native_record_range=[record_start,len(self.records)], native_ik_record_range=[ik_start,len(self.ik_records)],
-                    native_call_range=[call_start,len(self.native_calls)], partial_stages=deepcopy(self.stages),
+                    native_call_range=[call_start,len(self.native_calls)],
+                    partial_stages=[{k:s[k] for k in ('stage','stage_id','parent_stage_id','q','times')} for s in self.stages] if getattr(self,'call_archive',None) else list(self.stages),
                     partial_events=deepcopy(self.events), extraction_geometry=deepcopy(self.extraction_evidence),
                     extraction_attempts=deepcopy(self.extraction_attempts),approach_attempts=deepcopy(self.approach_attempts)))
                 if not recoverable:
@@ -586,6 +683,7 @@ class NativeTask:
             raise ValueError('NATIVE_GRASP_CANDIDATES_EXHAUSTED')
         result = dict(schema='eco65_native_plan_v1', status=STATUS, task_id=self.task_id,
             evaluation_profile=self.evaluation_profile, replay_interpolation=INTERPOLATION,
+            j1_direction_policy=J1_POLICY if self.directed_j1 else None,
             independent_review='NOT_RUN_PROFILE' if self.evaluation_profile == CHAIN else 'NOT_EVALUATED',
             identity=self.identity, snapshot_fingerprint=self.snapshot['fingerprint'], home_q=home.tolist(),
             stages=self.stages, events=self.events, fk_crosscheck=fk,
@@ -634,7 +732,7 @@ def validate_plan_contract(plan, snapshot):
         raise ValueError('PLAN_IDENTITY_OR_MODE_MISMATCH')
     if plan['identity'] != snapshot['native_model']['init']['identity'] or plan['snapshot_fingerprint'] != snapshot['fingerprint']:
         raise ValueError('PLAN_MODEL_TOOL_SCENE_MISMATCH')
-    if [s['stage'] for s in plan['stages']] != PHASES: raise ValueError('PLAN_STAGE_CHAIN_INCOMPLETE')
+    if not stage_chain_valid(plan['stages']): raise ValueError('PLAN_STAGE_CHAIN_INCOMPLETE')
     if [e['event'] for e in plan['events']] != ['ATTACH_PREDICTED', 'SUPPORTED_RELEASE_PREDICTED']:
         raise ValueError('PLAN_EVENT_CHAIN_INCOMPLETE')
     previous = np.asarray(plan['home_q']); parent = ''; seen = set()
@@ -697,6 +795,15 @@ def validate_plan_contract(plan, snapshot):
                 raw.get('task_tcp_identity') != plan['identity']['task_tcp_fingerprint'] or
                 ('goal_pose' in req and raw.get('interpolated_link') != plan['identity']['task_tcp_link'])):
             raise ValueError('PLAN_TASK_TCP_IDENTITY_MISMATCH')
+        if profile==CHAIN and 'goal_pose' in req:
+            fk=endpoint_fk(robot,q[-1],req['goal_pose'])
+            if fk['position_error_m']>1e-6 or fk['orientation_error_rad']>1e-6:raise ValueError('PLAN_ACTUAL_ENDPOINT_FK_FAILED')
+        if plan.get('j1_direction_policy') is not None:
+            direction=j1_direction(s['stage'])
+            if plan['j1_direction_policy']!=J1_POLICY or req.get('j1_direction')!=direction or not j1_valid(q,direction):
+                raise ValueError('PLAN_J1_DIRECTION_FAILED')
+            basic=raw.get('basic_path_check',{})
+            if basic.get('j1_direction')!=direction or basic.get('j1_edge_checks')!=len(q)-1:raise ValueError('PLAN_J1_EVIDENCE_MISSING')
         verify_ompl_output_interpolation(req,raw)
         if independent and (req['process_policy'].get('selection_binding') != binding or
                 req['process_policy'].get('active_ids') != ids or req['process_policy'].get('target_face') != plan['target_face']):

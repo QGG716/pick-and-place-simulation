@@ -1,6 +1,7 @@
 #pragma once
 #include "clearance.h"
 #include "process_policy.h"
+#include "joint_direction.h"
 #include <limits>
 #include <functional>
 
@@ -12,14 +13,15 @@ namespace m710 {
 inline Json basicSampledPath(const planning_scene::PlanningScenePtr& scene,
                             Clearance& clearance, ProcessPolicy& process,
                             const Json& path, double resolution, double timeout_s,
-                            const std::function<Json(const moveit::core::RobotState&)>& endpoint) {
+                            const std::function<Json(const moveit::core::RobotState&)>& endpoint, int direction=0) {
   const auto begin=std::chrono::steady_clock::now();
   auto elapsed=[&](){return std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();};
   Json report={{"status","BASIC_SAMPLED_INCOMPLETE"},{"sampling_rule","MAX_ABS_JOINT_DELTA_CEIL_V1"},
     {"geometric_interpolation","COMMON_PROGRESS_STRAIGHT_JOINT_EDGES"},{"resolution_rad",resolution},
     {"raw_nodes",path.size()},{"checked_states",0},{"clearance_checks",0},{"process_checks",0},
     {"ordinary_collision_checks",0},{"endpoint_process_checks",0},{"completed",false},
-    {"actual_endpoint_status","NOT_RUN"},{"continuous_swept_proof",false},{"failure",nullptr}};
+    {"actual_endpoint_status","NOT_RUN"},{"continuous_swept_proof",false},{"failure",nullptr},
+    {"j1_direction",direction},{"j1_tolerance_rad",kJ1DirectionEpsilon},{"j1_edge_checks",0}};
   size_t checked=0,clear=0,proc=0,collision_count=0,endpoints=0,edge=0;double fraction=0;
   try {
     if(path.size()<2 || !std::isfinite(resolution) || resolution<=0 || !std::isfinite(timeout_s) || timeout_s<=0)
@@ -36,6 +38,12 @@ inline Json basicSampledPath(const planning_scene::PlanningScenePtr& scene,
     clearance.phase="output";
     for(edge=0;edge<std::max(size_t(1),nodes.size()-1);++edge) {
       const auto& a=nodes[edge];const auto& b=nodes[std::min(edge+1,nodes.size()-1)];double maximum=0;
+      report["j1_edge_checks"]=edge+1;
+      if(!directedJ1(a.at(0),b.at(0),direction)) {
+        report["status"]="BASIC_SAMPLED_REJECTED";
+        report["failure"]={{"reason","J1_DIRECTION_VIOLATION"},{"edge",edge},{"from_q",a},{"to_q",b},{"direction",direction}};
+        throw std::runtime_error("J1_DIRECTION_VIOLATION");
+      }
       for(size_t j=0;j<joints;++j)maximum=std::max(maximum,std::abs(b[j]-a[j]));
       const double n=std::max(1.,std::ceil(maximum/resolution));
       if(!std::isfinite(n) || n>=double(std::numeric_limits<size_t>::max()))

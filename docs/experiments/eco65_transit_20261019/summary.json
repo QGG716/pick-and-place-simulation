@@ -1,0 +1,2813 @@
+{
+  "status": "BLOCKED_NO_COMPLETE_PLAN",
+  "baseline_commit": "c35845e7bac74b923089a4a49b0020c035bb7a96",
+  "reference_commit": "9fbd6021a54d20dfa7fb219bc154058a18c2ba7e",
+  "snapshot_fingerprint": "ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51",
+  "complete_plan": false,
+  "physics": "NOT_EVALUATED",
+  "normal_recording_off_task_wall_s": null,
+  "runs": [
+    {
+      "name": "diag01",
+      "path": "outputs/eco65_native/transit_20261019_diag01",
+      "status": "INTERRUPTED_NOT_CAPTURED",
+      "wall_s": 7.110089275985956,
+      "error": "PIPELINE_UNAVAILABLE:ompl",
+      "report": "run.json",
+      "op_counts": {},
+      "solver_calls": {},
+      "sum_native_solver_s": 0,
+      "motions": [],
+      "traces": []
+    },
+    {
+      "name": "diag02",
+      "path": "outputs/eco65_native/transit_20261019_diag02",
+      "status": "NATIVE_PLANNING_FAILED",
+      "wall_s": 126.05723685771227,
+      "error": null,
+      "report": "run.json",
+      "op_counts": {},
+      "solver_calls": {},
+      "sum_native_solver_s": 0,
+      "motions": [],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_diag02/search_trace.json.gz",
+          "sha256": "d60251a8718ec58b3b43a101d1406d64f9a77172e4ee04f4b49511e673d9a274",
+          "status": "Approximate solution",
+          "vertices": 193,
+          "edges": 182,
+          "tree_counts": {
+            "START": 7,
+            "GOAL": 186
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 344,
+          "samples": 8898,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 105
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 15
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c01"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 14
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 9
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 7
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 4
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 3
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "conveyor_longitudinal__mesh002_component000"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "top01",
+      "path": "outputs/eco65_native/transit_20261019_top01",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 90.7345348931849,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.01,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-1"
+          ]
+        },
+        {
+          "geometry": {
+            "lift_m": 0.04,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-34"
+          ]
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 4,
+        "check_state_offline": 17,
+        "ik": 64
+      },
+      "solver_calls": {
+        "LIN": 2,
+        "PTP": 1,
+        "RRTConnectkConfigDefault": 1
+      },
+      "sum_native_solver_s": 36.74216474,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.125847887247801,
+          "solver_s": 0.590209173,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.025986471,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-34",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 5.214417099952698,
+          "solver_s": 0.586414613,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 3.412087507,
+          "checked_states": 250,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.968461604829093,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.4574113474715075e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 6.35793793118148e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900045054472903
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-67",
+          "parent": "extraction-34",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 6.7736816965043545,
+          "solver_s": 5.5491835,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-68",
+          "parent": "extraction-34",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 32.167528692632914,
+          "solver_s": 30.016357454,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        }
+      ],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_top01/search_traces/transit-68.json.gz",
+          "sha256": "a45646475bdd62b0fb78007a2a99632152fd6accc2cd845087aff4bfbe5f367f",
+          "status": "Approximate solution",
+          "vertices": 51,
+          "edges": 40,
+          "tree_counts": {
+            "START": 26,
+            "GOAL": 25
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 60,
+          "samples": 1933,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 6
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 5
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "top02",
+      "path": "outputs/eco65_native/transit_20261019_top02",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 57.51589919626713,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.01,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-1"
+          ]
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 1,
+        "check_state_offline": 24,
+        "ik": 99
+      },
+      "solver_calls": {
+        "LIN": 1
+      },
+      "sum_native_solver_s": 0.599290834,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.172427982091904,
+          "solver_s": 0.599290834,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.057137574,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        }
+      ],
+      "traces": []
+    },
+    {
+      "name": "top03",
+      "path": "outputs/eco65_native/transit_20261019_top03",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 434.61446572095156,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.01,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-1"
+          ]
+        },
+        {
+          "geometry": {
+            "lift_m": 0.04,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-118"
+          ]
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 12,
+        "check_state_offline": 36,
+        "ik": 224
+      },
+      "solver_calls": {
+        "LIN": 2,
+        "PTP": 5,
+        "RRTConnectkConfigDefault": 5
+      },
+      "sum_native_solver_s": 324.30362076,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.142082322388887,
+          "solver_s": 0.589643759,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.053480386,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-42",
+          "parent": "extraction-1",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.381634164601564,
+          "solver_s": 3.221983981,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-43",
+          "parent": "extraction-1",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.522445440292358,
+          "solver_s": 3.312189632,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-44",
+          "parent": "extraction-1",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 64.28151286020875,
+          "solver_s": 62.057177961,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-45",
+          "parent": "extraction-1",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 62.197374511510134,
+          "solver_s": 60.053487905,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-118",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 5.1940295323729515,
+          "solver_s": 0.57964851,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 3.409644949,
+          "checked_states": 250,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.968461604829093,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.4574113474715075e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 6.35793793118148e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900045054472903
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-159",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.4450258538126945,
+          "solver_s": 3.289490649,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-160",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.405874725431204,
+          "solver_s": 3.21108114,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-161",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 6.759343653917313,
+          "solver_s": 5.572256481,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-162",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 63.01070050895214,
+          "solver_s": 60.820909495,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-163",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 62.93500132858753,
+          "solver_s": 60.770189422,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-164",
+          "parent": "extraction-118",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 62.97696636989713,
+          "solver_s": 60.825561825,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        }
+      ],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_top03/search_traces/transit-44.json.gz",
+          "sha256": "281ea1ea06fbed577073ee735c71fb45423ac4b0fe08848cf74f5b9696aee356",
+          "status": "Approximate solution",
+          "vertices": 91,
+          "edges": 80,
+          "tree_counts": {
+            "START": 61,
+            "GOAL": 30
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 182,
+          "samples": 3923,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 59
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 12
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 6
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 4
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "conveyor_longitudinal__mesh002_component000"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "conveyor_longitudinal__mesh002_component000"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_top03/search_traces/transit-45.json.gz",
+          "sha256": "4c18e23b05b8a0534d2c96bae76fb0085b5bc1d345eaedb2110420391f134001",
+          "status": "Approximate solution",
+          "vertices": 86,
+          "edges": 75,
+          "tree_counts": {
+            "START": 60,
+            "GOAL": 26
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 174,
+          "samples": 3671,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 55
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 8
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 4
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l01_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l01_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_top03/search_traces/transit-162.json.gz",
+          "sha256": "28bd9ed85cf57e44999a3b4b09688f510312d04631798baacbd0f2906c8641ee",
+          "status": "Approximate solution",
+          "vertices": 87,
+          "edges": 76,
+          "tree_counts": {
+            "START": 57,
+            "GOAL": 30
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 157,
+          "samples": 3714,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 51
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 12
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l01_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_top03/search_traces/transit-163.json.gz",
+          "sha256": "3a78c3a766f6173abd505539fde6669028888fa114aab9926cb9ccd0a29cd787",
+          "status": "Approximate solution",
+          "vertices": 88,
+          "edges": 77,
+          "tree_counts": {
+            "START": 60,
+            "GOAL": 28
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 156,
+          "samples": 3754,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 47
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 5
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 4
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_top03/search_traces/transit-164.json.gz",
+          "sha256": "823719239c272e5327cf8377a324867d98471297b9ce1db5840667a7f6558a6e",
+          "status": "Approximate solution",
+          "vertices": 86,
+          "edges": 75,
+          "tree_counts": {
+            "START": 59,
+            "GOAL": 27
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 154,
+          "samples": 3657,
+          "truncated": false,
+          "recording_overhead": null,
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 33
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 14
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 9
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "top04",
+      "path": "outputs/eco65_native/transit_20261019_top04",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 21.635937578976154,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.04,
+            "outward_m": 0.21147764064044156,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.06852235935955842,
+            "turn_envelope_extra_m": 0.048077640640441524,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction",
+          "stage_ids": []
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 2
+      },
+      "solver_calls": {
+        "LIN": 2
+      },
+      "sum_native_solver_s": 2.089989092,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "NATIVE_PATH_REJECTED",
+          "solver_message": "",
+          "wall_s": 6.899420164525509,
+          "solver_s": 0.726635584,
+          "basic_status": "BASIC_SAMPLED_REJECTED",
+          "basic_wall_s": 4.659425369,
+          "checked_states": 335,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.926170116074113,
+          "failure": {
+            "edge": 48,
+            "fraction": 1.0,
+            "q_rad": [
+              2.926170116074113,
+              0.4778392865424897,
+              -0.9928285687148722,
+              -1.055807539206679,
+              1.5707927062420897,
+              2.1428981093550066
+            ],
+            "reason": "OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"
+          },
+          "endpoint_fk": {
+            "orientation_error_rad": 7.602462330701778e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1459799437677586e-06,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11129193929970915
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-2",
+          "parent": "",
+          "status": "NATIVE_PATH_REJECTED",
+          "solver_message": "",
+          "wall_s": 7.607873160392046,
+          "solver_s": 1.363353508,
+          "basic_status": "BASIC_SAMPLED_REJECTED",
+          "basic_wall_s": 5.030502894,
+          "checked_states": 360,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9261700552525616,
+          "failure": {
+            "edge": 91,
+            "fraction": 1.0,
+            "q_rad": [
+              2.9261700552525616,
+              0.47783642385225816,
+              -0.9928278528249805,
+              -1.0558053923712536,
+              1.57079270623821,
+              2.1428980485334574
+            ],
+            "reason": "OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"
+          },
+          "endpoint_fk": {
+            "orientation_error_rad": 4.07253313962911e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 2.066758995645715e-06,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.1112920001212605
+        }
+      ],
+      "traces": []
+    },
+    {
+      "name": "top05",
+      "path": "outputs/eco65_native/transit_20261019_top05",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 31.052885863929987,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.04,
+            "outward_m": 0.21147764064044156,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.06852235935955842,
+            "turn_envelope_extra_m": 0.048077640640441524,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction",
+          "stage_ids": []
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 3
+      },
+      "solver_calls": {
+        "LIN": 3
+      },
+      "sum_native_solver_s": 4.574343776,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "NATIVE_PATH_REJECTED",
+          "solver_message": "",
+          "wall_s": 6.81110442429781,
+          "solver_s": 0.719243115,
+          "basic_status": "BASIC_SAMPLED_REJECTED",
+          "basic_wall_s": 4.602394837,
+          "checked_states": 335,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.926170116074113,
+          "failure": {
+            "edge": 48,
+            "fraction": 1.0,
+            "q_rad": [
+              2.926170116074113,
+              0.4778392865424897,
+              -0.9928285687148722,
+              -1.055807539206679,
+              1.5707927062420897,
+              2.1428981093550066
+            ],
+            "reason": "OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"
+          },
+          "endpoint_fk": {
+            "orientation_error_rad": 7.602462330701778e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1459799437677586e-06,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11129193929970915
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-2",
+          "parent": "",
+          "status": "NATIVE_PATH_REJECTED",
+          "solver_message": "",
+          "wall_s": 7.497200597077608,
+          "solver_s": 1.332994319,
+          "basic_status": "BASIC_SAMPLED_REJECTED",
+          "basic_wall_s": 4.968572865,
+          "checked_states": 360,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9261700552525616,
+          "failure": {
+            "edge": 91,
+            "fraction": 1.0,
+            "q_rad": [
+              2.9261700552525616,
+              0.47783642385225816,
+              -0.9928278528249805,
+              -1.0558053923712536,
+              1.57079270623821,
+              2.1428980485334574
+            ],
+            "reason": "OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"
+          },
+          "endpoint_fk": {
+            "orientation_error_rad": 4.07253313962911e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 2.066758995645715e-06,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.1112920001212605
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-3",
+          "parent": "",
+          "status": "NATIVE_PATH_REJECTED",
+          "solver_message": "",
+          "wall_s": 8.81475180014968,
+          "solver_s": 2.522106342,
+          "basic_status": "BASIC_SAMPLED_REJECTED",
+          "basic_wall_s": 5.08921845,
+          "checked_states": 375,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9261719623691342,
+          "failure": {
+            "edge": 177,
+            "fraction": 1.0,
+            "q_rad": [
+              2.9261719623691342,
+              0.4778328336611871,
+              -0.9928304871245562,
+              -1.0557991678607408,
+              1.5707927062370126,
+              2.142899955650032
+            ],
+            "reason": "OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"
+          },
+          "endpoint_fk": {
+            "orientation_error_rad": 2.0844115408417238e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 4.131818343918284e-06,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11129009300468784
+        }
+      ],
+      "traces": []
+    },
+    {
+      "name": "top06",
+      "path": "outputs/eco65_native/transit_20261019_top06",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 14.694390814751387,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.01,
+            "outward_m": 0.16340000000000005,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.11659999999999993,
+            "turn_envelope_extra_m": 0.0,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-1"
+          ]
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 1,
+        "check_state_offline": 1,
+        "ik": 72
+      },
+      "solver_calls": {
+        "LIN": 1
+      },
+      "sum_native_solver_s": 0.590555914,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.174856271594763,
+          "solver_s": 0.590555914,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.039624784,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        }
+      ],
+      "traces": []
+    },
+    {
+      "name": "top07",
+      "path": "outputs/eco65_native/transit_20261019_top07",
+      "status": "INCOMPLETE_STORAGE_INTERRUPTION",
+      "wall_s": null,
+      "error": null,
+      "report": "recovery_summary.json",
+      "archive_complete_rows": 51,
+      "archive_error": "error('Error -3 while decompressing data: invalid distance too far back')",
+      "archive_read_error": "error('Error -3 while decompressing data: invalid distance too far back')",
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 1,
+        "check_state_offline": 9,
+        "ik": 40
+      },
+      "solver_calls": {
+        "LIN": 1
+      },
+      "sum_native_solver_s": 0.739107204,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 7.0718642473220825,
+          "solver_s": 0.739107204,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.817619811,
+          "checked_states": 338,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.924034883399382,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 7.85994949341911e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.4992715006230678e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11342717197444019
+        }
+      ],
+      "traces": []
+    },
+    {
+      "name": "top08",
+      "path": "outputs/eco65_native/transit_20261019_top08",
+      "status": "DIAGNOSTIC_FINISHED",
+      "wall_s": 170.21121113747358,
+      "error": null,
+      "report": "report.json",
+      "attempts": [
+        {
+          "geometry": {
+            "lift_m": 0.04,
+            "outward_m": 0.21340000000000003,
+            "neighbor_front_x_m": 0.12999999999999995,
+            "target_initial_rear_x_m": 0.27999999999999997,
+            "target_final_rear_x_m": 0.06659999999999994,
+            "turn_envelope_extra_m": 0.05,
+            "lift_basis": "FULL_CARTON_FRONT_CLEARANCE_BEFORE_TURN",
+            "transit_requirement": "ORDINARY_PAYLOAD_NEIGHBOR_CLEARANCE_WITH_SEARCH_RESERVE"
+          },
+          "status": "REJECTED",
+          "error": "NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit",
+          "stage_ids": [
+            "extraction-1"
+          ]
+        }
+      ],
+      "op_counts": {
+        "init": 1,
+        "diagnostic_connection": 4,
+        "check_state_offline": 16,
+        "ik": 150
+      },
+      "solver_calls": {
+        "LIN": 1,
+        "PTP": 2,
+        "RRTConnectkConfigDefault": 1
+      },
+      "sum_native_solver_s": 95.11543377,
+      "motions": [
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-1",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.964287653565407,
+          "solver_s": 0.724239217,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.730429871,
+          "checked_states": 338,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.924034883399382,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 7.85994949341911e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.4992715006230678e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11342717197444019
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-42",
+          "parent": "extraction-1",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 28.23047587648034,
+          "solver_s": 1.966176348,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 25.076427058,
+          "checked_states": 1752,
+          "direction": -1,
+          "j1_start": 2.924034883399382,
+          "j1_end": -0.5031953406584946,
+          "failure": null,
+          "endpoint_fk": null,
+          "j1_net_change_rad": -3.4272302240578765
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-81",
+          "parent": "transit-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 3.3992845080792904,
+          "solver_s": 2.200873912,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-82",
+          "parent": "transit-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 92.48639535531402,
+          "solver_s": 90.224144293,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        }
+      ],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_top08/search_traces/transit-82.json.gz",
+          "sha256": "628af8582def38739f955642a2639511e73fad8fc9316260f88759e6caecccd7",
+          "status": "Approximate solution",
+          "vertices": 132,
+          "edges": 121,
+          "tree_counts": {
+            "START": 84,
+            "GOAL": 48
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 337,
+          "samples": 5920,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.0019966189999999907,
+            "planner_data_snapshot_s": 0.001352523,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 51
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 29
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 21
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 8
+            },
+            {
+              "pair": [
+                "link_3",
+                "part_039"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cold01",
+      "path": "outputs/eco65_native/transit_20261019_cold01",
+      "status": "INCOMPLETE_STORAGE_INTERRUPTION",
+      "wall_s": null,
+      "error": null,
+      "report": "recovery_summary.json",
+      "archive_complete_rows": 229,
+      "archive_error": "error('Error -3 while decompressing data: invalid bit length repeat')",
+      "archive_read_error": "error('Error -3 while decompressing data: invalid bit length repeat')",
+      "op_counts": {
+        "init": 1,
+        "check_state_offline": 26,
+        "fk": 4,
+        "ik": 190,
+        "plan": 8
+      },
+      "solver_calls": {
+        "PTP": 3,
+        "LIN": 4,
+        "RRTConnectkConfigDefault": 1
+      },
+      "sum_native_solver_s": 100.179559252,
+      "motions": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "pregrasp-39",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 24.834699671715498,
+          "solver_s": 1.704009449,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 21.871872773,
+          "checked_states": 1808,
+          "direction": 0,
+          "j1_start": -0.5031953406584946,
+          "j1_end": 3.037461409568475,
+          "failure": null,
+          "endpoint_fk": null,
+          "j1_net_change_rad": 3.5406567502269697
+        },
+        {
+          "stage": "contact",
+          "stage_id": "contact-40",
+          "parent": "pregrasp-39",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "PLANNING_FAILED",
+          "wall_s": 1.2023620940744877,
+          "solver_s": 0.012487335,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 3.037461409568475,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "contact",
+          "stage_id": "contact-41",
+          "parent": "pregrasp-39",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 3.4102911688387394,
+          "solver_s": 0.240520582,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 1.978113979,
+          "checked_states": 162,
+          "direction": -1,
+          "j1_start": 3.037461409568475,
+          "j1_end": 3.037462055373822,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 4.97306186668506e-07,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 2.681237383216647e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": 6.45805346977113e-07
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-42",
+          "parent": "contact-41",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 6.3474504314363,
+          "solver_s": 0.603250745,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.2199171,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-82",
+          "parent": "extraction-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.517744526267052,
+          "solver_s": 3.337338798,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-83",
+          "parent": "extraction-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 92.63353928551078,
+          "solver_s": 90.390352244,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-156",
+          "parent": "contact-41",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 5.314378369599581,
+          "solver_s": 0.592251335,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 3.462823557,
+          "checked_states": 250,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.968461604829093,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.4574113474715075e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 6.35793793118148e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900045054472903
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-198",
+          "parent": "extraction-156",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.473368611186743,
+          "solver_s": 3.299348764,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.968461604829093,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        }
+      ],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_cold01/attempt_00/search_traces/transit-83.json.gz",
+          "sha256": "9342204aed2b2948d6fb2dc00176daf8cf5946396ee22995a9fe4eeba93cfa3c",
+          "status": "Approximate solution",
+          "vertices": 126,
+          "edges": 115,
+          "tree_counts": {
+            "START": 69,
+            "GOAL": 57
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 515,
+          "samples": 5835,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.00272269,
+            "planner_data_snapshot_s": 0.001599721,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 216
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 45
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 29
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 14
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c01"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 2
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c01"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c02"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_cold01/attempt_00/search_traces/transit-199.json.gz",
+          "sha256": "e8897fbbdb4ea021e0f98aed8acc3524abcb33edcf6139dffaec661b1be72fcf",
+          "status": "Approximate solution",
+          "vertices": 124,
+          "edges": 113,
+          "tree_counts": {
+            "START": 86,
+            "GOAL": 38
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 264,
+          "samples": 5538,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.004159893000000005,
+            "planner_data_snapshot_s": 0.001335353,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 70
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 20
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 11
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 7
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 3
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cold02",
+      "path": "outputs/eco65_native/transit_20261019_cold02",
+      "status": "NO_BASIC_CHECKED_COMPLETE_PLAN",
+      "wall_s": 744.8166659474373,
+      "error": null,
+      "report": "run_report.json",
+      "op_counts": {
+        "init": 1,
+        "check_state_offline": 37,
+        "fk": 4,
+        "ik": 269,
+        "plan": 15
+      },
+      "solver_calls": {
+        "PTP": 7,
+        "LIN": 4,
+        "RRTConnectkConfigDefault": 4
+      },
+      "sum_native_solver_s": 301.71981783800004,
+      "motions": [
+        {
+          "stage": "pregrasp",
+          "stage_id": "pregrasp-39",
+          "parent": "",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 25.267995465546846,
+          "solver_s": 1.906811289,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 22.065763835,
+          "checked_states": 1808,
+          "direction": 0,
+          "j1_start": -0.5031953406584946,
+          "j1_end": 3.037461409568475,
+          "failure": null,
+          "endpoint_fk": null,
+          "j1_net_change_rad": 3.5406567502269697
+        },
+        {
+          "stage": "contact",
+          "stage_id": "contact-40",
+          "parent": "pregrasp-39",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "PLANNING_FAILED",
+          "wall_s": 1.2189612723886967,
+          "solver_s": 0.012421264,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 3.037461409568475,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "contact",
+          "stage_id": "contact-41",
+          "parent": "pregrasp-39",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 3.42058027908206,
+          "solver_s": 0.239411832,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 1.970216653,
+          "checked_states": 162,
+          "direction": -1,
+          "j1_start": 3.037461409568475,
+          "j1_end": 3.037462055373822,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 4.97306186668506e-07,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 2.681237383216647e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": 6.45805346977113e-07
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-42",
+          "parent": "contact-41",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 7.105594865977764,
+          "solver_s": 0.743265528,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.838760965,
+          "checked_states": 338,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.924034883399382,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 7.85994949341911e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.4992715006230678e-08,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.11342717197444019
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-81",
+          "parent": "extraction-42",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 28.691128354519606,
+          "solver_s": 1.979648868,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 25.487030042,
+          "checked_states": 1752,
+          "direction": -1,
+          "j1_start": 2.924034883399382,
+          "j1_end": -0.5031953406584946,
+          "failure": null,
+          "endpoint_fk": null,
+          "j1_net_change_rad": -3.4272302240578765
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-123",
+          "parent": "transit-81",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 3.427038535475731,
+          "solver_s": 2.207351671,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-124",
+          "parent": "transit-81",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 7.574016813188791,
+          "solver_s": 6.31647685,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-125",
+          "parent": "transit-81",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 92.47339480370283,
+          "solver_s": 90.198306138,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-126",
+          "parent": "transit-81",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 92.63337260112166,
+          "solver_s": 90.403754727,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": -0.5031953406584946,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-168",
+          "parent": "extraction-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 4.499077416956425,
+          "solver_s": 3.27287802,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.924034883399382,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-169",
+          "parent": "extraction-42",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "TIMED_OUT",
+          "wall_s": 101.67184050753713,
+          "solver_s": 99.427331234,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.924034883399382,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "extraction",
+          "stage_id": "extraction-242",
+          "parent": "contact-41",
+          "status": "SUCCESS",
+          "solver_message": "",
+          "wall_s": 5.8586271442472935,
+          "solver_s": 0.590985422,
+          "basic_status": "BASIC_SAMPLED_PASS",
+          "basic_wall_s": 4.022928039,
+          "checked_states": 287,
+          "direction": -1,
+          "j1_start": 3.037462055373822,
+          "j1_end": 2.9684612555587924,
+          "failure": null,
+          "endpoint_fk": {
+            "orientation_error_rad": 3.543013591597888e-11,
+            "orientation_tolerance_rad": 1e-06,
+            "position_error_m": 1.1163008613492602e-07,
+            "position_tolerance_m": 1e-06
+          },
+          "j1_net_change_rad": -0.06900079981502971
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-282",
+          "parent": "extraction-242",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 3.185955710709095,
+          "solver_s": 1.995518692,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-283",
+          "parent": "extraction-242",
+          "status": "NATIVE_PLANNING_FAILED",
+          "solver_message": "INVALID_MOTION_PLAN",
+          "wall_s": 3.6353536136448383,
+          "solver_s": 2.425656303,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null
+        },
+        {
+          "stage": "transit",
+          "stage_id": "transit-284",
+          "parent": "extraction-242",
+          "status": "INTERRUPTED_NOT_CAPTURED",
+          "solver_message": null,
+          "wall_s": 255.25355149433017,
+          "solver_s": null,
+          "basic_status": null,
+          "basic_wall_s": null,
+          "checked_states": null,
+          "direction": null,
+          "j1_start": 2.9684612555587924,
+          "j1_end": null,
+          "failure": null,
+          "endpoint_fk": null,
+          "error": "MOVEIT2_REQUEST_TIMEOUT",
+          "trace_status": "INCOMPLETE"
+        }
+      ],
+      "traces": [
+        {
+          "path": "outputs/eco65_native/transit_20261019_cold02/attempt_00/search_traces/transit-125.json.gz",
+          "sha256": "3546d3a9b45df3b388f3b037fcffe85e6c803ccd7bbe462af13a1a078ccc8701",
+          "status": "Approximate solution",
+          "vertices": 132,
+          "edges": 121,
+          "tree_counts": {
+            "START": 83,
+            "GOAL": 49
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 314,
+          "samples": 5915,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.002003217999999998,
+            "planner_data_snapshot_s": 0.001515482,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 55
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 28
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 19
+            },
+            {
+              "pair": [
+                "link_3",
+                "part_039"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 3
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "trailer_right"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_cold02/attempt_00/search_traces/transit-126.json.gz",
+          "sha256": "bf210abe68b7c6624fdbb53dc8935fa1509079c505727cb388b79d8a52dbe662",
+          "status": "Approximate solution",
+          "vertices": 131,
+          "edges": 120,
+          "tree_counts": {
+            "START": 79,
+            "GOAL": 52
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 190,
+          "samples": 5797,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.004165144999999999,
+            "planner_data_snapshot_s": 0.001322317,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 28
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 9
+            }
+          ]
+        },
+        {
+          "path": "outputs/eco65_native/transit_20261019_cold02/attempt_00/search_traces/transit-169.json.gz",
+          "sha256": "6b66c4ac944e77af91724906396bc1f9d9745ef90e855041eede4779d3459fe9",
+          "status": "Approximate solution",
+          "vertices": 136,
+          "edges": 125,
+          "tree_counts": {
+            "START": 104,
+            "GOAL": 32
+          },
+          "root_counts": {
+            "START": 1,
+            "GOAL": 10
+          },
+          "events": 315,
+          "samples": 6140,
+          "truncated": false,
+          "recording_overhead": {
+            "extension_and_sample_callback_s": 0.004797601999999987,
+            "planner_data_snapshot_s": 0.00192325,
+            "scope": "MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"
+          },
+          "failure_counts": [
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 118
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 11
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l02_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 6
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l01_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 2
+            },
+            {
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "INTERSECTION_OR_CONTACT",
+              "count": 1
+            },
+            {
+              "pair": [
+                "carton_r00_l03_c01",
+                "carton_r00_l03_c00"
+              ],
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "diag03",
+      "path": "outputs/eco65_native/transit_20261019_diag03",
+      "status": "INTERRUPTED_NOT_CAPTURED",
+      "wall_s": 248.02270612865686,
+      "error": "MOVEIT2_REQUEST_TIMEOUT",
+      "report": "run.json",
+      "op_counts": {},
+      "solver_calls": {},
+      "sum_native_solver_s": 0,
+      "motions": [],
+      "traces": []
+    }
+  ],
+  "mast_probe": {
+    "scope": "FOUR_DIRECTED_STATES_NOT_A_GLOBAL_INFEASIBILITY_PROOF",
+    "states": [
+      {
+        "q": [
+          -0.5031953406584946,
+          0.5,
+          -1.3414169996571763,
+          0.07599468559211806,
+          1.5707926322178625,
+          4.17131980283628
+        ],
+        "status": "SUCCESS",
+        "failures": []
+      },
+      {
+        "q": [
+          -0.5031953406584946,
+          0.6,
+          -1.3414169996571763,
+          0.07599468559211806,
+          1.5707926322178625,
+          4.17131980283628
+        ],
+        "status": "STATE_REJECTED",
+        "failures": [
+          {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "link_2",
+              "eco65_mast_mast_part_019"
+            ],
+            "phase": "initial",
+            "q_rad": [
+              -0.5031953406584946,
+              0.6,
+              -1.3414169996571763,
+              0.07599468559211806,
+              1.5707926322178625,
+              4.17131980283628
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "self_including_robot_tool_and_payload",
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": 0.0018142383897602975
+          }
+        ]
+      },
+      {
+        "q": [
+          -0.5031953406584946,
+          0.7,
+          -1.3414169996571763,
+          0.07599468559211806,
+          1.5707926322178625,
+          4.17131980283628
+        ],
+        "status": "STATE_REJECTED",
+        "failures": [
+          {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "link_2",
+              "eco65_mast_mast_part_019"
+            ],
+            "phase": "initial",
+            "q_rad": [
+              -0.5031953406584946,
+              0.7,
+              -1.3414169996571763,
+              0.07599468559211806,
+              1.5707926322178625,
+              4.17131980283628
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "self_including_robot_tool_and_payload",
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": 0.0019451742746075945
+          }
+        ]
+      },
+      {
+        "q": [
+          -0.5031953406584946,
+          0.8,
+          -1.3414169996571763,
+          0.07599468559211806,
+          1.5707926322178625,
+          4.17131980283628
+        ],
+        "status": "STATE_REJECTED",
+        "failures": [
+          {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "link_3",
+              "eco65_mast_mast_part_019"
+            ],
+            "phase": "initial",
+            "q_rad": [
+              -0.5031953406584946,
+              0.8,
+              -1.3414169996571763,
+              0.07599468559211806,
+              1.5707926322178625,
+              4.17131980283628
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "self_including_robot_tool_and_payload",
+            "reason": "INTERSECTION_OR_CONTACT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": -1.0
+          }
+        ]
+      }
+    ],
+    "kinematic_dependency": {
+      "robot_link": "link_2",
+      "mast_id": "eco65_mast_mast_part_019",
+      "mast_parent": "link_1",
+      "only_relative_variable": "joint_2",
+      "joint2_limits_rad": [
+        -3.106,
+        2.356
+      ],
+      "fixed_q2_rad": 0.6,
+      "relative_transform_max_error": 1.1819582449281232e-16
+    },
+    "conclusion": "This fixed-geometry gap barrier separates the tested lower-J2 start from the selected upper-J2 goals; not a proof over every grasp/IK goal."
+  },
+  "variant_probe": {
+    "scope": "FINITE_FOUR_ROTATIONS_ENDPOINT_PROBE_NOT_A_PLAN",
+    "variants": [
+      {
+        "candidate": "1c77faae78228a5bc6a2ac8b7ded4cad843a3a332f4a30be7960ce8241f9091a",
+        "roll": -2.356194490192345,
+        "active_ids": [
+          "part_024_seal"
+        ],
+        "status": "ENDPOINTS_ONLY",
+        "contact": [
+          3.037462151366076,
+          -0.07596687368031776,
+          -0.869437146533917,
+          -0.6253924281551797,
+          1.5707925836061134,
+          -4.028995157578191
+        ],
+        "goals": [
+          [
+            1.5651455765181417,
+            -0.516007560232991,
+            -1.4681114042969734,
+            -2.7282772964730904,
+            -1.5707923463393556,
+            3.923458856422906
+          ],
+          [
+            1.5651455844520583,
+            0.3182950305116947,
+            -2.3992258128931585,
+            0.5101345140349093,
+            1.5707925270612944,
+            -5.501311724366713
+          ],
+          [
+            -1.2169979630863947,
+            1.975425844980984,
+            -1.7181368205345995,
+            1.3134999333004145,
+            -1.5707927971341138,
+            1.1413153343707958
+          ]
+        ],
+        "return_compatible_low_j2": []
+      },
+      {
+        "candidate": "2188465d9a68f63f12dfaf4aefe48ced0b78a66b90344415586ff85d3d97db22",
+        "roll": 0.7853981633974483,
+        "active_ids": [
+          "part_002_seal"
+        ],
+        "status": "ENDPOINTS_ONLY",
+        "contact": [
+          3.037462107712393,
+          -0.07596668992840452,
+          -0.869437419602745,
+          -0.6253922035586594,
+          1.5707926515765853,
+          5.395782757102099
+        ],
+        "goals": [
+          [
+            1.5651454299568222,
+            0.3182956968020113,
+            -2.3992251757395335,
+            0.5101331554780575,
+            1.5707926669623662,
+            3.923466079352759
+          ],
+          [
+            -1.2169983035206302,
+            1.9754010770083066,
+            -1.7181166787131046,
+            1.3135045707837185,
+            -1.5707927851181551,
+            4.2829076515185225
+          ],
+          [
+            1.565145430571331,
+            -0.5160084228141475,
+            -1.468110497537956,
+            -2.7282774028221763,
+            -1.570792667056419,
+            -5.50131922719152
+          ],
+          [
+            1.5651454286710689,
+            -0.5160084007486704,
+            -1.4681105218074115,
+            -2.7282774005666006,
+            -1.5707926670037966,
+            0.7818660780705482
+          ],
+          [
+            -1.216998362964323,
+            1.9754251620656607,
+            -1.7181364004671114,
+            1.3135002107620928,
+            -1.5707926422279657,
+            4.282907593584081
+          ]
+        ],
+        "return_compatible_low_j2": []
+      },
+      {
+        "candidate": "4f6b5da78d06ac4aa517cd341cd41ddeb024d9e9eed5acde83d7456f6c54176e",
+        "roll": 2.356194490192345,
+        "active_ids": [
+          "part_020_seal"
+        ],
+        "status": "NO_CHECKED_CONTACT_IK"
+      },
+      {
+        "candidate": "b485a5503ce8f6ba2b05afc198ce2f70e8fc86ad28a3ccd68c9529b320f2d40e",
+        "roll": -0.7853981633974483,
+        "active_ids": [
+          "part_006_seal"
+        ],
+        "status": "ENDPOINTS_ONLY",
+        "contact": [
+          2.960678662471791,
+          -0.07595192995016015,
+          -0.8694654813102731,
+          -0.6253789168094921,
+          1.570792655482483,
+          3.7482029867335185
+        ],
+        "goals": [
+          [
+            -1.2480615636114611,
+            1.9369123273524222,
+            -1.5563082568541478,
+            1.1901849117789873,
+            -1.5707926537486583,
+            -3.6021372393189623
+          ],
+          [
+            1.5656454574301932,
+            0.1702252110244265,
+            -2.296140375136999,
+            0.555118837162518,
+            1.5707926577381435,
+            2.3531697823926363
+          ],
+          [
+            1.5656454819003622,
+            0.17017495113929987,
+            -2.296120411100998,
+            0.5551489933472762,
+            1.5707927659958265,
+            -3.9300155085528066
+          ],
+          [
+            -1.2480588721489776,
+            1.9369450568451598,
+            -1.5563377746493676,
+            1.1901815337842965,
+            -1.5707926603462479,
+            2.6810507570260698
+          ]
+        ],
+        "return_compatible_low_j2": []
+      }
+    ]
+  },
+  "trace_test": {
+    "status": "PASS",
+    "equal_check_sequences_and_paths": true,
+    "results": {
+      "off": {
+        "checks": 868,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.001362904
+      },
+      "on": {
+        "checks": 868,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.002365863
+      },
+      "cap": {
+        "checks": 868,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.001207678
+      },
+      "directed-off": {
+        "checks": 2453,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.003391901
+      },
+      "directed-on": {
+        "checks": 2453,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.007676389
+      },
+      "directed-cap": {
+        "checks": 2453,
+        "exact": true,
+        "success": true,
+        "wall_s": 0.005532457
+      },
+      "budget": {
+        "checks": 19,
+        "exact": false,
+        "success": false,
+        "wall_s": 0.02024508
+      }
+    }
+  },
+  "cold_search_scope": {
+    "attempted_geometry_candidates": 1,
+    "unsearched_geometry_candidates": 1487,
+    "termination": "MOVEIT2_REQUEST_TIMEOUT",
+    "global_infeasibility_proven": false
+  },
+  "real_rpc_overrun": {
+    "status": "UNRESOLVED",
+    "retest": "diag03",
+    "trace": "INTERRUPTED_NOT_CAPTURED",
+    "synthetic_budget_test_does_not_resolve_real_overrun": true
+  },
+  "storage_recovery": {
+    "original": "/root/autodl-tmp/eco65-native-20261015/repo/outputs/eco65_native/chain_20261019_run01/plan01/run_report.json",
+    "compressed": "/root/autodl-tmp/eco65-native-20261015/repo/outputs/eco65_native/chain_20261019_run01/plan01/run_report.json.gz",
+    "uncompressed_bytes": 3206645009,
+    "uncompressed_sha256": "ae8d949f43752c46ac3a9b4563d41d5c7ecb545bf36831422fc1f4408360a7a3",
+    "verification": "FULL_DECOMPRESSION_SHA256_MATCH",
+    "reason": "REMOTE_DATA_VOLUME_EXHAUSTED",
+    "compressed_bytes": 279430922
+  },
+  "baseline_view": {
+    "html": "outputs/eco65_native/transit_20261019_view01/failure.html",
+    "sha256": "1514fd49d2a07884fe690977e95d5218316d7e0caab0786ad6c5379738265c08",
+    "bytes": 63675232,
+    "export_wall_s": 4.832184948027134,
+    "requests": 1,
+    "complete": false,
+    "cups": 12,
+    "visual_meshes": 78,
+    "collision_shapes": 792,
+    "snapshot_fingerprint": "ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51",
+    "coordinate_frame": "D: +X into trailer, +Y left, +Z up; metres/radians/seconds; T_W_D not applied"
+  },
+  "top_view": {
+    "html": "outputs/eco65_native/transit_20261019_view02/top-transfer.html",
+    "sha256": "96793c5b4b04b948e0c06d9dcefd290e5d94f3851f53057fbdb45cc0e6f73a3e",
+    "bytes": 70021381,
+    "export_wall_s": 9.825839940458536,
+    "requests": 12,
+    "complete": false,
+    "cups": 12,
+    "visual_meshes": 78,
+    "collision_shapes": 792,
+    "snapshot_fingerprint": "ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51",
+    "coordinate_frame": "D: +X into trailer, +Y left, +Z up; metres/radians/seconds; T_W_D not applied"
+  },
+  "home_view": {
+    "html": "outputs/eco65_native/transit_20261019_view03/home-staging-transfer.html",
+    "sha256": "c317a74a74e292cc8159ea532239cc0b6cbf4face65db0152eb48fb78cb1478c",
+    "bytes": 60803222,
+    "export_wall_s": 6.516255650669336,
+    "requests": 4,
+    "complete": false,
+    "cups": 12,
+    "visual_meshes": 78,
+    "collision_shapes": 792,
+    "snapshot_fingerprint": "ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51",
+    "coordinate_frame": "D: +X into trailer, +Y left, +Z up; metres/radians/seconds; T_W_D not applied"
+  },
+  "final_view": {
+    "html": "outputs/eco65_native/transit_20261019_view05/comparison.html",
+    "sha256": "2339a450e04eeed04b92957051ce2c6ef2c5515b80a950cb3340a13da704d89c",
+    "bytes": 63362387,
+    "export_wall_s": 6.626312673091888,
+    "requests": 5,
+    "complete": false,
+    "cups": 12,
+    "visual_meshes": 78,
+    "collision_shapes": 792,
+    "snapshot_fingerprint": "ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51",
+    "coordinate_frame": "D: +X into trailer, +Y left, +Z up; metres/radians/seconds; T_W_D not applied",
+    "browser_screenshot": "outputs/eco65_native/transit_20261019_browser05/checked.png"
+  },
+  "browser_test": {
+    "checks": [
+      "VIEWER_READY",
+      "CASCADING_RUN_REQUEST_SELECTION",
+      "BROWSER_FK_MATCHES_CURRENT_PYTHON_MODEL",
+      "TWELVE_CUPS",
+      "RAW_SOLUTION_JOINT_CHART",
+      "J1_ACCESSORY_PARENTAGE",
+      "COLLISION_LAYER_TOGGLE",
+      "TOP_VIEW",
+      "REAL_NODE_CANVAS_CLICK",
+      "CLICK_POSE_IS_RECORDED_NODE",
+      "FAILED_SAMPLE_FULL_POSE",
+      "SEARCH_EVENT_STEP",
+      "SEARCH_PLAY",
+      "SEARCH_PAUSE",
+      "ATTACHED_COLLISION_LAYER_PRESENT",
+      "LOCAL_ATTACHMENT_TRANSFORM",
+      "NO_DUPLICATE_TARGET"
+    ],
+    "status": "PASS",
+    "maximum_fk_matrix_error": 1.1102230246251565e-16,
+    "complete_plan": "NOT_RUN_NO_COMPLETE_PLAN",
+    "wall_s": 22.796248099999502
+  },
+  "legacy_reference_exact_sha256": {
+    "tools/export_m710_search_replay.py": "eda1e8a856b89f993750ab6b70b479e6d389fde81f7a4453727f03566724b701",
+    "tools/search_replay/viewer.html": "309226ffde5ef815faa1ea20dbbfb320e17a285006ec3c2eb813190d6e903f77",
+    "tools/search_replay/vendor/three.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
+    "tools/search_replay/vendor/OrbitControls.js": "02bb4ade710f3e607329e37a21f098bc3ac70eb6e33daf8a65e79f4db785e7b2",
+    "tools/search_replay/vendor/LICENSE.three": "7dddf7c5b8fd10ee654db8857d75d104b5557889aa5a91fc4ca545ea7c07062f"
+  },
+  "python_tests": {
+    "status": "PASS",
+    "passed": 140,
+    "skipped": 2,
+    "wall_s": 16.18,
+    "command": ".venv/Scripts/python.exe -m pytest tests/test_eco65_evaluation.py tests/test_eco65_transfer_policy.py tests/test_eco65_native.py tests/test_eco65_native_composition.py tests/test_moveit2_native_cold.py tests/test_moveit2_tcp.py -q"
+  },
+  "native_semantic_event_test": {
+    "status": "PASS",
+    "scope": "SYNTHETIC_PROTOCOL_NOT_PHYSICAL_EXECUTION",
+    "log": "outputs/eco65_native/transit_20261019_build09/semantic-test.log"
+  },
+  "complete_motion_replay": {
+    "status": "NOT_RUN_NO_COMPLETE_PLAN",
+    "wall_s": null
+  },
+  "isaac_kinematic_preview": {
+    "status": "NOT_RUN_NO_COMPLETE_PLAN",
+    "wall_s": null
+  },
+  "j1_evidence_scope": {
+    "edge_tolerance_rad": 1e-07,
+    "complete_chain_verified": false,
+    "contact_net_increase_rad": 6.45805346977113e-07,
+    "note": "Individual edge tolerance can accumulate; successful contact is not mathematically strictly monotone."
+  },
+  "source_build_manifest": "outputs/eco65_native/transit_20261019_build14/source_deployment.json"
+}

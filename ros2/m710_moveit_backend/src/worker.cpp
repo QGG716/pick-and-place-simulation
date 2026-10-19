@@ -20,6 +20,7 @@
 #include "clearance.h"
 #include "process_policy.h"
 #include "basic_sampled_path.h"
+#include "search_trace.h"
 #include "scene_geometry.h"
 #include "native_zero_motion.h"
 #include "native_semantic_event.h"
@@ -202,6 +203,9 @@ class Worker {
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   std::string planning_mode="cold_from_scratch";
   std::string evaluation_profile="strict";
+  bool directed_j1=false;
+  Clock::time_point request_deadline=Clock::time_point::max();
+  double remainingBudget() const {return std::chrono::duration<double>(request_deadline-Clock::now()).count();}
   J static_prior_database=nullptr;
   std::string prior_placement_policy_sha256;
   void checkPriorContext(const J& req) const {
@@ -332,8 +336,11 @@ class Worker {
     const std::string task_id=req.at("task_id"),stage_id=req.at("stage_id");
     if(diagnostic) {
       const std::string stage=req.at("stage");
-      if(!planning_only || task_id.rfind("diagnostic-",0)!=0 || !req.contains("q_goal") || req.contains("goal_pose") ||
-        !(stage=="pregrasp"||stage=="transit"||stage=="residence"))throw std::runtime_error("DIAGNOSTIC_CONNECTION_SCOPE_REQUIRED");
+      const bool eco_lin=identity.value("robot_variant",std::string())=="ECO65-B" &&
+        stage=="extraction" && req.contains("goal_pose") && req.value("planner_id",std::string())=="LIN";
+      if(!planning_only || task_id.rfind("diagnostic-",0)!=0 || (!eco_lin &&
+        (!req.contains("q_goal") || req.contains("goal_pose") || !(stage=="pregrasp"||stage=="transit"||stage=="residence"))))
+        throw std::runtime_error("DIAGNOSTIC_CONNECTION_SCOPE_REQUIRED");
     } else if(task_id.rfind("diagnostic-",0)==0)throw std::runtime_error("DIAGNOSTIC_TASK_NOT_FORMAL");
 
     if(!req.contains("parent_stage_id") || !req.at("parent_stage_id").is_string())
@@ -511,11 +518,25 @@ class Worker {
           return;
         }
       }
+      std::shared_ptr<m710::SearchTrace> trace;
+      if(req.value("search_trace",false) && pipeline=="ompl") {
+        if(pipelines.at(pipeline)->getPlannerPluginName()!="m710/RecordedOMPLPlanner")throw std::runtime_error("SEARCH_TRACE_PLUGIN_NOT_ENABLED");
+        trace=std::make_shared<m710::SearchTrace>();trace->input=req;
+        trace->input["joint_names"]=names;
+        trace->event_limit=req.value("trace_event_limit",size_t(20000));
+        trace->sample_limit=req.value("trace_sample_limit",size_t(40000));
+        if(trace->event_limit>100000 || trace->sample_limit>250000)throw std::runtime_error("TRACE_RESOURCE_LIMIT");
+      }
+      m710::active_search_trace=trace;
+      m710::active_j1_direction=req.value("j1_direction",0);
+      struct TraceReset {~TraceReset(){m710::active_search_trace.reset();m710::active_j1_direction=0;}} reset_trace;
       auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
       solver->setPlannerId(planner);solver->setProperty("goal_joint_tolerance",1e-12);solver->setProperty("goal_position_tolerance",m710::kNativeGoalPositionToleranceM);
       solver->setProperty("goal_orientation_tolerance",m710::kNativeGoalOrientationToleranceRad);solver->setProperty("max_velocity_scaling_factor",req.at("velocity_scale").get<double>());
       solver->setProperty("max_acceleration_scaling_factor",req.at("acceleration_scale").get<double>());
-      solver->setTimeout(req.at("allowed_planning_time_s").get<double>());solver->init(model);
+      const double solve_budget=std::min(req.at("allowed_planning_time_s").get<double>(),remainingBudget()-req.value("return_reserve_s",5.));
+      if(solve_budget<=0) {r.result={{"status","NATIVE_REQUEST_BUDGET_EXHAUSTED"}};return;}
+      solver->setTimeout(solve_budget);solver->init(model);
       const auto* group=model->getJointModelGroup(m710::nativeFrames().planning_group);robot_trajectory::RobotTrajectoryPtr trajectory;
       r.clearance->phase="search";const auto begin=Clock::now();
       mtc::solvers::PlannerInterface::Result result;
@@ -523,14 +544,17 @@ class Worker {
         if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
         const auto* tcp=model->getLinkModel(identity.at("task_tcp_link").get<std::string>());
         if(!tcp) throw std::runtime_error("TASK_TCP_UNAVAILABLE");
-        result=solver->plan(r.start,*tcp,Eigen::Isometry3d::Identity(),matrix(req.at("goal_pose")),group,req.at("allowed_planning_time_s").get<double>(),trajectory,moveit_msgs::msg::Constraints{});
+        result=solver->plan(r.start,*tcp,Eigen::Isometry3d::Identity(),matrix(req.at("goal_pose")),group,solve_budget,trajectory,moveit_msgs::msg::Constraints{});
       } else {
         auto goal=r.start->diff();auto state=goal->getCurrentState();state.setJointGroupPositions(group,req.at("q_goal").get<std::vector<double>>());state.update();goal->setCurrentState(state);
-        result=solver->plan(r.start,goal,group,req.at("allowed_planning_time_s").get<double>(),trajectory,moveit_msgs::msg::Constraints{});
+        result=solver->plan(r.start,goal,group,solve_budget,trajectory,moveit_msgs::msg::Constraints{});
       }
       r.result={{"status","NATIVE_PLANNING_FAILED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_plan_s",seconds(begin)},
         {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
         {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
+      if(trace) r.result["search_trace"]={{"schema","native_rrt_search_v1"},{"input",trace->input},{"planners",trace->planners},
+        {"status",trace->planners.empty()?"NOT_STARTED_NO_TREE":"CAPTURED"},
+        {"marker","PLANNING_ONLY_NOT_EXECUTABLE"},{"continuous_swept_proof",false}};
       r.result["solver_returned_success"]=result.success;
       r.result["ompl_output_interpolation"]=pipeline=="ompl"?J(ompl_interpolate):J(nullptr);
       r.result["solver_message"]=result.message;
@@ -618,7 +642,7 @@ class Worker {
             return nullptr;
           };
           r.result["basic_path_check"]=m710::basicSampledPath(r.start,*r.clearance,*r.process,path,resolution,
-              req.at("output_check_timeout_s").get<double>(),endpoint);
+              std::min(req.at("output_check_timeout_s").get<double>(),remainingBudget()-req.value("return_reserve_s",5.)),endpoint,req.value("j1_direction",0));
           failure=r.result["basic_path_check"]["failure"];
           r.result["dense_output_review"]="NOT_RUN_PROFILE";
           r.result["start_state_status"]="PASS";
@@ -682,7 +706,13 @@ class Worker {
   }
 public:
   J dispatch(const J& req) {
-    const auto begin=Clock::now();auto result=run(req);result["evaluation_profile"]=evaluation_profile;
+    const auto begin=Clock::now();const double budget=req.value("request_budget_s",86400.);
+    if(!std::isfinite(budget)||budget<=0)throw std::runtime_error("INVALID_REQUEST_BUDGET");
+    request_deadline=begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(budget));
+    auto result=run(req);result["evaluation_profile"]=evaluation_profile;
+    result["budget"]={{"request_budget_s",budget},{"remaining_on_return_s",remainingBudget()},{"return_reserve_s",req.value("return_reserve_s",5.)}};
+    if(req.value("search_trace",false) && !result.contains("search_trace"))
+      result["search_trace_status"]=req.value("pipeline_id",std::string())=="ompl"?"NOT_STARTED_NO_TREE":"NOT_APPLICABLE_PILZ";
     result["request_wall_s"]=seconds(begin);return result;
   }
   J run(const J& req) {
@@ -696,6 +726,9 @@ public:
       planning_only=req.value("planning_only",false);
       planning_mode=req.value("planning_mode",std::string("cold_from_scratch"));
       evaluation_profile=req.value("evaluation_profile",std::string("strict"));
+      directed_j1=req.value("directed_j1_enabled",false);
+      if(directed_j1 && (req.at("identity").value("robot_variant",std::string())!="ECO65-B" || !planning_only))
+        throw std::runtime_error("DIRECTED_J1_SCOPE_INVALID");
       if(evaluation_profile!="strict" && evaluation_profile!="chain_integration_v1")throw std::runtime_error("UNKNOWN_EVALUATION_PROFILE");
       if(evaluation_profile=="chain_integration_v1" && (!planning_only || planning_mode!="cold_from_scratch" ||
           req.at("identity").value("robot_variant",std::string())!="ECO65-B" ||
@@ -712,6 +745,10 @@ public:
       else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
       std::vector<rclcpp::Parameter> params;
       for(auto it=req.at("parameters").begin(); it!=req.at("parameters").end(); ++it) {
+        if((req.value("search_trace_enabled",false)||directed_j1) && it.key()=="ompl.planning_plugin") {
+          if(!planning_only || planning_mode!="cold_from_scratch")throw std::runtime_error("SEARCH_TRACE_SCOPE_INVALID");
+          params.emplace_back(it.key(),std::string("m710/RecordedOMPLPlanner"));continue;
+        }
         const auto& v=it.value();
         if(v.is_string()) params.emplace_back(it.key(),v.get<std::string>());
         else if(v.is_boolean()) params.emplace_back(it.key(),v.get<bool>());
@@ -999,8 +1036,16 @@ public:
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
-        if(!clearance->check(current,verbose))return false;
-        if(process) {++process->planner_checks;return process->check(current);}return true;});
+        bool valid=clearance->check(current,verbose);J failure=valid?J(nullptr):clearance->last_failure;
+        const char* checker="Clearance";
+        if(valid && process) {++process->planner_checks;valid=process->check(current);checker="ProcessPolicy";
+          if(!valid)failure=process->last_failure;}
+        if(m710::extension_recorder) {
+          if(!failure.is_null())failure["phase"]=clearance->phase;
+          std::vector<double> q;current.copyJointGroupPositions(m710::nativeFrames().planning_group,q);
+          (*m710::extension_recorder)(q,valid,checker,failure);
+        }
+        return valid;});
     }
     if(op=="build_static_prior") {
       checkPriorContext(req);
@@ -1022,6 +1067,9 @@ public:
         {"generation_source","OFFLINE_DIAGNOSTIC_NOT_A_PLAN"}};
     }
     if(op=="check_state_offline") {
+      const auto phase=req.value("check_phase",std::string("initial"));
+      if(phase!="initial" && phase!="search")throw std::runtime_error("INVALID_CHECK_PHASE");
+      clearance->phase=phase;
       const bool clear=clearance->check(scene->getCurrentState());
       const bool valid=process && process->check(scene->getCurrentState(),req.value("endpoint",false));
       return {{"status",clear&&valid?"SUCCESS":"STATE_REJECTED"},{"native_valid",clear},{"process_valid",valid},
@@ -1061,6 +1109,13 @@ public:
         {"world_count",scene->getWorld()->size()},{"attached_id",attached_id},{"pipeline_calls",calls}};
     }
     if(op=="plan" || op=="diagnostic_connection") {
+      const std::string phase=req.at("stage");
+      const int expected=directed_j1?(phase=="contact"||phase=="extraction"||phase=="transit"||phase=="place"?-1:phase=="withdrawal"||phase=="residence"?1:0):0;
+      if(req.value("j1_direction",0)!=expected)throw std::runtime_error("J1_DIRECTION_POLICY_MISMATCH");
+      // Validate starts and explicit goals under the SAME reserve used by OMPL.
+      if(req.value("pipeline_id",std::string())=="ompl")clearance->phase="search";
+      if(req.contains("q_goal") && !m710::directedJ1(req.at("q_start").at(0),req.at("q_goal").at(0),expected))
+        return {{"status","INVALID_GOAL_J1_DIRECTION"},{"j1_direction",expected}};
       if(!clearance->check(scene->getCurrentState())) return {{"status","INVALID_START_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
       if(process && !process->check(scene->getCurrentState())) return {{"status","INVALID_START_PROCESS"},{"failure",process->last_failure},{"process_policy",process->evidence()},{"pipeline_calls",calls}};
       if(req.contains("q_goal")) {

@@ -38,7 +38,8 @@ def chain_fixture(monkeypatch):
     for stage in plan['stages']:basic_result(stage)
     def frames(q):
         return {'link_6':transform(snapshot['scene']['box']['pose']) if q==plan['events'][0]['q'] else np.asarray(plan['events'][1]['pose'])}
-    robot=SimpleNamespace(named_link_frames=frames)
+    endpoints={tuple(s['q'][-1]):deepcopy(s['native_request']['goal_pose']) for s in plan['stages'] if 'goal_pose' in s['native_request']}
+    robot=SimpleNamespace(named_link_frames=frames,fk=lambda q:np.asarray(endpoints[tuple(q)]))
     monkeypatch.setattr(native_task,'robot_for',lambda *a:robot)
     monkeypatch.setattr(native_replay,'robot_for',lambda *a:robot)
     monkeypatch.setattr(native_replay,'verify_snapshot',lambda s:True)
