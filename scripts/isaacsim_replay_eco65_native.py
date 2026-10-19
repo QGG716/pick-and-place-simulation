@@ -30,10 +30,9 @@ def main():
         encoders=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,check=True).stdout
         if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
-        # This installed driver lacks the OptiX/NGX denoiser resources. Use
-        # Isaac's documented textured-diffuse mode for legible geometry review.
-        render_config=dict(headless=True,renderer='MinimalRendering',minimal_shading_mode=2,
-                           width=640,height=360,denoiser=False,anti_aliasing=2)
+        # TAA does not require the absent NGX/DLSS or OptiX denoiser resources.
+        render_config=dict(headless=True,renderer='RaytracedLighting',
+                           width=640,height=360,denoiser=False,anti_aliasing=1)
         app=SimulationApp(render_config)
         import numpy as np
         from PIL import Image,ImageDraw
@@ -56,7 +55,7 @@ def main():
         stage=omni.usd.get_context().get_stage();checks=[]
         import carb
         settings=carb.settings.get_settings()
-        renderer_readback={key:settings.get(key) for key in ['/rtx/rendermode','/rtx/minimal/mode','/rtx/pathtracing/spp',
+        renderer_readback={key:settings.get(key) for key in ['/rtx/rendermode','/rtx/post/aa/op','/rtx/pathtracing/spp',
             '/rtx/pathtracing/optixDenoiser/enabled']}
         save_json(out/'renderer_settings.json',dict(requested=render_config,actual=renderer_readback))
         # Same nonzero wrist/zero/HOME FK cases as the current native model.
@@ -81,10 +80,14 @@ def main():
                 subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=encoder_log) as writer:
             for t in samples:
                 state=state_at(snapshot,plan,robot,float(t));readback=apply_display_state(stage,snapshot,state)
-                for _ in range(2):rep.orchestrator.step(delta_time=0.,rt_subframes=4,pause_timeline=True)
-                if timeline.is_playing() or timeline.get_current_time()!=0:raise ValueError('OFFLINE_TIMELINE_ADVANCED')
-                pixels=rgb.get_data();pixels=pixels['data'] if isinstance(pixels,dict) else pixels
-                pixels=np.asarray(pixels)[...,:3]
+                # Let render products become ready at the fixed pose. This
+                # bounded warmup advances neither physical nor trajectory time.
+                for render_attempt in range(40 if not records else 8):
+                    rep.orchestrator.step(delta_time=0.,rt_subframes=4,pause_timeline=True)
+                    if timeline.is_playing() or timeline.get_current_time()!=0:raise ValueError('OFFLINE_TIMELINE_ADVANCED')
+                    pixels=rgb.get_data();pixels=pixels['data'] if isinstance(pixels,dict) else pixels
+                    pixels=np.asarray(pixels)[...,:3]
+                    if render_attempt>=3 and pixels.shape==(360,640,3) and np.std(pixels)>=5:break
                 if pixels.shape!=(360,640,3) or np.std(pixels)<5:
                     save_json(out/'invalid_frame.json',dict(time_s=float(t),shape=list(pixels.shape),
                         dtype=str(pixels.dtype),std=float(np.std(pixels)) if pixels.size else None))
@@ -99,7 +102,8 @@ def main():
                 if not records:im.save(out/'warehouse_first_frame.png')
                 if state['phase'] not in seen_phases:
                     im.save(out/('phase_'+state['phase']+'.png'));seen_phases.add(state['phase'])
-                records.append(dict(time_s=float(t),q_rad=state['q'].tolist(),phase=state['phase'],readback=readback))
+                records.append(dict(time_s=float(t),q_rad=state['q'].tolist(),phase=state['phase'],
+                    render_steps=render_attempt+1,readback=readback))
                 if len(records)==1 or len(records)%25==0:
                     progress.write(json.dumps(dict(frames=len(records),time_s=float(t),phase=state['phase'],
                         render_wall_s=perf_counter()-render_started,timeline_time_s=timeline.get_current_time()))+'\n');progress.flush()
