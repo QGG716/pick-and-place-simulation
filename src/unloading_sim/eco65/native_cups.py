@@ -40,6 +40,12 @@ def grasp_candidates(geometry, target, size, flange_from_tcp, base_position,
                     # other physical cups above the stack. Axis-aligned,
                     # face-centred groups were actually rejected on neighbors.
                     placements += [('exposed_top_edge',np.array([y,high[1]])) for y in (low[0],center[0],high[0])]
+                else:
+                    # The middle column has neighbors on both sides. Place a
+                    # corner cup along the exposed front edge, including both
+                    # lateral extremes, so inactive cups may remain outside
+                    # the stack. The full physical tool is still checked.
+                    placements += [('exposed_front_edge',np.array([low[0],y])) for y in (low[1],center[1],high[1])]
                 for label, xy in placements:
                     local = np.eye(4); local[:3,:3]=rotation
                     local[axis,3]=sign*half[axis];local[others,3]=xy
