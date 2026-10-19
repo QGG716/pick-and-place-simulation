@@ -157,7 +157,9 @@ public:
     }
     return finish(true);
   }
+  size_t dense_path_calls=0;
   Json checkPath(moveit::core::RobotState probe, const Json& path, double resolution) {
+    ++dense_path_calls;
     if(!std::isfinite(resolution) || resolution<=0 || path.empty()) throw std::runtime_error("INVALID_CHECK_PATH");
     const size_t count=probe.getJointModelGroup(m710::nativeFrames().planning_group)->getVariableCount();
     for(size_t edge=0;edge<std::max(size_t(1),path.size()-1);++edge) {
@@ -194,7 +196,7 @@ public:
         {"legacy_witness_checks",c.legacy_witness_checks},{"seconds",c.seconds},
         {"bookkeeping_s",c.bookkeeping_s},{"legacy_witness_s",c.witness_s}};
     }
-    Json result={{"counts",counts},{"rejected_examples",rejected_examples},
+    Json result={{"dense_path_calls",dense_path_calls},{"counts",counts},{"rejected_examples",rejected_examples},
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
     {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
     {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},

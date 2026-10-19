@@ -1,4 +1,4 @@
-"""Same reviewed native path, offline warehouse display at 640x360 / 5 fps.
+"""Same profile-checked native path, offline warehouse display at 640x360 / 5 fps.
 
 Timeline remains stopped. Pose updates are KINEMATIC_REPLAY, never dynamics.
 """
@@ -14,12 +14,19 @@ from time import perf_counter
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    for name in ['snapshot','plan','review','assets','workstation','output']:
+    for name in ['snapshot','plan','assets','workstation','output']:
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--review',type=Path,help='Required for strict plans only')
+    p.add_argument('--evaluation-profile',choices=['strict','chain_integration_v1'],help='If supplied, must match the plan')
+    p.add_argument('--preview',action='store_true',help='Representative stage frames, four RGB samples per pose')
     a=p.parse_args()
     from unloading_sim.eco65.model import ROOT,load_json,save_json
     from unloading_sim.eco65.native_replay import replay_inputs,state_at,apply_display_state
-    snapshot,plan,review=map(load_json,[a.snapshot,a.plan,a.review])
+    from unloading_sim.eco65.evaluation import validate_export_reference
+    snapshot,plan=map(load_json,[a.snapshot,a.plan])
+    review=load_json(a.review) if a.review else None
+    if a.evaluation_profile and a.evaluation_profile!=plan.get('evaluation_profile','strict'):
+        raise ValueError('EVALUATION_PROFILE_MISMATCH')
     robot=replay_inputs(snapshot,plan,review)
     out=a.output.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     started=perf_counter();app=None
@@ -32,7 +39,7 @@ def main():
         from isaacsim import SimulationApp
         # This installed runtime has no working NGX/OptiX denoiser. Average
         # actual RGB samples at each fixed pose; never mix trajectory times.
-        samples_per_pose=64
+        samples_per_pose=4 if a.preview else 64
         render_config=dict(headless=True,renderer='RealTimePathTracing',
                            width=640,height=360,denoiser=False,anti_aliasing=2,
                            extra_args=['--/persistent/rtx/modes/rt2/enabled=true',
@@ -47,6 +54,7 @@ def main():
         import omni.timeline
         import isaacsim_render_eco65_warehouse as compose
         manifest=load_json(a.workstation.with_name('workstation_manifest.json'))
+        validate_export_reference(plan,manifest)
         if manifest.get('source_snapshot_fingerprint')!=snapshot['fingerprint'] or not manifest.get('native_snapshot'):
             raise ValueError('WORKSTATION_SNAPSHOT_MISMATCH')
         if manifest['home_q_rad']!=plan['home_q']:raise ValueError('WORKSTATION_HOME_CHANGED')
@@ -77,6 +85,9 @@ def main():
         preparation_s=perf_counter()-started;render_started=perf_counter();records=[]
         target=snapshot['scene']['target_box_id']
         duration=plan['simulated_duration_s'];samples=np.unique(np.r_[np.arange(0,duration,.2),duration])
+        if a.preview:
+            ends=np.cumsum([s['times'][-1] for s in plan['stages']]);starts=np.r_[0,ends[:-1]]
+            samples=np.unique(np.r_[0,(starts+ends)/2,ends])
         command=[ffmpeg,'-hide_banner','-loglevel','error','-nostdin','-f','rawvideo','-pixel_format','rgb24',
                  '-video_size','640x360','-framerate','5','-i','pipe:0','-an','-c:v','libx264','-crf','18',
                  '-pix_fmt','yuv420p','-movflags','+faststart',str(out/'kinematic_replay.mp4')]
@@ -124,6 +135,8 @@ def main():
             im.save(out/'warehouse_last_frame.png')
         if writer.returncode!=0:raise ValueError('FFMPEG_ENCODING_FAILED:'+str(writer.returncode))
         save_json(out/'replay_report.json',dict(status='KINEMATIC_REPLAY',planning_status=plan['status'],
+            evaluation_profile=plan.get('evaluation_profile','strict'),
+            sampling='REPRESENTATIVE_STAGE_PREVIEW' if a.preview else 'NORMAL_TIME_5_FPS',
             dynamics='NOT_EVALUATED',hardware=False,plan_fingerprint=plan['fingerprint'],snapshot_fingerprint=snapshot['fingerprint'],
             target_id=target,carton_count=len(snapshot['scene']['boxes']),
             frame_rate=5,frame_count=len(records),simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,

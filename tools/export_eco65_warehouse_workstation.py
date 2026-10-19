@@ -74,7 +74,7 @@ def export(snapshot_path, home_path, config_path, out):
         # Keep the complete immutable plan at its original location. Copying
         # all native failure records into a display manifest can add gigabytes.
         home_source={k:home_data[k] for k in ('schema','status','fingerprint','snapshot_fingerprint',
-                     'identity','home_q','initial_state_semantics','target_face','active_ids') if k in home_data}
+                     'identity','home_q','initial_state_semantics','target_face','active_ids','evaluation_profile') if k in home_data}
         home_source.update(representation='PLAN_HOME_REFERENCE',
             source_path=Path(os.path.relpath(Path(home_path).resolve(),ROOT)).as_posix(),
             source_sha256=hashlib.sha256(Path(home_path).read_bytes()).hexdigest())

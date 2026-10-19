@@ -6,6 +6,7 @@ import traceback
 from unloading_sim.eco65.model import ROOT, load_json, save_json
 from unloading_sim.eco65.native_io import build_snapshot, verify_snapshot, warehouse_bounds
 from unloading_sim.eco65.native_task import NativeTask, review_plan
+from unloading_sim.eco65.evaluation import PROFILES, STRICT, CHAIN
 
 
 def main():
@@ -21,13 +22,15 @@ def main():
     p.add_argument('--camera-configuration', type=Path,
                    help='Source-bound permanent camera installation; calibration board/probe are not task equipment')
     p.add_argument('--worker-command', help='Existing resident native worker launcher; never a core fallback')
+    p.add_argument('--evaluation-profile', choices=PROFILES,
+                   help='Default: strict for planning; export/review inherit the fingerprinted plan profile')
     p.add_argument('--home-candidate', type=Path, help='Identity-bound simulation initial state; rechecked by the worker')
     p.add_argument('--preferred-grasp-face',choices=['top','front'],
                    help='Stable face priority for independent cups; retains all candidates and regenerates every path')
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
     p.add_argument('--task-seconds', type=float, default=900.)
     p.add_argument('--stage-seconds', type=float, default=60.)
-    p.add_argument('--rpc-seconds',type=float,default=180.,help='Bounded watchdog including scene import and dense FCL audit; does not extend solver time')
+    p.add_argument('--rpc-seconds',type=float,default=180.,help='Bounded watchdog including scene import and output path checking; does not extend solver time')
     p.add_argument('--attempts', type=int, default=2, help='Bounded cold retries after search/review failure (1..3)')
     a = p.parse_args(); out = a.output.resolve(); out.relative_to(ROOT/'outputs')
     if out.exists(): raise FileExistsError('Use a fresh output directory')
@@ -63,15 +66,35 @@ def main():
                 task = None; begin = perf_counter(); attempt_out = out/f'attempt_{attempt:02d}'
                 try:
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
+                                      evaluation_profile=a.evaluation_profile or STRICT,
                                       stage_seconds=a.stage_seconds, attempt=attempt,rpc_seconds=a.rpc_seconds,
                                       progress_path=attempt_out/'native_progress.jsonl',
                                       preferred_grasp_face=a.preferred_grasp_face,
                                       home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
+                    if plan['evaluation_profile'] == CHAIN:
+                        save_json(out/'plan.json', plan)
+                        save_json(out/'run_report.json', dict(status='PLANNING_ONLY_NOT_EXECUTABLE',
+                            evaluation_profile=CHAIN, native_output_status='BASIC_SAMPLED_PASS',
+                            independent_geometry='NOT_RUN_PROFILE', dense_output_review='NOT_RUN_PROFILE',
+                            python_linear_audit='NOT_RUN_PROFILE', attempts=attempt+1, failures=failures,
+                            stage_checks=[dict(stage=s['stage'], basic_path_check=s['native_result']['basic_path_check'],
+                                planner_state_checks_enabled=s['native_result']['planner_internal_process_checks'],
+                                planner_clearance_checks=s['native_result']['clearance']['counts'].get('search',{}).get('queries',0),
+                                planner_state_checks=s['native_result']['process_policy']['planner_state_checks'],
+                                start_state_status=s['native_result']['start_state_status'],
+                                endpoint_fk=s['native_result'].get('endpoint_fk'),
+                                native_solver_s=s['native_result']['native_solver_s']) for s in plan['stages']],
+                            timings=dict(native_initialization_s=plan['native_initialization_s'],
+                                planning_wall_s=plan['planning_wall_s'], total_wall_s=perf_counter()-started,
+                                simulated_duration_s=plan['simulated_duration_s']),
+                            dynamics='NOT_EVALUATED', replay='NOT_EVALUATED'))
+                        return 0
                     review = review_plan(plan, snapshot,progress_path=attempt_out/'review_progress.jsonl'); save_json(attempt_out/'review.json', review)
                     if review['status'] == 'PASS':
                         save_json(out/'plan.json', plan); save_json(out/'review.json', review)
                         save_json(out/'run_report.json', dict(status='PLANNING_ONLY_NOT_EXECUTABLE',
+                            evaluation_profile=STRICT,
                             independent_geometry='PASS', attempts=attempt+1, failures=failures,
                             timings=dict(native_initialization_s=plan['native_initialization_s'],
                                 planning_wall_s=plan['planning_wall_s'], independent_review_s=review['wall_s'],
@@ -80,7 +103,8 @@ def main():
                         return 0
                     failures.append(review)
                 except Exception as error:
-                    failure = dict(error=str(error), traceback=traceback.format_exc())
+                    failure = dict(error=str(error), traceback=traceback.format_exc(),
+                                   evaluation_profile=a.evaluation_profile or STRICT)
                     if hasattr(error, 'native_calls'): failure['native_calls'] = error.native_calls
                     if task:
                         failure.update(native_records=task.records, native_ik_records=task.ik_records, partial_stages=task.stages)
@@ -94,11 +118,15 @@ def main():
                     if task: task.close()
                 remaining -= perf_counter()-begin
                 if remaining <= 0 or task is None: break
-            save_json(out/'run_report.json', dict(status='NO_REVIEWED_COMPLETE_PLAN', failures=failures,
+            save_json(out/'run_report.json', dict(status='NO_BASIC_CHECKED_COMPLETE_PLAN' if a.evaluation_profile == CHAIN else 'NO_REVIEWED_COMPLETE_PLAN',
+                evaluation_profile=a.evaluation_profile or STRICT, failures=failures,
+                independent_geometry='NOT_RUN_PROFILE' if a.evaluation_profile == CHAIN else 'NOT_EVALUATED',
                 total_wall_s=perf_counter()-started, dynamics='NOT_EVALUATED', replay='NOT_EVALUATED'))
             return 2
         if not a.plan: p.error('--plan required')
         plan = load_json(a.plan)
+        if a.evaluation_profile and a.evaluation_profile != plan.get('evaluation_profile', STRICT):
+            raise ValueError('EVALUATION_PROFILE_MISMATCH')
         if a.action == 'review':
             report = review_plan(plan, snapshot,progress_path=out/'review_progress.jsonl'); save_json(out/'review.json', report)
             return 0 if report['status'] == 'PASS' else 2
@@ -111,6 +139,7 @@ def main():
             return 0
     except Exception as error:
         save_json(out/'failure.json', dict(status='BLOCKED_OR_FAILED', error=str(error),
+            evaluation_profile=a.evaluation_profile or (plan.get('evaluation_profile', STRICT) if 'plan' in locals() else STRICT),
             traceback=traceback.format_exc(), wall_s=perf_counter()-started, dynamics='NOT_EVALUATED'))
         print(type(error).__name__, error); return 2
 

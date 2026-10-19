@@ -43,6 +43,7 @@ class ProcessPolicy {
     return {{"reason",reason},{"pair",{target_id_,other}},{"signed_distance_m",d},{"stage",stage_}};
   }
 public:
+  size_t planner_checks=0,endpoint_checks=0,dense_path_calls=0;
   Json last_failure=nullptr,last_seal=nullptr;
   ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request)
     :spec_(request.at("process_policy")),source_(request.at("clearance_policy").at("source_policy")),
@@ -123,6 +124,7 @@ public:
     }
   }
   bool check(const moveit::core::RobotState& state,bool endpoint=false) {
+    if(endpoint)++endpoint_checks;
     if(touch_) {++state_checks_;const bool ok=touch_->check(state,endpoint);last_failure=touch_->failure;return ok;}
     if(eco65_) {
       ++state_checks_;const bool ok=eco65_->check(state,endpoint);
@@ -163,6 +165,7 @@ public:
     return true;
   }
   Json checkPath(moveit::core::RobotState state,const Json& path,double resolution) {
+    ++dense_path_calls;
     if(path.empty() || !std::isfinite(resolution) || resolution<=0) throw std::runtime_error("INVALID_PROCESS_CHECK_PATH");
     bool released=!initial_.is_null() && initial_.value("fully_released",false);
     std::map<std::string,Json> pairs;if(relaxed_ && initial_.contains("pairs"))
@@ -209,7 +212,8 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
-  Json evidence() const {return {{"touch_process",touch_?touch_->evidence_:Json(nullptr)},{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
+  Json evidence() const {return {{"planner_state_checks",planner_checks},{"endpoint_checks",endpoint_checks},{"dense_path_calls",dense_path_calls},
+    {"touch_process",touch_?touch_->evidence_:Json(nullptr)},{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
     {"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}

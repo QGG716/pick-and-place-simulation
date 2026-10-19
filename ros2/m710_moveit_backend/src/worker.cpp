@@ -19,6 +19,7 @@
 #include <set>
 #include "clearance.h"
 #include "process_policy.h"
+#include "basic_sampled_path.h"
 #include "scene_geometry.h"
 #include "native_zero_motion.h"
 #include "native_semantic_event.h"
@@ -200,6 +201,7 @@ class Worker {
   size_t ik_calls=0;
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   std::string planning_mode="cold_from_scratch";
+  std::string evaluation_profile="strict";
   J static_prior_database=nullptr;
   std::string prior_placement_policy_sha256;
   void checkPriorContext(const J& req) const {
@@ -594,8 +596,37 @@ class Worker {
       J failure=nullptr;
       if(!planning_only || identity.value("robot_variant",std::string())=="ECO65-B") {
         const auto checking=Clock::now();r.clearance->phase="output";const double resolution=req.at("clearance_policy").at("edge_resolution_rad");
-        failure=r.clearance->checkPath(r.start->getCurrentState(),path,resolution);
-        if(failure.is_null() && r.process) failure=r.process->checkPath(r.start->getCurrentState(),path,resolution);
+        if(evaluation_profile=="chain_integration_v1") {
+          if(!r.process)throw std::runtime_error("PROCESS_POLICY_REQUIRED");
+          const auto endpoint=[&](const moveit::core::RobotState& last)->J {
+            if(!last.satisfiesBounds())return {{"reason","OUTPUT_ENDPOINT_JOINT_BOUNDS"}};
+            if(req.contains("goal_pose")) {
+              const auto actual=last.getGlobalLinkTransform(identity.at("task_tcp_link").get<std::string>());
+              const auto target=matrix(req.at("goal_pose"));
+              const double position=(actual.translation()-target.translation()).norm();
+              const double angle=Eigen::AngleAxisd(actual.linear().transpose()*target.linear()).angle();
+              r.result["endpoint_fk"]={{"position_error_m",position},{"orientation_error_rad",angle},
+                {"position_tolerance_m",m710::kNativeGoalPositionToleranceM},
+                {"orientation_tolerance_rad",m710::kNativeGoalOrientationToleranceRad}};
+              if(!std::isfinite(position)||!std::isfinite(angle)||position>m710::kNativeGoalPositionToleranceM||angle>m710::kNativeGoalOrientationToleranceRad)
+                return {{"reason","OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH"}};
+            } else {
+              std::vector<double> q;last.copyJointGroupPositions(group,q);
+              const auto goal=req.at("q_goal").get<std::vector<double>>();
+              for(size_t j=0;j<q.size();++j)if(std::abs(q[j]-goal[j])>1e-9)return {{"reason","OUTPUT_ENDPOINT_JOINT_GOAL_MISMATCH"}};
+            }
+            return nullptr;
+          };
+          r.result["basic_path_check"]=m710::basicSampledPath(r.start,*r.clearance,*r.process,path,resolution,
+              req.at("output_check_timeout_s").get<double>(),endpoint);
+          failure=r.result["basic_path_check"]["failure"];
+          r.result["dense_output_review"]="NOT_RUN_PROFILE";
+          r.result["start_state_status"]="PASS";
+          r.result["joint_goal_state_status"]=req.contains("q_goal")?"PASS":"NOT_APPLICABLE_POSE_GOAL";
+        } else {
+          failure=r.clearance->checkPath(r.start->getCurrentState(),path,resolution);
+          if(failure.is_null() && r.process) failure=r.process->checkPath(r.start->getCurrentState(),path,resolution);
+        }
         r.result["native_output_check_s"]=seconds(checking);
       } else {
         r.result["native_output_check_s"]=nullptr;
@@ -608,7 +639,7 @@ class Worker {
       r.trajectory=trajectory;r.end=r.start->diff();r.end->decoupleParent();r.end->setCurrentState(trajectory->getLastWayPoint());
       const bool checked=!planning_only || identity.value("robot_variant",std::string())=="ECO65-B";
       if(planning_only)r.result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
-      r.result["status"]="SUCCESS";r.result["native_output_status"]=checked?"PASS":"SKIPPED_PLANNING_ONLY";
+      r.result["status"]="SUCCESS";r.result["native_output_status"]=evaluation_profile=="chain_integration_v1"?"BASIC_SAMPLED_PASS":checked?"PASS":"SKIPPED_PLANNING_ONLY";
       r.result["process_semantics_checked"]=checked && bool(r.process);
       r.result["planner_internal_process_checks"]=bool(r.process);
       r.result["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";
@@ -638,6 +669,8 @@ class Worker {
     record->result["mtc_attempt_index"]=requests;record->result["task_solve_calls"]=session.solve_calls;record->result["task_backtracks"]=session.backtracks;
     record->result["retained_native_subsolutions"]=session.records.size();record->result["task_stage_ids"]=session.active;
     record->result["diagnostic_only"]=diagnostic;
+    record->result["evaluation_profile"]=evaluation_profile;
+    if(record->result.contains("mtc_plan_s"))record->result["native_solver_s"]=record->result["mtc_plan_s"];
     // Solver failures still need the actual search-state clearance/process
     // evidence. In particular, INVALID_MOTION_PLAN alone hides which inactive
     // cup or neighboring carton rejected the contact trajectory.
@@ -648,6 +681,10 @@ class Worker {
     return record->result;
   }
 public:
+  J dispatch(const J& req) {
+    const auto begin=Clock::now();auto result=run(req);result["evaluation_profile"]=evaluation_profile;
+    result["request_wall_s"]=seconds(begin);return result;
+  }
   J run(const J& req) {
     // JSONL dispatch is synchronous, but the resident process can retain four
     // model/TCP contexts. Restore this worker's bound frames on every dispatch.
@@ -658,6 +695,12 @@ public:
       m710::bindNativeFrames(req.at("identity"));
       planning_only=req.value("planning_only",false);
       planning_mode=req.value("planning_mode",std::string("cold_from_scratch"));
+      evaluation_profile=req.value("evaluation_profile",std::string("strict"));
+      if(evaluation_profile!="strict" && evaluation_profile!="chain_integration_v1")throw std::runtime_error("UNKNOWN_EVALUATION_PROFILE");
+      if(evaluation_profile=="chain_integration_v1" && (!planning_only || planning_mode!="cold_from_scratch" ||
+          req.at("identity").value("robot_variant",std::string())!="ECO65-B" ||
+          req.at("process_geometry").value("geometry_type",std::string())!="cad_seal_contours_v1"))
+        throw std::runtime_error("CHAIN_INTEGRATION_REQUIRES_ECO65_COLD_PLANNING_ONLY");
       prior_placement_policy_sha256=req.value("placement_policy_sha256",std::string());
       if(planning_mode!="cold_from_scratch" && planning_mode!="static_prior_fast")
         throw std::runtime_error("UNKNOWN_PLANNING_MODE");
@@ -724,6 +767,8 @@ public:
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if(req.value("evaluation_profile",std::string("strict"))!=evaluation_profile)
+      throw std::runtime_error("EVALUATION_PROFILE_MISMATCH");
     if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
     if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
@@ -733,15 +778,17 @@ public:
       throw std::runtime_error("PLANNING_ONLY_NOT_EXECUTABLE");
     // Offline state checking has no execution/export authority. The formal
     // validate/compose/task_audit gates above stay closed for planning-only.
-    if(op=="check_state_offline") {
+    if(op=="check_state_offline" || op=="check_path_offline") {
       if(!planning_only || identity.value("robot_variant",std::string())!="ECO65-B")
         throw std::runtime_error("OFFLINE_CHECK_SCOPE_INVALID");
+      if(op=="check_path_offline" && evaluation_profile!="chain_integration_v1")
+        throw std::runtime_error("BASIC_PATH_DIAGNOSTIC_REQUIRES_CHAIN_PROFILE");
       // Continue through the same bound model and process predicates below.
     }
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
     if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
-      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="retire_touch_task") throw std::runtime_error("UNKNOWN_OPERATION");
+      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     if(op=="retire_touch_task") {
       if(!planning_only || bound_process_geometry.value("geometry_type",std::string())!="known_tip_finite_datum_v1")throw std::runtime_error("TOUCH_TASK_RETIRE_SCOPE");
@@ -926,7 +973,7 @@ public:
     }
     std::shared_ptr<m710::Clearance> clearance;
     std::shared_ptr<m710::ProcessPolicy> process;
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="build_static_prior") {
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
@@ -951,7 +998,9 @@ public:
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")));
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
-      scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){return clearance->check(current,verbose) && (!process || process->check(current));});
+      scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
+        if(!clearance->check(current,verbose))return false;
+        if(process) {++process->planner_checks;return process->check(current);}return true;});
     }
     if(op=="build_static_prior") {
       checkPriorContext(req);
@@ -962,6 +1011,16 @@ public:
       auto result=m710::StaticPriorGraph::build(req,scene,*clearance);result["scene_import_s"]=import_s;return result;
     }
     auto path_check=[&](const J& path) {return clearance->checkPath(scene->getCurrentState(),path,req.at("clearance_policy").at("edge_resolution_rad"));};
+    if(op=="check_path_offline") {
+      if(!process)throw std::runtime_error("PROCESS_POLICY_REQUIRED");
+      const auto report=m710::basicSampledPath(scene,*clearance,*process,req.at("probe_path"),
+        req.at("clearance_policy").at("edge_resolution_rad"),req.at("output_check_timeout_s"),
+        [](const moveit::core::RobotState&)->J{return nullptr;});
+      return {{"status",report.at("status")},{"basic_path_check",report},
+        {"clearance",clearance->evidence()},{"process_policy",process->evidence()},
+        {"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"},{"execution_authorized",false},
+        {"generation_source","OFFLINE_DIAGNOSTIC_NOT_A_PLAN"}};
+    }
     if(op=="check_state_offline") {
       const bool clear=clearance->check(scene->getCurrentState());
       const bool valid=process && process->check(scene->getCurrentState(),req.value("endpoint",false));
@@ -1011,6 +1070,10 @@ public:
         auto end=scene->getCurrentState();end.setJointGroupPositions(m710::nativeFrames().planning_group,goal);end.update();
         if(!clearance->check(end)) return {{"status","INVALID_GOAL_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
         if(process && !process->check(end,true)) return {{"status","INVALID_GOAL_PROCESS"},{"failure",process->last_failure},{"process_policy",process->evidence()},{"pipeline_calls",calls}};
+        if(evaluation_profile=="chain_integration_v1") {
+          collision_detection::CollisionRequest cr;collision_detection::CollisionResult collision;scene->checkCollision(cr,collision,end);
+          if(collision.collision)return {{"status","INVALID_GOAL_COLLISION"}};
+        }
       }
     }
     collision_detection::CollisionRequest cr; cr.contacts=true; cr.max_contacts=20;
@@ -1107,9 +1170,10 @@ int main(int argc,char**argv) {
           workers[key]=std::make_unique<Worker>();
         }
         if(!workers.count(key)) throw std::runtime_error("UNKNOWN_MODEL_TCP_CONTEXT");
-        answer=workers.at(key)->run(req);
+        answer=workers.at(key)->dispatch(req);
         if(req.at("op")=="init") {answer["context_reused"]=false;startups[key]=answer;init_requests[key]=init_content;}
       }} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
+    if(!answer.contains("evaluation_profile"))answer["evaluation_profile"]=req.value("evaluation_profile",std::string("strict"));
     answer["request_id"]=req.value("request_id",std::string());std::cout<<answer.dump()<<std::endl;
   }
   rclcpp::shutdown();return 0;

@@ -4,13 +4,12 @@ from .model import transform, robot_for
 from .native_task import validate_plan_contract, STATUS
 from .native_io import verify_snapshot
 from ..timing import sample_quintic_knots
+from .evaluation import replay_review_gate, evaluation_profile, STRICT
 
 
-def replay_inputs(snapshot, plan, review):
+def replay_inputs(snapshot, plan, review=None):
     verify_snapshot(snapshot); validate_plan_contract(plan, snapshot)
-    if (review['status'] != 'PASS' or review['plan_fingerprint'] != plan['fingerprint'] or
-            review['snapshot_fingerprint'] != snapshot['fingerprint']):
-        raise ValueError('OFFLINE_REPLAY_REQUIRES_SAME_REVIEWED_PLAN')
+    replay_review_gate(plan, snapshot, review)
     robot = robot_for(snapshot['tool'], snapshot['scene'])
     # Validate both sides of semantic events before showing any frame.
     attach, release = plan['events']
@@ -35,6 +34,7 @@ def state_at(snapshot, plan, robot, time_s):
     if loaded: cartons[target] = frames['link_6']@np.asarray(plan['events'][0]['flange_from_target'])
     elif s['stage'] in {'withdrawal', 'residence'}: cartons[target] = np.asarray(plan['events'][1]['pose'])
     return dict(q=q[0], frames=frames, cartons=cartons, phase=s['stage'], attached=loaded, time_s=time_s,
+                evaluation_profile=evaluation_profile(plan.get('evaluation_profile', STRICT)),
                 active_ids=plan.get('active_ids',[]),target_face=plan.get('target_face','top'),
                 released=s['stage'] in {'withdrawal','residence'},
                 status='KINEMATIC_REPLAY', planning_status=STATUS, dynamics='NOT_EVALUATED')
