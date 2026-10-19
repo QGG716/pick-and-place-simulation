@@ -80,7 +80,8 @@ class LiftedConveyorScene:
     layout_fingerprint: str
 
     @classmethod
-    def build(cls, layout, cartons=None, *, surface_z_world_m=None, mechanical_surface_limits_m=None):
+    def build(cls, layout, cartons=None, *, surface_z_world_m=None, mechanical_surface_limits_m=None,
+              coupled_lift=False):
         fixed = layout.fixed_components()
         belt = next(b for b in fixed if b.name == "conveyor_transverse")
         if not np.allclose(belt.rotation[:, 2], [0, 0, 1], atol=1e-12, rtol=0):
@@ -110,6 +111,15 @@ class LiftedConveyorScene:
             moving_object_ids=[belt.name], mechanical_travel_status="UNKNOWN" if limits is None else "DECLARED",
             mechanical_surface_limits_m=limits, issues=issues, clamped=False,
             lift_mechanism="NOT_MODELED", scene_version="m710_lifted_reception_geometry_v1")
+        if coupled_lift:
+            # Explicit new scene; never silently reuse the legacy pure-Z proof.
+            from .conveyor_lift import coupled_conveyor_state
+            coupled = coupled_conveyor_state(layout, height, cartons)
+            boxes = coupled.boxes
+            evidence.update(lift_mechanism="SCISSOR_KINEMATIC_CONCEPT",
+                scene_version="m710_coupled_scissor_v1", coupled_mechanism=coupled.mechanism,
+                moving_object_ids=coupled.mechanism["moving_object_ids"],
+                native_transition_compatible=False)
         fingerprint = canonical_digest(dict(layout=layout.layout_fingerprint,
             geometry=[_obb_record(b) for b in boxes], height=evidence))
         return cls(boxes, evidence, fingerprint, layout.layout_fingerprint)
