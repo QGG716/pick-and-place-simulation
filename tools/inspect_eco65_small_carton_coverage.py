@@ -184,7 +184,7 @@ def main():
                 row['resumed_from']=dict(path=previous.resolve().relative_to(ROOT).as_posix(),
                     sha256=report_sha256,sha256_scope='UNCOMPRESSED_JSON_BYTES',
                     semantics='PRESERVED_PRIOR_RESULT_NOT_RERUN')
-                if a.retry_incomplete and row['short_segments']!='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN':
+                if a.retry_incomplete and command and row['short_segments']!='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN':
                     history=row['resumed_from']
                     row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
                                      a.ik_seeds,a.seconds_per_face,a.short_segments,a.candidate_start_index)
