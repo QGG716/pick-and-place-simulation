@@ -111,3 +111,23 @@ MuJoCo 对部分静态对的直接距离查询出现异常；孤立与完整模�
 Isaac 6.0.1.0、MuJoCo 3.8.0 保持原环境版本。
 始终标记 `PLANNING_ONLY_NOT_EXECUTABLE`、`KINEMATIC_REPLAY`、`Dynamics: NOT_EVALUATED`。
 独立选杯及吸附保持是仿真假设，不构成真实阀控、承载或动力学认证。
+
+## 密集检查拒绝后的定向修补
+
+`run18` 的 60 mm 抬升分支再次通过抽离，但实际 OMPL 输出在邻箱处只有
+2.381229 / 2.397547 mm 净空，均被原 2.4 mm 阈值拒绝。`run20` 将搜索余量
+提高到 1 mm，实际输出仍有 2.368572 mm 的拒绝点，说明余量本身不足以解决
+搜索边采样与输出密集检查的差异。失败原始调用没有改写为通过。
+
+`run21` 检查另一有限抬升高度：80 mm 抬升 / 85 mm 外移在原 LIN 速度下
+曾因关节减速度 -1.01265 rad/s² 超出 -1 限制失败，速度和加速度比例改为
+0.25 后，实际 LIN 及密集 FCL 通过（47.150 s）。110 mm 抬升和 122.5 mm
+外移尝试仍失败。生产入口因此增加一个 80% 邻箱高度候选，并为受控 LIN
+保留原 0.5 比例和一次 0.25 比例的有限重试，不改变官方限位或接触规则。
+
+独立选杯模型将 OMPL `longest_valid_segment_fraction` 从 0.001 收紧到
+0.00005，并在附着转运搜索中保留 1 mm 额外净空。参数属于模型指纹，新模型、
+快照和 HOME 在 `run22/build` 重新生成；几何尺寸和安装变换不变，复用已验证
+凸分解，没有 STEP 重转换。该参数控制搜索边的离散检查，见
+[MoveIt Humble 官方说明](https://moveit.picknik.ai/humble/doc/examples/ompl_interface/ompl_interface_tutorial.html)。
+正式输出仍为原密集 FCL 检查、2.4 mm 净空及独立 MuJoCo 复核；参数修改不是通过结论。

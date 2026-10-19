@@ -42,8 +42,8 @@ def test_front_extraction_uses_bounded_normal_offsets_and_neighbor_height(monkey
         native_task=dict(minimum_lift_m=.01,receiving=dict(box_pose_D=np.eye(4).tolist())))
     target=transform([.205,0,.53]);tcp=transform([.13,0,.58])
     goals=native_task.extraction_candidates(scene,target,[.15,.1,.1],tcp,'front')
-    assert len(goals)==10
-    assert {round(e['lift_m'],5) for _,e in goals}=={.01,.06,.11}
+    assert len(goals)==13
+    assert {round(e['lift_m'],5) for _,e in goals}=={.01,.06,.08,.11}
     assert {round(e['outward_m'],5) for _,e in goals}=={.01,.0475,.085,.16}
     for pose,e in goals:
         assert np.allclose(pose[:3,:3],tcp[:3,:3])

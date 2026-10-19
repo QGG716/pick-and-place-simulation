@@ -79,7 +79,11 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
         T=transform(box['pose']);tops.append(float(T[2,3]+np.abs(T[2,:3])@(np.asarray(box['size_m'])/2)))
     base_lift=original[0][1]['lift_m'];above=max(base_lift,max(tops,default=bottom)+clearance-bottom)
     extra=[]
-    for lift in dict.fromkeys([above,(above+base_lift)/2]):
+    # The actual 80 mm lift is reachable at reduced LIN speed where clearing
+    # the full 100 mm neighboring carton is not. It still requires an ordinary
+    # payload/world-checked transit; partial height is never an exemption.
+    partial=max(base_lift,.8*(max(tops,default=bottom)-bottom))
+    for lift in dict.fromkeys([above,partial,(above+base_lift)/2]):
         if lift<=base_lift+1e-9:continue
         for distance in (size[0]/2+clearance,size[0]+clearance,size[0]/4+clearance):
             goal,evidence=extraction_goal(scene,target_pose,size,tcp,face,distance)
@@ -264,8 +268,12 @@ class NativeTask:
 
     def motion(self, q, stage, *, pose=None, goal=None, ik_seed=None):
         constrained = stage in {'contact', 'extraction', 'place', 'withdrawal'}
-        solvers = [('pilz_industrial_motion_planner', 'LIN' if constrained else 'PTP')]
-        if not constrained: solvers.append(('ompl', 'RRTConnectkConfigDefault'))
+        solvers = [('pilz_industrial_motion_planner', 'LIN' if constrained else 'PTP', .5)]
+        # Pilz can reject a valid Cartesian branch on a joint velocity or
+        # deceleration limit. One slower native retry retains all geometric,
+        # rate, provenance and dense-output checks.
+        if constrained: solvers.append(('pilz_industrial_motion_planner', 'LIN', .25))
+        else: solvers.append(('ompl', 'RRTConnectkConfigDefault', .5))
         goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q if ik_seed is None else ik_seed, stage)))
         if not constrained:
             goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
@@ -276,12 +284,13 @@ class NativeTask:
         # A first valid IK branch can require a long turn through a wall. Give
         # the existing bounded native IK set its PTP attempts before spending
         # the OMPL budget on any branch; never substitute Python motion search.
-        for pipeline, planner in solvers:
+        for pipeline, planner, scale in solvers:
             for joint_goal in goals:
                 self.counter += 1; req = self.request(q, stage, op='plan')
-                req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner, require_native_motion=True)
+                req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner,
+                    require_native_motion=True,velocity_scale=scale,acceleration_scale=scale)
                 if pipeline=='ompl' and stage=='transit':
-                    req['clearance_policy']['search_payload_reserve_m']=.0003
+                    req['clearance_policy']['search_payload_reserve_m']=.001
                 if constrained: req['goal_pose'] = check_transform(pose).tolist()
                 else: req['q_goal'] = joint_goal.tolist()
                 started = perf_counter(); raw = self.call(req)

@@ -9,7 +9,7 @@ import numpy as np
 
 from .model import ROOT, check_transform, load_json, transform, mounting_pairs
 from .asset_paths import resolve_asset, resource_uri
-from .native_contact import extract_cad_contours
+from .native_contact import INDEPENDENT, extract_cad_contours
 from ..moveit2_backend import digest, _rpy
 
 from .asset_inventory import CONFIG, load_robot_config, asset_inventory
@@ -182,7 +182,13 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         'pilz_industrial_motion_planner.request_adapters': '', 'ompl.planning_plugin': 'ompl_interface/OMPLPlanner',
         'ompl.request_adapters': '', 'ompl.planner_configs.RRTConnectkConfigDefault.type': 'geometric::RRTConnect',
         'ompl.planner_configs.RRTConnectkConfigDefault.range': .1,
-        f'ompl.{pg}.planner_configs': ['RRTConnectkConfigDefault'], f'ompl.{pg}.longest_valid_segment_fraction': .001,
+        f'ompl.{pg}.planner_configs': ['RRTConnectkConfigDefault'],
+        # Small cartons leave a 10 mm channel. The former search spacing
+        # missed payload clearance dips subsequently caught by dense FCL.
+        # Bind the finer search spacing into the model identity; output
+        # clearance and independent review remain unchanged.
+        f'ompl.{pg}.longest_valid_segment_fraction':
+            .00005 if scene.get('native_task',{}).get('cup_selection_mode')==INDEPENDENT else .001,
         'robot_description_planning.cartesian_limits.max_trans_vel': limits['tcp_velocity_m_s'],
         'robot_description_planning.cartesian_limits.max_trans_acc': limits['tcp_acceleration_m_s2'],
         'robot_description_planning.cartesian_limits.max_trans_dec': -limits['tcp_acceleration_m_s2'],
