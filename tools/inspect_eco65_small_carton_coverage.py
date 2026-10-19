@@ -86,11 +86,20 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
             row['status']='CONTACT_POSE_PASS';result['status']='CONTACT_POSE_PASS'
             if not short_segments:break
             try:
-                pre_q=next(task.ik(pre,contact_q,'pregrasp',ik_seeds),None)
-                if pre_q is None:raise ValueError('PREGRASP_IK_OR_STATE_REJECTED')
-                start=pre.copy();start[:3,3]+=face_outward(transform(box['pose']),face)*snapshot['scene']['native_task']['preapproach_m']
-                start_q=next(task.ik(start,pre_q,'pregrasp',ik_seeds),None)
-                if start_q is None:raise ValueError('SHORT_SEGMENT_INITIAL_STATE_REJECTED')
+                distance=snapshot['scene']['native_task']['preapproach_m'];normal=face_outward(transform(box['pose']),face)
+                short_initial_attempts=[];row['short_initial_attempts']=short_initial_attempts
+                for start_offset,pre_offset in [(2*distance,distance),(distance+.005,distance),(distance,distance-.005)]:
+                    if pre_offset<=0:continue
+                    pre=top.copy();pre[:3,3]+=normal*pre_offset
+                    pre_q=next(task.ik(pre,contact_q,'pregrasp',ik_seeds),None)
+                    probe=dict(start_offset_m=start_offset,pre_offset_m=pre_offset,status='PREGRASP_REJECTED')
+                    short_initial_attempts.append(probe)
+                    if pre_q is None:continue
+                    start=top.copy();start[:3,3]+=normal*start_offset
+                    start_q=next(task.ik(start,pre_q,'pregrasp',ik_seeds),None)
+                    probe['status']='START_REJECTED' if start_q is None else 'NATIVE_STATES_PASS'
+                    if start_q is not None:break
+                else:raise ValueError('SHORT_SEGMENT_INITIAL_STATE_REJECTED')
                 if short_branches>=8:raise MoveItUnavailable('BOUNDED_SHORT_BRANCHES_EXHAUSTED')
                 short_branches+=1;task.task_id='eco65-coverage-'+uuid.uuid4().hex
                 row.update(short_initial_q_rad=start_q.tolist(),short_initial_state_semantics='STATIC_NATIVE_CHECKED_STATE_NOT_A_HOME_CONNECTION')
@@ -127,21 +136,36 @@ def main():
     for name in ('snapshot','home','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--worker-command');p.add_argument('--target',action='append')
     p.add_argument('--resume-from',type=Path,help='Reuse completed reports only when their exact conditional snapshot identity matches.')
+    p.add_argument('--retry-incomplete',action='store_true',help='Recheck prior pose/short-segment failures; preserve successful short chains.')
     p.add_argument('--candidate-limit',type=int,default=12);p.add_argument('--ik-seeds',type=int,default=8)
     p.add_argument('--seconds-per-face',type=float,default=120);p.add_argument('--short-segments',action='store_true')
     a=p.parse_args();source=verify_snapshot(load_json(a.snapshot));out=a.output.resolve();out.relative_to(ROOT/'outputs')
-    out.mkdir(parents=True,exist_ok=False);home=load_json(a.home)['q_rad'];rows=[]
+    out.mkdir(parents=True,exist_ok=False);home=load_json(a.home)['q_rad'];rows=[];prior_rows={}
+    if a.resume_from:
+        table=load_json(a.resume_from/'coverage_table.json')
+        if table['source_snapshot_fingerprint']!=source['fingerprint']:raise ValueError('COVERAGE_RESUME_SOURCE_CHANGED')
+        prior_rows={(r['target_id'],r['face']):r for r in table['rows']}
     for box in source['scene']['boxes']:
         snapshot=exposure_snapshot(source,box['id'])
         for face in ('top','front'):
             command=a.worker_command if not a.target or box['id'] in a.target else None
             previous=a.resume_from/(box['id']+'_'+face)/'coverage.json' if a.resume_from else None
+            prior=prior_rows.get((box['id'],face))
+            if prior and prior.get('resumed_from'):
+                binding=prior['resumed_from'];previous=ROOT/binding['path'];previous.resolve().relative_to(ROOT)
+                if hashlib.sha256(previous.read_bytes()).hexdigest()!=binding['sha256']:raise ValueError('COVERAGE_RESUME_REPORT_CHANGED')
             if previous and previous.is_file():
                 row=load_json(previous)
                 if (row['snapshot_fingerprint']!=snapshot['fingerprint'] or row['target_id']!=box['id'] or row['face']!=face):
                     raise ValueError('COVERAGE_RESUME_IDENTITY_MISMATCH')
                 row['resumed_from']=dict(path=previous.resolve().relative_to(ROOT).as_posix(),
                     sha256=hashlib.sha256(previous.read_bytes()).hexdigest(),semantics='PRESERVED_PRIOR_RESULT_NOT_RERUN')
+                if a.retry_incomplete and row['short_segments']!='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN':
+                    history=row['resumed_from']
+                    row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
+                                     a.ik_seeds,a.seconds_per_face,a.short_segments)
+                    row['prior_incomplete_result']=history
+                    save_json(out/(box['id']+'_'+face)/'coverage.json',row)
             else:
                 row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
                                  a.ik_seeds,a.seconds_per_face,a.short_segments)
