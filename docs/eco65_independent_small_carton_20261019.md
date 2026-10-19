@@ -242,3 +242,33 @@ FFmpeg 4.4.2 / libx264 接收实际 RGB 帧，不安装依赖。`run40`、`run48
 机械臂/真实 J1 桅杆和自碰撞；没有关闭这些碰撞。覆盖工具新增明确的几何候选
 起始索引，用于保存原失败后继续尚未搜索的有限候选区间，记录区间及旧报告哈希。
 这不导入旧关节路径，也不把短段覆盖称为完整抓放。
+
+## 后续原生衔接和布局筛选
+
+`run36` 完成 24 项表，23 项原生接近/接触/抽离短段通过。第三层中箱正面
+`carton_r00_l02_c01/front` 在 480 s 预算内拒绝前 104 个候选；`run56` 保留其
+原报告后继续候选 104–231，128 个候选全部被实际接触状态检查拒绝。它是有限
+候选失败，不能称为全空间不可达。其余 23 项通过记录按原始报告哈希保留。
+`delivery01/coverage56_summary.json` 已下载，SHA-256 为
+`7b3c505ffb3a75cdac55cc01381ec8ebdfd231e7cef30b02a8718dc65ab4b292`。
+
+`run54` 的 `pregrasp-166` 实际触发 `MOVEIT2_REQUEST_TIMEOUT`，605.241401 s，
+`run_report` 为 `NO_REVIEWED_COMPLETE_PLAN`，旧 worker 已关闭。密集细化的
+OMPL 返回点会进入 MoveIt 检查和后续时间参数化，日志累计约 48200 次检查。
+源码依据为 [MoveIt 2.5.10 的 useConfig/interpolateSolution/solve](https://github.com/moveit/moveit2/blob/2.5.10/moveit_planners/ompl/ompl_interface/src/model_based_planning_context.cpp)。
+
+`b82d24a` 增加独立选杯任务的 `ompl_interpolate_output=false` 原生请求选项。
+每次 OMPL 调用先恢复初始化时的完整配置，只关闭原生输出插值；搜索步长、
+原生求解器、密集 FCL 输出/过程检查和独立复核不变。结果必须携带匹配的
+worker 配置证据，缺失或受控段误用均拒绝。新 `build-small-20261019h` 的完整
+worker 和接触检查程序实际编译通过（46 s），`run60` 已用同一 `run34` 场景和
+HOME 冷启动。两项选项/回退定向回归通过（2.01 s）；原分支超时回归通过
+（1.75 s）。插值选项的实际路径收益仍以本轮运行结果为准。
+
+已有布局的有效前缘单杯姿态距基座约 0.399 m，实际拒绝主要涉及折叠手臂与
+J1 桅杆；后续几何候选的邻箱接近指标更差。因此新增一个有限后移候选
+`eco65_small_carton_setback_base_v1.yaml`：基座与安装座为 D=[-0.340,0,0.240] m。
+箱堆、带面、真实工具、TCP 和 J1 附件局部关系均不变。`run61/build` 重新生成
+快照 `ad20a4a45f4a9461a2b9a458d82360fe37374e3dd8bf01c4cfae1052dbd89f51`，
+16.947315 s，宿主/ROS rootfs 各 926 项资产核对通过（0.433050 / 0.448835 s）。
+先检查受阻中箱正面、顶层中箱顶面和底层中箱正面，不沿用旧布局的通过结论。
