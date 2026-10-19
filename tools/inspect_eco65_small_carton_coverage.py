@@ -53,7 +53,8 @@ def exposure_snapshot(source, target_id):
     return verify_snapshot(result)
 
 
-def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds, seconds, short_segments):
+def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds, seconds, short_segments,
+                 candidate_start_index=0):
     box=snapshot['scene']['box'];init=snapshot['native_model']['init'];started=perf_counter()
     proposal=grasp_candidates(init['process_geometry'],transform(box['pose']),box['size_m'],
         init['identity']['flange_from_task_tcp'],snapshot['scene']['base_position_m'],
@@ -65,6 +66,7 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
         initial_full_stack_visibility=('TOP_OCCLUDED_BY_UPPER_LAYER' if box['layer']<3 and face=='top' else 'FACE_EXPOSED'),
         initial_full_stack_extraction=('SUPPORTS_UPPER_CARTONS' if box['layer']<3 else 'NO_UPPER_CARTONS'),
         geometric_candidate_count=len(proposal['candidates']),attempts=[],status='NOT_RUN',
+        candidate_index_range=[candidate_start_index,min(candidate_start_index+candidate_limit,len(proposal['candidates']))],
         short_segments='NOT_RUN',full_task='NOT_RUN',dynamics='NOT_EVALUATED')
     out.mkdir(parents=True,exist_ok=False);save_json(out/'snapshot.json',snapshot)
     save_json(out/'candidates.json',proposal)
@@ -77,7 +79,7 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
         task=NativeTask(snapshot,command,task_seconds=seconds,stage_seconds=20,
             home_candidate=candidate,progress_path=out/'native_progress.jsonl')
         home=None;short_branches=0
-        for index,grasp in enumerate(proposal['candidates'][:candidate_limit]):
+        for index,grasp in enumerate(proposal['candidates'][candidate_start_index:candidate_start_index+candidate_limit],candidate_start_index):
             task.select_grasp(grasp);task.parent='';task.attachment=None;task.stages=[];task.events=[]
             top=np.array(grasp['tcp_pose_D']);pre=top.copy()
             pre[:3,3]+=face_outward(transform(box['pose']),face)*snapshot['scene']['native_task']['preapproach_m']
@@ -153,8 +155,11 @@ def main():
     p.add_argument('--resume-from',type=Path,help='Reuse completed reports only when their exact conditional snapshot identity matches.')
     p.add_argument('--retry-incomplete',action='store_true',help='Recheck prior pose/short-segment failures; preserve successful short chains.')
     p.add_argument('--candidate-limit',type=int,default=12);p.add_argument('--ik-seeds',type=int,default=8)
+    p.add_argument('--candidate-start-index',type=int,default=0,
+                   help='Explicit bounded continuation in the deterministic geometric candidate order; never imports a path.')
     p.add_argument('--seconds-per-face',type=float,default=120);p.add_argument('--short-segments',action='store_true')
     a=p.parse_args();source=verify_snapshot(load_json(a.snapshot));out=a.output.resolve();out.relative_to(ROOT/'outputs')
+    if a.candidate_start_index<0 or min(a.candidate_limit,a.ik_seeds)<1:p.error('Invalid candidate/seed bounds')
     out.mkdir(parents=True,exist_ok=False);home=load_json(a.home)['q_rad'];rows=[];prior_rows={}
     if a.resume_from:
         table=load_json(a.resume_from/'coverage_table.json')
@@ -182,12 +187,12 @@ def main():
                 if a.retry_incomplete and row['short_segments']!='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN':
                     history=row['resumed_from']
                     row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
-                                     a.ik_seeds,a.seconds_per_face,a.short_segments)
+                                     a.ik_seeds,a.seconds_per_face,a.short_segments,a.candidate_start_index)
                     row['prior_incomplete_result']=history
                     save_json(out/(box['id']+'_'+face)/'coverage.json',row)
             else:
                 row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
-                                 a.ik_seeds,a.seconds_per_face,a.short_segments)
+                                 a.ik_seeds,a.seconds_per_face,a.short_segments,a.candidate_start_index)
             rows.append({k:v for k,v in row.items() if k not in ('native_calls','native_records','native_ik_records','initial_state_checks')})
             save_json(out/'coverage_table.json',dict(source_snapshot_fingerprint=source['fingerprint'],rows=rows))
 
