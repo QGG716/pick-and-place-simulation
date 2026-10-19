@@ -30,7 +30,9 @@ def main():
         encoders=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,check=True).stdout
         if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
-        app=SimulationApp({'headless':True,'renderer':'RaytracedLighting','width':640,'height':360})
+        render_config=dict(headless=True,renderer='PathTracing',width=640,height=360,
+                           samples_per_pixel_per_frame=64,denoiser=True,anti_aliasing=2)
+        app=SimulationApp(render_config)
         import numpy as np
         from PIL import Image,ImageDraw
         from pxr import UsdGeom,Gf
@@ -46,9 +48,15 @@ def main():
                   '--output',str(out/'composition'),'--compose-only']
         compose.main()
         omni.usd.get_context().open_stage(str(out/'composition/eco65_desktop_warehouse.usda'))
+        app.reset_render_settings()
         for _ in range(30):app.update()
         timeline=omni.timeline.get_timeline_interface();timeline.stop()
         stage=omni.usd.get_context().get_stage();checks=[]
+        import carb
+        settings=carb.settings.get_settings()
+        renderer_readback={key:settings.get(key) for key in ['/rtx/rendermode','/rtx/pathtracing/spp',
+            '/rtx/pathtracing/optixDenoiser/enabled']}
+        save_json(out/'renderer_settings.json',dict(requested=render_config,actual=renderer_readback))
         # Same nonzero wrist/zero/HOME FK cases as the current native model.
         for row in plan['fk_crosscheck']:
             state=state_at(snapshot,plan,robot,0)
@@ -96,6 +104,7 @@ def main():
             target_id=target,carton_count=len(snapshot['scene']['boxes']),
             frame_rate=5,frame_count=len(records),simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,
             encoder_version=encoder_version,encoder_command=command,
+            renderer_settings=renderer_readback,
             video_sha256=hashlib.sha256((out/'kinematic_replay.mp4').read_bytes()).hexdigest(),
             timeline=dict(playing=timeline.is_playing(),time_s=timeline.get_current_time(),physics_steps=0),
             fk_readback=checks,frames=records,ideal_outfeed_count=0))
