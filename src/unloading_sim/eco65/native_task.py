@@ -38,6 +38,17 @@ def verify_ompl_output_interpolation(request,result):
         raise ValueError('NATIVE_OMPL_OUTPUT_INTERPOLATION_MISMATCH')
 
 
+def prioritize_grasp_face(geometry, preferred_face):
+    """Change search order only; retain every candidate and its exact binding."""
+    if preferred_face is None:return geometry
+    if preferred_face not in ('top','front'):raise ValueError('INVALID_PREFERRED_GRASP_FACE')
+    candidates=geometry['candidates']
+    order=sorted(range(len(candidates)),key=lambda i:candidates[i]['target_face']!=preferred_face)
+    return dict(geometry,candidates=[candidates[i] for i in order],
+                search_order=dict(preferred_face=preferred_face,original_geometry_rank_indices=order,
+                    semantics='STABLE_FACE_PRIORITY_NO_CANDIDATES_REMOVED_NO_PATH_IMPORTED'))
+
+
 def extraction_goal(scene, target_pose, size, tcp, face='top', outward_m=None):
     """Retain the 10 mm lift clearance above crossed support surfaces."""
     half=np.asarray(size)/2; start=np.asarray(target_pose)[:3,3]
@@ -110,13 +121,18 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
 
 class NativeTask:
     def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None,
-                 progress_path=None, rpc_seconds=180.):
+                 progress_path=None, rpc_seconds=180., preferred_grasp_face=None):
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
         self.model = snapshot['native_model']; self.init = self.model['init']; self.identity = self.init['identity']
         if self.identity['scene_fingerprint'] != self.scene['scene_fingerprint']: raise ValueError('MODEL_SCENE_MISMATCH')
         self.task_contract = validate_task_contract(self.scene)
+        if preferred_grasp_face is not None and (not self.task_contract or
+                self.task_contract.get('cup_selection_mode')!=INDEPENDENT or
+                preferred_grasp_face not in self.task_contract['allowed_faces']):
+            raise ValueError('PREFERRED_GRASP_FACE_NOT_IN_TASK_CONTRACT')
+        self.preferred_grasp_face=preferred_grasp_face
         if self.init['process_geometry'].get('task_contract') != self.task_contract:
             raise ValueError('MODEL_TASK_CONTRACT_MISMATCH')
         if self.init['process_geometry'].get('fixed_attachment_interfaces', []) != validate_fixed_interfaces(self.scene):
@@ -486,11 +502,13 @@ class NativeTask:
                 nominal_contact_geometry=seal, qualification='GEOMETRY_ONLY_NOT_IK_OR_PATH_VALIDATED')],
                 rejected=[] if seal['status'] == 'PASS' else [seal], checked_contour_count=12,
                 edge_margin_m=.003, method='LEGACY_CENTRED_TOP_GRASP')
+        self.grasp_geometry=prioritize_grasp_face(self.grasp_geometry,getattr(self,'preferred_grasp_face',None))
         candidates = self.grasp_geometry['candidates']
         if getattr(self,'progress_path',None):
             self.progress_path.with_name('grasp_candidates.json').write_text(
                 json.dumps(self.grasp_geometry,separators=(',',':'),allow_nan=False),encoding='utf-8')
         self.grasp_search = dict(status='HOME_SEARCH', candidate_count=len(candidates),
+                                 preferred_face=getattr(self,'preferred_grasp_face',None),
                                  attempted_indices=[], unsearched_indices=list(range(len(candidates))))
         if not candidates: raise ValueError('NO_NONEMPTY_FULL_SEAL_CANDIDATE')
         home = None

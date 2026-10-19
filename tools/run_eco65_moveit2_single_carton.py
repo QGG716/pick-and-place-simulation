@@ -22,6 +22,8 @@ def main():
                    help='Source-bound permanent camera installation; calibration board/probe are not task equipment')
     p.add_argument('--worker-command', help='Existing resident native worker launcher; never a core fallback')
     p.add_argument('--home-candidate', type=Path, help='Identity-bound simulation initial state; rechecked by the worker')
+    p.add_argument('--preferred-grasp-face',choices=['top','front'],
+                   help='Stable face priority for independent cups; retains all candidates and regenerates every path')
     p.add_argument('--native-asset-root', help='Repository path as seen inside the existing ROS rootfs')
     p.add_argument('--task-seconds', type=float, default=900.)
     p.add_argument('--stage-seconds', type=float, default=60.)
@@ -30,6 +32,7 @@ def main():
     a = p.parse_args(); out = a.output.resolve(); out.relative_to(ROOT/'outputs')
     if out.exists(): raise FileExistsError('Use a fresh output directory')
     if not 1 <= a.attempts <= 3: p.error('--attempts must be 1..3')
+    if a.preferred_grasp_face and a.action!='plan':p.error('--preferred-grasp-face requires plan')
     if a.static_snapshot and (a.action != 'build' or not a.static_home):
         p.error('--static-snapshot requires build and --static-home')
     if (a.static_home or a.camera_configuration) and not a.static_snapshot:
@@ -62,6 +65,7 @@ def main():
                     task = NativeTask(snapshot, a.worker_command, task_seconds=remaining,
                                       stage_seconds=a.stage_seconds, attempt=attempt,rpc_seconds=a.rpc_seconds,
                                       progress_path=attempt_out/'native_progress.jsonl',
+                                      preferred_grasp_face=a.preferred_grasp_face,
                                       home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
                     review = review_plan(plan, snapshot,progress_path=attempt_out/'review_progress.jsonl'); save_json(attempt_out/'review.json', review)
