@@ -13,7 +13,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'))
 from unloading_sim.conveyor_lift import coupled_conveyor_state
 from unloading_sim.coupled_batch import message_box
-from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message
+from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message,digest
 from unloading_sim.workcell_layout import load_workcell_layout
 import numpy as np
 
@@ -59,6 +59,7 @@ def audit(run,seed,worker,output):
                     state=coupled_conveyor_state(layout,float(h),cartons)
                     request=dict(template,world=[box_message(b) for b in state.boxes
                         if not (held and b.name==cycle['target_id'])])
+                    request['scene_fingerprint']=digest(request['world'])
                     reply=client.request(request)
                     assert reply['status']=='SUCCESS',reply
                     assert not reply['pipeline_calls'],reply['pipeline_calls']
