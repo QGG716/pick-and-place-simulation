@@ -1,6 +1,8 @@
 """Bounded native pose/short-segment coverage; never a complete unloading task."""
 import argparse
+import gzip
 import hashlib
+import json
 from copy import deepcopy
 from pathlib import Path
 from time import perf_counter
@@ -13,6 +15,14 @@ from unloading_sim.eco65.native_cups import grasp_candidates
 from unloading_sim.eco65.native_task import NativeTask, extraction_candidates
 from unloading_sim.eco65.home_candidate import make_candidate
 from unloading_sim.moveit2_backend import digest, MoveItUnavailable
+
+
+def read_coverage_report(path):
+    """Read the exact report or its lossless archive; retain original-byte identity."""
+    path=Path(path)
+    stored=path if path.is_file() else path.with_suffix(path.suffix+'.gz')
+    data=gzip.decompress(stored.read_bytes()) if stored.suffix=='.gz' else stored.read_bytes()
+    return json.loads(data),hashlib.sha256(data).hexdigest()
 
 
 def exposure_snapshot(source, target_id):
@@ -158,13 +168,17 @@ def main():
             prior=prior_rows.get((box['id'],face))
             if prior and prior.get('resumed_from'):
                 binding=prior['resumed_from'];previous=ROOT/binding['path'];previous.resolve().relative_to(ROOT)
-                if hashlib.sha256(previous.read_bytes()).hexdigest()!=binding['sha256']:raise ValueError('COVERAGE_RESUME_REPORT_CHANGED')
-            if previous and previous.is_file():
-                row=load_json(previous)
+                if not previous.is_file() and not previous.with_suffix(previous.suffix+'.gz').is_file():
+                    raise FileNotFoundError('COVERAGE_RESUME_REPORT_MISSING:'+str(previous))
+            if previous and (previous.is_file() or previous.with_suffix(previous.suffix+'.gz').is_file()):
+                row,report_sha256=read_coverage_report(previous)
+                if prior and prior.get('resumed_from') and report_sha256!=prior['resumed_from']['sha256']:
+                    raise ValueError('COVERAGE_RESUME_REPORT_CHANGED')
                 if (row['snapshot_fingerprint']!=snapshot['fingerprint'] or row['target_id']!=box['id'] or row['face']!=face):
                     raise ValueError('COVERAGE_RESUME_IDENTITY_MISMATCH')
                 row['resumed_from']=dict(path=previous.resolve().relative_to(ROOT).as_posix(),
-                    sha256=hashlib.sha256(previous.read_bytes()).hexdigest(),semantics='PRESERVED_PRIOR_RESULT_NOT_RERUN')
+                    sha256=report_sha256,sha256_scope='UNCOMPRESSED_JSON_BYTES',
+                    semantics='PRESERVED_PRIOR_RESULT_NOT_RERUN')
                 if a.retry_incomplete and row['short_segments']!='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN':
                     history=row['resumed_from']
                     row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
