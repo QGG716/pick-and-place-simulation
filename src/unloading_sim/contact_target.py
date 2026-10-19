@@ -83,7 +83,7 @@ class ContactTarget:
             contact_frame="nominal_compressed_physical_contact")
 
 
-def simulation_contact_targets(scene, target, robot_base_position, standoff_m):
+def simulation_contact_targets(scene, target, robot_base_position, standoff_m, *, side_exposure_depth_m=None):
     """Fixed FRONT/TOP/SIDE order; one face center, no pose/IK/history search.
 
     Exposure uses the existing conservative face-blocker test in box-local
@@ -94,6 +94,8 @@ def simulation_contact_targets(scene, target, robot_base_position, standoff_m):
         raise ValueError("INVALID_ROBOT_BASE_POSITION")
     if not np.isfinite(standoff_m) or standoff_m <= 0:
         raise ValueError("INVALID_STANDOFF")
+    if side_exposure_depth_m is not None and (not np.isfinite(side_exposure_depth_m) or side_exposure_depth_m<=0):
+        raise ValueError('INVALID_SIDE_EXPOSURE_DEPTH')
     active = set(scene.support_graph.cartons)
     if target.name not in active:
         raise ValueError("TARGET_NOT_IN_REMAINING_WORLD")
@@ -132,11 +134,16 @@ def simulation_contact_targets(scene, target, robot_base_position, standoff_m):
             reason = "UNSUPPORTED_GEOMETRIC_FACE_MAPPING"
         else:
             blockers = local_graph.face_blockers(target.name, legacy, active)
+            if role=='SIDE' and side_exposure_depth_m is not None:
+                by_name={b.name:b for b in local_boxes}
+                blockers=[n for n in blockers if
+                    min(sign*p[axis] for p in by_name[n].corners())-target.half_extents[axis]<=side_exposure_depth_m]
             if blockers:
                 reason = "FACE_OCCLUDED"
         screening.append(dict(face_role=role, geometric_face_id=face_id,
             available=reason is None, reason=reason, blockers=blockers,
-            supported_cartons=blocked_supports))
+            supported_cartons=blocked_supports,
+            exposure_depth_m=side_exposure_depth_m if role=='SIDE' else None))
         if reason:
             continue
         n = target.rotation[:, axis]*sign

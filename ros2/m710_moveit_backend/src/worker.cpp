@@ -341,6 +341,8 @@ class Worker {
       tasks[task_id]=std::move(session);
     }
     auto& session=*tasks.at(task_id);
+    if(req.contains("receiver_template") && (req.at("receiver_template")!="RIGHT_INNER_HMAX" ||
+        parent.empty() || receiver_binding.is_null()))throw std::runtime_error("NATIVE_TASK_RECEIVER_TEMPLATE_SCOPE");
     if(session.diagnostic!=diagnostic)throw std::runtime_error("DIAGNOSTIC_TASK_SCOPE_CHANGED");
     if(req.at("clearance_policy").at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
     if(session.records.count(stage_id)) throw std::runtime_error("NATIVE_STAGE_ID_REUSED");
@@ -355,8 +357,16 @@ class Worker {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
     } else {
       const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
+      if(req.value("receiver_template","")=="RIGHT_INNER_HMAX") {
+        const auto leg=req.at("process_substage");
+        if(receiver_binding.is_null() || (leg=="RIGHT_INNER_Y" && (previous.request.at("stage")!="contact" || req.at("ownership_transition")!="ATTACH")) ||
+            (leg=="RIGHT_INNER_X" && (previous.request.value("process_substage","")!="RIGHT_INNER_Y" || !req.at("ownership_transition").is_null())))
+          throw std::runtime_error("NATIVE_TASK_SIDE_SUBSTAGE_PARENT_INVALID");
+      }
       if(previous.process && req.contains("process_policy") && !req.at("process_policy").at("initial_proximity").is_null()) {
         const auto terminal=previous.process->terminalProximity();const auto& next=req.at("process_policy").at("initial_proximity");
+        if(next.contains("controlled_side_transfer") && previous.request.at("stage")=="extraction" &&
+            (terminal.is_null() || terminal!=next))throw std::runtime_error("NATIVE_TASK_SIDE_HISTORY_CHANGED");
         if(!terminal.is_null() && terminal.value("fully_released",false) && !next.value("fully_released",false))
           throw std::runtime_error("NATIVE_TASK_PROXIMITY_HISTORY_RESET");
         if(!terminal.is_null() && terminal.contains("pairs") && next.contains("pairs")) {
@@ -642,6 +652,13 @@ class Worker {
       } else {
         r.result["native_output_check_s"]=nullptr;
         r.result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
+        if(r.process && r.process->hasSideTransfer()) {
+          const auto checking=Clock::now();
+          failure=r.process->checkSideReturned(r.start->getCurrentState(),path,
+              begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(req.at("allowed_planning_time_s").get<double>())));
+          r.result["side_returned_history_s"]=seconds(checking);
+          r.result["side_history_scope"]="RETURNED_POINTS_ONLY_NOT_CONTINUOUS_PROOF";
+        }
       }
       r.result["clearance"]=r.clearance->evidence();
       if(r.process) r.result["process_policy"]=r.process->evidence();

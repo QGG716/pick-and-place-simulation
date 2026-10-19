@@ -11,4 +11,9 @@ assert.notEqual(ctx.candidateLabel(a('other')),ctx.candidateLabel(a('accepted'))
 DATA.result.complete=false;
 assert.notEqual(ctx.candidateLabel(a('accepted')),'\u672c\u6b21\u4efb\u52a1\u6700\u7ec8\u9009\u62e9');
 assert.equal(ctx.receiverCandidate({response_identity:{stage_id:'rejected',task_id:'other-task'}}),null);
-console.log(JSON.stringify({scope:'TEST_INJECTION_VIEWER_ONLY',checks:6,passed:true}));
+DATA.result.complete=true;DATA.result.plan.stages.push({stage_id:'turn'});
+DATA.result.attempts[0].region_attempts[0].segments=[{native_result:{stage_id:'turn'}}];
+DATA.result.attempts[0].region_attempts[1].segments=[{stage_id:'turn',reused:true}];
+assert.equal(ctx.receiverCandidate(a('turn')).stage_id,'accepted');
+assert.equal(ctx.candidateLabel(a('turn')),ctx.candidateLabel(a('accepted')));
+console.log(JSON.stringify({scope:'TEST_INJECTION_VIEWER_ONLY',checks:8,passed:true}));

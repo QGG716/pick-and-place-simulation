@@ -75,9 +75,12 @@ def release_ready_geometry(box, belt, *, tolerance, expected_bottom, expected_ro
 
 
 class SingleLiftedReceiverConnector(SingleExtractionConnector):
-    def plan_target(self, target, start, obstacles, suction, seed):
+    def validate_template(self, target):
         if target.face_role != "FRONT" or not np.allclose(target.outward_normal,[-1,0,0],atol=1e-12,rtol=0):
             raise MoveItUnavailable("FRONT_HMAX_TEMPLATE_SCOPE_ONLY")
+
+    def plan_target(self, target, start, obstacles, suction, seed):
+        self.validate_template(target)
         self.receiver_binding,self.high_belt=receiver_binding(target.box,obstacles,
             self.native_scene.snapshot["assembly"]["designed_contacts"])
         if self.receiver_binding != self.native.lifted_receiver_binding:
@@ -220,22 +223,47 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                 contact_tolerance_m=self.contact_tolerance_m,
                 extraction_reserve_m=self.budget.extraction_runtime_clearance_reserve_m)))
 
-    def _region_path_binding(self, start, path, prefix, native):
+    def _region_path_binding(self, start, path, prefix, native, checked_prefix=None):
         values=np.asarray(path,dtype=float)
         if values.ndim!=2 or values.shape[1]!=6 or len(values)<2 or not np.isfinite(values).all():
             raise MoveItUnavailable("RECEIVER_REGION_INVALID_PATH_VALUES")
         if not np.array_equal(path[0],start):
             raise MoveItUnavailable("EXTRACTION_PARENT_STATE_CHANGED")
         records=self._native_selected_records(path[-1])
-        if (len(records)!=len(prefix["stages"])+1
-                or [r["stage_id"] for r in records[:-1]]!=[r["stage_id"] for r in prefix["stages"]]
+        extra=1 if checked_prefix is None else 2
+        if (len(records)!=len(prefix["stages"])+extra
+                or [r["stage_id"] for r in records[:-extra]]!=[r["stage_id"] for r in prefix["stages"]]
                 or native.get("task_id")!=self.native_task_id
                 or records[-1]["stage_id"]!=native.get("stage_id")
-                or records[-1]["parent_stage_id"]!=self._native_state_receipt(start).stage_id
+                or records[-extra]["parent_stage_id"]!=self._native_state_receipt(start).stage_id
                 or native.get("parent_stage_id")!=records[-1]["parent_stage_id"]
-                or not np.array_equal([p["q"] for p in records[-1]["points"]],values)):
+                or not np.array_equal([p["q"] for r in records[-extra:] for p in r["points"]],
+                    values)):
             raise MoveItUnavailable("RECEIVER_REGION_PATH_IDENTITY_CHANGED")
         return digest(dict(path=values.tolist(),terminal_receipt=path[-1].native_receipt))
+
+    def region_candidates(self, region, payload, payload_world, attachment, start, row):
+        for x in region_samples(region,self.high_belt,payload,float(self.ik["position_tolerance_m"])):
+            yield np.array([x,payload.center[1],payload.center[2]])
+
+    def region_motion(self, start, center, target, attachment, payload_world, supports,
+                      tracker, seed, required, guard, entry):
+        payload=attachment.box_at(start);physical=self.physical_contact_pose(start)
+        distance=float(payload.center[0]-center[0])
+        goal=physical.copy();goal[0,3]-=distance
+        geometry=dict(direction_world=[-1.,0.,0.],distance_m=distance,
+            start_physical_pose=physical.tolist(),goal_physical_pose=goal.tolist(),
+            required_terminal_clearance_m=required,support_names=supports,
+            constraint_ids=[b.name for b in payload_world],
+            method="CURRENT_FULL_BOTTOM_REGION_NORMAL_LIN",maximum_distance_m=None,
+            old_maximum_extraction_m=self.budget.maximum_extraction_m,
+            old_bound_scope="OLD_EXPERIMENT_SEARCH_BOUND_NOT_MECHANICAL_LIMIT")
+        path,failure,evidence=self._native_plan(start,None,payload_world,seed=seed,
+            stage="extraction",purpose=MotionPurpose.EXTRACTION_PROCESS,
+            goal_pose=self.virtual_from_physical(goal),attachment=attachment,
+            support_names=supports,initial_proximity=tracker.clone(),
+            allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
+        return path,failure,evidence,geometry,None,tracker.clone()
 
     def _plan_extraction_suffix(self, plan, row, start, target, obstacles,
                                 attachment, payload_world, supports, tracker, seed):
@@ -249,6 +277,7 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
         region=receiving_region(payload,self.high_belt,payload_world)
         row["receiving_region"]=region
         row["region_attempts"]=[]
+        self._region_turn_cache={}
         required=max(self.collision_policy.pair_clearance("external",self.collision_margin_m)+self.contact_tolerance_m,
             self.collision_policy.free_space_clearance_m)+self.budget.extraction_runtime_clearance_reserve_m
         original_deadline=getattr(self,"_single_connection_deadline",None)
@@ -268,21 +297,13 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
         stop="DISCRETE_EXPLORATION_EXHAUSTED"
         try:
             binding=self._region_context_binding(start,target,obstacles,attachment,payload_world,supports,tracker,seed)
-            for x in region_samples(region,self.high_belt,payload,float(self.ik["position_tolerance_m"])):
+            for center in self.region_candidates(region,payload,payload_world,attachment,start,row):
                 guard()
-                distance=float(payload.center[0]-x)
+                distance=float(payload.center[0]-center[0])
                 if distance<=0:
                     continue
-                goal=physical.copy();goal[0,3]-=distance
-                geometry=dict(direction_world=[-1.,0.,0.],distance_m=distance,
-                    start_physical_pose=physical.tolist(),goal_physical_pose=goal.tolist(),
-                    required_terminal_clearance_m=required,support_names=supports,
-                    constraint_ids=[b.name for b in payload_world],
-                    method="CURRENT_FULL_BOTTOM_REGION_NORMAL_LIN",maximum_distance_m=None,
-                    old_maximum_extraction_m=self.budget.maximum_extraction_m,
-                    old_bound_scope="OLD_EXPERIMENT_SEARCH_BOUND_NOT_MECHANICAL_LIMIT")
                 candidate_started=perf_counter()
-                entry=dict(center_world_m=[x,float(payload.center[1]),float(payload.center[2])],
+                entry=dict(center_world_m=center.tolist(),
                     distance_m=distance,planning_s=None,failure=None,selected=False,
                     native_result=dict(status="NOT_OBSERVED"),sample_check=dict(status="NOT_REACHED"),
                     terminal_separation=dict(status="NOT_REACHED"),release_ready_check=dict(status="NOT_REACHED"),
@@ -293,11 +314,8 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                 try:
                     before=perf_counter()
                     try:
-                        path,failure,evidence=self._native_plan(start,None,payload_world,seed=seed,
-                            stage="extraction",purpose=MotionPurpose.EXTRACTION_PROCESS,
-                            goal_pose=self.virtual_from_physical(goal),attachment=attachment,
-                            support_names=supports,initial_proximity=tracker.clone(),
-                            allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
+                        path,failure,evidence,geometry,checked_prefix,branch_tracker=self.region_motion(
+                            start,center,target,attachment,payload_world,supports,tracker,seed,required,guard,entry)
                     finally:
                         entry["planning_s"]=perf_counter()-before
                         row["times"]["extraction_s"]+=entry["planning_s"]
@@ -308,6 +326,12 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                         entry.update(stage_id=attempts[-1].get("stage_id"),parent_stage_id=attempts[-1].get("parent_stage_id"))
                     guard()
                     if failure is not None:
+                        if entry.get('first_leg_postcheck_failure') is not None:
+                            if failure.get('reason') not in {'CONTACT_NORMAL_LINE_OR_ORIENTATION','CONTACT_ENDPOINT_FK',
+                                    'EXTRACTION_RETURNED_SAMPLE_PAYLOAD_REJECTED'}:
+                                raise MoveItUnavailable('RECEIVER_REGION_UNKNOWN_FIRST_LEG_CHECK')
+                            entry.update(failure={**deepcopy(failure),'scope':'CANDIDATE_PATH'},acceptance_status='POSTCHECK_REJECTED')
+                            continue
                         if failure.get("reason") not in {"NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT",
                                 "MOVEIT2_SEARCH_EXHAUSTED","SEARCH_EXHAUSTED","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS"}:
                             raise MoveItUnavailable("RECEIVER_REGION_REQUEST_STOP:"+str(failure.get("reason")))
@@ -316,13 +340,14 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                         continue
                     if entry["native_result"]["status"]!="SUCCESS":
                         raise MoveItUnavailable("RECEIVER_REGION_NATIVE_RESULT_UNKNOWN")
-                    entry["path_sha256"]=self._region_path_binding(start,path,plan,entry["native_result"])
+                    entry["path_sha256"]=self._region_path_binding(start,path,plan,entry["native_result"],checked_prefix)
                     entry["acceptance_status"]="NATIVE_GENERATED_CANDIDATE"
                     branch["extraction_geometry"]=geometry
                     accepted,branch=self._complete_extraction_candidate(deepcopy(plan),branch,start,path,geometry,
-                        target,obstacles,attachment,payload_world,supports,tracker.clone(),seed,guard=guard)
+                        target,obstacles,attachment,payload_world,supports,branch_tracker,seed,guard=guard,
+                        checked_prefix=checked_prefix)
                     guard()
-                    if entry["path_sha256"]!=self._region_path_binding(start,path,plan,entry["native_result"]):
+                    if entry["path_sha256"]!=self._region_path_binding(start,path,plan,entry["native_result"],checked_prefix):
                         raise MoveItUnavailable("RECEIVER_REGION_VALIDATED_PATH_CHANGED")
                     if accepted is None:
                         failure=branch.get("failure") or {}
@@ -363,6 +388,10 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                             entry[dst]={k:deepcopy(data[k]) for k in data if k in
                                 {"status","passed","failure","checked_samples","short_pairs","minimum_payload_world_gap_m",
                                  "actual_gap_m","full_bottom_projection_inside","orientation_max_abs_error"}}
+                    if entry.get('segments') and entry['segments'][-1]['substage']=='RIGHT_INNER_X':
+                        entry['segments'][-1].update(sample_check=deepcopy(entry['sample_check']),
+                            terminal_separation=deepcopy(entry['terminal_separation']),
+                            release_ready_check=deepcopy(entry['release_ready_check']))
                     entry["candidate_total_s"]=perf_counter()-candidate_started
         except MoveItUnavailable as exc:
             if str(exc) not in {"RECEIVER_REGION_STAGE_DEADLINE","SINGLE_TARGET_STAGE_DEADLINE"} or self._native_cancelled():
@@ -373,6 +402,7 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
             row["times"]["region_search_s"]=perf_counter()-began
             row["times"]["total_s"]=perf_counter()-self._single_face_started
             self._single_connection_deadline=original_deadline
+            self._region_turn_cache={}
         return self._reject_suffix(row,dict(reason="RECEIVER_REGION_SEARCH_INCOMPLETE",scope="FRONT_TEMPLATE_ONLY",
             termination=stop,samples_attempted=len(row["region_attempts"]),global_unreachable=False))
 

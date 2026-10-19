@@ -47,13 +47,13 @@ def extraction_geometry(connector, target, attachment, start, obstacles, support
     return goal, evidence, None
 
 
-def extraction_sample_check(connector, path, attachment, target, geometry, tracker, obstacles, supports):
+def extraction_sample_check(connector, path, attachment, target, geometry, tracker, obstacles, supports, *, terminal=True):
     """Existing returned samples only; preserve branch-local ordered payload history."""
     from types import SimpleNamespace
     actual_start = np.asarray(geometry["start_physical_pose"])
     goal = np.asarray(geometry["goal_physical_pose"])
     line = SimpleNamespace(approach_pose=actual_start, contact_pose=goal,
-        outward_normal=-target.outward_normal, standoff_m=geometry["distance_m"])
+        outward_normal=-np.asarray(geometry["direction_world"]), standoff_m=geometry["distance_m"])
     fk = check_contact_samples(path, connector.physical_contact_pose, line,
         position_tolerance=float(connector.ik["position_tolerance_m"]),
         orientation_tolerance=float(connector.ik["orientation_tolerance_rad"]))
@@ -75,14 +75,15 @@ def extraction_sample_check(connector, path, attachment, target, geometry, track
         raise MoveItUnavailable("EXTRACTION_END_DISTANCE_UNKNOWN")
     short = [(name, d) for name, d in distances
         if d + 1e-9 < geometry["required_terminal_clearance_m"]]
-    if not tracker.fully_released or short:
+    if terminal and (not tracker.fully_released or short):
         failure = failure or dict(reason="ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED",
             scope="FACE_ATTEMPT", short_pairs=short, fully_released=tracker.fully_released)
     return dict(passed=failure is None, failure=failure, fk=fk, payload_poses_world=poses,
         checked_samples=len(path), additional_samples=0,
         ordered_history_scope="RETURNED_SAMPLES_ONLY_NOT_DENSE_OR_CONTINUOUS_PROOF",
         terminal_tracker=tracker.evidence(), short_pairs=short,
-        minimum_payload_world_gap_m=min((d for _, d in distances), default=None))
+        minimum_payload_world_gap_m=min((d for _, d in distances), default=None),
+        final_separation_required=terminal)
 
 
 class SingleExtractionConnector(SingleContactConnector):
@@ -222,7 +223,7 @@ class SingleExtractionConnector(SingleContactConnector):
             target, obstacles, attachment, payload_world, supports, original_tracker, seed)
 
     def _complete_extraction_candidate(self, plan, row, start, path, geometry,
-            target, obstacles, attachment, payload_world, supports, tracker, seed, *, guard=None):
+            target, obstacles, attachment, payload_world, supports, tracker, seed, *, guard=None, checked_prefix=None):
         """Evaluate and assemble this exact candidate once; no acceptance cache.
 
         Regional callers provide a fresh branch plan/row and initial tracker.
@@ -231,13 +232,17 @@ class SingleExtractionConnector(SingleContactConnector):
         if not np.array_equal(path[0], start):
             raise MoveItUnavailable("EXTRACTION_PARENT_STATE_CHANGED")
         records = self._native_selected_records(path[-1])
-        if (len(records) != len(plan["stages"])+1
-                or [r["stage_id"] for r in records[:-1]] != [r["stage_id"] for r in plan["stages"]]
-                or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]):
+        extra = 1 if checked_prefix is None else 2
+        if (len(records) != len(plan["stages"])+extra
+                or [r["stage_id"] for r in records[:-extra]] != [r["stage_id"] for r in plan["stages"]]
+                or records[-extra]["parent_stage_id"] != plan["stages"][-1]["stage_id"]):
             raise MoveItUnavailable("EXTRACTION_PARENT_CHAIN_INVALID")
+        if checked_prefix is not None:
+            self._validate_checked_turn(checked_prefix, start, path, records, attachment, tracker)
         row["attachment"]["status"] = "NATIVE_OWNERSHIP_TRANSITION_ACCEPTED"
         before = perf_counter()
-        samples = extraction_sample_check(self, path, attachment, target, geometry,
+        final_path = path if checked_prefix is None else checked_prefix["second_path"]
+        samples = extraction_sample_check(self, final_path, attachment, target, geometry,
             tracker, payload_world, supports)
         row["extraction_samples"] = samples
         row["times"]["extraction_sample_check_s"] = perf_counter() - before
@@ -259,7 +264,7 @@ class SingleExtractionConnector(SingleContactConnector):
             return self._reject_suffix(row, dict(reason=checked["status"], detail=checked.get("failure")))
         event = dict(event_type="ATTACH", scope="PLANNED_SCENE_TRANSITION_ONLY",
             target_id=target.target_id, q_rad=np.asarray(start).tolist(),
-            parent_stage_id=plan["stages"][-1]["stage_id"], next_stage_id=records[-1]["stage_id"],
+            parent_stage_id=plan["stages"][-1]["stage_id"], next_stage_id=records[-extra]["stage_id"],
             physical_execution="NOT_RUN", measured=False)
         plan.update(status=MARKER, extraction=[np.asarray(q).tolist() for q in path],
             end_q_rad=np.asarray(path[-1]).tolist(), final_state_receipt=path[-1].native_receipt,
@@ -268,5 +273,10 @@ class SingleExtractionConnector(SingleContactConnector):
                 "generation_source","pipeline_id","planner_id","points","time_parameterization",
                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records])
         row.update(complete=True, failure=None, actual_end_q_rad=np.asarray(path[-1]).tolist())
+        if checked_prefix is not None:
+            plan["extraction_segments"] = [deepcopy(checked_prefix["evidence"]), dict(
+                substage="RIGHT_INNER_X", stage_id=records[-1]["stage_id"],
+                parent_stage_id=records[-1]["parent_stage_id"], geometry=deepcopy(geometry),
+                sample_check=deepcopy(samples), points=deepcopy(records[-1]["points"]))]
         row["times"]["total_s"] = perf_counter() - self._single_face_started
         return self.complete_extraction_plan(plan, row, path[-1], target, obstacles, attachment, seed)

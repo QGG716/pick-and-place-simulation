@@ -36,6 +36,10 @@ def main():
     stages.add_argument("--through-lifted-release-ready",action="store_true",
         help="front Hmax template: native lift coordination and normal LIN into receiver region; remains attached")
     parser.add_argument("--initial-state",type=Path)
+    parser.add_argument('--receiver-template',choices=['front','right_inner'],default='front',
+        help='explicit Hmax process template; does not change ordinary face preference')
+    parser.add_argument('--open-middle-channel',action='store_true',
+        help='declared geometric initial condition: remove original-layer middle cartons, not unloading results')
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--worker-command",required=True)
     parser.add_argument("--worker-binary",type=Path,required=True)
@@ -45,6 +49,10 @@ def main():
     parser.add_argument("--stage-budget-s",type=float,default=90.)
     parser.add_argument("--ipc-timeout-s",type=float,default=100.)
     args=parser.parse_args()
+    if (args.receiver_template!='front' or args.open_middle_channel) and not args.through_lifted_release_ready:
+        parser.error('receiver template/channel options require --through-lifted-release-ready')
+    if args.open_middle_channel and (args.receiver_template!='right_inner' or args.initial_state):
+        parser.error('channel preparation requires right_inner and configured initial q')
     if args.through_lifted_release_ready and args.legacy_single_attempts:
         parser.error("Hmax template requires the normal shared-budget recovery policy")
     if (not all(np.isfinite(x) and x>0 for x in (args.task_budget_s,args.stage_budget_s,args.ipc_timeout_s))
@@ -79,6 +87,13 @@ def main():
     if (q.shape!=(6,) or velocity.shape!=(6,) or not np.isfinite(q).all()
             or not np.isfinite(velocity).all() or np.any(velocity!=0.)):
         raise ValueError("INVALID_OR_NONSTATIONARY_INITIAL_STATE")
+    if args.open_middle_channel:
+        from unloading_sim.lifted_reception import layer_role
+        original_target=next(b for b in original.cartons if b.name==args.target)
+        role=layer_role(original_target,original.cartons,original.cartons)
+        if role['role']!='RIGHT_END':raise ValueError('CHANNEL_REQUIRES_ORIGINAL_RIGHT_END')
+        removed=role['original_y_order'][1:-1]
+        source='CONFIGURED_OFFLINE_STATIC_STATE_DECLARED_MIDDLE_CHANNEL_OPEN_NOT_UNLOADED'
     prepared=perf_counter()
     scene=next_scene(original,removed,q,built.connector.robot)
     target=next((b for b in scene.cartons if b.name==args.target),None)
@@ -90,7 +105,7 @@ def main():
         lift_binding,_=receiver_binding(target,scene.all_obstacles,scene.snapshot["assembly"]["designed_contacts"])
     client=SingleContactClient(ResidentMoveItClient(args.worker_command,log_path=str(args.output/"worker.log")),
         extraction_enabled=args.through_extraction,preplace_enabled=args.through_preplace,search_trace_enabled=args.search_trace,recovery_enabled=not args.legacy_single_attempts,
-        lifted_receiver_binding=lift_binding)
+        lifted_receiver_binding=lift_binding,right_inner_enabled=args.receiver_template=='right_inner')
     connector_type=SingleContactConnector
     marker=MARKER
     if args.through_extraction:
@@ -105,6 +120,9 @@ def main():
         from unloading_sim.single_lifted_receiver import SingleLiftedReceiverConnector, MARKER as LIFTED_MARKER
         connector_type=SingleLiftedReceiverConnector
         marker=LIFTED_MARKER
+        if args.receiver_template=='right_inner':
+            from unloading_sim.single_right_receiver import SingleRightReceiverConnector
+            connector_type=SingleRightReceiverConnector
     c=None
     try:
         c=connector_type.from_existing(built.connector,scene,native_client=client,
@@ -123,11 +141,23 @@ def main():
         c._final_export_reserve_s=0.
         c.boundary_costs={}
         generation=perf_counter()
+        side_depth=None
+        if args.receiver_template=='right_inner':
+            from unloading_sim.moveit2_backend import native_tool_collision_boxes
+            tools,_=native_tool_collision_boxes(c,q)
+            contact_from_world=np.linalg.inv(c.physical_contact_pose(q))
+            side_depth=max(-float(b.transformed(contact_from_world).corners()[:,2].min()) for b in tools)+c.budget.pregrasp_standoff_m
         targets,screening=simulation_contact_targets(scene,target,c.robot.base_transform[:3,3],
-            c.budget.pregrasp_standoff_m)
+            c.budget.pregrasp_standoff_m,side_exposure_depth_m=side_depth)
         if args.through_lifted_release_ready:
-            targets=[t for t in targets if t.face_role=="FRONT"]
-            screening=dict(upstream=screening,scope="FRONT_HMAX_TEMPLATE_ONLY_OTHER_TEMPLATES_NOT_EVALUATED")
+            if args.receiver_template=='right_inner':
+                from unloading_sim.single_right_receiver import right_inner_targets
+                targets,provenance=right_inner_targets(targets,target,original.cartons,scene.cartons)
+                c.template_provenance=provenance
+                screening=dict(upstream=screening,**provenance)
+            else:
+                targets=[t for t in targets if t.face_role=="FRONT"]
+                screening=dict(upstream=screening,scope="FRONT_HMAX_TEMPLATE_ONLY_OTHER_TEMPLATES_NOT_EVALUATED")
         target_generation_s=perf_counter()-generation
         plan,attempts=plan_faces(c,targets,q,velocity,source,scene.all_obstacles,policy.data["suction"],args.seed)
         total_s=perf_counter()-began
@@ -147,6 +177,7 @@ def main():
                 clearance=clearance,request_check_evidence=response.get("request_check_evidence")))
         result=dict(schema="m710_single_approach_contact_v1",status=marker,through_extraction=args.through_extraction or args.through_preplace or args.through_lifted_release_ready,through_preplace=args.through_preplace,
             through_lifted_release_ready=args.through_lifted_release_ready,
+            receiver_template=args.receiver_template if args.through_lifted_release_ready else None,
             qualification_status="NOT_EVALUATED",continuous_swept_proof=False,
             physical_execution="NOT_RUN",execution_ready=False,run_id=run_id,
             source_commit=args.source_commit,command=[sys.executable,*sys.argv],seed=args.seed,

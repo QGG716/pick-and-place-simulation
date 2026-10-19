@@ -18,7 +18,7 @@ MARKER = "APPROACH_CONTACT_PLANNED_NOT_EXECUTABLE"
 
 class SingleContactClient:
     """Fail-closed protocol fence, including startup. No old planner entry can hide."""
-    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False, search_trace_enabled=False, recovery_enabled=True, lifted_receiver_binding=None):
+    def __init__(self, client, *, extraction_enabled=False, preplace_enabled=False, search_trace_enabled=False, recovery_enabled=True, lifted_receiver_binding=None, right_inner_enabled=False):
         self.client, self.records = client, []
         self.forbidden_attempts = 0
         self.search_trace_enabled=search_trace_enabled
@@ -27,10 +27,20 @@ class SingleContactClient:
         self.traces=[]
         self.preplace_enabled = preplace_enabled
         self.lifted_receiver_binding = deepcopy(lifted_receiver_binding)
+        if right_inner_enabled and (lifted_receiver_binding is None or preplace_enabled or not recovery_enabled):
+            raise MoveItUnavailable("RIGHT_INNER_CLIENT_SCOPE")
+        self.right_inner_enabled=right_inner_enabled
         self.extraction_enabled = extraction_enabled or preplace_enabled or lifted_receiver_binding is not None
 
     def request(self, request, **kwargs):
         op = request.get("op")
+        if request.get('receiver_template') is not None:
+            if not (self.right_inner_enabled and request['receiver_template']=='RIGHT_INNER_HMAX'
+                    and op=='plan' and request.get('stage')=='extraction'
+                    and bool(request.get('parent_stage_id'))
+                    and ((request.get('process_substage')=='RIGHT_INNER_Y' and request.get('ownership_transition')=='ATTACH')
+                        or (request.get('process_substage')=='RIGHT_INNER_X' and request.get('ownership_transition') is None))):
+                raise MoveItUnavailable('RIGHT_INNER_REQUEST_SCOPE')
         if op == "init" and self.lifted_receiver_binding is not None:
             request = dict(request, lifted_receiver_binding=self.lifted_receiver_binding)
             self.trace_inputs["model"] = deepcopy(request)
@@ -114,7 +124,8 @@ class SingleContactClient:
         entry = {k: deepcopy(request.get(k)) for k in (
             "op","task_id","stage_id","parent_stage_id","stage","candidate_id","seed",
             "pipeline_id","planner_id","q_start","q_goal","goal_pose","scene_fingerprint",
-            "allowed_planning_time_s","ik_timeout_s","ik_mode","solver_budget_s","purpose","excluded_ik","ik_dedup_tolerance_rad")}
+            "allowed_planning_time_s","ik_timeout_s","ik_mode","solver_budget_s","purpose","excluded_ik","ik_dedup_tolerance_rad",
+            "receiver_template","process_substage")}
         if op in {"plan","check_start","check_receiver_state","ik","check_extraction_end","check_transit_end"}:
             entry.update(attachment=request.get("attachment"),
                 target_id=request["process_policy"]["target_id"],

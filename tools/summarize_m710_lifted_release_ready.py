@@ -37,7 +37,7 @@ def summarize(directory):
         rows.extend(row.get('previous_prefix_attempts',[]));rows.append(row)
     times=Counter()
     for row in rows:
-        for key,value in row['times'].items():
+        for key,value in row.get('times',{}).items():
             if key!='total_s' and value is not None:times[key]+=value
     plan=result.get('plan');continuity=None
     if plan:
@@ -57,14 +57,18 @@ def summarize(directory):
         planning_s=result['total_planning_s'],row_times_s=dict(times),request_round_trip_s=dict(request_cost),
         request_counts=dict(calls),native_calls=result['native_calls'],prior_calls=result['prior_build_load_query_calls'],
         pair_profile_enabled=False,exact_selected_q_and_parent_continuity=continuity,
-        initial_receiver_checks=compact_evidence(rows[0].get('initial_receiver_checks',[])),
+        initial_receiver_checks=compact_evidence(rows[0].get('initial_receiver_checks',[])) if rows else [],
         external_axis_attempts=compact_evidence(external),
         receiver_sync_attempts=[{key: item[key] for key in
             ('sync_stage','parent_stage_id','q_rad','status','round_trip_s')}
             for row in rows for item in row.get('receiver_sync_attempts',[])],
         prefix_attempt_count=len(rows),region_attempts=[a for row in rows for a in row.get('region_attempts',[])],
         planned_attach_events=None if not plan else sum(e.get('event_type')=='ATTACH' for e in plan['events']),
-        failure=result['attempts'][-1].get('failure'),release_ready=None if not plan else plan['release_ready'],
+        failure=result['attempts'][-1].get('failure') if rows else dict(reason='NO_TEMPLATE_AVAILABLE',screening=result['screening']),
+        receiver_template=result.get('receiver_template','front'),removed_cartons=result.get('removed_cartons',[]),
+        side_regions=[row['side_region'] for row in rows if 'side_region' in row],
+        extraction_segments=None if not plan else plan.get('extraction_segments'),
+        release_ready=None if not plan else plan['release_ready'],
         status=result['status'],qualification_status='NOT_EVALUATED',continuous_swept_proof=False,
         physical_execution='NOT_RUN',
         timing_semantics='Planning inclusive of all attempts; row/request/solver/check times are nested. Do not sum columns. External axis has no execution time law.')

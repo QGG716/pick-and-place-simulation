@@ -1,6 +1,7 @@
 #pragma once
 #include "process_geometry.h"
 #include "clearance.h"
+#include "side_transfer.h"
 
 namespace m710 {
 // Candidate-local process permissions. ACM exempts only the named pairs whose
@@ -16,6 +17,8 @@ class ProcessPolicy {
   size_t state_checks_=0,ordered_checks_=0;
   Json terminal_proximity_=nullptr;
   bool profile_=false,reuse_=false;
+  bool side_transfer_=false;
+  size_t side_distance_queries_=0;
   std::unique_ptr<ProcessSealInput> seal_input_;
   ProcessSealInput::Result seal_result_;
   bool seal_result_ready_=false;
@@ -88,6 +91,19 @@ public:
       throw std::runtime_error("PROCESS_TARGET_POSE_MISMATCH");
     const auto relaxation_stages=source_.at("stack_contact_stages").get<std::set<std::string>>();
     relaxed_=attached_ && relaxation_stages.count(stage_) && !initial_.is_null();
+    side_transfer_=!initial_.is_null() && initial_.contains("controlled_side_transfer");
+    if(side_transfer_) {
+      if(!relaxed_ || !request.value("planning_only",false) || request.value("planning_mode","")!="cold_from_scratch" ||
+          stage_!="extraction" || request.value("receiver_template","")!="RIGHT_INNER_HMAX" ||
+          (request.value("process_substage","")!="RIGHT_INNER_Y" && request.value("process_substage","")!="RIGHT_INNER_X") ||
+          source_.at("stack_contact_mode")!="planner_relaxed_physics_checked")throw std::runtime_error("SIDE_TRANSFER_SCOPE");
+      validateSideHistory(initial_.at("controlled_side_transfer"),world_,stack_,target_id_);
+      if((processBox(initial_.at("controlled_side_transfer").at("original_target")).half-target_.half).cwiseAbs().maxCoeff()>1e-12)
+        throw std::runtime_error("SIDE_TRANSFER_ORIGINAL_GEOMETRY_CHANGED");
+      if(request.at("process_substage")=="RIGHT_INNER_Y" &&
+          (processBox(initial_.at("controlled_side_transfer").at("original_target")).pose.matrix()-actual.pose.matrix()).cwiseAbs().maxCoeff()>1e-7)
+        throw std::runtime_error("SIDE_TRANSFER_ORIGINAL_POSE_CHANGED");
+    }
     if(relaxed_ && source_.at("stack_contact_mode")!="planner_relaxed_physics_checked" && !initial_.contains("pairs"))
       throw std::runtime_error("PROCESS_PROXIMITY_HISTORY_REQUIRED");
     if(!initial_.is_null() && !attached_) throw std::runtime_error("PROCESS_PROXIMITY_REQUIRES_ATTACHMENT");
@@ -171,6 +187,11 @@ public:
     }
     if(profile_) compression_s_+=std::chrono::duration<double>(ProfileClock::now()-compression_begin).count();
     if(attached_) {
+      if(side_transfer_) {
+        auto history=initial_.at("controlled_side_transfer");
+        last_failure=sideState(target,world_,stack_,history,source_.at("free_space_clearance_m"),tolerance_,false,&side_distance_queries_);
+        if(!last_failure.is_null())return false;
+      }
       for(const auto& name:supports_) if(!(relaxed_&&stack_.count(name)) && !processSupportSeparated(target,world_.at(name),tolerance_)) {
         last_failure=fail("SUPPORT_SIDE_OR_DEEP_PENETRATION",name,processSignedGap(target,world_.at(name)));return false;
       }
@@ -239,8 +260,28 @@ public:
     return nullptr;
   }
   Json terminalProximity() const {return terminal_proximity_;}
+  bool hasSideTransfer() const {return side_transfer_;}
+  Json checkSideReturned(moveit::core::RobotState state,const Json& path,
+                         std::chrono::steady_clock::time_point deadline) {
+    if(!side_transfer_)throw std::runtime_error("SIDE_TRANSFER_NOT_CONFIGURED");
+    auto history=initial_.at("controlled_side_transfer");bool released=initial_.at("fully_released");
+    size_t index=0;
+    for(const auto& q:path) {
+      if(std::chrono::steady_clock::now()>=deadline)throw std::runtime_error("SIDE_TRANSFER_DEADLINE");
+      state.setJointGroupPositions("manipulator",q.get<std::vector<double>>());state.update();++ordered_checks_;
+      auto target=targetAt(state);auto failure=sideState(target,world_,stack_,history,source_.at("free_space_clearance_m"),tolerance_,true,&side_distance_queries_);
+      if(!failure.is_null()){failure["sample"]=index;return failure;}
+      bool clear=true;for(const auto& name:stack_)if(name!=target_id_ && clear) {
+        ++side_distance_queries_;clear=sideSurfaceGap(target,world_.at(name))>=source_.at("free_space_clearance_m").get<double>();
+      }
+      released=released||clear;++index;
+    }
+    terminal_proximity_=initial_;terminal_proximity_["controlled_side_transfer"]=history;
+    terminal_proximity_["fully_released"]=released;return nullptr;
+  }
   Json evidence() const {std::lock_guard<std::mutex> lock(mutex_);return {{"schema","m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"seal_geometry_evaluations",seal_evaluations_},{"compression_sat_evaluations",compression_evaluations_},{"profile_seal_s",seal_s_},{"profile_compression_s",compression_s_},{"profile_enabled",profile_},{"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
+    {"side_transfer_enabled",side_transfer_},{"side_distance_queries",side_distance_queries_},
     {"support_names",supports_},{"last_seal",seal_result_ready_?seal_input_->evidence(seal_result_):last_seal},{"native_check_reuse",reuse_},{"seal_input_compilations",seal_input_?1:0},{"fixed_seal_verdict_reuses",0},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}
 };
 }
