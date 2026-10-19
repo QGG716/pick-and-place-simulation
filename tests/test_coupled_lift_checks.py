@@ -15,7 +15,7 @@ def layout():
 
 
 def test_existing_rear_stand_solid_overlap_has_literal_numeric_witness(layout):
-    result = check_coupled_state(layout, .6)
+    result = check_coupled_state(layout, .6, legacy_geometry=True)
     assert not result["passed"]
     assert result["object_count"] == 139
     assert len(result["carton_ids"]) == 40
@@ -70,8 +70,32 @@ def test_interval_invalid_inputs_and_resources(layout):
 def test_broadphase_is_not_a_collision_verdict(layout):
     # Each rejected pair carries a refined SAT/surface query. AABB intersects
     # alone cannot supply an exact volume for tilted solids.
-    result = check_coupled_state(layout, 2.05)
+    result = check_coupled_state(layout, 2.05, legacy_geometry=True)
     assert all(f["query_method"].startswith("OBB_SAT") for f in result["failures"])
     tilted = next(f for f in result["failures"] if
                   set(f["pair"]) == {"lift_rear_stand_0", "conveyor_longitudinal"})
     assert "exact_axis_aligned_intersection" not in tilted
+
+
+@pytest.mark.parametrize('start,end',[(.6,2.05),(2.05,.6),(.6,1.75),(1.75,.6),(1.75,2.05),(2.05,1.75),(2.05,2.05)])
+def test_corrected_synchronized_working_interval(layout,start,end):
+    contacts=[['chassis','conveyor_transverse'],['chassis','conveyor_longitudinal'],
+              ['conveyor_transverse','conveyor_longitudinal']]
+    result=check_coupled_interval(layout,start,end,height_step_m=.01,designed_contacts=contacts)
+    assert all(s['passed'] for s in result['samples']), [(s['height_m'],s['failures']) for s in result['samples'] if not s['passed']]
+    assert not result['continuous_swept_proof']
+
+
+def test_corrected_support_connectivity_and_independent_chassis(layout):
+    from unloading_sim.pair_clearance import obb_surface_distance
+    for h in [.6,1.75,2.05]:
+        state=coupled_conveyor_state(layout,h)
+        b={x.name:x for x in state.boxes}
+        for stand in ('lift_rear_stand_0','lift_rear_stand_2'):
+            assert obb_surface_distance(b[stand],b['lift_rear_bearing']) < 1e-9
+            assert obb_surface_distance(b[stand],b['conveyor_longitudinal']) >= .005
+        for key in ('lift_longitudinal_near','lift_longitudinal_rear'):
+            assert obb_surface_distance(b[key+'_neck'],b[key+'_head_rail']) < 1e-9
+            assert obb_surface_distance(b[key+'_neck'],b[key+'_swivel_head']) < 1e-9
+            assert obb_surface_distance(b[key+'_foot_1'],b['chassis']) >= .019999
+        assert obb_surface_distance(b['lift_rear_bearing'],b['chassis']) >= .009999

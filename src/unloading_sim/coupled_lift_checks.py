@@ -50,6 +50,9 @@ def assembly_mates(state):
         elif key in {"lift_longitudinal_near", "lift_longitudinal_rear"}:
             mate(f"{key}_head_rail", f"{key}_swivel_head", "DECLARED_SWIVEL_HEAD")
             mate(f"{key}_swivel_head", "conveyor_longitudinal", "DECLARED_SWIVEL_CONVEYOR_MOUNT")
+            if state.mechanism.get("geometry_revision") == "rear_offset_neck_v2":
+                mate(f"{key}_head_rail", f"{key}_neck", "DECLARED_HEAD_NECK")
+                mate(f"{key}_neck", f"{key}_swivel_head", "DECLARED_NECK_SWIVEL")
         else:
             raise ValueError("UNKNOWN_COUPLED_STACK_TOPOLOGY")
     for stand in ("lift_rear_stand_0", "lift_rear_stand_2"):
@@ -86,10 +89,10 @@ def _pair_geometry(a, b):
     return result
 
 
-def check_coupled_state(layout, height, cartons=None, *, clearance_m=.005, designed_contacts=()):
+def check_coupled_state(layout, height, cartons=None, *, clearance_m=.005, designed_contacts=(), legacy_geometry=False):
     if not np.isfinite(clearance_m) or clearance_m < 0:
         raise ValueError("INVALID_COUPLED_CLEARANCE")
-    state = coupled_conveyor_state(layout, height, cartons)
+    state = coupled_conveyor_state(layout, height, cartons, legacy_geometry=legacy_geometry)
     mates = assembly_mates(state)
     boxes = state.boxes
     # Vectorized broad phase; candidate pairs still require an exact OBB query.

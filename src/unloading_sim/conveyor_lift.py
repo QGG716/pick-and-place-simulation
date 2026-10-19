@@ -105,7 +105,7 @@ class CoupledConveyorState:
                     physical_execution="NOT_RUN", native_motion_approval="NOT_EVALUATED")
 
 
-def coupled_conveyor_state(layout, surface_z_world_m, cartons=None):
+def coupled_conveyor_state(layout, surface_z_world_m, cartons=None, *, legacy_geometry=False):
     """Near longitudinal tip follows height; rear top-surface hinge is fixed.
 
     Its near tip slides in X, rather than stretching a rigid 2.8 m conveyor.
@@ -155,18 +155,25 @@ def coupled_conveyor_state(layout, surface_z_world_m, cartons=None):
             raise ValueError("LONGITUDINAL_SUPPORT_OUTSIDE_FRAME")
         underside = rear[2]+(x-rear[0])*np.tan(theta)-thickness/c
         items, info = scissor_stack(f"lift_longitudinal_{'rear' if side<0 else 'near'}",
-            [x, rear[1]-.30, base_z], [0,1,0], underside-.07, ScissorSpec(4,.60,.025,.018),floor_z=floor)
+            [x, rear[1]-(.30 if legacy_geometry else .32), base_z], [0,1,0],
+            underside-(.07 if legacy_geometry else .09), ScissorSpec(4,.60,.025,.018),floor_z=floor)
         parts.extend(items); stacks.append(info)
         parts.append(_box(f"{info['id']}_swivel_head",np.array([x,rear[1],underside])-rotation[:,2]*.01,
                           [.08,.60,.02],rotation))
+        if not legacy_geometry:
+            # Central neck joins the lowered horizontal rail to the swivel.
+            # Narrow in X to clear the tilted underside at the maximum angle.
+            parts.append(_box(f"{info['id']}_neck", [x,rear[1]-.02,underside-.04], [.02,.50,.05]))
     # Rear stand and bearing keep the same world pose at every lift height.
     for side in (-1,1):
         stand_height = rear[2]-floor-.05
         if stand_height <= 0:
             raise ValueError("INVALID_REAR_STAND_HEIGHT")
         parts.append(_box(f"lift_rear_stand_{side+1}",
-            [rear[0], rear[1]+side*(width/2-.06), floor+stand_height/2], [.08,.08,stand_height]))
-    parts.append(_box("lift_rear_bearing", rear, [.12,width,.10]))
+            [rear[0]-(0 if legacy_geometry else .12), rear[1]+side*(width/2-.06),
+             floor+stand_height/2], [.08,.08,stand_height]))
+    parts.append(_box("lift_rear_bearing", rear+([0,0,0] if legacy_geometry else [-.06,0,0]),
+                      [.12,width,.10] if legacy_geometry else [.24,width-.02,.10]))
     boxes = tuple(trans if b.name==trans.name else long if b.name==long.name else b for b in fixed)
     boxes += tuple(layout.cartons() if cartons is None else cartons)+tuple(parts)
     if len({b.name for b in boxes}) != len(boxes):
@@ -175,7 +182,10 @@ def coupled_conveyor_state(layout, surface_z_world_m, cartons=None):
                      or b.name.startswith("lift_rear_")]
     moving=[trans.name,long.name]+[b.name for b in parts if b.name not in fixed_structure]
     xmin, xmax = transverse.center[0]+np.array([-1,1])*transverse.half_extents[0]
-    info = dict(schema="m710_coupled_scissor_v1", height_m=height, tilt_rad=theta,
+    info = dict(schema="m710_coupled_scissor_v1", geometry_revision="historical_rejected_v1" if legacy_geometry else "rear_offset_neck_v2",
+        design_basis=dict(rear_support="80mm posts behind the rotating frame, continuous enlarged bearing housing at unchanged pivot",
+            chassis_relation="INDEPENDENT_FLOOR_SUPPORTED_WITH_CLEARANCE", longitudinal_feet_y_offset_m=-.02,
+            head="20mm lower rail with central neck to swivel; tilted-frame clearance"), height_m=height, tilt_rad=theta,
         longitudinal_length_m=float(length), rear_hinge_world=rear.tolist(), near_tip_world=near.tolist(),
         near_tip_slide_x_m=float(near[0]-(rear[0]+length)), rear_fixed=True,
         near_tip_within_transverse_x=bool(xmin <= near[0] <= xmax),
