@@ -67,6 +67,17 @@ def export(snapshot_path, home_path, config_path, out):
     if not actual_layout: assert len(scene['boxes']) == 4
     elif c != scene['layout_config']: raise ValueError('FULL_FACE_CONFIG_CHANGED')
     home_data = load_json(home_path); home = home_data['home_q']
+    home_source=home_data
+    if home_data.get('schema')=='eco65_native_plan_v1':
+        from unloading_sim.eco65.native_task import validate_plan_contract
+        validate_plan_contract(home_data,snapshot)
+        # Keep the complete immutable plan at its original location. Copying
+        # all native failure records into a display manifest can add gigabytes.
+        home_source={k:home_data[k] for k in ('schema','status','fingerprint','snapshot_fingerprint',
+                     'identity','home_q','initial_state_semantics','target_face','active_ids') if k in home_data}
+        home_source.update(representation='PLAN_HOME_REFERENCE',
+            source_path=Path(os.path.relpath(Path(home_path).resolve(),ROOT)).as_posix(),
+            source_sha256=hashlib.sha256(Path(home_path).read_bytes()).hexdigest())
     if home_data.get('status') == 'STATIC_POSE_ONLY' and (
             home_data['source_snapshot_fingerprint'] != expected or
             home_data['identity'] != snapshot['native_model']['init']['identity']):
@@ -256,7 +267,7 @@ def export(snapshot_path, home_path, config_path, out):
         table_config=c,cartons=scene['boxes'],base_position_D_m=scene['base_position_m'],
         source_config_sha256=snapshot['config_sha256'], physics='NOT_EVALUATED',planning='NOT_EXECUTED',
         workstation_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
-    manifest.update(home_source=home_data,frame_transforms_D={k:np.asarray(v).tolist() for k,v in frame_transforms.items()},
+    manifest.update(home_source=home_source,frame_transforms_D={k:np.asarray(v).tolist() for k,v in frame_transforms.items()},
         collision_records=collision_records,obstacles=[o for o in scene['obstacles'] if o['role']!='warehouse_environment'])
     if native:
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
@@ -265,7 +276,7 @@ def export(snapshot_path, home_path, config_path, out):
             mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)
     elif native_12carton:
         manifest.update(native_12carton=True,layout_config=c,conveyors=scene['conveyors'],
-            top_geometry=scene['top_geometry'],mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),
+            top_geometry=scene.get('top_geometry'),mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),
             permanent_camera=scene.get('permanent_camera'),status='NATIVE_GEOMETRY_EXPORTED',frozen_environment=True)
     (out/'workstation_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     print(path)

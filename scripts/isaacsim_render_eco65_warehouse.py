@@ -170,6 +170,10 @@ def main():
                 ('trailer_roof_inner','trailer_roof',0,1.45)]:
             if path=='trailer_roof' and not stage.GetPrimAtPath('/World/Workstation/'+path):
                 heights[name]={'status':'NOT_EVALUATED_ROOF_DISABLED'};continue
+            if data.get('native_snapshot') and 'obstacles' in data and not path.startswith('conveyor_'):
+                source_obstacle=next(o for o in data['obstacles'] if o['id']==path)
+                expected=(source_obstacle['position_m'][2]+(1 if side else -1)*source_obstacle['size_m'][2]/2
+                          +translation[2])
             if (data.get('full_face_static') or data.get('native_12carton')) and path.startswith('conveyor_'):
                 item=next(r for r in data['conveyors']['items'] if r['id']==path.removesuffix('_belt'))
                 from unloading_sim.eco65.model import ROOT
@@ -200,11 +204,15 @@ def main():
                 if not np.allclose(actual,expected_bounds,atol=2e-6,rtol=0):
                     raise ValueError('FROZEN_BELT_GEOMETRY_MISMATCH:'+item['id'])
                 heights[name]=float(actual[side,2])
+                if data.get('native_snapshot'):expected=float(expected_bounds[side,2])
                 belt_readback[item['id']]=dict(bounds_W_m=actual.tolist(),
                     source_mesh_count=len(actual_bounds),source_sha256=item['usd_sha256'])
             else: heights[name]=float(bounds(path)[side][2])
             if not a.layout_review:assert abs(heights[name]-expected)<2e-6
-        if not a.layout_review:assert np.allclose(bounds('trailer_floor')[1][:2]-bounds('trailer_floor')[0][:2],[2,2])
+        table_size=[2,2]
+        if data.get('native_snapshot') and 'obstacles' in data:
+            table_size=next(o['size_m'][:2] for o in data['obstacles'] if o['id']=='trailer_floor')
+        if not a.layout_review:assert np.allclose(bounds('trailer_floor')[1][:2]-bounds('trailer_floor')[0][:2],table_size)
         # Check each actual workstation mesh/collider, not just its design footprint.
         intersections=[];checked=0
         for prim in Usd.PrimRange(station.GetPrim()):
