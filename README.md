@@ -1,4 +1,14 @@
-# FANUC M-710iD/70 当前结论（2026-10-17）
+# FANUC M-710iD/70 当前结论（2026-10-19）
+
+已修补 **Hmax 接收区域候选的完整验收与回退**：原生 LIN 成功后仍须通过返回点历史、末态分离、接收投影/间隔/姿态及最终身份/期限检查，才标为最终选择。候选级后置拒绝可从同一实际 contact 父状态、attachment 和独立 tracker 继续搜索；请求级错误停止。最终方案不重复验收或 ATTACH。
+
+c02/c04 各两个预先固定种子的原生复核共 **4/4 到达释放准备**，总规划时间分别 **2.373 / 3.021 / 2.369 / 2.873 s**。四次均首样本通过；后置失败恢复由定向测试覆盖，未在真实案例中触发。171 项定向 Python 测试通过。新服务器与上轮 CPU 不同，不作因果加速或成功率不退化结论。
+
+[本轮补修、全部尝试耗时与原始记录](docs/m710_receiver_acceptance_20261019.md) · [下载本次实际关节离线回放](docs/experiments/m710_receiver_acceptance_20261019/offline-viewers.zip)
+
+`LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE`；qualification_status=NOT_EVALUATED；continuous_swept_proof=false；physical_execution=NOT_RUN。目标仍附着，未运行真实释放、Isaac、真机或重型执行资格流程。
+
+## 前轮 Hmax 原生链路记录（2026-10-17，原记录保留）
 
 已接入**正面抓取＋Hmax 横带的真实原生释放准备规划**。最终版 c02 / c04 均从完整 40 箱配置初态重新完成接近、受检查升带、接触、规划附着与 −X LIN 抽离，规划耗时 **4.390 / 5.451 s**。原生检查确认配置初态与 Hmax 干涉；两例在本次接近末态停臂升带，再进入实际接收区域。目标仍附着，未释放、未物理执行。
 

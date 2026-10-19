@@ -49,7 +49,7 @@ def summarize(directory):
             previous=last;previous_id=stage['stage_id']
         assert previous==plan['end_q_rad']
         assert plan['target_still_attached'] and not any(e.get('event_type')=='RELEASE' for e in plan['events'])
-    return dict(target=result['target_id'],run_id=result['run_id'],source_commit=result['source_commit'],
+    return dict(target=result['target_id'],seed=result['seed'],run_id=result['run_id'],source_commit=result['source_commit'],
         worker_sha256=result['worker_sha256'],model_identity=result['model_identity'],budgets=result['budgets'],
         environment=result['environment'],command=result['command'],initial_carton_count=len(result['initial_cartons']),
         start_source=result['start_source'],start_q_rad=result['start_q_rad'],complete=result['complete'],
@@ -63,6 +63,7 @@ def summarize(directory):
             ('sync_stage','parent_stage_id','q_rad','status','round_trip_s')}
             for row in rows for item in row.get('receiver_sync_attempts',[])],
         prefix_attempt_count=len(rows),region_attempts=[a for row in rows for a in row.get('region_attempts',[])],
+        planned_attach_events=None if not plan else sum(e.get('event_type')=='ATTACH' for e in plan['events']),
         failure=result['attempts'][-1].get('failure'),release_ready=None if not plan else plan['release_ready'],
         status=result['status'],qualification_status='NOT_EVALUATED',continuous_swept_proof=False,
         physical_execution='NOT_RUN',
@@ -74,7 +75,7 @@ def main():
     args=p.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     rows=[summarize(run) for run in args.runs]
     (args.output/'summary.json').write_text(json.dumps(dict(cases=rows),ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf-8')
-    keys=['target','complete','planning_s','initialization_s','scene_prepare_s','prefix_attempt_count']
+    keys=['target','seed','complete','planning_s','initialization_s','scene_prepare_s','prefix_attempt_count','planned_attach_events']
     with (args.output/'timing.csv').open('w',newline='',encoding='utf-8') as stream:
         writer=csv.DictWriter(stream,fieldnames=keys);writer.writeheader()
         writer.writerows({key:row[key] for key in keys} for row in rows)

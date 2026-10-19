@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_lin_success_then_end_rejection_continues_same_contact __________
+
+    def test_lin_success_then_end_rejection_continues_same_contact():
+        c,t,q,world,plan,row,calls,checks,records,trackers=receiver_fixture()
+        original=c.native.request
+        def injected(req,**kw):
+            result=original(req,**kw)
+            if len(checks)==1:
+                result.update(status='EXTRACTION_END_CLEARANCE_REJECTED',
+                    failure=dict(reason='TEST_INJECTED_PAIR_CLEARANCE',pair=['box','support']))
+            return result
+        c.native.request=injected
+        result,row=c.complete_contact_plan(plan,row,q,t,world,{},71070)
+>       assert result is not None and row['complete']
+E       assert (None is not None)
+
+tests/test_receiver_candidate_acceptance.py:77: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_receiver_candidate_acceptance.py::test_lin_success_then_end_rejection_continues_same_contact
+1 failed in 0.18s

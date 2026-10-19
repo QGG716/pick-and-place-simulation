@@ -1,0 +1,9 @@
+BEGIN c02 seed=71070
+END c02 seed=71070 exit=0
+BEGIN c04 seed=71070
+END c04 seed=71070 exit=0
+BEGIN c02 seed=71071
+END c02 seed=71071 exit=0
+BEGIN c04 seed=71071
+END c04 seed=71071 exit=0
+BATCH_COMPLETE exit=0

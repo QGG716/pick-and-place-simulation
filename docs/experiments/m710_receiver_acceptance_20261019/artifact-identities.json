@@ -1,0 +1,73 @@
+{
+  "scope": "DELIVERY_ARTIFACT_BYTES",
+  "files": {
+    "baseline-regression.log": {
+      "bytes": 1190,
+      "sha256": "0264c25da7c5e4cedfa2d44e447b6f8eac26f687b6e9adce1ff4389264e8da1f"
+    },
+    "batch.log": {
+      "bytes": 210,
+      "sha256": "1fe9a935b44443b87667a6782dca5eaf235eec0aa06abb929cb6ab979538b842"
+    },
+    "c02-accepted.png": {
+      "bytes": 252155,
+      "sha256": "900450db6653407a709f30e1acf5b9d7680f09f7d99b3a76394e9d5d952c2d3c"
+    },
+    "c02-browser-checks.json": {
+      "bytes": 676,
+      "sha256": "fb2fa4647838ec4822d39543a37f15090afbb7bdcf4fa15dfd32dfefed964809"
+    },
+    "c04-accepted.png": {
+      "bytes": 253991,
+      "sha256": "0d1a645d8d9eaab31d328fc4a754a5f3644956d619ec80e6a162fa884dbbcb78"
+    },
+    "c04-browser-checks.json": {
+      "bytes": 675,
+      "sha256": "8c2fb8921f4a861d0e1c91e88de8ea581fb24faa85fb86a874330153ec7ec2eb"
+    },
+    "consistency.json": {
+      "bytes": 2347,
+      "sha256": "1e47a998b3e59c3a1e080132d687b03b78e8f99f4cb3b769b1c5f71cc03ea7fc"
+    },
+    "environment.txt": {
+      "bytes": 4417,
+      "sha256": "cde2185f92ea5213cfe8c499ece361e0a7db9dbb3bd53ef8b1c7f4c746ed3440"
+    },
+    "identity.json": {
+      "bytes": 2197,
+      "sha256": "3cfbf7b382df8bdffed985e55f1a41e4b28d0fed0d9066673fbc162c3918d282"
+    },
+    "offline-viewers.zip": {
+      "bytes": 1670320,
+      "sha256": "91ea776cd8a9fada9beac0bd8c919a40fffae17d73851dd72a2145b12533be5d"
+    },
+    "raw-identities.json": {
+      "bytes": 3656,
+      "sha256": "9b406c5a2a825f811c89bcbabfff313dd8071191db3525708cedaaa15b80b140"
+    },
+    "raw-records.zip": {
+      "bytes": 1884136,
+      "sha256": "e8e051eda348f9dde9ca28cbb00911c2b90038c615f1a524a177fee1e709416f"
+    },
+    "run.sh": {
+      "bytes": 1121,
+      "sha256": "588f079fd463abacbb643bdb1369acfad53128cec81a22f501ff9e118045e091"
+    },
+    "summary.json": {
+      "bytes": 106368,
+      "sha256": "c0e2400d5b095d6f7757e45dd37ae5468054a3344d645aeed393560ccb401ab0"
+    },
+    "tests-final.log": {
+      "bytes": 260,
+      "sha256": "d260cdb66b03eb3715d15847a9f4f2242499193cbfe2e052e7d5d5a6091a3a30"
+    },
+    "timing.csv": {
+      "bytes": 466,
+      "sha256": "ea730651dc51c37e9b8cb6772afe637e13f4374936381bccee389bfdf065d6a3"
+    },
+    "viewer-label-tests.json": {
+      "bytes": 64,
+      "sha256": "b2ea42694f749b7f86b03813b24d7a35adba6c98ad2ddac0db0ca711f305f565"
+    }
+  }
+}

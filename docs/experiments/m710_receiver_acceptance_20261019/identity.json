@@ -1,0 +1,75 @@
+{
+  "measured_source": "5dd484e59cac51fd3203cf52e83802408feec10a",
+  "baseline": "a2076a6ce83ba18884f3d9ca3a52382aa5110bc9",
+  "source_files": {
+    "src/unloading_sim/single_extraction.py": {
+      "raw_sha256": "0788a09555ae41e84e0be2e7fa98ed4c42c52fea1af0efaa07c1a649f0bb75cc",
+      "git_blob_content_sha256": "0788a09555ae41e84e0be2e7fa98ed4c42c52fea1af0efaa07c1a649f0bb75cc"
+    },
+    "src/unloading_sim/single_lifted_receiver.py": {
+      "raw_sha256": "1c8ee8ef11c1ee5967e2220c938ae1e43db90c6af3829c9c9d568316df7f09f7",
+      "git_blob_content_sha256": "1c8ee8ef11c1ee5967e2220c938ae1e43db90c6af3829c9c9d568316df7f09f7"
+    },
+    "src/unloading_sim/single_contact.py": {
+      "raw_sha256": "1ba8e3d75f309b0d18e3dc2daafbcb30e72883250ec6258c8b483d6d7245b148",
+      "git_blob_content_sha256": "1ba8e3d75f309b0d18e3dc2daafbcb30e72883250ec6258c8b483d6d7245b148"
+    },
+    "tools/search_replay/viewer.html": {
+      "raw_sha256": "7f18e83fa205ad967501dd08a91f33db9777975f65f5bf664f31ff39369b552a",
+      "git_blob_content_sha256": "7f18e83fa205ad967501dd08a91f33db9777975f65f5bf664f31ff39369b552a"
+    }
+  },
+  "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+  "reused_unchanged_native_binary": true,
+  "protocol": {
+    "cases": [
+      "c02-s71070",
+      "c04-s71070",
+      "c02-s71071",
+      "c04-s71071"
+    ],
+    "seeds": [
+      71070,
+      71071
+    ],
+    "task_s": 300,
+    "stage_s": 90,
+    "ipc_s": 100,
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "input": "CONFIGURED_OFFLINE_STATIC_STATE_FULL_40_CARTONS",
+    "actual_execution": false,
+    "trial_set_fixed_before_results": true,
+    "postcheck_failures_in_unit_tests_only": true
+  },
+  "cpu": "Intel Xeon Gold 6459C",
+  "previous_cpu": "Intel Xeon Platinum 8352V",
+  "historical_timing_is_not_same_machine_ab": true,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN"
+}

@@ -1,0 +1,3108 @@
+{
+  "cases": [
+    {
+      "target": "carton_l07_c02",
+      "seed": 71070,
+      "run_id": "single-contact-153e6ec7d9df4b25977023975cbe1c5f",
+      "source_commit": "5dd484e59cac51fd3203cf52e83802408feec10a",
+      "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c02",
+        "--seed",
+        "71070",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "5dd484e59cac51fd3203cf52e83802408feec10a",
+        "--output",
+        "/tmp/receiver-acceptance-20261019/c02-s71070"
+      ],
+      "initial_carton_count": 40,
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "complete": true,
+      "initialization_s": 0.798129964619875,
+      "scene_prepare_s": 0.004710521548986435,
+      "planning_s": 2.3728253692388535,
+      "row_times_s": {
+        "target_geometry_s": 0.12459469586610794,
+        "ik_s": 0.02920376881957054,
+        "pregrasp_s": 0.6439987868070602,
+        "contact_s": 0.15491103380918503,
+        "terminal_check_s": 0.005962017923593521,
+        "attachment_context_s": 0.004220183938741684,
+        "extraction_target_s": 0.0005327090620994568,
+        "extraction_s": 0.36410681903362274,
+        "extraction_sample_check_s": 0.6116529554128647,
+        "terminal_separation_s": 0.046355780214071274,
+        "release_ready_check_s": 0.00021205097436904907,
+        "region_search_s": 1.0843649432063103
+      },
+      "request_round_trip_s": {
+        "init:None": 0.2688957564532757,
+        "fk:None": 0.001321393996477127,
+        "check_receiver_state:pregrasp": 0.0953158438205719,
+        "check_start:pregrasp": 0.043554916977882385,
+        "ik:pregrasp": 0.023533664643764496,
+        "plan:pregrasp": 0.5748106725513935,
+        "external_axis": 0.10354721918702126,
+        "plan:contact": 0.1029835045337677,
+        "plan:extraction": 0.29035720229148865,
+        "check_extraction_end:extraction": 0.04156532138586044
+      },
+      "request_counts": {
+        "init:None": 1,
+        "fk:None": 3,
+        "check_receiver_state:pregrasp": 2,
+        "check_start:pregrasp": 1,
+        "ik:pregrasp": 1,
+        "plan:pregrasp": 1,
+        "external_axis": 1,
+        "plan:contact": 1,
+        "plan:extraction": 1,
+        "check_extraction_end:extraction": 1
+      },
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 2,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "pair_profile_enabled": false,
+      "exact_selected_q_and_parent_continuity": true,
+      "initial_receiver_checks": [
+        {
+          "height": "LOW",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.1e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000196906,
+                  "valid": 1
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000326735,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 5.47e-06,
+                "workspace_allocation_s": 0.003193561
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 0.000120746,
+                "pair_filter_s": 0.00298523,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 8233,
+                    "aabb_tests": 8248,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 8248,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 15,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.89e-06,
+                    "world_narrow": 7,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003106052,
+                "prepared_objects": 257
+              }
+            },
+            "failure": null,
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c02",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.000196906,
+              "clearance_queries": 1,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "5",
+            "scene_import_s": 0.012439321,
+            "status": "SUCCESS",
+            "transport_and_worker_s": 0.048717137426137924
+          },
+          "round_trip_s": 0.04947490990161896
+        },
+        {
+          "height": "HMAX",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 6.63e-06,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 1,
+                  "seconds": 9.1368e-05,
+                  "valid": 0
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000317057,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 3.969e-06,
+                "workspace_allocation_s": 0.002827537
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_0",
+                    "conveyor_transverse"
+                  ],
+                  "phase": "endpoint",
+                  "q_rad": [
+                    -0.4738507840476061,
+                    -0.46642585435191586,
+                    -0.35455135903520246,
+                    1.7851535539041579,
+                    0.48589729025839207,
+                    -3.3829904117272847
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 7.4043e-05,
+                "pair_filter_s": 0.002706812,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 1352,
+                    "aabb_tests": 1364,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 1364,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 12,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.128e-06,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.002780981,
+                "prepared_objects": 257
+              }
+            },
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "conveyor_transverse"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c02",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 9.1368e-05,
+              "clearance_queries": 1,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "RECEIVER_STATE_REJECTED",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "6",
+            "scene_import_s": 0.00988045,
+            "status": "RECEIVER_STATE_REJECTED",
+            "transport_and_worker_s": 0.04557366669178009
+          },
+          "round_trip_s": 0.04646674916148186
+        }
+      ],
+      "external_axis_attempts": [
+        {
+          "after_scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "before_scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "check_method": "EXACT_HORIZONTAL_BOX_Z_UNION_NATIVE_FCL",
+          "designed_contact_transitions": [
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "chassis"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            },
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "conveyor_longitudinal"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            }
+          ],
+          "execution_duration_s": null,
+          "from": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.54
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "geometry_check_s": 0.010540586,
+          "mechanical_travel": "UNKNOWN",
+          "mechanism_geometry": "NOT_MODELED",
+          "physical_execution": "NOT_RUN",
+          "robot_q": [
+            -0.3979853138947001,
+            -0.31738441200814993,
+            -0.2551142236287596,
+            1.7177477025744334,
+            0.40257038115278404,
+            -4.871901750080824
+          ],
+          "robot_q_constant": true,
+          "sweep_clearance": {
+            "continuous_swept_proof": false,
+            "counts": {
+              "endpoint": {
+                "bookkeeping_s": 2.8e-08,
+                "clearance_rejected": 0,
+                "distance_api_calls": 0,
+                "legacy_witness_checks": 0,
+                "legacy_witness_s": 0.0,
+                "queries": 1,
+                "rejected": 0,
+                "seconds": 0.000492772,
+                "valid": 1
+              }
+            },
+            "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+            "evidence_materialization_s": 0.000331756,
+            "fixed_narrow_qualification": true,
+            "mode": "optimized",
+            "native_check_reuse": true,
+            "profile": {
+              "state_copy_update_s": 5.996e-06,
+              "workspace_allocation_s": 0.003462939
+            },
+            "query_range_m": 0.006,
+            "rejected_examples": [],
+            "search_gap_witness": null,
+            "workspace": {
+              "eligible_pairs": 8248,
+              "exempt_pairs": 23520,
+              "geometry_prepare_s": 9.7441e-05,
+              "pair_filter_s": 0.003270953,
+              "pair_profile_enabled": false,
+              "pair_profile_status": "NOT_MEASURED",
+              "phases": {
+                "endpoint": {
+                  "aabb_skips": 8228,
+                  "aabb_tests": 8248,
+                  "broad_phase_s": null,
+                  "dynamic_pair_checks": 8248,
+                  "fixed_aabb_qualifications": 0,
+                  "fixed_aabb_reuses": 0,
+                  "fixed_first_checks": 0,
+                  "fixed_narrow_qualifications": 0,
+                  "fixed_narrow_reuses": 0,
+                  "fixed_property_evaluations": 0,
+                  "fixed_property_reuses": 0,
+                  "fixed_qualification_declines": {},
+                  "fixed_qualification_queries": 0,
+                  "narrow_calls": 20,
+                  "narrow_s": null,
+                  "queries": 1,
+                  "self_narrow": 5,
+                  "self_narrow_s": null,
+                  "transform_aabb_update_s": 9.693e-06,
+                  "world_narrow": 15,
+                  "world_narrow_s": null
+                }
+              },
+              "prepare_s": 0.003368503,
+              "prepared_objects": 257
+            }
+          },
+          "swept_volume": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.2650000000000001
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              1.5700000000000003
+            ]
+          },
+          "to": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9900000000000002
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "type": "TRANSVERSE_BELT_Z_LIFT",
+          "world_fcl_queries": 49
+        }
+      ],
+      "receiver_sync_attempts": [
+        {
+          "sync_stage": "pregrasp",
+          "parent_stage_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d:1",
+          "q_rad": [
+            -0.3979853138947001,
+            -0.31738441200814993,
+            -0.2551142236287596,
+            1.7177477025744334,
+            0.40257038115278404,
+            -4.871901750080824
+          ],
+          "status": "SUCCESS",
+          "round_trip_s": 0.1144033633172512
+        }
+      ],
+      "prefix_attempt_count": 1,
+      "region_attempts": [
+        {
+          "center_world_m": [
+            -0.5102000000000001,
+            -6.617444900424222e-24,
+            2.2499999999999996
+          ],
+          "distance_m": 0.8102000000000001,
+          "planning_s": 0.3635741099715233,
+          "failure": null,
+          "selected": true,
+          "native_result": {
+            "status": "SUCCESS",
+            "task_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d",
+            "stage_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d:4",
+            "parent_stage_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d:3",
+            "request_id": "12",
+            "solver_message": "",
+            "moveit_error_code": null
+          },
+          "sample_check": {
+            "passed": true,
+            "failure": null,
+            "checked_samples": 209,
+            "short_pairs": [],
+            "minimum_payload_world_gap_m": 0.04999999623375434
+          },
+          "terminal_separation": {
+            "failure": null,
+            "status": "SUCCESS"
+          },
+          "release_ready_check": {
+            "passed": true,
+            "full_bottom_projection_inside": true,
+            "actual_gap_m": 0.04999999623375434,
+            "orientation_max_abs_error": 1.6810366353565026e-08
+          },
+          "acceptance_status": "FINAL_SELECTED",
+          "context_sha256": "6d1b8d6f1c10ae477679faa075e57c2e9d5581a3623fb790381009faa26dcb53",
+          "stage_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d:4",
+          "parent_stage_id": "native-cold-09ce261d3d2e4f69b1d2e7dd51ddf60d:3",
+          "path_sha256": "395497e5a318c11645d560f440ad914313d9b99889f38024616271e032a4f382",
+          "extraction_sample_check_s": 0.6116529554128647,
+          "terminal_separation_s": 0.046355780214071274,
+          "release_ready_check_s": 0.00021205097436904907,
+          "candidate_total_s": 1.0687612369656563
+        }
+      ],
+      "planned_attach_events": 1,
+      "failure": null,
+      "release_ready": {
+        "passed": true,
+        "full_bottom_projection_inside": true,
+        "actual_gap_m": 0.04999999623375434,
+        "expected_gap_m": 0.05,
+        "actual_box": {
+          "id": "carton_l07_c02",
+          "size": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "pose": [
+            [
+              1.0,
+              -1.847587195205319e-09,
+              -7.985581913040924e-10,
+              -0.5101999943911617
+            ],
+            [
+              1.8475871826193916e-09,
+              0.9999999999999998,
+              1.6810366342826934e-08,
+              2.1921462413301716e-08
+            ],
+            [
+              7.985581885307962e-10,
+              -1.6810366353565026e-08,
+              0.9999999999999999,
+              2.2499999998353952
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "payload",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        "orientation_max_abs_error": 1.6810366353565026e-08,
+        "receiver_id": "conveyor_transverse",
+        "receiver_surface_z_m": 2.0500000000000003,
+        "physical_execution": "NOT_RUN",
+        "qualification_status": "NOT_EVALUATED"
+      },
+      "status": "LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE",
+      "qualification_status": "NOT_EVALUATED",
+      "continuous_swept_proof": false,
+      "physical_execution": "NOT_RUN",
+      "timing_semantics": "Planning inclusive of all attempts; row/request/solver/check times are nested. Do not sum columns. External axis has no execution time law."
+    },
+    {
+      "target": "carton_l07_c04",
+      "seed": 71070,
+      "run_id": "single-contact-41450e5e1a4446548f78ef3671ab4488",
+      "source_commit": "5dd484e59cac51fd3203cf52e83802408feec10a",
+      "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c04",
+        "--seed",
+        "71070",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "5dd484e59cac51fd3203cf52e83802408feec10a",
+        "--output",
+        "/tmp/receiver-acceptance-20261019/c04-s71070"
+      ],
+      "initial_carton_count": 40,
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "complete": true,
+      "initialization_s": 0.8059945777058601,
+      "scene_prepare_s": 0.004596341401338577,
+      "planning_s": 3.0210891366004944,
+      "row_times_s": {
+        "target_geometry_s": 0.12365949898958206,
+        "ik_s": 0.02694089338183403,
+        "pregrasp_s": 1.3164565898478031,
+        "contact_s": 0.1528768204152584,
+        "terminal_check_s": 0.006361756473779678,
+        "attachment_context_s": 0.0047400593757629395,
+        "extraction_target_s": 0.0005372874438762665,
+        "extraction_s": 0.36808429658412933,
+        "extraction_sample_check_s": 0.6121674403548241,
+        "terminal_separation_s": 0.04554642736911774,
+        "release_ready_check_s": 0.0002176538109779358,
+        "region_search_s": 1.0870436169207096
+      },
+      "request_round_trip_s": {
+        "init:None": 0.269643597304821,
+        "fk:None": 0.0013875886797904968,
+        "check_receiver_state:pregrasp": 0.09381360188126564,
+        "check_start:pregrasp": 0.043603070080280304,
+        "ik:pregrasp": 0.021366532891988754,
+        "plan:pregrasp": 1.243946485221386,
+        "external_axis": 0.09753028675913811,
+        "plan:contact": 0.09928562119603157,
+        "plan:extraction": 0.3218736909329891,
+        "check_extraction_end:extraction": 0.04070250689983368
+      },
+      "request_counts": {
+        "init:None": 1,
+        "fk:None": 3,
+        "check_receiver_state:pregrasp": 2,
+        "check_start:pregrasp": 1,
+        "ik:pregrasp": 1,
+        "plan:pregrasp": 1,
+        "external_axis": 1,
+        "plan:contact": 1,
+        "plan:extraction": 1,
+        "check_extraction_end:extraction": 1
+      },
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 2,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "pair_profile_enabled": false,
+      "exact_selected_q_and_parent_continuity": true,
+      "initial_receiver_checks": [
+        {
+          "height": "LOW",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.82e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000190313,
+                  "valid": 1
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000329649,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 5.3e-06,
+                "workspace_allocation_s": 0.003193853
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 0.000126651,
+                "pair_filter_s": 0.002976813,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 8233,
+                    "aabb_tests": 8248,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 8248,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 15,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.965e-06,
+                    "world_narrow": 7,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003103567,
+                "prepared_objects": 257
+              }
+            },
+            "failure": null,
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.000190313,
+              "clearance_queries": 1,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "5",
+            "scene_import_s": 0.012641167,
+            "status": "SUCCESS",
+            "transport_and_worker_s": 0.04814901947975159
+          },
+          "round_trip_s": 0.048907939344644547
+        },
+        {
+          "height": "HMAX",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 5.819e-06,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 1,
+                  "seconds": 7.6134e-05,
+                  "valid": 0
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000327992,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 3.984e-06,
+                "workspace_allocation_s": 0.002839135
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_0",
+                    "conveyor_transverse"
+                  ],
+                  "phase": "endpoint",
+                  "q_rad": [
+                    -0.4738507840476061,
+                    -0.46642585435191586,
+                    -0.35455135903520246,
+                    1.7851535539041579,
+                    0.48589729025839207,
+                    -3.3829904117272847
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 6.8468e-05,
+                "pair_filter_s": 0.002727024,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 1352,
+                    "aabb_tests": 1364,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 1364,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 12,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 8.637e-06,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.002795567,
+                "prepared_objects": 257
+              }
+            },
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "conveyor_transverse"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 7.6134e-05,
+              "clearance_queries": 1,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "RECEIVER_STATE_REJECTED",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "6",
+            "scene_import_s": 0.009360916,
+            "status": "RECEIVER_STATE_REJECTED",
+            "transport_and_worker_s": 0.044639695435762405
+          },
+          "round_trip_s": 0.0455264151096344
+        }
+      ],
+      "external_axis_attempts": [
+        {
+          "after_scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "before_scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "check_method": "EXACT_HORIZONTAL_BOX_Z_UNION_NATIVE_FCL",
+          "designed_contact_transitions": [
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "chassis"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            },
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "conveyor_longitudinal"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            }
+          ],
+          "execution_duration_s": null,
+          "from": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.54
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "geometry_check_s": 0.010481962,
+          "mechanical_travel": "UNKNOWN",
+          "mechanism_geometry": "NOT_MODELED",
+          "physical_execution": "NOT_RUN",
+          "robot_q": [
+            0.5319890305638955,
+            -0.24854041787241038,
+            -0.20290023857486436,
+            1.4934236177892317,
+            -0.5337550163383228,
+            -4.622579146293626
+          ],
+          "robot_q_constant": true,
+          "sweep_clearance": {
+            "continuous_swept_proof": false,
+            "counts": {
+              "endpoint": {
+                "bookkeeping_s": 2.2e-08,
+                "clearance_rejected": 0,
+                "distance_api_calls": 0,
+                "legacy_witness_checks": 0,
+                "legacy_witness_s": 0.0,
+                "queries": 1,
+                "rejected": 0,
+                "seconds": 0.000537327,
+                "valid": 1
+              }
+            },
+            "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+            "evidence_materialization_s": 0.000331937,
+            "fixed_narrow_qualification": true,
+            "mode": "optimized",
+            "native_check_reuse": true,
+            "profile": {
+              "state_copy_update_s": 6.308e-06,
+              "workspace_allocation_s": 0.003442317
+            },
+            "query_range_m": 0.006,
+            "rejected_examples": [],
+            "search_gap_witness": null,
+            "workspace": {
+              "eligible_pairs": 8248,
+              "exempt_pairs": 23520,
+              "geometry_prepare_s": 0.000101021,
+              "pair_filter_s": 0.003250589,
+              "pair_profile_enabled": false,
+              "pair_profile_status": "NOT_MEASURED",
+              "phases": {
+                "endpoint": {
+                  "aabb_skips": 8225,
+                  "aabb_tests": 8248,
+                  "broad_phase_s": null,
+                  "dynamic_pair_checks": 8248,
+                  "fixed_aabb_qualifications": 0,
+                  "fixed_aabb_reuses": 0,
+                  "fixed_first_checks": 0,
+                  "fixed_narrow_qualifications": 0,
+                  "fixed_narrow_reuses": 0,
+                  "fixed_property_evaluations": 0,
+                  "fixed_property_reuses": 0,
+                  "fixed_qualification_declines": {},
+                  "fixed_qualification_queries": 0,
+                  "narrow_calls": 23,
+                  "narrow_s": null,
+                  "queries": 1,
+                  "self_narrow": 9,
+                  "self_narrow_s": null,
+                  "transform_aabb_update_s": 9.493e-06,
+                  "world_narrow": 14,
+                  "world_narrow_s": null
+                }
+              },
+              "prepare_s": 0.003351732,
+              "prepared_objects": 257
+            }
+          },
+          "swept_volume": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.2650000000000001
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              1.5700000000000003
+            ]
+          },
+          "to": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9900000000000002
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "type": "TRANSVERSE_BELT_Z_LIFT",
+          "world_fcl_queries": 49
+        }
+      ],
+      "receiver_sync_attempts": [
+        {
+          "sync_stage": "pregrasp",
+          "parent_stage_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43:1",
+          "q_rad": [
+            0.5319890305638955,
+            -0.24854041787241038,
+            -0.20290023857486436,
+            1.4934236177892317,
+            -0.5337550163383228,
+            -4.622579146293626
+          ],
+          "status": "SUCCESS",
+          "round_trip_s": 0.1043725423514843
+        }
+      ],
+      "prefix_attempt_count": 1,
+      "region_attempts": [
+        {
+          "center_world_m": [
+            -0.5102000000000001,
+            0.8400000000000001,
+            2.25
+          ],
+          "distance_m": 0.8102000000000001,
+          "planning_s": 0.36754700914025307,
+          "failure": null,
+          "selected": true,
+          "native_result": {
+            "status": "SUCCESS",
+            "task_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43",
+            "stage_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43:4",
+            "parent_stage_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43:3",
+            "request_id": "12",
+            "solver_message": "",
+            "moveit_error_code": null
+          },
+          "sample_check": {
+            "passed": true,
+            "failure": null,
+            "checked_samples": 209,
+            "short_pairs": [],
+            "minimum_payload_world_gap_m": 0.04999989132567878
+          },
+          "terminal_separation": {
+            "failure": null,
+            "status": "SUCCESS"
+          },
+          "release_ready_check": {
+            "passed": true,
+            "full_bottom_projection_inside": true,
+            "actual_gap_m": 0.04999989132567878,
+            "orientation_max_abs_error": 3.418097232612307e-07
+          },
+          "acceptance_status": "FINAL_SELECTED",
+          "context_sha256": "fd6824a6ffc581eb2d291093ce6310cc4b5c337d865cc4c95eb810dd06d55db5",
+          "stage_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43:4",
+          "parent_stage_id": "native-cold-21f03ed1b5e94a819f5bd161fbf03c43:3",
+          "path_sha256": "704af2bf269709d5b9521181f05d52d153fdb7160e07e08e59b88e3fccd82b08",
+          "extraction_sample_check_s": 0.6121674403548241,
+          "terminal_separation_s": 0.04554642736911774,
+          "release_ready_check_s": 0.0002176538109779358,
+          "candidate_total_s": 1.0714295618236065
+        }
+      ],
+      "planned_attach_events": 1,
+      "failure": null,
+      "release_ready": {
+        "passed": true,
+        "full_bottom_projection_inside": true,
+        "actual_gap_m": 0.04999989132567878,
+        "expected_gap_m": 0.05,
+        "actual_box": {
+          "id": "carton_l07_c04",
+          "size": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "pose": [
+            [
+              0.9999999999999974,
+              1.9344813947983712e-08,
+              6.932695782314705e-08,
+              -0.5101999968157471
+            ],
+            [
+              -1.934479014726596e-08,
+              0.9999999999999415,
+              -3.418097232612307e-07,
+              0.8399999798319677
+            ],
+            [
+              -6.932696441963547e-08,
+              3.4180972185960187e-07,
+              0.9999999999999394,
+              2.2499999804857036
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "payload",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        "orientation_max_abs_error": 3.418097232612307e-07,
+        "receiver_id": "conveyor_transverse",
+        "receiver_surface_z_m": 2.0500000000000003,
+        "physical_execution": "NOT_RUN",
+        "qualification_status": "NOT_EVALUATED"
+      },
+      "status": "LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE",
+      "qualification_status": "NOT_EVALUATED",
+      "continuous_swept_proof": false,
+      "physical_execution": "NOT_RUN",
+      "timing_semantics": "Planning inclusive of all attempts; row/request/solver/check times are nested. Do not sum columns. External axis has no execution time law."
+    },
+    {
+      "target": "carton_l07_c02",
+      "seed": 71071,
+      "run_id": "single-contact-887c9e3bbc444863a7f385d70e6228f9",
+      "source_commit": "5dd484e59cac51fd3203cf52e83802408feec10a",
+      "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c02",
+        "--seed",
+        "71071",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "5dd484e59cac51fd3203cf52e83802408feec10a",
+        "--output",
+        "/tmp/receiver-acceptance-20261019/c02-s71071"
+      ],
+      "initial_carton_count": 40,
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "complete": true,
+      "initialization_s": 0.7942731082439423,
+      "scene_prepare_s": 0.004631485790014267,
+      "planning_s": 2.369244623929262,
+      "row_times_s": {
+        "target_geometry_s": 0.12718386948108673,
+        "ik_s": 0.027236752212047577,
+        "pregrasp_s": 0.668217059224844,
+        "contact_s": 0.14810459315776825,
+        "terminal_check_s": 0.005384258925914764,
+        "attachment_context_s": 0.005938179790973663,
+        "extraction_target_s": 0.0006858520209789276,
+        "extraction_s": 0.35840001329779625,
+        "extraction_sample_check_s": 0.609626054763794,
+        "terminal_separation_s": 0.04509228095412254,
+        "release_ready_check_s": 0.00021800771355628967,
+        "region_search_s": 1.0772118493914604
+      },
+      "request_round_trip_s": {
+        "init:None": 0.26563920080661774,
+        "fk:None": 0.0012883543968200684,
+        "check_receiver_state:pregrasp": 0.09781220182776451,
+        "check_start:pregrasp": 0.04415057599544525,
+        "ik:pregrasp": 0.021625351160764694,
+        "plan:pregrasp": 0.5986008681356907,
+        "external_axis": 0.09145867079496384,
+        "plan:contact": 0.09813892468810081,
+        "plan:extraction": 0.28791632130742073,
+        "check_extraction_end:extraction": 0.040320318192243576
+      },
+      "request_counts": {
+        "init:None": 1,
+        "fk:None": 3,
+        "check_receiver_state:pregrasp": 2,
+        "check_start:pregrasp": 1,
+        "ik:pregrasp": 1,
+        "plan:pregrasp": 1,
+        "external_axis": 1,
+        "plan:contact": 1,
+        "plan:extraction": 1,
+        "check_extraction_end:extraction": 1
+      },
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 2,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "pair_profile_enabled": false,
+      "exact_selected_q_and_parent_continuity": true,
+      "initial_receiver_checks": [
+        {
+          "height": "LOW",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 4.4e-08,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000192505,
+                  "valid": 1
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000328457,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 4.964e-06,
+                "workspace_allocation_s": 0.003257531
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 0.000137304,
+                "pair_filter_s": 0.003027897,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 8233,
+                    "aabb_tests": 8248,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 8248,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 15,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.562e-06,
+                    "world_narrow": 7,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003165304,
+                "prepared_objects": 257
+              }
+            },
+            "failure": null,
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c02",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.000192505,
+              "clearance_queries": 1,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "5",
+            "scene_import_s": 0.012907133,
+            "status": "SUCCESS",
+            "transport_and_worker_s": 0.051074594259262085
+          },
+          "round_trip_s": 0.051824163645505905
+        },
+        {
+          "height": "HMAX",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 6.491e-06,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 1,
+                  "seconds": 8.9785e-05,
+                  "valid": 0
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000332783,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 4.292e-06,
+                "workspace_allocation_s": 0.002869223
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_0",
+                    "conveyor_transverse"
+                  ],
+                  "phase": "endpoint",
+                  "q_rad": [
+                    -0.4738507840476061,
+                    -0.46642585435191586,
+                    -0.35455135903520246,
+                    1.7851535539041579,
+                    0.48589729025839207,
+                    -3.3829904117272847
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 7.8996e-05,
+                "pair_filter_s": 0.002745329,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 1352,
+                    "aabb_tests": 1364,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 1364,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 12,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.407e-06,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.002824449,
+                "prepared_objects": 257
+              }
+            },
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "conveyor_transverse"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c02",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 8.9785e-05,
+              "clearance_queries": 1,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "RECEIVER_STATE_REJECTED",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "6",
+            "scene_import_s": 0.009765624,
+            "status": "RECEIVER_STATE_REJECTED",
+            "transport_and_worker_s": 0.04555407539010048
+          },
+          "round_trip_s": 0.04677295312285423
+        }
+      ],
+      "external_axis_attempts": [
+        {
+          "after_scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "before_scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "check_method": "EXACT_HORIZONTAL_BOX_Z_UNION_NATIVE_FCL",
+          "designed_contact_transitions": [
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "chassis"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            },
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "conveyor_longitudinal"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            }
+          ],
+          "execution_duration_s": null,
+          "from": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.54
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "geometry_check_s": 0.010761829,
+          "mechanical_travel": "UNKNOWN",
+          "mechanism_geometry": "NOT_MODELED",
+          "physical_execution": "NOT_RUN",
+          "robot_q": [
+            -0.39798531389544445,
+            -0.3173844120084991,
+            -0.25511422362887465,
+            1.717747702575199,
+            0.40257038115131,
+            -4.8719017500814426
+          ],
+          "robot_q_constant": true,
+          "sweep_clearance": {
+            "continuous_swept_proof": false,
+            "counts": {
+              "endpoint": {
+                "bookkeeping_s": 2.3e-08,
+                "clearance_rejected": 0,
+                "distance_api_calls": 0,
+                "legacy_witness_checks": 0,
+                "legacy_witness_s": 0.0,
+                "queries": 1,
+                "rejected": 0,
+                "seconds": 0.000496386,
+                "valid": 1
+              }
+            },
+            "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+            "evidence_materialization_s": 0.000326827,
+            "fixed_narrow_qualification": true,
+            "mode": "optimized",
+            "native_check_reuse": true,
+            "profile": {
+              "state_copy_update_s": 5.397e-06,
+              "workspace_allocation_s": 0.003479977
+            },
+            "query_range_m": 0.006,
+            "rejected_examples": [],
+            "search_gap_witness": null,
+            "workspace": {
+              "eligible_pairs": 8248,
+              "exempt_pairs": 23520,
+              "geometry_prepare_s": 0.000103109,
+              "pair_filter_s": 0.003280558,
+              "pair_profile_enabled": false,
+              "pair_profile_status": "NOT_MEASURED",
+              "phases": {
+                "endpoint": {
+                  "aabb_skips": 8228,
+                  "aabb_tests": 8248,
+                  "broad_phase_s": null,
+                  "dynamic_pair_checks": 8248,
+                  "fixed_aabb_qualifications": 0,
+                  "fixed_aabb_reuses": 0,
+                  "fixed_first_checks": 0,
+                  "fixed_narrow_qualifications": 0,
+                  "fixed_narrow_reuses": 0,
+                  "fixed_property_evaluations": 0,
+                  "fixed_property_reuses": 0,
+                  "fixed_qualification_declines": {},
+                  "fixed_qualification_queries": 0,
+                  "narrow_calls": 20,
+                  "narrow_s": null,
+                  "queries": 1,
+                  "self_narrow": 5,
+                  "self_narrow_s": null,
+                  "transform_aabb_update_s": 1.0061e-05,
+                  "world_narrow": 15,
+                  "world_narrow_s": null
+                }
+              },
+              "prepare_s": 0.00338374,
+              "prepared_objects": 257
+            }
+          },
+          "swept_volume": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.2650000000000001
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              1.5700000000000003
+            ]
+          },
+          "to": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9900000000000002
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "type": "TRANSVERSE_BELT_Z_LIFT",
+          "world_fcl_queries": 49
+        }
+      ],
+      "receiver_sync_attempts": [
+        {
+          "sync_stage": "pregrasp",
+          "parent_stage_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992:1",
+          "q_rad": [
+            -0.39798531389544445,
+            -0.3173844120084991,
+            -0.25511422362887465,
+            1.717747702575199,
+            0.40257038115131,
+            -4.8719017500814426
+          ],
+          "status": "SUCCESS",
+          "round_trip_s": 0.09851177409291267
+        }
+      ],
+      "prefix_attempt_count": 1,
+      "region_attempts": [
+        {
+          "center_world_m": [
+            -0.5102,
+            0.0,
+            2.2499999999999996
+          ],
+          "distance_m": 0.8102,
+          "planning_s": 0.3577141612768173,
+          "failure": null,
+          "selected": true,
+          "native_result": {
+            "status": "SUCCESS",
+            "task_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992",
+            "stage_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992:4",
+            "parent_stage_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992:3",
+            "request_id": "12",
+            "solver_message": "",
+            "moveit_error_code": null
+          },
+          "sample_check": {
+            "passed": true,
+            "failure": null,
+            "checked_samples": 209,
+            "short_pairs": [],
+            "minimum_payload_world_gap_m": 0.04999999623375434
+          },
+          "terminal_separation": {
+            "failure": null,
+            "status": "SUCCESS"
+          },
+          "release_ready_check": {
+            "passed": true,
+            "full_bottom_projection_inside": true,
+            "actual_gap_m": 0.04999999623375434,
+            "orientation_max_abs_error": 1.6810366065271493e-08
+          },
+          "acceptance_status": "FINAL_SELECTED",
+          "context_sha256": "c94d378c37d0e0ac37b27b88b8e7ed8679a9d469cca567cdbacc5255378d9174",
+          "stage_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992:4",
+          "parent_stage_id": "native-cold-c20f10ebe45b4f6e9fc4255f27c29992:3",
+          "path_sha256": "f142ba2adf1b5cd44da491e5ba04cfd0e1f9081e3a8908951120de5d5c4e573e",
+          "extraction_sample_check_s": 0.609626054763794,
+          "terminal_separation_s": 0.04509228095412254,
+          "release_ready_check_s": 0.00021800771355628967,
+          "candidate_total_s": 1.0615368150174618
+        }
+      ],
+      "planned_attach_events": 1,
+      "failure": null,
+      "release_ready": {
+        "passed": true,
+        "full_bottom_projection_inside": true,
+        "actual_gap_m": 0.04999999623375434,
+        "expected_gap_m": 0.05,
+        "actual_box": {
+          "id": "carton_l07_c02",
+          "size": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "pose": [
+            [
+              1.0,
+              -1.8475870029504791e-09,
+              -7.985583738440336e-10,
+              -0.5101999943911618
+            ],
+            [
+              1.8475870715944421e-09,
+              1.0,
+              1.6810366065271493e-08,
+              2.1921462355846955e-08
+            ],
+            [
+              7.985582925765117e-10,
+              -1.6810366034377713e-08,
+              1.0000000000000002,
+              2.2499999998353952
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "payload",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        "orientation_max_abs_error": 1.6810366065271493e-08,
+        "receiver_id": "conveyor_transverse",
+        "receiver_surface_z_m": 2.0500000000000003,
+        "physical_execution": "NOT_RUN",
+        "qualification_status": "NOT_EVALUATED"
+      },
+      "status": "LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE",
+      "qualification_status": "NOT_EVALUATED",
+      "continuous_swept_proof": false,
+      "physical_execution": "NOT_RUN",
+      "timing_semantics": "Planning inclusive of all attempts; row/request/solver/check times are nested. Do not sum columns. External axis has no execution time law."
+    },
+    {
+      "target": "carton_l07_c04",
+      "seed": 71071,
+      "run_id": "single-contact-f8cfb4c594b7485a8d3a0913e11b5964",
+      "source_commit": "5dd484e59cac51fd3203cf52e83802408feec10a",
+      "worker_sha256": "cf6c18ba575b55a011eebf470b169d51d499e3575d3a38410b09d23712f41364",
+      "model_identity": {
+        "schema": "m710_native_stage_v1",
+        "reviewed_sources": {
+          "feasibility_core": "4ceb9487e8e650a82243fa10b2c4e91ff3ec48cd",
+          "moveit_backend": "c7e4b486b3bf50fc607cf1c826c441fc688dbdfe"
+        },
+        "scene_version": "m710id70_unloading_layout_v1",
+        "scene_fingerprint": "c400033d53e1bcd15f4eee9fd749de2b965ac1ea9d39183069ddc7f6022b43e8",
+        "policy_fingerprint": "741b7d3b5243fbd21a4e1ac8d95e690ea6e819bd6aa3a0b54989e357f00bcc1a",
+        "validator_identity": "m710id70_exact_mesh_tool:299e7462cc8e3ffd1d56dd719cb93f3d69b3185fb77efa6b1e6d24261aefa129",
+        "model_tool_fingerprint": "e10ac71fe41632c388aff129951e63709165fdd9d7bf8533c68a27c1c381118f",
+        "task_tcp_link": "m710_virtual_task_tcp",
+        "flange_from_task_tcp": [
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.25
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "task_tcp_fingerprint": "2fe32c87c4d318c6f2849151d33ad3151a8dd75ef312befd0521f56a34527c7e",
+        "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE_internal_planner_checks_only"
+      },
+      "budgets": {
+        "task_s": 300.0,
+        "stage_s": 90.0,
+        "ipc_s": 100.0,
+        "ik_timeout_field_s": 0.25,
+        "ik_timeout_field_is_solver_wall_deadline": false,
+        "ik_method": "fixed-target bounded searchPositionIK, shared connection deadline",
+        "preplace_solver_budget_s": null,
+        "ik_counter_scope": "native_ik_calls counts API calls, not plugin-internal attempts",
+        "standoff_m": 0.1
+      },
+      "environment": {
+        "python": "3.10.12",
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "command": [
+        "/opt/planning-opt-20261003-venv/bin/python",
+        "tools/plan_m710_approach_contact.py",
+        "--through-lifted-release-ready",
+        "--target",
+        "carton_l07_c04",
+        "--seed",
+        "71071",
+        "--task-budget-s",
+        "300",
+        "--stage-budget-s",
+        "90",
+        "--ipc-timeout-s",
+        "100",
+        "--worker-command",
+        "/tmp/lift-native-20261017/worker.sh",
+        "--worker-binary",
+        "/tmp/lift-native-20261017/build/m710_moveit_worker",
+        "--source-commit",
+        "5dd484e59cac51fd3203cf52e83802408feec10a",
+        "--output",
+        "/tmp/receiver-acceptance-20261019/c04-s71071"
+      ],
+      "initial_carton_count": 40,
+      "start_source": "CONFIGURED_OFFLINE_STATIC_STATE",
+      "start_q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "complete": true,
+      "initialization_s": 0.7871571891009808,
+      "scene_prepare_s": 0.004524808377027512,
+      "planning_s": 2.872567292302847,
+      "row_times_s": {
+        "target_geometry_s": 0.10833176597952843,
+        "ik_s": 0.02590101957321167,
+        "pregrasp_s": 1.2449157573282719,
+        "contact_s": 0.1525624617934227,
+        "terminal_check_s": 0.005600422620773315,
+        "attachment_context_s": 0.003687240183353424,
+        "extraction_target_s": 0.0005297549068927765,
+        "extraction_s": 0.3627374768257141,
+        "extraction_sample_check_s": 0.5979474671185017,
+        "terminal_separation_s": 0.04394887387752533,
+        "release_ready_check_s": 0.00022395700216293335,
+        "region_search_s": 1.0659984238445759
+      },
+      "request_round_trip_s": {
+        "init:None": 0.2646658718585968,
+        "fk:None": 0.0012194737792015076,
+        "check_receiver_state:pregrasp": 0.08950165659189224,
+        "check_start:pregrasp": 0.04195200279355049,
+        "ik:pregrasp": 0.021188706159591675,
+        "plan:pregrasp": 1.1766640804708004,
+        "external_axis": 0.09338224679231644,
+        "plan:contact": 0.09990660846233368,
+        "plan:extraction": 0.31575988978147507,
+        "check_extraction_end:extraction": 0.039184167981147766
+      },
+      "request_counts": {
+        "init:None": 1,
+        "fk:None": 3,
+        "check_receiver_state:pregrasp": 2,
+        "check_start:pregrasp": 1,
+        "ik:pregrasp": 1,
+        "plan:pregrasp": 1,
+        "external_axis": 1,
+        "plan:contact": 1,
+        "plan:extraction": 1,
+        "check_extraction_end:extraction": 1
+      },
+      "native_calls": {
+        "IK": 1,
+        "OMPL": 1,
+        "LIN": 2,
+        "PTP": 0
+      },
+      "prior_calls": 0,
+      "pair_profile_enabled": false,
+      "exact_selected_q_and_parent_continuity": true,
+      "initial_receiver_checks": [
+        {
+          "height": "LOW",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 1.42e-07,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 0,
+                  "seconds": 0.000183307,
+                  "valid": 1
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000329731,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 5.073e-06,
+                "workspace_allocation_s": 0.003192401
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 0.000117843,
+                "pair_filter_s": 0.002988641,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 8233,
+                    "aabb_tests": 8248,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 8248,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 15,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 9.406e-06,
+                    "world_narrow": 7,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.003106586,
+                "prepared_objects": 257
+              }
+            },
+            "failure": null,
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 0.000183307,
+              "clearance_queries": 1,
+              "completion": "COMPLETED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "SUCCESS",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "5",
+            "scene_import_s": 0.01199813,
+            "status": "SUCCESS",
+            "transport_and_worker_s": 0.046901579946279526
+          },
+          "round_trip_s": 0.04738958179950714
+        },
+        {
+          "height": "HMAX",
+          "q_rad": [
+            -0.4738507840476061,
+            -0.46642585435191586,
+            -0.35455135903520246,
+            1.7851535539041579,
+            0.48589729025839207,
+            -3.3829904117272847
+          ],
+          "scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "response": {
+            "checked_states": 1,
+            "clearance": {
+              "continuous_swept_proof": false,
+              "counts": {
+                "endpoint": {
+                  "bookkeeping_s": 6.778e-06,
+                  "clearance_rejected": 0,
+                  "distance_api_calls": 0,
+                  "legacy_witness_checks": 0,
+                  "legacy_witness_s": 0.0,
+                  "queries": 1,
+                  "rejected": 1,
+                  "seconds": 8.057e-05,
+                  "valid": 0
+                }
+              },
+              "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+              "evidence_materialization_s": 0.000321542,
+              "fixed_narrow_qualification": true,
+              "mode": "optimized",
+              "native_check_reuse": true,
+              "profile": {
+                "state_copy_update_s": 4.398e-06,
+                "workspace_allocation_s": 0.002853212
+              },
+              "query_range_m": 0.006,
+              "rejected_examples": [
+                {
+                  "numerical_gap_tolerance_m": 1e-09,
+                  "pair": [
+                    "tool_compliant_bellows_0",
+                    "conveyor_transverse"
+                  ],
+                  "phase": "endpoint",
+                  "q_rad": [
+                    -0.4738507840476061,
+                    -0.46642585435191586,
+                    -0.35455135903520246,
+                    1.7851535539041579,
+                    0.48589729025839207,
+                    -3.3829904117272847
+                  ],
+                  "query_range_m": 0.006,
+                  "query_scope": "robot_tool_payload_to_world",
+                  "reason": "INTERSECTION_OR_CONTACT",
+                  "required_pair_clearance_m": 0.005,
+                  "surface_distance_m": -1.0
+                }
+              ],
+              "search_gap_witness": null,
+              "workspace": {
+                "eligible_pairs": 8248,
+                "exempt_pairs": 23520,
+                "geometry_prepare_s": 6.9367e-05,
+                "pair_filter_s": 0.002740092,
+                "pair_profile_enabled": false,
+                "pair_profile_status": "NOT_MEASURED",
+                "phases": {
+                  "endpoint": {
+                    "aabb_skips": 1352,
+                    "aabb_tests": 1364,
+                    "broad_phase_s": null,
+                    "dynamic_pair_checks": 1364,
+                    "fixed_aabb_qualifications": 0,
+                    "fixed_aabb_reuses": 0,
+                    "fixed_first_checks": 0,
+                    "fixed_narrow_qualifications": 0,
+                    "fixed_narrow_reuses": 0,
+                    "fixed_property_evaluations": 0,
+                    "fixed_property_reuses": 0,
+                    "fixed_qualification_declines": {},
+                    "fixed_qualification_queries": 0,
+                    "narrow_calls": 12,
+                    "narrow_s": null,
+                    "queries": 1,
+                    "self_narrow": 8,
+                    "self_narrow_s": null,
+                    "transform_aabb_update_s": 8.598e-06,
+                    "world_narrow": 4,
+                    "world_narrow_s": null
+                  }
+                },
+                "prepare_s": 0.002809569,
+                "prepared_objects": 257
+              }
+            },
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "conveyor_transverse"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            "native_solver_calls": {},
+            "planning_only_status": "PLANNING_ONLY_NOT_EXECUTABLE",
+            "process_policy": {
+              "attached": false,
+              "compression_sat_evaluations": 0,
+              "continuous_swept_proof": false,
+              "fixed_seal_verdict_reuses": 0,
+              "last_failure": null,
+              "last_seal": null,
+              "native_check_reuse": true,
+              "ordered_checks": 0,
+              "profile_compression_s": 0.0,
+              "profile_enabled": false,
+              "profile_seal_s": 0.0,
+              "relaxed_stack": false,
+              "schema": "m710_native_process_evidence_v1",
+              "seal_geometry_evaluations": 0,
+              "seal_input_compilations": 1,
+              "stage": "pregrasp",
+              "state_checks": 0,
+              "support_names": [],
+              "target_id": "carton_l07_c04",
+              "terminal_proximity": null
+            },
+            "request_check_evidence": {
+              "clearance": "AVAILABLE_EXECUTED",
+              "clearance_check_s": 8.057e-05,
+              "clearance_queries": 1,
+              "completion": "PARTIAL_OR_FAILED_REQUEST",
+              "process_policy": "CREATED_NOT_CHECKED",
+              "request_status": "RECEIVER_STATE_REJECTED",
+              "scope": "CURRENT_REQUEST_ONLY"
+            },
+            "request_id": "6",
+            "scene_import_s": 0.009566366,
+            "status": "RECEIVER_STATE_REJECTED",
+            "transport_and_worker_s": 0.041944436728954315
+          },
+          "round_trip_s": 0.04249916225671768
+        }
+      ],
+      "external_axis_attempts": [
+        {
+          "after_scene_fingerprint": "73620e4c309914b351f2554efc97e121b541ebf46f0ce4389c4bda68d61d75c5",
+          "before_scene_fingerprint": "d1bee52ae3f2be08c47542cd58dc0a494b88c79ab848fee559ffa2365a578208",
+          "check_method": "EXACT_HORIZONTAL_BOX_Z_UNION_NATIVE_FCL",
+          "designed_contact_transitions": [
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "chassis"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            },
+            {
+              "final_gap_m": 1.33,
+              "nonpenetration_proof": "UNCHANGED_VERTICAL_SEPARATING_PLANE",
+              "normal_final_clearance_restored": true,
+              "pair": [
+                "conveyor_transverse",
+                "conveyor_longitudinal"
+              ],
+              "rule": "EXISTING_DESIGNED_PLANE_CONTACT_MONOTONE_Z_SEPARATION"
+            }
+          ],
+          "execution_duration_s": null,
+          "from": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.54
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "geometry_check_s": 0.010836296,
+          "mechanical_travel": "UNKNOWN",
+          "mechanism_geometry": "NOT_MODELED",
+          "physical_execution": "NOT_RUN",
+          "robot_q": [
+            0.5319890305651248,
+            -0.2485404178717574,
+            -0.2029002385753043,
+            1.4934236177895075,
+            -0.533755016337246,
+            -4.622579146294423
+          ],
+          "robot_q_constant": true,
+          "sweep_clearance": {
+            "continuous_swept_proof": false,
+            "counts": {
+              "endpoint": {
+                "bookkeeping_s": 3.2e-08,
+                "clearance_rejected": 0,
+                "distance_api_calls": 0,
+                "legacy_witness_checks": 0,
+                "legacy_witness_s": 0.0,
+                "queries": 1,
+                "rejected": 0,
+                "seconds": 0.000542108,
+                "valid": 1
+              }
+            },
+            "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+            "evidence_materialization_s": 0.000332733,
+            "fixed_narrow_qualification": true,
+            "mode": "optimized",
+            "native_check_reuse": true,
+            "profile": {
+              "state_copy_update_s": 5.408e-06,
+              "workspace_allocation_s": 0.003505074
+            },
+            "query_range_m": 0.006,
+            "rejected_examples": [],
+            "search_gap_witness": null,
+            "workspace": {
+              "eligible_pairs": 8248,
+              "exempt_pairs": 23520,
+              "geometry_prepare_s": 0.000108745,
+              "pair_filter_s": 0.003303618,
+              "pair_profile_enabled": false,
+              "pair_profile_status": "NOT_MEASURED",
+              "phases": {
+                "endpoint": {
+                  "aabb_skips": 8225,
+                  "aabb_tests": 8248,
+                  "broad_phase_s": null,
+                  "dynamic_pair_checks": 8248,
+                  "fixed_aabb_qualifications": 0,
+                  "fixed_aabb_reuses": 0,
+                  "fixed_first_checks": 0,
+                  "fixed_narrow_qualifications": 0,
+                  "fixed_narrow_reuses": 0,
+                  "fixed_property_evaluations": 0,
+                  "fixed_property_reuses": 0,
+                  "fixed_qualification_declines": {},
+                  "fixed_qualification_queries": 0,
+                  "narrow_calls": 23,
+                  "narrow_s": null,
+                  "queries": 1,
+                  "self_narrow": 9,
+                  "self_narrow_s": null,
+                  "transform_aabb_update_s": 9.222e-06,
+                  "world_narrow": 14,
+                  "world_narrow_s": null
+                }
+              },
+              "prepare_s": 0.003412437,
+              "prepared_objects": 257
+            }
+          },
+          "swept_volume": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.2650000000000001
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              1.5700000000000003
+            ]
+          },
+          "to": {
+            "category": "conveyor",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB",
+            "id": "conveyor_transverse",
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                -0.55
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.35
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9900000000000002
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "size": [
+              0.7,
+              1.5,
+              0.12
+            ]
+          },
+          "type": "TRANSVERSE_BELT_Z_LIFT",
+          "world_fcl_queries": 49
+        }
+      ],
+      "receiver_sync_attempts": [
+        {
+          "sync_stage": "pregrasp",
+          "parent_stage_id": "native-cold-891120e0cf5a415697982905482e9020:1",
+          "q_rad": [
+            0.5319890305651248,
+            -0.2485404178717574,
+            -0.2029002385753043,
+            1.4934236177895075,
+            -0.533755016337246,
+            -4.622579146294423
+          ],
+          "status": "SUCCESS",
+          "round_trip_s": 0.10067137330770493
+        }
+      ],
+      "prefix_attempt_count": 1,
+      "region_attempts": [
+        {
+          "center_world_m": [
+            -0.5102,
+            0.8400000000000001,
+            2.25
+          ],
+          "distance_m": 0.8102,
+          "planning_s": 0.36220772191882133,
+          "failure": null,
+          "selected": true,
+          "native_result": {
+            "status": "SUCCESS",
+            "task_id": "native-cold-891120e0cf5a415697982905482e9020",
+            "stage_id": "native-cold-891120e0cf5a415697982905482e9020:4",
+            "parent_stage_id": "native-cold-891120e0cf5a415697982905482e9020:3",
+            "request_id": "12",
+            "solver_message": "",
+            "moveit_error_code": null
+          },
+          "sample_check": {
+            "passed": true,
+            "failure": null,
+            "checked_samples": 209,
+            "short_pairs": [],
+            "minimum_payload_world_gap_m": 0.049999891325678336
+          },
+          "terminal_separation": {
+            "failure": null,
+            "status": "SUCCESS"
+          },
+          "release_ready_check": {
+            "passed": true,
+            "full_bottom_projection_inside": true,
+            "actual_gap_m": 0.049999891325678336,
+            "orientation_max_abs_error": 3.418097232612307e-07
+          },
+          "acceptance_status": "FINAL_SELECTED",
+          "context_sha256": "e654eba1822f70ae47aa02a9280b7ebb332b8566ae7617baed7731ef60954e9a",
+          "stage_id": "native-cold-891120e0cf5a415697982905482e9020:4",
+          "parent_stage_id": "native-cold-891120e0cf5a415697982905482e9020:3",
+          "path_sha256": "98a5348b154a8026fb0e2d234c88370fc903725036d7ba2b7ca94e11c0758bfd",
+          "extraction_sample_check_s": 0.5979474671185017,
+          "terminal_separation_s": 0.04394887387752533,
+          "release_ready_check_s": 0.00022395700216293335,
+          "candidate_total_s": 1.0504510626196861
+        }
+      ],
+      "planned_attach_events": 1,
+      "failure": null,
+      "release_ready": {
+        "passed": true,
+        "full_bottom_projection_inside": true,
+        "actual_gap_m": 0.049999891325678336,
+        "expected_gap_m": 0.05,
+        "actual_box": {
+          "id": "carton_l07_c04",
+          "size": [
+            0.6,
+            0.4,
+            0.3
+          ],
+          "pose": [
+            [
+              0.9999999999999972,
+              1.9344813744088214e-08,
+              6.93269576939016e-08,
+              -0.5101999968157475
+            ],
+            [
+              -1.9344789952976954e-08,
+              0.9999999999999413,
+              -3.418097232612307e-07,
+              0.8399999798319678
+            ],
+            [
+              -6.932696430167428e-08,
+              3.4180972180409066e-07,
+              0.9999999999999394,
+              2.249999980485703
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "payload",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        "orientation_max_abs_error": 3.418097232612307e-07,
+        "receiver_id": "conveyor_transverse",
+        "receiver_surface_z_m": 2.0500000000000003,
+        "physical_execution": "NOT_RUN",
+        "qualification_status": "NOT_EVALUATED"
+      },
+      "status": "LIFTED_RECEIVER_RELEASE_READY_PLANNED_NOT_EXECUTABLE",
+      "qualification_status": "NOT_EVALUATED",
+      "continuous_swept_proof": false,
+      "physical_execution": "NOT_RUN",
+      "timing_semantics": "Planning inclusive of all attempts; row/request/solver/check times are nested. Do not sum columns. External axis has no execution time law."
+    }
+  ]
+}
