@@ -32,20 +32,23 @@ def test_invalid_enabled_set_rejected(active):
         check_contours(geometry(),np.eye(4),np.eye(4),[.15,.1,.1],gap=.0004,penetration=.0004,active_ids=active)
 
 
-def test_front_extraction_uses_bounded_normal_offsets_and_neighbor_height(monkeypatch):
+@pytest.mark.parametrize('face,count',[('front',13),('top',4)])
+def test_extraction_uses_bounded_normal_offsets_and_neighbor_height(monkeypatch,face,count):
     from unloading_sim.eco65 import native_task
     from unloading_sim.eco65.model import transform
     monkeypatch.setattr(native_task,'world_objects',lambda scene:[])
     scene=dict(target_box_id='target',support_surface_ids=[],boxes=[
         dict(id='target',pose=[.205,0,.53],size_m=[.15,.1,.1]),
         dict(id='neighbor',pose=[.205,.11,.53],size_m=[.15,.1,.1])],
-        native_task=dict(minimum_lift_m=.01,receiving=dict(box_pose_D=np.eye(4).tolist())))
+        native_task=dict(minimum_lift_m=.01,cup_selection_mode=native_task.INDEPENDENT,
+                         receiving=dict(box_pose_D=np.eye(4).tolist())))
     target=transform([.205,0,.53]);tcp=transform([.13,0,.58])
-    goals=native_task.extraction_candidates(scene,target,[.15,.1,.1],tcp,'front')
-    assert len(goals)==13
+    goals=native_task.extraction_candidates(scene,target,[.15,.1,.1],tcp,face)
+    assert len(goals)==count
     assert {round(e['lift_m'],5) for _,e in goals}=={.01,.06,.08,.11}
-    assert {round(e['outward_m'],5) for _,e in goals}=={.01,.0475,.085,.16}
+    assert {round(e['outward_m'],5) for _,e in goals}==({.01,.0475,.085,.16} if face=='front' else {0.})
     for pose,e in goals:
         assert np.allclose(pose[:3,:3],tcp[:3,:3])
-        assert pose[0,3]<tcp[0,3] and pose[2,3]>tcp[2,3] and pose[1,3]==tcp[1,3]
+        assert (pose[0,3]<tcp[0,3] if face=='front' else pose[0,3]==tcp[0,3])
+        assert pose[2,3]>tcp[2,3] and pose[1,3]==tcp[1,3]
         assert e['fully_before_original_front']==(e['outward_m']>=.16-1e-9)

@@ -68,7 +68,8 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
     clearance=scene.get('native_task',{}).get('minimum_lift_m',.01)
     distances=[None] if face=='top' else [size[0]+clearance,size[0]/2+clearance,size[0]/4+clearance,clearance]
     original=[extraction_goal(scene,target_pose,size,tcp,face,d) for d in distances]
-    if face!='front':return original
+    if face=='top' and scene.get('native_task',{}).get('cup_selection_mode')!=INDEPENDENT:
+        return original
     # A short normal withdrawal can be reachable yet leave too little room
     # to turn between adjacent cartons. Also try clearing the neighboring
     # stack height, and a halfway lift, before abandoning this cup selection.
@@ -85,7 +86,12 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
     partial=max(base_lift,.8*(max(tops,default=bottom)-bottom))
     for lift in dict.fromkeys([above,partial,(above+base_lift)/2]):
         if lift<=base_lift+1e-9:continue
-        for distance in (size[0]/2+clearance,size[0]+clearance,size[0]/4+clearance):
+        # Top suction also needs room to turn the attached carton. Actual PTP
+        # and OMPL attempts from the 10 mm lift were rejected on neighbors.
+        # Keep top extraction vertical and check the same finite height set
+        # with native LIN before an ordinary, fully checked free transit.
+        distances=(None,) if face=='top' else (size[0]/2+clearance,size[0]+clearance,size[0]/4+clearance)
+        for distance in distances:
             goal,evidence=extraction_goal(scene,target_pose,size,tcp,face,distance)
             goal[2,3]+=lift-evidence['lift_m']
             evidence.update(lift_m=lift,goal_bottom_m=bottom+lift,neighbor_top_m=max(tops,default=bottom),
