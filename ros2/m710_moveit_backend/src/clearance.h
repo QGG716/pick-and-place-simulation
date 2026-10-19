@@ -58,6 +58,10 @@ public:
     gap_=policy.at("source_policy").at("required_pair_clearance_m");
     reserve_=stage=="transit" ? policy.at("receiver_reserve_m").get<double>() : 0.;
     if(!std::isfinite(reserve_) || reserve_<0) throw std::runtime_error("INVALID_RESERVE");
+    const double search_payload_reserve=policy.value("search_payload_reserve_m",0.);
+    if(!std::isfinite(search_payload_reserve) || search_payload_reserve<0. || search_payload_reserve>.001 ||
+       (search_payload_reserve>0. && (!eco65_ || stage!="transit")))
+      throw std::runtime_error("INVALID_SEARCH_PAYLOAD_RESERVE");
     // Query range is deliberately larger than every acceptance threshold.
     // It is not padding and not an acceptance tolerance.
     query_range_=gap_+reserve_+.001;
@@ -68,7 +72,7 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
@@ -192,6 +196,8 @@ public:
     }
     Json result={{"counts",counts},{"rejected_examples",rejected_examples},
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
+    {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
+    {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},
     {"mode",mode_},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
 };
 }

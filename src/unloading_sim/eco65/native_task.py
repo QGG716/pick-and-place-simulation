@@ -30,7 +30,7 @@ INDEPENDENT_PHASE = dict(pregrasp='approach', contact='contact', extraction='loa
     transit='loaded_transfer', place='place_contact', withdrawal='retreat', residence='retreat')
 
 
-def extraction_goal(scene, target_pose, size, tcp, face='top'):
+def extraction_goal(scene, target_pose, size, tcp, face='top', outward_m=None):
     """Retain the 10 mm lift clearance above crossed support surfaces."""
     half=np.asarray(size)/2; start=np.asarray(target_pose)[:3,3]
     task = scene.get('native_task')
@@ -54,9 +54,40 @@ def extraction_goal(scene, target_pose, size, tcp, face='top'):
     clearance = task['minimum_lift_m'] if task else .01
     lift=highest+clearance-bottom; goal=np.array(tcp,copy=True);goal[2,3]+=lift
     if face == 'front':
-        goal[:3,3] += face_outward(target_pose, face)*(size[0]+clearance)
+        outward_m=size[0]+clearance if outward_m is None else float(outward_m)
+        if not np.isfinite(outward_m) or outward_m<clearance:raise ValueError('INVALID_FRONT_EXTRACTION_DISTANCE')
+        goal[:3,3] += face_outward(target_pose, face)*outward_m
     return goal,dict(initial_bottom_m=bottom,crossed_supports=crossed,highest_support_m=highest,
-        retained_lift_clearance_m=clearance,lift_m=lift,goal_bottom_m=bottom+lift)
+        retained_lift_clearance_m=clearance,lift_m=lift,goal_bottom_m=bottom+lift,
+        outward_m=outward_m if face=='front' else 0.,
+        fully_before_original_front=bool(face=='front' and outward_m>=size[0]+clearance-1e-12),
+        transit_requirement='FULL_PAYLOAD_NEIGHBOR_CLEARANCE_NO_SUPPORT_OR_NEIGHBOR_EXEMPTION')
+
+
+def extraction_candidates(scene,target_pose,size,tcp,face='top'):
+    clearance=scene.get('native_task',{}).get('minimum_lift_m',.01)
+    distances=[None] if face=='top' else [size[0]+clearance,size[0]/2+clearance,size[0]/4+clearance,clearance]
+    original=[extraction_goal(scene,target_pose,size,tcp,face,d) for d in distances]
+    if face!='front':return original
+    # A short normal withdrawal can be reachable yet leave too little room
+    # to turn between adjacent cartons. Also try clearing the neighboring
+    # stack height, and a halfway lift, before abandoning this cup selection.
+    bottom=float(np.asarray(target_pose)[2,3]-np.abs(np.asarray(target_pose)[2,:3])@ (np.asarray(size)/2))
+    tops=[]
+    for box in scene['boxes']:
+        if box['id']==scene['target_box_id']:continue
+        T=transform(box['pose']);tops.append(float(T[2,3]+np.abs(T[2,:3])@(np.asarray(box['size_m'])/2)))
+    base_lift=original[0][1]['lift_m'];above=max(base_lift,max(tops,default=bottom)+clearance-bottom)
+    extra=[]
+    for lift in dict.fromkeys([above,(above+base_lift)/2]):
+        if lift<=base_lift+1e-9:continue
+        for distance in (size[0]/2+clearance,size[0]+clearance,size[0]/4+clearance):
+            goal,evidence=extraction_goal(scene,target_pose,size,tcp,face,distance)
+            goal[2,3]+=lift-evidence['lift_m']
+            evidence.update(lift_m=lift,goal_bottom_m=bottom+lift,neighbor_top_m=max(tops,default=bottom),
+                lift_basis='BOUNDED_NEIGHBOR_HEIGHT_CANDIDATE_NOT_PATH_ACCEPTANCE')
+            extra.append((goal,evidence))
+    return extra+original
 
 
 class NativeTask:
@@ -81,6 +112,7 @@ class NativeTask:
         if self.progress_path: self.progress_path.parent.mkdir(parents=True, exist_ok=True)
         self.call_archive = self.progress_path.with_name('native_calls.jsonl.gz') if self.progress_path else None
         self.extraction_evidence = None
+        self.extraction_attempts = []
         self.grasp_geometry = None; self.grasp_failures = []; self.grasp_home_rejections = []
         self.grasp_search = dict(status='NOT_STARTED', candidate_count=0,
                                  attempted_indices=[], unsearched_indices=[])
@@ -248,6 +280,8 @@ class NativeTask:
             for joint_goal in goals:
                 self.counter += 1; req = self.request(q, stage, op='plan')
                 req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner, require_native_motion=True)
+                if pipeline=='ompl' and stage=='transit':
+                    req['clearance_policy']['search_payload_reserve_m']=.0003
                 if constrained: req['goal_pose'] = check_transform(pose).tolist()
                 else: req['q_goal'] = joint_goal.tolist()
                 started = perf_counter(); raw = self.call(req)
@@ -340,8 +374,6 @@ class NativeTask:
         self.events.append(dict(event='ATTACH_PREDICTED', after_stage=self.parent,
             target_id=self.target['id'], flange_from_target=self.attachment.tolist(), q=q.tolist(),
             selection_binding=self.selection_binding(), actual_sealed_ids=seal['actual_sealed_ids']))
-        lift, self.extraction_evidence = extraction_goal(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face)
-        q = self.motion(q, 'extraction', pose=lift)
         if contract:
             place_box = check_transform(contract['receiving']['box_pose_D'])
         else:
@@ -350,7 +382,23 @@ class NativeTask:
             place_box = transform(center)
         place_tcp = place_box @ np.linalg.inv(self.attachment) @ np.asarray(self.identity['flange_from_task_tcp'])
         preplace = place_tcp.copy(); preplace[2, 3] += contract['preplace_m'] if contract else .03
-        q = self.motion(q, 'transit', pose=preplace)
+        contact_q=q.copy();contact_parent=self.parent;contact_stages=deepcopy(self.stages)
+        last_error='NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction'
+        for lift,evidence in extraction_candidates(self.scene,self.target_pose,self.target['size_m'],self.robot.fk(q),self.face):
+            self.parent=contact_parent;self.stages=deepcopy(contact_stages)
+            self.extraction_evidence=None
+            attempt=dict(geometry=evidence,goal_tcp_D=lift.tolist(),native_record_start=len(self.records),status='SEARCHING')
+            self.extraction_attempts.append(attempt)
+            try:
+                value=self.motion(contact_q,'extraction',pose=lift)
+                self.extraction_evidence=evidence
+                q=self.motion(value,'transit',pose=preplace)
+                attempt.update(status='EXTRACTION_AND_TRANSIT_PASS',native_record_end=len(self.records));break
+            except ValueError as error:
+                if str(error) not in ('NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction','NATIVE_STAGE_CANDIDATES_EXHAUSTED:transit'):raise
+                attempt.update(status='REJECTED',reason=str(error),native_record_end=len(self.records))
+                last_error=str(error)
+        else:raise ValueError(last_error)
         q = self.motion(q, 'place', pose=place_tcp)
         self.target_pose = self.robot.named_link_frames(q)['link_6'] @ self.attachment
         if not supported(self.scene, self.target_pose): raise ValueError('SUPPORTED_RELEASE_REJECTED')
@@ -419,7 +467,7 @@ class NativeTask:
             # worker verifies that a root branch has the identical initial q,
             # complete world and no attachment; stage IDs remain unique.
             self.parent = ''; self.attachment = None; self.target_pose = initial_target_pose.copy()
-            self.stages = []; self.events = []; self.extraction_evidence = None
+            self.stages = []; self.events = []; self.extraction_evidence = None;self.extraction_attempts=[]
             self.grasp_search.update(status='SEARCHING', active_index=index)
             self.grasp_search['attempted_indices'].append(index)
             self.grasp_search['unsearched_indices'] = list(range(index+1, len(candidates)))
@@ -444,7 +492,8 @@ class NativeTask:
                     recoverable_geometry_failure=recoverable, planning_wall_s=perf_counter()-branch_started,
                     native_record_range=[record_start,len(self.records)], native_ik_record_range=[ik_start,len(self.ik_records)],
                     native_call_range=[call_start,len(self.native_calls)], partial_stages=deepcopy(self.stages),
-                    partial_events=deepcopy(self.events), extraction_geometry=deepcopy(self.extraction_evidence)))
+                    partial_events=deepcopy(self.events), extraction_geometry=deepcopy(self.extraction_evidence),
+                    extraction_attempts=deepcopy(self.extraction_attempts)))
                 if not recoverable:
                     self.grasp_search.update(status='INTERRUPTED', reason=str(error))
                     # A timeout closes the resident worker. Do not retry a
@@ -466,6 +515,7 @@ class NativeTask:
             grasp_search=self.grasp_search, grasp_failures=self.grasp_failures,
             grasp_home_rejections=self.grasp_home_rejections,
             extraction_geometry=self.extraction_evidence,
+            extraction_attempts=self.extraction_attempts,
             initial_state_semantics='SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION',
             native_initialization_s=self.initialization_s,
             planning_wall_s=perf_counter()-started, simulated_duration_s=sum(s['times'][-1] for s in self.stages),

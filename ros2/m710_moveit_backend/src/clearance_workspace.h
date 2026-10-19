@@ -32,6 +32,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   std::vector<int> pair_index_,all_pair_indices_;
   bool hierarchical_=false;
   double maximum_band_=0.;
+  double search_payload_reserve_=0.;
   size_t moving_=0;
   std::vector<const moveit::core::AttachedBody*> attached_;
   int buildTree(std::vector<size_t>& ids,size_t first,size_t last) {
@@ -79,8 +80,9 @@ public:
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      bool explicit_convex_meshes=false)
-    : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()) {
+      bool explicit_convex_meshes=false,double search_payload_reserve=0.)
+    : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
+      search_payload_reserve_(search_payload_reserve) {
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
@@ -134,7 +136,7 @@ public:
     all_pair_indices_.resize(pairs_.size());std::iota(all_pair_indices_.begin(),all_pair_indices_.end(),0);
     if(hierarchical_) {
       pair_index_.assign(moving_*bodies_.size(),-1);
-      for(size_t i=0;i<pairs_.size();++i) {const auto& p=pairs_[i];pair_index_[p.a*bodies_.size()+p.b]=int(i);maximum_band_=std::max(maximum_band_,p.limit+.001);}
+      for(size_t i=0;i<pairs_.size();++i) {const auto& p=pairs_[i];pair_index_[p.a*bodies_.size()+p.b]=int(i);maximum_band_=std::max(maximum_band_,p.limit+search_payload_reserve_+.001);}
       std::vector<size_t> ids(bodies_.size());std::iota(ids.begin(),ids.end(),0);tree_.reserve(2*bodies_.size());buildTree(ids,0,ids.size());
     }
     stats.pair_filter_s=elapsed(filtering);stats.prepared_objects=bodies_.size();stats.eligible_pairs=pairs_.size();stats.prepare_s=elapsed(t);
@@ -182,22 +184,27 @@ public:
     for(int index:*selected) {
       const auto& p=pairs_[index];
       const auto& a=bodies_[p.a];const auto& b=bodies_[p.b];++stats.aabb_tests;
+      // The actual dense audit retains the original acceptance threshold.
+      // A small, explicit search-only reserve keeps OMPL's coarser segments
+      // away from the observed payload/neighbor clearance boundary.
+      const bool payload=a.type==collision_detection::BodyTypes::ROBOT_ATTACHED || b.type==collision_detection::BodyTypes::ROBOT_ATTACHED;
+      const double limit=p.limit+((phase=="search" && payload)?search_payload_reserve_:0.);
       const auto& ab=a.object->getAABB();const auto& bb=b.object->getAABB();
       // Per-pair query band is wider than the acceptance threshold. This is
       // conservative broad phase, not padding or a new numerical tolerance.
       const double lower=ab.distance(bb);
       if(!std::isfinite(lower)) throw std::runtime_error("UNKNOWN_AABB_DISTANCE");
-      const bool skip=lower>p.limit+.001;
+      const bool skip=lower>limit+.001;
       if(skip) {++stats.aabb_skips;continue;}
       auto narrow=Clock::now();++stats.narrow_calls;
       if(p.self) ++stats.self_narrow;else ++stats.world_narrow;
-      fcl::DistanceResultd result;result.min_distance=p.limit+.001;
+      fcl::DistanceResultd result;result.min_distance=limit+.001;
       const double d=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),result);
       const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
       // Use the same FCL request/default solver and strict contact rejection as
       // MoveIt's reference callback; no signed-distance or geometry surrogate.
-      if(!std::isfinite(d) || !std::isfinite(result.min_distance) || d<=0 || d+1e-9<p.limit) {
-        failure={a.name,b.name,d,p.limit,p.self};finish_broad();return false;
+      if(!std::isfinite(d) || !std::isfinite(result.min_distance) || d<=0 || d+1e-9<limit) {
+        failure={a.name,b.name,d,limit,p.self};finish_broad();return false;
       }
     }
     finish_broad();return true;

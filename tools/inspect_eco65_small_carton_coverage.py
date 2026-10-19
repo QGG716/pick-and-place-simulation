@@ -1,14 +1,16 @@
 """Bounded native pose/short-segment coverage; never a complete unloading task."""
 import argparse
+import hashlib
 from copy import deepcopy
 from pathlib import Path
 from time import perf_counter
+import uuid
 import numpy as np
 from unloading_sim.eco65.model import ROOT, load_json, save_json, transform
 from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.native_contact import bind_task_contract, check_contours, face_outward
 from unloading_sim.eco65.native_cups import grasp_candidates
-from unloading_sim.eco65.native_task import NativeTask, extraction_goal
+from unloading_sim.eco65.native_task import NativeTask, extraction_candidates
 from unloading_sim.eco65.home_candidate import make_candidate
 from unloading_sim.moveit2_backend import digest, MoveItUnavailable
 
@@ -64,7 +66,7 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
     try:
         task=NativeTask(snapshot,command,task_seconds=seconds,stage_seconds=20,
             home_candidate=candidate,progress_path=out/'native_progress.jsonl')
-        home=None
+        home=None;short_branches=0
         for index,grasp in enumerate(proposal['candidates'][:candidate_limit]):
             task.select_grasp(grasp);task.parent='';task.attachment=None;task.stages=[];task.events=[]
             top=np.array(grasp['tcp_pose_D']);pre=top.copy()
@@ -86,14 +88,23 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
             try:
                 pre_q=next(task.ik(pre,contact_q,'pregrasp',ik_seeds),None)
                 if pre_q is None:raise ValueError('PREGRASP_IK_OR_STATE_REJECTED')
-                q=task.motion(home,'pregrasp',goal=pre_q)
+                start=pre.copy();start[:3,3]+=face_outward(transform(box['pose']),face)*snapshot['scene']['native_task']['preapproach_m']
+                start_q=next(task.ik(start,pre_q,'pregrasp',ik_seeds),None)
+                if start_q is None:raise ValueError('SHORT_SEGMENT_INITIAL_STATE_REJECTED')
+                if short_branches>=8:raise MoveItUnavailable('BOUNDED_SHORT_BRANCHES_EXHAUSTED')
+                short_branches+=1;task.task_id='eco65-coverage-'+uuid.uuid4().hex
+                row.update(short_initial_q_rad=start_q.tolist(),short_initial_state_semantics='STATIC_NATIVE_CHECKED_STATE_NOT_A_HOME_CONNECTION')
+                q=task.motion(start_q,'pregrasp',goal=pre_q)
                 q=task.motion(q,'contact',pose=top)
                 seal=check_contours(init['process_geometry'],task.robot.named_link_frames(q)['link_6'],
                     transform(box['pose']),box['size_m'],gap=.0004,penetration=.0004,face=face,active_ids=task.active_ids)
                 if seal['status']!='PASS':raise ValueError('ACTUAL_CONTACT_ENDPOINT_SEAL_REJECTED')
                 task.attachment=np.linalg.inv(task.robot.named_link_frames(q)['link_6'])@transform(box['pose'])
-                lift,evidence=extraction_goal(task.scene,task.target_pose,box['size_m'],task.robot.fk(q),face)
-                task.motion(q,'extraction',pose=lift)
+                for lift,evidence in extraction_candidates(task.scene,task.target_pose,box['size_m'],task.robot.fk(q),face):
+                    try:task.motion(q,'extraction',pose=lift);break
+                    except ValueError as error:
+                        if str(error)!='NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction':raise
+                else:raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:extraction')
                 row.update(status='NATIVE_SHORT_SEGMENTS_PASS',extraction=evidence,actual_seal=seal)
                 result['short_segments']='NATIVE_PASS_INDEPENDENT_PATH_REVIEW_NOT_RUN'
                 break
@@ -115,6 +126,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('snapshot','home','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--worker-command');p.add_argument('--target',action='append')
+    p.add_argument('--resume-from',type=Path,help='Reuse completed reports only when their exact conditional snapshot identity matches.')
     p.add_argument('--candidate-limit',type=int,default=12);p.add_argument('--ik-seeds',type=int,default=8)
     p.add_argument('--seconds-per-face',type=float,default=120);p.add_argument('--short-segments',action='store_true')
     a=p.parse_args();source=verify_snapshot(load_json(a.snapshot));out=a.output.resolve();out.relative_to(ROOT/'outputs')
@@ -123,8 +135,16 @@ def main():
         snapshot=exposure_snapshot(source,box['id'])
         for face in ('top','front'):
             command=a.worker_command if not a.target or box['id'] in a.target else None
-            row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
-                             a.ik_seeds,a.seconds_per_face,a.short_segments)
+            previous=a.resume_from/(box['id']+'_'+face)/'coverage.json' if a.resume_from else None
+            if previous and previous.is_file():
+                row=load_json(previous)
+                if (row['snapshot_fingerprint']!=snapshot['fingerprint'] or row['target_id']!=box['id'] or row['face']!=face):
+                    raise ValueError('COVERAGE_RESUME_IDENTITY_MISMATCH')
+                row['resumed_from']=dict(path=previous.resolve().relative_to(ROOT).as_posix(),
+                    sha256=hashlib.sha256(previous.read_bytes()).hexdigest(),semantics='PRESERVED_PRIOR_RESULT_NOT_RERUN')
+            else:
+                row=inspect_face(snapshot,home,face,command,out/(box['id']+'_'+face),a.candidate_limit,
+                                 a.ik_seeds,a.seconds_per_face,a.short_segments)
             rows.append({k:v for k,v in row.items() if k not in ('native_calls','native_records','native_ik_records','initial_state_checks')})
             save_json(out/'coverage_table.json',dict(source_snapshot_fingerprint=source['fingerprint'],rows=rows))
 

@@ -30,3 +30,22 @@ def test_real_polygon_subset_placements_use_face_normal(face):
 def test_invalid_enabled_set_rejected(active):
     with pytest.raises(ValueError,match='CONTACT_ACTIVE_SELECTION_INVALID'):
         check_contours(geometry(),np.eye(4),np.eye(4),[.15,.1,.1],gap=.0004,penetration=.0004,active_ids=active)
+
+
+def test_front_extraction_uses_bounded_normal_offsets_and_neighbor_height(monkeypatch):
+    from unloading_sim.eco65 import native_task
+    from unloading_sim.eco65.model import transform
+    monkeypatch.setattr(native_task,'world_objects',lambda scene:[])
+    scene=dict(target_box_id='target',support_surface_ids=[],boxes=[
+        dict(id='target',pose=[.205,0,.53],size_m=[.15,.1,.1]),
+        dict(id='neighbor',pose=[.205,.11,.53],size_m=[.15,.1,.1])],
+        native_task=dict(minimum_lift_m=.01,receiving=dict(box_pose_D=np.eye(4).tolist())))
+    target=transform([.205,0,.53]);tcp=transform([.13,0,.58])
+    goals=native_task.extraction_candidates(scene,target,[.15,.1,.1],tcp,'front')
+    assert len(goals)==10
+    assert {round(e['lift_m'],5) for _,e in goals}=={.01,.06,.11}
+    assert {round(e['outward_m'],5) for _,e in goals}=={.01,.0475,.085,.16}
+    for pose,e in goals:
+        assert np.allclose(pose[:3,:3],tcp[:3,:3])
+        assert pose[0,3]<tcp[0,3] and pose[2,3]>tcp[2,3] and pose[1,3]==tcp[1,3]
+        assert e['fully_before_original_front']==(e['outward_m']>=.16-1e-9)
