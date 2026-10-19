@@ -51,28 +51,22 @@ def test_region_is_not_midpoint_or_old_point_eight_limit(layout):
     assert list(islice(region_samples(blocked,belt,target,.0001),3))==samples[:3]
 
 
-def test_first_lin_failure_does_not_reject_region_or_mutate_start(layout):
-    c,target,start,obstacles,plan,row,*_=suffix_fixture()
-    c.__class__=SingleLiftedReceiverConnector
-    c.high_belt=box((-.55,0,target.box.center[2]-.15-.05-.06),(.34,.8,.06),"conveyor_transverse")
-    c._single_connection_deadline=None
-    calls=[];frozen=start.copy()
-    attachment=SimpleNamespace(box_at=lambda q:target.box)
-    tracker=SimpleNamespace(clone=lambda:object())
-    def native(q,goal,world,**kw):
-        assert np.array_equal(q,frozen) and kw["attachment"] is attachment
-        assert not kw["allow_ompl"] and not kw["try_ptp"] and not kw["try_prior"]
-        assert kw["stage"]=="extraction" and kw["purpose"].value=="EXTRACTION_PROCESS"
-        calls.append(kw)
-        if len(calls)==1:return [],dict(reason="NATIVE_PLANNING_FAILED"),{}
-        return [q,q.copy()],None,{}
+def test_first_lin_failure_does_not_reject_region_or_mutate_start():
+    from test_receiver_candidate_acceptance import receiver_fixture
+    c,target,start,world,plan,row,calls,checks,*_=receiver_fixture()
+    original=c._native_plan;attempts=[]
+    def native(q,goal,obstacles,**kw):
+        attempts.append(kw)
+        if len(attempts)==1:
+            return [],dict(reason="NATIVE_PLANNING_FAILED"),dict(attempts=[dict(status="NATIVE_PLANNING_FAILED")])
+        return original(q,goal,obstacles,**kw)
     c._native_plan=native
-    path,geometry,failure=c.plan_extraction(start,target,attachment,[],[],tracker,71070,row)
-    assert failure is None and len(calls)==2 and len(row["region_attempts"])==2
-    assert not row["region_attempts"][0]["selected"] and row["region_attempts"][1]["selected"]
-    assert calls[0]["goal_pose"][0,3]!=calls[1]["goal_pose"][0,3]
-    assert np.array_equal(calls[0]["goal_pose"][:3,:3],c.physical_contact_pose(start)[:3,:3])
-    assert geometry["maximum_distance_m"] is None and c.budget.maximum_extraction_m==.8
+    result,row=c.complete_contact_plan(plan,row,start,target,world,{},71070)
+    assert result and len(attempts)==2 and len(checks)==1
+    assert [a["selected"] for a in row["region_attempts"]]==[False,True]
+    assert attempts[0]["goal_pose"][0,3]!=attempts[1]["goal_pose"][0,3]
+    assert np.array_equal(attempts[0]["goal_pose"][:3,:3],c.physical_contact_pose(start)[:3,:3])
+    assert result["extraction_geometry"]["maximum_distance_m"] is None and c.budget.maximum_extraction_m==.8
     assert c._single_connection_deadline is None
 
 

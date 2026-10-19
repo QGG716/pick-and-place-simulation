@@ -205,7 +205,45 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
             scene_fingerprint=digest([box_message(b) for b in self.active_obstacles]))
         return super().complete_contact_plan(plan,row,contact_end,target,obstacles,suction,seed)
 
-    def plan_extraction(self, start, target, attachment, payload_world, supports, tracker, seed, row):
+    def _region_context_binding(self, start, target, obstacles, attachment, payload_world, supports, tracker, seed):
+        self.check_context(target, obstacles)
+        if self._native_cancelled():
+            raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
+        request=self._build_native_request(start,start,payload_world,seed=seed,stage="extraction",
+            attachment=attachment,support_names=supports,initial_proximity=tracker)
+        parent,_,transition=self._native_parent_for_request(start,request)
+        if transition!="ATTACH":
+            raise MoveItUnavailable("RECEIVER_REGION_CONTACT_OWNERSHIP_CHANGED")
+        return digest(dict(request=request,parent=parent.evidence(),receiver=box_message(self.high_belt),
+            acceptance_policy=dict(position_tolerance_m=self.ik["position_tolerance_m"],
+                orientation_tolerance_rad=self.ik["orientation_tolerance_rad"],
+                contact_tolerance_m=self.contact_tolerance_m,
+                extraction_reserve_m=self.budget.extraction_runtime_clearance_reserve_m)))
+
+    def _region_path_binding(self, start, path, prefix, native):
+        values=np.asarray(path,dtype=float)
+        if values.ndim!=2 or values.shape[1]!=6 or len(values)<2 or not np.isfinite(values).all():
+            raise MoveItUnavailable("RECEIVER_REGION_INVALID_PATH_VALUES")
+        if not np.array_equal(path[0],start):
+            raise MoveItUnavailable("EXTRACTION_PARENT_STATE_CHANGED")
+        records=self._native_selected_records(path[-1])
+        if (len(records)!=len(prefix["stages"])+1
+                or [r["stage_id"] for r in records[:-1]]!=[r["stage_id"] for r in prefix["stages"]]
+                or native.get("task_id")!=self.native_task_id
+                or records[-1]["stage_id"]!=native.get("stage_id")
+                or records[-1]["parent_stage_id"]!=self._native_state_receipt(start).stage_id
+                or native.get("parent_stage_id")!=records[-1]["parent_stage_id"]
+                or not np.array_equal([p["q"] for p in records[-1]["points"]],values)):
+            raise MoveItUnavailable("RECEIVER_REGION_PATH_IDENTITY_CHANGED")
+        return digest(dict(path=values.tolist(),terminal_receipt=path[-1].native_receipt))
+
+    def _plan_extraction_suffix(self, plan, row, start, target, obstacles,
+                                attachment, payload_world, supports, tracker, seed):
+        """A native-generated LIN remains a candidate until the entire suffix passes.
+
+        Each branch is evaluated directly, with fresh row/plan and tracker clones.
+        The accepted branch is returned as-is: no validation cache or second audit.
+        """
         began=perf_counter();stage_s,_=self._native_limits();deadline=began+stage_s
         payload=attachment.box_at(start)
         region=receiving_region(payload,self.high_belt,payload_world)
@@ -217,11 +255,21 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
         self._single_connection_deadline=min(deadline,original_deadline) if original_deadline else deadline
         row["times"]["extraction_target_s"]=perf_counter()-began
         physical=self.physical_contact_pose(start)
-        geometry={}
+        validation_times=("extraction_sample_check_s","terminal_separation_s","release_ready_check_s")
+        for key in validation_times:
+            row["times"][key]=None
+        row["times"]["extraction_s"]=row["times"]["extraction_target_s"]
+        binding=None
+        def guard():
+            if self._region_context_binding(start,target,obstacles,attachment,payload_world,supports,tracker,seed)!=binding:
+                raise MoveItUnavailable("RECEIVER_REGION_CONTEXT_CHANGED")
+            if perf_counter()>=self._single_connection_deadline:
+                raise MoveItUnavailable("RECEIVER_REGION_STAGE_DEADLINE")
+        stop="DISCRETE_EXPLORATION_EXHAUSTED"
         try:
+            binding=self._region_context_binding(start,target,obstacles,attachment,payload_world,supports,tracker,seed)
             for x in region_samples(region,self.high_belt,payload,float(self.ik["position_tolerance_m"])):
-                if self._native_cancelled() or perf_counter()>=self._single_connection_deadline:
-                    break
+                guard()
                 distance=float(payload.center[0]-x)
                 if distance<=0:
                     continue
@@ -233,28 +281,100 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                     method="CURRENT_FULL_BOTTOM_REGION_NORMAL_LIN",maximum_distance_m=None,
                     old_maximum_extraction_m=self.budget.maximum_extraction_m,
                     old_bound_scope="OLD_EXPERIMENT_SEARCH_BOUND_NOT_MECHANICAL_LIMIT")
-                before=perf_counter()
-                path,failure,evidence=self._native_plan(start,None,payload_world,seed=seed,
-                    stage="extraction",purpose=MotionPurpose.EXTRACTION_PROCESS,
-                    goal_pose=self.virtual_from_physical(goal),attachment=attachment,
-                    support_names=supports,initial_proximity=tracker.clone(),
-                    allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
+                candidate_started=perf_counter()
                 entry=dict(center_world_m=[x,float(payload.center[1]),float(payload.center[2])],
-                    distance_m=distance,planning_s=perf_counter()-before,failure=deepcopy(failure),selected=False)
+                    distance_m=distance,planning_s=None,failure=None,selected=False,
+                    native_result=dict(status="NOT_OBSERVED"),sample_check=dict(status="NOT_REACHED"),
+                    terminal_separation=dict(status="NOT_REACHED"),release_ready_check=dict(status="NOT_REACHED"),
+                    acceptance_status="PENDING",context_sha256=binding)
                 row["region_attempts"].append(entry)
-                if failure is None:
-                    entry["selected"]=True
-                    row["times"]["extraction_s"]=perf_counter()-began
-                    return path,geometry,None
-                reason=failure.get("reason","")
-                if reason not in {"NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT","MOVEIT2_SEARCH_EXHAUSTED",
-                        "SEARCH_EXHAUSTED","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS"}:
-                    raise MoveItUnavailable("RECEIVER_REGION_REQUEST_STOP:"+reason)
-            row["times"]["extraction_s"]=perf_counter()-began
-            return [],geometry,dict(reason="RECEIVER_REGION_SEARCH_INCOMPLETE",scope="FRONT_TEMPLATE_ONLY",
-                samples_attempted=len(row["region_attempts"]),global_unreachable=False)
+                branch=dict(row,times={**row["times"],**dict.fromkeys(validation_times)},
+                    attachment=deepcopy(row["attachment"]),complete=False,failure=None)
+                try:
+                    before=perf_counter()
+                    try:
+                        path,failure,evidence=self._native_plan(start,None,payload_world,seed=seed,
+                            stage="extraction",purpose=MotionPurpose.EXTRACTION_PROCESS,
+                            goal_pose=self.virtual_from_physical(goal),attachment=attachment,
+                            support_names=supports,initial_proximity=tracker.clone(),
+                            allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
+                    finally:
+                        entry["planning_s"]=perf_counter()-before
+                        row["times"]["extraction_s"]+=entry["planning_s"]
+                    attempts=evidence.get("attempts",[])
+                    if attempts:
+                        entry["native_result"]={k:deepcopy(attempts[-1].get(k)) for k in
+                            ("status","task_id","stage_id","parent_stage_id","request_id","solver_message","moveit_error_code")}
+                        entry.update(stage_id=attempts[-1].get("stage_id"),parent_stage_id=attempts[-1].get("parent_stage_id"))
+                    guard()
+                    if failure is not None:
+                        if failure.get("reason") not in {"NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT",
+                                "MOVEIT2_SEARCH_EXHAUSTED","SEARCH_EXHAUSTED","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS"}:
+                            raise MoveItUnavailable("RECEIVER_REGION_REQUEST_STOP:"+str(failure.get("reason")))
+                        entry.update(failure={**deepcopy(failure),"scope":"CANDIDATE_METHOD"},
+                            acceptance_status="NATIVE_METHOD_NOT_CONNECTED")
+                        continue
+                    if entry["native_result"]["status"]!="SUCCESS":
+                        raise MoveItUnavailable("RECEIVER_REGION_NATIVE_RESULT_UNKNOWN")
+                    entry["path_sha256"]=self._region_path_binding(start,path,plan,entry["native_result"])
+                    entry["acceptance_status"]="NATIVE_GENERATED_CANDIDATE"
+                    branch["extraction_geometry"]=geometry
+                    accepted,branch=self._complete_extraction_candidate(deepcopy(plan),branch,start,path,geometry,
+                        target,obstacles,attachment,payload_world,supports,tracker.clone(),seed,guard=guard)
+                    guard()
+                    if entry["path_sha256"]!=self._region_path_binding(start,path,plan,entry["native_result"]):
+                        raise MoveItUnavailable("RECEIVER_REGION_VALIDATED_PATH_CHANGED")
+                    if accepted is None:
+                        failure=branch.get("failure") or {}
+                        allowed={"CONTACT_NORMAL_LINE_OR_ORIENTATION","CONTACT_ENDPOINT_FK",
+                            "EXTRACTION_RETURNED_SAMPLE_PAYLOAD_REJECTED","ACTUAL_EXTRACTION_CLEARANCE_NOT_REACHED",
+                            "EXTRACTION_END_CLEARANCE_REJECTED","EXTRACTION_END_PROCESS_REJECTED",
+                            "ACTUAL_RELEASE_REGION_NOT_REACHED"}
+                        if failure.get("reason") not in allowed or (
+                                failure.get("reason") in {"EXTRACTION_END_CLEARANCE_REJECTED","EXTRACTION_END_PROCESS_REJECTED"}
+                                and not failure.get("detail")):
+                            raise MoveItUnavailable("RECEIVER_REGION_UNKNOWN_POSTCHECK:"+str(failure))
+                        entry.update(failure={**deepcopy(failure),"scope":"CANDIDATE_PATH_OR_GOAL"},
+                            acceptance_status="POSTCHECK_REJECTED")
+                        continue
+                    entry.update(selected=True,acceptance_status="FINAL_SELECTED")
+                    for key in ("extraction_geometry","extraction_samples","terminal_separation","release_ready_check",
+                                "actual_end_q_rad","attachment"):
+                        row[key]=branch[key]
+                    row.update(complete=True,failure=None)
+                    return accepted,row
+                except Exception as exc:
+                    entry.update(selected=False,acceptance_status="REQUEST_STOPPED",
+                        failure=dict(reason=str(exc),scope="REQUEST"))
+                    if str(exc) in {"RECEIVER_REGION_STAGE_DEADLINE","SINGLE_TARGET_STAGE_DEADLINE"} and not self._native_cancelled():
+                        entry["acceptance_status"]="SEARCH_INCOMPLETE"
+                        entry["failure"]["scope"]="REGION_BUDGET"
+                    raise
+                finally:
+                    for key in validation_times:
+                        value=branch["times"].get(key)
+                        entry[key]=value
+                        if value is not None:
+                            row["times"][key]=(row["times"].get(key) or 0.)+value
+                    for src,dst in (("extraction_samples","sample_check"),("terminal_separation","terminal_separation"),
+                                    ("release_ready_check","release_ready_check")):
+                        if src in branch:
+                            data=branch[src]
+                            entry[dst]={k:deepcopy(data[k]) for k in data if k in
+                                {"status","passed","failure","checked_samples","short_pairs","minimum_payload_world_gap_m",
+                                 "actual_gap_m","full_bottom_projection_inside","orientation_max_abs_error"}}
+                    entry["candidate_total_s"]=perf_counter()-candidate_started
+        except MoveItUnavailable as exc:
+            if str(exc) not in {"RECEIVER_REGION_STAGE_DEADLINE","SINGLE_TARGET_STAGE_DEADLINE"} or self._native_cancelled():
+                row["complete"]=False
+                raise
+            stop="STAGE_BUDGET_EXHAUSTED"
         finally:
+            row["times"]["region_search_s"]=perf_counter()-began
+            row["times"]["total_s"]=perf_counter()-self._single_face_started
             self._single_connection_deadline=original_deadline
+        return self._reject_suffix(row,dict(reason="RECEIVER_REGION_SEARCH_INCOMPLETE",scope="FRONT_TEMPLATE_ONLY",
+            termination=stop,samples_attempted=len(row["region_attempts"]),global_unreachable=False))
 
     def _reject_suffix(self,row,failure):
         if failure.get("reason")=="RECEIVER_REGION_SEARCH_INCOMPLETE":

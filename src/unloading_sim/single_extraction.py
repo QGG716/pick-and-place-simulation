@@ -206,20 +206,46 @@ class SingleExtractionConnector(SingleContactConnector):
         row["times"]["attachment_context_s"] = perf_counter() - began
         if failure:
             return self._reject_suffix(row, failure)
+        return self._plan_extraction_suffix(plan, row, start, target, obstacles,
+            attachment, payload_world, supports, tracker, seed)
+
+    def _plan_extraction_suffix(self, plan, row, start, target, obstacles,
+                                attachment, payload_world, supports, tracker, seed):
+        """Default one-target suffix; regional search overrides only this hook."""
         original_tracker = tracker.clone()
         path, geometry, failure = self.plan_extraction(start, target, attachment, payload_world,
             supports, tracker, seed, row)
         row["extraction_geometry"] = geometry
         if failure:
             return self._reject_suffix(row, failure)
+        return self._complete_extraction_candidate(plan, row, start, path, geometry,
+            target, obstacles, attachment, payload_world, supports, original_tracker, seed)
+
+    def _complete_extraction_candidate(self, plan, row, start, path, geometry,
+            target, obstacles, attachment, payload_world, supports, tracker, seed, *, guard=None):
+        """Evaluate and assemble this exact candidate once; no acceptance cache.
+
+        Regional callers provide a fresh branch plan/row and initial tracker.
+        The default suffix retains its existing checks and completion hook.
+        """
         if not np.array_equal(path[0], start):
             raise MoveItUnavailable("EXTRACTION_PARENT_STATE_CHANGED")
+        records = self._native_selected_records(path[-1])
+        if (len(records) != len(plan["stages"])+1
+                or [r["stage_id"] for r in records[:-1]] != [r["stage_id"] for r in plan["stages"]]
+                or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]):
+            raise MoveItUnavailable("EXTRACTION_PARENT_CHAIN_INVALID")
         row["attachment"]["status"] = "NATIVE_OWNERSHIP_TRANSITION_ACCEPTED"
         before = perf_counter()
         samples = extraction_sample_check(self, path, attachment, target, geometry,
-            original_tracker, payload_world, supports)
+            tracker, payload_world, supports)
         row["extraction_samples"] = samples
         row["times"]["extraction_sample_check_s"] = perf_counter() - before
+        if guard is not None:
+            guard()
+            if (type(samples.get("passed")) is not bool
+                    or samples["passed"] != (samples.get("failure") is None)):
+                raise MoveItUnavailable("EXTRACTION_SAMPLE_RESULT_UNKNOWN")
         if not samples["passed"]:
             return self._reject_suffix(row, samples["failure"])
         self.check_context(target, obstacles)
@@ -227,11 +253,10 @@ class SingleExtractionConnector(SingleContactConnector):
         checked = self.check_attached_end(path[-1], target, payload_world, attachment, seed, stage="extraction")
         row["terminal_separation"] = deepcopy(checked)
         row["times"]["terminal_separation_s"] = perf_counter() - before
+        if guard is not None:
+            guard()
         if checked["status"] != "SUCCESS":
             return self._reject_suffix(row, dict(reason=checked["status"], detail=checked.get("failure")))
-        records = self._native_selected_records(path[-1])
-        if len(records) != len(plan["stages"])+1 or records[-1]["parent_stage_id"] != plan["stages"][-1]["stage_id"]:
-            raise MoveItUnavailable("EXTRACTION_PARENT_CHAIN_INVALID")
         event = dict(event_type="ATTACH", scope="PLANNED_SCENE_TRANSITION_ONLY",
             target_id=target.target_id, q_rad=np.asarray(start).tolist(),
             parent_stage_id=plan["stages"][-1]["stage_id"], next_stage_id=records[-1]["stage_id"],

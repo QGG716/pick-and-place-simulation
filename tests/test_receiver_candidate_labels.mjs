@@ -1,0 +1,14 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const s=fs.readFileSync('tools/search_replay/viewer.html','utf8');
+const source=s.slice(s.indexOf('function receiverCandidate('),s.indexOf('function setMotion('));
+const DATA={result:{through_lifted_release_ready:true,complete:true,plan:{stages:[{stage_id:'accepted'}]},attempts:[{region_attempts:[{stage_id:'rejected',native_result:{task_id:'task',status:'SUCCESS'},selected:false,acceptance_status:'POSTCHECK_REJECTED'},{stage_id:'accepted',native_result:{task_id:'task',status:'SUCCESS'},selected:true,acceptance_status:'FINAL_SELECTED'}]}]}};
+const ctx={DATA};vm.createContext(ctx);vm.runInContext(source,ctx);
+const a=id=>({response_identity:{stage_id:id,task_id:'task',status:'SUCCESS'}});
+assert.equal(ctx.receiverCandidate(a('rejected')).selected,false);
+assert.equal(ctx.candidateLabel(a('rejected')),'\u540e\u7f6e\u9a8c\u6536\u88ab\u62d2\u7edd');
+assert.equal(ctx.candidateLabel(a('accepted')),'\u672c\u6b21\u4efb\u52a1\u6700\u7ec8\u9009\u62e9');
+assert.notEqual(ctx.candidateLabel(a('other')),ctx.candidateLabel(a('accepted')));
+DATA.result.complete=false;
+assert.notEqual(ctx.candidateLabel(a('accepted')),'\u672c\u6b21\u4efb\u52a1\u6700\u7ec8\u9009\u62e9');
+assert.equal(ctx.receiverCandidate({response_identity:{stage_id:'rejected',task_id:'other-task'}}),null);
+console.log(JSON.stringify({scope:'TEST_INJECTION_VIEWER_ONLY',checks:6,passed:true}));
