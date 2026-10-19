@@ -87,12 +87,14 @@ class SingleRightReceiverConnector(SingleLiftedReceiverConnector):
         if not np.allclose(self.high_belt.rotation,np.eye(3),atol=1e-12,rtol=0):
             raise MoveItUnavailable('RIGHT_REGION_REQUIRES_WORLD_ALIGNED_BELT')
         a,b,c,d=region['projection_center_limits_before_occupancy'];x,y=self.high_belt.center[:2]
-        raw=[a+x,min(b+x,payload.center[0]),max(c+y,payload.center[1]),d+y]
+        sign=getattr(self,'lateral_sign',1.)
+        raw=[a+x,min(b+x,payload.center[0]),max(c+y,payload.center[1]) if sign>0 else c+y,
+             d+y if sign>0 else min(d+y,payload.center[1])]
         tools,_=native_tool_collision_boxes(self,start)
         compliant={box.name for box in self.robot_state_validator._compliant_boxes(start)}
         tracker=SideTransferTracker(payload,[o for o in payload_world if o.name in self.stack_carton_names],
             self.collision_policy,self.collision_margin_m,self.contact_tolerance_m)
-        screened,blockers=side_turn_regions([raw],payload,tools,payload_world,1,
+        screened,blockers=side_turn_regions([raw],payload,tools,payload_world,sign,
             support_ids=tracker.planar,compliant_ids=compliant,stack_ids=self.stack_carton_names,
             ignore_flexible_neighbors=self.collision_policy.compliant_cup_neighbor_contact_mode=='ignore',
             clearance_m=self.collision_policy.free_space_clearance_m)
@@ -163,7 +165,7 @@ class SingleRightReceiverConnector(SingleLiftedReceiverConnector):
             entry['segments'].append(leg)
             if failure:return first,failure,evidence,{},None,tracker.clone()
             self._region_path_binding(start,first,{'stages':self._native_selected_records(start)},leg['native_result'])
-            first_geometry=geometry(start,turn,[0.,1.,0.]);history=tracker.clone();began=perf_counter()
+            first_geometry=geometry(start,turn,[0.,getattr(self,'lateral_sign',1.),0.]);history=tracker.clone();began=perf_counter()
             samples=extraction_sample_check(self,first,attachment,target,first_geometry,history,payload_world,supports,terminal=False)
             leg.update(sample_check=samples,sample_check_s=perf_counter()-began);guard()
             if type(samples.get('passed')) is not bool or samples['passed']!=(samples.get('failure') is None):

@@ -35,7 +35,7 @@ class SingleContactClient:
     def request(self, request, **kwargs):
         op = request.get("op")
         if request.get('receiver_template') is not None:
-            if not (self.right_inner_enabled and request['receiver_template']=='RIGHT_INNER_HMAX'
+            if not (self.right_inner_enabled and request['receiver_template'] in ({'RIGHT_INNER_HMAX','COUPLED_PLANAR'} if getattr(self,'coupled_enabled',False) else {'RIGHT_INNER_HMAX'})
                     and op=='plan' and request.get('stage')=='extraction'
                     and bool(request.get('parent_stage_id'))
                     and ((request.get('process_substage')=='RIGHT_INNER_Y' and request.get('ownership_transition')=='ATTACH')
@@ -91,7 +91,14 @@ class SingleContactClient:
                 ("contact", "pilz_industrial_motion_planner", "LIN")}) or (
                 self.lifted_receiver_binding is not None and request.get("attachment") is None
                 and request.get("stage") in {"pregrasp", "contact"}
-                and request.get("pipeline_id") == "external_axis" and request.get("planner_id") == "LIFT_Z")
+                and request.get("pipeline_id") == "external_axis" and request.get("planner_id") in
+                ({"LIFT_Z","COUPLED_LIFT"} if getattr(self,'coupled_enabled',False) else {"LIFT_Z"})) or (
+                getattr(self,'coupled_enabled',False) and request.get('pipeline_id')=='semantic_event'
+                and request.get('planner_id')=='NOMINAL_DROP_RELEASE' and request.get('stage')=='extraction'
+                and request.get('attachment') is not None and bool(request.get('parent_stage_id'))) or (
+                getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
+                and request.get('pipeline_id')=='pilz_industrial_motion_planner' and request.get('planner_id')=='LIN'
+                and request.get('attachment') is None and bool(request.get('parent_stage_id')))
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))

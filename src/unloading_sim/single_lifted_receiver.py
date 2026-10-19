@@ -75,14 +75,16 @@ def release_ready_geometry(box, belt, *, tolerance, expected_bottom, expected_ro
 
 
 class SingleLiftedReceiverConnector(SingleExtractionConnector):
+    def prepare_receiver_binding(self, target, obstacles):
+        return receiver_binding(target.box,obstacles,self.native_scene.snapshot["assembly"]["designed_contacts"])
+
     def validate_template(self, target):
         if target.face_role != "FRONT" or not np.allclose(target.outward_normal,[-1,0,0],atol=1e-12,rtol=0):
             raise MoveItUnavailable("FRONT_HMAX_TEMPLATE_SCOPE_ONLY")
 
     def plan_target(self, target, start, obstacles, suction, seed):
         self.validate_template(target)
-        self.receiver_binding,self.high_belt=receiver_binding(target.box,obstacles,
-            self.native_scene.snapshot["assembly"]["designed_contacts"])
+        self.receiver_binding,self.high_belt=self.prepare_receiver_binding(target,obstacles)
         if self.receiver_binding != self.native.lifted_receiver_binding:
             raise MoveItUnavailable("RECEIVER_BINDING_IDENTITY_CHANGED")
         self.initial_receiver_checks=[]
@@ -154,7 +156,7 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
         world=self.high_world();serialized=[box_message(b) for b in world]
         req.update(parent_stage_id=receipt.stage_id,parent_state_receipt=receipt.evidence(),
             ownership_transition=None,stage_id=self.native_task_id+":"+str(next(self._native_stage_ids)),
-            pipeline_id="external_axis",planner_id="LIFT_Z",receiver_end_world=serialized,
+            pipeline_id="external_axis",planner_id=getattr(self,"lift_planner_id","LIFT_Z"),receiver_end_world=serialized,
             receiver_end_fingerprint=digest(serialized),allowed_planning_time_s=stage_s,
             purpose=MotionPurpose.FREE_APPROACH.value if stage=="pregrasp" else MotionPurpose.CONTACT_PROCESS.value)
         before=perf_counter()

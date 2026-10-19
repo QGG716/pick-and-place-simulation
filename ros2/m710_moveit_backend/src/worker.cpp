@@ -26,6 +26,8 @@
 #include "native_semantic_event.h"
 #include "static_prior.h"
 #include "lifted_receiver.h"
+#include "coupled_receiver.h"
+#include "nominal_release.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <moveit/kinematic_constraints/utils.h>
 
@@ -304,8 +306,15 @@ class Worker {
   J nativeTaskPlan(const J& req,const planning_scene::PlanningScenePtr& scene,
       const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process,bool diagnostic=false) {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
-    if(req.value("pipeline_id",std::string())=="external_axis")
-      m710::receiverTransitionWorld(req,receiver_binding);
+    if(req.value("pipeline_id",std::string())=="external_axis") {
+      if(m710::coupledBinding(receiver_binding))m710::coupledTransitionWorld(req,receiver_binding);
+      else m710::receiverTransitionWorld(req,receiver_binding);
+    }
+    else if(req.value("pipeline_id",std::string())=="semantic_event" && m710::coupledBinding(receiver_binding)) {
+      if(req.value("planner_id","")!="NOMINAL_DROP_RELEASE" || req.at("stage")!="extraction" ||
+          req.at("q_start")!=req.at("q_goal") || req.at("attachment").is_null() || req.value("parent_stage_id","").empty())
+        throw std::runtime_error("NOMINAL_RELEASE_SCOPE_INVALID");
+    }
     else m710::validateNativeMotionScope(req);
     const std::string connection_scope=req.value("connection_scope",std::string());
     if(!connection_scope.empty()) {
@@ -341,7 +350,8 @@ class Worker {
       tasks[task_id]=std::move(session);
     }
     auto& session=*tasks.at(task_id);
-    if(req.contains("receiver_template") && (req.at("receiver_template")!="RIGHT_INNER_HMAX" ||
+    if(req.contains("receiver_template") && ((req.at("receiver_template")!="RIGHT_INNER_HMAX" &&
+        !(req.at("receiver_template")=="COUPLED_PLANAR" && m710::coupledBinding(receiver_binding))) ||
         parent.empty() || receiver_binding.is_null()))throw std::runtime_error("NATIVE_TASK_RECEIVER_TEMPLATE_SCOPE");
     if(session.diagnostic!=diagnostic)throw std::runtime_error("DIAGNOSTIC_TASK_SCOPE_CHANGED");
     if(req.at("clearance_policy").at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
@@ -357,7 +367,7 @@ class Worker {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
     } else {
       const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
-      if(req.value("receiver_template","")=="RIGHT_INNER_HMAX") {
+      if(req.value("receiver_template","")=="RIGHT_INNER_HMAX" || req.value("receiver_template","")=="COUPLED_PLANAR") {
         const auto leg=req.at("process_substage");
         if(receiver_binding.is_null() || (leg=="RIGHT_INNER_Y" && (previous.request.at("stage")!="contact" || req.at("ownership_transition")!="ATTACH")) ||
             (leg=="RIGHT_INNER_X" && (previous.request.value("process_substage","")!="RIGHT_INNER_Y" || !req.at("ownership_transition").is_null())))
@@ -396,6 +406,99 @@ class Worker {
     while(session.active.size()>common) {session.task->stages()->remove(-1);session.active.pop_back();}
     auto generate=[this](NativeStageRecord& r) {
       const auto& req=r.request;const std::string pipeline=req.at("pipeline_id"),planner=req.at("planner_id");
+      if(pipeline=="semantic_event" && planner=="NOMINAL_DROP_RELEASE") {
+        m710::validateNominalDrop(req,receiver_binding);
+        const auto began=Clock::now();const auto& samples=req.at("nominal_release").at("samples");
+        const std::string target=req.at("process_policy").at("target_id");
+        const auto* held=r.start->getCurrentState().getAttachedBody(target);
+        if(!held || !samePose(held->getGlobalCollisionBodyTransforms().at(0),m710::processBox(samples.front().at("box")).pose))
+          throw std::runtime_error("RELEASE_ACTUAL_ATTACHMENT_MISMATCH");
+        r.result={{"status","NOMINAL_DROP_REJECTED"},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
+          {"parent_stage_id",r.parent},{"request_id",req.at("request_id")},{"generation_source","SEMANTIC_EVENT"},
+          {"pipeline_id",pipeline},{"planner_id",planner},{"native_solver_calls",J::object()},
+          {"mtc_generation",true},{"generated_during_task",true}};
+        auto next=r.start->diff();next->decoupleParent();
+        next->getCurrentStateNonConst().clearAttachedBody(target);next->getCurrentStateNonConst().update();
+        std::map<std::string,double> last_gap;std::set<std::string> initial_contact,restored;
+        const auto cups=req.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>();
+        J checks=J::array(),failure=nullptr;
+        for(size_t index=0;index<samples.size();++index) {
+          const auto& sample=samples[index];const auto box=m710::processBox(sample.at("box"));
+          if(seconds(began)>=req.at("allowed_planning_time_s").get<double>()) {failure={{"reason","NOMINAL_DROP_CHECK_TIMEOUT"}};break;}
+          if(!next->processCollisionObjectMsg(object(sample.at("box"))))throw std::runtime_error("RELEASE_WORLD_IMPORT_FAILED");
+          if(next->getCurrentState().hasAttachedBody(target) || !next->getWorld()->hasObject(target))throw std::runtime_error("RELEASE_OWNERSHIP_INVALID");
+          auto& acm=next->getAllowedCollisionMatrixNonConst();
+          for(const auto& name:cups) {
+            const auto* link=model->getLinkModel(name);if(!link || link->getShapes().empty())throw std::runtime_error("RELEASE_CUP_MISSING");
+            double gap=1e9;
+            for(size_t k=0;k<link->getShapes().size();++k) {
+              if(link->getShapes()[k]->type!=shapes::BOX)throw std::runtime_error("RELEASE_CUP_SHAPE_UNKNOWN");
+              const auto* shape=static_cast<const shapes::Box*>(link->getShapes()[k].get());
+              m710::ProcessBox cup;cup.id=name;cup.pose=next->getCurrentState().getCollisionBodyTransform(link,k);
+              cup.half=Eigen::Vector3d(shape->size[0],shape->size[1],shape->size[2])/2.;gap=std::min(gap,m710::processSignedGap(cup,box));
+            }
+            if(index==0 && gap<.005)initial_contact.insert(name);
+            if(gap>=.005)restored.insert(name);
+            const bool permitted=initial_contact.count(name) && !restored.count(name);
+            if((index>0 && permitted && gap<last_gap[name]-1e-7) || gap < -req.at("process_policy").at("collision_policy").at("maximum_compliant_cup_additional_compression_m").get<double>()) {
+              failure={{"reason","RELEASE_CUP_COMPRESSION_OR_REENTRY"},{"pair",{name,target}},{"signed_gap_m",gap}};break;
+            }
+            last_gap[name]=gap;acm.setEntry(name,target,permitted);
+          }
+          if(!failure.is_null())break;
+          m710::Clearance gate(next,req.at("clearance_policy"),"optimized",true,true,false);
+          if(!gate.check(next->getCurrentState()))failure=gate.last_failure;
+          if(failure.is_null())for(const auto& other:req.at("world")) {
+            if(other.at("id")==target)throw std::runtime_error("RELEASE_DUPLICATE_TARGET");
+            const auto b=m710::processBox(other);const double sat=m710::processSignedGap(box,b);
+            if(other.at("id")=="conveyor_transverse" && sat>=-1e-9)continue;
+            if(sat>.005000001)continue;
+            const double gap=m710::receiverBoxDistance(sample.at("box"),other);
+            if(gap+.000000001<.005) {failure={{"reason","NOMINAL_DROP_WORLD_CLEARANCE"},{"pair",{target,b.id}},{"gap_m",gap}};break;}
+          }
+          checks.push_back({{"t",sample.at("t")},{"passed",failure.is_null()},{"failure",failure},{"clearance",gate.evidence()}});
+          if(!failure.is_null())break;
+        }
+        r.result["nominal_release"]={{"checks",checks},{"same_pose_detachment",true},{"target_in_world_once",true},
+          {"first_contact",failure.is_null()},{"tool_q_constant",true},{"initial_contact_cups",initial_contact},
+          {"restored_clearance_cups",restored},{"physical_execution","NOT_RUN"},{"continuous_swept_proof",false}};
+        r.result["failure"]=failure;if(!failure.is_null())return;
+        r.end=next;r.trajectory=std::make_shared<robot_trajectory::RobotTrajectory>(model,"manipulator");
+        r.trajectory->addSuffixWayPoint(r.start->getCurrentState(),0.);
+        r.result.update({{"status","SUCCESS"},{"terminal_q",req.at("q_start")},{"points",J::array()},
+          {"joint_names",names},{"native_output_status","SKIPPED_PLANNING_ONLY"},{"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"},
+          {"time_parameterization","NOMINAL_GRAVITY_MODEL_NOT_ROBOT_MOTION"}});r.ready=true;return;
+      }
+      if(pipeline=="external_axis" && m710::coupledBinding(receiver_binding)) {
+        const auto began=Clock::now();const auto end_world=m710::coupledTransitionWorld(req,receiver_binding);
+        r.result={{"status","RECEIVER_SWEEP_REJECTED"},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
+          {"parent_stage_id",r.parent},{"request_id",req.at("request_id")},{"generation_source","NATIVE_EXTERNAL_AXIS"},
+          {"pipeline_id",pipeline},{"planner_id",planner},{"native_solver_calls",J::object()},
+          {"mtc_generation",true},{"generated_during_task",true}};
+        J checks=J::array();J failure=nullptr;planning_scene::PlanningScenePtr next;
+        for(const auto& sample:receiver_binding.at("samples")) {
+          if(seconds(began)>=req.at("allowed_planning_time_s").get<double>()) {r.result["status"]="RECEIVER_SWEEP_TIMEOUT";break;}
+          next=r.start->diff();next->decoupleParent();
+          for(const auto& box:sample.at("world"))if(!next->processCollisionObjectMsg(object(box)))throw std::runtime_error("COUPLED_IMPORT_FAILED");
+          m710::Clearance gate(next,req.at("clearance_policy"),"optimized",true,true,false);
+          const bool valid=gate.check(next->getCurrentState());
+          failure=valid?m710::coupledWorldFailure(sample,receiver_binding):gate.last_failure;
+          checks.push_back({{"height_m",sample.at("height_m")},{"passed",failure.is_null()},{"failure",failure},{"clearance",gate.evidence()}});
+          if(!failure.is_null())break;
+        }
+        r.result["external_axis"]={{"type","COUPLED_CONVEYOR_DISCRETE_HEIGHT_TRANSITION"},{"robot_q_constant",true},
+          {"robot_q",req.at("q_start")},{"from_height_m",receiver_binding.at("samples").front().at("height_m")},
+          {"to_height_m",receiver_binding.at("samples").back().at("height_m")},{"checks",checks},
+          {"maximum_height_step_m",receiver_binding.at("maximum_height_step_m")},{"continuous_swept_proof",false},
+          {"after_scene_fingerprint",req.at("receiver_end_fingerprint")},{"execution_duration_s",nullptr},{"physical_execution","NOT_RUN"}};
+        r.result["failure"]=failure;
+        if(!failure.is_null() || r.result["status"]=="RECEIVER_SWEEP_TIMEOUT")return;
+        r.end=next;r.trajectory=std::make_shared<robot_trajectory::RobotTrajectory>(model,"manipulator");
+        r.trajectory->addSuffixWayPoint(r.start->getCurrentState(),0.);
+        r.result.update({{"status","SUCCESS"},{"terminal_q",req.at("q_start")},{"points",J::array({{{"q",req.at("q_start")},{"t",0.}}})},
+          {"joint_names",names},{"native_output_status","SKIPPED_PLANNING_ONLY"},{"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"},
+          {"time_parameterization","NOT_AVAILABLE_EXTERNAL_AXIS_HARDWARE_PARAMETERS"}});r.ready=true;return;
+      }
       if(pipeline=="external_axis") {
         const auto began=Clock::now();
         const auto end_world=m710::receiverTransitionWorld(req,receiver_binding);
@@ -728,7 +831,8 @@ private:
       receiver_binding=req.value("lifted_receiver_binding",J(nullptr));
       if(!receiver_binding.is_null()) {
         if(!planning_only || req.value("planning_mode","")!="cold_from_scratch")throw std::runtime_error("RECEIVER_INIT_SCOPE_INVALID");
-        m710::receiverSweep(receiver_binding.at("low"),receiver_binding.at("high"));
+        if(m710::coupledBinding(receiver_binding))m710::validateCoupledBinding(receiver_binding);
+        else m710::receiverSweep(receiver_binding.at("low"),receiver_binding.at("high"));
       }
       bounded_preplace_ik_enabled=req.value("bounded_preplace_ik_enabled",false);
       single_target_recovery_enabled=req.value("single_target_recovery_enabled",false);

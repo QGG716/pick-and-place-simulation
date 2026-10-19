@@ -94,7 +94,7 @@ public:
     side_transfer_=!initial_.is_null() && initial_.contains("controlled_side_transfer");
     if(side_transfer_) {
       if(!relaxed_ || !request.value("planning_only",false) || request.value("planning_mode","")!="cold_from_scratch" ||
-          stage_!="extraction" || request.value("receiver_template","")!="RIGHT_INNER_HMAX" ||
+          stage_!="extraction" || (request.value("receiver_template","")!="RIGHT_INNER_HMAX" && request.value("receiver_template","")!="COUPLED_PLANAR") ||
           (request.value("process_substage","")!="RIGHT_INNER_Y" && request.value("process_substage","")!="RIGHT_INNER_X") ||
           source_.at("stack_contact_mode")!="planner_relaxed_physics_checked")throw std::runtime_error("SIDE_TRANSFER_SCOPE");
       validateSideHistory(initial_.at("controlled_side_transfer"),world_,stack_,target_id_);
