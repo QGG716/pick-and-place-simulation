@@ -52,3 +52,37 @@ def test_extraction_uses_bounded_normal_offsets_and_neighbor_height(monkeypatch,
         assert (pose[0,3]<tcp[0,3] if face=='front' else pose[0,3]==tcp[0,3])
         assert pose[2,3]>tcp[2,3] and pose[1,3]==tcp[1,3]
         assert e['fully_before_original_front']==(e['outward_m']>=.16-1e-9)
+
+
+def test_shorter_approach_restarts_from_home_without_retaining_failed_path(monkeypatch):
+    from types import SimpleNamespace
+    from unloading_sim.eco65 import native_task
+    task=object.__new__(native_task.NativeTask)
+    task.scene=dict(native_task=dict(preapproach_m=.03,preplace_m=.03,
+        cup_selection_mode=native_task.INDEPENDENT,receiving=dict(box_pose_D=np.eye(4).tolist())))
+    task.target_pose=np.eye(4);task.target=dict(id='target',size_m=[.15,.1,.1])
+    task.robot=SimpleNamespace(fk=lambda q:np.eye(4),named_link_frames=lambda q:{'link_6':np.eye(4)})
+    task.init=dict(process_geometry={});task.snapshot=dict(tool=dict(contact=dict(normal_tolerance_rad=.01)))
+    task.identity=dict(flange_from_task_tcp=np.eye(4));task.face='front';task.active_ids=['cup_0']
+    task.parent='';task.stages=[];task.events=[];task.records=[];task.approach_attempts=[]
+    task.ik=lambda *args:iter([np.ones(6)]);task.select_grasp=lambda grasp:None
+    task.selection_binding=lambda:{}
+    monkeypatch.setattr(native_task,'check_contours',lambda *args,**kwargs:dict(status='PASS',actual_sealed_ids=['cup_0']))
+    def stop_after_contact(*args):raise RuntimeError('CONTACT_TEST_COMPLETE')
+    monkeypatch.setattr(native_task,'extraction_candidates',stop_after_contact)
+    home=np.zeros(6);top=np.eye(4);top[:3,3]=[.2,0,.3];calls=[]
+    def motion(q,stage,*,pose,**kwargs):
+        offset=round(.2-pose[0,3],6) if stage=='pregrasp' else calls[-1][1]
+        calls.append((stage,offset,np.array(q),task.parent))
+        if stage=='pregrasp':
+            assert np.array_equal(q,home) and task.parent=='' and task.stages==[]
+        if (stage,offset) in [('pregrasp',.03),('contact',.025)]:
+            raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:'+stage)
+        task.parent=f'{stage}-{offset}';task.stages.append(task.parent)
+        return np.full(6,offset)
+    task.motion=motion
+    with pytest.raises(RuntimeError,match='CONTACT_TEST_COMPLETE'):
+        task.run_grasp(dict(tcp_pose_D=top),home)
+    assert [a['status'] for a in task.approach_attempts]==['REJECTED','REJECTED','HOME_APPROACH_AND_CONTACT_PASS']
+    assert task.stages==['pregrasp-0.01','contact-0.01']
+    assert len(task.events)==1 and task.events[0]['after_stage']=='contact-0.01'

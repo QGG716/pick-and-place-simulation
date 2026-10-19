@@ -123,6 +123,7 @@ class NativeTask:
         self.call_archive = self.progress_path.with_name('native_calls.jsonl.gz') if self.progress_path else None
         self.extraction_evidence = None
         self.extraction_attempts = []
+        self.approach_attempts = []
         self.grasp_geometry = None; self.grasp_failures = []; self.grasp_home_rejections = []
         self.grasp_search = dict(status='NOT_STARTED', candidate_count=0,
                                  attempted_indices=[], unsearched_indices=[])
@@ -362,8 +363,6 @@ class NativeTask:
         contract = self.scene.get('native_task')
         top = check_transform(grasp['tcp_pose_D'])
         self.select_grasp(grasp)
-        pre = top.copy(); pre[:3, 3] += face_outward(self.target_pose,self.face)*(contract['preapproach_m'] if contract else .03)
-        q = home.copy()
         # A free pregrasp can be reachable while inactive cups collide with
         # lower/neighbor cartons at contact. Check the actual contact IK and
         # complete world before spending a dense audit on the free approach.
@@ -374,17 +373,36 @@ class NativeTask:
                 angle=self.snapshot['tool']['contact']['normal_tolerance_rad'],face=self.face,active_ids=self.active_ids)
             if probe['status']=='PASS':contact_seed=value;break
         if contact_seed is None:raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:contact_pose')
-        # A legal HOME already at the approach pose is still a state, not a
-        # fabricated nonzero motion. Choose a distinct nearby checked approach.
-        if np.linalg.norm(self.robot.fk(q)[:3, 3]-pre[:3, 3]) < 1e-4:
-            pre[:3,3] += face_outward(self.target_pose,self.face)*.005
-        q = self.motion(q, 'pregrasp', pose=pre,ik_seed=contact_seed)
-        q = self.motion(q, 'contact', pose=top)
-        seal = check_contours(self.init['process_geometry'], self.robot.named_link_frames(q)['link_6'],
-                              self.target_pose, self.target['size_m'], gap=.0004, penetration=.0004,
-                              angle=self.snapshot['tool']['contact']['normal_tolerance_rad'],
-                              face=self.face, active_ids=self.active_ids)
-        if seal['status'] != 'PASS': raise ValueError('CONTACT_ENDPOINT_CONTOURS_REJECTED')
+        distance=contract['preapproach_m'] if contract else .03
+        offsets=[distance]
+        if contract and contract.get('cup_selection_mode')==INDEPENDENT:
+            offsets.extend(d for d in [.025,.010,.005] if d<distance)
+        # Real contact IK can pass while the 30 mm normal-offset pose fails.
+        # Every shorter approach still requires a new complete HOME connection
+        # and native LIN contact. This never imports a diagnostic short path.
+        approach_parent=self.parent;approach_stages=deepcopy(self.stages)
+        for offset in offsets:
+            self.parent=approach_parent;self.stages=deepcopy(approach_stages)
+            pre=top.copy();pre[:3,3]+=face_outward(self.target_pose,self.face)*offset
+            # Keep a distinct approach if the configured HOME already equals it.
+            if np.linalg.norm(self.robot.fk(home)[:3,3]-pre[:3,3])<1e-4:
+                pre[:3,3]+=face_outward(self.target_pose,self.face)*.005
+            attempt=dict(normal_offset_m=offset,goal_tcp_D=pre.tolist(),
+                         native_record_start=len(self.records),status='SEARCHING')
+            self.approach_attempts.append(attempt)
+            try:
+                q=self.motion(home.copy(),'pregrasp',pose=pre,ik_seed=contact_seed)
+                q=self.motion(q,'contact',pose=top)
+                seal=check_contours(self.init['process_geometry'],self.robot.named_link_frames(q)['link_6'],
+                    self.target_pose,self.target['size_m'],gap=.0004,penetration=.0004,
+                    angle=self.snapshot['tool']['contact']['normal_tolerance_rad'],face=self.face,active_ids=self.active_ids)
+                if seal['status']!='PASS':raise ValueError('CONTACT_ENDPOINT_CONTOURS_REJECTED')
+                attempt.update(status='HOME_APPROACH_AND_CONTACT_PASS',native_record_end=len(self.records));break
+            except ValueError as error:
+                if str(error) not in ('NATIVE_STAGE_CANDIDATES_EXHAUSTED:pregrasp',
+                        'NATIVE_STAGE_CANDIDATES_EXHAUSTED:contact','CONTACT_ENDPOINT_CONTOURS_REJECTED'):raise
+                attempt.update(status='REJECTED',reason=str(error),native_record_end=len(self.records))
+        else:raise ValueError('NATIVE_STAGE_CANDIDATES_EXHAUSTED:approach_contact')
         self.attachment = np.linalg.inv(self.robot.named_link_frames(q)['link_6']) @ self.target_pose
         self.events.append(dict(event='ATTACH_PREDICTED', after_stage=self.parent,
             target_id=self.target['id'], flange_from_target=self.attachment.tolist(), q=q.tolist(),
@@ -482,7 +500,7 @@ class NativeTask:
             # worker verifies that a root branch has the identical initial q,
             # complete world and no attachment; stage IDs remain unique.
             self.parent = ''; self.attachment = None; self.target_pose = initial_target_pose.copy()
-            self.stages = []; self.events = []; self.extraction_evidence = None;self.extraction_attempts=[]
+            self.stages = []; self.events = []; self.extraction_evidence = None;self.extraction_attempts=[];self.approach_attempts=[]
             self.grasp_search.update(status='SEARCHING', active_index=index)
             self.grasp_search['attempted_indices'].append(index)
             self.grasp_search['unsearched_indices'] = list(range(index+1, len(candidates)))
@@ -508,7 +526,7 @@ class NativeTask:
                     native_record_range=[record_start,len(self.records)], native_ik_record_range=[ik_start,len(self.ik_records)],
                     native_call_range=[call_start,len(self.native_calls)], partial_stages=deepcopy(self.stages),
                     partial_events=deepcopy(self.events), extraction_geometry=deepcopy(self.extraction_evidence),
-                    extraction_attempts=deepcopy(self.extraction_attempts)))
+                    extraction_attempts=deepcopy(self.extraction_attempts),approach_attempts=deepcopy(self.approach_attempts)))
                 if not recoverable:
                     self.grasp_search.update(status='INTERRUPTED', reason=str(error))
                     # A timeout closes the resident worker. Do not retry a
@@ -531,6 +549,7 @@ class NativeTask:
             grasp_home_rejections=self.grasp_home_rejections,
             extraction_geometry=self.extraction_evidence,
             extraction_attempts=self.extraction_attempts,
+            approach_attempts=self.approach_attempts,
             initial_state_semantics='SIMULATION_INITIAL_STATE_NOT_A_VERIFIED_HOMING_MOTION',
             native_initialization_s=self.initialization_s,
             planning_wall_s=perf_counter()-started, simulated_duration_s=sum(s['times'][-1] for s in self.stages),
