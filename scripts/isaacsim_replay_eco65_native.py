@@ -30,9 +30,14 @@ def main():
         encoders=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,check=True).stdout
         if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
-        # TAA does not require the absent NGX/DLSS or OptiX denoiser resources.
-        render_config=dict(headless=True,renderer='RaytracedLighting',
-                           width=640,height=360,denoiser=False,anti_aliasing=1)
+        # This installed runtime has no working NGX/OptiX denoiser. Average
+        # actual RGB samples at each fixed pose; never mix trajectory times.
+        samples_per_pose=64
+        render_config=dict(headless=True,renderer='RealTimePathTracing',
+                           width=640,height=360,denoiser=False,anti_aliasing=2,
+                           extra_args=['--/persistent/rtx/modes/rt2/enabled=true',
+                                       '--/persistent/rtx/modes/pt/enabled=false',
+                                       '--/persistent/rtx/modes/rt/enabled=false'])
         app=SimulationApp(render_config)
         import numpy as np
         from PIL import Image,ImageDraw
@@ -93,6 +98,15 @@ def main():
                         dtype=str(pixels.dtype),std=float(np.std(pixels)) if pixels.size else None))
                     if pixels.shape==(360,640,3):Image.fromarray(pixels).save(out/'invalid_frame.png')
                     raise ValueError('INVALID_REPLAY_RENDER')
+                accumulated=np.zeros((360,640,3),dtype=np.float64)
+                for _ in range(samples_per_pose):
+                    rep.orchestrator.step(delta_time=0.,rt_subframes=1,pause_timeline=True)
+                    if timeline.is_playing() or timeline.get_current_time()!=0:raise ValueError('OFFLINE_TIMELINE_ADVANCED')
+                    sample=rgb.get_data();sample=sample['data'] if isinstance(sample,dict) else sample
+                    sample=np.asarray(sample)[...,:3]
+                    if sample.shape!=(360,640,3) or np.std(sample)<5:raise ValueError('INVALID_REPLAY_ACCUMULATION_SAMPLE')
+                    accumulated+=sample
+                pixels=np.rint(accumulated/samples_per_pose).astype(np.uint8)
                 im=Image.fromarray(pixels);draw=ImageDraw.Draw(im)
                 draw.rectangle([0,302,640,360],fill='#172432')
                 draw.text((8,305),f"{target} | {state['phase']} | {t:.2f}s | cups={len(state['active_ids'])}",fill='white')
@@ -103,7 +117,7 @@ def main():
                 if state['phase'] not in seen_phases:
                     im.save(out/('phase_'+state['phase']+'.png'));seen_phases.add(state['phase'])
                 records.append(dict(time_s=float(t),q_rad=state['q'].tolist(),phase=state['phase'],
-                    render_steps=render_attempt+1,readback=readback))
+                    warmup_render_steps=render_attempt+1,rgb_samples=samples_per_pose,readback=readback))
                 if len(records)==1 or len(records)%25==0:
                     progress.write(json.dumps(dict(frames=len(records),time_s=float(t),phase=state['phase'],
                         render_wall_s=perf_counter()-render_started,timeline_time_s=timeline.get_current_time()))+'\n');progress.flush()
@@ -115,6 +129,8 @@ def main():
             frame_rate=5,frame_count=len(records),simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,
             encoder_version=encoder_version,encoder_command=command,
             renderer_settings=renderer_readback,
+            accumulation=dict(method='ARITHMETIC_MEAN_OF_ACTUAL_ISAAC_RGB_AT_IDENTICAL_POSE',
+                samples_per_pose=samples_per_pose,cross_pose_blending=False,linear_radiance_claim=False),
             video_sha256=hashlib.sha256((out/'kinematic_replay.mp4').read_bytes()).hexdigest(),
             timeline=dict(playing=timeline.is_playing(),time_s=timeline.get_current_time(),physics_steps=0),
             fk_readback=checks,frames=records,ideal_outfeed_count=0))
