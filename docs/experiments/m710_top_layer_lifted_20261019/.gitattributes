@@ -1,0 +1,3 @@
+# Preserve byte hashes and original test output in this evidence directory.
+* -text
+*.log -diff

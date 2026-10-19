@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "initial": {
+    "kind": "INITIAL_REJECTION_NOT_BATCH_REPLAY",
+    "q_rad": [
+      -0.4738507840476061,
+      -0.46642585435191586,
+      -0.35455135903520246,
+      1.7851535539041579,
+      0.48589729025839207,
+      -3.3829904117272847
+    ],
+    "initial_world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+    "selected_pair": [
+      "conveyor_longitudinal",
+      "lift_rear_stand_0"
+    ],
+    "completed_count": 0,
+    "carton_count": 40,
+    "accepted_motion_edges": 0
+  },
+  "final": {
+    "kind": "INITIAL_REJECTION_NOT_BATCH_REPLAY",
+    "q_rad": [
+      -0.4738507840476061,
+      -0.46642585435191586,
+      -0.35455135903520246,
+      1.7851535539041579,
+      0.48589729025839207,
+      -3.3829904117272847
+    ],
+    "initial_world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+    "selected_pair": [
+      "conveyor_longitudinal",
+      "lift_rear_stand_2"
+    ],
+    "completed_count": 0,
+    "carton_count": 40,
+    "accepted_motion_edges": 0
+  },
+  "frames": 40,
+  "width": 640,
+  "height": 360,
+  "fps": 5,
+  "presentation_duration_s": 8,
+  "simulated_time_s": null,
+  "classification": "STATIC_INITIAL_REJECTION_INSPECTION_NOT_BATCH_VIDEO"
+}

@@ -1,0 +1,99 @@
+....F...FF..F                                                            [100%]
+=================================== FAILURES ===================================
+___ test_assembly_is_a_rigid_transform_and_fixed_identity_ignores_placement ____
+
+    def test_assembly_is_a_rigid_transform_and_fixed_identity_ignores_placement():
+        layout = _config().layout
+        moved = _mutated_layout(
+            layout,
+            lambda data: data["assembly"].update(
+                {"world_xyz_m": [-0.3, 0.1, 0.2], "world_rpy_rad": [0.0, 0.0, 0.37]}
+            ),
+        )
+        original_relative = [layout.assembly_from_world @ box.world_from_local for box in layout.fixed_components()]
+        moved_relative = [moved.assembly_from_world @ box.world_from_local for box in moved.fixed_components()]
+        for before, after in zip(original_relative, moved_relative):
+>           np.testing.assert_allclose(after, before, atol=1e-12)
+E           AssertionError: 
+E           Not equal to tolerance rtol=1e-07, atol=1e-12
+E           
+E           Mismatched elements: 7 / 16 (43.8%)
+E           Max absolute difference among violations: 1.70646334
+E           Max relative difference among violations: 8.
+E            ACTUAL: array([[ 0.932327,  0.361615,  0.      ,  0.243537],
+E                  [-0.361615,  0.932327,  0.      , -0.201717],
+E                  [ 0.      ,  0.      ,  1.      , -0.225   ],
+E                  [ 0.      ,  0.      ,  0.      ,  1.      ]])
+E            DESIRED: array([[ 1.   ,  0.   ,  0.   ,  1.95 ],
+E                  [ 0.   ,  1.   ,  0.   , -0.35 ],
+E                  [ 0.   ,  0.   ,  1.   , -0.025],
+E                  [ 0.   ,  0.   ,  0.   ,  1.   ]])
+
+tests/test_workcell_layout.py:155: AssertionError
+__ test_initial_state_is_collision_checked_and_seeded_witness_is_reproducible __
+
+    def test_initial_state_is_collision_checked_and_seeded_witness_is_reproducible():
+        config = _config()
+        previous = audit_initial_state(config, np.asarray(config.data["initial_state"]["previous_v3_q_rad"]))
+        assert previous["status"] == "FAIL"
+        assert any(failure["reason"] == "TRAILER_SIDE_CLEARANCE" for failure in previous["failures"])
+        initial = audit_initial_state(config)
+>       assert initial["status"] == "FAIL"
+E       AssertionError: assert 'PASS' == 'FAIL'
+E         
+E         - FAIL
+E         + PASS
+
+tests/test_workcell_layout.py:194: AssertionError
+___ test_invalid_home_refuses_snapshot_and_freezes_only_diagnostic_geometry ____
+
+    def test_invalid_home_refuses_snapshot_and_freezes_only_diagnostic_geometry():
+        config = _config()
+>       with pytest.raises(ValueError, match="refusing to snapshot invalid initial state"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_workcell_layout.py:210: Failed
+__ test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults __
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-10/test_feasibility_entry_routes_0')
+
+    def test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults(tmp_path):
+        validation = copy.deepcopy(_config().data)
+        validation["layout_config"] = str(_config().layout.config_path)
+        validation["initial_state"]["search_maximum_random_draws"] = 1
+        config_path = tmp_path / "layout_validation.yaml"
+        config_path.write_text(yaml.safe_dump(validation), encoding="utf-8")
+        result = subprocess.run(
+            [
+                sys.executable,
+                "tools/run_m710id70_v3.py",
+                "--phase",
+                "layout",
+                "--config",
+                str(config_path),
+                "--output-dir",
+                str(tmp_path / "layout"),
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0
+        numeric = json.loads((tmp_path / "layout/numeric_audit.json").read_text(encoding="utf-8"))
+        initial = json.loads((tmp_path / "layout/initial_state_audit.json").read_text(encoding="utf-8"))
+        search = json.loads((tmp_path / "layout/initial_state_search.json").read_text(encoding="utf-8"))
+        assert numeric["overall_status"] == "PASS"
+>       assert initial["status"] == "FAIL" and initial["failures"]
+E       AssertionError: assert ('PASS' == 'FAIL'
+E         
+E         - FAIL
+E         + PASS)
+
+tests/test_workcell_layout.py:284: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_workcell_layout.py::test_assembly_is_a_rigid_transform_and_fixed_identity_ignores_placement
+FAILED tests/test_workcell_layout.py::test_initial_state_is_collision_checked_and_seeded_witness_is_reproducible
+FAILED tests/test_workcell_layout.py::test_invalid_home_refuses_snapshot_and_freezes_only_diagnostic_geometry
+FAILED tests/test_workcell_layout.py::test_feasibility_entry_routes_layout_phase_without_loading_legacy_defaults
+4 failed, 9 passed in 1.36s

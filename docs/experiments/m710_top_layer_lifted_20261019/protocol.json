@@ -1,0 +1,7123 @@
+{
+  "schema": "m710_coupled_top_layer_start_protocol_v1",
+  "source_commit": "a93ebbb4a9ed866c552f28ef5e86f885f6a840fe",
+  "seeds": [
+    71070,
+    71071
+  ],
+  "seed_selection": "FIXED_BEFORE_NATIVE_PROBES",
+  "initial_state_source": "CONFIGURED_OFFLINE_Q_NOT_PHYSICAL_FEEDBACK",
+  "q_rad": [
+    -0.4738507840476061,
+    -0.46642585435191586,
+    -0.35455135903520246,
+    1.7851535539041579,
+    0.48589729025839207,
+    -3.3829904117272847
+  ],
+  "velocity_rad_s": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "height_m": 0.6000000000000001,
+  "frozen_top_layer": {
+    "heights": {
+      "carton_l07_c00": {
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "d_m": 0.05,
+        "frozen_at": "TASK_START_GEOMETRY",
+        "h_m": 0.3,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003,
+        "start_box_identity": "f98f5d01c59c27c754c30947e717db69de0bd973f48d9553982a933ee126b050",
+        "target_id": "carton_l07_c00",
+        "z_b_m": 2.1
+      },
+      "carton_l07_c01": {
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "d_m": 0.05,
+        "frozen_at": "TASK_START_GEOMETRY",
+        "h_m": 0.3,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003,
+        "start_box_identity": "06734ca24f03f7692ea04a27d77b58217d9e11bf5b2d13d66b2099481fa98b9f",
+        "target_id": "carton_l07_c01",
+        "z_b_m": 2.1
+      },
+      "carton_l07_c02": {
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "d_m": 0.05,
+        "frozen_at": "TASK_START_GEOMETRY",
+        "h_m": 0.3,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003,
+        "start_box_identity": "852f5e6196324fa059dbaaf9f3cbcaa5deed5681d7fe9354b1a19009e19fd5b2",
+        "target_id": "carton_l07_c02",
+        "z_b_m": 2.1
+      },
+      "carton_l07_c03": {
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "d_m": 0.05,
+        "frozen_at": "TASK_START_GEOMETRY",
+        "h_m": 0.3,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003,
+        "start_box_identity": "e7afd1419a467f217568ac269a744fa44a3d81b329570d06d33188875b4d301a",
+        "target_id": "carton_l07_c03",
+        "z_b_m": 2.1
+      },
+      "carton_l07_c04": {
+        "Hmax_world_m": 2.0500000000000003,
+        "Hmin_world_m": 1.75,
+        "d_m": 0.05,
+        "frozen_at": "TASK_START_GEOMETRY",
+        "h_m": 0.3,
+        "high_drop_m": 0.05,
+        "low_drop_m": 0.35,
+        "low_first_touch_top_world_m": 2.0500000000000003,
+        "start_box_identity": "7c7c4e322dff80af038baef4a858bfba1a693fe3c1ba0c951e88480f023b114d",
+        "target_id": "carton_l07_c04",
+        "z_b_m": 2.1
+      }
+    },
+    "highest_top_z_m": 2.4,
+    "original_carton_count": 40,
+    "original_cartons_sha256": "387807b5b7a3bf3f64d4cd99103867a2f06c986d7aa8e952daad5e2827eb7ac1",
+    "roles": {
+      "carton_l07_c00": {
+        "original_layer_bottom_m": 2.1,
+        "original_layer_index": 7,
+        "original_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "remaining_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "removed_from_original_layer": [],
+        "role": "RIGHT_END"
+      },
+      "carton_l07_c01": {
+        "original_layer_bottom_m": 2.1,
+        "original_layer_index": 7,
+        "original_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "remaining_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "removed_from_original_layer": [],
+        "role": "MIDDLE"
+      },
+      "carton_l07_c02": {
+        "original_layer_bottom_m": 2.1,
+        "original_layer_index": 7,
+        "original_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "remaining_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "removed_from_original_layer": [],
+        "role": "MIDDLE"
+      },
+      "carton_l07_c03": {
+        "original_layer_bottom_m": 2.1,
+        "original_layer_index": 7,
+        "original_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "remaining_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "removed_from_original_layer": [],
+        "role": "MIDDLE"
+      },
+      "carton_l07_c04": {
+        "original_layer_bottom_m": 2.1,
+        "original_layer_index": 7,
+        "original_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "remaining_y_order": [
+          "carton_l07_c00",
+          "carton_l07_c01",
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c04"
+        ],
+        "removed_from_original_layer": [],
+        "role": "LEFT_END"
+      }
+    },
+    "selection": "INITIAL_HIGHEST_TOP_AND_NO_SUPPORTED_CARTONS",
+    "support_graph": {
+      "cartons": 40,
+      "model": "conservative_world_projection_support_graph_v1",
+      "support_edges": [
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l01_c00",
+          "supporter": "carton_l00_c00",
+          "vertical_gap_m": -5.551115123125783e-17
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l01_c01",
+          "supporter": "carton_l00_c01",
+          "vertical_gap_m": -5.551115123125783e-17
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l01_c02",
+          "supporter": "carton_l00_c02",
+          "vertical_gap_m": -5.551115123125783e-17
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l01_c03",
+          "supporter": "carton_l00_c03",
+          "vertical_gap_m": -5.551115123125783e-17
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l01_c04",
+          "supporter": "carton_l00_c04",
+          "vertical_gap_m": -5.551115123125783e-17
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l02_c00",
+          "supporter": "carton_l01_c00",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l02_c01",
+          "supporter": "carton_l01_c01",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l02_c02",
+          "supporter": "carton_l01_c02",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l02_c03",
+          "supporter": "carton_l01_c03",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l02_c04",
+          "supporter": "carton_l01_c04",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l03_c00",
+          "supporter": "carton_l02_c00",
+          "vertical_gap_m": -2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l03_c01",
+          "supporter": "carton_l02_c01",
+          "vertical_gap_m": -2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l03_c02",
+          "supporter": "carton_l02_c02",
+          "vertical_gap_m": -2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l03_c03",
+          "supporter": "carton_l02_c03",
+          "vertical_gap_m": -2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l03_c04",
+          "supporter": "carton_l02_c04",
+          "vertical_gap_m": -2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l04_c00",
+          "supporter": "carton_l03_c00",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l04_c01",
+          "supporter": "carton_l03_c01",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l04_c02",
+          "supporter": "carton_l03_c02",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l04_c03",
+          "supporter": "carton_l03_c03",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l04_c04",
+          "supporter": "carton_l03_c04",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l05_c00",
+          "supporter": "carton_l04_c00",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l05_c01",
+          "supporter": "carton_l04_c01",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l05_c02",
+          "supporter": "carton_l04_c02",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l05_c03",
+          "supporter": "carton_l04_c03",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l05_c04",
+          "supporter": "carton_l04_c04",
+          "vertical_gap_m": 2.220446049250313e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l06_c00",
+          "supporter": "carton_l05_c00",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l06_c01",
+          "supporter": "carton_l05_c01",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l06_c02",
+          "supporter": "carton_l05_c02",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l06_c03",
+          "supporter": "carton_l05_c03",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l06_c04",
+          "supporter": "carton_l05_c04",
+          "vertical_gap_m": 0.0
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l07_c00",
+          "supporter": "carton_l06_c00",
+          "vertical_gap_m": 4.440892098500626e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l07_c01",
+          "supporter": "carton_l06_c01",
+          "vertical_gap_m": 4.440892098500626e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l07_c02",
+          "supporter": "carton_l06_c02",
+          "vertical_gap_m": 4.440892098500626e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l07_c03",
+          "supporter": "carton_l06_c03",
+          "vertical_gap_m": 4.440892098500626e-16
+        },
+        {
+          "footprint_overlap_ratio": 1.0,
+          "supported": "carton_l07_c04",
+          "supporter": "carton_l06_c04",
+          "vertical_gap_m": 4.440892098500626e-16
+        }
+      ]
+    },
+    "target_ids": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ]
+  },
+  "proposed_process_queue": [
+    {
+      "target_id": "carton_l07_c02",
+      "options": [
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 2.0500000000000003,
+          "segment_directions_world": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.19000000000000006,
+            0.89
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.54,
+                0.54
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.89,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.89,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.54,
+              0.54
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": false,
+          "original_role": "MIDDLE",
+          "target_id": "carton_l07_c02",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        }
+      ],
+      "supported_cartons": [],
+      "front_blockers": [],
+      "rank": [
+        false,
+        0.0,
+        0.5175012684345893,
+        "carton_l07_c02"
+      ]
+    },
+    {
+      "target_id": "carton_l07_c03",
+      "options": [
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                0.42
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 2.0500000000000003,
+          "segment_directions_world": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.19000000000000006,
+            0.89
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.54,
+                0.54
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.89,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.89,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.54,
+              0.54
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": false,
+          "original_role": "MIDDLE",
+          "target_id": "carton_l07_c03",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        }
+      ],
+      "supported_cartons": [],
+      "front_blockers": [],
+      "rank": [
+        false,
+        0.42,
+        0.6664889628736643,
+        "carton_l07_c03"
+      ]
+    },
+    {
+      "target_id": "carton_l07_c04",
+      "options": [
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                0.84
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 2.0500000000000003,
+          "segment_directions_world": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.18999999999999995,
+            0.8899999999999999
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.5399999999999999,
+                0.5399999999999999
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.5399999999999999,
+              0.5399999999999999
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": false,
+          "original_role": "LEFT_END",
+          "target_id": "carton_l07_c04",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        },
+        {
+          "template": "LEFT_INNER_HMIN",
+          "face": {
+            "geometric_face_id": "y-",
+            "axis": 1,
+            "sign": -1,
+            "outward_normal": [
+              -0.0,
+              -1.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.6399999999999999
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 1.75,
+          "segment_directions_world": [
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.5399999999999999,
+                0.5399999999999999
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.5399999999999999,
+              0.5399999999999999
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": true,
+          "original_role": "LEFT_END",
+          "target_id": "carton_l07_c04",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        }
+      ],
+      "supported_cartons": [],
+      "front_blockers": [],
+      "rank": [
+        false,
+        0.84,
+        0.986614165939967,
+        "carton_l07_c04"
+      ]
+    },
+    {
+      "target_id": "carton_l07_c01",
+      "options": [
+        {
+          "template": "FRONT_LATERAL_HMIN",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 1.75,
+          "segment_directions_world": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.19000000000000006,
+            0.89
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.54,
+                0.54
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.19000000000000006,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.89,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.89,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.54,
+              0.54
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": true,
+          "original_role": "MIDDLE",
+          "target_id": "carton_l07_c01",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        }
+      ],
+      "supported_cartons": [],
+      "front_blockers": [],
+      "rank": [
+        true,
+        0.42,
+        0.6664890006822356,
+        "carton_l07_c01"
+      ]
+    },
+    {
+      "target_id": "carton_l07_c00",
+      "options": [
+        {
+          "template": "FRONT_LATERAL_HMIN",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 1.75,
+          "segment_directions_world": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.18999999999999995,
+            0.8899999999999999
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.5399999999999999,
+                0.5399999999999999
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.5399999999999999,
+              0.5399999999999999
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": true,
+          "original_role": "RIGHT_END",
+          "target_id": "carton_l07_c00",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        },
+        {
+          "template": "RIGHT_INNER_HMAX",
+          "face": {
+            "geometric_face_id": "y+",
+            "axis": 1,
+            "sign": 1,
+            "outward_normal": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                -1.0,
+                -0.0,
+                0.3
+              ],
+              [
+                0.0,
+                0.0,
+                -1.0,
+                -0.6399999999999999
+              ],
+              [
+                1.0,
+                0.0,
+                -0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              -0.0,
+              -1.0,
+              -0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 2.0500000000000003,
+          "segment_directions_world": [
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.5399999999999999,
+                0.5399999999999999
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  -0.18999999999999995,
+                  0.6000000000000001
+                ],
+                [
+                  -0.51,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ],
+                [
+                  -0.5900000000000001,
+                  0.8899999999999999,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.5399999999999999,
+              0.5399999999999999
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "requires_open_channel": true,
+          "original_role": "RIGHT_END",
+          "target_id": "carton_l07_c00",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false
+        }
+      ],
+      "supported_cartons": [],
+      "front_blockers": [],
+      "rank": [
+        true,
+        0.84,
+        0.9866142170217299,
+        "carton_l07_c00"
+      ]
+    }
+  ],
+  "original_scene_fingerprint": "e2af5af3746cd1ce311f4ad93473469d6b377377f7509def59a6d894971d0302",
+  "coupled_scene_fingerprint": "79475a48792ffa9f45010dadb96cb56ea9743ae9d7b66fcc4b62cc60301a219f",
+  "ideal_receiver_drain": "REQUESTED_FOR_BATCH_BUT_NOT_REACHED",
+  "geometry": {
+    "world": [
+      {
+        "id": "chassis",
+        "size": [
+          2.1,
+          1.5,
+          0.6
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.95
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "chassis",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "conveyor_transverse",
+        "size": [
+          0.7,
+          1.5,
+          0.12
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.55
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.54
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "conveyor",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "conveyor_longitudinal",
+        "size": [
+          2.8,
+          0.7,
+          0.12
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            -0.0,
+            -1.6
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.7500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.54
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "conveyor",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "trailer_floor",
+        "size": [
+          6.4,
+          2.3,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            -0.025
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "floor",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "trailer_left_wall",
+        "size": [
+          6.4,
+          0.05,
+          2.7
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            1.1749999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.35
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "trailer",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "trailer_right_wall",
+        "size": [
+          6.4,
+          0.05,
+          2.7
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.1749999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.35
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "trailer",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "trailer_ceiling",
+        "size": [
+          6.4,
+          2.3,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.725
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "trailer",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "trailer_closed_end_wall",
+        "size": [
+          0.05,
+          2.3,
+          2.7
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            3.225
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.35
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "trailer",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l00_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.15
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l00_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.15
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l00_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.15
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l00_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.15
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l00_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.15
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l01_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44999999999999996
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l01_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44999999999999996
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l01_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44999999999999996
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l01_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44999999999999996
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l01_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44999999999999996
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l02_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.75
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l02_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.75
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l02_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.75
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l02_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.75
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l02_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.75
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l03_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.0499999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l03_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.0499999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l03_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.0499999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l03_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.0499999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l03_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.0499999999999998
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l04_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.3499999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l04_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.3499999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l04_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.3499999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l04_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.3499999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l04_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.3499999999999999
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l05_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.65
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l05_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.65
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l05_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.65
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l05_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.65
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l05_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.65
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l06_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.9499999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l06_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.9499999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l06_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.9499999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l06_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.9499999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l06_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            1.9499999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l07_c00",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l07_c01",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l07_c02",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l07_c03",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.42
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "carton_l07_c04",
+        "size": [
+          0.6,
+          0.4,
+          0.3
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.84
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            2.25
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "carton",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_arm_0_0",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.767
+          ],
+          [
+            0.9922822179198819,
+            0.0,
+            -0.124,
+            0.3451763861999262
+          ],
+          [
+            0.124,
+            0.0,
+            0.9922822179198819,
+            0.1775
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_arm_0_1",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.793
+          ],
+          [
+            -0.9922822179198819,
+            0.0,
+            -0.124,
+            0.3451763861999262
+          ],
+          [
+            0.124,
+            0.0,
+            -0.9922822179198819,
+            0.1775
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_pin_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3451763861999262
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_arm_1_0",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.767
+          ],
+          [
+            0.9922822179198819,
+            0.0,
+            -0.12400000000000003,
+            0.3451763861999262
+          ],
+          [
+            0.12400000000000003,
+            0.0,
+            0.9922822179198819,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_arm_1_1",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.793
+          ],
+          [
+            -0.9922822179198819,
+            0.0,
+            -0.12400000000000003,
+            0.3451763861999262
+          ],
+          [
+            0.12400000000000003,
+            0.0,
+            -0.9922822179198819,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_pin_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3451763861999262
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_0_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_0_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_1_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_1_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_2_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_end_pin_2_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_base_rail",
+        "size": [
+          1.33,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_head_rail",
+        "size": [
+          1.33,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.78
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44500000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_foot_0",
+        "size": [
+          0.1,
+          0.1,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.78
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.025
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_foot_1",
+        "size": [
+          0.1,
+          0.1,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.78
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.975
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.025
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_left_mount",
+        "size": [
+          0.08,
+          1.25,
+          0.02
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.78
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4700000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_arm_0_0",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.30700000000000005
+          ],
+          [
+            0.9922822179198819,
+            0.0,
+            -0.124,
+            0.3451763861999262
+          ],
+          [
+            0.124,
+            0.0,
+            0.9922822179198819,
+            0.1775
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_arm_0_1",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.3330000000000001
+          ],
+          [
+            -0.9922822179198819,
+            0.0,
+            -0.124,
+            0.3451763861999262
+          ],
+          [
+            0.124,
+            0.0,
+            -0.9922822179198819,
+            0.1775
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_pin_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3451763861999262
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_arm_1_0",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.30700000000000005
+          ],
+          [
+            0.9922822179198819,
+            0.0,
+            -0.12400000000000003,
+            0.3451763861999262
+          ],
+          [
+            0.12400000000000003,
+            0.0,
+            0.9922822179198819,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_arm_1_1",
+        "size": [
+          1.25,
+          0.02,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.3330000000000001
+          ],
+          [
+            -0.9922822179198819,
+            0.0,
+            -0.12400000000000003,
+            0.3451763861999262
+          ],
+          [
+            0.12400000000000003,
+            0.0,
+            -0.9922822179198819,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_pin_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.3451763861999262
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_0_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_0_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_1_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_1_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_2_0",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_end_pin_2_1",
+        "size": [
+          0.035,
+          0.052000000000000005,
+          0.035
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.9653527723998524
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_base_rail",
+        "size": [
+          1.33,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.065
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_head_rail",
+        "size": [
+          1.33,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.44500000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_foot_0",
+        "size": [
+          0.1,
+          0.1,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.275
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.025
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_foot_1",
+        "size": [
+          0.1,
+          0.1,
+          0.05
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.975
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.025
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_transverse_right_mount",
+        "size": [
+          0.08,
+          1.25,
+          0.02
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.32000000000000006
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.35
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4700000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_0_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1483
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_0_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -1.1717000000000002
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_pin_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_1_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1483
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.12916666666666665,
+            -0.7525131305418675
+          ],
+          [
+            0.12916666666666665,
+            0.0,
+            0.9916228981937752,
+            0.21625
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_1_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -1.1717000000000002
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.12916666666666665,
+            -0.7525131305418675
+          ],
+          [
+            0.12916666666666665,
+            0.0,
+            -0.9916228981937752,
+            0.21625
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_pin_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.21625000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_2_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1483
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_2_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -1.1717000000000002
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_pin_2",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_3_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1483
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_arm_3_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -1.1717000000000002
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_pin_3",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_0_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_0_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_1_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_1_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_2_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_2_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_3_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_3_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_4_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_end_pin_4_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_base_rail",
+        "size": [
+          0.6799999999999999,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.75
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.07500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_head_rail",
+        "size": [
+          0.6799999999999999,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.75
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4350000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_foot_0",
+        "size": [
+          0.1,
+          0.1,
+          0.06000000000000001
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.030000000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_foot_1",
+        "size": [
+          0.1,
+          0.1,
+          0.06000000000000001
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.1600000000000001
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.45000000000000007
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.030000000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_rear_swivel_head",
+        "size": [
+          0.08,
+          0.6,
+          0.02
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            -0.0,
+            -1.1600000000000001
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.7500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4700000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_0_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9083000000000002
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_0_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.9317000000000003
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_pin_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.13875
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_1_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9083000000000002
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.12916666666666665,
+            -0.7525131305418675
+          ],
+          [
+            0.12916666666666665,
+            0.0,
+            0.9916228981937752,
+            0.21625
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_1_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.9317000000000003
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.12916666666666665,
+            -0.7525131305418675
+          ],
+          [
+            0.12916666666666665,
+            0.0,
+            -0.9916228981937752,
+            0.21625
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_pin_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.21625000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_2_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9083000000000002
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_2_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.9317000000000003
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_pin_2",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.29375
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_3_0",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9083000000000002
+          ],
+          [
+            0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            0.9916228981937752,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_arm_3_1",
+        "size": [
+          0.6,
+          0.018,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            -0.0,
+            -0.9317000000000003
+          ],
+          [
+            -0.9916228981937752,
+            0.0,
+            -0.1291666666666667,
+            -0.7525131305418675
+          ],
+          [
+            0.1291666666666667,
+            0.0,
+            -0.9916228981937752,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_pin_3",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.7525131305418675
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.37125
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_0_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_0_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.1
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_1_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_1_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.17750000000000002
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_2_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_2_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.255
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_3_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_3_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.3325
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_4_0",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_end_pin_4_1",
+        "size": [
+          0.025,
+          0.0468,
+          0.025
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.4550262610837349
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.41000000000000003
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_base_rail",
+        "size": [
+          0.6799999999999999,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.75
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.07500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_head_rail",
+        "size": [
+          0.6799999999999999,
+          0.08,
+          0.03
+        ],
+        "pose": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.75
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4350000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_foot_0",
+        "size": [
+          0.1,
+          0.1,
+          0.06000000000000001
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.05
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.030000000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_foot_1",
+        "size": [
+          0.1,
+          0.1,
+          0.06000000000000001
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -0.9200000000000003
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.45000000000000007
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.030000000000000006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_longitudinal_near_swivel_head",
+        "size": [
+          0.08,
+          0.6,
+          0.02
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            -0.0,
+            -0.9200000000000003
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.7500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.4700000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_rear_stand_0",
+        "size": [
+          0.08,
+          0.08,
+          0.55
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -1.04
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.275
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_rear_stand_2",
+        "size": [
+          0.08,
+          0.08,
+          0.55
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.46000000000000013
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.275
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      },
+      {
+        "id": "lift_rear_bearing",
+        "size": [
+          0.12,
+          0.7,
+          0.1
+        ],
+        "pose": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -3.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -0.7500000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.6000000000000001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "category": "lift_mechanism",
+        "geometry_source": "frozen_layout_or_audited_tool_OBB"
+      }
+    ],
+    "mechanism": {
+      "schema": "m710_coupled_scissor_v1",
+      "height_m": 0.6000000000000001,
+      "tilt_rad": 0.0,
+      "longitudinal_length_m": 2.8,
+      "rear_hinge_world": [
+        -3.0,
+        -0.7500000000000001,
+        0.6000000000000001
+      ],
+      "near_tip_world": [
+        -0.20000000000000018,
+        -0.7500000000000001,
+        0.6000000000000001
+      ],
+      "near_tip_slide_x_m": 0.0,
+      "rear_fixed": true,
+      "near_tip_within_transverse_x": true,
+      "coupling": "FIXED_REAR_PIVOT_NEAR_HEIGHT_FOLLOW_WITH_X_SLIDE",
+      "moving_object_ids": [
+        "conveyor_transverse",
+        "conveyor_longitudinal",
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_pin_0",
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_pin_1",
+        "lift_transverse_left_end_pin_0_0",
+        "lift_transverse_left_end_pin_0_1",
+        "lift_transverse_left_end_pin_1_0",
+        "lift_transverse_left_end_pin_1_1",
+        "lift_transverse_left_end_pin_2_0",
+        "lift_transverse_left_end_pin_2_1",
+        "lift_transverse_left_head_rail",
+        "lift_transverse_left_mount",
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_pin_0",
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_pin_1",
+        "lift_transverse_right_end_pin_0_0",
+        "lift_transverse_right_end_pin_0_1",
+        "lift_transverse_right_end_pin_1_0",
+        "lift_transverse_right_end_pin_1_1",
+        "lift_transverse_right_end_pin_2_0",
+        "lift_transverse_right_end_pin_2_1",
+        "lift_transverse_right_head_rail",
+        "lift_transverse_right_mount",
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_pin_0",
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_pin_1",
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_pin_2",
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_pin_3",
+        "lift_longitudinal_rear_end_pin_0_0",
+        "lift_longitudinal_rear_end_pin_0_1",
+        "lift_longitudinal_rear_end_pin_1_0",
+        "lift_longitudinal_rear_end_pin_1_1",
+        "lift_longitudinal_rear_end_pin_2_0",
+        "lift_longitudinal_rear_end_pin_2_1",
+        "lift_longitudinal_rear_end_pin_3_0",
+        "lift_longitudinal_rear_end_pin_3_1",
+        "lift_longitudinal_rear_end_pin_4_0",
+        "lift_longitudinal_rear_end_pin_4_1",
+        "lift_longitudinal_rear_head_rail",
+        "lift_longitudinal_rear_swivel_head",
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_pin_0",
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_pin_1",
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_pin_2",
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_pin_3",
+        "lift_longitudinal_near_end_pin_0_0",
+        "lift_longitudinal_near_end_pin_0_1",
+        "lift_longitudinal_near_end_pin_1_0",
+        "lift_longitudinal_near_end_pin_1_1",
+        "lift_longitudinal_near_end_pin_2_0",
+        "lift_longitudinal_near_end_pin_2_1",
+        "lift_longitudinal_near_end_pin_3_0",
+        "lift_longitudinal_near_end_pin_3_1",
+        "lift_longitudinal_near_end_pin_4_0",
+        "lift_longitudinal_near_end_pin_4_1",
+        "lift_longitudinal_near_head_rail",
+        "lift_longitudinal_near_swivel_head"
+      ],
+      "fixed_structure_ids": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_foot_0",
+        "lift_transverse_left_foot_1",
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_foot_0",
+        "lift_transverse_right_foot_1",
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_foot_0",
+        "lift_longitudinal_rear_foot_1",
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_foot_0",
+        "lift_longitudinal_near_foot_1",
+        "lift_rear_stand_0",
+        "lift_rear_stand_2",
+        "lift_rear_bearing"
+      ],
+      "handoff_qualification": "NOT_EVALUATED",
+      "stacks": [
+        {
+          "id": "lift_transverse_left",
+          "stages": 2,
+          "span_m": 1.2403527723998524,
+          "stage_rise_m": 0.15500000000000003,
+          "angle_rad": 0.12431998972196544,
+          "bars": [
+            {
+              "id": "lift_transverse_left_arm_0_0",
+              "endpoints": [
+                [
+                  -0.767,
+                  -0.275,
+                  0.1
+                ],
+                [
+                  -0.767,
+                  0.9653527723998524,
+                  0.255
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_left_arm_0_1",
+              "endpoints": [
+                [
+                  -0.793,
+                  0.9653527723998524,
+                  0.1
+                ],
+                [
+                  -0.793,
+                  -0.275,
+                  0.255
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_left_arm_1_0",
+              "endpoints": [
+                [
+                  -0.767,
+                  -0.275,
+                  0.255
+                ],
+                [
+                  -0.767,
+                  0.9653527723998524,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_left_arm_1_1",
+              "endpoints": [
+                [
+                  -0.793,
+                  0.9653527723998524,
+                  0.255
+                ],
+                [
+                  -0.793,
+                  -0.275,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 1.25
+            }
+          ],
+          "hinges": [
+            {
+              "id": "lift_transverse_left_hinge_0",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_transverse_left_arm_0_0",
+                "lift_transverse_left_arm_0_1"
+              ],
+              "position": [
+                -0.78,
+                0.3451763861999262,
+                0.17750000000000002
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_transverse_left_hinge_1",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_transverse_left_arm_1_0",
+                "lift_transverse_left_arm_1_1"
+              ],
+              "position": [
+                -0.78,
+                0.3451763861999262,
+                0.3325
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ],
+          "sliding_pin_travel_m": 0.009647227600147579,
+          "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+        },
+        {
+          "id": "lift_transverse_right",
+          "stages": 2,
+          "span_m": 1.2403527723998524,
+          "stage_rise_m": 0.15500000000000003,
+          "angle_rad": 0.12431998972196544,
+          "bars": [
+            {
+              "id": "lift_transverse_right_arm_0_0",
+              "endpoints": [
+                [
+                  -0.30700000000000005,
+                  -0.275,
+                  0.1
+                ],
+                [
+                  -0.30700000000000005,
+                  0.9653527723998524,
+                  0.255
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_right_arm_0_1",
+              "endpoints": [
+                [
+                  -0.3330000000000001,
+                  0.9653527723998524,
+                  0.1
+                ],
+                [
+                  -0.3330000000000001,
+                  -0.275,
+                  0.255
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_right_arm_1_0",
+              "endpoints": [
+                [
+                  -0.30700000000000005,
+                  -0.275,
+                  0.255
+                ],
+                [
+                  -0.30700000000000005,
+                  0.9653527723998524,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 1.25
+            },
+            {
+              "id": "lift_transverse_right_arm_1_1",
+              "endpoints": [
+                [
+                  -0.3330000000000001,
+                  0.9653527723998524,
+                  0.255
+                ],
+                [
+                  -0.3330000000000001,
+                  -0.275,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 1.25
+            }
+          ],
+          "hinges": [
+            {
+              "id": "lift_transverse_right_hinge_0",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_transverse_right_arm_0_0",
+                "lift_transverse_right_arm_0_1"
+              ],
+              "position": [
+                -0.32000000000000006,
+                0.3451763861999262,
+                0.17750000000000002
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_transverse_right_hinge_1",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_transverse_right_arm_1_0",
+                "lift_transverse_right_arm_1_1"
+              ],
+              "position": [
+                -0.32000000000000006,
+                0.3451763861999262,
+                0.3325
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ],
+          "sliding_pin_travel_m": 0.009647227600147579,
+          "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+        },
+        {
+          "id": "lift_longitudinal_rear",
+          "stages": 4,
+          "span_m": 0.5949737389162651,
+          "stage_rise_m": 0.07750000000000001,
+          "angle_rad": 0.1295285603779565,
+          "bars": [
+            {
+              "id": "lift_longitudinal_rear_arm_0_0",
+              "endpoints": [
+                [
+                  -1.1483,
+                  -1.05,
+                  0.1
+                ],
+                [
+                  -1.1483,
+                  -0.4550262610837349,
+                  0.17750000000000002
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_0_1",
+              "endpoints": [
+                [
+                  -1.1717000000000002,
+                  -0.4550262610837349,
+                  0.1
+                ],
+                [
+                  -1.1717000000000002,
+                  -1.05,
+                  0.17750000000000002
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_1_0",
+              "endpoints": [
+                [
+                  -1.1483,
+                  -1.05,
+                  0.17750000000000002
+                ],
+                [
+                  -1.1483,
+                  -0.4550262610837349,
+                  0.255
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_1_1",
+              "endpoints": [
+                [
+                  -1.1717000000000002,
+                  -0.4550262610837349,
+                  0.17750000000000002
+                ],
+                [
+                  -1.1717000000000002,
+                  -1.05,
+                  0.255
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_2_0",
+              "endpoints": [
+                [
+                  -1.1483,
+                  -1.05,
+                  0.255
+                ],
+                [
+                  -1.1483,
+                  -0.4550262610837349,
+                  0.3325
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_2_1",
+              "endpoints": [
+                [
+                  -1.1717000000000002,
+                  -0.4550262610837349,
+                  0.255
+                ],
+                [
+                  -1.1717000000000002,
+                  -1.05,
+                  0.3325
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_3_0",
+              "endpoints": [
+                [
+                  -1.1483,
+                  -1.05,
+                  0.3325
+                ],
+                [
+                  -1.1483,
+                  -0.4550262610837349,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_rear_arm_3_1",
+              "endpoints": [
+                [
+                  -1.1717000000000002,
+                  -0.4550262610837349,
+                  0.3325
+                ],
+                [
+                  -1.1717000000000002,
+                  -1.05,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 0.6
+            }
+          ],
+          "hinges": [
+            {
+              "id": "lift_longitudinal_rear_hinge_0",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_rear_arm_0_0",
+                "lift_longitudinal_rear_arm_0_1"
+              ],
+              "position": [
+                -1.1600000000000001,
+                -0.7525131305418675,
+                0.13875
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_rear_hinge_1",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_rear_arm_1_0",
+                "lift_longitudinal_rear_arm_1_1"
+              ],
+              "position": [
+                -1.1600000000000001,
+                -0.7525131305418675,
+                0.21625000000000003
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_rear_hinge_2",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_rear_arm_2_0",
+                "lift_longitudinal_rear_arm_2_1"
+              ],
+              "position": [
+                -1.1600000000000001,
+                -0.7525131305418675,
+                0.29375
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_rear_hinge_3",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_rear_arm_3_0",
+                "lift_longitudinal_rear_arm_3_1"
+              ],
+              "position": [
+                -1.1600000000000001,
+                -0.7525131305418675,
+                0.37125
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ],
+          "sliding_pin_travel_m": 0.005026261083734829,
+          "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+        },
+        {
+          "id": "lift_longitudinal_near",
+          "stages": 4,
+          "span_m": 0.5949737389162651,
+          "stage_rise_m": 0.07750000000000001,
+          "angle_rad": 0.1295285603779565,
+          "bars": [
+            {
+              "id": "lift_longitudinal_near_arm_0_0",
+              "endpoints": [
+                [
+                  -0.9083000000000002,
+                  -1.05,
+                  0.1
+                ],
+                [
+                  -0.9083000000000002,
+                  -0.4550262610837349,
+                  0.17750000000000002
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_0_1",
+              "endpoints": [
+                [
+                  -0.9317000000000003,
+                  -0.4550262610837349,
+                  0.1
+                ],
+                [
+                  -0.9317000000000003,
+                  -1.05,
+                  0.17750000000000002
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_1_0",
+              "endpoints": [
+                [
+                  -0.9083000000000002,
+                  -1.05,
+                  0.17750000000000002
+                ],
+                [
+                  -0.9083000000000002,
+                  -0.4550262610837349,
+                  0.255
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_1_1",
+              "endpoints": [
+                [
+                  -0.9317000000000003,
+                  -0.4550262610837349,
+                  0.17750000000000002
+                ],
+                [
+                  -0.9317000000000003,
+                  -1.05,
+                  0.255
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_2_0",
+              "endpoints": [
+                [
+                  -0.9083000000000002,
+                  -1.05,
+                  0.255
+                ],
+                [
+                  -0.9083000000000002,
+                  -0.4550262610837349,
+                  0.3325
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_2_1",
+              "endpoints": [
+                [
+                  -0.9317000000000003,
+                  -0.4550262610837349,
+                  0.255
+                ],
+                [
+                  -0.9317000000000003,
+                  -1.05,
+                  0.3325
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_3_0",
+              "endpoints": [
+                [
+                  -0.9083000000000002,
+                  -1.05,
+                  0.3325
+                ],
+                [
+                  -0.9083000000000002,
+                  -0.4550262610837349,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 0.6
+            },
+            {
+              "id": "lift_longitudinal_near_arm_3_1",
+              "endpoints": [
+                [
+                  -0.9317000000000003,
+                  -0.4550262610837349,
+                  0.3325
+                ],
+                [
+                  -0.9317000000000003,
+                  -1.05,
+                  0.41000000000000003
+                ]
+              ],
+              "length_m": 0.6
+            }
+          ],
+          "hinges": [
+            {
+              "id": "lift_longitudinal_near_hinge_0",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_near_arm_0_0",
+                "lift_longitudinal_near_arm_0_1"
+              ],
+              "position": [
+                -0.9200000000000003,
+                -0.7525131305418675,
+                0.13875
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_near_hinge_1",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_near_arm_1_0",
+                "lift_longitudinal_near_arm_1_1"
+              ],
+              "position": [
+                -0.9200000000000003,
+                -0.7525131305418675,
+                0.21625000000000003
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_near_hinge_2",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_near_arm_2_0",
+                "lift_longitudinal_near_arm_2_1"
+              ],
+              "position": [
+                -0.9200000000000003,
+                -0.7525131305418675,
+                0.29375
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "id": "lift_longitudinal_near_hinge_3",
+              "type": "REVOLUTE",
+              "bodies": [
+                "lift_longitudinal_near_arm_3_0",
+                "lift_longitudinal_near_arm_3_1"
+              ],
+              "position": [
+                -0.9200000000000003,
+                -0.7525131305418675,
+                0.37125
+              ],
+              "axis": [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            }
+          ],
+          "sliding_pin_travel_m": 0.005026261083734829,
+          "endpoint_joints": "LEFT_PIN_RIGHT_SLIDER_WITH_SWIVEL_HEAD"
+        }
+      ],
+      "geometry_origin": "PROJECT_CONCEPT_NOT_NVIDIA_COMPLETE_SCISSOR_ASSET",
+      "mechanical_stroke_rating": "UNKNOWN",
+      "actuator_force_speed": "UNKNOWN",
+      "mass_inertia": "NOT_SPECIFIED",
+      "full_sweep_collision": "NOT_EVALUATED",
+      "native_receiver_transition": "UNSUPPORTED_BY_LEGACY_PURE_Z_CONTRACT"
+    },
+    "scene_fingerprint": "79475a48792ffa9f45010dadb96cb56ea9743ae9d7b66fcc4b62cc60301a219f",
+    "status": "COUPLED_CONVEYOR_KINEMATIC_MODEL_NOT_EXECUTABLE",
+    "qualification_status": "NOT_EVALUATED",
+    "continuous_swept_proof": false,
+    "physical_execution": "NOT_RUN",
+    "native_motion_approval": "NOT_EVALUATED"
+  },
+  "command": [
+    "/opt/planning-opt-20261003-venv/bin/python",
+    "tools/audit_m710_coupled_batch_start.py",
+    "--source-commit",
+    "a93ebbb4a9ed866c552f28ef5e86f885f6a840fe",
+    "--source-manifest",
+    "source-manifest.json",
+    "--worker-command",
+    "/tmp/right-inner-20261019/worker.sh",
+    "--worker-binary",
+    "/tmp/right-inner-20261019/build/m710_moveit_worker",
+    "--seeds",
+    "71070",
+    "71071",
+    "--height-step-m",
+    ".01",
+    "--output",
+    "/tmp/top-layer-lifted-20261019/formal"
+  ]
+}

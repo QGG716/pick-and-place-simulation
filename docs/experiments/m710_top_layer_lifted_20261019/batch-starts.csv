@@ -1,0 +1,3 @@
+seed,status,completed,target_count,remaining_ids,unload_order,first_reception,ideal_drain,cartons_before,cartons_after,probe_s
+71070,BATCH_START_REJECTED,0,5,carton_l07_c00;carton_l07_c01;carton_l07_c02;carton_l07_c03;carton_l07_c04,,0,0,40,40,0.7018469758331776
+71071,BATCH_START_REJECTED,0,5,carton_l07_c00;carton_l07_c01;carton_l07_c02;carton_l07_c03;carton_l07_c04,,0,0,40,40,0.6523700430989265

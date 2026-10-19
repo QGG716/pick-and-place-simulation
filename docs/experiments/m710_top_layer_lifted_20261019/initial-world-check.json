@@ -1,0 +1,1474 @@
+{
+  "status": "COUPLED_WORLD_GEOMETRY_REJECTED",
+  "passed": false,
+  "height_m": 0.6000000000000001,
+  "scene_fingerprint": "79475a48792ffa9f45010dadb96cb56ea9743ae9d7b66fcc4b62cc60301a219f",
+  "world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+  "object_count": 139,
+  "carton_ids": [
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l05_c00",
+    "carton_l05_c01",
+    "carton_l05_c02",
+    "carton_l05_c03",
+    "carton_l05_c04",
+    "carton_l06_c00",
+    "carton_l06_c01",
+    "carton_l06_c02",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "failures": [
+    {
+      "pair": [
+        "chassis",
+        "lift_longitudinal_rear_foot_1"
+      ],
+      "surface_distance_m": 0.0,
+      "signed_sat_separation_m": 4.163336342344337e-17,
+      "sat_value_is_not_general_penetration_depth": true,
+      "classification": "SOLID_OBB_CONTACT",
+      "geometry_scope": "PROJECT_CONCEPT_SOLID_OBBS_NOT_ORIGINAL_CAD",
+      "original_cad_penetration_proven": false,
+      "query_method": "OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "bodies": [
+        {
+          "id": "chassis",
+          "size": [
+            2.1,
+            1.5,
+            0.6
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.95
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "chassis",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_1",
+          "size": [
+            0.1,
+            0.1,
+            0.06000000000000001
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.1600000000000001
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.45000000000000007
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.030000000000000006
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "lift_mechanism",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        }
+      ],
+      "required_clearance_m": 0.005
+    },
+    {
+      "pair": [
+        "chassis",
+        "lift_longitudinal_near_foot_1"
+      ],
+      "surface_distance_m": 0.0,
+      "signed_sat_separation_m": 4.163336342344337e-17,
+      "sat_value_is_not_general_penetration_depth": true,
+      "classification": "SOLID_OBB_CONTACT",
+      "geometry_scope": "PROJECT_CONCEPT_SOLID_OBBS_NOT_ORIGINAL_CAD",
+      "original_cad_penetration_proven": false,
+      "query_method": "OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "bodies": [
+        {
+          "id": "chassis",
+          "size": [
+            2.1,
+            1.5,
+            0.6
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.95
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "chassis",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_1",
+          "size": [
+            0.1,
+            0.1,
+            0.06000000000000001
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -0.9200000000000003
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.45000000000000007
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.030000000000000006
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "lift_mechanism",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        }
+      ],
+      "required_clearance_m": 0.005
+    },
+    {
+      "pair": [
+        "chassis",
+        "lift_rear_bearing"
+      ],
+      "surface_distance_m": 1.1102230246251565e-16,
+      "signed_sat_separation_m": 1.1102230246251565e-16,
+      "sat_value_is_not_general_penetration_depth": true,
+      "classification": "SOLID_OBB_CONTACT",
+      "geometry_scope": "PROJECT_CONCEPT_SOLID_OBBS_NOT_ORIGINAL_CAD",
+      "original_cad_penetration_proven": false,
+      "query_method": "OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "bodies": [
+        {
+          "id": "chassis",
+          "size": [
+            2.1,
+            1.5,
+            0.6
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -1.95
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.35
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.3
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "chassis",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        {
+          "id": "lift_rear_bearing",
+          "size": [
+            0.12,
+            0.7,
+            0.1
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -3.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.7500000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.6000000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "lift_mechanism",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        }
+      ],
+      "required_clearance_m": 0.005
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_rear_stand_0"
+      ],
+      "surface_distance_m": 0.0,
+      "signed_sat_separation_m": -0.04,
+      "sat_value_is_not_general_penetration_depth": true,
+      "classification": "SOLID_OBB_INTERSECTION",
+      "geometry_scope": "PROJECT_CONCEPT_SOLID_OBBS_NOT_ORIGINAL_CAD",
+      "original_cad_penetration_proven": false,
+      "query_method": "OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "bodies": [
+        {
+          "id": "conveyor_longitudinal",
+          "size": [
+            2.8,
+            0.7,
+            0.12
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              -0.0,
+              -1.6
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.7500000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "conveyor",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        {
+          "id": "lift_rear_stand_0",
+          "size": [
+            0.08,
+            0.08,
+            0.55
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -3.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -1.04
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.275
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "lift_mechanism",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        }
+      ],
+      "exact_axis_aligned_intersection": {
+        "min_world_m": [
+          -3.0,
+          -1.08,
+          0.48000000000000004
+        ],
+        "max_world_m": [
+          -2.96,
+          -1.0,
+          0.55
+        ],
+        "size_m": [
+          0.040000000000000036,
+          0.08000000000000007,
+          0.07
+        ],
+        "volume_m3": 0.00022400000000000043
+      },
+      "required_clearance_m": 0.005
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_rear_stand_2"
+      ],
+      "surface_distance_m": 0.0,
+      "signed_sat_separation_m": -0.04,
+      "sat_value_is_not_general_penetration_depth": true,
+      "classification": "SOLID_OBB_INTERSECTION",
+      "geometry_scope": "PROJECT_CONCEPT_SOLID_OBBS_NOT_ORIGINAL_CAD",
+      "original_cad_penetration_proven": false,
+      "query_method": "OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+      "bodies": [
+        {
+          "id": "conveyor_longitudinal",
+          "size": [
+            2.8,
+            0.7,
+            0.12
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              -0.0,
+              -1.6
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.7500000000000001
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.54
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "conveyor",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        },
+        {
+          "id": "lift_rear_stand_2",
+          "size": [
+            0.08,
+            0.08,
+            0.55
+          ],
+          "pose": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              -3.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              -0.46000000000000013
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.275
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "category": "lift_mechanism",
+          "geometry_source": "frozen_layout_or_audited_tool_OBB"
+        }
+      ],
+      "exact_axis_aligned_intersection": {
+        "min_world_m": [
+          -3.0,
+          -0.5000000000000001,
+          0.48000000000000004
+        ],
+        "max_world_m": [
+          -2.96,
+          -0.42000000000000015,
+          0.55
+        ],
+        "size_m": [
+          0.040000000000000036,
+          0.07999999999999996,
+          0.07
+        ],
+        "volume_m3": 0.00022400000000000013
+      },
+      "required_clearance_m": 0.005
+    }
+  ],
+  "allowed_assembly_pairs": [
+    {
+      "pair": [
+        "chassis",
+        "conveyor_transverse"
+      ],
+      "rule": "FROZEN_ASSEMBLY_NONPENETRATING_SEPARATING_PLANE"
+    },
+    {
+      "pair": [
+        "chassis",
+        "conveyor_longitudinal"
+      ],
+      "rule": "FROZEN_ASSEMBLY_NONPENETRATING_SEPARATING_PLANE"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "conveyor_transverse"
+      ],
+      "rule": "FROZEN_ASSEMBLY_NONPENETRATING_SEPARATING_PLANE"
+    },
+    {
+      "pair": [
+        "conveyor_transverse",
+        "lift_transverse_left_mount"
+      ],
+      "rule": "DECLARED_TRANSVERSE_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_transverse",
+        "lift_transverse_right_mount"
+      ],
+      "rule": "DECLARED_TRANSVERSE_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_longitudinal_rear_swivel_head"
+      ],
+      "rule": "DECLARED_SWIVEL_CONVEYOR_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_longitudinal_near_swivel_head"
+      ],
+      "rule": "DECLARED_SWIVEL_CONVEYOR_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_rear_bearing"
+      ],
+      "rule": "DECLARED_REAR_REVOLUTE_BEARING"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_rear_stand_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_STAND_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_rear_stand_2",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_STAND_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_end_pin_2_0",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_end_pin_2_1",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_head_rail",
+        "lift_transverse_left_mount"
+      ],
+      "rule": "DECLARED_HEAD_MOUNT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_end_pin_2_0",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_end_pin_2_1",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_head_rail",
+        "lift_transverse_right_mount"
+      ],
+      "rule": "DECLARED_HEAD_MOUNT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_end_pin_4_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_end_pin_4_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_end_pin_4_0",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_end_pin_4_1",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_end_pin_4_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_end_pin_4_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_end_pin_4_0",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_end_pin_4_1",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_rear_bearing",
+        "lift_rear_stand_0"
+      ],
+      "rule": "DECLARED_REAR_BEARING_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_rear_bearing",
+        "lift_rear_stand_2"
+      ],
+      "rule": "DECLARED_REAR_BEARING_SUPPORT"
+    }
+  ],
+  "refined_pairs": 203,
+  "robot_mesh_check": "SEPARATE_GATE",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "execution_ready": false
+}

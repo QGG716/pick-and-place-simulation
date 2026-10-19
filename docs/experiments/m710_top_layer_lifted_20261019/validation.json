@@ -1,0 +1,90 @@
+{
+  "status": "PASS_EVIDENCE_INTEGRITY_ONLY",
+  "world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+  "unique_objects": 139,
+  "cartons_preserved": 40,
+  "top_targets": 5,
+  "lower_cartons_preserved": 35,
+  "completed_count": 0,
+  "native_probe_seeds": [
+    71070,
+    71071
+  ],
+  "native_world_and_q_match": true,
+  "source_measured": "a93ebbb4a9ed866c552f28ef5e86f885f6a840fe",
+  "legacy_files_unchanged": [
+    "tests/test_workcell_layout.py",
+    "src/unloading_sim/workcell_layout.py",
+    "configs/workcells/m710id70_unloading_layout_v1.yaml",
+    "src/unloading_sim/conveyor_lift.py",
+    "src/unloading_sim/single_contact.py",
+    "src/unloading_sim/single_lifted_receiver.py",
+    "src/unloading_sim/single_right_receiver.py",
+    "ros2/m710_moveit_backend/src/worker.cpp"
+  ],
+  "browser": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "kind": "INITIAL_REJECTION_NOT_BATCH_REPLAY",
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "initial_world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+      "selected_pair": [
+        "conveyor_longitudinal",
+        "lift_rear_stand_0"
+      ],
+      "completed_count": 0,
+      "carton_count": 40,
+      "accepted_motion_edges": 0
+    },
+    "final": {
+      "kind": "INITIAL_REJECTION_NOT_BATCH_REPLAY",
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "initial_world_sha256": "963b0e2a501b516f304e62022044ec974503438b2e4ce7a270be446ef1ead504",
+      "selected_pair": [
+        "conveyor_longitudinal",
+        "lift_rear_stand_2"
+      ],
+      "completed_count": 0,
+      "carton_count": 40,
+      "accepted_motion_edges": 0
+    },
+    "frames": 40,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "presentation_duration_s": 8,
+    "simulated_time_s": null,
+    "classification": "STATIC_INITIAL_REJECTION_INSPECTION_NOT_BATCH_VIDEO"
+  },
+  "video": {
+    "programs": [],
+    "streams": [
+      {
+        "width": 640,
+        "height": 360,
+        "r_frame_rate": "5/1",
+        "duration": "8.000000",
+        "nb_frames": "40"
+      }
+    ]
+  },
+  "qualification_status": "NOT_EVALUATED",
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "continuous_swept_proof": false
+}
