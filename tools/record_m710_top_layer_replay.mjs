@@ -18,9 +18,11 @@ const port=server.address().port;
 const probe=net.createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));
 const debugPort=probe.address().port;await new Promise(r=>probe.close(r));
 const profile=await fs.mkdtemp(path.join(path.resolve(output),'chrome-profile-'));
+const graphics=process.argv.includes('--hardware-rendering')?['--enable-gpu']:
+  ['--enable-unsafe-swiftshader','--use-angle=swiftshader'];
 const child=spawn(chrome,['--headless=new','--no-first-run','--no-default-browser-check',
   '--disable-background-networking','--disable-sync','--disable-extensions',
-  '--enable-unsafe-swiftshader','--use-angle=swiftshader','--hide-scrollbars',
+  ...graphics,'--hide-scrollbars',
   '--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${debugPort}`,
   `--user-data-dir=${profile}`,'about:blank'],{windowsHide:true,stdio:'ignore'});
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
@@ -55,6 +57,8 @@ try{
   let state;
   for(let i=0;i<100;i++){state=await evaluate('window.previewState || null');if(state)break;await delay(100);}
   assert.ok(state,'Viewer did not initialize');
+  const rendererInfo=await evaluate(`(()=>{const g=renderer.getContext(),e=g.getExtension('WEBGL_debug_renderer_info');return e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)})()`);
+  console.log(JSON.stringify({renderer:rendererInfo}));
 
   assert.equal(state.carton_count,40);assert.equal(state.completed_count,0);
   const screenshot=async name=>{
@@ -93,7 +97,7 @@ try{
   const final=await evaluate('window.previewState');assert.equal(final.completed_count,timeline.count);
   assert.equal(final.carton_count,40-timeline.count);
   await fs.writeFile(path.join(output,'browser-checks.json'),JSON.stringify({status:'PASS',errors,
-    initial:state,final,checks,frames,width:640,height:360,fps:5,playback_speed:1,
+    initial:state,final,checks,frames,width:640,height:360,fps:5,playback_speed:1,renderer:rendererInfo,
     classification:'NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL'},null,2));
   console.log(JSON.stringify({status:'PASS',output,frames,errors:0}));
 }finally{
