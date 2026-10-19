@@ -307,7 +307,7 @@ class Worker {
       const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process,bool diagnostic=false) {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
     if(req.value("pipeline_id",std::string())=="external_axis") {
-      if(m710::coupledBinding(receiver_binding))m710::coupledTransitionWorld(req,receiver_binding);
+      if(m710::coupledBinding(receiver_binding))m710::coupledTransitionWorld(req,m710::activeCoupledBinding(req,receiver_binding));
       else m710::receiverTransitionWorld(req,receiver_binding);
     }
     else if(req.value("pipeline_id",std::string())=="semantic_event" && m710::coupledBinding(receiver_binding)) {
@@ -448,14 +448,7 @@ class Worker {
           if(!failure.is_null())break;
           m710::Clearance gate(next,req.at("clearance_policy"),"optimized",true,true,false);
           if(!gate.check(next->getCurrentState()))failure=gate.last_failure;
-          if(failure.is_null())for(const auto& other:req.at("world")) {
-            if(other.at("id")==target)throw std::runtime_error("RELEASE_DUPLICATE_TARGET");
-            const auto b=m710::processBox(other);const double sat=m710::processSignedGap(box,b);
-            if(other.at("id")=="conveyor_transverse" && sat>=-1e-9)continue;
-            if(sat>.005000001)continue;
-            const double gap=m710::receiverBoxDistance(sample.at("box"),other);
-            if(gap+.000000001<.005) {failure={{"reason","NOMINAL_DROP_WORLD_CLEARANCE"},{"pair",{target,b.id}},{"gap_m",gap}};break;}
-          }
+          if(failure.is_null())failure=m710::nominalDropWorldFailure(sample.at("box"),req.at("world"));
           checks.push_back({{"t",sample.at("t")},{"passed",failure.is_null()},{"failure",failure},{"clearance",gate.evidence()}});
           if(!failure.is_null())break;
         }
@@ -470,26 +463,31 @@ class Worker {
           {"time_parameterization","NOMINAL_GRAVITY_MODEL_NOT_ROBOT_MOTION"}});r.ready=true;return;
       }
       if(pipeline=="external_axis" && m710::coupledBinding(receiver_binding)) {
-        const auto began=Clock::now();const auto end_world=m710::coupledTransitionWorld(req,receiver_binding);
+        const auto& transition_binding=m710::activeCoupledBinding(req,receiver_binding);
+        const auto began=Clock::now();const auto end_world=m710::coupledTransitionWorld(req,transition_binding);
         r.result={{"status","RECEIVER_SWEEP_REJECTED"},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
           {"parent_stage_id",r.parent},{"request_id",req.at("request_id")},{"generation_source","NATIVE_EXTERNAL_AXIS"},
           {"pipeline_id",pipeline},{"planner_id",planner},{"native_solver_calls",J::object()},
           {"mtc_generation",true},{"generated_during_task",true}};
         J checks=J::array();J failure=nullptr;planning_scene::PlanningScenePtr next;
-        for(const auto& sample:receiver_binding.at("samples")) {
+        for(auto sample:transition_binding.at("samples")) {
+          if(!req.at("attachment").is_null()) {
+            J filtered=J::array();for(const auto& box:sample.at("world"))if(box.at("id")!=transition_binding.at("target_id"))filtered.push_back(box);
+            sample["world"]=filtered;
+          }
           if(seconds(began)>=req.at("allowed_planning_time_s").get<double>()) {r.result["status"]="RECEIVER_SWEEP_TIMEOUT";break;}
           next=r.start->diff();next->decoupleParent();
           for(const auto& box:sample.at("world"))if(!next->processCollisionObjectMsg(object(box)))throw std::runtime_error("COUPLED_IMPORT_FAILED");
           m710::Clearance gate(next,req.at("clearance_policy"),"optimized",true,true,false);
           const bool valid=gate.check(next->getCurrentState());
-          failure=valid?m710::coupledWorldFailure(sample,receiver_binding):gate.last_failure;
+          failure=valid?m710::coupledWorldFailure(sample,transition_binding):gate.last_failure;
           checks.push_back({{"height_m",sample.at("height_m")},{"passed",failure.is_null()},{"failure",failure},{"clearance",gate.evidence()}});
           if(!failure.is_null())break;
         }
         r.result["external_axis"]={{"type","COUPLED_CONVEYOR_DISCRETE_HEIGHT_TRANSITION"},{"robot_q_constant",true},
-          {"robot_q",req.at("q_start")},{"from_height_m",receiver_binding.at("samples").front().at("height_m")},
-          {"to_height_m",receiver_binding.at("samples").back().at("height_m")},{"checks",checks},
-          {"maximum_height_step_m",receiver_binding.at("maximum_height_step_m")},{"continuous_swept_proof",false},
+          {"robot_q",req.at("q_start")},{"from_height_m",transition_binding.at("samples").front().at("height_m")},
+          {"to_height_m",transition_binding.at("samples").back().at("height_m")},{"checks",checks},
+          {"maximum_height_step_m",transition_binding.at("maximum_height_step_m")},{"continuous_swept_proof",false},
           {"after_scene_fingerprint",req.at("receiver_end_fingerprint")},{"execution_duration_s",nullptr},{"physical_execution","NOT_RUN"}};
         r.result["failure"]=failure;
         if(!failure.is_null() || r.result["status"]=="RECEIVER_SWEEP_TIMEOUT")return;
@@ -900,6 +898,8 @@ private:
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
+                {"coupled_receiver_discrete",m710::coupledBinding(receiver_binding)},
+                {"nominal_drop_release",m710::coupledBinding(receiver_binding)},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};

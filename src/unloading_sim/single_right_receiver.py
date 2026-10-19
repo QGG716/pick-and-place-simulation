@@ -55,6 +55,19 @@ def rectangle_samples(rect,tolerance):
         k+=1
 
 
+def retain_exact_native_start(path, start):
+    """Native returned samples have values; lineage belongs to the real input.
+
+    Never infer a new root/receipt from FK or tolerate a changed first sample.
+    """
+    if not path or not np.array_equal(path[0],start):
+        raise MoveItUnavailable('RIGHT_TURN_NATIVE_START_CHANGED')
+    if hasattr(path[0],'native_receipt') and path[0].native_receipt!=start.native_receipt:
+        raise MoveItUnavailable('RIGHT_TURN_NATIVE_START_RECEIPT_CHANGED')
+    path[0]=start
+    return path
+
+
 class SingleRightReceiverConnector(SingleLiftedReceiverConnector):
     def complete_extraction_plan(self,plan,row,end,target,obstacles,attachment,seed):
         record=self._native_selected_records(end)[-1]
@@ -142,6 +155,8 @@ class SingleRightReceiverConnector(SingleLiftedReceiverConnector):
                 if attempts and attempts[-1].get('status') in {'NATIVE_PROCESSING_FAILED','ERROR','CANCELLED'}:
                     guard()
                     raise MoveItUnavailable('RIGHT_INNER_NATIVE_REQUEST_ERROR:'+str(attempts[-1].get('failure')))
+                if result[1] is None:
+                    retain_exact_native_start(result[0],q)
                 return result
             finally:self._side_substage='RIGHT_INNER_Y'
         def geometry(q,goal,direction):

@@ -4,6 +4,11 @@ namespace m710 {
 inline bool coupledBinding(const ProcessJson& binding) {
   return binding.is_object() && binding.value("schema","")=="m710_coupled_receiver_v2";
 }
+inline const ProcessJson& activeCoupledBinding(const ProcessJson& req,const ProcessJson& binding) {
+  if(req.value("coupled_leg","")=="PRE_APPROACH")return binding.at("pre_approach_transition");
+  if(req.contains("coupled_leg"))throw std::runtime_error("COUPLED_LEG_UNKNOWN");
+  return binding;
+}
 inline void validateCoupledBinding(const ProcessJson& b) {
   if(!coupledBinding(b) || b.at("samples").empty() || b.at("samples").size()>4096 ||
       b.at("continuous_swept_proof")!=false || b.at("maximum_height_step_m").get<double>()>.010000000001)
@@ -26,14 +31,26 @@ inline void validateCoupledBinding(const ProcessJson& b) {
         throw std::runtime_error("COUPLED_FIXED_GEOMETRY_CHANGED");
     }
   }
+  if(b.contains("pre_approach_transition")) {
+    const auto& pre=b.at("pre_approach_transition");
+    if(pre.contains("pre_approach_transition") || pre.at("target_id")!=b.at("target_id") ||
+        pre.at("samples").back().at("world")!=b.at("samples").front().at("world"))
+      throw std::runtime_error("COUPLED_PRE_APPROACH_CONTINUITY_INVALID");
+    validateCoupledBinding(pre);
+  }
 }
 inline ProcessJson coupledTransitionWorld(const ProcessJson& req,const ProcessJson& b) {
+  const bool attached=!req.at("attachment").is_null();
+  auto withoutTarget=[&](const ProcessJson& world){auto out=ProcessJson::array();for(const auto& box:world)
+    if(!attached || box.at("id")!=b.at("target_id"))out.push_back(box);return out;};
   if(!coupledBinding(b) || !req.value("planning_only",false) || req.value("planning_mode","")!="cold_from_scratch" ||
       req.at("planner_id")!="COUPLED_LIFT" || req.at("q_start")!=req.at("q_goal") ||
-      !req.at("attachment").is_null() || !req.at("ownership_transition").is_null() ||
-      req.value("parent_stage_id","").empty() || (req.at("stage")!="pregrasp" && req.at("stage")!="contact") ||
-      req.at("world")!=b.at("samples").front().at("world") ||
-      req.at("receiver_end_world")!=b.at("samples").back().at("world") ||
+      !req.at("ownership_transition").is_null() ||
+      (req.value("parent_stage_id","").empty() && req.value("coupled_leg","")!="PRE_APPROACH") ||
+      (attached ? (req.at("stage")!="extraction" || !req.at("process_policy").at("initial_proximity").is_null() ||
+        !req.at("process_policy").at("support_names").empty() || req.value("parent_stage_id","").empty()) : (req.at("stage")!="pregrasp" && req.at("stage")!="contact")) ||
+      req.at("world")!=withoutTarget(b.at("samples").front().at("world")) ||
+      req.at("receiver_end_world")!=withoutTarget(b.at("samples").back().at("world")) ||
       req.at("process_policy").at("target_id")!=b.at("target_id"))
     throw std::runtime_error("COUPLED_TRANSITION_SCOPE_OR_WORLD_INVALID");
   return req.at("receiver_end_world");

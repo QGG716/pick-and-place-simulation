@@ -113,9 +113,23 @@ def rank_remaining(frozen, cartons, completed, q, robot, belt):
         target = active[name]
         options = process_options(target, belt, frozen, cartons)
         direct = bool(options and options[0]["template"] == "FRONT_DIRECT_HMAX")
+        channel=[]
+        if options and options[0]['template']=='FRONT_LATERAL_HMIN':
+            direction=options[0]['segment_directions_world'][0][1]
+            lo,hi=bounds(target)
+            for other in cartons:
+                if other.name==name:continue
+                ol,oh=bounds(other)
+                # A same-height neighbor lies between this carton and the belt
+                # region. Rank an already open channel first; do not label a
+                # blocked current-world process globally unreachable.
+                if min(hi[0],oh[0])-max(lo[0],ol[0])>1e-9 and min(hi[2],oh[2])-max(lo[2],ol[2])>1e-9:
+                    if direction*(other.center[1]-target.center[1])>0 and direction*(other.center[1]-belt.center[1])<0:
+                        channel.append(other.name)
         rows.append(dict(target_id=name, options=options,
+                         lateral_channel_blockers=sorted(channel),
                          supported_cartons=sorted(graph.supports[name]),
                          front_blockers=graph.face_blockers(name, "front"),
-                         rank=[not direct, abs(float(target.center[1])-center_y),
+                         rank=[not direct, bool(channel), abs(float(target.center[1])-center_y),
                                float(np.linalg.norm(target.center-tcp)), name]))
     return sorted(rows, key=lambda row: row["rank"])

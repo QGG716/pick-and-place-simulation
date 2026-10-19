@@ -67,7 +67,8 @@ class BatchState:
 
     def root(self):
         return dict(q_rad=self.q.tolist(),velocity_rad_s=[0.]*6,height_m=self.height,
-            world_cartons=[box_message(b) for b in self.cartons],completed=[e['target_id'] for e in self.ledger])
+            world_cartons=[box_message(b) for b in self.cartons],completed=[e['target_id'] for e in self.ledger],
+            predecessor_final_state_receipt=self.cycles[-1]['final_state_receipt'] if self.cycles else None)
 
     def commit(self,plan):
         if plan['batch_root']!=self.root():raise ValueError('BATCH_COMMIT_ROOT_CHANGED')
@@ -76,6 +77,7 @@ class BatchState:
         required=['RELEASE','NOMINAL_FIRST_CONTACT','SAFE_TOOL_SEPARATION','IDEAL_RECEIVER_DRAIN']
         if target not in remaining or any(types.count(t)!=1 for t in required):raise ValueError('PREMATURE_OR_DUPLICATE_DRAIN')
         if [types.index(t) for t in required]!=sorted(types.index(t) for t in required):raise ValueError('DRAIN_EVENT_ORDER')
+        if any(e.get('target_id')!=target for e in events if e['event_type'] in required):raise ValueError('DRAIN_TARGET_CHANGED')
         if not plan['separation']['passed'] or not plan['nominal_release']['passed']:raise ValueError('DRAIN_WITHOUT_CHECKS')
         self.q=np.asarray(plan['end_q_rad']);self.height=float(plan['height_m'])
         self.cartons=tuple(b for b in self.cartons if b.name!=target)
@@ -118,12 +120,53 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def prepare_receiver_binding(self,target,obstacles):
         b=self.native.lifted_receiver_binding
-        if [box_message(o) for o in obstacles]!=b['samples'][0]['world']:raise MoveItUnavailable('COUPLED_ROOT_WORLD_MISMATCH')
+        root=b.get('pre_approach_transition',b)
+        if [box_message(o) for o in obstacles]!=root['samples'][0]['world']:raise MoveItUnavailable('COUPLED_ROOT_WORLD_MISMATCH')
         return b,next(message_box(x) for x in b['samples'][-1]['world'] if x['id']=='conveyor_transverse')
 
-    def high_world(self):return [message_box(x) for x in self.receiver_binding['samples'][-1]['world']]
+    def high_world(self):
+        b=self.receiver_binding['pre_approach_transition'] if getattr(self,'_pre_approach_lift',False) else self.receiver_binding
+        return [message_box(x) for x in b['samples'][-1]['world']]
+
+    def prepare_approach_start(self,start,target,obstacles,seed,row):
+        if 'pre_approach_transition' not in self.receiver_binding:return start,obstacles
+        self._pre_approach_lift=True
+        try:
+            state,world,success=self.lift_at(start,target,obstacles,seed,row,stage='pregrasp')
+        finally:self._pre_approach_lift=False
+        self.receiver_raised=False
+        if not success:raise MoveItUnavailable('PRE_APPROACH_COUPLED_SWEEP_REJECTED')
+        return state,world
 
     def expected_contact(self,target,suction):return SingleContactConnector.expected_contact(self,target,suction)
+
+    def prepare_contact_start(self,start,target,obstacles,seed,row):
+        if self.option.get('late_receiver_sync'):return start,obstacles
+        return super().prepare_contact_start(start,target,obstacles,seed,row)
+
+    def complete_contact_plan(self,plan,row,end,target,obstacles,suction,seed):
+        if not self.option.get('late_receiver_sync'):return super().complete_contact_plan(plan,row,end,target,obstacles,suction,seed)
+        plan['events']=deepcopy(self.receiver_events)
+        return SingleExtractionConnector.complete_contact_plan(self,plan,row,end,target,obstacles,suction,seed)
+
+    def lift_attached_at(self,end,target,obstacles,attachment,seed):
+        world=[b for b in obstacles if b.name!=target.target_id]
+        final_world=[b for b in self.high_world() if b.name!=target.target_id]
+        req=self._build_native_request(end,end,world,seed=seed,stage='extraction',attachment=attachment)
+        receipt,_,transition=self._native_parent_for_request(end,req)
+        if transition is not None:raise MoveItUnavailable('LATE_SYNC_OWNERSHIP_CHANGED')
+        stage_s,timeout=self._native_limits();serialized=[box_message(b) for b in final_world]
+        req.update(parent_stage_id=receipt.stage_id,parent_state_receipt=receipt.evidence(),ownership_transition=None,
+            stage_id=self.native_task_id+':'+str(next(self._native_stage_ids)),pipeline_id='external_axis',planner_id='COUPLED_LIFT',
+            receiver_end_world=serialized,receiver_end_fingerprint=digest(serialized),allowed_planning_time_s=stage_s,
+            purpose=MotionPurpose.EXTRACTION_PROCESS.value)
+        raw=self.native.request(req,timeout=timeout,cancelled=self._native_cancelled)
+        if raw['status']!='SUCCESS':return None,None,raw
+        if raw.get('generation_source')!='NATIVE_EXTERNAL_AXIS' or not np.array_equal(raw.get('terminal_q'),end):
+            raise MoveItUnavailable('LATE_SYNC_RETURN_IDENTITY')
+        self.native_generated.append(dict(raw,stage='extraction',submitted_request=deepcopy(req),authoritative_status='SKIPPED_PLANNING_ONLY'))
+        state=self._native_issue_state(end,req['stage_id'],self._native_state_context(dict(req,world=serialized),endpoint=end,attachment=attachment))
+        return state,final_world,raw
 
     @property
     def planar(self):return len(self.option['segment_directions_world'])==2
@@ -136,6 +179,7 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def _build_native_request(self,*args,**kwargs):
         req=SingleContactConnector._build_native_request(self,*args,**kwargs)
+        if getattr(self,'_pre_approach_lift',False):req['coupled_leg']='PRE_APPROACH'
         if getattr(self,'option',None) and self.planar and kwargs.get('stage')=='extraction' and kwargs.get('initial_proximity') is not None:
             req.update(receiver_template='COUPLED_PLANAR',process_substage=getattr(self,'_side_substage','RIGHT_INNER_Y'))
         return req
@@ -158,6 +202,12 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             row.update(complete=False,failure=dict(reason='ACTUAL_RELEASE_REGION_NOT_REACHED',
                 scope='COMPLETE_CYCLE_CANDIDATE',blocking_stage=reason,detail=detail))
             return None,row
+        if self.option.get('late_receiver_sync'):
+            lifted,lift_world,checked=self.lift_attached_at(end,target,obstacles,attachment,seed)
+            if lifted is None:return reject('LATE_RECEIVER_SYNC',checked)
+            end=lifted;obstacles=[*lift_world,target.box]
+            plan['events'].append(dict(event_type='EXTERNAL_AXIS_MOTION',stage_id=checked['stage_id'],
+                attached=True,**checked['external_axis']))
         if not check['passed']:return reject('RELEASE_HEIGHT',check)
         try:drop=nominal_drop(box,self.high_belt)
         except ValueError as exc:return reject('NOMINAL_DROP_GEOMETRY',str(exc))
@@ -183,7 +233,7 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             request=self._build_native_request(q,q,released_world,seed=seed,stage='pregrasp',target_contact=landed)
             parent,_,transition=self._native_parent_for_request(q,request)
             if transition is not None:raise MoveItUnavailable('SEPARATION_OWNERSHIP_CHANGED')
-            request.update(op='check_start',parent_stage_id=parent.stage_id,parent_state_receipt=parent.evidence(),ownership_transition=None)
+            request.update(op='check_start',coupled_separation_probe=True,parent_stage_id=parent.stage_id,parent_state_receipt=parent.evidence(),ownership_transition=None)
             result=self.native.request(request,timeout=timeout,cancelled=self._native_cancelled)
             return dict(passed=result['status']=='SUCCESS',response=result)
         # check_start rejects invalid states at protocol scope; only use a native

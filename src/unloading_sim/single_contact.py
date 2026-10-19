@@ -98,7 +98,12 @@ class SingleContactClient:
                 and request.get('attachment') is not None and bool(request.get('parent_stage_id'))) or (
                 getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
                 and request.get('pipeline_id')=='pilz_industrial_motion_planner' and request.get('planner_id')=='LIN'
-                and request.get('attachment') is None and bool(request.get('parent_stage_id')))
+                and request.get('attachment') is None and bool(request.get('parent_stage_id'))) or (
+                getattr(self,'coupled_enabled',False) and request.get('stage')=='extraction'
+                and request.get('pipeline_id')=='external_axis' and request.get('planner_id')=='COUPLED_LIFT'
+                and request.get('attachment') is not None and bool(request.get('parent_stage_id'))
+                and request.get('process_policy',{}).get('initial_proximity') is None
+                and request.get('process_policy',{}).get('support_names')==[])
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))
@@ -164,7 +169,9 @@ class SingleContactClient:
                 entry["response"]["clearance"].pop("policy", None)
             status = response.get("status","MISSING_STATUS")
             entry["status"] = status
-            if (status in {"ERROR","CANCELLED"} or status.startswith(("INVALID_START","NATIVE_TASK_"))
+            candidate_separation=(getattr(self,'coupled_enabled',False) and request.get('coupled_separation_probe') is True
+                and op=='check_start' and status in {'INVALID_START_CLEARANCE','INVALID_START_PROCESS'})
+            if (status in {"ERROR","CANCELLED"} or (status.startswith(("INVALID_START","NATIVE_TASK_")) and not candidate_separation)
                     or any(word in status for word in ("CONTEXT","IDENTITY","MISMATCH"))):
                 raise MoveItUnavailable("REQUEST_STOP:"+status+":"+str(response.get("detail","")))
             return response
@@ -345,6 +352,9 @@ class SingleContactConnector(PlanningOnlyConnector):
         """Extension boundary; default preserves the original two-segment entry."""
         return start, obstacles
 
+    def prepare_approach_start(self,start,target,obstacles,seed,row):
+        return start,obstacles
+
     def plan_target(self, target: ContactTarget, start, obstacles, suction, seed):
         began=perf_counter()
         row=dict(target=target.evidence(),complete=False,times=dict(
@@ -372,6 +382,7 @@ class SingleContactConnector(PlanningOnlyConnector):
         _,timeout=self._native_limits()
         self.native.request(check,timeout=timeout,cancelled=self._native_cancelled)
         self.check_context(target,obstacles)
+        initial,obstacles=self.prepare_approach_start(initial,target,obstacles,seed,row)
         before=perf_counter()
         recovering=getattr(self,"single_target_recovery_enabled",False)
         if recovering:

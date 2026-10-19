@@ -1,6 +1,18 @@
 #pragma once
 #include "coupled_receiver.h"
 namespace m710 {
+inline ProcessJson nominalDropWorldFailure(const ProcessJson& target,const ProcessJson& world) {
+  const auto box=processBox(target);
+  for(const auto& other:world) {
+    if(other.at("id")==box.id)throw std::runtime_error("RELEASE_DUPLICATE_TARGET");
+    const auto b=processBox(other);const double sat=processSignedGap(box,b);
+    if(b.id=="conveyor_transverse" && sat>=-1e-9)continue;
+    if(sat>.005000001)continue;
+    const double gap=receiverBoxDistance(target,other);
+    if(gap+1e-9<.005)return {{"reason","NOMINAL_DROP_WORLD_CLEARANCE"},{"pair",{box.id,b.id}},{"gap_m",gap}};
+  }
+  return nullptr;
+}
 inline void validateNominalDrop(const ProcessJson& req,const ProcessJson& binding) {
   const auto& spec=req.at("nominal_release");const auto& samples=spec.at("samples");
   if(!coupledBinding(binding) || spec.at("gravity_m_s2")!=9.81 ||

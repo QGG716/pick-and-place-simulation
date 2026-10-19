@@ -29,6 +29,9 @@ def source_identity(args):
     if args.source_manifest:
         m=json.loads(args.source_manifest.read_text())
         if m['source_commit']!=args.source_commit:raise ValueError('SOURCE_COMMIT_MISMATCH')
+        actual={str(p.relative_to(ROOT)).replace('\\','/') for directory in ('src','tools','ros2','configs')
+            for p in (ROOT/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc'}
+        if actual!=set(m['sha256']):raise ValueError('SOURCE_FILE_SET_MISMATCH')
         for file,sha in m['sha256'].items():
             p=(ROOT/file).resolve()
             if not p.is_relative_to(ROOT) or hashlib.sha256(p.read_bytes()).hexdigest()!=sha:raise ValueError('SOURCE_FILE_MISMATCH:'+file)
@@ -40,7 +43,8 @@ def source_identity(args):
 
 def run_seed(args,original,built,frozen,seed,out):
     layout=original.policy.layout_validation.layout
-    state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),.6)
+    state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),
+        float(original.receiver.center[2]+original.receiver.half_extents[2]))
     initial=state.root();attempts=[];began=perf_counter();attempt_no=0
     flags=dict(qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
     def result(status):
@@ -62,14 +66,29 @@ def run_seed(args,original,built,frozen,seed,out):
         for ranked_target in ranked:
             target=next(b for b in state.cartons if b.name==ranked_target['target_id'])
             task_started=perf_counter();deadline=task_started+args.task_budget_s
+            options=[]
+            low=float(original.receiver.center[2]+original.receiver.half_extents[2])
             for option in ranked_target['options']:
-                if perf_counter()>=deadline:break
+                options.append(option)
+                if state.height>low+.005:
+                    options.append(dict(option,synchronization='CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT',pre_approach_height_m=low))
+                    options.append(dict(option,synchronization='CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT',pre_approach_height_m=low,late_receiver_sync=True))
+            for option_index,option in enumerate(options):
+                if perf_counter()>=deadline:
+                    attempts.append(dict(target_id=target.name,complete=False,failure='SHARED_TASK_BUDGET_EXHAUSTED',
+                        unsearched_process_options=options[option_index:],unsearched_option_count=len(options)-option_index,
+                        classification='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY',wall_s=0.))
+                    break
                 attempt_no+=1;folder=out/f'attempt-{attempt_no:03d}';folder.mkdir()
                 row=dict(target_id=target.name,option=option,root=state.root(),folder=folder.name,complete=False)
                 attempts.append(row);started=perf_counter();client=None;c=None
                 print(json.dumps(dict(seed=seed,attempt=attempt_no,target=target.name,process=option['template'],completed=len(state.ledger))),flush=True)
                 try:
                     binding=coupled_binding(layout,state.cartons,state.height,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
+                    if 'pre_approach_height_m' in option:
+                        pre=coupled_binding(layout,state.cartons,state.height,low,target.name,scene.snapshot['assembly']['designed_contacts'])
+                        binding=coupled_binding(layout,state.cartons,low,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
+                        binding['pre_approach_transition']=pre
                     os.environ['M710_MOVEIT_SEED']=str(seed)
                     client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),binding=binding)
                     c=CoupledCycleConnector.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
