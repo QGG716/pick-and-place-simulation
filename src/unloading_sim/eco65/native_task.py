@@ -646,7 +646,7 @@ def validate_plan_contract(plan, snapshot):
     return True
 
 
-def review_plan(plan, snapshot):
+def review_plan(plan, snapshot, *, progress_path=None):
     """One independent world and exactly the same monotonic joint-edge replay."""
     from .task_world import UnloadingTaskWorld
     from .native_io import verify_snapshot
@@ -666,8 +666,14 @@ def review_plan(plan, snapshot):
     world.tool = deepcopy(snapshot['tool'])
     world.tool['native_contact_geometry'] = snapshot['native_model']['init']['process_geometry']
     world.tool['active_seal_ids'] = selected_ids(world.tool['native_contact_geometry'],plan.get('active_ids'))
+    def progress(event, **details):
+        if progress_path:
+            with Path(progress_path).open('a',encoding='utf-8') as stream:
+                stream.write(json.dumps(dict(event=event,checked_states=checks,
+                    wall_s=perf_counter()-started,**details),allow_nan=False)+'\n')
     try:
         for stage in plan['stages']:
+            progress('STAGE_STARTED',stage=stage['stage'])
             phase = INDEPENDENT_PHASE[stage['stage']]
             q, ts = np.asarray(stage['q']), np.asarray(stage['times'])
             if stage['stage'] in {'contact', 'extraction', 'place', 'withdrawal'}:
@@ -680,9 +686,12 @@ def review_plan(plan, snapshot):
                 for value in values:
                     checks += 1
                     if not world.valid(value, phase):
+                        progress('FAILED',stage=stage['stage'],edge=i,failure=world.last_failure)
                         return dict(status='FAIL', stage=stage['stage'], edge=i, q=value.tolist(),
                                     failure=world.last_failure, checked_states=checks, wall_s=perf_counter()-started,
+                                    distance_query=getattr(world,'distance_query_settings',None),
                                     plan_fingerprint=plan['fingerprint'], snapshot_fingerprint=snapshot['fingerprint'])
+                    if checks%1000==0:progress('PROGRESS',stage=stage['stage'],edge=i)
             if stage['stage'] == 'contact':
                 relative = world.attach(q[-1])
                 expected = np.asarray(snapshot['tool']['T_flange_tcp'])@relative
@@ -693,6 +702,8 @@ def review_plan(plan, snapshot):
                 if not np.allclose(pose, plan['events'][1]['pose'], atol=1e-8, rtol=0):
                     raise ValueError('INDEPENDENT_RELEASE_TRANSFORM_MISMATCH')
         return dict(status='PASS', checked_states=checks, wall_s=perf_counter()-started,
+                    distance_query=getattr(world,'distance_query_settings',None),
+                    actual_box_box_distance_queries=getattr(world,'box_box_distance_queries',None),
                     fixed_mount_actual_mujoco_queries=getattr(world,'fixed_distance_queries',None),
                     fixed_mount_query_scope='RIGID_INTERFACE_INVARIANT_WITHIN_SAME_REVIEW_WORLD',
                     plan_fingerprint=plan['fingerprint'], snapshot_fingerprint=snapshot['fingerprint'],

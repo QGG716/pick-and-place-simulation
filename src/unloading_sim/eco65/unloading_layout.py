@@ -238,6 +238,9 @@ class UnloadingWorld(World):
             overlap=np.minimum(A[:2,3]+ah[:2],B[:2,3]+bh[:2])-np.maximum(A[:2,3]-ah[:2],B[:2,3]-bh[:2])
             if delta>=-self.scene['contact_tolerance_m'] and np.all(overlap>0):return True
         return False
+    def query_distance(self,a,b,limit):
+        return self.mj.mj_geomDistance(self.model,self.data,a,b,limit,None)
+
     def valid(self,q,phase='pose',detail=False):
         self.calls+=1;self.last_failure=None
         if not np.isfinite(q).all() or not self.robot.within_limits(q):self.last_failure=dict(reason='joint_limits');return False
@@ -270,7 +273,7 @@ class UnloadingWorld(World):
             invariant=cache is not None and key in self.mounting_pairs
             if invariant and key in cache:distance=cache[key]
             else:
-                distance=self.mj.mj_geomDistance(self.model,self.data,a['gid'],b['gid'],margin,None)
+                distance=self.query_distance(a['gid'],b['gid'],margin)
                 if invariant:cache[key]=float(distance);self.fixed_distance_queries+=1
             if not distance_accepted(distance,threshold):
                 self.last_failure=dict(reason='collision',pair=[a['name'],b['name']],distance_m=float(distance),threshold_m=threshold,allowance=allowance)

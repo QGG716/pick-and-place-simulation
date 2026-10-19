@@ -1,0 +1,26 @@
+﻿schema: eco65_small_carton_config_v1
+target_id: carton_r00_l03_c01
+box_size_m: [0.150, 0.100, 0.100]
+depth_rows: 1
+width_columns: 3
+height_layers: 4
+column_gap_m: 0.010
+layer_gap_m: 0.0
+cup_selection_mode: SIMULATED_INDEPENDENT_CUPS
+physical_contour_count: 12
+minimum_enabled_cups: 1
+allowed_faces: [top, front]
+independent_control_assumption: SIMULATION_ONLY_NOT_HARDWARE_EVIDENCE
+usable_belt_width_m: 0.200
+belt_top_D_m: 0.180
+carton_conveyor_gap_m: 0.060
+base_candidates_D_m:
+  - [-0.280, 0.000, 0.220]
+  - [-0.280, 0.000, 0.240]
+  - [-0.320, 0.000, 0.180]
+preapproach_m: 0.030
+preplace_m: 0.030
+withdrawal_m: 0.030
+minimum_lift_m: 0.010
+enable_hardware: false
+

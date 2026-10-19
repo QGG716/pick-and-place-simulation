@@ -27,6 +27,7 @@ class NativeSceneWorld(UnloadingTaskWorld):
         self._native_world_ids = {row['id'] for row in scene['native_world_objects']}
         self._extra_ready = False
         self._extra_bodies = []
+        self.box_box_distance_queries=0
         super().__init__(tool, scene)
         root = ET.fromstring(self.xml); assets = root.find('asset'); body_root = root.find('worldbody')
         def add(ident, vertices, kind, parent, T):
@@ -59,8 +60,20 @@ class NativeSceneWorld(UnloadingTaskWorld):
             if not mesh.is_watertight or not mesh.is_convex:
                 raise ValueError('NATIVE_REVIEW_ATTACHMENT_CONVEX_REQUIRED')
             add(row['id'], mesh.vertices, 'permanent_attachment', row['parent_link'], row['T_parent_local'])
+        # Native CCD's default 1 um convergence tolerance classified an actual
+        # 0.729 um separating box gap as a 100 mm penetration. Tighten the
+        # numerical query, without moving geometry or relaxing pair limits.
+        option=root.find('option')
+        if option is None:option=ET.SubElement(root,'option')
+        option.set('ccd_tolerance','1e-10');option.set('ccd_iterations','200')
         self.xml = ET.tostring(root, encoding='unicode')
         self.model = self.mj.MjModel.from_xml_string(self.xml); self.data = self.mj.MjData(self.model)
+        self.distance_query_settings=dict(engine='MuJoCo',version=self.mj.__version__,
+            ccd_tolerance=float(self.model.opt.ccd_tolerance),ccd_iterations=int(self.model.opt.ccd_iterations),
+            native_ccd_enabled=not bool(self.model.opt.disableflags & self.mj.mjtDisableBit.mjDSBL_NATIVECCD),
+            box_box_algorithm='MuJoCo_mjc_BoxBox_via_mj_geomDistance',
+            other_convex_algorithm='MuJoCo_native_CCD')
+        self.box_box_distance_queries=0
         for entry in self.entries:
             entry['gid'] = self.mj.mj_name2id(self.model, self.mj.mjtObj.mjOBJ_GEOM, entry['name'])
         self.geoms = {e['name']: e for e in self.entries}
@@ -115,6 +128,22 @@ class NativeSceneWorld(UnloadingTaskWorld):
         self._group_pair_rows=np.split(ordered,starts[1:])
         self._mount_pair_mask=np.array([frozenset([a['name'],b['name']]) in self.mounting_pairs for a,b in self.pairs])
         self.set_state(np.asarray(self.current_q), 'initial')
+
+    def query_distance(self, a, b, limit):
+        # MuJoCo 3.8's native GJK/EPA also returned zero for an actual rotated
+        # box pair separated by 2.334 mm. Its dedicated BoxBox query agrees
+        # with actual FCL for that pair and the sub-micron support gap. Select
+        # that built-in algorithm only for box/box; mesh queries keep native
+        # CCD. This world is single-threaded and never steps dynamics.
+        box=int(self.mj.mjtGeom.mjGEOM_BOX)
+        if self.model.geom_type[a]!=box or self.model.geom_type[b]!=box:
+            return super().query_distance(a,b,limit)
+        previous=self.model.opt.disableflags
+        try:
+            self.model.opt.disableflags=previous | int(self.mj.mjtDisableBit.mjDSBL_NATIVECCD)
+            self.box_box_distance_queries+=1
+            return self.mj.mj_geomDistance(self.model,self.data,a,b,limit,None)
+        finally:self.model.opt.disableflags=previous
 
     def candidate_pair_indices(self,centers,margin):
         """Conservative rigid-group bounds before the unchanged sphere/FCL-independent query.

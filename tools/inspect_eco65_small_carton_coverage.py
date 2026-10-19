@@ -88,7 +88,12 @@ def inspect_face(snapshot, home_q, face, command, out, candidate_limit, ik_seeds
             try:
                 distance=snapshot['scene']['native_task']['preapproach_m'];normal=face_outward(transform(box['pose']),face)
                 short_initial_attempts=[];row['short_initial_attempts']=short_initial_attempts
-                for start_offset,pre_offset in [(2*distance,distance),(distance+.005,distance),(distance,distance-.005)]:
+                offsets=[(2*distance,distance),(distance+.005,distance),(distance,distance-.005)]
+                # Actual upper-layer top contacts can be reachable while a
+                # 25 mm higher approach is not. Check two shorter, nonzero
+                # diagnostic approaches; neither substitutes a HOME path.
+                if face=='top':offsets += [(.015,.010),(.010,.005)]
+                for start_offset,pre_offset in offsets:
                     if pre_offset<=0:continue
                     pre=top.copy();pre[:3,3]+=normal*pre_offset
                     pre_q=next(task.ik(pre,contact_q,'pregrasp',ik_seeds),None)

@@ -64,7 +64,7 @@ def main():
                                       progress_path=attempt_out/'native_progress.jsonl',
                                       home_candidate=load_json(a.home_candidate) if a.home_candidate else None)
                     plan = task.run(); save_json(attempt_out/'plan.json', plan)
-                    review = review_plan(plan, snapshot); save_json(attempt_out/'review.json', review)
+                    review = review_plan(plan, snapshot,progress_path=attempt_out/'review_progress.jsonl'); save_json(attempt_out/'review.json', review)
                     if review['status'] == 'PASS':
                         save_json(out/'plan.json', plan); save_json(out/'review.json', review)
                         save_json(out/'run_report.json', dict(status='PLANNING_ONLY_NOT_EXECUTABLE',
@@ -96,7 +96,7 @@ def main():
         if not a.plan: p.error('--plan required')
         plan = load_json(a.plan)
         if a.action == 'review':
-            report = review_plan(plan, snapshot); save_json(out/'review.json', report)
+            report = review_plan(plan, snapshot,progress_path=out/'review_progress.jsonl'); save_json(out/'review.json', report)
             return 0 if report['status'] == 'PASS' else 2
         if a.action == 'export':
             from unloading_sim.eco65.native_task import validate_plan_contract
