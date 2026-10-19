@@ -31,7 +31,7 @@ def main():
         if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
         render_config=dict(headless=True,renderer='PathTracing',width=640,height=360,
-                           samples_per_pixel_per_frame=64,denoiser=True,anti_aliasing=2)
+                           samples_per_pixel_per_frame=256,denoiser=False,anti_aliasing=2)
         app=SimulationApp(render_config)
         import numpy as np
         from PIL import Image,ImageDraw
@@ -83,7 +83,11 @@ def main():
                 if timeline.is_playing() or timeline.get_current_time()!=0:raise ValueError('OFFLINE_TIMELINE_ADVANCED')
                 pixels=rgb.get_data();pixels=pixels['data'] if isinstance(pixels,dict) else pixels
                 pixels=np.asarray(pixels)[...,:3]
-                if pixels.shape!=(360,640,3) or np.std(pixels)<5:raise ValueError('INVALID_REPLAY_RENDER')
+                if pixels.shape!=(360,640,3) or np.std(pixels)<5:
+                    save_json(out/'invalid_frame.json',dict(time_s=float(t),shape=list(pixels.shape),
+                        dtype=str(pixels.dtype),std=float(np.std(pixels)) if pixels.size else None))
+                    if pixels.shape==(360,640,3):Image.fromarray(pixels).save(out/'invalid_frame.png')
+                    raise ValueError('INVALID_REPLAY_RENDER')
                 im=Image.fromarray(pixels);draw=ImageDraw.Draw(im)
                 draw.rectangle([0,302,640,360],fill='#172432')
                 draw.text((8,305),f"{target} | {state['phase']} | {t:.2f}s | cups={len(state['active_ids'])}",fill='white')
