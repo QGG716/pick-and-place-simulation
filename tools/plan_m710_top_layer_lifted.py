@@ -21,7 +21,15 @@ from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message
 
 
 def save(path,data):
-    path.write_text(json.dumps(data,ensure_ascii=False,allow_nan=False,indent=2)+'\n',encoding='utf-8')
+    # Repeated native world samples are large. Stream compact JSON instead of
+    # building an indented duplicate in memory; preserve the last complete file
+    # if the filesystem fills during a later checkpoint. A partial file remains
+    # visible as failed-write evidence and is never treated as a checkpoint.
+    pending=path.with_suffix(path.suffix+'.partial')
+    with pending.open('w',encoding='utf-8',newline='\n') as stream:
+        json.dump(data,stream,ensure_ascii=False,allow_nan=False,separators=(',',':'))
+        stream.write('\n')
+    pending.replace(path)
 
 
 def source_identity(args):
