@@ -30,8 +30,10 @@ def main():
         encoders=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,check=True).stdout
         if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
-        render_config=dict(headless=True,renderer='PathTracing',width=640,height=360,
-                           samples_per_pixel_per_frame=256,denoiser=False,anti_aliasing=2)
+        # This installed driver lacks the OptiX/NGX denoiser resources. Use
+        # Isaac's documented textured-diffuse mode for legible geometry review.
+        render_config=dict(headless=True,renderer='MinimalRendering',minimal_shading_mode=2,
+                           width=640,height=360,denoiser=False,anti_aliasing=2)
         app=SimulationApp(render_config)
         import numpy as np
         from PIL import Image,ImageDraw
@@ -54,7 +56,7 @@ def main():
         stage=omni.usd.get_context().get_stage();checks=[]
         import carb
         settings=carb.settings.get_settings()
-        renderer_readback={key:settings.get(key) for key in ['/rtx/rendermode','/rtx/pathtracing/spp',
+        renderer_readback={key:settings.get(key) for key in ['/rtx/rendermode','/rtx/minimal/mode','/rtx/pathtracing/spp',
             '/rtx/pathtracing/optixDenoiser/enabled']}
         save_json(out/'renderer_settings.json',dict(requested=render_config,actual=renderer_readback))
         # Same nonzero wrist/zero/HOME FK cases as the current native model.
