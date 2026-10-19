@@ -306,7 +306,7 @@ class SingleContactConnector(PlanningOnlyConnector):
                 raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
         request=self._build_native_request(start,None,obstacles,seed=seed,stage=stage,
             goal_pose=pose,attachment=attachment)
-        if attachment is not None:
+        if attachment is not None or (getattr(self.native,'coupled_enabled',False) and getattr(start,'native_receipt',{}).get('stage_id')):
             receipt,_,transition=self._native_parent_for_request(start,request)
             if transition is not None:
                 raise MoveItUnavailable("LOADED_IK_OWNERSHIP_CHANGED")

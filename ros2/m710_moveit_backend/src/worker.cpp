@@ -1037,7 +1037,7 @@ private:
       const bool bounded=mode!="single_attempt";
       double budget=0.,stage_budget=0.;
       if(bounded) {
-        if(!(recovery?m710::boundedTargetIkScope(req,single_target_recovery_enabled,planning_only,planning_mode):m710::boundedIkScope(req,bounded_preplace_ik_enabled,planning_only,planning_mode)))
+        if(!(recovery?m710::boundedTargetIkScope(req,single_target_recovery_enabled,planning_only,planning_mode,m710::coupledBinding(receiver_binding)):m710::boundedIkScope(req,bounded_preplace_ik_enabled,planning_only,planning_mode)))
           throw std::runtime_error("BOUNDED_PREPLACE_IK_SCOPE");
         stage_budget=req.at("allowed_planning_time_s");
         budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
@@ -1071,7 +1071,19 @@ private:
           throw std::runtime_error("NATIVE_TASK_IK_PARENT_CONTEXT_MISMATCH");
         } else if(recovery) {
           const std::string task_id=req.at("task_id");
-          if(tasks.count(task_id) && (tasks.at(task_id)->initial_q!=req.at("q_start") ||
+            const std::string parent_id=req.value("parent_stage_id","");
+            if(!parent_id.empty()) {
+              if(!m710::coupledBinding(receiver_binding) || !tasks.count(task_id) || !tasks.at(task_id)->records.count(parent_id))
+                throw std::runtime_error("COUPLED_IK_PARENT_UNKNOWN");
+              const auto& parent=*tasks.at(task_id)->records.at(parent_id);std::vector<double> actual;
+              if(!parent.ready || !parent.end || parent.request.at("pipeline_id")!="external_axis" ||
+                  parent.request.at("stage")!="pregrasp" || !parent.request.at("attachment").is_null())
+                throw std::runtime_error("COUPLED_IK_PARENT_INVALID");
+              parent.end->getCurrentState().copyJointGroupPositions("manipulator",actual);
+              if(actual!=q || req.at("world")!=parent.request.at("receiver_end_world") ||
+                  tasks.at(task_id)->target_id!=req.at("process_policy").at("target_id") || !req.at("ownership_transition").is_null())
+                throw std::runtime_error("COUPLED_IK_PARENT_CONTEXT_MISMATCH");
+            } else if(tasks.count(task_id) && (tasks.at(task_id)->initial_q!=req.at("q_start") ||
               tasks.at(task_id)->initial_world!=req.at("world") ||
               tasks.at(task_id)->target_id!=req.at("process_policy").at("target_id")))
             throw std::runtime_error("NATIVE_TASK_IK_ROOT_CONTEXT_MISMATCH");

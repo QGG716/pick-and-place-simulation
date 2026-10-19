@@ -53,6 +53,9 @@ int main(){
  approach["world"].push_back({{"id","target"}});approach["process_policy"]["attached"]=false;
  require(m710::boundedTargetIkScope(approach,true,true,"cold_from_scratch"),"RECOVERY_APPROACH");
  require(!m710::boundedTargetIkScope(approach,false,true,"cold_from_scratch"),"RECOVERY_DISABLED");
+ auto coupled=approach;coupled["parent_stage_id"]="native-coupled-parent";
+ require(!m710::boundedTargetIkScope(coupled,true,true,"cold_from_scratch"),"LEGACY_EMPTY_IK_STILL_ROOT_ONLY");
+ require(m710::boundedTargetIkScope(coupled,true,true,"cold_from_scratch",true),"COUPLED_PARENT_SCOPE_WORKER_MUST_VALIDATE_ACTUAL_END_SCENE");
  for(const char* key:{"stage","purpose","parent_stage_id","task_id"}) {
    auto x=approach;x[key]=(std::string(key)=="task_id"?"":"wrong");
    require(!m710::boundedTargetIkScope(x,true,true,"cold_from_scratch"),key);

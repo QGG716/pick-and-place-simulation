@@ -136,6 +136,10 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         finally:self._pre_approach_lift=False
         self.receiver_raised=False
         if not success:raise MoveItUnavailable('PRE_APPROACH_COUPLED_SWEEP_REJECTED')
+        # A newly generated external-axis parent is a new connection context.
+        # Keep prior prefix failures in the enclosing history, never transplant
+        # exclusions or pretend this new request continues the old search tree.
+        self._lift_recovery_state={}
         return state,world
 
     def expected_contact(self,target,suction):return SingleContactConnector.expected_contact(self,target,suction)
