@@ -3,7 +3,11 @@
 Timeline remains stopped. Pose updates are KINEMATIC_REPLAY, never dynamics.
 """
 import argparse
+import hashlib
+import json
 from pathlib import Path
+import shutil
+import subprocess
 import sys
 from time import perf_counter
 
@@ -20,10 +24,14 @@ def main():
     out=a.output.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     started=perf_counter();app=None
     try:
+        ffmpeg=shutil.which('ffmpeg')
+        if not ffmpeg:raise ValueError('EXISTING_FFMPEG_ENCODER_REQUIRED')
+        encoder_version=subprocess.check_output([ffmpeg,'-version'],text=True).splitlines()[0]
+        encoders=subprocess.run([ffmpeg,'-hide_banner','-encoders'],capture_output=True,text=True,check=True).stdout
+        if 'libx264 ' not in encoders:raise ValueError('EXISTING_FFMPEG_LIBX264_REQUIRED')
         from isaacsim import SimulationApp
         app=SimulationApp({'headless':True,'renderer':'RaytracedLighting','width':640,'height':360})
         import numpy as np
-        import imageio.v2 as imageio
         from PIL import Image,ImageDraw
         from pxr import UsdGeom,Gf
         import omni.usd
@@ -55,7 +63,12 @@ def main():
         preparation_s=perf_counter()-started;render_started=perf_counter();records=[]
         target=snapshot['scene']['target_box_id']
         duration=plan['simulated_duration_s'];samples=np.unique(np.r_[np.arange(0,duration,.2),duration])
-        with imageio.get_writer(str(out/'kinematic_replay.mp4'),fps=5,codec='libx264',macro_block_size=1) as writer:
+        command=[ffmpeg,'-hide_banner','-loglevel','error','-nostdin','-f','rawvideo','-pixel_format','rgb24',
+                 '-video_size','640x360','-framerate','5','-i','pipe:0','-an','-c:v','libx264','-crf','18',
+                 '-pix_fmt','yuv420p','-movflags','+faststart',str(out/'kinematic_replay.mp4')]
+        seen_phases=set()
+        with (out/'encoder.log').open('w') as encoder_log, (out/'replay_progress.jsonl').open('w') as progress, \
+                subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=encoder_log) as writer:
             for t in samples:
                 state=state_at(snapshot,plan,robot,float(t));readback=apply_display_state(stage,snapshot,state)
                 for _ in range(2):rep.orchestrator.step(delta_time=0.,rt_subframes=4,pause_timeline=True)
@@ -68,13 +81,23 @@ def main():
                 draw.text((8,305),f"{target} | {state['phase']} | {t:.2f}s | cups={len(state['active_ids'])}",fill='white')
                 draw.text((8,321),'KINEMATIC_REPLAY | PLANNING_ONLY_NOT_EXECUTABLE',fill='white')
                 draw.text((8,337),f"attached={state['attached']} placed={state['released']} | Dynamics: NOT_EVALUATED",fill='white')
-                writer.append_data(np.asarray(im))
+                writer.stdin.write(np.asarray(im).tobytes())
                 if not records:im.save(out/'warehouse_first_frame.png')
+                if state['phase'] not in seen_phases:
+                    im.save(out/('phase_'+state['phase']+'.png'));seen_phases.add(state['phase'])
                 records.append(dict(time_s=float(t),q_rad=state['q'].tolist(),phase=state['phase'],readback=readback))
+                if len(records)==1 or len(records)%25==0:
+                    progress.write(json.dumps(dict(frames=len(records),time_s=float(t),phase=state['phase'],
+                        render_wall_s=perf_counter()-render_started,timeline_time_s=timeline.get_current_time()))+'\n');progress.flush()
+            im.save(out/'warehouse_last_frame.png')
+        if writer.returncode!=0:raise ValueError('FFMPEG_ENCODING_FAILED:'+str(writer.returncode))
         save_json(out/'replay_report.json',dict(status='KINEMATIC_REPLAY',planning_status=plan['status'],
             dynamics='NOT_EVALUATED',hardware=False,plan_fingerprint=plan['fingerprint'],snapshot_fingerprint=snapshot['fingerprint'],
             target_id=target,carton_count=len(snapshot['scene']['boxes']),
-            frame_rate=5,simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,
+            frame_rate=5,frame_count=len(records),simulated_duration_s=duration,preparation_wall_s=preparation_s,render_wall_s=perf_counter()-render_started,
+            encoder_version=encoder_version,encoder_command=command,
+            video_sha256=hashlib.sha256((out/'kinematic_replay.mp4').read_bytes()).hexdigest(),
+            timeline=dict(playing=timeline.is_playing(),time_s=timeline.get_current_time(),physics_steps=0),
             fk_readback=checks,frames=records,ideal_outfeed_count=0))
     except Exception as error:
         import traceback
