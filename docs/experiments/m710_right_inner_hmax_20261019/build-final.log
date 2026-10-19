@@ -1,0 +1,28 @@
+[ 60%] Built target m710_search_trace
+Consolidate compiler generated dependencies of target m710_moveit_worker
+[ 80%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[100%] Linking CXX executable m710_moveit_worker
+[100%] Built target m710_moveit_worker
+[100%] Built target m710_side_transfer_test
+[100%] Built target m710_lifted_receiver_test
+-- Install configuration: "Release"
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/search_trace_plugin.xml
+-- Up-to-date: /tmp/right-inner-20261019/install/lib/libm710_search_trace.so
+-- Installing: /tmp/right-inner-20261019/install/lib/m710_moveit_backend/m710_moveit_worker
+-- Set runtime path of "/tmp/right-inner-20261019/install/lib/m710_moveit_backend/m710_moveit_worker" to ""
+-- Up-to-date: /tmp/right-inner-20261019/install/share/ament_index/resource_index/package_run_dependencies/m710_moveit_backend
+-- Up-to-date: /tmp/right-inner-20261019/install/share/ament_index/resource_index/parent_prefix_path/m710_moveit_backend
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/environment/ament_prefix_path.sh
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/environment/ament_prefix_path.dsv
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/environment/path.sh
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/environment/path.dsv
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/local_setup.bash
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/local_setup.sh
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/local_setup.zsh
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/local_setup.dsv
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/package.dsv
+-- Up-to-date: /tmp/right-inner-20261019/install/share/ament_index/resource_index/packages/m710_moveit_backend
+-- Up-to-date: /tmp/right-inner-20261019/install/share/ament_index/resource_index/moveit_core__pluginlib__plugin/m710_moveit_backend
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/cmake/m710_moveit_backendConfig.cmake
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/cmake/m710_moveit_backendConfig-version.cmake
+-- Up-to-date: /tmp/right-inner-20261019/install/share/m710_moveit_backend/package.xml

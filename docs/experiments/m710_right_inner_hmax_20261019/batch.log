@@ -1,0 +1,11 @@
+BEGIN right-open-s71070
+END right-open-s71070 exit=0
+BEGIN right-open-s71071
+END right-open-s71071 exit=0
+BEGIN right-blocked-s71070
+END right-blocked-s71070 exit=0
+BEGIN middle-front-s71070
+END middle-front-s71070 exit=0
+BEGIN left-front-s71070
+END left-front-s71070 exit=0
+BATCH_COMPLETE

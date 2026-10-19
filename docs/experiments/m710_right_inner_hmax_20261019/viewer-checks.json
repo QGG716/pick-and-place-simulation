@@ -1,0 +1,64 @@
+{
+  "scope": "DISPLAY_ONLY_NO_REPLANNING",
+  "all_four_html_ready": true,
+  "uncaught_browser_exceptions": [],
+  "candidate_label_tests": {
+    "checks": 8,
+    "passed": true
+  },
+  "right_failed_goal_view": {
+    "recorded_endpoint_count": 16,
+    "native_motion_paths": 0,
+    "highlighted_pair": [
+      "J4_link",
+      "carton_l06_c02"
+    ]
+  },
+  "front_stages": {
+    "ready": true,
+    "errors": "",
+    "results": [
+      {
+        "stage": "pregrasp",
+        "id": "native-cold-d943ed16aa234fec95f94965771c376b:1",
+        "points": 43,
+        "status": "SUCCESS"
+      },
+      {
+        "stage": "contact",
+        "id": "native-cold-d943ed16aa234fec95f94965771c376b:3",
+        "points": 31,
+        "status": "SUCCESS"
+      },
+      {
+        "stage": "external_axis",
+        "id": "native-cold-d943ed16aa234fec95f94965771c376b:2",
+        "points": 1,
+        "status": "SUCCESS"
+      },
+      {
+        "stage": "extraction",
+        "id": "native-cold-d943ed16aa234fec95f94965771c376b:4",
+        "points": 209,
+        "status": "SUCCESS"
+      }
+    ],
+    "hud": "middle-front-s71070 ·  · 受控 −X 抽离最终结果：已规划到释放准备，目标仍附着当前请求：目标附着SUCCESS · 本次任务最终选择 · Request 12 · 请求规划器 LIN同一运行：single-contact-2ebbcaa3756c495eb02c91696a7c8aac起点/目标 TCP、接触、接近、预放置坐标轴已显示；规划耗时与轨迹时间分开"
+  },
+  "remaining": [
+    {
+      "ready": true,
+      "error": "",
+      "complete": false,
+      "attempts": 16,
+      "notice": "模板：右端内侧抓取，第一段 +Y（蓝色转折点），第二段 −X。预先移除的中间箱：carton_l07_c01, carton_l07_c02, carton_l07_c03；不是本轮卸箱成绩。 机器人和工具由本次记录 q 驱动；未生成阶段不补动画。横带滑条仅显示已检查的 Z 几何进度，无真实升降时间。绿色为完整接收区域，红点为未选区域样本。 任务未完成；未到达阶段不作通过或附着声明。"
+    },
+    {
+      "ready": true,
+      "error": "",
+      "complete": true,
+      "attempts": 1,
+      "notice": "机器人和工具由本次记录 q 驱动；未生成阶段不补动画。横带滑条仅显示已检查的 Z 几何进度，无真实升降时间。绿色为完整接收区域，红点为未选区域样本。 最终目标保持附着；未释放、未执行。"
+    }
+  ]
+}

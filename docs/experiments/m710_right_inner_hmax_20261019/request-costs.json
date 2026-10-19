@@ -1,0 +1,677 @@
+{
+  "scope": "READ_ONLY_EXISTING_RECORDS_NO_RECHECK",
+  "cases": [
+    {
+      "case": "right-open-s71070",
+      "request_identity_rule": "Unique response.request_id within this fresh worker run; reject duplicates; CURRENT_REQUEST_ONLY aggregates, not parent stages",
+      "request_count": 500,
+      "request_status_counts": [
+        {
+          "op": "init",
+          "stage": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "RECEIVER_STATE_REJECTED",
+          "count": 1
+        },
+        {
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 16
+        },
+        {
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "INVALID_GOAL_CLEARANCE",
+          "count": 16
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "NATIVE_IK_FAILED",
+          "count": 460
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "NATIVE_IK_REQUEST_DEADLINE",
+          "count": 1
+        }
+      ],
+      "failure_witness_counts": [
+        {
+          "status": "RECEIVER_STATE_REJECTED",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "conveyor_transverse"
+          ],
+          "count": 1
+        },
+        {
+          "status": "INVALID_GOAL_CLEARANCE",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "J4_link",
+            "carton_l06_c02"
+          ],
+          "count": 16
+        }
+      ],
+      "ik_requests": 477,
+      "ik_solver_api_calls": 477,
+      "ik_actual_s": 46.735418379000045,
+      "ik_internal_attempts": null,
+      "ik_internal_attempts_observability": "NOT_OBSERVABLE",
+      "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+      "actual_motion_solver_calls": {},
+      "clearance_aggregates": {
+        "workspace_prepare_s": 0.075121178,
+        "workspace_allocation_s": 0.07624676300000001,
+        "state_checks": 35,
+        "check_s": 0.008827997,
+        "aabb_tests": 162201,
+        "aabb_skips": 159261,
+        "narrow_calls": 2940,
+        "fixed_qualification_queries": 0,
+        "fixed_aabb_qualifications": 0,
+        "fixed_aabb_reuses": 0,
+        "fixed_narrow_qualifications": 0,
+        "fixed_narrow_reuses": 0
+      },
+      "clearance_phase_s": {
+        "endpoint": 0.008827997
+      },
+      "process_aggregates": {
+        "seal_input_compilations": 19,
+        "seal_geometry_evaluations": 0,
+        "compression_sat_evaluations": 0,
+        "side_distance_queries": 0
+      },
+      "profile_evidence_request_count": 19,
+      "pair_profile_enabled": false,
+      "pair_profile_status": "NOT_MEASURED",
+      "measured_stage_s": {
+        "target_geometry_s": 0.12695330008864403,
+        "ik_s": 60.99173456430435,
+        "pregrasp_s": 1.43978351354599,
+        "contact_s": null,
+        "terminal_check_s": null,
+        "attachment_context_s": null,
+        "extraction_target_s": null,
+        "extraction_s": null,
+        "extraction_sample_check_s": null,
+        "terminal_separation_s": null,
+        "release_ready_check_s": null,
+        "region_search_s": null
+      },
+      "boundary_costs": {
+        "request_build_s": 13.047221582382917,
+        "motion_request_build_s": 0.0805077999830246,
+        "motion_connection_inclusive_s": 1.439649537205696
+      },
+      "not_reached": [
+        "contact",
+        "receiver_sync",
+        "attachment",
+        "region_generation",
+        "RIGHT_INNER_Y",
+        "RIGHT_INNER_X",
+        "terminal_separation",
+        "release_ready_check"
+      ],
+      "returned_native_stage_count": 0,
+      "region_attempt_count": 0,
+      "forbidden_requests": 0,
+      "prior_calls": 0,
+      "history_and_legacy": {
+        "history_enabled": false,
+        "history_inputs_read": 0,
+        "legacy_motion_generator_calls": 0,
+        "forbidden_entry_attempts": 0
+      }
+    },
+    {
+      "case": "right-open-s71071",
+      "request_identity_rule": "Unique response.request_id within this fresh worker run; reject duplicates; CURRENT_REQUEST_ONLY aggregates, not parent stages",
+      "request_count": 492,
+      "request_status_counts": [
+        {
+          "op": "init",
+          "stage": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "RECEIVER_STATE_REJECTED",
+          "count": 1
+        },
+        {
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 16
+        },
+        {
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "INVALID_GOAL_CLEARANCE",
+          "count": 16
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "NATIVE_IK_FAILED",
+          "count": 452
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "NATIVE_IK_REQUEST_DEADLINE",
+          "count": 1
+        }
+      ],
+      "failure_witness_counts": [
+        {
+          "status": "RECEIVER_STATE_REJECTED",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "conveyor_transverse"
+          ],
+          "count": 1
+        },
+        {
+          "status": "INVALID_GOAL_CLEARANCE",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "J4_link",
+            "carton_l06_c02"
+          ],
+          "count": 16
+        }
+      ],
+      "ik_requests": 469,
+      "ik_solver_api_calls": 469,
+      "ik_actual_s": 46.01268764899997,
+      "ik_internal_attempts": null,
+      "ik_internal_attempts_observability": "NOT_OBSERVABLE",
+      "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+      "actual_motion_solver_calls": {},
+      "clearance_aggregates": {
+        "workspace_prepare_s": 0.068259618,
+        "workspace_allocation_s": 0.069352016,
+        "state_checks": 35,
+        "check_s": 0.008537387,
+        "aabb_tests": 162201,
+        "aabb_skips": 159261,
+        "narrow_calls": 2940,
+        "fixed_qualification_queries": 0,
+        "fixed_aabb_qualifications": 0,
+        "fixed_aabb_reuses": 0,
+        "fixed_narrow_qualifications": 0,
+        "fixed_narrow_reuses": 0
+      },
+      "clearance_phase_s": {
+        "endpoint": 0.008537387
+      },
+      "process_aggregates": {
+        "seal_input_compilations": 19,
+        "seal_geometry_evaluations": 0,
+        "compression_sat_evaluations": 0,
+        "side_distance_queries": 0
+      },
+      "profile_evidence_request_count": 19,
+      "pair_profile_enabled": false,
+      "pair_profile_status": "NOT_MEASURED",
+      "measured_stage_s": {
+        "target_geometry_s": 0.11106907948851585,
+        "ik_s": 60.27402085438371,
+        "pregrasp_s": 1.4904085136950016,
+        "contact_s": null,
+        "terminal_check_s": null,
+        "attachment_context_s": null,
+        "extraction_target_s": null,
+        "extraction_s": null,
+        "extraction_sample_check_s": null,
+        "terminal_separation_s": null,
+        "release_ready_check_s": null,
+        "region_search_s": null
+      },
+      "boundary_costs": {
+        "request_build_s": 14.155719313770533,
+        "motion_request_build_s": 0.05998998135328293,
+        "motion_connection_inclusive_s": 1.4902593791484833
+      },
+      "not_reached": [
+        "contact",
+        "receiver_sync",
+        "attachment",
+        "region_generation",
+        "RIGHT_INNER_Y",
+        "RIGHT_INNER_X",
+        "terminal_separation",
+        "release_ready_check"
+      ],
+      "returned_native_stage_count": 0,
+      "region_attempt_count": 0,
+      "forbidden_requests": 0,
+      "prior_calls": 0,
+      "history_and_legacy": {
+        "history_enabled": false,
+        "history_inputs_read": 0,
+        "legacy_motion_generator_calls": 0,
+        "forbidden_entry_attempts": 0
+      }
+    },
+    {
+      "case": "right-blocked-s71070",
+      "request_identity_rule": "Unique response.request_id within this fresh worker run; reject duplicates; CURRENT_REQUEST_ONLY aggregates, not parent stages",
+      "request_count": 4,
+      "request_status_counts": [
+        {
+          "op": "init",
+          "stage": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "status": "SUCCESS",
+          "count": 3
+        }
+      ],
+      "failure_witness_counts": [],
+      "ik_requests": 0,
+      "ik_solver_api_calls": 0,
+      "ik_actual_s": 0,
+      "ik_internal_attempts": null,
+      "ik_internal_attempts_observability": "NOT_OBSERVABLE",
+      "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+      "actual_motion_solver_calls": {},
+      "clearance_aggregates": {},
+      "clearance_phase_s": {},
+      "process_aggregates": {
+        "seal_input_compilations": 0,
+        "seal_geometry_evaluations": 0,
+        "compression_sat_evaluations": 0,
+        "side_distance_queries": 0
+      },
+      "profile_evidence_request_count": 0,
+      "pair_profile_enabled": null,
+      "pair_profile_status": "CHECKER_NOT_CREATED",
+      "measured_stage_s": {
+        "target_geometry_s": null,
+        "ik_s": null,
+        "pregrasp_s": null,
+        "contact_s": null,
+        "terminal_check_s": null,
+        "attachment_context_s": null,
+        "extraction_target_s": null,
+        "extraction_s": null,
+        "extraction_sample_check_s": null,
+        "terminal_separation_s": null,
+        "release_ready_check_s": null,
+        "region_search_s": null
+      },
+      "boundary_costs": {},
+      "not_reached": [
+        "contact",
+        "receiver_sync",
+        "attachment",
+        "region_generation",
+        "RIGHT_INNER_Y",
+        "RIGHT_INNER_X",
+        "terminal_separation",
+        "release_ready_check"
+      ],
+      "returned_native_stage_count": 0,
+      "region_attempt_count": 0,
+      "forbidden_requests": 0,
+      "prior_calls": 0,
+      "history_and_legacy": {
+        "history_enabled": false,
+        "history_inputs_read": 0,
+        "legacy_motion_generator_calls": 0,
+        "forbidden_entry_attempts": 0
+      }
+    },
+    {
+      "case": "middle-front-s71070",
+      "request_identity_rule": "Unique response.request_id within this fresh worker run; reject duplicates; CURRENT_REQUEST_ONLY aggregates, not parent stages",
+      "request_count": 13,
+      "request_status_counts": [
+        {
+          "op": "init",
+          "stage": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "RECEIVER_STATE_REJECTED",
+          "count": 1
+        },
+        {
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 2
+        },
+        {
+          "op": "plan",
+          "stage": "contact",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "extraction",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_extraction_end",
+          "stage": "extraction",
+          "status": "SUCCESS",
+          "count": 1
+        }
+      ],
+      "failure_witness_counts": [
+        {
+          "status": "RECEIVER_STATE_REJECTED",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "conveyor_transverse"
+          ],
+          "count": 1
+        }
+      ],
+      "ik_requests": 1,
+      "ik_solver_api_calls": 1,
+      "ik_actual_s": 0.000199066,
+      "ik_internal_attempts": null,
+      "ik_internal_attempts_observability": "NOT_OBSERVABLE",
+      "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+      "actual_motion_solver_calls": {
+        "OMPL": 1,
+        "LIN": 2
+      },
+      "clearance_aggregates": {
+        "workspace_prepare_s": 0.024725907000000002,
+        "workspace_allocation_s": 0.025372941,
+        "state_checks": 990,
+        "check_s": 0.13394482100000005,
+        "aabb_tests": 8115697,
+        "aabb_skips": 8100352,
+        "narrow_calls": 15471,
+        "fixed_qualification_queries": 126,
+        "fixed_aabb_qualifications": 134,
+        "fixed_aabb_reuses": 26334,
+        "fixed_narrow_qualifications": 126,
+        "fixed_narrow_reuses": 836
+      },
+      "clearance_phase_s": {
+        "endpoint": 0.0017251979999999998,
+        "search": 0.13221962300000006
+      },
+      "process_aggregates": {
+        "seal_input_compilations": 8,
+        "seal_geometry_evaluations": 211,
+        "compression_sat_evaluations": 17496,
+        "side_distance_queries": 0
+      },
+      "profile_evidence_request_count": 8,
+      "pair_profile_enabled": false,
+      "pair_profile_status": "NOT_MEASURED",
+      "measured_stage_s": {
+        "target_geometry_s": 0.14567780122160912,
+        "ik_s": 0.030589163303375244,
+        "pregrasp_s": 0.782853938639164,
+        "contact_s": 0.14258133247494698,
+        "terminal_check_s": 0.005319707095623016,
+        "attachment_context_s": 0.004923656582832336,
+        "extraction_target_s": 0.0006859935820102692,
+        "extraction_s": 0.39415594190359116,
+        "extraction_sample_check_s": 0.6790731810033321,
+        "terminal_separation_s": 0.060907892882823944,
+        "release_ready_check_s": 0.0002367161214351654,
+        "region_search_s": 1.196563620120287
+      },
+      "boundary_costs": {
+        "request_build_s": 0.13636283576488495,
+        "motion_request_build_s": 0.011365987360477448,
+        "accepted_return_processing_s": 0.09540440887212753,
+        "motion_connection_inclusive_s": 1.316365048289299
+      },
+      "not_reached": [],
+      "returned_native_stage_count": 4,
+      "region_attempt_count": 1,
+      "forbidden_requests": 0,
+      "prior_calls": 0,
+      "history_and_legacy": {
+        "history_enabled": false,
+        "history_inputs_read": 0,
+        "legacy_motion_generator_calls": 0,
+        "forbidden_entry_attempts": 0
+      }
+    },
+    {
+      "case": "left-front-s71070",
+      "request_identity_rule": "Unique response.request_id within this fresh worker run; reject duplicates; CURRENT_REQUEST_ONLY aggregates, not parent stages",
+      "request_count": 13,
+      "request_status_counts": [
+        {
+          "op": "init",
+          "stage": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_receiver_state",
+          "stage": "pregrasp",
+          "status": "RECEIVER_STATE_REJECTED",
+          "count": 1
+        },
+        {
+          "op": "check_start",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 2
+        },
+        {
+          "op": "plan",
+          "stage": "contact",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "extraction",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_extraction_end",
+          "stage": "extraction",
+          "status": "SUCCESS",
+          "count": 1
+        }
+      ],
+      "failure_witness_counts": [
+        {
+          "status": "RECEIVER_STATE_REJECTED",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "pair": [
+            "tool_compliant_bellows_0",
+            "conveyor_transverse"
+          ],
+          "count": 1
+        }
+      ],
+      "ik_requests": 1,
+      "ik_solver_api_calls": 1,
+      "ik_actual_s": 0.000236669,
+      "ik_internal_attempts": null,
+      "ik_internal_attempts_observability": "NOT_OBSERVABLE",
+      "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+      "actual_motion_solver_calls": {
+        "OMPL": 1,
+        "LIN": 2
+      },
+      "clearance_aggregates": {
+        "workspace_prepare_s": 0.024331887,
+        "workspace_allocation_s": 0.024932139999999995,
+        "state_checks": 1852,
+        "check_s": 0.2308428979999999,
+        "aabb_tests": 15225401,
+        "aabb_skips": 15199296,
+        "narrow_calls": 26231,
+        "fixed_qualification_queries": 126,
+        "fixed_aabb_qualifications": 134,
+        "fixed_aabb_reuses": 26334,
+        "fixed_narrow_qualifications": 126,
+        "fixed_narrow_reuses": 836
+      },
+      "clearance_phase_s": {
+        "endpoint": 0.0017538579999999998,
+        "search": 0.22908903999999988
+      },
+      "process_aggregates": {
+        "seal_input_compilations": 8,
+        "seal_geometry_evaluations": 211,
+        "compression_sat_evaluations": 17568,
+        "side_distance_queries": 0
+      },
+      "profile_evidence_request_count": 8,
+      "pair_profile_enabled": false,
+      "pair_profile_status": "NOT_MEASURED",
+      "measured_stage_s": {
+        "target_geometry_s": 0.1481248401105404,
+        "ik_s": 0.046565569937229156,
+        "pregrasp_s": 1.4265306890010834,
+        "contact_s": 0.14575323089957237,
+        "terminal_check_s": 0.005500108003616333,
+        "attachment_context_s": 0.0037894919514656067,
+        "extraction_target_s": 0.000527065247297287,
+        "extraction_s": 0.4035985730588436,
+        "extraction_sample_check_s": 0.700154185295105,
+        "terminal_separation_s": 0.04443753883242607,
+        "release_ready_check_s": 0.0002532750368118286,
+        "region_search_s": 1.2227644734084606
+      },
+      "boundary_costs": {
+        "request_build_s": 0.11571089550852776,
+        "motion_request_build_s": 0.020690828561782837,
+        "accepted_return_processing_s": 0.06162815913558006,
+        "motion_connection_inclusive_s": 1.9729997888207436
+      },
+      "not_reached": [],
+      "returned_native_stage_count": 4,
+      "region_attempt_count": 1,
+      "forbidden_requests": 0,
+      "prior_calls": 0,
+      "history_and_legacy": {
+        "history_enabled": false,
+        "history_inputs_read": 0,
+        "legacy_motion_generator_calls": 0,
+        "forbidden_entry_attempts": 0
+      }
+    }
+  ],
+  "timing": "Parent and child intervals overlap; do not add solver, RTT, row and total times."
+}

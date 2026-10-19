@@ -1,0 +1,22 @@
+{
+  "source_commit": "fff5e93a981bd239ad42840c41d853cbcd9fbb50",
+  "artifact_sha256": {
+    "aggregate-records.py": "96d6d539da3ae1368d970bc22cf6839441da6a12ce090541e3e490332ad9722f",
+    "batch.log": "bfde9e88dff9790d61103d6cb657692b5f0e3fcaf4990ef25c2ab05caac7071d",
+    "build-final.log": "b81cca1592a25581d4297c7dcd053228785e83b633870fc4e3df5555ecf90c3c",
+    "environment.txt": "697aef0020b2723a76c139cbd7de613ef4dbef746e6ced566f22e0fafebf5394",
+    "front-c02-release-ready.png": "82f2ee6e8889983b875125577efde678514f443f13f0e610183c298f23559d50",
+    "native-tests-final.log": "e8c183a5e5092d3ee2dedd1b54da549da29de53b34af67ac94b5b2784212c35f",
+    "offline-viewers.zip": "5e68f07a4cbfbb2644a350c14dfdd1e416495b09d1fc69d2fdf5f464eda0441b",
+    "protocol.json": "97bacb7629e062f11795c61be9198945b0f82122208624131510b81bcaf02bcf",
+    "raw-results.zip": "a77ea00399cecb45491d01a00ee2b202b9eed4d970230dd336d2933aea453218",
+    "request-costs.json": "99ab470dcb0d038359b3715ee5573a84b313bc14dd5459e9a21e950a5528bc70",
+    "right-rejected-goal.png": "b82034197857cf2087be9c174b074b036ca512c28a975147b64469ac80f2131b",
+    "run.sh": "d06bfbfe2adb898a19d477c947b71a593e9a4e2c30b308cbe7541804759fd02e",
+    "summary.json": "9b9c2f8d07f2f346b7d15db4d061ef053716fe42505403c8c1bfbbf5f2247ffd",
+    "tests-final.log": "34d0c46a310fa04f75717ad18a7c365ac878966ae01ffbe544899002b20e3849",
+    "timing.csv": "71dba182a982bc1c1f772b06c03f97d08b69f3f6897d30594ffef812bef85f34",
+    "viewer-checks.json": "467288e1d60080ddf30a2489024f2257c3658ff63e37563944e0b24b901e538e"
+  },
+  "viewer_data_equal_raw_records": true
+}

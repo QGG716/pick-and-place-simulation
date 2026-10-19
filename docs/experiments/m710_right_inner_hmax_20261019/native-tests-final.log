@@ -1,0 +1,2 @@
+side_transfer_test PASS (synthetic geometry, real FCL)
+PASS exact Z union: endpoint clear / middle rejected; strict transition invariants

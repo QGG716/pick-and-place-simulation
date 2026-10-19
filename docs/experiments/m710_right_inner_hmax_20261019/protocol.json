@@ -1,0 +1,95 @@
+{
+  "cases": [
+    [
+      "right-open-s71070",
+      "carton_l07_c00",
+      71070,
+      "right_inner",
+      true
+    ],
+    [
+      "right-open-s71071",
+      "carton_l07_c00",
+      71071,
+      "right_inner",
+      true
+    ],
+    [
+      "right-blocked-s71070",
+      "carton_l07_c00",
+      71070,
+      "right_inner",
+      false
+    ],
+    [
+      "middle-front-s71070",
+      "carton_l07_c02",
+      71070,
+      "front",
+      false
+    ],
+    [
+      "left-front-s71070",
+      "carton_l07_c04",
+      71070,
+      "front",
+      false
+    ]
+  ],
+  "original_right_role": {
+    "role": "RIGHT_END",
+    "original_layer_index": 7,
+    "original_layer_bottom_m": 2.1,
+    "original_y_order": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "remaining_y_order": [
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "removed_from_original_layer": []
+  },
+  "declared_removed_middle_ids": [
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03"
+  ],
+  "newly_unloaded_count": 0,
+  "input": "CONFIGURED_OFFLINE_STATIC_INITIAL_Q_NOT_PREVIOUS_PHYSICAL_FEEDBACK",
+  "task_s": 300,
+  "stage_s": 90,
+  "ipc_s": 100,
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "threads": 1,
+  "selection_fixed_before_runs": true
+}
