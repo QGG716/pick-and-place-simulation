@@ -1,0 +1,29 @@
+{
+  "formal": [
+    {
+      "source": "eed289495d46b8ea88c7a7c0dc8d3a9c8ecd6dec",
+      "failure": "AttributeError: 'PinocchioHppFclBackend' object has no attribute 'joint_axis_frames'",
+      "scope": "REQUEST_STOPPED_AFTER_FIRST_IK",
+      "rerun_after_fix": false
+    }
+  ],
+  "development": [
+    {
+      "scope": "NATIVE_UNIT_TEST_INVOCATION",
+      "test": "m710_coupled_receiver_test",
+      "calls": 2,
+      "reason": "Required fixture argv missing; assertion argc==2; no passed result claimed"
+    },
+    {
+      "scope": "PRODUCTION_BACKEND_REGRESSION_SETUP",
+      "reason": "Isolated development directory lacked scripts/expand_official_m710id70_urdf.py",
+      "retained_log": "post-failure-fix-tests.txt",
+      "resolution": "Synced repository scripts; final 126 tests passed"
+    },
+    {
+      "scope": "BROWSER_TEST_ASSERTION_ENCODING",
+      "reason": "PowerShell pipe encoded Chinese literal as question marks",
+      "resolution": "Unicode escapes; final browser checks passed"
+    }
+  ]
+}

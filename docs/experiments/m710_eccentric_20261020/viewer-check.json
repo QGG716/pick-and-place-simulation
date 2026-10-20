@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "actual_native_ik_cases": 1,
+  "static_pending_targets": 63,
+  "outside_reference_valid_ring_cases": 35,
+  "upper_arm_fk_error_rad": 0,
+  "all_72_cups_preserved": true,
+  "actual_contact_not_claimed": true,
+  "static_preview_q_unchanged": true,
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+}

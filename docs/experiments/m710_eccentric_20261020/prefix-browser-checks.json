@@ -1,0 +1,107 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "initial": {
+    "time": 0,
+    "phase": "候选初始降带 · 原生检查通过",
+    "completed_count": 0,
+    "carton_count": 37,
+    "q_rad": [
+      -1.4198698080202128,
+      -0.45344173919354397,
+      -0.346623102268061,
+      1.5870092577268429,
+      1.4207365736267565,
+      -4.820426009497792
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999999973,
+      4.758229782408918e-9,
+      7.358654492695127e-8,
+      0,
+      4.758202492265508e-9,
+      -0.9999999999999312,
+      3.7082293177781445e-7,
+      0,
+      7.358654667972265e-8,
+      -3.708229314031142e-7,
+      -0.9999999999999285,
+      0,
+      -1.0328960984322093,
+      -0.41999977546259065,
+      2.2499999211655957,
+      1
+    ],
+    "height_m": 2.0500000000000003,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": "carton_l07_c00",
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "final": {
+    "time": 6,
+    "phase": "接近未完成 · 候选未接受",
+    "completed_count": 0,
+    "carton_count": 37,
+    "q_rad": [
+      -1.4198698080202128,
+      -0.45344173919354397,
+      -0.346623102268061,
+      1.5870092577268429,
+      1.4207365736267565,
+      -4.820426009497792
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999999973,
+      4.758229782408918e-9,
+      7.358654492695127e-8,
+      0,
+      4.758202492265508e-9,
+      -0.9999999999999312,
+      3.7082293177781445e-7,
+      0,
+      7.358654667972265e-8,
+      -3.708229314031142e-7,
+      -0.9999999999999285,
+      0,
+      -1.0328960984322093,
+      -0.41999977546259065,
+      2.2499999211655957,
+      1
+    ],
+    "height_m": 1.75,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": "carton_l07_c00",
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "segment": 0,
+      "kind": "lift",
+      "time": 0,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 1,
+      "kind": "final",
+      "time": 4,
+      "completed": 0,
+      "cartons": 37
+    }
+  ],
+  "frames": 31,
+  "width": 640,
+  "height": 360,
+  "fps": 5,
+  "playback_speed": 1,
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+}

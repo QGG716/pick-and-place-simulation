@@ -1,0 +1,144 @@
+{
+  "formal_tasks_run": 1,
+  "formal_status": "REQUEST_STOPPED",
+  "completed_count": 0,
+  "target_count": 1,
+  "world_cartons_before": 37,
+  "world_cartons_after": 37,
+  "committed_root_unchanged": true,
+  "historical_completed_count": 3,
+  "planning_wall_s": 3.3081757389009,
+  "candidate_visit_wall_s": 2.466477692127228,
+  "calls": [
+    {
+      "op": "init",
+      "status": "READY",
+      "round_trip_s": 0.39645228907465935,
+      "actual_ik_s": null
+    },
+    {
+      "op": "fk",
+      "status": "SUCCESS",
+      "round_trip_s": 0.005279649049043655,
+      "actual_ik_s": null
+    },
+    {
+      "op": "fk",
+      "status": "SUCCESS",
+      "round_trip_s": 0.00041523948311805725,
+      "actual_ik_s": null
+    },
+    {
+      "op": "fk",
+      "status": "SUCCESS",
+      "round_trip_s": 0.0003642179071903229,
+      "actual_ik_s": null
+    },
+    {
+      "op": "check_start",
+      "status": "SUCCESS",
+      "round_trip_s": 0.04744459688663483,
+      "actual_ik_s": null
+    },
+    {
+      "op": "plan",
+      "status": "SUCCESS",
+      "round_trip_s": 1.0456364154815674,
+      "actual_ik_s": null
+    },
+    {
+      "op": "ik",
+      "status": "SUCCESS",
+      "round_trip_s": 0.024765968322753906,
+      "actual_ik_s": 0.000282982
+    }
+  ],
+  "actual_delta_m": 0.0,
+  "actual_ik_q": [
+    -0.9603524100875748,
+    0.3054661512244053,
+    0.36457157252428324,
+    1.6120977173521396,
+    0.9615735072745865,
+    -4.784481064446006
+  ],
+  "ik_response": {
+    "actual_ik_s": 0.000282982,
+    "bounded_search": true,
+    "effective_solver_budget_s": 0.1,
+    "error_code": 1,
+    "excluded_local_ik_count": 0,
+    "ik_collision_checked": false,
+    "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+    "ik_mode": "bounded_target",
+    "ik_request_count": 1,
+    "ik_s": 0.000282982,
+    "internal_attempts": null,
+    "internal_attempts_observability": "NOT_OBSERVABLE",
+    "native_ik_calls": 1,
+    "numerical_ik_seed": [
+      -1.4198698080202128,
+      -0.45344173919354397,
+      -0.346623102268061,
+      1.5870092577268429,
+      1.4207365736267565,
+      -4.820426009497792
+    ],
+    "numerical_seed_index": 0,
+    "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+    "orientation_error_rad": 7.649536280517568e-10,
+    "position_error_m": 2.427559307940217e-09,
+    "q": [
+      -0.9603524100875748,
+      0.3054661512244053,
+      0.36457157252428324,
+      1.6120977173521396,
+      0.9615735072745865,
+      -4.784481064446006
+    ],
+    "random_restarts": null,
+    "real_start_q_unchanged": [
+      -1.4198698080202128,
+      -0.45344173919354397,
+      -0.346623102268061,
+      1.5870092577268429,
+      1.4207365736267565,
+      -4.820426009497792
+    ],
+    "request_id": "7",
+    "requested_solver_budget_s": 0.1,
+    "resident_native_ik_calls": 1,
+    "seed": 71070,
+    "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+    "solver": "MoveIt_KDL_searchPositionIK",
+    "solver_api": "searchPositionIK",
+    "solver_api_calls": 1,
+    "solver_candidate_q": [
+      -0.9603524100875748,
+      0.3054661512244053,
+      0.36457157252428324,
+      1.6120977173521396,
+      0.9615735072745865,
+      -4.784481064446006
+    ],
+    "status": "SUCCESS",
+    "transport_and_worker_s": 0.024662360548973083
+  },
+  "height_checks": 32,
+  "target_collision_check": "NOT_REACHED",
+  "pregrasp_contact_attachment_suffix": "NOT_REACHED",
+  "positive_offsets_dispatched": 0,
+  "unvisited_domain_combinations": 11839,
+  "nominal_eligible_cups": 48,
+  "commanded_cups": 48,
+  "actual_contact": "NOT_REACHED",
+  "native_robot_motion_s": 0.0,
+  "lift_demo_s": 4.0,
+  "event_display_s": 2.2,
+  "hardware_lift_s": null,
+  "actual_physical_cycle_s": null,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

@@ -1,0 +1,22 @@
+.....F.................................................................. [ 57%]
+.....................................................                    [100%]
+=================================== FAILURES ===================================
+_______ test_production_connector_backend_matches_official_structural_fk _______
+
+robot = <unloading_sim.robot.URDFRobot object at 0x7fa2f1b20310>
+
+    def test_production_connector_backend_matches_official_structural_fk(robot):
+        from unloading_sim.layout_single_carton import (load_layout_motion_policy,
+            build_verified_motion_input, _build_automatic_trajectory_connector)
+        root=Path(__file__).resolve().parents[1]
+        policy=load_layout_motion_policy(root/"configs/validation/m710id70_proof_of_concept.yaml")
+        scene=build_verified_motion_input(policy,root)
+        built=_build_automatic_trajectory_connector(scene,robot)
+>       assert built.connector is not None
+E       AssertionError: assert None is not None
+E        +  where None = LayoutTrajectoryConnectorBuildResult(connector=None, status='UNAVAILABLE', failure_reason='OFFICIAL_MODEL_IDENTITY_AUD...FICIAL_MODEL_IDENTITY_AUDIT_FAILED', 'detail': 'referenced file is missing: scripts/expand_official_m710id70_urdf.py'}).connector
+
+tests/test_upper_arm_preference.py:88: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_upper_arm_preference.py::test_production_connector_backend_matches_official_structural_fk
+1 failed, 124 passed in 3.60s

@@ -1,0 +1,10 @@
+[ 20%] Building CXX object CMakeFiles/m710_search_trace.dir/src/search_trace.cpp.o
+[ 40%] Building CXX object CMakeFiles/m710_search_trace.dir/src/recorded_ompl_manager.cpp.o
+[ 60%] Linking CXX shared library libm710_search_trace.so
+[ 60%] Built target m710_search_trace
+[ 80%] Building CXX object CMakeFiles/m710_moveit_worker.dir/src/worker.cpp.o
+[100%] Linking CXX executable m710_moveit_worker
+[100%] Built target m710_moveit_worker
+[ 50%] Building CXX object CMakeFiles/m710_bounded_ik_test.dir/src/bounded_ik_test.cpp.o
+[100%] Linking CXX executable m710_bounded_ik_test
+[100%] Built target m710_bounded_ik_test
