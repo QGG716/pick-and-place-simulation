@@ -171,6 +171,16 @@ def verify(run, replay=None):
     attempted = {o["target_id"] for o in outcomes}
     blocked = {b["target_id"] for b in summary["blocked"]}
     assert len(attempted) == len(outcomes) and not attempted & blocked and attempted | blocked == targets
+    # A box left under a failed carton must remain an actual support, not a
+    # made-up failure count or a box silently removed to expose its successors.
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]/"src"))
+    from unloading_sim.coupled_batch import message_box
+    from unloading_sim.support import SupportRelationGraph
+    support = SupportRelationGraph.build(tuple(message_box(b) for b in root["world_cartons"]))
+    for row in summary["blocked"]:
+        assert row["supported_cartons"] == sorted(support.supports[row["target_id"]])
+        assert row["supported_cartons"] and not row["native_search_performed"]
     completed = sum(o["complete"] for o in outcomes)
     assert completed == summary["completed_count"]
     assert len(root["world_cartons"]) == len(targets)-completed
