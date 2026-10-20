@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>J2／剪叉干涉 · 同构型三维对比</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#111c2a;color:#e8f2fa;font:14px/1.5 system-ui,"Microsoft Yahei",sans-serif}
+header{height:78px;padding:13px 20px;border-bottom:1px solid #3b5066;display:flex;align-items:center;justify-content:space-between;gap:16px}
+h1{font-size:21px;margin:0 0 3px}small,.muted{font-size:12px;color:#b6cadb}.tag{border:1px solid #667b90;padding:5px 9px;border-radius:5px;white-space:nowrap}
+main{display:grid;grid-template-columns:302px 1fr;height:calc(100vh - 78px)}aside{padding:16px;background:#192a3b;overflow:auto}
+section{padding-bottom:16px;margin-bottom:14px;border-bottom:1px solid #395068}h2{font-size:14px;color:#8adfe9;margin:0 0 9px}
+button,select{font:inherit;background:#29465f;border:1px solid #5c7d96;border-radius:5px;color:#f1f7fc;padding:7px 9px;cursor:pointer}
+select{width:100%;margin-bottom:8px}button:hover{background:#355e7b}button.active{background:#17627d;border-color:#7ad7de}
+.row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}label{display:block;margin:9px 0;font-size:12px}input{accent-color:#67d7d8}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;color:#bcd2e3;margin:8px 0}.legend{line-height:1.9;font-size:12px}.swatch{display:inline-block;width:11px;height:11px;margin-right:7px;border-radius:2px}
+#view{position:relative;overflow:hidden;min-width:0;touch-action:none}canvas{display:block}
+#panels{position:absolute;top:0;left:0;right:0;display:grid;pointer-events:none}
+.panel{padding:13px 10px 11px;background:linear-gradient(#112135f5,#1121359c,transparent);min-width:0;border-right:1px solid #6f849744}
+.panel h3{font-size:16px;margin:0 0 2px}.width{font-size:11px;color:#aebfd2}.result{font-size:13px;font-weight:650;line-height:1.7;margin-top:7px}
+.pass{color:#72e5b2}.gap{color:#ffcf72}.contact{color:#ff8c97}.note{font-size:11px;color:#bed0de}
+#footer{position:absolute;bottom:14px;left:14px;right:14px;display:flex;gap:10px;justify-content:space-between;pointer-events:none}
+#state,#hint{padding:9px 12px;background:#0d1b2bdd;border-radius:5px;font-size:12px}
+#hint{max-width:320px;color:#b9cfdf}#error{color:#ff9c9c;white-space:pre-wrap}details{font-size:12px;margin-top:10px}
+@media(max-width:900px){main{grid-template-columns:240px 1fr}aside{padding:12px}.panel h3{font-size:13px}.result{font-size:11px}#hint{display:none}}
+</style>
+<header><div><h1>J2／剪叉干涉 · 同构型三维对比</h1><small>固定实际失败目标 q · 三档中心距使用同一视角 · 不插值、不播放运动</small></div><span class="tag">静态诊断 · 未物理执行</span></header>
+<main><aside>
+<section><h2>1 · 选择实际失败构型</h2><select id="case"></select>
+<div class="row"><button id="prev">← 上一个</button><button id="next">下一个 →</button></div>
+<label><input type="checkbox" id="pinFilter"> 仅看 300 mm 新增铰销接触的构型</label>
+<div id="caseInfo" class="muted"></div></section>
+<section><h2>2 · 聚焦部件</h2><select id="part"></select>
+<div class="legend"><span class="swatch" style="background:#bf94f6"></span>J2 官方碰撞网格<br>
+<span class="swatch" style="background:#ff6376"></span>选中实体：接触／相交<br>
+<span class="swatch" style="background:#ffc15c"></span>选中实体：间隙不足 5 mm<br>
+<span class="swatch" style="background:#55dba3"></span>原记录：表面距离检查通过</div>
+<label><input type="checkbox" id="transparent" checked> J2 半透明，便于观察重叠</label>
+<label><input type="checkbox" id="section" checked> 显示部件中心高度的 J2 网格截面</label>
+<label><input type="checkbox" id="allFailures"> 同时显示其余失败部件</label>
+<label><input type="checkbox" id="context"> 显示装配背景</label></section>
+<section><h2>3 · 视角</h2><select id="mode"><option value="all">三档并排对比</option><option value="0">单独查看：460 mm</option><option value="1">单独查看：300 mm</option><option value="2">单独查看：260 mm</option></select>
+<div class="row"><button id="local">碰撞局部</button><button id="sectionView">截面俯视</button><button id="assembly">装配全景</button><button id="xz">沿 −Y 看</button><button id="yz">沿 −X 看</button></div>
+<p class="muted">左键旋转 · 滚轮缩放 · 右键平移<br>三幅图同步操作；机器人 q 始终相同。</p></section>
+<section><h2>原始 q / 判定来源</h2><pre id="angles"></pre><details><summary>查看来源与数值</summary><pre id="evidence"></pre></details><button id="download">保存当前构型记录</button></section>
+<div class="muted">距离来自已保存的 Coal 成对诊断。新原生规划仍由全场景 FCL 门禁检查。本页不重新计算或批准路径。</div><div id="error"></div>
+</aside><div id="view"><div id="panels"></div><div id="footer"><div id="state"></div><div id="hint">截面只画网格边界，不填实心。<br>表面距离通过不等于已排除实体内含。<br>无接触点记录；负距离不作穿透深度。</div></div></div></main>
+<script>/*__VENDOR__*/</script><script>
+const D=/*__DATA__*/;
+window.COMPARISON_DATA=D;
+const T=THREE,$=id=>document.getElementById(id),view=$('view');
+const mat=a=>new T.Matrix4().set(...a.flat()),vec=a=>new T.Vector3(...a);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.autoClear=false;view.prepend(renderer.domElement);
+const camera=new T.PerspectiveCamera(42,1,.003,80);camera.up.set(0,0,1);
+const controls=new T.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
+const scenes=[],robots=[],bodies=[],outlines=[],grids=[],sections=[];
+const sectionCache=new Map();let sectionPoints=[],sectionZ=0;
+const model=D.model,geometries=new Map();
+function robotGeometry(item){
+ const key=item.kind==='mesh'?item.asset:JSON.stringify(item);
+ if(geometries.has(key))return geometries.get(key);
+ let g;if(item.kind==='mesh'){const bytes=Uint8Array.from(atob(model.meshes[item.asset].positions_b64),x=>x.charCodeAt(0));
+  g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(bytes.buffer),3));g.computeVertexNormals();
+ }else if(item.kind==='box')g=new T.BoxGeometry(...item.size);
+ else{g=new T.CylinderGeometry(item.radius,item.radius,item.length,24);g.rotateX(Math.PI/2);}
+ geometries.set(key,g);return g;
+}
+function solidGeometry(b){
+ if(!b.solid)return new T.BoxGeometry(...b.size);
+ const g=new T.BufferGeometry(),v=b.solid.vertices_m,xyz=[];
+ for(const face of b.solid.faces)for(let i=1;i<face.length-1;i++)for(const k of [face[0],face[i],face[i+1]])xyz.push(...v[k]);
+ g.setAttribute('position',new T.Float32BufferAttribute(xyz,3));g.computeVertexNormals();return g;
+}
+function framesAt(q){
+ const frames={world:new T.Matrix4()};let pending=[...model.joints];
+ while(pending.length){const next=[];
+  for(const j of pending){if(!frames[j.parent]){next.push(j);continue;}
+   const f=frames[j.parent].clone().multiply(mat(j.origin)),k=model.joint_names.indexOf(j.name);
+   if(k>=0){const axis=vec(j.axis).normalize();f.multiply(j.type==='prismatic'?
+    new T.Matrix4().makeTranslation(...axis.multiplyScalar(q[k]).toArray()):new T.Matrix4().makeRotationAxis(axis,q[k]));}
+   frames[j.child]=f;
+  }if(next.length===pending.length)throw Error('UNRESOLVED_RECORDED_MODEL_TREE');pending=next;
+ }return frames;
+}
+for(let i=0;i<3;i++){
+ const scene=new T.Scene();scene.background=new T.Color('#17283a');scenes.push(scene);
+ scene.add(new T.HemisphereLight(0xe2f2ff,0x4c5d70,1.0));const sun=new T.DirectionalLight(0xffffff,.65);sun.position.set(-4,-5,7);scene.add(sun);
+ const parts=[];for(const item of model.links){
+  const mesh=new T.Mesh(robotGeometry(item),new T.MeshStandardMaterial({color:item.link==='J2_link'?0xa278dc:0xb5c5d5,roughness:.6,side:T.FrontSide}));
+  mesh.matrixAutoUpdate=false;scene.add(mesh);parts.push({mesh,item,origin:mat(item.origin)});
+ }robots.push(parts);bodies.push(new Map());outlines.push(new Map());
+ const section=new T.LineSegments(new T.BufferGeometry(),new T.LineBasicMaterial({color:0xe3c8ff,depthTest:false,transparent:true,opacity:1}));
+ section.renderOrder=6;scene.add(section);sections.push(section);
+ const grid=new T.GridHelper(8,32,0x546f85,0x31495e);grid.rotation.x=Math.PI/2;grid.visible=false;scene.add(grid);grids.push(grid);
+}
+const labels={
+ lift_transverse_left_arm_1_0:'左排上层剪叉臂 A',
+ lift_transverse_left_arm_1_1:'左排上层剪叉臂 B',
+ lift_transverse_left_pin_1:'左排上层交叉铰销',
+ lift_transverse_right_arm_1_1:'右排上层剪叉臂 B'
+};
+const partIds=[...new Set(D.cases.flatMap(c=>c.variants.flatMap(v=>v.pairs.filter(p=>!p.passed).map(p=>p.pair[1]))))];
+for(const id of partIds)$('part').add(new Option(labels[id]||id,id));
+$('part').value='lift_transverse_left_pin_1';
+let caseIndex=D.default_case,partId=$('part').value,currentFrames=null,activeVariants=[0,1,2];
+const pair=(c,i,id=partId)=>c.variants[i].pairs.find(p=>p.pair[1]===id);
+const color=p=>p.collision?0xff6376:p.passed?0x55dba3:0xffc15c;
+const status=p=>p.collision?'记录：接触／相交':p.passed?`网格表面距 ${(p.surface_distance_m*1000).toFixed(3)} mm`:`表面距 ${(p.surface_distance_m*1000).toFixed(3)} mm < 5 mm`;
+function populate(){
+ $('case').replaceChildren();D.cases.forEach((c,i)=>{
+  if($('pinFilter').checked&&!c.new_pin_contact_at_300)return;
+  $('case').add(new Option(`#${String(i+1).padStart(2,'0')} · H=${c.height_m.toFixed(2)} m · ${c.new_pin_contact_at_300?'铰销新增接触':'剪叉净空失败'}`,i));
+ });
+ if(![...$('case').options].some(o=>Number(o.value)===caseIndex))caseIndex=Number($('case').options[0].value);
+ $('case').value=caseIndex;
+}
+function choose(index,refocus=false){caseIndex=Number(index);$('case').value=caseIndex;draw();if(refocus)focus('local');}
+function draw(){
+ const c=D.cases[caseIndex];currentFrames=framesAt(c.q_rad);
+ const context=$('context').checked,all=$('allFailures').checked;
+ for(let i=0;i<3;i++){
+  for(const {mesh,item,origin}of robots[i]){
+   mesh.matrix.copy(currentFrames[item.link]).multiply(origin);const j2=item.link==='J2_link';
+   mesh.visible=j2||context;mesh.material.opacity=j2?($('transparent').checked?.4:1):(item.tool?.16:.22);
+   mesh.material.transparent=mesh.material.opacity<1;mesh.material.depthWrite=mesh.material.opacity>=1;
+   mesh.renderOrder=j2?3:0;
+  }
+  grids[i].visible=context;
+  for(const b of D.worlds[c.world_key][i]){
+   let mesh=bodies[i].get(b.id),outline=outlines[i].get(b.id);
+   if(!mesh){const geometry=solidGeometry(b);mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({roughness:.65,side:T.DoubleSide}));
+    mesh.matrixAutoUpdate=false;scenes[i].add(mesh);bodies[i].set(b.id,mesh);
+    outline=new T.LineSegments(new T.EdgesGeometry(geometry),new T.LineBasicMaterial({color:0xf5fbff,transparent:true,opacity:.9}));
+    outline.matrixAutoUpdate=false;scenes[i].add(outline);outlines[i].set(b.id,outline);
+   }
+   mesh.matrix.copy(mat(b.pose));outline.matrix.copy(mesh.matrix);
+   const p=pair(c,i,b.id),selected=b.id===partId,failed=p&&!p.passed;
+   mesh.visible=selected||(all&&failed)||context;
+   mesh.material.color.setHex(selected||all&&failed?color(p):b.category==='lift_mechanism'?0xb4a07b:b.category==='conveyor'?0x518aa7:0x758798);
+   mesh.material.opacity=selected?1:all&&failed?.65:b.category==='trailer'?.035:.14;
+   mesh.material.transparent=mesh.material.opacity<1;mesh.material.depthWrite=selected;
+   mesh.renderOrder=selected?2:1;outline.visible=selected;outline.renderOrder=4;
+  }
+ }
+ sectionZ=bodies[0].get(partId).matrix.elements[14];
+ const sectionKey=`${caseIndex}/${sectionZ}`;
+ if(!sectionCache.has(sectionKey)){
+  const segments=[];
+  for(const {mesh}of robots[0].filter(x=>x.item.link==='J2_link')){
+   const vertices=mesh.geometry.attributes.position;
+   for(let k=0;k<vertices.count;k+=3){
+    const triangle=[0,1,2].map(j=>new T.Vector3().fromBufferAttribute(vertices,k+j).applyMatrix4(mesh.matrix)),hits=[];
+    function hit(p){if(!hits.some(q=>p.distanceToSquared(q)<1e-16))hits.push(p);}
+    for(let j=0;j<3;j++){const a=triangle[j],b=triangle[(j+1)%3],da=a.z-sectionZ,db=b.z-sectionZ;
+     if(Math.abs(da)<1e-10)hit(a.clone());
+     if(da*db<0)hit(a.clone().lerp(b,da/(da-db)));
+    }
+    if(hits.length===2)segments.push(...hits);
+   }
+  }sectionCache.set(sectionKey,segments);
+ }
+ sectionPoints=sectionCache.get(sectionKey);
+ for(let i=0;i<3;i++){
+  sections[i].geometry.dispose();sections[i].geometry=new T.BufferGeometry().setFromPoints(sectionPoints);
+  sections[i].visible=$('section').checked;
+  if($('section').checked&&$('transparent').checked)
+   for(const {mesh} of robots[i].filter(x=>x.item.link==='J2_link'))mesh.material.opacity=.10;
+ }
+ activeVariants=$('mode').value==='all'?[0,1,2]:[Number($('mode').value)];
+ $('panels').style.gridTemplateColumns=`repeat(${activeVariants.length},1fr)`;
+ $('panels').innerHTML=activeVariants.map(i=>{const p=pair(c,i);return `<div class="panel"><h3>${i===0?'原基线':'缩宽'} · ${D.widths_mm[i]} mm</h3><div class="width">中心距 / 含支脚总宽 ${D.outer_widths_mm[i]} mm</div><div class="result ${p.collision?'contact':p.passed?'pass':'gap'}">${status(p)}</div><div class="note">${p.passed?'原表面检查通过':'原表面检查未通过'} · ${c.variants[i].pairs.filter(x=>!x.passed).length} 个失败部件</div></div>`;}).join('');
+ $('caseInfo').textContent=`共 40 个实际失败请求；30 个在 300 mm 时新增铰销接触。当前记录 ${c.attempt}，原请求行 ${c.source_row+1}。`;
+ $('state').innerHTML=`<b>${labels[partId]||partId}</b><br>目标构型 #${caseIndex+1} · 带面 ${c.height_m.toFixed(2)} m · 37 箱<br>${$('section').checked?`浅紫线：J2 网格与 Z=${sectionZ.toFixed(4)} m 平面的交线`:'q 固定 · 三档仅改变横带剪叉 X 中心距'}`;
+ $('angles').textContent=c.q_rad.map((q,i)=>`J${i+1}  ${q.toFixed(6)} rad  (${(q*180/Math.PI).toFixed(2)}°)`).join('\n');
+ $('evidence').textContent=JSON.stringify({request_stage_id:c.stage_id,recorded_goal_source:D.recorded_goal_source,
+  selected_part:partId,required_gap_m:D.required_gap_m,measurements:c.variants.map((v,i)=>({spacing_mm:D.widths_mm[i],...pair(c,i)})),
+  previous_native_failure:c.previous_native_failure,contact_witness_points_recorded:false},null,2);
+ window.comparisonState={case_index:caseIndex,q_rad:c.q_rad.slice(),selected_part:partId,height_m:c.height_m,
+  variants:activeVariants.slice(),J2_matrix:currentFrames.J2_link.elements.slice(),flange_matrix:currentFrames.flange.elements.slice(),
+  selected_bodies:[0,1,2].map(i=>({matrix:bodies[i].get(partId).matrix.elements.slice(),pair:pair(c,i)})),
+  statuses:[0,1,2].map(i=>status(pair(c,i))),section_z:sectionZ,section_segment_count:sectionPoints.length/2,
+  section_points:sectionPoints.map(p=>p.toArray()),physical_execution:'NOT_RUN'};
+ resize();
+}
+function focus(kind){
+ const points=[];
+ for(let i=0;i<3;i++){
+  const objects=[...(kind==='sectionView'?[]:robots[i].filter(x=>x.item.link==='J2_link').map(x=>x.mesh)),bodies[i].get(partId)];
+  for(const mesh of objects){const positions=mesh.geometry.attributes.position;
+   for(let k=0;k<positions.count;k++)points.push(new T.Vector3().fromBufferAttribute(positions,k).applyMatrix4(mesh.matrix));
+  }
+ }
+ if(kind==='sectionView')points.push(...sectionPoints);
+ const center=new T.Box3().setFromPoints(points).getCenter(new T.Vector3()),direction=vec([-1.1,1.55,.8]).normalize();
+ camera.up.set(0,0,1);
+ if(kind==='assembly'){$('context').checked=true;draw();controls.target.set(-.8,-.1,1.25);camera.position.copy(controls.target).add(vec([-3.1,-3.2,1.8]));controls.update();return;}
+ if(kind==='xz')direction.set(0,-1,.005).normalize();
+ if(kind==='yz')direction.set(-1,0,.005).normalize();
+ if(kind==='sectionView'){direction.set(0,0,1);camera.up.set(0,1,0);}
+ controls.target.copy(center);camera.position.copy(center).add(direction);camera.lookAt(center);camera.updateMatrixWorld();
+ const right=vec([1,0,0]).applyQuaternion(camera.quaternion),up=vec([0,1,0]).applyQuaternion(camera.quaternion);
+ const tangent=Math.tan(T.MathUtils.degToRad(camera.fov/2)),horizontal=tangent*camera.aspect;
+ let distance=.4;
+ for(const point of points){const d=point.clone().sub(center);
+  distance=Math.max(distance,d.dot(direction)+1.2*Math.max(Math.abs(d.dot(right))/horizontal,Math.abs(d.dot(up))/tangent));
+ }
+ camera.position.copy(center).addScaledVector(direction,distance);controls.update();
+}
+function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h);camera.aspect=w/activeVariants.length/h;camera.updateProjectionMatrix();}
+function cycle(step){const ids=[...$('case').options].map(o=>Number(o.value)),i=ids.indexOf(caseIndex);choose(ids[(i+step+ids.length)%ids.length]);}
+$('case').onchange=()=>choose($('case').value);$('prev').onclick=()=>cycle(-1);$('next').onclick=()=>cycle(1);
+$('pinFilter').onchange=()=>{populate();choose(caseIndex);};
+$('part').onchange=()=>{partId=$('part').value;draw();focus($('section').checked?'sectionView':'local');};
+for(const id of ['transparent','section','allFailures','context','mode'])$(id).onchange=draw;
+for(const id of ['local','sectionView','assembly','xz','yz'])$(id).onclick=()=>focus(id);
+$('download').onclick=()=>{const a=document.createElement('a'),c=D.cases[caseIndex];
+ const url=URL.createObjectURL(new Blob([JSON.stringify({case:c,worlds:D.worlds[c.world_key],source_files:D.source_files,scope:D.scope},null,2)],{type:'application/json'}));
+ a.href=url;a.download=`j2-scissor-case-${caseIndex+1}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+window.addEventListener('resize',resize);window.addEventListener('error',e=>$('error').textContent=e.message);
+window.setComparisonCase=n=>choose(n);window.setComparisonPart=id=>{$('part').value=id;partId=id;draw();focus($('section').checked?'sectionView':'local');};
+window.comparisonFocus=focus;
+populate();choose(caseIndex);focus('sectionView');
+function render(){requestAnimationFrame(render);controls.update();renderer.setScissorTest(true);
+ const w=view.clientWidth,h=view.clientHeight,n=activeVariants.length;
+ activeVariants.forEach((v,i)=>{const x=Math.floor(i*w/n),end=Math.floor((i+1)*w/n);
+  renderer.setViewport(x,0,end-x,h);renderer.setScissor(x,0,end-x,h);renderer.clear();renderer.render(scenes[v],camera);});
+ renderer.setScissorTest(false);
+}render();window.COMPARISON_READY=true;
+</script></html>

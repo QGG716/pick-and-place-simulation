@@ -1,0 +1,42 @@
+{
+  ".gitattributes": {
+    "bytes": 20,
+    "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+  },
+  "arm-a-comparison.png": {
+    "bytes": 105175,
+    "sha256": "b4c642dee61eb2dfeb8c6cbabd1114a40c46205da62b98be5052406bf9dcb5c6"
+  },
+  "arm-b-comparison.png": {
+    "bytes": 103909,
+    "sha256": "70d632377bc7ba53f213896b3c6cd0c3e0a5a5073a8d012bc5a533c00416df3a"
+  },
+  "assembly-comparison.png": {
+    "bytes": 281827,
+    "sha256": "31df2536ea31d6de067153c14efbd520dbf9210978369b422ca033f89f331580"
+  },
+  "browser-checks.json": {
+    "bytes": 35245,
+    "sha256": "6bf266c813f1efdc23884a2bb45a23812dfe6f59c84f8b98acaae2cbf8965efb"
+  },
+  "j2-scissor-comparison.checks.json": {
+    "bytes": 1070,
+    "sha256": "7e952747e50f9044e90e5288207a29577be550d4167dbf1290f5f1c151208819"
+  },
+  "j2-scissor-comparison.html": {
+    "bytes": 2504153,
+    "sha256": "87eb9181bda691fff6d5e0aeb7ca56e94613289db7f8ab508aa54f65bdd01e26"
+  },
+  "offline-viewer.zip": {
+    "bytes": 1015748,
+    "sha256": "65f68489c16643a58196c82cccfecbbe2fae4ae16edb97a2e179d9f4f9139cfe"
+  },
+  "pin-contact-comparison.png": {
+    "bytes": 97205,
+    "sha256": "265e726f70d7699435e8ad5fa9529546ac1b49770d2ade4028060e7396e84059"
+  },
+  "README.md": {
+    "bytes": 2968,
+    "sha256": "e399474be2fdd73c7d5b5ca2a9a7ef9a16569ee1cb10330513364a2cde1e8d92"
+  }
+}

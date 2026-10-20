@@ -1,0 +1,2255 @@
+{
+  "status": "PASS",
+  "html_sha256": "87eb9181bda691fff6d5e0aeb7ca56e94613289db7f8ab508aa54f65bdd01e26",
+  "cases": 40,
+  "parts": [
+    "lift_transverse_left_arm_1_0",
+    "lift_transverse_left_arm_1_1",
+    "lift_transverse_left_pin_1",
+    "lift_transverse_right_arm_1_1"
+  ],
+  "checks": [
+    {
+      "case": 0,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 0,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 0,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 0,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 1,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 1,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 1,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 1,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 2,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 2,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 2,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 2,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 3,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 3,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 3,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 3,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 4,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 4,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 4,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 4,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 5,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 5,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 5,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 5,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 6,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 6,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 6,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 6,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 7,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 7,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 7,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 7,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 8,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 8,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 8,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 8,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 9,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 9,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 9,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "case": 9,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 10,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 10,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 10,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 10,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 11,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 11,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 11,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 11,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 12,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 12,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 12,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 12,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 13,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 13,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 13,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 13,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 14,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 14,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 14,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 14,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 15,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 15,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 15,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 15,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 16,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 16,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 16,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 16,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 17,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 17,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 17,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 17,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 18,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 18,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 18,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 18,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 19,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 19,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 19,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 19,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 20,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 20,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 20,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 20,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 21,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 21,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 21,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 21,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 22,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 22,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 22,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 22,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 23,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 23,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 23,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 23,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 24,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 24,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 24,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 24,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 25,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 25,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 25,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 25,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 26,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 26,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 26,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 26,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 27,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 27,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 27,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 27,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 28,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 28,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 28,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 28,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 29,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 29,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 29,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 29,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        true
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 30,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 30,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 30,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 30,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 31,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 31,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 31,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 31,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 32,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 32,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 32,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 32,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 33,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 33,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 33,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 33,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 34,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 34,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 34,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 34,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 35,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 35,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 35,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 35,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 36,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 36,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 36,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 36,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 37,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 37,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 37,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 37,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 38,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 38,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 38,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 38,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "case": 39,
+      "part": "lift_transverse_left_arm_1_0",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "case": 39,
+      "part": "lift_transverse_left_arm_1_1",
+      "passed": [
+        false,
+        false,
+        false
+      ],
+      "collision": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 39,
+      "part": "lift_transverse_left_pin_1",
+      "passed": [
+        true,
+        false,
+        false
+      ],
+      "collision": [
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "case": 39,
+      "part": "lift_transverse_right_arm_1_1",
+      "passed": [
+        true,
+        true,
+        false
+      ],
+      "collision": [
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "errors": [],
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+}

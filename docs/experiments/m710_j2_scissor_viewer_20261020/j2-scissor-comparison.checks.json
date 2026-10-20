@@ -1,0 +1,22 @@
+{
+  "status": "PASS_SAVED_Q_GEOMETRY_AND_SOURCE_IDENTITY",
+  "cases": 40,
+  "new_pin_contact_at_300": 30,
+  "heights": [
+    1.65,
+    1.7,
+    1.75
+  ],
+  "variants": 3,
+  "source_files": {
+    "docs\\experiments\\m710_junction_hmin_20261020\\offline-viewers.zip": "0c2911a094c93de376482ae2c523a7035dcfeb9ae60f1919389d6f41c62bf33b",
+    "docs\\experiments\\m710_transverse_scissor_20261020\\offline-viewers.zip": "5486923e1c228e276a628ba8db341f28bd7a4b2d8f29ec00b5039339847e0c21",
+    "docs\\experiments\\m710_transverse_scissor_20261020\\paired-j2-probe.json": "aa340321356b8e579c03e3c93109403443965fe81944502b60aecdc5a4927ed8",
+    "docs\\experiments\\m710_transverse_scissor_20261020\\frozen-paired-j2-probe-026.json": "b8060b3f6bcf2101b81176519b11b28ac6fcfff987621eb14fc452989bb59b21"
+  },
+  "geometry_tolerance_m": 1e-12,
+  "fk_witnesses": "INDEPENDENT_CPU_URDF_LINK_FRAMES_FOR_EVERY_CASE",
+  "export_sha256": "87eb9181bda691fff6d5e0aeb7ca56e94613289db7f8ab508aa54f65bdd01e26",
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

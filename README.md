@@ -4,6 +4,8 @@
 
 [中文报告](docs/m710_transverse_scissor_20261020.md) · [离线查看器](docs/experiments/m710_transverse_scissor_20261020/offline-viewers.zip) · [260 mm 配置短视频](docs/experiments/m710_transverse_scissor_20261020/scissor026-prefix-side.mp4) · [原始证据与复现](docs/experiments/m710_transverse_scissor_20261020/README.md)
 
+[J2／剪叉／铰销专用三维对比](docs/experiments/m710_j2_scissor_viewer_20261020/j2-scissor-comparison.html)：固定 40 个实际失败构型，并排对比 460/300/260 mm 中心距，提供部件高亮、原记录表面距离和官方 J2 网格截面。表面距离通过不解释为实体内含已排除；详见[查看说明](docs/experiments/m710_j2_scissor_viewer_20261020/README.md)。
+
 56 项定向检查通过。两档保持为显式配置，原有默认布局保留；没有缩小臂截面、删除碰撞体或放宽 5 mm 净空。详情区分固定构型成对诊断与一次新的原生规划。
 
 # 历史：c00 Hmin 未完成，纵带缩至 0.60 m 仍无合格接近（2026-10-20）
