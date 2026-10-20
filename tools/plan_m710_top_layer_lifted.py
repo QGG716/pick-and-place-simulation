@@ -34,7 +34,7 @@ def save(path,data):
     pending.replace(path)
 
 
-def checkpoint_candidate(state,plan,client,folder,out,row,connections):
+def checkpoint_candidate(state,plan,client,folder,out,row,connections,*,initial_cycle_count=0):
     proposed=deepcopy(state);proposed.commit(plan)
     save(folder/'plan.json',plan)
     save(folder/'requests.json',client.records)
@@ -45,8 +45,8 @@ def checkpoint_candidate(state,plan,client,folder,out,row,connections):
     if any(not (folder/name).is_file() or (folder/name).stat().st_size==0 for name in required):
         raise ValueError('CHECKPOINT_REQUIRED_EVIDENCE_MISSING')
     save(out/'checkpoint.json',dict(root=proposed.root(),completed_count=len(proposed.ledger),
-        current_run_completed_count=len(proposed.cycles),
-        historical_completed_count=len(proposed.ledger)-len(proposed.cycles),
+        current_run_completed_count=len(proposed.cycles)-initial_cycle_count,
+        historical_completed_count=len(proposed.ledger)-len(proposed.cycles)+initial_cycle_count,
         plan_file=str(folder/'plan.json'),required_evidence_files=required))
     return proposed
 
@@ -73,6 +73,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
     state=initial_state or BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),
         float(original.receiver.center[2]+original.receiver.half_extents[2]))
     historical_count=len(state.ledger);historical_ledger=deepcopy(state.ledger)
+    initial_cycle_count=len(state.cycles)
     scope=tuple(frozen.target_ids if target_ids is None else target_ids)
     def remaining():
         return [n for n in frozen.remaining_ids([e['target_id'] for e in state.ledger]) if n in scope]
@@ -84,7 +85,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
             completed_count=n,target_count=len(scope),remaining_target_ids=remaining(),
             historical_completed_count=historical_count,historical_ledger=historical_ledger,
             release_count=n,nominal_first_contact_count=n,separation_count=n,ideal_drain_count=n,
-            ledger=state.ledger,cycles=state.cycles,attempts=attempts,planning_wall_s=perf_counter()-began,
+            ledger=state.ledger,cycles=state.cycles[initial_cycle_count:],attempts=attempts,planning_wall_s=perf_counter()-began,
             lower_layer_preserved=all(any(box_message(b)==box_message(o) for b in state.cartons) for o in original.cartons if o.name not in frozen.target_ids),
             hardware_lift_duration_s=None,nominal_drop_assumed=True,ideal_receiver_drain_assumed=True,**flags)
     while remaining():
@@ -109,6 +110,13 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 if not business_options or business_options[0]['template']!='FRONT_DIRECT_HMIN' or not business_options[0]['reception']['junction']:
                     raise ValueError('REQUESTED_JUNCTION_FRONT_HMIN_NOT_APPLICABLE')
             for option in business_options:
+                domain=getattr(args,'receive_height_range',None)
+                if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
+                    attempts.append(dict(target_id=target.name,option=option,complete=False,
+                        failure='RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE',
+                        classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
+                        receive_height_range_m=list(domain),wall_s=0.))
+                    continue
                 options.extend(synchronization_options(option,state.height,low))
             eccentric=getattr(args,'right_front_eccentric',False)
             visits=options;total_visits=len(options)
@@ -152,7 +160,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.eccentric_frozen_layer=frozen if eccentric else None
-                    c.upper_arm_preference_enabled=eccentric
+                    c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
                     c.height_visit_deadline=min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.))
@@ -179,7 +187,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     if plan is not None:
                         # Save all required native evidence and the proposed
                         # checkpoint BEFORE changing the completed batch root.
-                        state=checkpoint_candidate(state,plan,client,folder,out,dict(row,wall_s=perf_counter()-started),c.connection_attempts)
+                        state=checkpoint_candidate(state,plan,client,folder,out,dict(row,wall_s=perf_counter()-started),
+                            c.connection_attempts,initial_cycle_count=initial_cycle_count)
                         row['complete']=True;accepted=True;evidence_saved=True
                         print(json.dumps(dict(seed=seed,completed=len(state.ledger)-historical_count,
                             historical_completed=historical_count,terminal_q=state.q.tolist(),height=state.height)),flush=True)
