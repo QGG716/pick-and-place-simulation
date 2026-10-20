@@ -1,0 +1,130 @@
+{
+  "analyze.py": {
+    "bytes": 2987,
+    "sha256": "9475b7bef0adac9199efec80e886aa1686207f187ddc2c2a58c402747555bf71"
+  },
+  "browser-checks.json": {
+    "bytes": 34284,
+    "sha256": "839545848d7754e58ac507aa7e6298895136628589c2c5fc2335f9ecd6c835c1"
+  },
+  "candidate-prefix-side.mp4": {
+    "bytes": 49822,
+    "sha256": "db52e4f05c1e1646fbece915870fc41a84d7f6ae5a4690964010238130c64e69"
+  },
+  "failed-startup-worker.sh": {
+    "bytes": 172,
+    "sha256": "a4182cade10226d2556b9fc8b498974d831f27e75eb8e5e14b772c82efec41fc"
+  },
+  "ffprobe.json": {
+    "bytes": 2274,
+    "sha256": "6c2ddcefa7bd737a5ce197903493125d1e008c9affc7a4771809c3d15fc0471f"
+  },
+  "focused-tests-final.log": {
+    "bytes": 180,
+    "sha256": "c1f467e7b20eca5a974eb2615e547a2216e0779445042db5fbec5cd8ec62ed72"
+  },
+  "formal-build.log": {
+    "bytes": 6438,
+    "sha256": "551951376596ecee7bd87223792e96d6150109c7cf0ac946364a7a43873dc65c"
+  },
+  "formal-envfixed-verification.json": {
+    "bytes": 583,
+    "sha256": "4e5414b6e5b19d60884570558892461788a03e8394d5276edccc4fa2af524df3"
+  },
+  "formal-verification.json": {
+    "bytes": 583,
+    "sha256": "52d7220ef242ed3932bf3262b5e629b26ae0f0911b0ca798f5af92faa5c47d7e"
+  },
+  "frozen-native-tests.log": {
+    "bytes": 107,
+    "sha256": "4f842ad50a83393a941674ec2f5b9edf3e80b1840b8bb3c89494098025af593a"
+  },
+  "initial-view.png": {
+    "bytes": 120629,
+    "sha256": "4c67e8bbec110db7e1a51e3ddd6ea155ed292d89c612268cf685c3b8d9f18b80"
+  },
+  "metrics.json": {
+    "bytes": 65664,
+    "sha256": "14f3d6ef2db60102bfdec538913fe6c836ccd10bdbd34637acd5039b00f19788"
+  },
+  "native-tests.log": {
+    "bytes": 107,
+    "sha256": "4f842ad50a83393a941674ec2f5b9edf3e80b1840b8bb3c89494098025af593a"
+  },
+  "official-asset-hashes.json": {
+    "bytes": 3564,
+    "sha256": "d3d2867233baec1a79628303f3acf9c8162d4c7562aac937fc3bb41c72f6156a"
+  },
+  "offline-viewers.zip": {
+    "bytes": 5360975,
+    "sha256": "0c2911a094c93de376482ae2c523a7035dcfeb9ae60f1919389d6f41c62bf33b"
+  },
+  "predecessor-preflight.json": {
+    "bytes": 58611,
+    "sha256": "6ec3274ee5ccfa7a954b66b34804effa3127aa18880e16836115b843408f06ca"
+  },
+  "raw-runs.tar.gz": {
+    "bytes": 8950972,
+    "sha256": "0f5a0ffcbb15bafdd2eeb207c71872c23f581ed62afdfd3ab0a41fd6786b3622"
+  },
+  "README.md": {
+    "bytes": 5418,
+    "sha256": "6f2672a97181af227df404afcc5a36b4d73b84c8db4f088c815b8ea86a75f9a7"
+  },
+  "recording-initial.png": {
+    "bytes": 120629,
+    "sha256": "4c67e8bbec110db7e1a51e3ddd6ea155ed292d89c612268cf685c3b8d9f18b80"
+  },
+  "side-view.png": {
+    "bytes": 28757,
+    "sha256": "b3967966e4652cedb56dc69d7e46b4ae61ae4b0a90292611a37a4e9f83c6e3d1"
+  },
+  "source-manifest.json": {
+    "bytes": 32672,
+    "sha256": "f1bcf145602a1147a87cd2877520dc6c9b383d91a950ff30acc2cc5429790698"
+  },
+  "width-browser-checks.json": {
+    "bytes": 34314,
+    "sha256": "7c41c8ac15d73f5f9e7c07d5405cc0f81a5b370ced00328c2efb6437a94c27df"
+  },
+  "width-ffprobe.json": {
+    "bytes": 2273,
+    "sha256": "0fc568fac66953e6d0fad37a282cab1e088e56ff01f87fe7389bc20413533044"
+  },
+  "width-native-reuse.json": {
+    "bytes": 5903,
+    "sha256": "48bab7ca1bc178fd76b074be2740e0123ff1f4323df1f7f4464f2eef251186dd"
+  },
+  "width-recording-initial.png": {
+    "bytes": 120811,
+    "sha256": "6611f9349373cd8ff238741e1b71fb9c4f042d520e95cc097b807517c0960b01"
+  },
+  "width-source-manifest.json": {
+    "bytes": 32817,
+    "sha256": "698c96ff83fa9aa31c6b4d37689e3c9d019c0b40a8036e53e6538850113ca64a"
+  },
+  "width-summary.json": {
+    "bytes": 30722,
+    "sha256": "7449f4c4a1d42d1b51d9c91212332663b0aaf311d7c896e7d8043c0d3910b252"
+  },
+  "width-tests.log": {
+    "bytes": 99,
+    "sha256": "1d626bce8a5978fd1ebcf6a972929d574a75ae5a5a39f78006f33290f9290911"
+  },
+  "width060-prefix-side.mp4": {
+    "bytes": 48899,
+    "sha256": "e37267698479d099ff0fd74aa5f234ca4b97e112c57a4c9e74014a0ab9dc9852"
+  },
+  "width060-raw.tar.gz": {
+    "bytes": 8776459,
+    "sha256": "e1d0b6a48e4b4f7dea57148bfeabc0d5b7186c3b1747a609e102b3d3486636dc"
+  },
+  "width_metrics.py": {
+    "bytes": 2732,
+    "sha256": "42214d5ac9a0d8fdbb64adeae4b86d8056bf3d427631e558697aa4ae5790dc42"
+  },
+  "worker-fixed.sh": {
+    "bytes": 292,
+    "sha256": "8194a132b15993de6c4b6b19d9c35a2beb3120687cf72877802dcfd8e88f1654"
+  }
+}

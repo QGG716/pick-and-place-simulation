@@ -1,4 +1,12 @@
-# 当前结论：接缝全行程保持，连续顶层两批 5/5（2026-10-20）
+# 当前结论：c00 Hmin 未完成，纵带缩至 0.60 m 仍无合格接近（2026-10-20）
+
+已实施交汇区正抓直出必须在 Hmin=1.75 m 抽离，并禁用抽离后持箱升带。从历史 c01 的实际末态恢复 37 箱，仅重新规划 c00；新增 **0/1、37→37 箱**。按用户追加指令将纵带从 0.70 m 缩至 0.60 m 后，返回 32 次数值 IK 成功，但展开后的 144 个目标构型请求均被原净空检查拒绝，仍未生成接近轨迹。已有拒绝涉及 J2/J3 与横带、纵带及横带升降臂；365 个高度/同步选项未搜索，不能宣称全局不可卸。
+
+[中文报告](docs/m710_junction_hmin_20261020.md) · [两轮离线回放 ZIP](docs/experiments/m710_junction_hmin_20261020/offline-viewers.zip) · [0.60 m 侧视短视频](docs/experiments/m710_junction_hmin_20261020/width060-prefix-side.mp4) · [原始记录与复现命令](docs/experiments/m710_junction_hmin_20261020/README.md)
+
+0.60 m 为显式试验配置（`--longitudinal-060`），历史 0.70 m 配置保留。未接触、附着、释放或清空，无 Isaac 或物理执行。`qualification_status=NOT_EVALUATED`、`continuous_swept_proof=false`、`physical_execution=NOT_RUN`、`execution_ready=false`。
+
+# 历史：接缝全行程保持，连续顶层两批 5/5（2026-10-20）
 
 横带向 −Y 扩展，纵带采用上端随横带、低端水平滑移；CPU、原生碰撞、三维显示与 USD 使用同源实体。新连续链已取消 OMPL 固定次数配额，空载接近采用合法 IK 比较、原生 PTP/LIN 优先和 RRT 回退。
 

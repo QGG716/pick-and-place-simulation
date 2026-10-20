@@ -40,6 +40,7 @@ function draw(t){time=Math.max(0,Math.min(D.duration,t));const s=D.segments.find
  $('seek').value=time;$('clock').textContent=`${time.toFixed(1)} / ${D.duration.toFixed(1)} s`;
  $('counts').textContent=`${D.single_junction?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count} · 保留下层 ${D.lower_count}`+(D.single_junction?` · 历史完成 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`:'');
  $('detail').textContent=`${s.target||'—'}\n${s.option.template||'—'}\nH=${height.toFixed(3)} m\n${s.phase}\n${s.source}`;
+ if(D.geometry_variant)$('detail').textContent+=`\n纵带宽度 ${D.geometry_variant.from_width_m.toFixed(2)} → ${D.geometry_variant.to_width_m.toFixed(2)} m · Ymin 保持`;
  if(D.single_junction&&!D.incomplete_run){const e=D.junction_evidence,o=e.option;
  $('detail').textContent+=`\n\n最终完整接受方案（非搜索试演）\nH_current 起始 ${o.H_current_m.toFixed(3)} m\nH_temporary ${o.H_temporary_m.toFixed(3)} m\nH_receive ${o.H_receive_m.toFixed(3)} m\n当前实际带高 ${height.toFixed(3)} m\n交汇区 · 出料 −X · 吸具工作轴 +X\n同步 ${e.receive_sync_location}\n抽离起点带高 ${e.actual_extraction_height_m.toFixed(3)} m\n名义落差 ${D.times.nominal_drop_distance_m.toFixed(3)} m\n第三种同步方案已禁用\n首次触带箱顶 ${e.first_touch_tool_geometry.box_top_m.toFixed(3)} m\n相关工具下缘净高 ${e.first_touch_tool_geometry.outfeed_vertical_envelope_gap_m?.toFixed(3)??'不适用'} m\n失败及候选轨迹见独立候选查看器`;}
  if(D.incomplete_run){const o=D.junction_evidence.option;

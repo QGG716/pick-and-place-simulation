@@ -1,0 +1,22 @@
+{
+  "source_commit": "7be1f05c2c3d3d0af53198199e5ec7d446253bd4",
+  "runs": [
+    {
+      "seed": 71070,
+      "status": "PASS_FAILURE_RETENTION_UNCHANGED_COMMITTED_ROOT",
+      "completed": 0,
+      "targets": 1,
+      "historical_completed": 3,
+      "initial_cartons": 37,
+      "remaining_cartons": 37,
+      "native_stages": 0,
+      "coupled_native_samples": 0,
+      "nominal_drop_samples": 0,
+      "lower_cartons_unchanged": 35,
+      "failed_attempts": 5,
+      "planning_wall_s": 91.91530108079314
+    }
+  ],
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

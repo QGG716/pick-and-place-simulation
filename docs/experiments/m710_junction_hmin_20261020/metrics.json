@@ -1,0 +1,2749 @@
+{
+  "source_commit": "7be1f05c2c3d3d0af53198199e5ec7d446253bd4",
+  "worker_sha256": "1498f580d4150efee5a91198155b3bcffe84277ad08e19cf7408a454532e46ab",
+  "status": "INCOMPLETE_RETAINED",
+  "completed": 0,
+  "targets": 1,
+  "initial_count": 37,
+  "final_count": 37,
+  "historical_completed": 3,
+  "lower_preserved": true,
+  "planning_wall_s": 91.91530108079314,
+  "all_native_request_wall_s": 53.894006974995136,
+  "failed_initialization_wall_s": 6.188265200704336,
+  "failed_initialization_attempts": [
+    {
+      "target_id": "carton_l07_c00",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.1,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.40000000000000013,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -0.40000000000000013
+            ],
+            [
+              -0.9,
+              -0.40000000000000013
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.75,
+        "pre_approach_height_m": 1.75,
+        "synchronization": "ALREADY_AT_RECEIVE",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "root": {
+        "q_rad": [
+          -1.4198698080202128,
+          -0.45344173919354397,
+          -0.346623102268061,
+          1.5870092577268429,
+          1.4207365736267565,
+          -4.820426009497792
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 2.0500000000000003,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l07_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l07_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "folder": "attempt-001",
+      "complete": false,
+      "failure": "MoveItUnavailable: PIPELINE_UNAVAILABLE:ompl",
+      "classification": "REQUEST_FAILURE_RETAINED",
+      "wall_s": 5.88251656293869,
+      "prior_calls": 0
+    }
+  ],
+  "attempts": [
+    {
+      "folder": "attempt-001",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.1,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.40000000000000013,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -0.40000000000000013
+            ],
+            [
+              -0.9,
+              -0.40000000000000013
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.75,
+        "pre_approach_height_m": 1.75,
+        "synchronization": "ALREADY_AT_RECEIVE",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100175754,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100175754,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "119",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 77,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.12570318952202797
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 74,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.116723656654358,
+      "request_wall_s": 12.877178531140089,
+      "statuses": {
+        "READY": 1,
+        "SUCCESS": 13,
+        "INVALID_GOAL_CLEARANCE": 36,
+        "NATIVE_IK_FAILED": 69
+      }
+    },
+    {
+      "folder": "attempt-002",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.1,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.40000000000000013,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -0.40000000000000013
+            ],
+            [
+              -0.9,
+              -0.40000000000000013
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.7,
+        "pre_approach_height_m": 1.7,
+        "synchronization": "PREGRASP",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100028447,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100028447,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "121",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 79,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.125618115067482
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 76,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.630104169249535,
+      "request_wall_s": 13.779501747339964,
+      "statuses": {
+        "READY": 1,
+        "SUCCESS": 13,
+        "INVALID_GOAL_CLEARANCE": 36,
+        "NATIVE_IK_FAILED": 71
+      }
+    },
+    {
+      "folder": "attempt-003",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.1,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.40000000000000013,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -0.40000000000000013
+            ],
+            [
+              -0.9,
+              -0.40000000000000013
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.7,
+        "pre_approach_height_m": 1.7,
+        "synchronization": "CONTACT",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.102840069,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.102840069,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "119",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 77,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.12710103392601013
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 74,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.684272576123476,
+      "request_wall_s": 13.901824675500393,
+      "statuses": {
+        "READY": 1,
+        "SUCCESS": 13,
+        "INVALID_GOAL_CLEARANCE": 36,
+        "NATIVE_IK_FAILED": 69,
+        "NATIVE_IK_REQUEST_DEADLINE": 1
+      }
+    },
+    {
+      "folder": "attempt-004",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.1,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.40000000000000013,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -1.1
+            ],
+            [
+              -0.20000000000000007,
+              -0.40000000000000013
+            ],
+            [
+              -0.9,
+              -0.40000000000000013
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.65,
+        "pre_approach_height_m": 1.65,
+        "synchronization": "PREGRASP",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.101890964,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.101890964,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "116",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 74,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.127449169754982
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 70,
+        "retained_legal_configurations": 0,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.603171404451132,
+      "request_wall_s": 13.33550202101469,
+      "statuses": {
+        "READY": 1,
+        "SUCCESS": 13,
+        "INVALID_GOAL_CLEARANCE": 36,
+        "NATIVE_IK_FAILED": 66
+      }
+    }
+  ],
+  "cycles": [],
+  "asset_root": "/work-seam-approach-formal-v2-20261020",
+  "runtime_wrapper_sha256": "8194a132b15993de6c4b6b19d9c35a2beb3120687cf72877802dcfd8e88f1654",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "failed_candidate_evidence": [
+    {
+      "attempt": "attempt-001",
+      "coupled_lifts": [
+        {
+          "from_height_m": 2.0500000000000003,
+          "to_height_m": 1.75,
+          "maximum_height_step_m": 0.009677419354838719,
+          "continuous_swept_proof": false
+        }
+      ],
+      "coupled_samples": 32,
+      "all_coupled_samples_passed": true,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-002",
+      "coupled_lifts": [
+        {
+          "from_height_m": 2.0500000000000003,
+          "to_height_m": 1.7,
+          "maximum_height_step_m": 0.009722222222222231,
+          "continuous_swept_proof": false
+        }
+      ],
+      "coupled_samples": 37,
+      "all_coupled_samples_passed": true,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-003",
+      "coupled_lifts": [
+        {
+          "from_height_m": 2.0500000000000003,
+          "to_height_m": 1.7,
+          "maximum_height_step_m": 0.009722222222222231,
+          "continuous_swept_proof": false
+        }
+      ],
+      "coupled_samples": 37,
+      "all_coupled_samples_passed": true,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-004",
+      "coupled_lifts": [
+        {
+          "from_height_m": 2.0500000000000003,
+          "to_height_m": 1.65,
+          "maximum_height_step_m": 0.009756097560975618,
+          "continuous_swept_proof": false
+        }
+      ],
+      "coupled_samples": 42,
+      "all_coupled_samples_passed": true,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    }
+  ],
+  "unsearched_height_sync_options": 365,
+  "reached_contact": false,
+  "release_and_tool_bottom_evidence": "NOT_REACHED_NO_RELEASE_Q"
+}
