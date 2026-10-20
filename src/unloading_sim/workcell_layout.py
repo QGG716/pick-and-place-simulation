@@ -558,10 +558,11 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         }
 
     seam = layout.data["conveyors"].get("coupling", {}).get("geometry_revision") == "upper_seam_lower_slider_v3"
+    narrow = layout.data["evidence"]["approval_basis"] == "user_20261020_longitudinal_width_060_ymin_fixed"
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
-        "longitudinal_size_xy": vector(2.0 * longitudinal.half_extents[:2], [2.8, 0.7]),
+        "longitudinal_size_xy": vector(2.0 * longitudinal.half_extents[:2], [2.8, 0.6 if narrow else 0.7]),
         "transverse_surface_z": scalar(_interval(world["conveyor_transverse"], 2)[1], 0.6),
         "longitudinal_surface_z": scalar(_interval(world["conveyor_longitudinal"], 2)[1], 0.6),
         "transverse_front_x": scalar(_interval(world["conveyor_transverse"], 0)[1], -0.2),
@@ -601,6 +602,14 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "stack_width": scalar(float(np.ptp(stack_corners[:, 1])), 2.08),
         "stack_height": scalar(float(np.ptp(stack_corners[:, 2])), 2.4),
     }
+    if narrow:
+        # User-authorized width experiment: preserve the outer seam edge.
+        # The narrowed inner edge is separated from the chassis by 100 mm;
+        # it is no longer reported as the historical chassis contact.
+        checks.pop("chassis_longitudinal_join")
+        checks["narrow_longitudinal_y_bounds"] = vector(_interval(world["conveyor_longitudinal"],1),[-1.1,-.5])
+        checks["narrow_longitudinal_chassis_gap"] = scalar(
+            _interval(world["chassis"],1)[0]-_interval(world["conveyor_longitudinal"],1)[1],.1)
     return {
         "schema": "m710id70_layout_numeric_audit_v1",
         "layout_id": layout.data["layout_id"],

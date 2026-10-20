@@ -1,6 +1,7 @@
 """One c00 task from the committed c01 predecessor, not a new top-layer batch."""
 import argparse
 from copy import deepcopy
+from dataclasses import replace
 import gzip
 import hashlib
 import json
@@ -12,6 +13,7 @@ import numpy as np
 from plan_m710_top_layer_lifted import (
     ROOT,save,source_identity,run_seed,load_layout_motion_policy,build_verified_motion_input,
     _build_automatic_trajectory_connector,FrozenTopLayer,BatchState,box_message)
+from unloading_sim.workcell_layout import load_workcell_layout
 
 BASELINE="6416c192d1bae5a93e82418b4c8ae3d6c3e6280a"
 ARCHIVED_SOURCE="feba0c5491ffe4958e61e30ee3baa3d4ee954e5e"
@@ -80,6 +82,8 @@ def main():
     p.add_argument("--worker-command",required=True);p.add_argument("--worker-binary",type=Path,required=True)
     p.add_argument("--source-commit",required=True);p.add_argument("--source-manifest",type=Path)
     p.add_argument("--development",action="store_true")
+    p.add_argument("--longitudinal-060",action="store_true",
+        help="Explicit user-authorized width experiment; preserve the archived q/cartons and Ymin")
     args=p.parse_args()
     args.seed=71070;args.task_budget_s=300.;args.stage_budget_s=90.;args.ipc_timeout_s=100.
     args.direct_first=True;args.junction_only=True
@@ -90,11 +94,30 @@ def main():
     built=_build_automatic_trajectory_connector(original,policy.layout_validation.layout.robot())
     if built.connector is None:raise ValueError(built.failure_reason)
     state,origin=predecessor(args.archive,original,built.connector,frozen)
-    args.expected_model_identity=origin["archived_model_identity"]
+    args.expected_model_identity=deepcopy(origin["archived_model_identity"])
+    if args.longitudinal_060:
+        layout=load_workcell_layout(ROOT/"configs/workcells/m710id70_unloading_layout_v1_longitudinal_060.yaml")
+        policy=replace(policy,layout_validation=replace(policy.layout_validation,layout=layout))
+        variant=build_verified_motion_input(policy,ROOT)
+        if [box_message(b) for b in variant.cartons]!=[box_message(b) for b in original.cartons]:
+            raise ValueError("WIDTH_EXPERIMENT_CHANGED_CARTONS")
+        new_built=_build_automatic_trajectory_connector(variant,layout.robot())
+        if new_built.connector is None:raise ValueError(new_built.failure_reason)
+        origin["authorized_geometry_change"]=dict(
+            source="USER_FOLLOWUP_LONGITUDINAL_WIDTH",from_width_m=.7,to_width_m=.6,
+            alignment="YMIN_FIXED",from_layout_fingerprint=original.policy.layout_validation.layout.layout_fingerprint,
+            to_layout_fingerprint=layout.layout_fingerprint,config=str(layout.config_path),
+            previous_policy_fingerprint=original.policy.policy_fingerprint,new_policy_fingerprint=policy.policy_fingerprint,
+            cartons_unchanged=True,archived_q_unchanged=True,old_geometry_results_reused=False)
+        args.expected_model_identity["policy_fingerprint"]=policy.policy_fingerprint
+        args.expected_model_identity["validator_identity"]=new_built.connector.validator_identity
+        original,built=variant,new_built
     save(args.output/"predecessor.json",origin)
     save(args.output/"protocol.json",dict(**identity,seeds=[71070],scope="ONE_NEW_JUNCTION_C00",
         frozen=frozen.evidence(),scoped_target_ids=["carton_l07_c00"],historical_completed_count=3,
         original_cartons=[box_message(b) for b in original.cartons],configured_initial_q=state.q.tolist(),
+        active_layout_file=str(original.policy.layout_validation.layout.config_path.relative_to(ROOT)),
+        authorized_geometry_change=origin.get("authorized_geometry_change"),
         initial_root=state.root(),worker_sha256=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest(),
         task_budget_s=300.,stage_budget_s=90.,height_visit_prefix_slice_s=20.,
         height_resolution_m=.01,height_coarse_priority_spacing_m=.05,

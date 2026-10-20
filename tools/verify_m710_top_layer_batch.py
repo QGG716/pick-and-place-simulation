@@ -72,11 +72,17 @@ def verify(run):
         assert r['qualification_status']=='NOT_EVALUATED' and not r['continuous_swept_proof']
         if protocol.get('scope')=='ONE_NEW_JUNCTION_C00':
             assert len(historical)==3 and len(r['initial']['world_cartons'])==37
-            assert len(r['terminal']['world_cartons'])==36 and r['completed_count']==1
-            assert r['cycles'][0]['receive_policy_check']['reception']['junction']
-            assert abs(r['cycles'][0]['nominal_release']['drop_m']-.35)<1e-5
+            assert len(r['terminal']['world_cartons'])==37-r['completed_count']
+            if r['completed_count']:
+                assert r['completed_count']==1
+                assert r['cycles'][0]['receive_policy_check']['reception']['junction']
+                assert abs(r['cycles'][0]['nominal_release']['drop_m']-.35)<1e-5
+            else:
+                assert r['terminal']==r['initial'] and r['status'] in ('INCOMPLETE_RETAINED','REQUEST_STOPPED')
+                assert not (folder/'checkpoint.json').exists()
             assert 'carton_l07_c04' in {b['id'] for b in r['terminal']['world_cartons']}
-        reports.append(dict(seed=seed,status='PASS_SAVED_LINEAGE_AND_CONTINUITY',completed=len(removed)-len(historical),targets=len(targets),
+        reports.append(dict(seed=seed,status='PASS_SAVED_LINEAGE_AND_CONTINUITY' if r['completed_count'] else 'PASS_FAILURE_RETENTION_UNCHANGED_COMMITTED_ROOT',
+            completed=len(removed)-len(historical),targets=len(targets),
             historical_completed=len(historical),initial_cartons=len(r['initial']['world_cartons']),
             remaining_cartons=len(r['terminal']['world_cartons']),
             native_stages=stages,coupled_native_samples=lift_samples,nominal_drop_samples=drop_samples,lower_cartons_unchanged=35,

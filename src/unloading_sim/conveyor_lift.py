@@ -250,7 +250,7 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         if not lower[0]<x<upper[0]:raise ValueError("LONGITUDINAL_SUPPORT_OUTSIDE_FRAME")
         underside=low+(x-lower[0])*s/c-thickness/c
         items,info=scissor_stack(f"lift_longitudinal_{'rear' if side<0 else 'near'}",
-            [x,lower[1]-.32,base_z],[0,1,0],underside-.09,ScissorSpec(4,.60,.025,.018),floor_z=floor)
+            [x,lower[1]-(.32+(width-.70)/2),base_z],[0,1,0],underside-.09,ScissorSpec(4,.60,.025,.018),floor_z=floor)
         parts.extend(items);stacks.append(info)
         parts.append(_box(f"{info['id']}_swivel_head",np.array([x,lower[1],underside])-rotation[:,2]*.01,
             [.08,.60,.02],rotation))
