@@ -172,6 +172,7 @@ def _obb_record(box: OBB, *, shape: str = "box", **extra: Any) -> dict[str, Any]
         "pose_world": box.world_from_local.tolist(),
         "center_m": box.center.tolist(),
         "half_extents_m": box.half_extents.tolist(),
+        **({"solid": box.solid} if getattr(box, "solid", None) else {}),
         **extra,
     }
 
@@ -413,7 +414,14 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     _vector(data["chassis"]["size_xyz_m"], 3, "chassis.size_xyz_m", positive=True)
     _vector(data["chassis"]["center_a_m"], 3, "chassis.center_a_m")
     conveyors = _mapping(data["conveyors"], "conveyors")
-    _keys(conveyors, {"body_thickness_m", "body_thickness_source", "surface_z_a_m", "transverse", "longitudinal"}, "conveyors")
+    conveyor_keys = {"body_thickness_m", "body_thickness_source", "surface_z_a_m", "transverse", "longitudinal"}
+    _keys(conveyors, conveyor_keys | ({"coupling"} if "coupling" in conveyors else set()), "conveyors")
+    if "coupling" in conveyors:
+        coupling = conveyors["coupling"]
+        _keys(coupling, {"geometry_revision", "maximum_surface_height_world_m"}, "conveyors.coupling")
+        if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
+            raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
+        _positive(coupling["maximum_surface_height_world_m"], "coupling.maximum_surface_height_world_m")
     _positive(conveyors["body_thickness_m"], "conveyors.body_thickness_m")
     _positive(conveyors["surface_z_a_m"], "conveyors.surface_z_a_m", allow_zero=True)
     for name in ("transverse", "longitudinal"):
@@ -549,19 +557,20 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
             "expected": reference.tolist(),
         }
 
+    seam = layout.data["conveyors"].get("coupling", {}).get("geometry_revision") == "upper_seam_lower_slider_v3"
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
-        "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 1.5]),
+        "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
         "longitudinal_size_xy": vector(2.0 * longitudinal.half_extents[:2], [2.8, 0.7]),
         "transverse_surface_z": scalar(_interval(world["conveyor_transverse"], 2)[1], 0.6),
         "longitudinal_surface_z": scalar(_interval(world["conveyor_longitudinal"], 2)[1], 0.6),
         "transverse_front_x": scalar(_interval(world["conveyor_transverse"], 0)[1], -0.2),
-        "longitudinal_front_x": scalar(_interval(world["conveyor_longitudinal"], 0)[1], -0.2),
-        "fixed_assembly_x_extent": scalar(assembly_bounds["x"][1] - assembly_bounds["x"][0], 2.8),
+        "longitudinal_front_x": scalar(_interval(world["conveyor_longitudinal"], 0)[1], -0.9 if seam else -0.2),
+        "fixed_assembly_x_extent": scalar(assembly_bounds["x"][1] - assembly_bounds["x"][0], 3.5 if seam else 2.8),
         "fixed_assembly_y_extent": scalar(assembly_bounds["y"][1] - assembly_bounds["y"][0], 2.2),
         "chassis_transverse_join": _contact_check(chassis, transverse, 0, 1, tolerance),
         "chassis_longitudinal_join": _contact_check(chassis, longitudinal, 1, -1, tolerance),
-        "transverse_longitudinal_join": _contact_check(transverse, longitudinal, 1, -1, tolerance),
+        "transverse_longitudinal_join": _contact_check(transverse, longitudinal, 0 if seam else 1, -1, tolerance),
         "chassis_floor_contact": {"status": "PASS" if abs(_interval(world["chassis"], 2)[0]) <= tolerance else "FAIL", "gap_m": _interval(world["chassis"], 2)[0]},
         "robot_mount_surface": {"status": "PASS" if abs(base[2] - _interval(world["chassis"], 2)[1]) <= tolerance else "FAIL", "gap_m": float(base[2] - _interval(world["chassis"], 2)[1])},
         "robot_base_origin_world": vector(base, [-1.325, 0.35, 0.6]),

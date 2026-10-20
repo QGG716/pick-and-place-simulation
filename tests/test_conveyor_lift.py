@@ -10,7 +10,7 @@ from unloading_sim.lifted_reception import LiftedConveyorScene
 @pytest.fixture(scope="module")
 def layout():
     return load_workcell_layout(Path(__file__).resolve().parents[1]/
-        "configs/workcells/m710id70_unloading_layout_v1.yaml")
+        "configs/workcells/m710id70_unloading_layout_v1_rear_fixed_20261019.yaml")
 
 
 def test_literal_dimensions_and_fixed_rear(layout):

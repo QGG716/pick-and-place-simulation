@@ -1,5 +1,6 @@
 #pragma once
 #include "process_geometry.h"
+#include "concept_solid.h"
 #include <fcl/fcl.h>
 
 namespace m710 {
@@ -48,10 +49,10 @@ inline ProcessJson receiverTransitionWorld(const ProcessJson& request,const Proc
 }
 inline double receiverBoxDistance(const ProcessJson& first,const ProcessJson& second) {
   const auto a=processBox(first),b=processBox(second);
-  fcl::Boxd ga(2*a.half.x(),2*a.half.y(),2*a.half.z()),gb(2*b.half.x(),2*b.half.y(),2*b.half.z());
+  auto ga=solidFcl(first),gb=solidFcl(second);
   fcl::DistanceRequestd req;req.gjk_solver_type=fcl::GST_LIBCCD;
   fcl::DistanceResultd result; // untruncated result, including first qualification cost
-  const double value=fcl::distance(&ga,a.pose,&gb,b.pose,req,result);
+  const double value=fcl::distance(ga.get(),a.pose,gb.get(),b.pose,req,result);
   if(!std::isfinite(value) || !std::isfinite(result.min_distance))
     throw std::runtime_error("RECEIVER_DISTANCE_UNKNOWN");
   return std::min(value,result.min_distance);

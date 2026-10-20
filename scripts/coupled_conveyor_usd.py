@@ -41,13 +41,21 @@ def create_stage(state, output, *, asset_config=None, asset_cache=None):
         if moving:
             api=UsdPhysics.RigidBodyAPI.Apply(body.GetPrim())
             api.CreateKinematicEnabledAttr(True)
-        cube=UsdGeom.Cube.Define(stage,path+"/Collider")
-        cube.CreateSizeAttr(1.)
-        cube.AddScaleOp().Set(Gf.Vec3f(*item["size"]))
+        if "solid" in item:
+            cube=UsdGeom.Mesh.Define(stage,path+"/Collider")
+            cube.CreatePointsAttr([Gf.Vec3f(*p) for p in item["solid"]["vertices_m"]])
+            cube.CreateFaceVertexCountsAttr([len(f) for f in item["solid"]["faces"]])
+            cube.CreateFaceVertexIndicesAttr([i for f in item["solid"]["faces"] for i in f])
+            cube.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
+            UsdPhysics.MeshCollisionAPI.Apply(cube.GetPrim()).CreateApproximationAttr("convexHull")
+        else:
+            cube=UsdGeom.Cube.Define(stage,path+"/Collider")
+            cube.CreateSizeAttr(1.)
+            cube.AddScaleOp().Set(Gf.Vec3f(*item["size"]))
         UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
         color=(.85,.49,.12) if item["id"].startswith("lift_") else (.20,.55,.65)
         cube.CreateDisplayColorAttr([Gf.Vec3f(*color)])
-        if item["id"].startswith("conveyor_") and asset_cache is not None:
+        if item["id"].startswith("conveyor_") and asset_cache is not None and "solid" not in item:
             from workcell_visuals import attach_a06_belts
             visual=UsdGeom.Xform.Define(stage,path+"/OfficialVisual")
             visual.AddScaleOp().Set(Gf.Vec3f(*item["size"]))
@@ -93,12 +101,13 @@ def apply_state(stage,state):
     if set(old)!={x["id"] for x in new["world"]}:
         raise ValueError("LIFT_OBJECT_IDENTITY_CHANGED")
     if (previous["mechanism"]["moving_object_ids"]!=new["mechanism"]["moving_object_ids"] or
-            previous["mechanism"]["rear_hinge_world"]!=new["mechanism"]["rear_hinge_world"]):
+            previous["mechanism"]["geometry_revision"]!=new["mechanism"]["geometry_revision"] or
+            (previous["mechanism"]["rear_fixed"] and previous["mechanism"]["rear_hinge_world"]!=new["mechanism"]["rear_hinge_world"])):
         raise ValueError("LIFT_CONTROL_BINDING_CHANGED")
     updates=[]
     for item in new["world"]:
         prior=old[item["id"]]
-        if item["size"]!=prior["size"] or item["category"]!=prior["category"]:
+        if item["size"]!=prior["size"] or item["category"]!=prior["category"] or item.get("solid")!=prior.get("solid"):
             raise ValueError("LIFT_GEOMETRY_IDENTITY_CHANGED")
         if item["id"] not in previous["mechanism"]["moving_object_ids"] and item!=prior:
             raise ValueError("UNRELATED_WORLD_OBJECT_CHANGED")

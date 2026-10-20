@@ -112,6 +112,8 @@ def coupled_conveyor_state(layout, surface_z_world_m, cartons=None, *, legacy_ge
     Separate scissor supports follow the tilted underside with swivel/sliding
     heads. This explicit opt-in scene does not reuse native pure-Z sweep proof.
     """
+    if not legacy_geometry and "coupling" in layout.data["conveyors"]:
+        return _seam_coupled_state(layout, surface_z_world_m, cartons)
     fixed = layout.fixed_components()
     transverse = next(b for b in fixed if b.name == "conveyor_transverse")
     longitudinal = next(b for b in fixed if b.name == "conveyor_longitudinal")
@@ -199,3 +201,104 @@ def coupled_conveyor_state(layout, surface_z_world_m, cartons=None, *, legacy_ge
     identity = canonical_digest(dict(layout=layout.layout_fingerprint, mechanism=info,
                                      geometry=[_obb_record(b) for b in boxes]))
     return CoupledConveyorState(boxes, info, identity)
+
+
+def _seam_coupled_state(layout, surface_z_world_m, cartons):
+    from .concept_solid import relieved_transverse
+    fixed=layout.fixed_components()
+    transverse=next(b for b in fixed if b.name=="conveyor_transverse")
+    longitudinal=next(b for b in fixed if b.name=="conveyor_longitudinal")
+    if any(not np.allclose(b.rotation,np.eye(3),atol=1e-12,rtol=0) for b in (transverse,longitudinal)):
+        raise ValueError("COUPLED_LIFT_REQUIRES_AXIS_ALIGNED_LAYOUT")
+    height=float(surface_z_world_m)
+    length,width,thickness=2*longitudinal.half_extents
+    low=float(layout.data["assembly"]["world_xyz_m"][2]+layout.data["conveyors"]["surface_z_a_m"])
+    limit=float(layout.data["conveyors"]["coupling"]["maximum_surface_height_world_m"])
+    rise=height-low
+    if (not np.isfinite([height,limit,rise]).all() or rise<0 or height>limit or
+            not low<limit<low+length or length*length-rise*rise<=0):
+        raise ValueError("LONGITUDINAL_FIXED_LENGTH_RANGE_EXCEEDED")
+    dx=float(np.sqrt(length*length-rise*rise))
+    c,s=dx/length,rise/length
+    theta=float(np.arctan2(rise,dx))
+    rotation=np.array([[c,0,-s],[0,1,0],[s,0,c]])
+    upper=np.array([transverse.center[0]-transverse.half_extents[0],longitudinal.center[1],height])
+    lower=upper-np.array([dx,0,rise])
+    if abs((transverse.center[1]-transverse.half_extents[1])-
+           (longitudinal.center[1]-width/2))>1e-9:
+        raise ValueError("CONVEYOR_YMIN_ALIGNMENT_INVALID")
+    trans0=OBB([*transverse.center[:2],height-transverse.half_extents[2]],
+        transverse.half_extents,np.eye(3),transverse.name,transverse.category)
+    max_rise=limit-low
+    slope=max_rise/np.sqrt(length*length-max_rise*max_rise)
+    trans=relieved_transverse(trans0,slope)
+    long=OBB((upper+lower)/2-rotation[:,2]*thickness/2,
+        longitudinal.half_extents,rotation,longitudinal.name,longitudinal.category)
+    floor=float(layout.data["world"]["floor_z_m"]);base_z=floor+.10
+    parts=[];stacks=[];mates=[]
+    for side in (-1,1):
+        x=transverse.center[0]+side*(transverse.half_extents[0]-.12)
+        items,info=scissor_stack(f"lift_transverse_{'left' if side<0 else 'right'}",
+            [x,transverse.center[1]-.625,base_z],[0,1,0],
+            height-2*transverse.half_extents[2]-.07,ScissorSpec(2,1.25),floor_z=floor)
+        parts.extend(items);stacks.append(info)
+        parts.append(_box(f"{info['id']}_mount",[x,transverse.center[1],height-.13],[.08,1.25,.02]))
+    # Fixed floor stations; heads swivel and slide against the inclined frame.
+    station=upper[0]-length*.40
+    for side in (-1,1):
+        x=station+side*.12
+        if not lower[0]<x<upper[0]:raise ValueError("LONGITUDINAL_SUPPORT_OUTSIDE_FRAME")
+        underside=low+(x-lower[0])*s/c-thickness/c
+        items,info=scissor_stack(f"lift_longitudinal_{'rear' if side<0 else 'near'}",
+            [x,lower[1]-.32,base_z],[0,1,0],underside-.09,ScissorSpec(4,.60,.025,.018),floor_z=floor)
+        parts.extend(items);stacks.append(info)
+        parts.append(_box(f"{info['id']}_swivel_head",np.array([x,lower[1],underside])-rotation[:,2]*.01,
+            [.08,.60,.02],rotation))
+        parts.append(_box(f"{info['id']}_neck",[x,lower[1]-.02,underside-.04],[.02,.50,.05]))
+    # The rear floor is finite. A fixed cantilever rail reaches outside the
+    # opening; both support stations stand on the existing floor inside it.
+    low_x=upper[0]-length
+    travel=length-np.sqrt(length*length-max_rise*max_rise)
+    rail_min=low_x-.25
+    floor_min=float(layout.data["trailer"]["opening_x_m"])
+    rail_max=max(low_x+travel+.18,floor_min+.30)
+    rail_z=low-.20
+    if rail_min>=rail_max or rail_z-.02<=floor:raise ValueError("INVALID_SLIDER_RAIL")
+    for side in (-1,1):
+        y=lower[1]+side*(width/2-.08);key=f"lift_lower_rail_{side+1}"
+        parts.append(_box(key,[(rail_min+rail_max)/2,y,rail_z],[rail_max-rail_min,.06,.04]))
+        for index,x in enumerate((floor_min+.07,rail_max-.07)):
+            foot=f"{key}_stand_{index}";h=rail_z-.02-floor
+            parts.append(_box(foot,[x,y,floor+h/2],[.08,.08,h]))
+            mates.extend([(foot,key,"FIXED_RAIL_STAND"),(foot,"trailer_floor","FOOT_ON_EXISTING_FLOOR")])
+        carriage=f"lift_lower_carriage_{side+1}"
+        parts.append(_box(carriage,[lower[0]-.14,y,low-.14],[.16,.10,.08]))
+        mates.extend([(carriage,key,"HORIZONTAL_X_SLIDER"),(carriage,"lift_lower_bearing","SLIDER_BEARING")])
+    parts.append(_box("lift_lower_bearing",lower+[-.04,0,-.05],[.20,width-.04,.10]))
+    mates.append(("lift_lower_bearing","conveyor_longitudinal","LOWER_REVOLUTE_BEARING"))
+    boxes=tuple(trans if b.name==trans.name else long if b.name==long.name else b for b in fixed)
+    boxes+=tuple(layout.cartons() if cartons is None else cartons)+tuple(parts)
+    if len({b.name for b in boxes})!=len(boxes):raise ValueError("DUPLICATE_SCENE_IDENTITY")
+    fixed_ids=[b.name for b in parts if "_foot_" in b.name or "_base_rail" in b.name or b.name.startswith("lift_lower_rail_")]
+    moving=[trans.name,long.name]+[b.name for b in parts if b.name not in fixed_ids]
+    info=dict(schema="m710_coupled_scissor_v3",geometry_revision="upper_seam_lower_slider_v3",
+        height_m=height,tilt_rad=theta,longitudinal_length_m=float(length),rear_fixed=False,
+        rear_hinge_world=lower.tolist(),near_tip_world=upper.tolist(),near_tip_slide_x_m=0.,
+        lower_slide_x_m=float(lower[0]-low_x),near_tip_within_transverse_x=True,
+        coupling="UPPER_SEAM_Z_FOLLOW_LOWER_HORIZONTAL_X_SLIDER",
+        moving_object_ids=moving,fixed_structure_ids=fixed_ids,stacks=stacks,
+        additional_mates=mates,maximum_surface_height_world_m=limit,
+        seam=dict(effective_surface_gap_m=0.,upper_edge_world=upper.tolist(),
+            ymin_world_m=float(transverse.center[1]-transverse.half_extents[1]),
+            underside_relief_slope=float(slope),maximum_underside_cutback_m=float(slope*2*transverse.half_extents[2]),
+            definition="COINCIDENT_TOP_EDGE_WITH_FIXED_CONVEX_UNDERSIDE_RELIEF",
+            contact_rule="ONLY_NONPENETRATING_DECLARED_SEAM"),
+        design_basis=dict(transverse_support="UNCHANGED_1.25M_BARS_AND_CENTRAL_MOUNTS_WITH_CANTILEVER_TOP",
+            lower_support="MOVING_CARRIAGE_ON_FIXED_CANTILEVER_RAILS; FEET_ON_FINITE_EXISTING_FLOOR",
+            solid_source="SAME_CONVEX_MESH_FOR_DISPLAY_NATIVE_AND_USD; OBB_IS_OUTWARD_BROAD_PHASE"),
+        geometry_origin="PROJECT_CONCEPT_NOT_MANUFACTURING_SPECIFICATION",
+        mechanical_stroke_rating="UNKNOWN",actuator_force_speed="UNKNOWN",mass_inertia="NOT_SPECIFIED",
+        handoff_qualification="NOT_EVALUATED",full_sweep_collision="NOT_EVALUATED",
+        native_receiver_transition="DISCRETE_COUPLED_V3_NOT_PURE_Z_SWEEP")
+    identity=canonical_digest(dict(layout=layout.layout_fingerprint,mechanism=info,geometry=[_obb_record(b) for b in boxes]))
+    return CoupledConveyorState(boxes,info,identity)

@@ -2,7 +2,8 @@
 #include "lifted_receiver.h"
 namespace m710 {
 inline bool coupledBinding(const ProcessJson& binding) {
-  return binding.is_object() && binding.value("schema","")=="m710_coupled_receiver_v2";
+  return binding.is_object() && (binding.value("schema","")=="m710_coupled_receiver_v2" ||
+      binding.value("schema","")=="m710_coupled_receiver_v3");
 }
 inline const ProcessJson& activeCoupledBinding(const ProcessJson& req,const ProcessJson& binding) {
   if(req.value("coupled_leg","")=="PRE_APPROACH")return binding.at("pre_approach_transition");
@@ -15,7 +16,7 @@ inline void validateCoupledBinding(const ProcessJson& b) {
     throw std::runtime_error("COUPLED_BINDING_INVALID");
   const auto& first=b.at("samples").front();
   std::map<std::string,ProcessJson> original;
-  for(const auto& box:first.at("world")) {processBox(box);original[box.at("id")]=box;}
+  for(const auto& box:first.at("world")) {processBox(box);validateSolid(box);original[box.at("id")]=box;}
   const auto moving=b.at("moving_ids").get<std::set<std::string>>();
   double previous=first.at("height_m");
   for(const auto& sample:b.at("samples")) {
@@ -68,7 +69,11 @@ inline ProcessJson coupledWorldFailure(const ProcessJson& sample,const ProcessJs
     const std::set<std::string> pair{a.id,b.id};if(mates.count(pair))continue;
     const Eigen::Vector3d ea=a.pose.linear().cwiseAbs()*a.half,eb=b.pose.linear().cwiseAbs()*b.half;
     if(((a.pose.translation()-b.pose.translation()).cwiseAbs()-ea-eb).cwiseMax(0.).norm()>.005000001)continue;
-    const double sat=processSignedGap(a,b);
+    const double sat=(world[i].contains("solid") || world[j].contains("solid"))?
+      solidSignedGap(world[i],world[j]):processSignedGap(a,b);
+    if(binding.value("geometry_revision","")=="upper_seam_lower_slider_v3" &&
+       pair==std::set<std::string>{"conveyor_transverse","conveyor_longitudinal"} &&
+       sat>=-1e-9)continue; // named, nonpenetrating top edge; penetration still rejects
     if(planes.count(pair) && sat>=-1e-9) {
       bool plane=false;for(int k=0;k<2;++k)if(std::abs(std::abs(a.pose.translation()[k]-b.pose.translation()[k])-ea[k]-eb[k])<=1e-9)plane=true;
       if(plane)continue;

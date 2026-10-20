@@ -117,7 +117,7 @@ class LiftedConveyorScene:
             coupled = coupled_conveyor_state(layout, height, cartons)
             boxes = coupled.boxes
             evidence.update(lift_mechanism="SCISSOR_KINEMATIC_CONCEPT",
-                scene_version="m710_coupled_scissor_v1", coupled_mechanism=coupled.mechanism,
+                scene_version=coupled.mechanism["schema"], coupled_mechanism=coupled.mechanism,
                 moving_object_ids=coupled.mechanism["moving_object_ids"],
                 native_transition_compatible=False)
         fingerprint = canonical_digest(dict(layout=layout.layout_fingerprint,

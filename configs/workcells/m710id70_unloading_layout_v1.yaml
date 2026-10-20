@@ -17,12 +17,15 @@ conveyors:
   body_thickness_m: 0.120
   body_thickness_source: retained_engineering_assumption_not_manufacturing_dimension
   surface_z_a_m: 0.600
+  coupling:
+    geometry_revision: upper_seam_lower_slider_v3
+    maximum_surface_height_world_m: 2.100
   transverse:
-    size_xy_m: [0.700, 1.500]
-    center_xy_a_m: [1.400, 0.0]
+    size_xy_m: [0.700, 2.200]
+    center_xy_a_m: [1.400, -0.350]
   longitudinal:
     size_xy_m: [2.800, 0.700]
-    center_xy_a_m: [0.350, -1.100]
+    center_xy_a_m: [-0.350, -1.100]
 robot:
   model: fanuc_m710id_70
   model_config: ../robots/fanuc_m710id_70.yaml

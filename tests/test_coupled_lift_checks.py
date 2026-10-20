@@ -11,7 +11,7 @@ from unloading_sim.workcell_layout import load_workcell_layout
 @pytest.fixture(scope="module")
 def layout():
     return load_workcell_layout(Path(__file__).resolve().parents[1]/
-                                "configs/workcells/m710id70_unloading_layout_v1.yaml")
+                                "configs/workcells/m710id70_unloading_layout_v1_rear_fixed_20261019.yaml")
 
 
 def test_existing_rear_stand_solid_overlap_has_literal_numeric_witness(layout):

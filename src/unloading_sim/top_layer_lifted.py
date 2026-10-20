@@ -80,6 +80,9 @@ def process_options(target, belt, frozen, remaining_cartons, *, occupied=()):
                             height_m=height, segment_directions_world=legs,
                             turn_center_y_interval_world_m=[float(c+belt.center[1]), float(d+belt.center[1])],
                             region=deepcopy(region), requires_open_channel=len(legs) == 2))
+        if name=="FRONT_DIRECT_HMAX":
+            options.append(dict(options[-1],template="FRONT_DIRECT_HMIN",
+                height_m=expected["Hmin_world_m"]))
     role = capture["roles"][target.name]["role"]
     if role in {"LEFT_END", "RIGHT_END"}:
         sign = -1. if role == "LEFT_END" else 1.

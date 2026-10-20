@@ -39,7 +39,8 @@ def digest(value):
 def box_message(box, pose=None):
     return dict(id=box.name, size=(2*np.asarray(box.half_extents)).tolist(),
                 pose=np.asarray(box.world_from_local if pose is None else pose).tolist(),
-                category=box.category, geometry_source="frozen_layout_or_audited_tool_OBB")
+                category=box.category, geometry_source="frozen_layout_or_audited_tool_OBB",
+                **({"solid": box.solid} if getattr(box, "solid", None) else {}))
 
 
 class MoveItUnavailable(RuntimeError):

@@ -50,21 +50,31 @@ def assembly_mates(state):
         elif key in {"lift_longitudinal_near", "lift_longitudinal_rear"}:
             mate(f"{key}_head_rail", f"{key}_swivel_head", "DECLARED_SWIVEL_HEAD")
             mate(f"{key}_swivel_head", "conveyor_longitudinal", "DECLARED_SWIVEL_CONVEYOR_MOUNT")
-            if state.mechanism.get("geometry_revision") == "rear_offset_neck_v2":
+            if state.mechanism.get("geometry_revision") in {"rear_offset_neck_v2","upper_seam_lower_slider_v3"}:
                 mate(f"{key}_head_rail", f"{key}_neck", "DECLARED_HEAD_NECK")
                 mate(f"{key}_neck", f"{key}_swivel_head", "DECLARED_NECK_SWIVEL")
         else:
             raise ValueError("UNKNOWN_COUPLED_STACK_TOPOLOGY")
-    for stand in ("lift_rear_stand_0", "lift_rear_stand_2"):
+    for a,b,reason in state.mechanism.get("additional_mates",[]):
+        mate(a,b,reason)
+    for stand in (() if not state.mechanism["rear_fixed"] else ("lift_rear_stand_0", "lift_rear_stand_2")):
         mate(stand, "trailer_floor", "DECLARED_STAND_ON_FLOOR")
         mate(stand, "lift_rear_bearing", "DECLARED_REAR_BEARING_SUPPORT")
-    mate("lift_rear_bearing", "conveyor_longitudinal", "DECLARED_REAR_REVOLUTE_BEARING")
+    if state.mechanism["rear_fixed"]:
+        mate("lift_rear_bearing", "conveyor_longitudinal", "DECLARED_REAR_REVOLUTE_BEARING")
     return pairs
 
 
 def _pair_geometry(a, b):
     gap = obb_surface_distance(a, b)
     signed = float(a.signed_distance_obb(b))
+    convex=bool(getattr(a,"solid",None) or getattr(b,"solid",None))
+    if convex:
+        from .concept_solid import solid_signed_gap
+        signed=solid_signed_gap(a,b)
+        # SAT is a conservative lower bound on positive Euclidean distance.
+        # A value below the required gap still rejects, except the named seam.
+        gap=max(gap,signed,0.)
     if not np.isfinite([gap, signed]).all():
         raise ValueError("COUPLED_PAIR_GEOMETRY_UNKNOWN")
     result = dict(pair=[a.name, b.name], surface_distance_m=gap,
@@ -76,6 +86,9 @@ def _pair_geometry(a, b):
                   original_cad_penetration_proven=False,
                   query_method="OBB_SAT_AND_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
                   bodies=[box_message(a), box_message(b)])
+    if convex:
+        result.update(query_method="CONVEX_SAT_DISTANCE_LOWER_BOUND",
+            geometry_scope="SAME_SOURCE_CONVEX_CONCEPT_SOLID",surface_distance_is_lower_bound=True)
     # Only aligned boxes have an exact box intersection. Never label a rotated
     # bounding-box overlap as penetration volume or as a narrow-phase verdict.
     if all(np.allclose(x.rotation, np.eye(3), atol=1e-12, rtol=0) for x in (a, b)):
@@ -120,6 +133,12 @@ def check_coupled_state(layout, height, cartons=None, *, clearance_m=.005, desig
         if detail["surface_distance_m"]+1e-9 >= clearance_m and detail["signed_sat_separation_m"] > 0:
             continue
         rule = mates.get(key)
+        if (key==("conveyor_longitudinal","conveyor_transverse") and
+                state.mechanism["geometry_revision"]=="upper_seam_lower_slider_v3" and
+                detail["signed_sat_separation_m"]>=-1e-9):
+            # Exact convex solids must be nonpenetrating. This is not a whole
+            # conveyor exemption: penetration or any other pair still rejects.
+            rule="DECLARED_NONPENETRATING_EFFECTIVE_TOP_SEAM"
         # Preserve existing plane contacts only with a zero-volume separating
         # world-Y plane. A tilted longitudinal belt cannot reuse a pure-Z union.
         if rule is None and key in original_contacts:

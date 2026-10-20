@@ -24,13 +24,15 @@ def main():
     transverse=next(b for b in layout.fixed_components() if b.name=="conveyor_transverse")
     low=float(transverse.center[2]+transverse.half_extents[2])
     high=max(float(b.corners()[:,2].min()) for b in layout.cartons())-.05
+    top=next(b for b in layout.cartons() if abs(float(b.corners()[:,2].min())-.05-high)<1e-9)
+    middle=high-2*top.half_extents[2]
     # Parameter samples, NOT seconds or claimed sweep collision verification.
-    states=[coupled_conveyor_state(layout,h) for h in np.linspace(low,high,101)]
+    states=[coupled_conveyor_state(layout,h) for h in sorted(set([*np.linspace(low,high,101),middle]))]
     evidence=[s.evidence() for s in states]
     result=dict(status=evidence[0]["status"],source_commit=args.source_commit,
         layout_fingerprint=layout.layout_fingerprint,command=sys.argv,
         qualification_status="NOT_EVALUATED",physical_execution="NOT_RUN",continuous_swept_proof=False,
-        sample_parameter="HEIGHT_NOT_TIME",states=evidence,
+        sample_parameter="HEIGHT_NOT_TIME",states=evidence,working_heights=dict(low=low,Hmin=middle,Hmax=high),
         official_resources=dict(conveyor_manifest="configs/isaac/conveyor_assets.json",
           articulations="https://docs.omniverse.nvidia.com/kit/docs/omni_physics/110.0/dev_guide/rigid_bodies_articulations/articulations.html",
           conveyor="https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.asset.gen.conveyor/docs/index.html"))

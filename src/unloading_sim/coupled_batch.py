@@ -23,6 +23,9 @@ from .workcell_layout import _obb_record
 
 def message_box(b):
     p=np.asarray(b['pose'],float)
+    if "solid" in b:
+        from .concept_solid import ConceptSolid
+        return ConceptSolid(p[:3,3],np.asarray(b['size'])/2,p[:3,:3],b['id'],b['category'],b["solid"])
     return OBB(p[:3,3],np.asarray(b['size'])/2,p[:3,:3],b['id'],b['category'])
 
 
@@ -34,7 +37,7 @@ def coupled_binding(layout, cartons, start_height, end_height, target_id, contac
     states=[coupled_conveyor_state(layout,float(h),cartons) for h in np.linspace(start_height,end_height,n+1)]
     # Match FrozenLayoutMotionInput's ordering, including every mechanism body.
     world=lambda s:[box_message(b) for b in s.boxes if b.category!='carton']+[box_message(b) for b in s.boxes if b.category=='carton']
-    return dict(schema='m710_coupled_receiver_v2',target_id=target_id,
+    return dict(schema='m710_coupled_receiver_v3',target_id=target_id,
         samples=[dict(height_m=s.mechanism['height_m'],world=world(s),scene_fingerprint=s.scene_fingerprint) for s in states],
         moving_ids=states[0].mechanism['moving_object_ids'],assembly_pairs=[list(p) for p in assembly_mates(states[0])],
         designed_contacts=[list(p) for p in contacts],maximum_height_step_m=abs(end_height-start_height)/max(n,1),

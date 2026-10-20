@@ -60,6 +60,15 @@ geometry_msgs::msg::Pose pose(const J& value) {
 }
 moveit_msgs::msg::CollisionObject object(const J& b, const std::string& frame="world") {
   moveit_msgs::msg::CollisionObject o; o.header.frame_id=frame; o.id=b.at("id"); o.operation=o.ADD;
+  if(b.contains("solid")) {
+    m710::validateSolid(b);shape_msgs::msg::Mesh mesh;
+    for(const auto& v:m710::solidVertices(b)){geometry_msgs::msg::Point p;p.x=v.x();p.y=v.y();p.z=v.z();mesh.vertices.push_back(p);}
+    for(const auto& f:m710::solidFaces())for(int i:{1,2}) {
+      shape_msgs::msg::MeshTriangle t;t.vertex_indices={static_cast<uint32_t>(f[0]),
+        static_cast<uint32_t>(f[i]),static_cast<uint32_t>(f[i+1])};mesh.triangles.push_back(t);
+    }
+    o.meshes.push_back(mesh);o.mesh_poses.push_back(pose(b.at("pose")));return o;
+  }
   shape_msgs::msg::SolidPrimitive s; s.type=s.BOX; auto dimensions=b.at("size").get<std::vector<double>>(); s.dimensions.assign(dimensions.begin(),dimensions.end());
   if(s.dimensions.size()!=3) throw std::runtime_error("INVALID_BOX");
   for(auto d:s.dimensions) if(!std::isfinite(d)||d<=0) throw std::runtime_error("INVALID_BOX");
@@ -266,9 +275,17 @@ class Worker {
       if(x->shapes_.size()!=y->shapes_.size() || x->global_shape_poses_.size()!=x->shapes_.size() ||
          y->global_shape_poses_.size()!=y->shapes_.size()) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
       for(size_t i=0;i<x->shapes_.size();++i) {
-        if(x->shapes_[i]->type!=shapes::BOX || y->shapes_[i]->type!=shapes::BOX) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_UNSUPPORTED");
-        const auto* sx=static_cast<const shapes::Box*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Box*>(y->shapes_[i].get());
-        for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+        if(x->shapes_[i]->type!=y->shapes_[i]->type)throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+        if(x->shapes_[i]->type==shapes::BOX) {
+          const auto* sx=static_cast<const shapes::Box*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Box*>(y->shapes_[i].get());
+          for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+        } else if(x->shapes_[i]->type==shapes::MESH) {
+          const auto* sx=static_cast<const shapes::Mesh*>(x->shapes_[i].get());const auto* sy=static_cast<const shapes::Mesh*>(y->shapes_[i].get());
+          if(sx->vertex_count!=sy->vertex_count || sx->triangle_count!=sy->triangle_count ||
+             !std::equal(sx->vertices,sx->vertices+3*sx->vertex_count,sy->vertices) ||
+             !std::equal(sx->triangles,sx->triangles+3*sx->triangle_count,sy->triangles))
+            throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
+        } else throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_UNSUPPORTED");
         if(!samePose(m710::worldShapePose(*x,i),m710::worldShapePose(*y,i))) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
       }
     }

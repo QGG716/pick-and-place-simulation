@@ -24,6 +24,16 @@ int main(int argc,char**argv){
     auto bad=b;bad["samples"][0]["world"][0]["size"][0]=0.;rejects([&]{m710::validateCoupledBinding(bad);});
   }
   const auto& binding=data.at("bindings")[0];
+  if(binding.value("geometry_revision","")=="upper_seam_lower_slider_v3") {
+    auto sample=binding.at("samples").back();J trans,longitudinal;
+    for(const auto& b:sample.at("world")) {
+      if(b.at("id")=="conveyor_transverse"){trans=b;m710::validateSolid(b);}
+      if(b.at("id")=="conveyor_longitudinal")longitudinal=b;
+    }
+    assert(trans.contains("solid"));assert(m710::solidSignedGap(trans,longitudinal)>=-1e-9);
+    for(auto& b:sample["world"])if(b.at("id")=="conveyor_longitudinal")b["pose"][0][3]=b["pose"][0][3].get<double>()+.02;
+    assert(!m710::coupledWorldFailure(sample,binding).is_null());
+  }
   assert(!m710::coupledWorldFailure(data.at("old_model"),binding).is_null());
   for(const auto& request:data.at("releases")){
     m710::validateNominalDrop(request,binding);
