@@ -36,6 +36,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         geometry['fixed_attachment_interfaces'] = fixed_interfaces
     if 'robot_mast_exemption' in policy:
         geometry['robot_mast_exemption'] = policy['robot_mast_exemption']
+    if 'extraction_carton_contact' in policy:
+        geometry['extraction_carton_contact'] = policy['extraction_carton_contact']
     if 'native_task' in scene:
         from .native_contact import bind_task_contract
         geometry = bind_task_contract(geometry, scene)
@@ -198,6 +200,10 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         'robot_description_planning.cartesian_limits.max_trans_acc': limits['tcp_acceleration_m_s2'],
         'robot_description_planning.cartesian_limits.max_trans_dec': -limits['tcp_acceleration_m_s2'],
         'robot_description_planning.cartesian_limits.max_rot_vel': limits['tcp_rotation_rad_s']})
+    if 'coupled_conveyor_spec' in scene:
+        # Humble KDL defaults to 1e-5, looser than our 1e-6 endpoint gate.
+        # Tighten native convergence; do not edit endpoints or relax acceptance.
+        params[f'robot_description_kinematics.{pg}.epsilon'] = 1e-9
     for joint in c['joint_names']:
         prefix = f'robot_description_planning.joint_limits.{joint}.'
         params.update({prefix+'has_velocity_limits': True,
@@ -212,6 +218,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     if 'robot_mast_exemption' in policy:
         identity.update(collision_policy_schema=policy['schema'], collision_policy_mode=policy['mode'],
                         collision_exemption_fingerprint=digest(policy['robot_mast_exemption']))
+    if 'extraction_carton_contact' in policy:
+        identity['extraction_carton_contact_fingerprint'] = digest(policy['extraction_carton_contact'])
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
         collision_policy=policy, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',

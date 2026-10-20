@@ -410,6 +410,8 @@ def build_coupled_scene(source_scene, config=None):
     result = with_coupled_state(result, spec["config"]["initial_height_m"])
     result["layout_id"] = spec["config"]["layout_id"]
     result["collision_policy_mode"] = spec["config"]["collision_policy_mode"]
+    if "extraction_carton_contact_mode" in spec["config"]:
+        result["extraction_carton_contact_mode"] = spec["config"]["extraction_carton_contact_mode"]
     result["source_native_scene_fingerprint"] = source_scene["scene_fingerprint"]
     result["occupancy"] = {"conveyor_transverse": []}
     result["scene_fingerprint"] = digest({k: v for k, v in result.items() if k != "scene_fingerprint"})

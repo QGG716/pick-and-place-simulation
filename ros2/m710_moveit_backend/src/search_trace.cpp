@@ -48,6 +48,7 @@ namespace m710 {
 using TraceClock=std::chrono::steady_clock;
 std::shared_ptr<SearchTrace> active_search_trace;
 int active_j1_direction=0;
+NativeDeadlinePtr active_native_deadline;
 thread_local TraceJson validity_witness=nullptr;
 thread_local bool witness_requested=false;
 thread_local SampleRecorder* extension_recorder=nullptr;
@@ -70,7 +71,8 @@ base::PlannerStatus TraceRRTConnect::solve(const base::PlannerTerminationConditi
   // A cached OMPL context must bind this solve's request, not its creation request.
   trace_=active_search_trace;
   direction_=active_j1_direction;
-  if(!trace_&&!direction_)return RRTConnect::solve(ptc);
+  deadline_=active_native_deadline;
+  if(!trace_&&!direction_&&!deadline_)return RRTConnect::solve(ptc);
   events_.clear();samples_.clear();event_count_=sample_count_=0;recording_s_=0.;
   recorder_=[this](const std::vector<double>& q,bool valid,const char* checker,const TraceJson& original) {
     if(!trace_)return;
@@ -80,7 +82,9 @@ base::PlannerStatus TraceRRTConnect::solve(const base::PlannerTerminationConditi
     recording_s_+=std::chrono::duration<double>(TraceClock::now()-begin).count();
   };
   try {
-    auto status=solveRecorded(ptc);extension_recorder=nullptr;if(trace_)snapshot(status);return status;
+    auto status=solveRecorded(ptc);extension_recorder=nullptr;
+    if(nativeExpired(deadline_))status=base::PlannerStatus::TIMEOUT;
+    if(trace_)snapshot(status);return status;
   } catch(...) {extension_recorder=nullptr;throw;}
 }
 void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
@@ -116,6 +120,7 @@ void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
   j["truncation"]={{"events_missing_from",event_count_>events_.size()?TraceJson(events_.size()):TraceJson(nullptr)},
     {"samples_missing_from",sample_count_>samples_.size()?TraceJson(samples_.size()):TraceJson(nullptr)}};
   j["j1_direction"]=direction_;
+  j["absolute_deadline_expired"]=nativeExpired(deadline_);
   j["recording_overhead"]={{"extension_and_sample_callback_s",recording_s_},
     {"planner_data_snapshot_s",std::chrono::duration<double>(TraceClock::now()-begin).count()},
     {"scope","MEASURED_RECORDING_SECTIONS_EXCLUDES_WORKER_JSON_TRANSPORT_AND_VIEWER_EXPORT"}};
@@ -126,6 +131,7 @@ void TraceRRTConnect::snapshot(const base::PlannerStatus& status) {
 m710::TraceRRTConnect::GrowState m710::TraceRRTConnect::growTree(TreeData &tree, TreeGrowingInfo &tgi,
                                                                              Motion *rmotion)
 {
+    if(nativeExpired(deadline_))return TRAPPED;
     /* find closest state in the tree */
     Motion *nmotion = tree->nearest(rmotion);
 
@@ -164,7 +170,9 @@ m710::TraceRRTConnect::GrowState m710::TraceRRTConnect::growTree(TreeData &tree,
                                    si_->isValid(dstate) && si_->checkMotion(dstate, nmotion->state);
 
     extension_recorder=nullptr;
-    extension(nmotion->state,dstate,tgi.start,validMotion,validMotion?"ACCEPTED":"REJECTED");
+    const bool deadline_expired=nativeExpired(deadline_);
+    if(deadline_expired)validMotion=false;
+    extension(nmotion->state,dstate,tgi.start,validMotion,deadline_expired?"DEADLINE_EXPIRED":validMotion?"ACCEPTED":"REJECTED");
     if (!validMotion)
         return TRAPPED;
 
@@ -220,6 +228,8 @@ m710::TraceRRTConnect::GrowState m710::TraceRRTConnect::growTree(TreeData &tree,
 
 ompl::base::PlannerStatus m710::TraceRRTConnect::solveRecorded(const base::PlannerTerminationCondition &ptc)
 {
+    const auto termination=base::plannerOrTerminationCondition(ptc,
+      base::PlannerTerminationCondition([this](){return nativeExpired(deadline_);}));
     checkValidity();
     auto *goal = dynamic_cast<base::GoalSampleableRegion *>(pdef_->getGoal().get());
 
@@ -265,7 +275,7 @@ ompl::base::PlannerStatus m710::TraceRRTConnect::solveRecorded(const base::Plann
     bool solved = false;
     base::PlannerStatus::StatusType status = base::PlannerStatus::TIMEOUT;
 
-    while (!ptc)
+    while (!ptc && !nativeExpired(deadline_))
     {
         TreeData &tree = startTree_ ? tStart_ : tGoal_;
         tgi.start = startTree_;
@@ -274,7 +284,8 @@ ompl::base::PlannerStatus m710::TraceRRTConnect::solveRecorded(const base::Plann
 
         if (tGoal_->size() == 0 || pis_.getSampledGoalsCount() < tGoal_->size() / 2)
         {
-            const base::State *st = tGoal_->size() == 0 ? pis_.nextGoal(ptc) : pis_.nextGoal();
+            const base::State *st = deadline_?pis_.nextGoal(termination):
+              tGoal_->size() == 0 ? pis_.nextGoal(ptc) : pis_.nextGoal();
             if (st != nullptr)
             {
                 auto *motion = new Motion(si_);
@@ -316,7 +327,7 @@ ompl::base::PlannerStatus m710::TraceRRTConnect::solveRecorded(const base::Plann
 
             // A long CONNECT loop must not outrun the declared solve budget.
             // This is independent of trace enablement and storage caps.
-            while (gsc == ADVANCED && (!direction_ || !ptc))
+            while (gsc == ADVANCED && (!direction_ || !ptc) && !nativeExpired(deadline_))
                 gsc = growTree(otherTree, tgi, rmotion);
 
             /* update distance between trees */

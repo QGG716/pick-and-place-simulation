@@ -2,6 +2,9 @@ schema: eco65_coupled_carton_config_v1
 geometry_revision: upper_seam_lower_slider_v3
 layout_id: eco65_small_carton_coupled_v1
 collision_policy_mode: robot_body_vision_mast_exempt_v2
+# 2026-10-20 user-authorized kinematic assumption. This affects only the
+# attached current carton against remaining original cartons in extraction.
+extraction_carton_contact_mode: attached_target_remaining_original_cartons_during_extraction
 target_id: carton_r00_l03_c01
 box_size_m: [0.150, 0.100, 0.100]
 usable_belt_width_m: 0.200

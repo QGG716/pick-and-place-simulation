@@ -12,6 +12,32 @@ CHECK = r'''
 setTimeout(()=>{const result={checks:[],status:'RUNNING'};
 const check=(name,value)=>{if(!value)throw Error(name);result.checks.push(name);};
 const close=(a,b,eps=1e-8)=>a.length===b.length&&a.every((v,i)=>Math.abs(v-b[i])<=eps);
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const pairKeys=pairs=>(pairs||[]).map(pair=>JSON.stringify(pair.slice().sort())).sort();
+const objectIds=world=>world.map(b=>b.id).sort();
+const policyCheck=(name,display,request,response,requireNative=false)=>{
+const source=request.clearance_policy?.source_policy||request.process_policy?.collision_policy;
+check(name+'_POLICY_SCHEMA',display.policy_schema===source?.schema);
+check(name+'_POLICY_DESCRIPTOR',same(display.extraction_carton_contact??null,source?.extraction_carton_contact??null));
+if(!source?.extraction_carton_contact)return;
+const native=response.process_policy?.extraction_carton_contact||response.process?.extraction_carton_contact;
+if(requireNative)check(name+'_NATIVE_POLICY_EVIDENCE_PRESENT',!!native&&typeof native.active==='boolean'&&Array.isArray(native.pairs));
+if(native&&typeof native.active==='boolean'){
+check(name+'_NATIVE_POLICY_EVIDENCE',same(display.native_evidence,native));
+check(name+'_NATIVE_PERMITTED_PAIRS',same(pairKeys(display.permitted_pairs),pairKeys(native.pairs)));
+check(name+'_NATIVE_ACTIVE_MEANS_NONEMPTY_PAIRS',native.active===(native.pairs.length>0));}
+if(display.permitted_pairs.length){
+const allowed=new Set(source.extraction_carton_contact.original_carton_ids);
+const remaining=new Set(request.process_policy.task_contract.stack_carton_ids);
+const world=new Set(request.world.map(b=>b.id));
+check(name+'_EXTRACTION_ONLY',request.stage==='extraction'&&request.attachment?.id===request.process_policy.target_id);
+check(name+'_NAMED_REMAINING_WORLD_CARTONS',display.permitted_pairs.every(pair=>
+pair[0]===request.attachment.id&&pair[1]!==pair[0]&&allowed.has(pair[1])&&remaining.has(pair[1])&&world.has(pair[1])&&!(request.completed_ids||[]).includes(pair[1])));
+}
+if(request.stage==='transit'){
+check(name+'_FREE_TRANSIT_RESTORES_CHECKS',display.request_scope_applies===false&&display.permitted_pairs.length===0);
+if(native)check(name+'_NATIVE_FREE_TRANSIT_NO_EXEMPTION',native.active===false&&native.pairs.length===0);}
+};
 try{
 check('VIEWER_READY',window.REPLAY_READY===true);
 check('TWELVE_PHYSICAL_CUPS',model.cup_ids.length===12);
@@ -39,16 +65,35 @@ if(DATA.segments.length){
 document.getElementById('mode').value='cycle';modeChanged();
 for(const segment of DATA.segments){
 setTime(segment.start_s+segment.duration_s*.37);
+const attempt=DATA.attempts.find(a=>a.adopted&&a.request.stage_id===segment.record_id);
+check('RECORD_HAS_OWN_NATIVE_REQUEST_'+segment.record_id,!!attempt);
+policyCheck('RECORD_'+segment.record_id,segment.display_policy,attempt.request,attempt.response,true);
+check('RECORD_POLICY_PANEL_'+segment.record_id,same(JSON.parse(document.getElementById('policyEvidence').textContent),segment.display_policy));
+check('RECORD_STATE_POLICY_'+segment.record_id,same(segment.state_before.collision_policy,attempt.request.clearance_policy.source_policy)&&same(segment.state_before.collision_policy,segment.state_after.collision_policy));
+const expected=(segment.kind==='event'&&segment.event_type!=='NOMINAL_RECEIVE')?segment.state_after:segment.state_before;
+check('RECORD_RENDERED_OWNERSHIP_'+segment.record_id,same(objectIds(state.world),objectIds(expected.world))&&state.attachment?.id===expected.attachment?.id&&state.target_id===expected.target_id&&same(state.completed_ids,expected.completed_ids));
 if(segment.kind==='external_axis')check('EXTERNAL_AXIS_HOLDS_Q_'+segment.record_id,close(currentQ,segment.state_before.q,1e-12));
 if(segment.kind==='robot_motion')check('ROBOT_HOLDS_HEIGHT_'+segment.record_id,state.height_m===segment.state_before.height_m);
 if(state.attachment){check('NO_DUPLICATE_ATTACHMENT_'+segment.record_id,!state.world.some(b=>b.id===state.attachment.id));const actual=window.replay.payload.matrix.elements,expected=fk(currentQ)[model.flange_link].clone().multiply(matrix(state.attachment.pose)).elements;check('LOCAL_ATTACHMENT_'+segment.record_id,close(actual,expected,1e-12));}
 }
 setTime(DATA.duration_s);check('TERMINAL_Q',close(currentQ,DATA.terminal_state.q,1e-12));
 check('TERMINAL_OWNERSHIP',state.world.length===DATA.terminal_state.world.length&&state.attachment?.id===DATA.terminal_state.attachment?.id);
+const originalIds=new Set(DATA.previews[0].state.world.filter(b=>b.category==='carton').map(b=>b.id));
+const worldIds=state.world.filter(b=>originalIds.has(b.id)).map(b=>b.id),attachedIds=state.attachment?[state.attachment.id]:[],completedIds=state.completed_ids||[];
+result.terminal_carton_counts={world:worldIds.length,attached:attachedIds.length,completed:completedIds.length};
+check('TERMINAL_CARTON_IDS_PARTITION',new Set([...worldIds,...attachedIds,...completedIds]).size===originalIds.size&&worldIds.length+attachedIds.length+completedIds.length===originalIds.size&&[...worldIds,...attachedIds,...completedIds].every(id=>originalIds.has(id)));
+check('TERMINAL_COUNTS_MATCH_VALIDATED_PLAN',worldIds.length===DATA.validation.world_cartons&&attachedIds.length===DATA.validation.attached_cartons&&completedIds.length===DATA.validation.completed_cartons);
+if(DATA.plan_summary.complete)check('ONE_COMPLETE_NEXT_ONLY_ATTACHED',completedIds.length===1&&completedIds[0]===DATA.plan_summary.first_target_id&&attachedIds.length===1&&attachedIds[0]===DATA.plan_summary.next_target_id&&!completedIds.includes(DATA.plan_summary.next_target_id));
 result.complete_task=DATA.plan_summary.complete?'TESTED':'PARTIAL_ONLY';
 }else result.complete_task='NOT_RUN_NO_PLAN';
 if(DATA.attempts.length){
 document.getElementById('mode').value='search';modeChanged();
+const policyIndices=[DATA.attempts.findIndex(a=>a.request.stage==='extraction'&&a.display_policy?.native_evidence?.active),DATA.attempts.findIndex(a=>a.request.stage==='transit'&&a.display_policy?.native_evidence)];
+for(const i of [...new Set(policyIndices.filter(i=>i>=0))]){
+document.getElementById('request').value=i;chooseRequest();policyCheck('SEARCH_'+i,active.display_policy,active.request,active.response);
+check('SEARCH_POLICY_PANEL_'+i,same(JSON.parse(document.getElementById('policyEvidence').textContent),active.display_policy));
+check('SEARCH_POLICY_OWN_WORLD_'+i,state.world===active.request.world&&state.attachment===active.request.attachment);
+}
 const index=DATA.attempts.findIndex(a=>a.trace?.planners?.some(p=>p.nodes.length));
 document.getElementById('request').value=Math.max(0,index);chooseRequest();
 check('REQUEST_OWNS_WORLD',state.world===active.request.world);

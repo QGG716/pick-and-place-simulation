@@ -45,7 +45,7 @@ class ProcessPolicy {
 public:
   size_t planner_checks=0,endpoint_checks=0,dense_path_calls=0;
   Json last_failure=nullptr,last_seal=nullptr;
-  ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request)
+  ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request,NativeDeadlinePtr deadline={})
     :spec_(request.at("process_policy")),source_(request.at("clearance_policy").at("source_policy")),
      initial_(spec_.at("initial_proximity")),stage_(request.at("stage")),target_id_(spec_.at("target_id")) {
     if(spec_.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
@@ -56,7 +56,7 @@ public:
     target_=processBox(spec_.at("target"));
     if(spec_.value("geometry_type",std::string())=="cad_seal_contours_v1") {
       attached_=scene->getCurrentState().hasAttachedBody(target_id_);
-      eco65_=std::make_unique<Eco65Process>(scene,request);return;
+      eco65_=std::make_unique<Eco65Process>(scene,request,std::move(deadline));return;
     }
     if(spec_.at("schema")!="m710_native_process_v1" || spec_.at("stage")!=stage_ || spec_.at("collision_policy")!=source_ ||
        target_.id!=target_id_ || request.at("clearance_policy").at("target_id")!=target_id_)
@@ -214,6 +214,7 @@ public:
   Json terminalProximity() const {return terminal_proximity_;}
   Json evidence() const {return {{"planner_state_checks",planner_checks},{"endpoint_checks",endpoint_checks},{"dense_path_calls",dense_path_calls},
     {"touch_process",touch_?touch_->evidence_:Json(nullptr)},{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
+    {"extraction_carton_contact",eco65_?eco65_->extractionContactEvidence():Json(nullptr)},
     {"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}

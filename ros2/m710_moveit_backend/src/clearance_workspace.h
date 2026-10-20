@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <limits>
+#include "native_deadline.h"
 
 namespace m710 {
 // Reuse MoveIt's unpadded FCL assets. Mutable objects and the world snapshot are
@@ -33,6 +34,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   bool hierarchical_=false;
   double maximum_band_=0.;
   double search_payload_reserve_=0.;
+  NativeDeadlinePtr deadline_;
   size_t moving_=0;
   std::vector<const moveit::core::AttachedBody*> attached_;
   int buildTree(std::vector<size_t>& ids,size_t first,size_t last) {
@@ -76,16 +78,17 @@ public:
     double prepare_s=0, geometry_prepare_s=0, pair_filter_s=0, update_s=0, broad_s=0, narrow_s=0, self_s=0, world_s=0;
   } stats;
   std::map<std::string,Stats> phases;
-  struct Failure {std::string a,b;double distance=0,limit=0;bool self=false;};
+  struct Failure {std::string a,b;double distance=0,limit=0;bool self=false;std::string reason;};
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      bool explicit_convex_meshes=false,double search_payload_reserve=0.)
+      bool explicit_convex_meshes=false,double search_payload_reserve=0.,NativeDeadlinePtr deadline={})
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
-      search_payload_reserve_(search_payload_reserve) {
+      search_payload_reserve_(search_payload_reserve),deadline_(std::move(deadline)) {
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
+      if(deadline_)deadline_->require();
       if(!o || !o->collisionGeometry()) throw std::runtime_error("MISSING_FCL_GEOMETRY");
       const auto* d=static_cast<const collision_detection::CollisionGeometryData*>(o->collisionGeometry()->getUserData());
       if(!d) throw std::runtime_error("MISSING_FCL_METADATA");
@@ -123,6 +126,7 @@ public:
     stats.geometry_prepare_s=elapsed(t);const auto filtering=Clock::now();
     const auto& acm=scene->getAllowedCollisionMatrix();
     for(size_t a=0;a<moving_;++a) for(size_t b=a+1;b<bodies_.size();++b) {
+      if(deadline_ && b==a+1)deadline_->require();
       const auto& x=bodies_[a];const auto& y=bodies_[b];
       collision_detection::AllowedCollision::Type allowed;
       const bool exempt=(x.type==y.type && x.name==y.name) ||
@@ -142,6 +146,9 @@ public:
     stats.pair_filter_s=elapsed(filtering);stats.prepared_objects=bodies_.size();stats.eligible_pairs=pairs_.size();stats.prepare_s=elapsed(t);
   }
   bool check(const moveit::core::RobotState& state,Failure& failure,const std::string& phase) {
+    auto expired=[&](){if(!nativeExpired(deadline_))return false;
+      failure.reason="NATIVE_ABSOLUTE_DEADLINE_EXPIRED";failure.distance=std::numeric_limits<double>::quiet_NaN();return true;};
+    if(expired())return false;
     auto& stats=phases[phase];
     ++stats.queries;auto updating=Clock::now();
     if(state.getRobotModel()!=context_.getRobotModel()) throw std::runtime_error("WORKSPACE_MODEL_CHANGED");
@@ -156,6 +163,7 @@ public:
       for(size_t i=0;i<a.size();++i) if(a[i].matrix()!=b[i].matrix()) throw std::runtime_error("WORKSPACE_ATTACHMENT_CHANGED");
     }
     for(size_t i=0;i<moving_;++i) {
+      if((i%64)==0 && expired())return false;
       auto& b=bodies_[i];
       const auto& transform=b.link?state.getCollisionBodyTransform(b.link,b.shape):
         state.getAttachedBody(b.name)->getGlobalCollisionBodyTransforms().at(b.shape);
@@ -177,11 +185,15 @@ public:
     std::vector<int> nearby;const auto* selected=&all_pair_indices_;
     if(hierarchical_) {
       refitTree(0);
-      for(size_t a=0;a<moving_;++a)nearPairs(a,0,nearby,stats.hierarchy_nodes_visited);
+      for(size_t a=0;a<moving_;++a) {
+        if((a%32)==0 && expired())return false;
+        nearPairs(a,0,nearby,stats.hierarchy_nodes_visited);
+      }
       std::sort(nearby.begin(),nearby.end());selected=&nearby;
       stats.aabb_skips+=pairs_.size()-nearby.size();
     }
     for(int index:*selected) {
+      if(expired()) {finish_broad();return false;}
       const auto& p=pairs_[index];
       const auto& a=bodies_[p.a];const auto& b=bodies_[p.b];++stats.aabb_tests;
       // The actual dense audit retains the original acceptance threshold.
@@ -201,6 +213,7 @@ public:
       fcl::DistanceResultd result;result.min_distance=limit+.001;
       const double d=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),result);
       const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
+      if(expired()) {finish_broad();return false;}
       // Use the same FCL request/default solver and strict contact rejection as
       // MoveIt's reference callback; no signed-distance or geometry surrogate.
       if(!std::isfinite(d) || !std::isfinite(result.min_distance) || d<=0 || d+1e-9<limit) {

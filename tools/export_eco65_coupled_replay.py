@@ -13,9 +13,49 @@ import zipfile
 import numpy as np
 
 from export_eco65_search_replay import export_model
+from export_m710_search_replay import validate_attempt
 from unloading_sim.eco65.model import ROOT, load_json, robot_for
 from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.coupled_scene import coupled_conveyor_state, receiving_height_candidates
+
+
+def policy_display(request=None, result=None, *, configured_policy=None):
+    """Explain the captured request scope, never infer observed carton contact."""
+    source = (configured_policy if request is None else
+              request.get('clearance_policy', {}).get('source_policy',
+                  request.get('process_policy', {}).get('collision_policy')))
+    source = source or {}
+    descriptor = source.get('extraction_carton_contact')
+    display = dict(policy_schema=source.get('schema'), policy_mode=source.get('mode'),
+                   extraction_carton_contact=deepcopy(descriptor),
+                   source='FROZEN_MODEL_CONFIGURATION' if request is None else 'ACTUAL_NATIVE_REQUEST_POLICY',
+                   request_scope_applies=None, permitted_pairs=[], native_evidence=None,
+                   contact_observation='NO_PHYSICAL_CONTACT_OBSERVATION',
+                   physical_execution='NOT_RUN', execution_ready=False)
+    if request is None or descriptor is None:
+        return display
+    process = request.get('process_policy', {})
+    attached = request.get('attachment')
+    target = process.get('target_id')
+    applies = (descriptor.get('schema') == 'eco65_attached_target_stack_exemption_v1'
+               and descriptor.get('scope') == 'ATTACHED_TARGET_VS_REMAINING_ORIGINAL_CARTONS_ONLY'
+               and descriptor.get('allow_intersection') is True
+               and request.get('continuous_task_mode') == descriptor.get('continuous_task_mode')
+               and request.get('stage') == descriptor.get('stage')
+               and attached is not None and attached.get('id') == target)
+    remaining = set(process.get('stack_carton_ids', []))-set(request.get('completed_ids', []))
+    world = {o['id'] for o in request.get('world', [])}
+    neighbors = sorted(set(descriptor.get('original_carton_ids', [])) & remaining & world-{target})
+    display.update(stage=request.get('stage'), operation=request.get('op'),
+                   ik_collision_checked=(result or {}).get('ik_collision_checked'),
+                   request_scope_applies=applies,
+                   permitted_pairs=[[target, neighbor] for neighbor in neighbors] if applies else [])
+    for key in ('process_policy', 'process'):
+        evidence = ((result or {}).get(key) or {}).get('extraction_carton_contact')
+        if isinstance(evidence, dict) and 'active' in evidence and 'pairs' in evidence:
+            display['native_evidence'] = deepcopy(evidence)
+            break
+    return display
 
 
 def read_trace(result, folder):
@@ -47,25 +87,79 @@ def attempts_from_run(folder, records):
             if req['op'] == 'init':
                 continue
             result = row.get('result', {})
-            if 'world' not in req or 'q_start' not in req:
+            if 'q_start' not in req or ('world' not in req and req['op'] not in ('ik', 'ik_batch')):
                 continue
             trace = read_trace(result, folder)
+            if trace:
+                captured = trace['input']
+                for key in ('identity', 'task_id', 'stage_id', 'parent_stage_id',
+                            'q_start', 'q_goal', 'world', 'attachment'):
+                    if key in req and captured.get(key) != req[key]:
+                        raise ValueError('TRACE_REQUEST_CONTEXT_MISMATCH:'+key)
+                validate_attempt(dict(trace=trace, response_identity=result))
+            ik_results = (result.get('results', []) if req['op'] == 'ik_batch'
+                          else [result] if req['op'] == 'ik' else [])
+            candidates = [dict(q=r['q'], status=r.get('status'),
+                              seed_index=r.get('seed_index'),
+                              ik_collision_checked=r.get('ik_collision_checked'),
+                              position_error_m=r.get('position_error_m'),
+                              orientation_error_rad=r.get('orientation_error_rad'))
+                          for r in ik_results if 'q' in r]
+            witnesses = []
+            for witness in [result.get('failure'), (result.get('basic_path_check') or {}).get('failure'),
+                            *(result.get('clearance') or {}).get('rejected_examples', [])]:
+                if isinstance(witness, dict) and witness.get('q_rad'):
+                    witnesses.append(dict(q=witness['q_rad'], witness=witness))
+            process_failure = (result.get('process') or {}).get('last_failure')
+            if req['op'] == 'check_state_offline' and isinstance(process_failure, dict):
+                witnesses.append(dict(q=req['q_start'], witness=process_failure,
+                                      source='SAME_SINGLE_STATE_REQUEST'))
+            if isinstance(result.get('failure'), dict) and not result['failure'].get('q_rad'):
+                endpoint = ('q_start' if str(result.get('status')).startswith('INVALID_START_')
+                            else 'q_goal' if str(result.get('status')).startswith('INVALID_GOAL_') else None)
+                if endpoint and endpoint in req:
+                    witnesses.append(dict(q=req[endpoint], witness=result['failure'],
+                                          source='SAME_NATIVE_ENDPOINT_CHECK'))
             attempts.append(dict(
                 request=req, response=result, trace=trace,
                 adopted=req.get('stage_id') in adopted,
                 round_trip_s=row.get('wall_s', row.get('round_trip_s')),
                 error=row.get('error'), native_path=result.get('points', []),
+                ik_candidates=candidates, failure_samples=witnesses,
+                display_policy=policy_display(req, result),
+                world_context_status='CAPTURED' if 'world' in req else 'NOT_CAPTURED',
                 trace_status=trace.get('status', 'CAPTURED') if trace else
                     ('NOT_CAPTURED' if req.get('pipeline_id') == 'ompl'
                      else 'NOT_APPLICABLE_NO_RRT_TREE')))
     return attempts
 
 
+def share_worlds(data):
+    """Keep request worlds exact while storing repeated immutable arrays once."""
+    worlds = {}
+    def walk(value):
+        if isinstance(value, dict):
+            if 'world' in value:
+                world = value.pop('world')
+                key = hashlib.sha256(json.dumps(
+                    world, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+                worlds.setdefault(key, world)
+                value['world_ref'] = key
+            for child in value.values():
+                walk(child)
+        elif isinstance(value, list):
+            for child in value:
+                walk(child)
+    walk(data)
+    data['shared_worlds'] = worlds
+    return data
+
+
 def mechanism_state(snapshot, height):
     return coupled_conveyor_state(snapshot['scene']['coupled_conveyor_spec'], float(height))
 
 
-def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None):
+def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_cycle=True):
     """No display-side mechanism solver or ownership reconstruction."""
     model = export_model(snapshot)
     robot = robot_for(snapshot['tool'], snapshot['scene'])
@@ -112,9 +206,12 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None):
     records = plan['records'] if plan else []
     if plan:
         from unloading_sim.eco65.coupled_state import validate_cycle
-        validation = validate_cycle(plan, snapshot, require_complete=bool(plan['complete']))
+        validation = (validate_cycle(plan, snapshot, require_complete=bool(plan['complete']))
+                      if check_cycle else dict(status='NOT_RUN_USER_REQUEST',
+                                               complete=bool(plan['complete'])))
         for original in records:
             row = deepcopy(original)
+            row['display_policy'] = policy_display(row['native_request'], row['native_result'])
             kind = row['kind']
             if kind == 'robot_motion':
                 elapsed = float(row['times'][-1])
@@ -144,15 +241,38 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None):
                     totals['event_display_s'] += elapsed
             for endpoint in ('state_before', 'state_after'):
                 row[endpoint]['mechanism_ref'] = mechanism(row[endpoint]['height_m'])
+                row[endpoint].pop('mechanism', None)
+            if row.get('event_type') == 'ATTACH':
+                geometry = snapshot['native_model']['init']['process_geometry']
+                transform = (robot.named_link_frames(row['state_after']['q'])['link_6']
+                             @ np.asarray(geometry['flange_from_contact_frame']))
+                row['contact_contours_D'] = [dict(
+                    id=contour['id'], points=(np.asarray(contour['points_m'])
+                        @ transform[:3, :3].T+transform[:3, 3]).tolist(),
+                    observation='PREDICTED_GEOMETRY_NOT_PHYSICAL_CONTACT')
+                    for contour in geometry['contours']
+                    if contour['id'] in row['state_after']['active_ids']]
+            if kind == 'robot_motion' and row['stage'] == 'extraction':
+                row['actual_extraction_tcp_D'] = robot.fk(row['q'][-1]).tolist()
             row.update(start_s=duration, duration_s=elapsed)
             duration += elapsed
             # Search requests/results live in the archive/attempt list once.
             row.pop('native_request', None)
             row.pop('native_result', None)
+            # Original checked samples remain in cycle.json/the native archive.
+            # Display uses authoritative per-frame mechanism samples or the
+            # explicitly recorded nominal-drop samples, never these duplicates.
+            row.pop('samples', None)
             segments.append(row)
-    attempts = attempts_from_run(run_folder, records) if run_folder else []
+    all_attempts = attempts_from_run(run_folder, records) if run_folder else []
+    unbound_ik = [a for a in all_attempts if a['world_context_status'] == 'NOT_CAPTURED']
+    attempts = [a for a in all_attempts if a['world_context_status'] == 'CAPTURED']
     for attempt in attempts:
         request = attempt['request']
+        if request.get('identity') != snapshot['native_model']['init']['identity']:
+            raise ValueError('REPLAY_REQUEST_MODEL_MISMATCH')
+        if plan and request.get('task_id') != plan['task_id']:
+            raise ValueError('REPLAY_REQUEST_RUN_MISMATCH')
         # Bind mechanism to this request's own world; never current replay time.
         height = request.get('mechanism_state', {}).get(
             'height_m', request.get('height_m', request.get('external_height_m')))
@@ -168,9 +288,13 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None):
     for q in fixture_q:
         fixtures.append(dict(q=q, frames={k:np.asarray(v).tolist()
             for k, v in robot.named_link_frames(q).items()}))
-    return dict(schema='eco65_coupled_replay_v1', model=model,
-        snapshot_fingerprint=snapshot['fingerprint'], collision_policy=scene.get('collision_policy'),
+    return share_worlds(dict(schema='eco65_coupled_replay_v1', model=model,
+        snapshot_fingerprint=snapshot['fingerprint'],
+        collision_policy=snapshot['native_model']['init']['collision_policy'],
+        preview_display_policy=policy_display(
+            configured_policy=snapshot['native_model']['init']['collision_policy']),
         previews=previews, mechanisms=mechanisms, segments=segments, attempts=attempts,
+        unbound_ik_attempts=unbound_ik,
         plan_summary=None if plan is None else {k:plan.get(k) for k in (
             'schema','complete','status','first_target_id','next_target_id','planning_wall_s',
             'physical_execution','execution_ready','j1_direction_policy','failures')},
@@ -179,10 +303,11 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None):
         validation=validation, duration_s=duration, times=totals, fk_fixtures=fixtures,
         physical_execution='NOT_RUN', execution_ready=False, planning_only=True,
         status='KINEMATIC_REPLAY', coordinate_frame='D: +X 入垛 / +Y 左 / +Z 上; m, rad, s',
-        source_contract='SAME_PYTHON_COUPLED_SCENE_AND_CURRENT_RUN_NATIVE_RECORDS')
+        source_contract='SAME_PYTHON_COUPLED_SCENE_AND_CURRENT_RUN_NATIVE_RECORDS'))
 
 
-def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=None):
+def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=None,
+           check_cycle=True):
     start = time.perf_counter()
     output = Path(output)
     output.resolve().relative_to(ROOT / 'outputs')
@@ -190,7 +315,8 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
         raise FileExistsError('Use a fresh output path')
     snapshot = verify_snapshot(load_json(snapshot_path))
     plan = load_json(plan_path) if plan_path else None
-    data = prepare_data(snapshot, plan, Path(run_folder) if run_folder else None, preview_q)
+    data = prepare_data(snapshot, plan, Path(run_folder) if run_folder else None, preview_q,
+                        check_cycle=check_cycle)
     vendor = ROOT / 'tools/search_replay/vendor'
     template = (ROOT / 'tools/search_replay/eco65_coupled_viewer.html').read_text(encoding='utf-8')
     payload = json.dumps(data, separators=(',', ':'), allow_nan=False)
@@ -233,9 +359,11 @@ def main():
     parser.add_argument('--run', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--preview-q', type=float, nargs=6)
+    parser.add_argument('--skip-cycle-validation', action='store_true',
+                        help='Export existing records for inspection without rerunning cycle validation.')
     args = parser.parse_args()
     export(args.snapshot, args.output, plan_path=args.plan, run_folder=args.run,
-           preview_q=args.preview_q)
+           preview_q=args.preview_q, check_cycle=not args.skip_cycle_validation)
 
 
 if __name__ == '__main__':

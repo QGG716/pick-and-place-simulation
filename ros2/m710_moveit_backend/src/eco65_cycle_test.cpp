@@ -30,6 +30,13 @@ int main() {
       reverse+=m710::j1ReverseTravel(q,next,1);q=next;}
     require(reverse>m710::kEcoCycleReverseLimit,"SMALL_REVERSE_EDGES_MUST_ACCUMULATE");
     require(m710::j1ReverseTravel(3.,-3.,1)==6.,"RAW_ANGLE_MUST_NOT_WRAP");
+    auto level=Eigen::Isometry3d::Identity();
+    level.linear()=Eigen::AngleAxisd(.7,Eigen::Vector3d::UnitZ()).toRotationMatrix();
+    require(m710::ecoCycleLevelBox(level),"PURE_YAW_IS_LEVEL");
+    level.linear()=Eigen::AngleAxisd(.01,Eigen::Vector3d::UnitX()).toRotationMatrix();
+    require(!m710::ecoCycleLevelBox(level),"TILTED_BOX_IS_NOT_LEVEL");
+    level.linear()=Eigen::AngleAxisd(std::acos(-1.),Eigen::Vector3d::UnitX()).toRotationMatrix();
+    require(!m710::ecoCycleLevelBox(level),"INVERTED_BOX_IS_NOT_UPRIGHT");
     J world=J::array({{{"id","beltT"},{"size",{.2,.6,.01}},{"pose",pose(0,0,.18)}},
       {{"id","beltL"},{"size",{.5,.2,.01}},{"pose",pose(-.35,-.2,.18)}},
       {{"id","foot"},{"size",{.03,.03,.01}},{"pose",pose(0,0,.005)}}});
@@ -65,7 +72,7 @@ int main() {
     bad=req;bad["world"].push_back({{"id","unknown"},{"size",{1,1,1}},{"pose",pose()}});
     rejects([&]{contract.checkRequest(bad);});
     std::cout<<J({{"status","PASS"},{"scope","SYNTHETIC_DIRECTION_AND_SCENE_PROTOCOL_ONLY"},
-      {"cases",16},{"accumulated_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
+      {"cases",19},{"accumulated_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
     return 0;
   } catch(const std::exception& error) {std::cerr<<error.what()<<std::endl;return 1;}
 }

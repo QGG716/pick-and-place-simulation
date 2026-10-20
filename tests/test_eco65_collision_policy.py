@@ -3,7 +3,8 @@ from copy import deepcopy
 import pytest
 
 from unloading_sim.eco65.collision_policy import (
-    effective_collision_policy, LEGACY_POLICY, MAST_MODE, ROBOT_BODY_LINKS)
+    effective_collision_policy, LEGACY_POLICY, MAST_MODE, ROBOT_BODY_LINKS,
+    EXTRACTION_CARTON_MODE, extraction_carton_pairs)
 
 
 def inventory():
@@ -68,3 +69,91 @@ def test_historical_entries_keep_v1_and_unknown_modes_fail_closed():
     assert effective_collision_policy({}) == LEGACY_POLICY
     with pytest.raises(ValueError, match='UNKNOWN_ECO65_COLLISION_POLICY_MODE'):
         effective_collision_policy(dict(collision_policy_mode='ignore_everything'))
+
+
+def coupled_inventory():
+    scene = inventory()
+    scene['extraction_carton_contact_mode'] = EXTRACTION_CARTON_MODE
+    scene['coupled_conveyor_spec'] = dict(schema='eco65_coupled_spec_v1',
+        config=dict(extraction_carton_contact_mode=EXTRACTION_CARTON_MODE))
+    scene['target_box_id'] = 'carton_r00_l03_c01'
+    scene['boxes'] = [dict(id=f'carton_r00_l{layer:02d}_c{column:02d}',
+        pose=[.205, (column-1)*.11, .23+layer*.1], size_m=[.15, .1, .1])
+        for layer in range(4) for column in range(3)]
+    return scene
+
+
+def test_coupled_extraction_authorization_is_versioned_and_frozen():
+    scene = coupled_inventory()
+    policy = effective_collision_policy(scene)
+    rule = policy['extraction_carton_contact']
+    assert policy['schema'] == 'eco65_pair_collision_policy_v3'
+    assert policy['stack_contact_mode'] == EXTRACTION_CARTON_MODE
+    assert rule['stage'] == 'extraction' and rule['allow_intersection'] is True
+    assert rule['continuous_task_mode'] == 'eco65_coupled_cycle_v1'
+    assert rule['original_carton_ids'] == sorted(box['id'] for box in scene['boxes'])
+    assert rule['geometry_retained'] is True
+    assert rule['physical_execution'] == 'NOT_RUN' and rule['execution_ready'] is False
+    assert policy['robot_mast_exemption'] == effective_collision_policy(inventory())['robot_mast_exemption']
+    changed = deepcopy(scene)
+    changed['boxes'][0]['pose'][0] += .001
+    assert (effective_collision_policy(changed)['extraction_carton_contact']['original_carton_inventory_fingerprint']
+            != rule['original_carton_inventory_fingerprint'])
+
+
+def test_extraction_only_current_attached_target_and_remaining_cartons():
+    scene = coupled_inventory()
+    policy = effective_collision_policy(scene)
+    first = 'carton_r00_l03_c01'
+    second = 'carton_r00_l03_c00'
+    ids = [box['id'] for box in scene['boxes']]
+    args = dict(continuous_task_mode='eco65_coupled_cycle_v1', stage='extraction',
+                target_id=first, attached_target_id=first,
+                world_carton_ids=[name for name in ids if name != first])
+    pairs = extraction_carton_pairs(policy, **args)
+    assert len(pairs) == 11
+    assert all(pair[0] == first for pair in pairs)
+    assert [first, 'carton_r00_l02_c01'] in pairs
+    assert not any('robot_mount_plate' in pair or 'link_2' in pair for pair in pairs)
+    # After the first ideal drain, the second target can only name ten
+    # remaining world cartons. The completed carton gains no ghost permission.
+    pairs = extraction_carton_pairs(policy, **dict(args, target_id=second,
+        attached_target_id=second, world_carton_ids=[x for x in ids if x not in (first, second)],
+        completed_ids=[first]))
+    assert len(pairs) == 10
+    assert all(first not in pair and pair[0] == second for pair in pairs)
+    for stage in ('pregrasp', 'contact', 'transit', 'place', 'withdrawal', 'residence'):
+        assert extraction_carton_pairs(policy, **dict(args, stage=stage)) == []
+    assert extraction_carton_pairs(policy, **dict(args, attached_target_id=None)) == []
+    assert extraction_carton_pairs(policy, **dict(args, continuous_task_mode='historical')) == []
+    assert extraction_carton_pairs(effective_collision_policy(inventory()), **args) == []
+
+
+@pytest.mark.parametrize('change', [
+    lambda scene: scene.pop('coupled_conveyor_spec'),
+    lambda scene: scene['coupled_conveyor_spec']['config'].clear(),
+    lambda scene: scene['boxes'][0].update(id='warehouse_carton_unknown'),
+    lambda scene: scene['boxes'][0].update(size_m=[.25, .21, .1]),
+    lambda scene: scene['boxes'].append(deepcopy(scene['boxes'][0])),
+])
+def test_extraction_mode_rejects_non_coupled_or_changed_inventory(change):
+    scene = coupled_inventory()
+    change(scene)
+    with pytest.raises(ValueError, match='EXTRACTION_CARTON'):
+        effective_collision_policy(scene)
+
+
+def test_extraction_pairs_fail_closed_on_unknown_or_inconsistent_ownership():
+    scene = coupled_inventory()
+    policy = effective_collision_policy(scene)
+    target = scene['target_box_id']
+    world = [b['id'] for b in scene['boxes'] if b['id'] != target]
+    args = dict(continuous_task_mode='eco65_coupled_cycle_v1', stage='extraction',
+                target_id=target, attached_target_id=target, world_carton_ids=world)
+    for updates in (dict(world_carton_ids=[*world, 'robot_mount_plate']),
+                    dict(world_carton_ids=[*world, target]),
+                    dict(world_carton_ids=world[:-1]),
+                    dict(attached_target_id='carton_r00_l03_c00'),
+                    dict(completed_ids=[world[0]])):
+        with pytest.raises(ValueError, match='RUNTIME_OWNERSHIP'):
+            extraction_carton_pairs(policy, **dict(args, **updates))

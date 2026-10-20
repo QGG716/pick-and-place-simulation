@@ -207,6 +207,7 @@ class Worker {
   std::string evaluation_profile="strict";
   bool directed_j1=false;
   std::unique_ptr<m710::EcoCycleBinding> cycle_binding;
+  m710::NativeDeadlinePtr native_deadline;
   Clock::time_point request_deadline=Clock::time_point::max();
   double remainingBudget() const {return std::chrono::duration<double>(request_deadline-Clock::now()).count();}
   J static_prior_database=nullptr;
@@ -391,8 +392,8 @@ class Worker {
       a.object=object(b,m710::nativeFrames().flange_link);a.touch_links=b.at("touch_links").get<std::vector<std::string>>();
       if(!out.scene->processAttachedCollisionObjectMsg(a))throw std::runtime_error("ECO65_CYCLE_ATTACH_IMPORT_FAILED");
     }
-    out.process=std::make_shared<m710::ProcessPolicy>(out.scene,req);
-    out.clearance=std::make_shared<m710::Clearance>(out.scene,req.at("clearance_policy"),"optimized");
+    out.process=std::make_shared<m710::ProcessPolicy>(out.scene,req,native_deadline);
+    out.clearance=std::make_shared<m710::Clearance>(out.scene,req.at("clearance_policy"),"optimized",native_deadline,req);
     out.clearance->phase="initial";J failure=nullptr;
     if(!out.clearance->check(out.scene->getCurrentState()))failure=out.clearance->last_failure;
     if(failure.is_null() && !out.process->check(out.scene->getCurrentState(),req.value("endpoint",false)))
@@ -402,7 +403,7 @@ class Worker {
       out.scene->checkCollision(cr,result);
       if(result.collision)failure={{"reason","ECO65_CYCLE_ORDINARY_COLLISION"}};
     }
-    if(failure.is_null() && world_target)failure=m710::ecoCycleWorldTarget(out.scene,req);
+    if(failure.is_null() && world_target)failure=m710::ecoCycleWorldTarget(out.scene,req,native_deadline);
     out.evidence={{"status",failure.is_null()?"SUCCESS":"STATE_REJECTED"},{"failure",failure},
       {"clearance",out.clearance->evidence()},{"process",out.process->evidence()}};
     // The complete immutable policy is already present in every archived
@@ -412,7 +413,8 @@ class Worker {
     return out;
   }
   Eigen::Isometry3d cycleTargetPose(const planning_scene::PlanningSceneConstPtr& scene,const std::string& id) const {
-    const auto* attached=scene->getCurrentState().getAttachedBody(id);
+    const auto& state=scene->getCurrentState();
+    const auto* attached=state.hasAttachedBody(id)?state.getAttachedBody(id):nullptr;
     const auto world=scene->getWorld()->getObject(id);
     if(bool(attached)==bool(world))throw std::runtime_error("ECO65_CYCLE_TARGET_OWNER_REQUIRED");
     return attached?attached->getGlobalCollisionBodyTransforms().at(0):m710::worldShapePose(*world,0);
@@ -508,7 +510,7 @@ class Worker {
         const Eigen::Vector3d extent=pose.linear().cwiseAbs()*half;
         const auto& receiver=req.at("process_policy").at("task_contract").at("receiving");
         const double gap=pose.translation().z()-extent.z()-receiver.at("bounds_D_m").at(1).at(2).get<double>();
-        if((pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-5 ||
+        if(!m710::ecoCycleLevelBox(pose) ||
             std::abs(gap-cycle_binding->binding.at("mechanism_spec").at("config").at("desired_drop_m").get<double>())>1e-6)
           throw std::runtime_error("ECO65_CYCLE_RELEASE_DROP_INVALID");
         for(int k=0;k<2;++k)
@@ -527,14 +529,16 @@ class Worker {
         for(const auto& item:bound_tools) {
           const auto* link=model->getLinkModel(item.get<std::string>());
           for(size_t k=0;k<link->getShapes().size();++k) {
+            native_deadline->require();
             const double gap=m710::ecoCycleSolidDistance(link->getShapes()[k],r.start->getCurrentState().getCollisionBodyTransform(link,k),
               carton->shapes_[0],m710::worldShapePose(*carton,0));
+            native_deadline->require();
             if(gap<minimum){minimum=gap;closest=item.get<std::string>();}
           }
         }
         r.result["tool_target_separation"]={{"minimum_m",minimum},{"tool_link",closest},{"required_m",.01}};
         if(minimum<.01-1e-9)throw std::runtime_error("ECO65_CYCLE_DRAIN_TOOL_NOT_SEPARATED");
-        const auto received=m710::ecoCycleWorldTarget(r.start,req);
+        const auto received=m710::ecoCycleWorldTarget(r.start,req,native_deadline);
         if(!received.is_null()){r.result["failure"]=received;return;}
         const auto box=m710::processBox(req.at("process_policy").at("target"));
         const double bottom=box.pose.translation().z()-(box.pose.linear().cwiseAbs()*box.half).z();
@@ -827,7 +831,9 @@ class Worker {
       }
       m710::active_search_trace=trace;
       m710::active_j1_direction=req.value("j1_direction",0);
-      struct TraceReset {~TraceReset(){m710::active_search_trace.reset();m710::active_j1_direction=0;}} reset_trace;
+      m710::active_native_deadline=cycle_binding?native_deadline:nullptr;
+      struct TraceReset {~TraceReset(){m710::active_search_trace.reset();m710::active_j1_direction=0;
+        m710::active_native_deadline.reset();}} reset_trace;
       auto solver=std::make_shared<CountedPlanner>(pipelines.at(pipeline),calls[pipeline+"/"+planner]);
       solver->setPlannerId(planner);solver->setProperty("goal_joint_tolerance",1e-12);solver->setProperty("goal_position_tolerance",m710::kNativeGoalPositionToleranceM);
       solver->setProperty("goal_orientation_tolerance",m710::kNativeGoalOrientationToleranceRad);solver->setProperty("max_velocity_scaling_factor",req.at("velocity_scale").get<double>());
@@ -837,6 +843,12 @@ class Worker {
       solver->setTimeout(solve_budget);solver->init(model);
       const auto* group=model->getJointModelGroup(m710::nativeFrames().planning_group);robot_trajectory::RobotTrajectoryPtr trajectory;
       r.clearance->phase="search";const auto begin=Clock::now();
+      struct RestoreDeadline {
+        m710::NativeDeadlinePtr deadline;Clock::time_point request_end;
+        ~RestoreDeadline(){if(deadline)deadline->set(request_end);}
+      } restore_deadline{cycle_binding?native_deadline:nullptr,request_deadline};
+      if(cycle_binding)native_deadline->set(std::min(request_deadline,
+        begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
       mtc::solvers::PlannerInterface::Result result;
       if(req.contains("goal_pose")) {
         if(req.at("flange_from_task_tcp")!=identity.at("flange_from_task_tcp")) throw std::runtime_error("TASK_TCP_CONTEXT_MISMATCH");
@@ -847,6 +859,8 @@ class Worker {
         auto goal=r.start->diff();auto state=goal->getCurrentState();state.setJointGroupPositions(group,req.at("q_goal").get<std::vector<double>>());state.update();goal->setCurrentState(state);
         result=solver->plan(r.start,goal,group,solve_budget,trajectory,moveit_msgs::msg::Constraints{});
       }
+      const bool solver_deadline_expired=cycle_binding&&native_deadline->expired();
+      if(cycle_binding)native_deadline->set(request_deadline);
       r.result={{"status","NATIVE_PLANNING_FAILED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_plan_s",seconds(begin)},
         {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
         {"parent_stage_id",r.parent},{"native_solver_calls",{{pipeline=="ompl"?"OMPL":planner,1}}},{"pipeline_calls",calls},{"request_id",req.at("request_id")}};
@@ -856,6 +870,10 @@ class Worker {
       r.result["solver_returned_success"]=result.success;
       r.result["ompl_output_interpolation"]=pipeline=="ompl"?J(ompl_interpolate):J(nullptr);
       r.result["solver_message"]=result.message;
+      if(cycle_binding)r.result["absolute_solver_deadline"]={{"budget_s",solve_budget},
+        {"expired_on_return",solver_deadline_expired},
+        {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},
+        {"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
       // MTC exposes the original error name on failure, but drops the numeric
       // response and the successful response message. Never invent that code.
       r.result["moveit_error_code"]=nullptr;
@@ -869,6 +887,11 @@ class Worker {
       }
       r.result["returned_waypoint_count"]=trajectory?trajectory->getWayPointCount():0;
       r.result["trajectory_present"]=bool(trajectory);
+      if(solver_deadline_expired) {
+        r.result["status"]="NATIVE_SOLVER_DEADLINE_EXPIRED";
+        r.result["failure"]={{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
+        r.result["trajectory_present"]=false;trajectory.reset();return;
+      }
       r.result["processing_branch"]=!result?"SOLVER_RETURNED_FAILURE":!trajectory?
           "NULL_TRAJECTORY":trajectory->getWayPointCount()<2?"INSUFFICIENT_WAYPOINTS":"TRAJECTORY_CONVERSION";
       if(req.contains("goal_pose")) {
@@ -1008,6 +1031,7 @@ public:
     const auto begin=Clock::now();const double budget=req.value("request_budget_s",86400.);
     if(!std::isfinite(budget)||budget<=0)throw std::runtime_error("INVALID_REQUEST_BUDGET");
     request_deadline=begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(budget));
+    native_deadline=std::make_shared<m710::NativeDeadline>(request_deadline);
     auto result=run(req);result["evaluation_profile"]=evaluation_profile;
     result["budget"]={{"request_budget_s",budget},{"remaining_on_return_s",remainingBudget()},{"return_reserve_s",req.value("return_reserve_s",5.)}};
     if(req.value("search_trace",false) && !result.contains("search_trace")) {
@@ -1088,6 +1112,9 @@ public:
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       if(req.at("identity").value("robot_variant",std::string())=="ECO65-B")
         m710::validateEco65MastExemption(bound_policy,model,bound_process_geometry,bound_tools);
+      if(bound_policy.value("schema",std::string())=="eco65_pair_collision_policy_v3")
+        m710::validateEco65ExtractionContact(bound_policy,bound_process_geometry,
+          req.at("coupled_cycle_binding").at("original_cartons"));
       const auto continuous_mode=req.value("continuous_task_mode",std::string());
       if(!continuous_mode.empty()) {
         if(continuous_mode!=m710::kEcoCycleMode || !directed_j1 || !planning_only ||
@@ -1345,13 +1372,14 @@ public:
         } else if(req.at("process_policy").at("cups")!=bound_process_geometry.at("cups") ||
                   req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
             throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_MISMATCH");
-        process=std::make_shared<m710::ProcessPolicy>(scene,req);
+        process=std::make_shared<m710::ProcessPolicy>(scene,req,cycle_binding?native_deadline:nullptr);
       }
       if((req.at("clearance_policy").at("schema")=="m710_native_process_clearance_v1" ||
           req.at("clearance_policy").at("schema")=="eco65_native_process_clearance_v1") && !process && op!="build_static_prior")
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       if(req.value("require_native_motion",false) && (op=="plan" || op=="diagnostic_connection") && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
-      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")));
+      clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),
+        cycle_binding?native_deadline:nullptr,req);
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){

@@ -27,29 +27,49 @@ class Clearance {
   std::unique_ptr<ClearanceWorkspace> workspace_;
   std::string mode_;
   bool eco65_=false;
+  NativeDeadlinePtr deadline_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
     double seconds=0,bookkeeping_s=0,witness_s=0;};
   std::map<std::string,Count> counts_;
 public:
   std::string phase = "endpoint";
   Json last_failure = nullptr, rejected_examples = Json::array(), search_gap_witness = nullptr;
-  Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized")
-    : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode) {
+  Clearance(const planning_scene::PlanningSceneConstPtr& scene, const Json& policy, const std::string& mode="optimized",
+            NativeDeadlinePtr deadline={},const Json& request=nullptr)
+    : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode),deadline_(std::move(deadline)) {
     const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
     eco65_=policy.at("schema")=="eco65_native_process_clearance_v1";
     if(eco65_) {
       const auto& source=policy.at("source_policy");
-      if((source.at("schema")!="eco65_pair_collision_policy_v1" && source.at("schema")!="eco65_pair_collision_policy_v2") ||
+      if((source.at("schema")!="eco65_pair_collision_policy_v1" && !eco65HasMastPolicy(source)) ||
          source.at("collision_margin_m")!=.002 || source.at("mesh_error_reserve_m")!=.0002 ||
          source.at("required_pair_clearance_m")!=.0024 || source.at("self_collision_clearance_m")!=.0024 ||
          source.at("contact_tolerance_m")!=.0004 || policy.at("numerical_gap_tolerance_m")!=1e-9 ||
          policy.at("receiver_reserve_m")!=0.)throw std::runtime_error("UNSUPPORTED_ECO65_CLEARANCE_POLICY");
-      if(source.at("schema")=="eco65_pair_collision_policy_v2") {
+      if(eco65HasMastPolicy(source)) {
         for(const auto& pair:source.at("robot_mast_exemption").at("exempt_pairs")) {
           collision_detection::AllowedCollision::Type allowed;
           if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||
               allowed!=collision_detection::AllowedCollision::ALWAYS)
             throw std::runtime_error("ECO65_MAST_SRDF_ACM_MISMATCH");
+        }
+      }
+      if(source.at("schema")=="eco65_pair_collision_policy_v3") {
+        if(request.is_null() || request.at("clearance_policy")!=policy)
+          throw std::runtime_error("ECO65_EXTRACTION_RUNTIME_CONTEXT_REQUIRED");
+        const auto expected=eco65ExtractionNeighbors(request);
+        const std::string target=policy.at("target_id");
+        for(const auto& id:expected) {
+          collision_detection::AllowedCollision::Type allowed;
+          if(!scene->getCurrentState().hasAttachedBody(target) || !scene->getWorld()->hasObject(id) ||
+              !acm_.getEntry(target,id,allowed) || allowed!=collision_detection::AllowedCollision::ALWAYS)
+            throw std::runtime_error("ECO65_EXTRACTION_ACM_MISMATCH");
+        }
+        if(request.value("continuous_task_mode",std::string())=="eco65_coupled_cycle_v1" &&
+            policy.at("stage")!="extraction")for(const auto& id:eco65ExtractionOriginalIds(source))if(id!=target) {
+          collision_detection::AllowedCollision::Type allowed;
+          if(acm_.getEntry(target,id,allowed) && allowed==collision_detection::AllowedCollision::ALWAYS)
+            throw std::runtime_error("ECO65_EXTRACTION_PERMISSION_LEAKED_TO_OTHER_STAGE");
         }
       }
     } else if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
@@ -81,7 +101,7 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
@@ -98,6 +118,10 @@ public:
     const auto start=std::chrono::steady_clock::now();
     auto& c=counts_[phase];++c.queries;
     last_failure=nullptr;
+    if(nativeExpired(deadline_)) {
+      last_failure={{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"},{"phase",phase}};
+      ++c.rejected;return false;
+    }
     auto finish=[&](bool valid) {
       auto bookkeeping=Clock::now();
       if(!valid) {
@@ -128,7 +152,7 @@ public:
       ClearanceWorkspace::Failure f;
       try {
         if(workspace_->check(state,f,phase)) return finish(true);
-        last_failure={{"reason",!std::isfinite(f.distance)?"DISTANCE_UNKNOWN":f.distance<=0.?"INTERSECTION_OR_CONTACT":"CLEARANCE_INSUFFICIENT"},
+        last_failure={{"reason",!f.reason.empty()?f.reason:!std::isfinite(f.distance)?"DISTANCE_UNKNOWN":f.distance<=0.?"INTERSECTION_OR_CONTACT":"CLEARANCE_INSUFFICIENT"},
           {"pair",{f.a,f.b}},{"surface_distance_m",std::isfinite(f.distance)?Json(f.distance):Json(nullptr)},
           {"required_pair_clearance_m",f.limit},{"numerical_gap_tolerance_m",1e-9},{"query_range_m",f.limit+.001},
           {"query_scope",f.self?"self_including_robot_tool_and_payload":"robot_tool_payload_to_world"}};

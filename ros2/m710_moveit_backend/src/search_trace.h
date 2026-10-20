@@ -6,6 +6,7 @@
 #include <mutex>
 #include <atomic>
 #include <array>
+#include "native_deadline.h"
 namespace m710 {
 using TraceJson=nlohmann::json;
 // Request-local output; no global path/answer cache. JSON is materialized after solve.
@@ -18,6 +19,7 @@ struct SearchTrace {
 };
 extern std::shared_ptr<SearchTrace> active_search_trace;
 extern int active_j1_direction;
+extern NativeDeadlinePtr active_native_deadline;
 extern thread_local TraceJson validity_witness;
 extern thread_local bool witness_requested;
 using SampleRecorder=std::function<void(const std::vector<double>&,bool,const char*,const TraceJson&)>;
@@ -40,6 +42,7 @@ class TraceRRTConnect : public ompl::geometric::RRTConnect {
   bool in_extension_=false;
   SampleRecorder recorder_;
   int direction_=0;
+  NativeDeadlinePtr deadline_;
   double recording_s_=0.;
   std::vector<double> values(const ompl::base::State* s) const;
   void extension(const ompl::base::State* from,const ompl::base::State* to,bool start,bool accepted,const char* outcome);

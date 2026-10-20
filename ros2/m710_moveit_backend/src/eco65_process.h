@@ -14,9 +14,11 @@ class Eco65Process {
   ProcessBox target_;
   bool attached_;
   bool drained_=false;
+  NativeDeadlinePtr deadline_;
   bool record_distances_=false;
   bool fixed_mounts_accepted_=false;
   std::set<std::string> bands_,supports_;
+  std::set<std::string> extraction_neighbors_;
   std::map<std::string,ProcessBox> world_;
   struct WorldSolid {std::shared_ptr<fcl::CollisionGeometryd> shape;Eigen::Isometry3d pose;};
   std::map<std::string,WorldSolid> world_solids_;
@@ -114,11 +116,11 @@ class Eco65Process {
   }
 public:
   Json failure=nullptr,seal=nullptr,distance_samples=Json::array();
-  Eco65Process(const planning_scene::PlanningScenePtr& scene,const Json& req)
+  Eco65Process(const planning_scene::PlanningScenePtr& scene,const Json& req,NativeDeadlinePtr deadline={})
     :spec_(req.at("process_policy")),stage_(req.at("stage")),target_id_(spec_.at("target_id")),
      target_(processBox(spec_.at("target"))),attached_(!req.at("attachment").is_null()),
      bands_(req.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
-     supports_(spec_.at("support_names").get<std::set<std::string>>()) {
+     supports_(spec_.at("support_names").get<std::set<std::string>>()),deadline_(std::move(deadline)) {
     record_distances_=req.at("op")=="check_state_offline" && req.value("record_contact_distances",false);
     validateSealContours(spec_);processTransform(spec_.at("flange_from_contact_frame"));
     if(spec_.at("schema")!="eco65_native_process_v1" || spec_.at("stage")!=stage_ ||
@@ -213,6 +215,8 @@ public:
       throw std::runtime_error(contracted?"ECO65_TWELVE_CARTONS_REQUIRED":"ECO65_FOUR_CARTONS_REQUIRED");
     if(spec_.at("stack_carton_ids").size()!=cartons.size())throw std::runtime_error("ECO65_CARTON_ID_DUPLICATE");
     for(const auto& id:cartons)if(id!=target_id_ && !world_.count(id))throw std::runtime_error("ECO65_OTHER_CARTON_MISSING");
+    extraction_neighbors_=eco65ExtractionNeighbors(req);
+    setEco65ExtractionPairs(scene,target_id_,extraction_neighbors_);
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& id:bands_) {bands.push_back(solid(state,id));acm.setEntry(id,target_id_,true);}
     base_solid=solid(state,nativeFrames().base_link);
@@ -273,6 +277,7 @@ public:
     // Query real FCL once at request import, then reuse that rigid invariant
     // through this request's path. No articulated pair gets this optimization.
     for(auto& pair:mount_pairs) {
+      if(deadline_)deadline_->require();
       auto* child=pair.b.link;
       while(child && child!=pair.a.link) {
         const auto* joint=child->getParentJointModel();
@@ -286,6 +291,9 @@ public:
   }
   bool check(const moveit::core::RobotState& state,bool endpoint) {
     failure=nullptr;distance_samples=Json::array();auto target=target_;
+    auto expired=[&](){if(!nativeExpired(deadline_))return false;
+      failure={{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"},{"stage",stage_}};return true;};
+    if(expired())return false;
     if(attached_) {
       const auto* a=state.getAttachedBody(target_id_);
       if(!a || a->getShapes().size()!=1 || a->getShapes()[0]->type!=shapes::BOX)throw std::runtime_error("ECO65_ATTACHMENT_CHANGED");
@@ -301,6 +309,7 @@ public:
     seal=processSealRings(geometry,target,flange);
     const bool fit=seal.at("status")=="PASS";
     auto accept=[&](const std::string& a,const std::string& b,double d,double threshold) {
+      if(expired())return false;
       if(record_distances_)distance_samples.push_back({{"pair",{a,b}},{"signed_distance_m",d},
         {"threshold_m",threshold},{"accepted",eco65DistanceAccepted(d,threshold)},{"query","FCL_signed_distance"}});
       if(!eco65DistanceAccepted(d,threshold)) {failure={{"reason","ECO65_CONTACT_OR_CLEARANCE"},{"pair",{a,b}},
@@ -308,8 +317,10 @@ public:
     };
     if(!accept(nativeFrames().base_link,"robot_mount_plate",distance(base_solid,state,world_.at("robot_mount_plate")),-.0004))return false;
     if(!fixed_mounts_accepted_ || record_distances_) for(const auto& pair:mount_pairs) {
+      if(expired())return false;
+      const auto recorded_before=distance_samples.size();
       const bool valid=accept(pair.a.link->getName(),pair.b.link->getName(),pair.fixed_distance,-.0004);
-      if(record_distances_) {
+      if(record_distances_ && distance_samples.size()>recorded_before) {
         distance_samples.back()["robot_shape_index"]=pair.a.index;
         distance_samples.back()["attachment_shape_index"]=pair.b.index;
         distance_samples.back()["query_scope"]="FCL_AT_REQUEST_IMPORT_FIXED_JOINT_CHAIN_INVARIANT";
@@ -319,6 +330,7 @@ public:
     fixed_mounts_accepted_=true;
     if(drained_) {seal={{"status","NOT_APPLICABLE_DRAINED_TARGET"}};return true;}
     for(const auto& band:bands) {
+      if(expired())return false;
       bool contact=fit;
       if(spec_.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS") {
         contact=false;
@@ -333,6 +345,10 @@ public:
       if(!accept(band.link->getName(),target_id_,distance(band,state,target),contact?-.0004:.0024))return false;
     }
     if(attached_)for(const auto& id:supports_) {
+      if(expired())return false;
+      // The authorized extraction interval includes actual carton overlap,
+      // including original supporting cartons. Non-carton supports remain checked.
+      if(extraction_neighbors_.count(id))continue;
       const auto& support=world_.at(id);
       const Eigen::Vector3d extent=target.pose.linear().cwiseAbs()*target.half;
       bool overlap=true;
@@ -349,6 +365,13 @@ public:
       if(seal.at("status")!="PASS") {failure=seal;return false;}
     }
     return true;
+  }
+  Json extractionContactEvidence() const {
+    auto evidence=eco65ExtractionEvidence(target_id_,extraction_neighbors_);
+    evidence["support_fcl_exempt_pairs"]=Json::array();
+    for(const auto& id:supports_)if(extraction_neighbors_.count(id))
+      evidence["support_fcl_exempt_pairs"].push_back({target_id_,id});
+    return evidence;
   }
 };
 }

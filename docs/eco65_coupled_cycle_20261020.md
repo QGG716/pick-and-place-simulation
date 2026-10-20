@@ -103,3 +103,73 @@ residence 或最终回 HOME。
 定向 Python 检查 27 项通过；C++ `eco65_cycle_test` 的 16 组协议/数值检查通过，
 `m710_search_trace_test` 生成 exact 路径。新 worker 已在既有 chroot 原生编译、
 安装。合成测试不是完整任务证据；完整运行与实际导出结果在阶段三另记。
+
+## 阶段三：原生运行与问题修正
+
+首次原生运行 `coupled_20261020_run01` 完成首箱接触、附着和固定 q 升带；
+直接前抓退到横带的释放点被原生 LIN 报告 `NO_IK_SOLUTION`，没有当作完成。
+第二次运行 `coupled_20261020_run02` 增加几何生成的脱垛点与水平箱体转向候选。
+脱垛 LIN 已生成路径，但箱体刚离开原下层支撑箱边缘时，间隙约 0.102 mm，
+小于原策略要求的 2.4 mm。原始请求、返回、失败 q 和搜索 trace 均保留。
+
+用户随后明确补充：“脱垛过程中，允许箱子与邻箱接触和碰撞。”
+据此采用 `eco65_pair_collision_policy_v3`，不追改上述旧运行证据。
+新许可仅适用于 `eco65_coupled_cycle_v1` 的 `extraction` 阶段：
+实际 attached 的当前目标与冻结原始箱身份中仍在 world 的其余纸箱。
+对象对按 ID 精确枚举，允许接触及交叠；邻箱在本轮运动学假设下保持其世界位姿。
+工具、全部吸盘、机器人、输送机构及其他环境不获得该许可；
+`transit`、`place` 和回程恢复正常碰撞检查。该许可同时作用于原生 ACM、
+净空工作区和原支撑箱的独立 FCL 检查，未扩展请求 `allowed_pairs`。
+新配置、模型、计划与查看器均绑定新策略身份。
+
+原生求解的绝对截止时间现在覆盖 RRT 扩展、CONNECT 循环和碰撞查询边界；
+单个 FCL 调用仍不可抢占，调用前后检查截止。20 ms 的定向测试在 trace 开启/
+关闭时分别约 21.30/21.31 ms 退出，未产生 exact 路径。状态检查也共享
+任务和连接的剩余预算；额外 10 s RPC 窗口仅用于接收回复。
+脱垛末态还采用真实 6 mm 微抬，后续释放继续依据实际箱底和带面检查名义间隙。
+
+`run03` 的首箱接近在输出检查用尽固定 35% 子预算时被拒绝，当时请求尚余
+55.51 s，未发现碰撞。中止该候选搜索并保留诊断；连续入口改为让必需输出检查
+共享请求截止时间内的剩余额度，不增加 900 s 任务、100 s 连接或 8 s 求解上限。
+历史入口保留原预算方法。
+
+`run04` 的脱垛路径通过采样碰撞和 J1 检查，但实际终点位置误差为
+3.588719 µm，超过保持不变的 1 µm 门限。安装版 MoveIt 为 2.5.10，其
+[KDL 默认收敛精度为 1e-5](https://github.com/moveit/moveit2/blob/2.5.10/moveit_kinematics/kdl_kinematics_plugin/src/kdl_kinematics_plugin.cpp#L190-L195)。
+因此只在新联动模型中设置 `robot_description_kinematics.<group>.epsilon=1e-9`，
+重新生成模型身份和快照；不修改已生成轨迹的端点，不放宽验收。
+
+### 当前提交的实际完成边界
+
+`run05` 在高位带载转运时遇到机械臂与纵带净空不足，随后暴露连接预算耗尽被误报为
+整个任务预算耗尽的问题。保留失败记录，修正预算异常归属，并优先尝试低位转运后升带。
+
+`coupled_20261020_run06` 使用本次 ECO65 原生 worker，在
+`coupled_20261020_scene05` 中生成首箱的完整接受链：
+`pregrasp-119 → contact-121 → attach-122 → extraction-123 → transit-137 →
+coupled_lift-138 → release-139 → nominal_receive-140 → withdrawal-141 →
+ideal_receiver_drain-142`。
+首箱为 `carton_r00_l03_c01`，实际采用顶抓、`part_024_seal`，
+低位抽离及带载转运后保持 q 升至 0.43 m；实际名义下落约 0.05 m。
+首箱清空后 world 箱体 11、attached 箱体 0、完成箱体 1。
+首箱 checkpoint 规划墙钟 291.948673 s，接受机器人轨迹 148.596280 s，
+机构展示 4.166667 s；墙钟不包含随后下一箱搜索。
+
+用户随后要求“不要再验证，先看结果”，因此停止下一箱搜索及后续验证。
+停止时尚未到达下一箱实际接触态，`complete=false`；末个未完成请求为
+`pregrasp-650`（调用索引 688），不能作为成功回程。
+本提交包含随后修正的接收阶段独立共享截止时间，以及完成自由转运后升带保持
+自由转运碰撞范围；这两项最新修改尚未重新原生运行。最终完整任务验收未运行，
+不以首箱 checkpoint 代替“一箱完整流程＋下一箱实际接触态”的完成证据。
+
+已有记录导出至本地忽略目录
+`outputs/eco65_native/coupled_20261020_result06/`：
+`first_carton.html` / `first_carton.zip` 为首箱轨迹版，
+`full_diagnostics.zip` 包含同次运行的完整诊断页面、684 条可展示请求及原始记录。
+导出使用 `--skip-cycle-validation`，明确记录 `NOT_RUN_USER_REQUEST`，
+未追加浏览器复核；完整诊断 HTML 约 1.2 GB，建议先打开首箱版。
+快照指纹为 `98d7aaca771a37afc632bb4b260ed06c98db63a919bc660eaa921545c9302f6e`。
+私有资产、快照和生成回放保持忽略，通过实际离线文件交付，不加入 Git。
+
+本次提交保存阶段三的当前进展，不声明完整任务成功。
+`planning_only=True`、`physical_execution=NOT_RUN`、`execution_ready=false`。

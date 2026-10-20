@@ -2,6 +2,7 @@
 #include "process_geometry.h"
 #include "scene_geometry.h"
 #include "joint_direction.h"
+#include "native_deadline.h"
 #include <moveit/planning_scene/planning_scene.h>
 #include <fcl/fcl.h>
 #include <geometric_shapes/shapes.h>
@@ -42,6 +43,11 @@ inline bool ecoCycleSameShape(CycleJson a,CycleJson b) {
 }
 inline bool ecoCycleSamePose(const CycleJson& a,const CycleJson& b,double epsilon=1e-9) {
   return (processTransform(a).matrix()-processTransform(b).matrix()).cwiseAbs().maxCoeff()<=epsilon;
+}
+inline bool ecoCycleLevelBox(const Eigen::Isometry3d& pose) {
+  // A supported box may yaw in the effective receiver rectangle. Its local
+  // +Z must still point upward; processTransform already checks proper SE(3).
+  return (pose.linear().col(2)-Eigen::Vector3d::UnitZ()).cwiseAbs().maxCoeff()<=1e-5;
 }
 class EcoCycleBinding {
 public:
@@ -171,7 +177,8 @@ inline double ecoCycleSolidDistance(const shapes::ShapeConstPtr& a,const Eigen::
 }
 // MoveIt does not query world/world pairs. A released carton therefore gets
 // these finite, actual-solid checks during nominal reception.
-inline CycleJson ecoCycleWorldTarget(const planning_scene::PlanningScenePtr& scene,const CycleJson& req) {
+inline CycleJson ecoCycleWorldTarget(const planning_scene::PlanningScenePtr& scene,const CycleJson& req,
+                                    const NativeDeadlinePtr& deadline=nullptr) {
   const std::string target=req.at("process_policy").at("target_id");
   const auto object=scene->getWorld()->getObject(target);
   if(!object || object->shapes_.size()!=1)throw std::runtime_error("ECO65_CYCLE_WORLD_TARGET_REQUIRED");
@@ -183,12 +190,13 @@ inline CycleJson ecoCycleWorldTarget(const planning_scene::PlanningScenePtr& sce
   for(int k=0;k<2;++k)full=full &&
     p.pose.translation()[k]-extent[k]>=receiver.at("bounds_D_m").at(0).at(k).get<double>()+receiver.at("margin_m").get<double>()-1e-6 &&
     p.pose.translation()[k]+extent[k]<=receiver.at("bounds_D_m").at(1).at(k).get<double>()-receiver.at("margin_m").get<double>()+1e-6;
-  const bool bottom=full && p.pose.translation().z()-extent.z()>=h-.0004 &&
-    (p.pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()<1e-5;
+  const bool bottom=full && p.pose.translation().z()-extent.z()>=h-.0004 && ecoCycleLevelBox(p.pose);
   for(const auto& id:scene->getWorld()->getObjectIds())if(id!=target) {
     const auto other=scene->getWorld()->getObject(id);
     for(size_t k=0;k<other->shapes_.size();++k) {
+      if(nativeExpired(deadline))return {{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
       const double d=ecoCycleSolidDistance(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k));
+      if(nativeExpired(deadline))return {{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
       const double limit=supports.count(id)&&bottom?-.0004:.0024;
       if(d+1e-9<limit)return {{"reason","ECO65_CYCLE_RELEASED_TARGET_COLLISION"},{"pair",{target,id}},
         {"surface_distance_m",d},{"required_pair_clearance_m",limit}};

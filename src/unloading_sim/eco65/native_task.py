@@ -186,6 +186,9 @@ class NativeTask:
 
     def close(self): self.native.close()
 
+    def request_budgets(self, remaining):
+        return request_budgets(remaining, self.stage_seconds, self.rpc_seconds)
+
     def call(self, request):
         remaining = self.deadline-perf_counter()
         if self.cancelled(): raise MoveItUnavailable('CANCELLED')
@@ -196,7 +199,7 @@ class NativeTask:
             raise ValueError('EVALUATION_PROFILE_MISMATCH')
         request['evaluation_profile'] = profile
         if request['op'] in ('plan','diagnostic_connection','eco65_transition') and profile == CHAIN:
-            request.update(request_budgets(remaining,self.stage_seconds,self.rpc_seconds))
+            request.update(self.request_budgets(remaining))
         elif request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
         if request['op']=='plan' and self.init.get('search_trace_enabled'):
             request['search_trace']=(request['stage'] in self.trace_stages and

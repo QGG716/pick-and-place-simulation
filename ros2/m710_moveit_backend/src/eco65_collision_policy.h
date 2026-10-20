@@ -1,23 +1,106 @@
 #pragma once
 #include <moveit/robot_model/robot_model.h>
+#include <moveit/planning_scene/planning_scene.h>
 #include <nlohmann/json.hpp>
 #include <set>
 #include <string>
 
 namespace m710 {
 using EcoPolicyJson = nlohmann::json;
+inline bool eco65HasMastPolicy(const EcoPolicyJson& policy) {
+  const auto schema=policy.value("schema",std::string());
+  return schema=="eco65_pair_collision_policy_v2" || schema=="eco65_pair_collision_policy_v3";
+}
 inline bool eco65MastExempt(const EcoPolicyJson& policy,const std::string& a,const std::string& b) {
-  if(policy.value("schema",std::string())!="eco65_pair_collision_policy_v2")return false;
+  if(!eco65HasMastPolicy(policy))return false;
   const auto& exemption=policy.at("robot_mast_exemption");
   for(const auto& pair:exemption.at("exempt_pairs"))
     if((pair.at(0)==a && pair.at(1)==b)||(pair.at(0)==b && pair.at(1)==a))return true;
   return false;
 }
+inline std::set<std::string> eco65ExtractionOriginalIds(const EcoPolicyJson& policy) {
+  if(policy.value("schema",std::string())!="eco65_pair_collision_policy_v3")return {};
+  const auto& e=policy.at("extraction_carton_contact");
+  const auto ids=e.at("original_carton_ids").get<std::set<std::string>>();
+  if(e.at("schema")!="eco65_attached_target_stack_exemption_v1" ||
+      e.at("continuous_task_mode")!="eco65_coupled_cycle_v1" || e.at("stage")!="extraction" ||
+      e.at("scope")!="ATTACHED_TARGET_VS_REMAINING_ORIGINAL_CARTONS_ONLY" ||
+      e.at("allow_intersection")!=true || e.at("geometry_retained")!=true ||
+      e.at("physical_execution")!="NOT_RUN" || e.at("execution_ready")!=false ||
+      policy.at("stack_contact_mode")!="attached_target_remaining_original_cartons_during_extraction" ||
+      policy.at("stack_contact_stages")!=EcoPolicyJson::array({"extraction"}) ||
+      ids.size()!=12 || EcoPolicyJson(ids)!=e.at("original_carton_ids"))
+    throw std::runtime_error("ECO65_EXTRACTION_CONTACT_POLICY_INVALID");
+  return ids;
+}
+inline void validateEco65ExtractionContact(const EcoPolicyJson& policy,const EcoPolicyJson& geometry,
+                                         const EcoPolicyJson& original_cartons) {
+  const auto ids=eco65ExtractionOriginalIds(policy);if(ids.empty())return;
+  std::set<std::string> expected;
+  for(const auto& box:original_cartons)
+    if(!expected.insert(box.at("id").get<std::string>()).second)
+      throw std::runtime_error("ECO65_EXTRACTION_CARTON_INVENTORY_DUPLICATE");
+  if(ids!=expected || geometry.at("extraction_carton_contact")!=policy.at("extraction_carton_contact"))
+    throw std::runtime_error("ECO65_EXTRACTION_CARTON_BINDING_CHANGED");
+}
+// Derive runtime pairs from bound identities and real ownership, never from a
+// caller-provided free-form permission list or an object-name prefix.
+inline std::set<std::string> eco65ExtractionNeighbors(const EcoPolicyJson& req) {
+  if(req.is_null() || !req.contains("clearance_policy"))return {};
+  const auto& policy=req.at("clearance_policy").at("source_policy");
+  const auto original=eco65ExtractionOriginalIds(policy);
+  if(original.empty() || req.value("continuous_task_mode",std::string())!="eco65_coupled_cycle_v1" ||
+      req.at("stage")!="extraction" || req.at("attachment").is_null())return {};
+  const auto& p=req.at("process_policy");const auto& task=p.at("task_contract");
+  const std::string target=p.at("target_id");
+  if(!original.count(target) || req.at("attachment").at("id")!=target ||
+      req.at("clearance_policy").at("target_id")!=target || p.at("stage")!="extraction" ||
+      task.at("continuous_task_mode")!="eco65_coupled_cycle_v1" || task.at("target_id")!=target ||
+      p.at("extraction_carton_contact")!=policy.at("extraction_carton_contact"))
+    throw std::runtime_error("ECO65_EXTRACTION_CONTACT_CONTEXT_CHANGED");
+  const auto remaining=task.at("stack_carton_ids").get<std::set<std::string>>();
+  const auto completed=req.at("completed_ids").get<std::set<std::string>>();
+  if(!remaining.count(target) || completed.count(target))
+    throw std::runtime_error("ECO65_EXTRACTION_TARGET_NOT_REMAINING");
+  std::set<std::string> world;
+  for(const auto& row:req.at("world"))world.insert(row.at("id").get<std::string>());
+  if(world.count(target))throw std::runtime_error("ECO65_EXTRACTION_DUPLICATE_TARGET_OWNERSHIP");
+  for(const auto& id:completed)if(!original.count(id))
+    throw std::runtime_error("ECO65_EXTRACTION_UNKNOWN_COMPLETED_CARTON");
+  std::set<std::string> result;
+  for(const auto& id:remaining) {
+    if(!original.count(id) || completed.count(id))
+      throw std::runtime_error("ECO65_EXTRACTION_UNKNOWN_REMAINING_CARTON");
+    if(id!=target) {
+      if(!world.count(id))throw std::runtime_error("ECO65_EXTRACTION_REMAINING_WORLD_CARTON_MISSING");
+      result.insert(id);
+    }
+  }
+  return result;
+}
+inline void setEco65ExtractionPairs(const planning_scene::PlanningScenePtr& scene,
+                                   const std::string& target,const std::set<std::string>& neighbors) {
+  if(neighbors.empty())return;
+  if(!scene->getCurrentState().hasAttachedBody(target) || scene->getWorld()->hasObject(target))
+    throw std::runtime_error("ECO65_EXTRACTION_ATTACHED_TARGET_REQUIRED");
+  std::set<std::string> robot_links;
+  for(const auto* link:scene->getRobotModel()->getLinkModels())robot_links.insert(link->getName());
+  for(const auto& id:neighbors) {
+    if(id==target || !scene->getWorld()->hasObject(id) || robot_links.count(id))
+      throw std::runtime_error("ECO65_EXTRACTION_WORLD_CARTON_REQUIRED");
+    scene->getAllowedCollisionMatrixNonConst().setEntry(target,id,true);
+  }
+}
+inline EcoPolicyJson eco65ExtractionEvidence(const std::string& target,const std::set<std::string>& neighbors) {
+  EcoPolicyJson pairs=EcoPolicyJson::array();for(const auto& id:neighbors)pairs.push_back({target,id});
+  return {{"active",!neighbors.empty()},{"pairs",pairs},{"policy_schema","eco65_attached_target_stack_exemption_v1"},
+    {"scope","ATTACHED_TARGET_VS_REMAINING_ORIGINAL_CARTONS_ONLY"}};
+}
 // Called once against the actual imported model, before any request can use it.
 inline void validateEco65MastExemption(const EcoPolicyJson& policy,
     const moveit::core::RobotModelConstPtr& model,const EcoPolicyJson& geometry,
     const EcoPolicyJson& tools) {
-  if(policy.value("schema",std::string())!="eco65_pair_collision_policy_v2")return;
+  if(!eco65HasMastPolicy(policy))return;
   const auto& e=policy.at("robot_mast_exemption");
   const EcoPolicyJson robots={"base_link","link_1","link_2","link_3","link_4","link_5","link_6"};
   if(policy.at("mode")!="robot_body_vision_mast_exempt_v2" ||

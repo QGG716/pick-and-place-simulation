@@ -80,7 +80,7 @@ def receiving_geometry(pose, size, bounds, *, desired_drop=None, margin=.01):
     gap = float(low[2]-bounds[1, 2])
     projection = bool(np.all(low[:2] >= bounds[0, :2]+margin-1e-6)
                       and np.all(high[:2] <= bounds[1, :2]-margin+1e-6))
-    level = bool(np.max(np.abs(pose[:3, :3]-np.eye(3))) <= 1e-5)
+    level = bool(np.max(np.abs(pose[:3, 2]-[0.,0.,1.])) <= 1e-5)
     return dict(passed=projection and level and gap >= -1e-6
                 and (desired_drop is None or abs(gap-desired_drop) <= 1e-6),
                 full_projection_inside=projection, level=level, actual_gap_m=gap,
@@ -116,6 +116,9 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
     from .native_scene import world_objects
     mechanism_cache={}
     def check_mechanism(state):
+        if (state['collision_policy'] != snapshot['native_model']['init']['collision_policy']
+                or state['scene_fingerprint'] != snapshot['scene']['scene_fingerprint']):
+            raise ValueError('CYCLE_STATE_COLLISION_POLICY_OR_SCENE_CHANGED')
         height=state['height_m']
         if height not in mechanism_cache:
             mechanism_cache[height]=(coupled_conveyor_state(
@@ -144,6 +147,11 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
             raise ValueError('CYCLE_NATIVE_PARENT_CHANGED')
         seen.add(record['record_id'])
         req, result = record['native_request'], record['native_result']
+        policy = snapshot['native_model']['init']['collision_policy']
+        if (req['clearance_policy']['source_policy'] != policy
+                or req['process_policy']['collision_policy'] != policy
+                or result['clearance']['policy']['source_policy'] != policy):
+            raise ValueError('CYCLE_NATIVE_COLLISION_POLICY_CHANGED')
         if (result['status'] != 'SUCCESS' or result['parent_stage_id'] != parent
                 or result['stage_id'] != record['record_id']
                 or req['world'] != before['world'] or req['attachment'] != before['attachment']

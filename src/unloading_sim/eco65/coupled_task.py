@@ -25,6 +25,8 @@ class CoupledTask(NativeTask):
         self.reverse_used = dict.fromkeys(INTERVALS, 0.)
         self.connection_seconds = connection_seconds
         self.connection_deadline = None
+        self.reception_deadline = None
+        self.phase_budgets = {}
         self.ik_seeds = ik_seeds
         self.max_grasps = max_grasps
         self.cycle_records = []
@@ -34,6 +36,7 @@ class CoupledTask(NativeTask):
         self.current_q = None
         self.accepted_state = None
         self.spec = snapshot['scene']['coupled_conveyor_spec']
+        self.desired_drop = float(self.spec['config']['desired_drop_m'])
         self.height_m = float(self.spec['low_height_m'])
         self.carton_poses = {b['id']: transform(b['pose']) for b in snapshot['scene']['boxes']}
         self.started = perf_counter()
@@ -70,6 +73,12 @@ class CoupledTask(NativeTask):
                 and perf_counter()<self.deadline):
             raise ValueError('NATIVE_CONNECTION_BUDGET_EXHAUSTED')
         request = deepcopy(request)
+        if request['op']=='ik':
+            # Retain the real solve-time world for diagnosis. The KDL solve
+            # itself still reports ik_collision_checked=false; its returned
+            # candidate receives the ordinary separate native state check.
+            context=self.request(request['q_start'],getattr(self,'_ik_stage','pregrasp'),op='ik')
+            request={**context,**request}
         if request['op'] != 'init':
             request.update(continuous_task_mode=MODE, business_interval=self.business_interval,
                            j1_direction=INTERVALS[self.business_interval],
@@ -80,9 +89,35 @@ class CoupledTask(NativeTask):
         if self.connection_deadline:
             self.deadline = min(deadline, self.connection_deadline)
         try:
-            return super().call(request)
+            if (request['op'] not in ('init', 'plan', 'diagnostic_connection', 'eco65_transition')
+                    and 'request_budget_s' not in request):
+                # State checks share the task/connection cutoff too. The base
+                # call keeps its additional 10 s solely for IPC reply handling.
+                request['request_budget_s'] = min(self.rpc_seconds, self.deadline-perf_counter())
+            try:
+                return super().call(request)
+            except MoveItUnavailable as error:
+                # Building/serializing a request can cross the connection
+                # deadline after the entry check. Do not mistake that bounded
+                # candidate exhaustion for the whole task's absolute deadline.
+                if (str(error)=='NATIVE_TASK_BUDGET_EXHAUSTED'
+                        and self.connection_deadline is not None
+                        and perf_counter()<deadline):
+                    raise ValueError('NATIVE_CONNECTION_BUDGET_EXHAUSTED') from error
+                raise
         finally:
             self.deadline = deadline
+
+    def request_budgets(self, remaining):
+        # Keep one absolute request/connection deadline. A finished solver's
+        # unused time is available to mandatory output checking; a fractional
+        # sub-budget must not discard a path while most of its budget remains.
+        budget = min(remaining, self.rpc_seconds)
+        if not np.isfinite([budget, self.stage_seconds]).all() or budget <= 10.:
+            raise ValueError('NATIVE_REQUEST_BUDGET_EXHAUSTED')
+        return dict(request_budget_s=budget,
+                    allowed_planning_time_s=min(self.stage_seconds, budget-10.),
+                    output_check_timeout_s=budget-5., return_reserve_s=5.)
 
     def mechanism(self, height=None):
         from .coupled_scene import coupled_conveyor_state
@@ -145,7 +180,12 @@ class CoupledTask(NativeTask):
             collision_policy=self.init['collision_policy']))
 
     def ik(self, pose, seed, stage, count=32):
-        yield from super().ik(pose, seed, stage, min(count, self.ik_seeds))
+        previous=getattr(self,'_ik_stage','pregrasp')
+        self._ik_stage=stage
+        try:
+            yield from super().ik(pose, seed, stage, min(count, self.ik_seeds))
+        finally:
+            self._ik_stage=previous
 
     def move(self, stage, *, pose=None, goal=None, seed=None):
         before = self.state()
@@ -172,22 +212,29 @@ class CoupledTask(NativeTask):
             receiver_history=deepcopy(self.receiver_history),business_interval=self.business_interval,
             reverse_used=dict(self.reverse_used),face=self.face,active_ids=list(self.active_ids),
             candidate_id=self.candidate_id,records=list(self.cycle_records),stages=list(self.stages),
-            accepted_state=self.accepted_state)
+            accepted_state=self.accepted_state,next_target_id=self.next_target_id)
 
     def restore(self, cp):
         for key in ('parent','height_m','target','target_pose','attachment','carton_poses','completed_ids',
                     'receiver_history','business_interval','reverse_used','face','active_ids','candidate_id',
-                    'stages','accepted_state'):
+                    'stages','accepted_state','next_target_id'):
             setattr(self,key,deepcopy(cp[key]))
         self.current_q=cp['q'].copy()
         self.cycle_records=list(cp['records'])
+
+    def attached_check_stage(self):
+        # Once a real free-transfer segment is accepted, a later stopped lift
+        # keeps free-transfer collision rules. It must not regain the earlier
+        # extraction-only carton contact permission.
+        return ('transit' if self.stages and self.stages[-1]['stage'] in ('transit','place')
+                else 'extraction')
 
     def transition(self, event_type, change, *, kind='event', samples=None, duration_s=0.):
         """Commit a state change only after the worker accepts its native receipt."""
         checkpoint = self.checkpoint()
         before = self.state()
         stage = 'contact' if event_type=='ATTACH' else 'place' if event_type=='RELEASE' else (
-            'extraction' if self.attachment is not None else 'withdrawal')
+            self.attached_check_stage() if self.attachment is not None else 'withdrawal')
         req = self.request(self.current_q,stage,op='eco65_transition',endpoint=event_type=='ATTACH')
         self.counter+=1
         stage_id=f'{event_type.lower()}-{self.counter}'
@@ -195,7 +242,7 @@ class CoupledTask(NativeTask):
                    planner_id='STOPPED_COUPLED_AXIS' if kind=='external_axis' else 'NONE')
         try:
             change()
-            after_req=self.request(self.current_q,'extraction' if self.attachment is not None else 'withdrawal')
+            after_req=self.request(self.current_q,self.attached_check_stage() if self.attachment is not None else 'withdrawal')
             after=self.state()
         finally:
             self.restore(checkpoint)
@@ -225,7 +272,7 @@ class CoupledTask(NativeTask):
         for h in np.linspace(self.height_m,height,count+1):
             self.height_m=float(h)
             samples.append(dict(height_m=float(h),state=self.state(),
-                request=self.request(self.current_q,'extraction' if self.attachment is not None else 'pregrasp')))
+                request=self.request(self.current_q,self.attached_check_stage() if self.attachment is not None else 'pregrasp')))
         self.restore(checkpoint)
         self.transition('COUPLED_LIFT',lambda:setattr(self,'height_m',float(height)),
             kind='external_axis',samples=samples,duration_s=abs(height-self.height_m)/.06)
@@ -265,7 +312,7 @@ class CoupledTask(NativeTask):
         candidates=first+rest
         front=[g for g in candidates if g['target_face']=='front']
         top=[g for g in candidates if g['target_face']=='top']
-        candidates=front[:12]+top[:4]+front[12:]+top[4:]
+        candidates=front[:4]+top[:4]+front[4:]+top[4:]
         return dict(geometry,candidates=candidates)
 
     def approach(self, grasp):
@@ -292,23 +339,81 @@ class CoupledTask(NativeTask):
                     self.restore(cp)
             raise ValueError('NATIVE_APPROACH_CONTACT_EXHAUSTED')
 
-    def release_candidates(self, height):
+    def release_candidates(self, height, yaws=(0.,)):
         receiver=self.receiver(height)
         lo,hi=np.asarray(receiver['bounds_D_m'])
-        half=np.asarray(self.target['size_m'])/2
-        left,right=lo[:2]+half[:2]+.01,hi[:2]-half[:2]-.01
-        if np.any(left>right):raise ValueError('RECEIVER_FULL_PROJECTION_EMPTY')
         current=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
-        nearest=np.clip(current[:2,3],left,right)
-        for xy in (nearest,(left+right)/2):
-            pose=np.eye(4);pose[:3,3]=[*xy,height+.05+half[2]]
-            yield pose
+        half=np.asarray(self.target['size_m'])/2
+        for yaw in yaws:
+            c,s=np.cos(yaw),np.sin(yaw)
+            rotation=np.array([[c,-s,0.],[s,c,0.],[0.,0.,1.]])
+            extent=np.abs(rotation)@half
+            margin=receiver['margin_m']
+            left,right=lo[:2]+extent[:2]+margin,hi[:2]-extent[:2]-margin
+            if np.any(left>right):continue
+            nearest=np.clip(current[:2,3],left,right)
+            for xy in (nearest,(left+right)/2):
+                pose=np.eye(4);pose[:3,:3]=rotation
+                pose[:3,3]=[*xy,height+self.desired_drop+half[2]]
+                yield pose
+
+    def clear_stack_pose(self):
+        """One geometry-derived withdrawal with room for an upright yaw turn."""
+        box=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
+        remaining=[b for b in self.scene['boxes'] if b['id']!=self.target['id']
+                   and b['id'] not in self.completed_ids]
+        front=min(b['pose'][0]-b['size_m'][0]/2 for b in remaining)
+        radius=float(np.linalg.norm(np.asarray(self.target['size_m'])[:2]/2))
+        box[0,3]=min(box[0,3],front-radius-.005)
+        # A real diagonal LIN lifts off the original support before its
+        # horizontal overlap ends. The later release goal still uses the
+        # actual receiver height and drop; this rise is not hidden in metadata.
+        box[2,3]+=.006
+        return box@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
+
+    def finish_release(self,height,order,route):
+        # Reception is a distinct stopped-axis / release / retreat phase.
+        # Its one absolute deadline is shared by every reception candidate;
+        # revisiting a candidate never resets it. The global deadline remains.
+        previous=self.connection_deadline
+        if self.reception_deadline is None:
+            start=perf_counter()
+            self.reception_deadline=min(self.deadline,start+self.connection_seconds)
+            self.phase_budgets['reception_release_withdrawal']=dict(
+                start_elapsed_s=start-self.started,
+                deadline_elapsed_s=self.reception_deadline-self.started,
+                maximum_s=self.connection_seconds)
+        self.connection_deadline=self.reception_deadline
+        try:
+            if order=='EXTRACT_TRANSFER_THEN_RAISE':
+                self.lift(height['height_m'])
+            actual=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
+            region=receiving_geometry(actual,self.target['size_m'],
+                self.receiver()['bounds_D_m'],desired_drop=self.desired_drop,
+                margin=self.receiver()['margin_m'])
+            if not region['passed']:
+                raise ValueError('ACTUAL_RELEASE_REGION_NOT_REACHED:'+str(region))
+            self.release_and_drain(actual,region)
+            self.adopted_process=dict(target_id=self.target['id'],face=self.face,
+                candidate_id=self.candidate_id,active_ids=list(self.active_ids),
+                receiver_height_m=height['height_m'],coordination_order=order,
+                loaded_route=route,release_pose=actual.tolist(),actual_drop_m=region['actual_gap_m'])
+        finally:
+            self.connection_deadline=previous
 
     def extract_and_release(self):
+        with self.connection():
+            return self._extract_and_release()
+
+    def _extract_and_release(self):
         attached=self.checkpoint()
         heights=frozen_receive_heights(self.original_boxes[self.target['id']],
-                                       self.spec['low_height_m'],self.spec['high_height_m'])
-        for height,order in [(h,o) for h in heights for o in ('RAISE_THEN_EXTRACT','EXTRACT_THEN_RAISE')]:
+            self.spec['low_height_m'],self.spec['high_height_m'],self.desired_drop)
+        # Keep the receiver low during arm transit when the high longitudinal
+        # belt obstructs link_2. The final raise is a checked fixed-q operation,
+        # with the same attachment, before release.
+        orders=('EXTRACT_TRANSFER_THEN_RAISE','RAISE_THEN_EXTRACT','EXTRACT_THEN_RAISE')
+        for height,order in [(h,o) for h in heights for o in orders]:
             self.restore(attached)
             try:
                 # This order is a real candidate, not a mandatory low/reset cycle.
@@ -338,15 +443,32 @@ class CoupledTask(NativeTask):
                             self.lift(height['height_m'])
                         if np.max(np.abs(self.robot.fk(self.current_q)-tcp))>1e-6:
                             self.move('place',pose=tcp)
-                        actual=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
-                        region=receiving_geometry(actual,self.target['size_m'],
-                                                   self.receiver()['bounds_D_m'],desired_drop=.05)
-                        if not region['passed']:raise ValueError('ACTUAL_RELEASE_REGION_NOT_REACHED:'+str(region))
-                        self.release_and_drain(actual,region)
+                        self.finish_release(height,order,'DIRECT_WITHDRAWAL_TO_RECEIVER')
                         return
                     except ValueError as error:
                         self.cycle_failures.append(dict(stage='loaded_transfer',target_id=self.target['id'],
                             candidate_id=self.candidate_id,receiving=height,coordination_order=order,error=str(error)))
+                # The front-grasp TCP can be unreachable directly above the
+                # near belt because the flange lies behind the carton. First
+                # leave the stack, then use actual native loaded transfer with
+                # a finite set of upright carton yaw orientations.
+                self.restore(lifted)
+                self.move('extraction',pose=self.clear_stack_pose())
+                if order=='EXTRACT_THEN_RAISE':
+                    self.lift(height['height_m'])
+                clear=self.checkpoint()
+                for box_goal in self.release_candidates(height['height_m'],
+                                                         (-np.pi/2,np.pi/2,np.pi,0.)):
+                    self.restore(clear)
+                    try:
+                        tcp=box_goal@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
+                        self.move('transit',pose=tcp)
+                        self.finish_release(height,order,'CLEAR_STACK_THEN_NATIVE_LOADED_TRANSFER')
+                        return
+                    except ValueError as error:
+                        self.cycle_failures.append(dict(stage='loaded_transfer_after_clear',
+                            candidate_id=self.candidate_id,receiving=height,coordination_order=order,
+                            box_goal=box_goal.tolist(),error=str(error)))
                 raise ValueError('LOADED_RELEASE_CANDIDATES_EXHAUSTED')
             except ValueError as error:
                 self.cycle_failures.append(dict(stage='lift_or_transfer',target_id=self.target['id'],
@@ -472,6 +594,8 @@ class CoupledTask(NativeTask):
             event_display_s=sum(r.get('duration_s',0.) for r in self.cycle_records if r['kind']=='event'),
             failures=self.cycle_failures,native_calls_archive=self.call_archive_info(),
             j1_reverse_used_rad=self.reverse_used)
+        result['adopted_process']=getattr(self,'adopted_process',None)
+        result['phase_budgets']=deepcopy(self.phase_budgets)
         result['fingerprint']=digest(result)
         return result
 
