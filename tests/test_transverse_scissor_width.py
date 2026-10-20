@@ -13,16 +13,17 @@ from unloading_sim.workcell_layout import audit_layout_constraints, load_workcel
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@pytest.fixture(scope="module")
-def layouts():
+@pytest.fixture(scope="module", params=("030", "026"))
+def layouts(request):
     return tuple(load_workcell_layout(ROOT/"configs/workcells"/name) for name in (
         "m710id70_unloading_layout_v1_longitudinal_060.yaml",
-        "m710id70_unloading_layout_v1_transverse_scissor_030.yaml"))
+        f"m710id70_unloading_layout_v1_transverse_scissor_{request.param}.yaml"))
 
 
 @pytest.mark.parametrize("height", [.60, 1.65, 1.70, 1.75, 2.05, 2.10])
 def test_literal_widths_symmetric_offset_and_no_removed_solids(layouts, height):
     old, new = layouts
+    narrower = new.config_path.stem.endswith("_026")
     assert audit_layout_constraints(new)["overall_status"] == "PASS"
     a, b = (coupled_conveyor_state(x, height) for x in layouts)
     assert set(x.name for x in a.boxes) == set(x.name for x in b.boxes)
@@ -33,14 +34,15 @@ def test_literal_widths_symmetric_offset_and_no_removed_solids(layouts, height):
         prior = old_boxes[box.name]
         np.testing.assert_array_equal(prior.half_extents, box.half_extents)
         np.testing.assert_array_equal(prior.rotation, box.rotation)
-        dx = .08 if box.name.startswith("lift_transverse_left_") else (
-            -.08 if box.name.startswith("lift_transverse_right_") else 0.)
+        shift = .10 if narrower else .08
+        dx = shift if box.name.startswith("lift_transverse_left_") else (
+            -shift if box.name.startswith("lift_transverse_right_") else 0.)
         np.testing.assert_allclose(box.center-prior.center, [dx, 0, 0], atol=1e-12, rtol=0)
-    for state, expected in ((a, [-.83, -.27]), (b, [-.75, -.35])):
+    for state, expected in ((a, [-.83, -.27]), (b, [-.73, -.37] if narrower else [-.75, -.35])):
         corners = np.vstack([x.corners() for x in state.boxes if x.name.startswith("lift_transverse_")])
         assert [corners[:, 0].min(), corners[:, 0].max()] == pytest.approx(expected)
-    assert b.mechanism["transverse_support_spacing_m"] == .30
-    assert b.mechanism["transverse_support_outer_width_m"] == .40
+    assert b.mechanism["transverse_support_spacing_m"] == (.26 if narrower else .30)
+    assert b.mechanism["transverse_support_outer_width_m"] == (.36 if narrower else .40)
     assert b.scene_fingerprint != a.scene_fingerprint
     # Exact same source supplies display and planning; permitted assembly
     # contacts are unchanged, and all other mechanism/world pairs still checked.

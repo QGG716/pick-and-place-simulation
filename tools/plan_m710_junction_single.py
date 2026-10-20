@@ -87,6 +87,8 @@ def main():
         help="Explicit user-authorized width experiment; preserve the archived q/cartons and Ymin")
     geometry.add_argument("--transverse-scissor-030",action="store_true",
         help="300 mm transverse support spacing with the previous 600 mm longitudinal belt")
+    geometry.add_argument("--transverse-scissor-026",action="store_true",
+        help="260 mm transverse support spacing with the previous 600 mm longitudinal belt")
     args=p.parse_args()
     args.seed=71070;args.task_budget_s=300.;args.stage_budget_s=90.;args.ipc_timeout_s=100.
     args.direct_first=True;args.junction_only=True
@@ -98,9 +100,10 @@ def main():
     if built.connector is None:raise ValueError(built.failure_reason)
     state,origin=predecessor(args.archive,original,built.connector,frozen)
     args.expected_model_identity=deepcopy(origin["archived_model_identity"])
-    if args.longitudinal_060 or args.transverse_scissor_030:
-        variant_name=("m710id70_unloading_layout_v1_transverse_scissor_030.yaml"
-                      if args.transverse_scissor_030 else "m710id70_unloading_layout_v1_longitudinal_060.yaml")
+    scissor_width = .30 if args.transverse_scissor_030 else .26 if args.transverse_scissor_026 else None
+    if args.longitudinal_060 or scissor_width is not None:
+        variant_name=(f"m710id70_unloading_layout_v1_transverse_scissor_{round(scissor_width*100):03d}.yaml"
+                      if scissor_width is not None else "m710id70_unloading_layout_v1_longitudinal_060.yaml")
         layout=load_workcell_layout(ROOT/"configs/workcells"/variant_name)
         policy=replace(policy,layout_validation=replace(policy.layout_validation,layout=layout))
         variant=build_verified_motion_input(policy,ROOT)
@@ -114,12 +117,12 @@ def main():
             to_layout_fingerprint=layout.layout_fingerprint,config=str(layout.config_path),
             previous_policy_fingerprint=original.policy.policy_fingerprint,new_policy_fingerprint=policy.policy_fingerprint,
             cartons_unchanged=True,archived_q_unchanged=True,old_geometry_results_reused=False)
-        if args.transverse_scissor_030:
+        if scissor_width is not None:
             origin["authorized_geometry_change"].update(
                 source="USER_FOLLOWUP_TRANSVERSE_SCISSOR_WIDTH",
                 previous_experiment_layout="m710id70_unloading_layout_v1_longitudinal_060.yaml",
-                transverse_support_spacing_from_m=.46,transverse_support_spacing_to_m=.30,
-                transverse_support_outer_width_from_m=.56,transverse_support_outer_width_to_m=.40,
+                transverse_support_spacing_from_m=.46,transverse_support_spacing_to_m=scissor_width,
+                transverse_support_outer_width_from_m=.56,transverse_support_outer_width_to_m=scissor_width+.10,
                 support_centering="SYMMETRIC_X_ABOUT_UNCHANGED_TRANSVERSE_DECK",
                 arm_lengths_cross_sections_and_deck_unchanged=True)
         args.expected_model_identity["policy_fingerprint"]=policy.policy_fingerprint

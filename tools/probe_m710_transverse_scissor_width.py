@@ -22,10 +22,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("source", type=Path)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--variant", choices=("030", "026"), default="030")
     args = p.parse_args()
     layouts = [load_workcell_layout(ROOT/"configs/workcells"/name) for name in (
         "m710id70_unloading_layout_v1_longitudinal_060.yaml",
-        "m710id70_unloading_layout_v1_transverse_scissor_030.yaml")]
+        f"m710id70_unloading_layout_v1_transverse_scissor_{args.variant}.yaml")]
     policy = load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
     policy = replace(policy, layout_validation=replace(policy.layout_validation, layout=layouts[0]))
     scene = build_verified_motion_input(policy, ROOT)
@@ -103,6 +104,7 @@ def main():
         scope="OFFLINE_FAILED_GOALS_ONLY_NOT_PLANNER_INPUT_OR_PATH_ACCEPTANCE",
         source_commit=protocol["source_commit"], source_files_sha256=inputs,
         layouts=[dict(file=str(x.config_path.relative_to(ROOT)), fingerprint=x.layout_fingerprint) for x in layouts],
+        transverse_support_spacing_m=layouts[1].data["conveyors"]["coupling"]["transverse_support_spacing_m"],
         mesh_geometry_source="COMPLETE_OFFICIAL_URDF_COLLISION_MESH_COAL",
         required_clearance_m=.005, rows=rows, request_count=len(rows), unique_q_height_count=len(cache),
         old_native_left_arm_witness_count=len(previous_witness),

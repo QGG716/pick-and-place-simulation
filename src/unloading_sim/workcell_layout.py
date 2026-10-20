@@ -568,7 +568,8 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
     seam = layout.data["conveyors"].get("coupling", {}).get("geometry_revision") == "upper_seam_lower_slider_v3"
     narrow = layout.data["evidence"]["approval_basis"] in {
         "user_20261020_longitudinal_width_060_ymin_fixed",
-        "user_20261020_transverse_scissor_spacing_030_longitudinal_060"}
+        "user_20261020_transverse_scissor_spacing_030_longitudinal_060",
+        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"}
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
@@ -620,9 +621,13 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         checks["narrow_longitudinal_y_bounds"] = vector(_interval(world["conveyor_longitudinal"],1),[-1.1,-.5])
         checks["narrow_longitudinal_chassis_gap"] = scalar(
             _interval(world["chassis"],1)[0]-_interval(world["conveyor_longitudinal"],1)[1],.1)
-    if layout.data["evidence"]["approval_basis"] == "user_20261020_transverse_scissor_spacing_030_longitudinal_060":
+    support_variants = {
+        "user_20261020_transverse_scissor_spacing_030_longitudinal_060": .30,
+        "user_20261020_transverse_scissor_spacing_026_longitudinal_060": .26}
+    if layout.data["evidence"]["approval_basis"] in support_variants:
         checks["transverse_support_spacing"] = scalar(
-            layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.), .30)
+            layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.),
+            support_variants[layout.data["evidence"]["approval_basis"]])
     return {
         "schema": "m710id70_layout_numeric_audit_v1",
         "layout_id": layout.data["layout_id"],
