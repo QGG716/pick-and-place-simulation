@@ -73,9 +73,9 @@ try{
   assert.ok(Math.abs(actual.alpha_rad-expected.elevation_rad)<1e-10);
   assert.ok(Math.abs(actual.q2_rad-expected.q2_rad)<1e-10);
   assert.equal(actual.physical_cups,72);
-  assert.equal(actual.commanded,48);
-  assert.equal(actual.actual,null);
-  assert.equal(actual.delta_m,0);
+  const row=await evaluate('DATA.eccentric.targets[active.request.task_id]');
+  assert.equal(actual.commanded,row.expected.commanded_active_mask.filter(Boolean).length);
+  assert.equal(actual.delta_m,row.target.world_y_offset_m);
   await evaluate('eccentricReplay.closeup()');
   await screenshot('actual-native-ik.png');
   const count=await evaluate('document.getElementById("offsetPreview").options.length-1');
@@ -91,10 +91,37 @@ try{
     if(i===0){await evaluate('eccentricReplay.targetView()');await screenshot('pending-eccentric-geometry.png');}
   }
   assert.ok(outside>0);
+  const dispatched=await evaluate('DATA.eccentric.all_attempts.filter(a=>a.folder).map(a=>a.option.world_y_offset_m)');
+  const previews=await evaluate('DATA.eccentric.targets[active.request.task_id].pending_target_geometry.map(p=>p.target.world_y_offset_m)');
+  assert.ok(previews.every(delta=>!dispatched.includes(delta)));
+  const contacts=await evaluate(`DATA.raw.attempts.filter(a=>a.request.stage==='contact')`);
+  const accepted=contacts.findIndex(a=>a.current_cycle_selected);
+  let actualContact=null,collisionChecked=false;
+  if(accepted>=0){
+    actualContact=await evaluate(`(()=>{eccentricReplay.select('contact',${accepted});replay.setMotion(active.final_timed_path.length-1);return eccentricReplay.state;})()`);
+    const recorded=await evaluate('DATA.eccentric.targets[active.request.task_id].actual');
+    assert.equal(actualContact.actual,recorded.actual_contact_mask.filter(Boolean).length);
+    assert.equal(actualContact.commanded,actualContact.actual);
+    assert.equal(actualContact.physical_cups,72);
+    assert.ok(actualContact.delta_m>0);
+    await evaluate('eccentricReplay.targetView()');
+    await screenshot('accepted-contact.png');
+  }
+  const rejected=contacts.findIndex(a=>a.clearance_witnesses?.length);
+  if(rejected>=0){
+    const witness=await evaluate(`(()=>{eccentricReplay.select('contact',${rejected});const state=eccentricReplay.witness();return {state,witness:active.clearance_witnesses[0],highlightedRobot:modelObjects.filter(([o,l])=>o.material.color.getHex()===0xff304d).map(([o,l])=>l.link),highlightedWorld:obstacles.filter(o=>o.material.color.getHex()===0xff304d).map(o=>o.userData.name)};})()`);
+    assert.deepEqual(witness.state.q,witness.witness.q_rad);
+    assert.ok(witness.witness.pair.every(name=>[...witness.highlightedRobot,...witness.highlightedWorld].includes(name)));
+    await evaluate('eccentricReplay.closeup()');
+    await screenshot('current-contact-collision.png');
+    collisionChecked=true;
+  }
   assert.equal(errors.length,0,JSON.stringify(errors));
-  const evidence={passed:true,actual_native_ik_cases:1,static_pending_targets:count,
+  const evidence={passed:true,native_goal_fk_cases:1,accepted_contact_fk_cases:actualContact?1:0,static_pending_targets:count,
     outside_reference_valid_ring_cases:outside,upper_arm_fk_error_rad:actual.alpha_rad-expected.elevation_rad,
-    all_72_cups_preserved:true,actual_contact_not_claimed:true,static_preview_q_unchanged:true,renderer:rendererInfo};
+    all_72_cups_preserved:true,actual_contact_geometry:actualContact,
+    current_request_collision_witness_verified:collisionChecked,
+    static_preview_q_unchanged:true,preview_deltas_exclude_dispatched:true,renderer:rendererInfo};
   await fs.writeFile(path.join(output,'viewer-check.json'),JSON.stringify(evidence,null,2));
   console.log(JSON.stringify(evidence));
 }finally{

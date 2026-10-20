@@ -7,6 +7,13 @@ document.querySelector('aside').prepend(eccentricPanel);
 const toolToggle=document.createElement('label');
 toolToggle.innerHTML='<input type="checkbox" id="cupXray" checked> 工具半透明（显示全部杯与参考点）';
 eccentricPanel.append(toolToggle);
+const witnessControls=document.createElement('div');
+witnessControls.innerHTML='<p>本请求的碰撞见证（原始受检 q，非运动）</p><select id="collisionWitness"></select><button id="inspectWitness">显示见证</button>';
+eccentricPanel.append(witnessControls);
+const stageControls=document.createElement('div');
+stageControls.innerHTML='<p>查看实际阶段</p>'+['pregrasp','contact','extraction','withdrawal'].map(s=>`<button data-eccentric-stage="${s}">${s}</button>`).join(' ');
+eccentricPanel.prepend(stageControls);
+for(const button of stageControls.querySelectorAll('button'))button.onclick=()=>setStage(button.dataset.eccentricStage);
 let eccentricState=null;
 const originalPose=pose;
 function eccentricAnnotations(q){
@@ -16,6 +23,12 @@ function eccentricAnnotations(q){
   eccentricGroup.add(line([a,b],0xffffff));
   eccentricGroup.add(new T.ArrowHelper(u.clone().normalize(),a,u.length(),0xffffff,.07,.035));
   const row=DATA.eccentric.targets[active.request.task_id],target=row?.target;
+  const requestKey=active.request.task_id+':'+(active.request.stage_id||active.response_identity.request_id);
+  if($('collisionWitness').dataset.request!==requestKey){
+    $('collisionWitness').dataset.request=requestKey;
+    $('collisionWitness').innerHTML=(active.clearance_witnesses||[]).map((w,i)=>`<option value="${i}">${w.pair.join(' / ')} · ${w.reason}</option>`).join('');
+    $('inspectWitness').disabled=!(active.clearance_witnesses||[]).length;
+  }
   const atContact=!!row?.contact_q&&row.contact_q.every((v,i)=>Math.abs(v-q[i])<1e-9);
   const physical=frames.flange.clone().multiply(matrix(model.flange_from_contact));
   const eligible=row?.expected?.geometrically_eligible_mask||Array(72).fill(false);
@@ -73,15 +86,37 @@ function eccentricAnnotations(q){
   $('eccentricInfo').textContent=`J2 = ${(q[1]*180/Math.PI).toFixed(3)}°\n上臂仰角 α = ${(alpha*180/Math.PI).toFixed(3)}°\n结构长度 ${u.length().toFixed(3)} m\n`+
     `δ = ${target?target.world_y_offset_m.toFixed(5):'未保存目标详情'} m\n临时高度 ${row?.option.H_temporary_m} m\nHmin ${row?.option.H_receive_m} m\n同步：${row?.receive_sync||'NOT_REACHED'}\n`+
     `全杯 72 / 有效 ${eccentricState.eligible} / 命令 ${eccentricState.commanded}\n实际 contact 几何：${eccentricState.actual??'NOT_REACHED'}\n`+
+    `本候选已记录 contact 几何：${row?.actual?.actual_contact_mask?.filter(Boolean).length??'NOT_REACHED'}\n`+
     `箱体原 Y：${target?.face_center_m[1]??'UNKNOWN'} m\n完整任务 ${DATA.eccentric.completed_count}/1\n`+
     '所选有效杯承载足够：理想假设\n静态目标检查不是运动轨迹';
 }
 pose=function(q,detail){originalPose(q,detail);eccentricAnnotations(q);};
 $('offsetPreview').onchange=()=>eccentricAnnotations(currentQ);
 $('cupXray').onchange=()=>eccentricAnnotations(currentQ);
+$('inspectWitness').onclick=()=>{
+  const witness=active.clearance_witnesses?.[Number($('collisionWitness').value)];
+  if(!witness?.q_rad)return;
+  motionPlaying=searchPlaying=false;
+  pose(witness.q_rad,'本次原生碰撞见证 · 非接受轨迹\n'+JSON.stringify(witness,null,2));
+  for(const [object,link] of modelObjects)if(witness.pair.includes(link.link))object.material.color.set(0xff304d);
+  for(const object of obstacles)if(witness.pair.includes(object.userData.name))object.material.color.set(0xff304d);
+  $('motionText').textContent='仅显示原检查 q；负值是相交标志，不是穿透深度';
+};
+// Request IDs restart with each worker: use the selected task's evidence,
+// never a same-numbered request from another candidate.
+$('goalInspect').onclick=()=>{
+  const q=active.request.q_goal;
+  if(!q){$('selection').textContent='未记录关节目标；请播放本请求返回轨迹或查看原始碰撞见证。';return;}
+  motionPlaying=searchPlaying=false;
+  pose(q,'本次请求目标 q · 非轨迹\n'+JSON.stringify({
+    task_id:active.request.task_id,stage_id:active.request.stage_id,
+    native_status:active.response_identity.status,evidence:active.failure_witness},null,2));
+};
 window.eccentricReplay={
   inspect(index){setStage('pregrasp');$('attempt').value=index;chooseAttempt();$('goalInspect').click();return eccentricState;},
   get state(){return eccentricState;},
+  select(stageName,index){setStage(stageName);$('attempt').value=index;chooseAttempt();return eccentricState;},
+  witness(index=0){$('collisionWitness').value=index;$('inspectWitness').click();return eccentricState;},
   closeup(){camera.position.set(-3.6,-3.4,3.1);controls.target.set(-.4,-.35,1.65);controls.update();},
   targetView(){camera.position.set(-2.3,-2.5,2.9);controls.target.set(.1,-.55,2.25);controls.update();}
 };

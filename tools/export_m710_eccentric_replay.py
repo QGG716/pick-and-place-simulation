@@ -24,6 +24,8 @@ def export(run, output):
     robot=load_workcell_layout(ROOT/protocol["active_layout_file"]).robot()
     attempts=[];logs=[];model=None;targets={}
     frozen=FrozenTopLayer.capture([message_box(b) for b in protocol["original_cartons"]])
+    dispatched_deltas={row["option"]["world_y_offset_m"] for row in result["attempts"] if row.get("folder")}
+    accepted_stages={s["stage_id"] for cycle in result["cycles"] for s in cycle["stages"]}
     for row in result["attempts"]:
         if not row.get("folder"):continue
         folder=run/"seed-71070"/row["folder"]
@@ -32,7 +34,7 @@ def export(run, output):
         if model is None:model=export_model(trace["model"])
         # An exception can precede attempt.json. Reconstruct only target geometry
         # from the saved native process contract, then verify its candidate ID.
-        if not detail.get("target") and trace["attempts"]:
+        if trace["attempts"]:
             req=trace["attempts"][0]["request"];process=req["process_policy"]
             target_box=message_box(process["target"])
             scene=SimpleNamespace(support_graph=SupportRelationGraph.build(
@@ -45,13 +47,16 @@ def export(run, output):
             suction={"suction_edge_margin_m":process["suction_edge_margin_m"]}
             target=eccentric_target(centered,frozen,row["option"]["world_y_offset_m"],suction)
             assert req["candidate_id"]=="single-contact:"+target.candidate_id
-            detail=dict(target=target.evidence(),expected_contact={k:process[k] for k in
-                ("geometrically_eligible_mask","commanded_active_mask")})
-            detail["geometry_reconstructed_from_bound_native_request"]=True
+            if not detail.get("target"):
+                detail=dict(target=target.evidence(),expected_contact={k:process[k] for k in
+                    ("geometrically_eligible_mask","commanded_active_mask")})
+                detail["geometry_reconstructed_from_bound_native_request"]=True
+            else:
+                assert detail["target"]==target.evidence()
             pending=[]
             domain=offset_intervals(centered,frozen,suction)
             for delta in candidate_deltas(domain):
-                if delta == row["option"]["world_y_offset_m"]:continue
+                if delta in dispatched_deltas:continue
                 preview=eccentric_target(centered,frozen,delta,suction)
                 pending.append(dict(target=preview.evidence(),status="STATIC_GEOMETRY_ONLY_NOT_DISPATCHED",
                     eligible_count=sum(preview.predicted_eligible_mask)))
@@ -65,7 +70,7 @@ def export(run, output):
         by={c.get("stage_id"):c for c in calls if c.get("stage_id")}
         for entry in trace["attempts"]:
             req=entry["request"]
-            if req.get("op")!="plan" or req.get("pipeline_id")=="external_axis":continue
+            if req.get("op")!="plan" or req.get("pipeline_id") in {"external_axis","semantic_event"}:continue
             call=by[req["stage_id"]];response=call["response"]
             # Bind all annotations to THIS native task. No old q is imported.
             targets[req["task_id"]].update(dict(folder=row["folder"],option=row["option"],
@@ -79,13 +84,19 @@ def export(run, output):
             display["process_policy"]={"target_id":req["process_policy"]["target_id"]}
             compact={k:response[k] for k in ("request_id","task_id","stage_id","parent_stage_id",
                 "status","reason","failure","solver_message","moveit_error_code") if k in response}
+            witnesses=response.get("clearance",{}).get("rejected_examples",[])
+            points=entry.get("final_timed_path") or []
             q=req.get("q_goal")
+            if q is None and points:q=points[-1]["q"]
+            selected=req["stage_id"] in accepted_stages
             attempts.append(dict(request=display,response_identity=compact,
-                display_label=f'{row["folder"]} delta={row["option"].get("world_y_offset_m",0):.5f} m · {response["status"]}',
-                final_timed_path=entry.get("final_timed_path") or [],trace=None,external_axis=None,
+                display_label=f'{row["folder"]} delta={row["option"].get("world_y_offset_m",0):.5f} m · '+
+                    ("完整路线已接受" if selected else "未选候选")+" · "+response["status"],
+                final_timed_path=points,trace=None,external_axis=None,
+                current_cycle_selected=selected,clearance_witnesses=witnesses,
                 history_status="RECORDED_IN_RAW_ARCHIVE_NOT_EMBEDDED",
                 fk_upper_arm=None if q is None else upper_arm(robot,q),
-                failure_witness=compact if response["status"]!="SUCCESS" else None))
+                failure_witness=dict(native=compact,clearance_witnesses=witnesses) if response["status"]!="SUCCESS" else None))
             logs.append(dict(op="plan",response=compact,round_trip_s=call["round_trip_s"]))
         logs.extend({k:c[k] for k in ("op","status","stage","candidate_id","q_start","goal_pose",
             "scene_fingerprint","attachment","response") if k in c} for c in calls if c.get("op")=="ik")
@@ -94,6 +105,12 @@ def export(run, output):
         for c in calls:
             if c.get("op")!="ik" or not c.get("response",{}).get("q"):continue
             q=c["response"]["q"]
+            # A motion request already displays this configuration together
+            # with its actual check result. Never relabel it as unchecked IK.
+            if any(e["request"].get("q_goal") is not None and
+                   np.max(np.abs(np.asarray(e["request"]["q_goal"])-q))<1e-6
+                   for e in trace["attempts"] if e["request"].get("pipeline_id")!="external_axis"):
+                continue
             parent=next(e["request"] for e in trace["attempts"] if e["request"]["stage_id"]==c["parent_stage_id"])
             assert parent["receiver_end_fingerprint"]==c["scene_fingerprint"]
             req=dict(op="ik",task_id=c["task_id"],stage_id=None,parent_stage_id=c["parent_stage_id"],
@@ -102,17 +119,19 @@ def export(run, output):
                 attachment=None,pipeline_id=None,planner_id="IK_ONLY",process_policy={"target_id":c["target_id"]})
             response=dict(c["response"],task_id=c["task_id"],stage_id=None,parent_stage_id=c["parent_stage_id"])
             attempts.append(dict(request=req,response_identity=response,
-                display_label=row["folder"]+" · 原生 IK 数值解 / 碰撞与接近路径尚未检查",
+                display_label=row["folder"]+" · 数值 IK / 本返回构型未派发目标运动请求",
                 final_timed_path=[],trace=None,external_axis=None,fk_upper_arm=upper_arm(robot,q),
-                history_status="NO_MOTION_REQUEST_AFTER_INTEGRATION_FAILURE"))
+                clearance_witnesses=[],current_cycle_selected=False,
+                history_status="NUMERICAL_IK_ONLY_NO_MATCHING_MOTION_REQUEST"))
             logs.append(dict(op="ik_result_inspection",response=response))
     if not attempts:raise ValueError("NO_CURRENT_RUN_NATIVE_REQUESTS")
-    data=dict(label="c00 · 右端正面 +Y / 上臂 FK",raw=dict(run_id="eccentric-71070",
+    data=dict(label="c00 · 右端正面 +Y / 上臂 FK",raw=dict(run_id=run.name+"-71070",
         source_commit=protocol["source_commit"],attempts=attempts),
         result=dict(complete=result["completed_count"]==1,target_id="carton_l07_c00"),
         model=model,request_log=logs,eccentric=dict(targets=targets,
             cups=build_m710_independent_cup_array().to_dict(),planning_wall_s=result["planning_wall_s"],
-            all_attempts=result["attempts"],completed_count=result["completed_count"]),
+            all_attempts=[{k:row.get(k) for k in ("folder","option","complete","wall_s","classification")}
+                for row in result["attempts"]],completed_count=result["completed_count"]),
         qualification_status="NOT_EVALUATED",physical_execution="NOT_RUN",
         execution_ready=False,continuous_swept_proof=False)
     vendor=ROOT/"tools/search_replay/vendor"
