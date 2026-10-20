@@ -236,8 +236,13 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         longitudinal.half_extents,rotation,longitudinal.name,longitudinal.category)
     floor=float(layout.data["world"]["floor_z_m"]);base_z=floor+.10
     parts=[];stacks=[];mates=[]
+    coupling=layout.data["conveyors"]["coupling"]
+    support_spacing=float(coupling.get("transverse_support_spacing_m",
+                                     2*(transverse.half_extents[0]-.12)))
+    if not np.isfinite(support_spacing) or not .105 <= support_spacing <= 2*transverse.half_extents[0]-.10:
+        raise ValueError("TRANSVERSE_SUPPORT_SPACING_OUT_OF_GEOMETRIC_RANGE")
     for side in (-1,1):
-        x=transverse.center[0]+side*(transverse.half_extents[0]-.12)
+        x=transverse.center[0]+side*support_spacing/2
         items,info=scissor_stack(f"lift_transverse_{'left' if side<0 else 'right'}",
             [x,transverse.center[1]-.625,base_z],[0,1,0],
             height-2*transverse.half_extents[2]-.07,ScissorSpec(2,1.25),floor_z=floor)
@@ -300,5 +305,10 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         mechanical_stroke_rating="UNKNOWN",actuator_force_speed="UNKNOWN",mass_inertia="NOT_SPECIFIED",
         handoff_qualification="NOT_EVALUATED",full_sweep_collision="NOT_EVALUATED",
         native_receiver_transition="DISCRETE_COUPLED_V3_NOT_PURE_Z_SWEEP")
+    if "transverse_support_spacing_m" in coupling:
+        info["transverse_support_spacing_m"]=support_spacing
+        info["transverse_support_outer_width_m"]=support_spacing+.10
+        info["design_basis"]["transverse_support"]=(
+            "USER_CONFIGURED_SYMMETRIC_X_SPACING; UNCHANGED_1.25M_BARS_CROSS_SECTIONS_AND_MOUNTS")
     identity=canonical_digest(dict(layout=layout.layout_fingerprint,mechanism=info,geometry=[_obb_record(b) for b in boxes]))
     return CoupledConveyorState(boxes,info,identity)

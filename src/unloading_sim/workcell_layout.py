@@ -418,7 +418,9 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     _keys(conveyors, conveyor_keys | ({"coupling"} if "coupling" in conveyors else set()), "conveyors")
     if "coupling" in conveyors:
         coupling = conveyors["coupling"]
-        _keys(coupling, {"geometry_revision", "maximum_surface_height_world_m"}, "conveyors.coupling")
+        spacing_key = "transverse_support_spacing_m"
+        _keys(coupling, {"geometry_revision", "maximum_surface_height_world_m"} |
+              ({spacing_key} if spacing_key in coupling else set()), "conveyors.coupling")
         if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
             raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
         _positive(coupling["maximum_surface_height_world_m"], "coupling.maximum_surface_height_world_m")
@@ -429,6 +431,12 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
         _keys(entry, {"size_xy_m", "center_xy_a_m"}, f"conveyors.{name}")
         _vector(entry["size_xy_m"], 2, f"conveyors.{name}.size_xy_m", positive=True)
         _vector(entry["center_xy_a_m"], 2, f"conveyors.{name}.center_xy_a_m")
+    if "transverse_support_spacing_m" in conveyors.get("coupling", {}):
+        spacing = _positive(conveyors["coupling"]["transverse_support_spacing_m"],
+                            "coupling.transverse_support_spacing_m")
+        # 100 mm feet retain 5 mm separation and stay beneath the 700 mm deck.
+        if not .105 <= spacing <= float(conveyors["transverse"]["size_xy_m"][0])-.10:
+            raise ValueError("TRANSVERSE_SUPPORT_SPACING_OUT_OF_GEOMETRIC_RANGE")
     robot = _mapping(data["robot"], "robot")
     _keys(robot, {"model", "model_config", "urdf_path", "mounting_surface_z_a_m", "base_origin_xy_a_m", "base_support_bbox_min_xyz_m", "base_support_bbox_max_xyz_m", "base_front_edge_x_world_m", "positioning_basis", "positioning_status"}, "robot")
     if robot["model"] != "fanuc_m710id_70":
@@ -558,7 +566,9 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         }
 
     seam = layout.data["conveyors"].get("coupling", {}).get("geometry_revision") == "upper_seam_lower_slider_v3"
-    narrow = layout.data["evidence"]["approval_basis"] == "user_20261020_longitudinal_width_060_ymin_fixed"
+    narrow = layout.data["evidence"]["approval_basis"] in {
+        "user_20261020_longitudinal_width_060_ymin_fixed",
+        "user_20261020_transverse_scissor_spacing_030_longitudinal_060"}
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
@@ -610,6 +620,9 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         checks["narrow_longitudinal_y_bounds"] = vector(_interval(world["conveyor_longitudinal"],1),[-1.1,-.5])
         checks["narrow_longitudinal_chassis_gap"] = scalar(
             _interval(world["chassis"],1)[0]-_interval(world["conveyor_longitudinal"],1)[1],.1)
+    if layout.data["evidence"]["approval_basis"] == "user_20261020_transverse_scissor_spacing_030_longitudinal_060":
+        checks["transverse_support_spacing"] = scalar(
+            layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.), .30)
     return {
         "schema": "m710id70_layout_numeric_audit_v1",
         "layout_id": layout.data["layout_id"],
