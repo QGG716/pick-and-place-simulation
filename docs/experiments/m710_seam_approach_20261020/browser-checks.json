@@ -1,0 +1,5148 @@
+{
+  "ui/layout/browser-checks.json": {
+    "status": "PASS",
+    "layout": true,
+    "checks": [
+      {
+        "index": 0,
+        "height": 0.6000000000000001,
+        "scene": "8330cc29fbdc22f3b804878f9f14077984d8f5fa884975f63e088c291b1e52dd"
+      },
+      {
+        "index": 80,
+        "height": 1.7500000000000002,
+        "scene": "f5b084f1a0a0a92eb55e5dbf4120209df9f275452c0d20501d898bd9f960bde9"
+      },
+      {
+        "index": 101,
+        "height": 2.0500000000000003,
+        "scene": "66602b758f217ed70d7aaf4480e2eeda74a6d618d0f061d178bb1ad97e19229c"
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/off-71070/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 43,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 223,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 160,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 120,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/off-71071/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 43,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 118,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 159,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 209,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/off-full-71070/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 211.25764410288764,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.336208652450083,
+        -0.7538396688841705,
+        -0.49430514684520466,
+        1.5095413556100632,
+        -1.3442049584811018,
+        1.8373023309140968
+      ],
+      "flange_matrix_column_major": [
+        0.999999999999994,
+        -2.299349546874829e-08,
+        -1.059310635737054e-07,
+        0,
+        -2.2993543452813435e-08,
+        -0.9999999999998971,
+        -4.5283270877494175e-07,
+        0,
+        -1.0593105319793673e-07,
+        4.5283271116192125e-07,
+        -0.999999999999892,
+        0,
+        -1.0328960565311287,
+        0.8399996980756628,
+        2.2499999369461006,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.635115395000001,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.390115395,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.49107914666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.091079146666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.60098499966669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.40098499966669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 64.73536181466669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 65.33536181466668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 68.33536366766668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 89.09036366766668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 89.19132743680163,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 89.79132743680162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 90.30123374580162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 91.10123374580162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 105.11063462280163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 105.71063462280162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 108.71065216480162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 129.4656521648016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 129.56661574848596,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 130.16661574848595,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 130.67652675748596,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 131.47652675748597,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 135.47652675748597,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 141.04617111948596,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 144.04617113748597,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 164.80117113648598,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 168.80117113648598,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 168.9021348871401,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 169.5021348871401,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 170.0120400801401,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 170.81204008014012,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 183.89177069314013,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 184.49177069314013,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 187.49177577714013,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 208.24677577614014,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 208.34773942188764,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 208.94773942188763,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 209.45764410288763,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 210.25764410288764,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "ui/old-71070/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "71070-carton_l07_c02-to-carton_l07_c03 OLD_ACCEPTED \u00b7 \u5df2\u63a5\u53d7",
+        "points": 284,
+        "solid_count": 0
+      },
+      {
+        "index": 1,
+        "label": "71070-carton_l07_c02-to-carton_l07_c03 PTP_DIAGNOSTIC \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 0
+      },
+      {
+        "index": 2,
+        "label": "71070-carton_l07_c03-to-carton_l07_c04 OLD_ACCEPTED \u00b7 \u5df2\u63a5\u53d7",
+        "points": 63,
+        "solid_count": 0
+      },
+      {
+        "index": 3,
+        "label": "71070-carton_l07_c03-to-carton_l07_c04 PTP_DIAGNOSTIC \u00b7 \u8bca\u65ad\u5019\u9009",
+        "points": 61,
+        "solid_count": 0
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/old-71071/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "71071-carton_l07_c02-to-carton_l07_c03 OLD_ACCEPTED \u00b7 \u5df2\u63a5\u53d7",
+        "points": 291,
+        "solid_count": 0
+      },
+      {
+        "index": 1,
+        "label": "71071-carton_l07_c02-to-carton_l07_c03 PTP_DIAGNOSTIC \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 0
+      },
+      {
+        "index": 2,
+        "label": "71071-carton_l07_c03-to-carton_l07_c04 OLD_ACCEPTED \u00b7 \u5df2\u63a5\u53d7",
+        "points": 63,
+        "solid_count": 0
+      },
+      {
+        "index": 3,
+        "label": "71071-carton_l07_c03-to-carton_l07_c04 PTP_DIAGNOSTIC \u00b7 \u8bca\u65ad\u5019\u9009",
+        "points": 61,
+        "solid_count": 0
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/on-71070/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 76,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 159,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 48,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 463,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/on-71071/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 220,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 159,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 48,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 49,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 50,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 463,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/v2-off-71070/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 43,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 118,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 161,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 160,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/v2-off-71071/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 43,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 241,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 159,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 53,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 171,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/v2-off-full-71070/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 194.93600130888828,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.3362086524500831,
+        -0.753839668884171,
+        -0.4943051468452044,
+        -1.6320512979797297,
+        1.3442049584811022,
+        -1.304290322675696
+      ],
+      "flange_matrix_column_major": [
+        0.999999999999994,
+        -2.2993495718548473e-08,
+        -1.0593106319900514e-07,
+        0,
+        -2.2993543675045207e-08,
+        -0.9999999999998971,
+        -4.5283270888596405e-07,
+        0,
+        -1.0593105280545825e-07,
+        4.5283271127294356e-07,
+        -0.9999999999998918,
+        0,
+        -1.0328960565311287,
+        0.839999698075662,
+        2.2499999369461006,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.635115395000001,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.390115395,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.49107914666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.091079146666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.60098499966669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.40098499966669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 45.66276359366669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 46.26276359366669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 49.26276386066669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 70.01776385966669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 70.11872762880164,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 70.71872762880163,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 71.22863539680164,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 72.02863539680163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 86.33266265980163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 86.93266265980162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 89.93266366280162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 110.68766366280161,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 110.78862724648664,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 111.38862724648664,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 111.89853302248663,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 112.69853302248663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 116.69853302248663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 122.26817683848662,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 125.26817685648662,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 146.02317685648663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 150.02317685648663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 150.12414060714076,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 150.72414060714075,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 151.23404580014076,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 152.03404580014077,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 167.57012789914077,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 168.17012789914077,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 171.17013298314077,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 191.92513298214078,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 192.02609662788828,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 192.62609662788827,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 193.13600130888827,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 193.93600130888828,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "ui/v2-off-full-71071/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 212.79949486688758,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.3362086524500751,
+        -0.7538396688841701,
+        -0.49430514684520366,
+        1.5095413556100616,
+        -1.3442049584810944,
+        1.837302330914097
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999941,
+        -2.2993495774059625e-08,
+        -1.0593106298389943e-07,
+        0,
+        -2.299354375664428e-08,
+        -0.9999999999998971,
+        -4.5283270944107556e-07,
+        0,
+        -1.0593105261195011e-07,
+        4.528327117725439e-07,
+        -0.9999999999998918,
+        0,
+        -1.032896056531125,
+        0.8399996980756619,
+        2.249999936946101,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.635115452,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.635115395000001,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.390115395,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.49107914666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.091079146666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.60098499966669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.40098499966669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 65.76696149366668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 66.36696149366668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 69.36696150866668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 90.12196150766667,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 90.2229252768016,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 90.8229252768016,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 91.3328298748016,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 92.1328298748016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 104.7670903008016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 105.36709030080159,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 108.36710784280159,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 129.1221078428016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 129.22307142648594,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 129.82307142648594,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 130.33298243548595,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 131.13298243548596,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 135.13298243548596,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 140.70262679748595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 143.70262681548596,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 164.45762681548595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 168.45762681548595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 168.55859056614008,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 169.15859056614008,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 169.6684957591401,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 170.4684957591401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 185.4336214561401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 186.03362145614008,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 189.0336265401401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 209.7886265401401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 209.88959018588758,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 210.48959018588758,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 210.99949486688757,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 211.79949486688758,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "ui/v2-on-71070/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 76,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 48,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 101,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "ui/v2-on-71071/browser-checks.json": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c02 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-002 carton_l07_c03 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 76,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-003 carton_l07_c01 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 79,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-005 carton_l07_c00 \u00b7 \u539f\u751f\u5019\u9009\uff0c\u672a\u6700\u7ec8\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-006 carton_l07_c00 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 57,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5df2\u63a5\u53d7",
+        "points": 301,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 48,
+        "label": "attempt-007 carton_l07_c04 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "recording-71070/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 223.5329304228883,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.3362086524538157,
+        -0.7538396688661341,
+        -0.49430514682449705,
+        1.5095413556263306,
+        -1.3442049584852351,
+        -4.4458829762714815
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999942,
+        -2.299792487003849e-08,
+        -1.0591623929301353e-07,
+        0,
+        -2.299797277736292e-08,
+        -0.9999999999998973,
+        -4.528376439383308e-07,
+        0,
+        -1.0591622888358431e-07,
+        4.528376464363326e-07,
+        -0.9999999999998919,
+        0,
+        -1.0328960565304905,
+        0.8399996980856479,
+        2.2499999369623245,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.717282723,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.472282722,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.57324647366669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.173246473666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.68315232666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.48315232666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 44.935087118666694,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 45.535087118666695,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 48.53513130866669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 69.29013130766668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 69.39109507680165,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 69.99109507680164,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 70.50100796980165,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 71.30100796980165,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 84.37624773980164,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 84.97624773980164,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 87.97624874280163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 108.73124874180164,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 108.83221232548667,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 109.43221232548666,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 109.94211810148666,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 110.74211810148665,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 114.74211810148665,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 120.25177477948665,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 123.25177479748665,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 144.00677479748666,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 148.00677479748666,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 148.1077385481408,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 148.70773854814078,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 149.2176437411408,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 150.0176437411408,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 196.1670620151408,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 196.7670620151408,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 199.7670620971408,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 220.52206209614081,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 220.6230257418883,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 221.2230257418883,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 221.7329304228883,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 222.5329304228883,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 1119,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "recording-71071/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 246.3635578008876,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.336208652453809,
+        -0.7538396688661327,
+        -0.4943051468244961,
+        4.651134009216121,
+        1.344204958485229,
+        -1.304290322681689
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999942,
+        -2.2997924759016186e-08,
+        -1.0591624038241987e-07,
+        0,
+        -2.2997972744227913e-08,
+        -0.9999999999998972,
+        -4.528376449930427e-07,
+        0,
+        -1.0591622995346177e-07,
+        4.528376473800222e-07,
+        -0.9999999999998918,
+        0,
+        -1.032896056530487,
+        0.8399996980856481,
+        2.2499999369623245,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.717282723,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.472282722,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.57324647366669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.173246473666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.68315232666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.48315232666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 68.1526631886667,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 68.75266318866669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 71.75266319366669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 92.50766319266668,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 92.60862696180162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 93.20862696180161,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 93.71853145580161,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 94.51853145580161,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 107.20685281580161,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 107.8068528158016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 110.8068703578016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 131.5618703568016,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 131.66283394048594,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 132.26283394048593,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 132.77274494948594,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 133.57274494948595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 137.57274494948595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 143.08240215748594,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 146.08240217548595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 166.83740217548595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 170.83740217548595,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 170.93836592614008,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 171.53836592614007,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 172.04827111914008,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 172.8482711191401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 218.9976893931401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 219.5976893931401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 222.5976894751401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 243.3526894741401,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 243.4536531198876,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 244.0536531198876,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 244.5635578008876,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 245.3635578008876,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 1233,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "recording-v2-71070/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 184.18622177988829,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.3362086524500831,
+        -0.7538396688841705,
+        -0.4943051468452038,
+        1.5095413556100628,
+        -1.3442049584811022,
+        -4.445882976265488
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999942,
+        -2.299349549650387e-08,
+        -1.05931063927589e-07,
+        0,
+        -2.299354345638779e-08,
+        -0.9999999999998973,
+        -4.5283270810880794e-07,
+        0,
+        -1.0593105350101114e-07,
+        4.5283271060680974e-07,
+        -0.9999999999998919,
+        0,
+        -1.0328960565311287,
+        0.8399996980756625,
+        2.249999936946101,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.717282723,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.472282722,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.57324647366669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.173246473666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.68315232666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.48315232666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 44.93508656766669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 45.53508656766669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 48.53508657366669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 69.2900865726667,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 69.39105034180163,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 69.99105034180162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 70.50095489280163,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 71.30095489280163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 79.05684400080163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 79.65684400080163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 82.65684400080163,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 103.41184399980162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 103.51280758348663,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 104.11280758348663,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 104.62271274448663,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 105.42271274448663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 109.42271274448663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 114.93236932148663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 117.93236933948663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 138.68736933848663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 142.68736933848663,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 142.78833308914076,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 143.38833308914076,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 143.89823828214077,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 144.69823828214078,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 156.82034837014078,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 157.42034837014077,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 160.42035345414078,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 181.1753534531408,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 181.27631709888828,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 181.87631709888828,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 182.38622177988827,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 183.18622177988829,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 922,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "recording-v2-71071/browser-checks.json": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 40,
+      "q_rad": [
+        -0.4738507840476061,
+        -0.46642585435191586,
+        -0.35455135903520246,
+        1.7851535539041579,
+        0.48589729025839207,
+        -3.3829904117272847
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999966624,
+        -2.580425970788447e-06,
+        1.284195648154629e-07,
+        0,
+        -1.284217051917729e-07,
+        -8.294742018244428e-07,
+        0.9999999999996478,
+        0,
+        -2.580425864467947e-06,
+        -0.9999999999963267,
+        -8.294745331705045e-07,
+        0,
+        -0.46750126843365547,
+        6.751052976455841e-07,
+        2.2499996481858484,
+        1
+      ],
+      "height_m": 0.6000000000000001,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 203.23697514688826,
+      "phase": "\u6574\u6279\u7ed3\u675f",
+      "completed_count": 5,
+      "carton_count": 35,
+      "q_rad": [
+        1.336208652450077,
+        -0.7538396688841699,
+        -0.4943051468452038,
+        1.5095413556100616,
+        -1.344204958481096,
+        -4.445882976265489
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999941,
+        -2.2993495468748293e-08,
+        -1.0593106349043868e-07,
+        0,
+        -2.299354342301869e-08,
+        -0.9999999999998972,
+        -4.5283270855289715e-07,
+        0,
+        -1.059310530962961e-07,
+        4.5283271093987665e-07,
+        -0.9999999999998918,
+        0,
+        -1.0328960565311256,
+        0.8399996980756627,
+        2.2499999369461006,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 5,
+      "drain_count": 5,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 1,
+        "kind": "lift",
+        "time": 7.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.71728278,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 3,
+        "kind": "motion",
+        "time": 14.717282723,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 4,
+        "kind": "drop",
+        "time": 35.472282722,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 5,
+        "kind": "landed",
+        "time": 35.57324647366669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 6,
+        "kind": "motion",
+        "time": 36.173246473666694,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 7,
+        "kind": "landed",
+        "time": 36.68315232666669,
+        "completed": 0,
+        "cartons": 40
+      },
+      {
+        "segment": 8,
+        "kind": "motion",
+        "time": 37.48315232666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 9,
+        "kind": "lift",
+        "time": 44.93508657666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 10,
+        "kind": "motion",
+        "time": 45.53508657666669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 11,
+        "kind": "motion",
+        "time": 48.53508662366669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 12,
+        "kind": "drop",
+        "time": 69.29008662266669,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 13,
+        "kind": "landed",
+        "time": 69.39105039180163,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 14,
+        "kind": "motion",
+        "time": 69.99105039180162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 15,
+        "kind": "landed",
+        "time": 70.50095508680162,
+        "completed": 1,
+        "cartons": 39
+      },
+      {
+        "segment": 16,
+        "kind": "motion",
+        "time": 71.30095508680162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 17,
+        "kind": "lift",
+        "time": 79.05684429580162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 18,
+        "kind": "motion",
+        "time": 79.65684429580162,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 19,
+        "kind": "motion",
+        "time": 82.65684430580161,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 20,
+        "kind": "drop",
+        "time": 103.41184430580161,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 21,
+        "kind": "landed",
+        "time": 103.51280788948662,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 22,
+        "kind": "motion",
+        "time": 104.11280788948662,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 23,
+        "kind": "landed",
+        "time": 104.62271304748661,
+        "completed": 2,
+        "cartons": 38
+      },
+      {
+        "segment": 24,
+        "kind": "lift",
+        "time": 105.42271304748661,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 25,
+        "kind": "motion",
+        "time": 109.42271304748661,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 26,
+        "kind": "motion",
+        "time": 114.93236962448661,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 27,
+        "kind": "motion",
+        "time": 117.9323696424866,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 28,
+        "kind": "lift",
+        "time": 138.6873696424866,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 29,
+        "kind": "drop",
+        "time": 142.6873696424866,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 30,
+        "kind": "landed",
+        "time": 142.78833339314073,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 31,
+        "kind": "motion",
+        "time": 143.38833339314073,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 32,
+        "kind": "landed",
+        "time": 143.89823858614074,
+        "completed": 3,
+        "cartons": 37
+      },
+      {
+        "segment": 33,
+        "kind": "motion",
+        "time": 144.69823858614075,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 34,
+        "kind": "lift",
+        "time": 175.87110173714075,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 35,
+        "kind": "motion",
+        "time": 176.47110173714074,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 36,
+        "kind": "motion",
+        "time": 179.47110682114075,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 37,
+        "kind": "drop",
+        "time": 200.22610682014076,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 38,
+        "kind": "landed",
+        "time": 200.32707046588826,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 39,
+        "kind": "motion",
+        "time": 200.92707046588825,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 40,
+        "kind": "landed",
+        "time": 201.43697514688824,
+        "completed": 4,
+        "cartons": 36
+      },
+      {
+        "segment": 41,
+        "kind": "final",
+        "time": 202.23697514688826,
+        "completed": 5,
+        "cartons": 35
+      }
+    ],
+    "frames": 1018,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  }
+}

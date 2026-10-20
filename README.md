@@ -1,4 +1,16 @@
-# 当前结论：顶层连续抓放两批均完成 5/5（2026-10-19）
+# 当前结论：接缝全行程保持，连续顶层两批 5/5（2026-10-20）
+
+横带向 −Y 扩展，纵带采用上端随横带、低端水平滑移；CPU、原生碰撞、三维显示与 USD 使用同源实体。新连续链已取消 OMPL 固定次数配额，空载接近采用合法 IK 比较、原生 PTP/LIN 优先和 RRT 回退。
+
+最终源码 `feba0c5491ffe4958e61e30ee3baa3d4ee954e5e` 的同几何关闭/开启对照均连续完成种子 71070、71071 的 **5/5**，下层 35 箱不变。开启组机器人运动时间减少 **6.23% / 5.02%**；规划墙钟分别 **增加 5.07% / 减少 2.68%**，单段仍有退化。第一版负结果及全部失败保留，不宣称全面加速或统计成功率保证。
+
+[完整报告与逐段对照](docs/m710_seam_approach_20261020.md) · [三维回放与布局 USD](docs/experiments/m710_seam_approach_20261020/offline-viewers.zip) · [视频 71070](docs/experiments/m710_seam_approach_20261020/seed-71070.mp4) · [视频 71071](docs/experiments/m710_seam_approach_20261020/seed-71071.mp4) · [原始记录和复现命令](docs/experiments/m710_seam_approach_20261020/README.md)
+
+依赖名义下落与 `IDEAL_RECEIVER_DRAIN`，没有物理执行。`qualification_status=NOT_EVALUATED`、`continuous_swept_proof=false`、`physical_execution=NOT_RUN`、`execution_ready=false`。视频保持 640×360、5 fps、正常轨迹时间，名义/理想计数与实测接收 0 明确分开。
+
+以下为各自源码、几何和范围内的历史记录。
+
+# 历史：顶层连续抓放两批均完成 5/5（2026-10-19）
 
 已在 `feat/v0.5-moveit2-native-single-carton` 实现并运行完整顶层批次入口。预定种子 71070、71071 从完整 40 箱及配置初态分别连续完成 **5/5**，包括释放、名义首次触带、工具分离和箱间实际末态衔接；下方 35 箱保留。联动横带、旋转纵带、剪叉及修正支座真实进入原生碰撞场景。
 

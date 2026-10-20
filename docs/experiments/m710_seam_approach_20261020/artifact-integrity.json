@@ -1,0 +1,136 @@
+{
+  "planning_source_commit": "feba0c5491ffe4958e61e30ee3baa3d4ee954e5e",
+  "delivery_commit": "Containing Git commit; obtain with git rev-parse HEAD",
+  "files": {
+    ".gitattributes": {
+      "bytes": 20,
+      "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+    },
+    "archive-index.json": {
+      "bytes": 3776,
+      "sha256": "4384e197f4b42260e84a25cb3261ed6023b63d05806db82dd1a3c587ecb08734"
+    },
+    "browser-checks.json": {
+      "bytes": 128980,
+      "sha256": "0484fcfa20fe873b852fe71d52f614cefdb5f3e05a77d4393775d67922694910"
+    },
+    "comparison-summary-v1.json": {
+      "bytes": 1738143,
+      "sha256": "0b843bb22f907c418b4e2475454732b02e14e48b015ac509be7cd34657e7d7c6"
+    },
+    "comparison-summary.json": {
+      "bytes": 150367,
+      "sha256": "21875322a23c50dd0d95333585368cb12d37078f716518d99eabd8b80ba07c8a"
+    },
+    "development.tar.gz.part-000": {
+      "bytes": 28809037,
+      "sha256": "5d9912265f8f966441581bfcc375e40e297122e3fe325fd4ef3b1b5a26ccf620"
+    },
+    "frozen-source-manifest.json": {
+      "bytes": 32102,
+      "sha256": "c1ddc1087293d180792aad00d8183447bb0d2ecf2897f9ec1c251ee6a248b429"
+    },
+    "frozen-source-v2-manifest.json": {
+      "bytes": 32102,
+      "sha256": "f24f2fb85025a2bd2b18ba9a65fedb04cb0fe43a53ae7e0a4a74f3b9d3fab9be"
+    },
+    "native-binary-reuse-v2.json": {
+      "bytes": 6357,
+      "sha256": "cec86b29437a51278714e6a33d907df9674fab16ac634b014ff7d3bb94cfa53d"
+    },
+    "offline-viewers.zip": {
+      "bytes": 15453940,
+      "sha256": "851ec3b4c73b1f86c1f6fe3a5b066bd8beecea2961f97a3e22ba604a9f26345b"
+    },
+    "old-direct-summary.json": {
+      "bytes": 15340,
+      "sha256": "7cf4a7afd369b45dd94f3b53c50bc2432557df40e1b0a8145bdf52979746cff7"
+    },
+    "old-direct.tar.gz": {
+      "bytes": 760852,
+      "sha256": "65b18757c6ffaaa4116d803fd9e34fb79fdffcba02d287135744fa9e348a7cb4"
+    },
+    "README.md": {
+      "bytes": 7247,
+      "sha256": "f043fa5a9542103f01a3cfdf3c5ae0a44fe91e95e06229a80dd627c751405f9b"
+    },
+    "seed-71070-ffprobe.json": {
+      "bytes": 230,
+      "sha256": "700873f4b6e451e6345fe3874f0b6ac80cf0746d0648c25c4ccd72ca26d79ed8"
+    },
+    "seed-71070.mp4": {
+      "bytes": 696595,
+      "sha256": "5fab1459f65b42b54301d2fce98ddc99c5eef136218d220c77d1e8f1d4b1cdd9"
+    },
+    "seed-71071-ffprobe.json": {
+      "bytes": 231,
+      "sha256": "71d4cc96ebe0c9f2d19fe85ba1d36b4c005e5deb7d7b177fe3194f52e2929e72"
+    },
+    "seed-71071.mp4": {
+      "bytes": 753206,
+      "sha256": "485b00db6c642e9b51246e08aa47ceb43a78939a64f6f5e2fc33b57962208eb0"
+    },
+    "v1-off.tar.gz.part-000": {
+      "bytes": 41943040,
+      "sha256": "392afa89c1ce4336334c72700fa8475d28950bd4b4c703fe3c6fee5b629d5b9e"
+    },
+    "v1-off.tar.gz.part-001": {
+      "bytes": 5158269,
+      "sha256": "1c4286eccfeb0ad0718e55076ce89a41a9a561374fd80b122f820ab953f3ff5f"
+    },
+    "v1-on.tar.gz.part-000": {
+      "bytes": 41943040,
+      "sha256": "728f7112e8c1620bbd231f69f6fbe859b52cda3eccf1a4f08932b5125cf613ef"
+    },
+    "v1-on.tar.gz.part-001": {
+      "bytes": 13688907,
+      "sha256": "36349b0b1845fa3a8fe9baf7ef06368407db6d7380d558f90f4921ad8d90958f"
+    },
+    "v1-seed-71070-ffprobe.json": {
+      "bytes": 231,
+      "sha256": "80b9d6867c5bbe4acd71ab1b93d1b6e7676da2b7b0dfff2f7a6e8d54a3888033"
+    },
+    "v1-seed-71070.mp4": {
+      "bytes": 809888,
+      "sha256": "2148338e13ebad9b21d93a23b3ecd21f51fa2eecd97ba8af0a897d6cf3dc3112"
+    },
+    "v1-seed-71071-decoded.png": {
+      "bytes": 65165,
+      "sha256": "9402a33e8c7097198334774a6cc4163f64513f134d0253c2af24580eb1b331f2"
+    },
+    "v1-seed-71071-ffprobe.json": {
+      "bytes": 231,
+      "sha256": "0aa6dd1467039c22999f35317eedf0375430f6aae15fcb941409befb43549c7c"
+    },
+    "v1-seed-71071.mp4": {
+      "bytes": 855825,
+      "sha256": "e033197a0f72a21d554fb041778093f0bd4cd04994d2ae76aacd9d9830d96508"
+    },
+    "v2-off.tar.gz.part-000": {
+      "bytes": 41943040,
+      "sha256": "5d8b95c1a8f611a4fb6cfd97696a68a946441cb9526bdd83fce623f03cb4df06"
+    },
+    "v2-off.tar.gz.part-001": {
+      "bytes": 4649556,
+      "sha256": "b468937cfa589c260fe75d60b7063caa3d4d9aeb13874b80bf73f9759767096f"
+    },
+    "v2-on.tar.gz.part-000": {
+      "bytes": 41943040,
+      "sha256": "827903778ed91630ae4a0d9b524294b264da958ae9d02f78face642f6a1d2e13"
+    },
+    "v2-on.tar.gz.part-001": {
+      "bytes": 9474475,
+      "sha256": "0a0fae4b5328c42f4726276149f8008b55997a4edad2e2ddeb00656dd45f4bab"
+    },
+    "validation.tar.gz.part-000": {
+      "bytes": 15703223,
+      "sha256": "6992d490857a5b92bbb4a786a5f7e9b9c8d33ffb3120dc35af0e3cb602f68b92"
+    }
+  },
+  "offline_zip_crc_and_internal_hashes": "PASS",
+  "final_video_decode_visual_inspection": "PASS",
+  "qualification_status": "NOT_EVALUATED",
+  "physical_execution": "NOT_RUN",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

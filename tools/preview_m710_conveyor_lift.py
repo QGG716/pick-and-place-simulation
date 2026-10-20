@@ -16,6 +16,8 @@ def main():
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--source-commit",required=True)
     parser.add_argument("--usd-asset-cache",type=Path)
+    parser.add_argument("--usd",action="store_true",
+                        help="Export portable collider geometry without external visual assets.")
     args=parser.parse_args()
     if len(args.source_commit)!=40 or any(c not in "0123456789abcdef" for c in args.source_commit):
         raise ValueError("FULL_SOURCE_COMMIT_REQUIRED")
@@ -36,7 +38,7 @@ def main():
         official_resources=dict(conveyor_manifest="configs/isaac/conveyor_assets.json",
           articulations="https://docs.omniverse.nvidia.com/kit/docs/omni_physics/110.0/dev_guide/rigid_bodies_articulations/articulations.html",
           conveyor="https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.asset.gen.conveyor/docs/index.html"))
-    if args.usd_asset_cache:
+    if args.usd or args.usd_asset_cache:
         sys.path.insert(0,str(ROOT/"scripts"))
         from coupled_conveyor_usd import create_stage, apply_state
         from pxr import Usd, UsdGeom
@@ -48,14 +50,22 @@ def main():
             apply_state(stage,state)
             cache=UsdGeom.XformCache()
             for box in state.boxes:
-                actual=cache.GetLocalToWorldTransform(stage.GetPrimAtPath("/CoupledConveyors/Bodies/"+box.name))
+                body_path="/CoupledConveyors/Bodies/"+box.name
+                actual=cache.GetLocalToWorldTransform(stage.GetPrimAtPath(body_path))
                 if not np.allclose(np.asarray(actual).T,box.world_from_local,atol=1e-12,rtol=0):
                     raise ValueError("USD_GEOMETRY_DIVERGED")
+                if hasattr(box, "solid"):
+                    mesh=UsdGeom.Mesh(stage.GetPrimAtPath(body_path+"/Collider"))
+                    if not np.allclose(np.asarray(mesh.GetPointsAttr().Get()),
+                                       box.solid["vertices_m"],atol=1e-7,rtol=0):
+                        raise ValueError("USD_CONVEX_VERTICES_DIVERGED")
+                    if list(mesh.GetFaceVertexIndicesAttr().Get()) != [i for f in box.solid["faces"] for i in f]:
+                        raise ValueError("USD_CONVEX_FACES_DIVERGED")
         stage.GetRootLayer().Save()
         reopened=Usd.Stage.Open(str(args.output/"coupled_conveyors.usda"))
         if reopened.GetDefaultPrim().GetCustomDataByKey("scene_fingerprint")!=states[-1].scene_fingerprint:
             raise ValueError("USD_RELOAD_IDENTITY_MISMATCH")
-        result["usd_validation"]=dict(status="PASS_GEOMETRY_ONLY",states=101,
+        result["usd_validation"]=dict(status="PASS_GEOMETRY_ONLY",states=len(states),
                                       assets=assets,physics_steps=0)
     template=(ROOT/"tools/lifted_reception/viewer.html").read_text(encoding="utf-8")
     extension=(ROOT/"tools/lifted_reception/coupled_view.js").read_text(encoding="utf-8")
@@ -92,7 +102,7 @@ def main():
           "tools/preview_m710_conveyor_lift.py","tools/lifted_reception/coupled_view.js",
           "tools/lifted_reception/viewer.html")})
     (args.output/"summary.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding="utf-8")
-    print(json.dumps(dict(states=101,low=low,high=high,tilt_degrees=float(np.rad2deg(states[-1].mechanism["tilt_rad"])),
+    print(json.dumps(dict(states=len(states),low=low,high=high,tilt_degrees=float(np.rad2deg(states[-1].mechanism["tilt_rad"])),
                          near_tip_world=states[-1].mechanism["near_tip_world"],usd=result.get("usd_validation",{}).get("status"))))
 
 

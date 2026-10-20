@@ -1,0 +1,124 @@
+{
+  "development.tar.gz": {
+    "bytes": 28809037,
+    "sha256": "5d9912265f8f966441581bfcc375e40e297122e3fe325fd4ef3b1b5a26ccf620",
+    "parts": [
+      {
+        "file": "development.tar.gz.part-000",
+        "bytes": 28809037,
+        "sha256": "5d9912265f8f966441581bfcc375e40e297122e3fe325fd4ef3b1b5a26ccf620"
+      }
+    ],
+    "nested_lossless_verification": [
+      {
+        "manifest": "dev-01/lossless-compression-manifest.json",
+        "verified_files": 24,
+        "decoded_bytes": 1324806958
+      }
+    ]
+  },
+  "v1-off.tar.gz": {
+    "bytes": 47101309,
+    "sha256": "9cb589bef175392857d2fcbe46b9c44be0701d4950e30c5528d7aa885cc4f8fd",
+    "parts": [
+      {
+        "file": "v1-off.tar.gz.part-000",
+        "bytes": 41943040,
+        "sha256": "392afa89c1ce4336334c72700fa8475d28950bd4b4c703fe3c6fee5b629d5b9e"
+      },
+      {
+        "file": "v1-off.tar.gz.part-001",
+        "bytes": 5158269,
+        "sha256": "1c4286eccfeb0ad0718e55076ce89a41a9a561374fd80b122f820ab953f3ff5f"
+      }
+    ],
+    "nested_lossless_verification": [
+      {
+        "manifest": "comparison-off/lossless-compression-manifest.json",
+        "verified_files": 45,
+        "decoded_bytes": 2138291757
+      }
+    ]
+  },
+  "v1-on.tar.gz": {
+    "bytes": 55631947,
+    "sha256": "fb24baa63b315a004344a5ef33104ba2604ce21612ea70b35496991a94951129",
+    "parts": [
+      {
+        "file": "v1-on.tar.gz.part-000",
+        "bytes": 41943040,
+        "sha256": "728f7112e8c1620bbd231f69f6fbe859b52cda3eccf1a4f08932b5125cf613ef"
+      },
+      {
+        "file": "v1-on.tar.gz.part-001",
+        "bytes": 13688907,
+        "sha256": "36349b0b1845fa3a8fe9baf7ef06368407db6d7380d558f90f4921ad8d90958f"
+      }
+    ],
+    "nested_lossless_verification": [
+      {
+        "manifest": "final-on/lossless-compression-manifest.json",
+        "verified_files": 47,
+        "decoded_bytes": 2656519466
+      }
+    ]
+  },
+  "validation.tar.gz": {
+    "bytes": 15703223,
+    "sha256": "6992d490857a5b92bbb4a786a5f7e9b9c8d33ffb3120dc35af0e3cb602f68b92",
+    "parts": [
+      {
+        "file": "validation.tar.gz.part-000",
+        "bytes": 15703223,
+        "sha256": "6992d490857a5b92bbb4a786a5f7e9b9c8d33ffb3120dc35af0e3cb602f68b92"
+      }
+    ],
+    "nested_lossless_verification": []
+  },
+  "v2-off.tar.gz": {
+    "bytes": 46592596,
+    "sha256": "f67016ee9d2c8b849228936cf0170b4597536d317441f4eb60e9784b620926cc",
+    "parts": [
+      {
+        "file": "v2-off.tar.gz.part-000",
+        "bytes": 41943040,
+        "sha256": "5d8b95c1a8f611a4fb6cfd97696a68a946441cb9526bdd83fce623f03cb4df06"
+      },
+      {
+        "file": "v2-off.tar.gz.part-001",
+        "bytes": 4649556,
+        "sha256": "b468937cfa589c260fe75d60b7063caa3d4d9aeb13874b80bf73f9759767096f"
+      }
+    ],
+    "nested_lossless_verification": [
+      {
+        "manifest": "comparison-v2-off/lossless-compression-manifest.json",
+        "verified_files": 45,
+        "decoded_bytes": 2133566002
+      }
+    ]
+  },
+  "v2-on.tar.gz": {
+    "bytes": 51417515,
+    "sha256": "341fab7e63ac711ce4f0933a42db817a2587fed9121bad4e1ff138981ce6df01",
+    "parts": [
+      {
+        "file": "v2-on.tar.gz.part-000",
+        "bytes": 41943040,
+        "sha256": "827903778ed91630ae4a0d9b524294b264da958ae9d02f78face642f6a1d2e13"
+      },
+      {
+        "file": "v2-on.tar.gz.part-001",
+        "bytes": 9474475,
+        "sha256": "0a0fae4b5328c42f4726276149f8008b55997a4edad2e2ddeb00656dd45f4bab"
+      }
+    ],
+    "nested_lossless_verification": [
+      {
+        "manifest": "final-v2-on/lossless-compression-manifest.json",
+        "verified_files": 46,
+        "decoded_bytes": 2397245197
+      }
+    ]
+  }
+}

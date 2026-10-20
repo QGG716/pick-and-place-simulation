@@ -1,0 +1,4757 @@
+{
+  "source_commit": "feba0c5491ffe4958e61e30ee3baa3d4ee954e5e",
+  "worker_sha256": "df64ad8a5a7593d56a246d120112fae7406d38e0725696ef3befe120b5b538a5",
+  "shared_budget": {
+    "task_budget_s": 300.0,
+    "stage_budget_s": 90.0,
+    "ompl_attempt_quota": null
+  },
+  "scope": "Two fixed seeds, independent continuous 40-carton worlds. ON also supplies final regression; no extra runs.",
+  "no_statistical_success_rate_claim": true,
+  "runs": [
+    {
+      "mode": "OFF",
+      "seed": 71070,
+      "status": "COMPLETE_PLANNING_ONLY",
+      "completed": 5,
+      "target_count": 5,
+      "lower_layer_preserved": true,
+      "remaining_cartons": 35,
+      "planning_wall_s": 330.6741245277226,
+      "native_request_wall_s": 155.02076575905085,
+      "pregrasp_request_wall_s": 128.28970106318593,
+      "accepted_robot_motion_s": 172.63118280799998,
+      "accepted_pregrasp_motion_s": 51.306647224,
+      "accepted_pregrasp_joint_rad": 24.96461504261465,
+      "accepted_pregrasp_contact_m": 5.455587998876689,
+      "mechanism_demo_s": 13.799999999999999,
+      "hardware_cycle_s": null,
+      "method_requests": {
+        "RRTConnectkConfigDefault": 45
+      },
+      "method_failures": {
+        "RRTConnectkConfigDefault": 36
+      },
+      "failed_process_attempts": [
+        {
+          "folder": "attempt-004",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100103577,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 36,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100103577,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "random_restarts": null,
+                "request_id": "456",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.1221250556409359
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 416,
+            "scope": "FACE_ATTEMPT"
+          },
+          "classification": "SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+          "wall_s": 90.39720740169287
+        },
+        {
+          "folder": "attempt-005",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT",
+            "pre_approach_height_m": 0.6000000000000001
+          },
+          "failure": "MoveItUnavailable: SINGLE_TARGET_STAGE_DEADLINE",
+          "classification": "REQUEST_FAILURE_RETAINED",
+          "wall_s": 97.00598295778036
+        }
+      ],
+      "transitions": [
+        {
+          "previous": "INITIAL",
+          "target": "carton_l07_c02",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c02",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -0.4738507840476061,
+              -0.46642585435191586,
+              -0.35455135903520246,
+              1.7851535539041579,
+              0.48589729025839207,
+              -3.3829904117272847
+            ],
+            "q_goal_rad": [
+              -0.3979853138949721,
+              -0.317384412007828,
+              -0.25511422362779673,
+              1.7177477025749017,
+              0.4025703811519453,
+              -4.871901750081057
+            ],
+            "endpoint_delta_rad": [
+              0.07586547015263401,
+              0.14904144234408784,
+              0.09943713540740573,
+              -0.06740585132925614,
+              -0.08332690910644674,
+              -1.4889113383537724
+            ],
+            "cumulative_abs_joint_rad": [
+              0.07586547015263401,
+              0.14904144234408784,
+              0.09943713540740573,
+              0.06740585132925614,
+              0.08332690910644674,
+              1.4889113383537724
+            ],
+            "weighted_joint_length_rad": 1.9639881466936029,
+            "endpoint_joint_distance_rad": 1.9639881466936029,
+            "motion_duration_s": 7.635115452,
+            "planning_wall_s": 0.8939900621771812,
+            "tcp_length_m": 0.15024351218085863,
+            "tcp_chord_m": 0.1500012706829967,
+            "tcp_length_over_chord": 1.0016149296386552,
+            "physical_contact_length_m": 0.15023934564311678,
+            "physical_contact_chord_m": 0.1500012706829366,
+            "physical_contact_length_over_chord": 1.00158715295608
+          }
+        },
+        {
+          "previous": "carton_l07_c02",
+          "target": "carton_l07_c03",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c03",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.2479213627972467,
+              -0.8970359037919353,
+              -0.5377388924863081,
+              1.6879031471315302,
+              1.2692122461813484,
+              -5.089499476061123
+            ],
+            "q_goal_rad": [
+              0.08388675903527279,
+              -0.39143868253511876,
+              -0.3068355650474625,
+              0.7829172212065891,
+              -0.11907066458650517,
+              -3.9209571365354146
+            ],
+            "endpoint_delta_rad": [
+              1.3318081218325195,
+              0.5055972212568165,
+              0.23090332743884562,
+              -0.9049859259249411,
+              -1.3882829107678536,
+              1.1685423395257084
+            ],
+            "cumulative_abs_joint_rad": [
+              1.3318081218325195,
+              0.5055972212568165,
+              0.23090332743884562,
+              0.9049859259249411,
+              1.3882829107678536,
+              1.1685423395257084
+            ],
+            "weighted_joint_length_rad": 5.530119846746684,
+            "endpoint_joint_distance_rad": 5.530119846746684,
+            "motion_duration_s": 8.261778594,
+            "planning_wall_s": 3.1914939619600773,
+            "tcp_length_m": 1.0020945889860995,
+            "tcp_chord_m": 0.8295729081633819,
+            "tcp_length_over_chord": 1.2079644587293343,
+            "physical_contact_length_m": 0.9922930840005569,
+            "physical_contact_chord_m": 0.8295729042026688,
+            "physical_contact_length_over_chord": 1.196149342599713
+          }
+        },
+        {
+          "previous": "carton_l07_c03",
+          "target": "carton_l07_c01",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c01",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              0.538764583750708,
+              -1.1260425648592545,
+              -0.565015814147007,
+              0.8434825333975896,
+              -0.7571920129474987,
+              -3.826319506837438
+            ],
+            "q_goal_rad": [
+              -0.7464163615394982,
+              -0.06396951081406446,
+              -0.04304185711496971,
+              -1.5481754868112596,
+              -0.7466530209961522,
+              -1.6016118174170815
+            ],
+            "endpoint_delta_rad": [
+              -1.285180945290206,
+              1.06207305404519,
+              0.5219739570320373,
+              -2.3916580202088493,
+              0.010538991951346555,
+              2.224707689420357
+            ],
+            "cumulative_abs_joint_rad": [
+              1.285180945290206,
+              1.0620730540451921,
+              0.5219739570320381,
+              2.3916580202088515,
+              0.05151509257708908,
+              2.2247076894203586
+            ],
+            "weighted_joint_length_rad": 7.537108758573728,
+            "endpoint_joint_distance_rad": 7.496132657947986,
+            "motion_duration_s": 14.304027263,
+            "planning_wall_s": 6.223153650760651,
+            "tcp_length_m": 1.3206043783592778,
+            "tcp_chord_m": 1.1033536926448755,
+            "tcp_length_over_chord": 1.1969003114437633,
+            "physical_contact_length_m": 1.3179684382621324,
+            "physical_contact_chord_m": 1.1033537071905648,
+            "physical_contact_length_over_chord": 1.194511270205485
+          }
+        },
+        {
+          "previous": "carton_l07_c01",
+          "target": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT",
+            "pre_approach_height_m": 0.6000000000000001,
+            "late_receiver_sync": true
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4198698183961467,
+              -0.45344176698256,
+              -0.3466231133835538,
+              -1.5545833734280796,
+              -1.4207365261042102,
+              -1.6788333770610449
+            ],
+            "q_goal_rad": [
+              -0.9603524100876276,
+              0.30546615122393905,
+              0.3645715725248454,
+              -1.52949493623761,
+              -0.9615735072753793,
+              -1.6428884108570543
+            ],
+            "endpoint_delta_rad": [
+              0.45951740830851906,
+              0.758907918206499,
+              0.7111946859083992,
+              0.025088437190469604,
+              0.4591630188288309,
+              0.03594496620399057
+            ],
+            "cumulative_abs_joint_rad": [
+              0.45951740830851906,
+              0.758907918206499,
+              0.7111946859083992,
+              0.025088437190469604,
+              0.4591630188288309,
+              0.03594496620399057
+            ],
+            "weighted_joint_length_rad": 2.449816434646708,
+            "endpoint_joint_distance_rad": 2.449816434646708,
+            "motion_duration_s": 5.569643816,
+            "planning_wall_s": 1.1887257508933544,
+            "tcp_length_m": 0.8615174400664947,
+            "tcp_chord_m": 0.8295732532396833,
+            "tcp_length_over_chord": 1.0385067704413824,
+            "physical_contact_length_m": 0.8614636983864925,
+            "physical_contact_chord_m": 0.8295732541526255,
+            "physical_contact_length_over_chord": 1.038441986978524
+          }
+        },
+        {
+          "previous": "carton_l07_c00",
+          "target": "carton_l07_c04",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "LEFT_END",
+            "target_id": "carton_l07_c04",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4727055134859537,
+              0.004693045291523071,
+              0.02387215939346351,
+              -1.5689094256322962,
+              -1.4727235620302683,
+              -1.590067938415868
+            ],
+            "q_goal_rad": [
+              0.5319865460041694,
+              -0.2485349557775021,
+              -0.20289525044127002,
+              -1.6481581454474368,
+              0.5337523652188074,
+              -1.48099808435281
+            ],
+            "endpoint_delta_rad": [
+              2.004692059490123,
+              -0.25322800106902515,
+              -0.22676740983473354,
+              -0.07924871981514059,
+              2.0064759272490758,
+              0.10906985406305791
+            ],
+            "cumulative_abs_joint_rad": [
+              2.004692059490122,
+              0.3260870455844765,
+              0.22676740983473354,
+              1.1103158245810434,
+              2.0064759272490775,
+              1.8092435892144756
+            ],
+            "weighted_joint_length_rad": 7.483581855953926,
+            "endpoint_joint_distance_rad": 4.679481971521156,
+            "motion_duration_s": 15.536082099,
+            "planning_wall_s": 8.746890362352133,
+            "tcp_length_m": 2.137143574831568,
+            "tcp_chord_m": 1.8259769043250709,
+            "tcp_length_over_chord": 1.1704110658625841,
+            "physical_contact_length_m": 2.1336234325843906,
+            "physical_contact_chord_m": 1.8259768788835757,
+            "physical_contact_length_over_chord": 1.1684832690153852
+          }
+        }
+      ]
+    },
+    {
+      "mode": "OFF",
+      "seed": 71071,
+      "status": "COMPLETE_PLANNING_ONLY",
+      "completed": 5,
+      "target_count": 5,
+      "lower_layer_preserved": true,
+      "remaining_cartons": 35,
+      "planning_wall_s": 343.71071195974946,
+      "native_request_wall_s": 160.03375851362944,
+      "pregrasp_request_wall_s": 132.2338725142181,
+      "accepted_robot_motion_s": 190.494676366,
+      "accepted_pregrasp_motion_s": 69.170122431,
+      "accepted_pregrasp_joint_rad": 31.28743553249116,
+      "accepted_pregrasp_contact_m": 5.98302303660174,
+      "mechanism_demo_s": 13.799999999999999,
+      "hardware_cycle_s": null,
+      "method_requests": {
+        "RRTConnectkConfigDefault": 45
+      },
+      "method_failures": {
+        "RRTConnectkConfigDefault": 36
+      },
+      "failed_process_attempts": [
+        {
+          "folder": "attempt-004",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.102717643,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 36,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.102717643,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "random_restarts": null,
+                "request_id": "452",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 411,
+                "seed": 71071,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12464863806962967
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 412,
+            "scope": "FACE_ATTEMPT"
+          },
+          "classification": "SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+          "wall_s": 90.40220792219043
+        },
+        {
+          "folder": "attempt-005",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT",
+            "pre_approach_height_m": 0.6000000000000001
+          },
+          "failure": "MoveItUnavailable: SINGLE_TARGET_STAGE_DEADLINE",
+          "classification": "REQUEST_FAILURE_RETAINED",
+          "wall_s": 101.64956579357386
+        }
+      ],
+      "transitions": [
+        {
+          "previous": "INITIAL",
+          "target": "carton_l07_c02",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c02",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -0.4738507840476061,
+              -0.46642585435191586,
+              -0.35455135903520246,
+              1.7851535539041579,
+              0.48589729025839207,
+              -3.3829904117272847
+            ],
+            "q_goal_rad": [
+              -0.39798531389468644,
+              -0.31738441200696627,
+              -0.2551142236283724,
+              1.717747702575064,
+              0.4025703811520177,
+              -4.871901750082077
+            ],
+            "endpoint_delta_rad": [
+              0.07586547015291967,
+              0.1490414423449496,
+              0.09943713540683008,
+              -0.06740585132909382,
+              -0.08332690910637436,
+              -1.488911338354792
+            ],
+            "cumulative_abs_joint_rad": [
+              0.07586547015291967,
+              0.1490414423449496,
+              0.09943713540683008,
+              0.06740585132909382,
+              0.08332690910637436,
+              1.488911338354792
+            ],
+            "weighted_joint_length_rad": 1.9639881466949596,
+            "endpoint_joint_distance_rad": 1.9639881466949596,
+            "motion_duration_s": 7.635115452,
+            "planning_wall_s": 0.8365539275109768,
+            "tcp_length_m": 0.15024351218194792,
+            "tcp_chord_m": 0.15000127068408295,
+            "tcp_length_over_chord": 1.0016149296386638,
+            "physical_contact_length_m": 0.15023934564420607,
+            "physical_contact_chord_m": 0.1500012706840228,
+            "physical_contact_length_over_chord": 1.0015871529560891
+          }
+        },
+        {
+          "previous": "carton_l07_c02",
+          "target": "carton_l07_c03",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c03",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.2479213627976184,
+              -0.8970359037914654,
+              -0.5377388924855473,
+              1.6879031471327055,
+              1.2692122461825661,
+              -5.089499476063174
+            ],
+            "q_goal_rad": [
+              0.08388675859637838,
+              -0.3914386714306205,
+              -0.30683555735440454,
+              3.9245105645392986,
+              0.11907084862875612,
+              -0.7793651725602939
+            ],
+            "endpoint_delta_rad": [
+              1.3318081213939967,
+              0.5055972323608449,
+              0.23090333513114275,
+              2.236607417406593,
+              -1.15014139755381,
+              4.310134303502879
+            ],
+            "cumulative_abs_joint_rad": [
+              1.3318081213939987,
+              0.8424944216061616,
+              0.5474315300855195,
+              3.1141963122051615,
+              1.1501413975538108,
+              4.310134303502878
+            ],
+            "weighted_joint_length_rad": 11.296206086347532,
+            "endpoint_joint_distance_rad": 9.765191807349266,
+            "motion_duration_s": 28.365976494,
+            "planning_wall_s": 8.547692988067865,
+            "tcp_length_m": 1.4599672755284452,
+            "tcp_chord_m": 0.8295728766139978,
+            "tcp_length_over_chord": 1.7599023746864513,
+            "physical_contact_length_m": 1.4514141498771647,
+            "physical_contact_chord_m": 0.8295728757478993,
+            "physical_contact_length_over_chord": 1.7495921001137436
+          }
+        },
+        {
+          "previous": "carton_l07_c03",
+          "target": "carton_l07_c01",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c01",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              0.5387648535390063,
+              -1.12604245263034,
+              -0.5650157749983161,
+              3.9850756901871076,
+              0.7571923134283755,
+              -0.6847272608035841
+            ],
+            "q_goal_rad": [
+              -0.7464162169516783,
+              -0.06397074233707145,
+              -0.0430433345018243,
+              1.5934162840383557,
+              0.746652697117062,
+              1.539981455215305
+            ],
+            "endpoint_delta_rad": [
+              -1.2851810704906845,
+              1.0620717102932686,
+              0.5219724404964918,
+              -2.3916594061487517,
+              -0.010539616311313504,
+              2.224708716018889
+            ],
+            "cumulative_abs_joint_rad": [
+              1.2851810704906843,
+              1.062071710293269,
+              0.5219724404964917,
+              2.3916594061487517,
+              0.014537426731170977,
+              2.224708716018889
+            ],
+            "weighted_joint_length_rad": 7.500130770179258,
+            "endpoint_joint_distance_rad": 7.496132959759399,
+            "motion_duration_s": 12.634260426,
+            "planning_wall_s": 6.173073261976242,
+            "tcp_length_m": 1.3381672640537707,
+            "tcp_chord_m": 1.103352639633851,
+            "tcp_length_over_chord": 1.2128191984911036,
+            "physical_contact_length_m": 1.3341700474303275,
+            "physical_contact_chord_m": 1.103352654855475,
+            "physical_contact_length_over_chord": 1.2091963902557397
+          }
+        },
+        {
+          "previous": "carton_l07_c01",
+          "target": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT",
+            "pre_approach_height_m": 0.6000000000000001,
+            "late_receiver_sync": true
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.419869935431431,
+              -0.45344191285271346,
+              -0.3466233817683056,
+              1.5870088352730887,
+              1.4207364345077218,
+              1.462759268364366
+            ],
+            "q_goal_rad": [
+              -0.9603524100867774,
+              0.30546615122432896,
+              0.36457157252329536,
+              1.612097717353028,
+              0.9615735072748202,
+              1.498704242734287
+            ],
+            "endpoint_delta_rad": [
+              0.4595175253446536,
+              0.7589080640770425,
+              0.711194954291601,
+              0.025088882079939312,
+              -0.45916292723290164,
+              0.035944974369920946
+            ],
+            "cumulative_abs_joint_rad": [
+              0.4595175253446536,
+              0.7589080640770425,
+              0.711194954291601,
+              0.025088882079939312,
+              0.45916292723290164,
+              0.035944974369920946
+            ],
+            "weighted_joint_length_rad": 2.449817327396059,
+            "endpoint_joint_distance_rad": 2.449817327396059,
+            "motion_duration_s": 5.569644362,
+            "planning_wall_s": 1.1938252970576286,
+            "tcp_length_m": 0.8615175424774825,
+            "tcp_chord_m": 0.8295733417525948,
+            "tcp_length_over_chord": 1.0385067830861114,
+            "physical_contact_length_m": 0.861463803849006,
+            "physical_contact_chord_m": 0.829573345309172,
+            "physical_contact_length_over_chord": 1.0384419999993475
+          }
+        },
+        {
+          "previous": "carton_l07_c00",
+          "target": "carton_l07_c04",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "LEFT_END",
+            "target_id": "carton_l07_c04",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4727055134857063,
+              0.0046930452918248836,
+              0.02387215939448605,
+              1.5726832279593388,
+              1.472723562030299,
+              1.5515247151734692
+            ],
+            "q_goal_rad": [
+              0.5319865460042383,
+              -0.24853495577870605,
+              -0.20289525044140705,
+              1.4934345081435738,
+              -0.5337523652191949,
+              1.6605945692379094
+            ],
+            "endpoint_delta_rad": [
+              2.004692059489945,
+              -0.25322800107053095,
+              -0.2267674098358931,
+              -0.07924871981576498,
+              -2.006475927249494,
+              0.10906985406444014
+            ],
+            "cumulative_abs_joint_rad": [
+              2.004692059489948,
+              0.2993057262746577,
+              0.2267674098358931,
+              1.827064455093573,
+              2.0064759272494963,
+              1.7129876239297923
+            ],
+            "weighted_joint_length_rad": 8.077293201873355,
+            "endpoint_joint_distance_rad": 4.679481971526068,
+            "motion_duration_s": 14.965125697,
+            "planning_wall_s": 6.918834086507559,
+            "tcp_length_m": 2.195046394096697,
+            "tcp_chord_m": 1.825976904323818,
+            "tcp_length_over_chord": 1.2021216636962613,
+            "physical_contact_length_m": 2.185735689801035,
+            "physical_contact_chord_m": 1.8259768788823412,
+            "physical_contact_length_over_chord": 1.1970226540540305
+          }
+        }
+      ]
+    },
+    {
+      "mode": "ON",
+      "seed": 71070,
+      "status": "COMPLETE_PLANNING_ONLY",
+      "completed": 5,
+      "target_count": 5,
+      "lower_layer_preserved": true,
+      "remaining_cartons": 35,
+      "planning_wall_s": 347.42671843245625,
+      "native_request_wall_s": 151.48409658297896,
+      "pregrasp_request_wall_s": 119.59947297349572,
+      "accepted_robot_motion_s": 161.881403279,
+      "accepted_pregrasp_motion_s": 40.556872794,
+      "accepted_pregrasp_joint_rad": 20.67981728541097,
+      "accepted_pregrasp_contact_m": 5.5286557531361735,
+      "mechanism_demo_s": 13.799999999999999,
+      "hardware_cycle_s": null,
+      "method_requests": {
+        "PTP": 46,
+        "LIN": 1,
+        "RRTConnectkConfigDefault": 2
+      },
+      "method_failures": {
+        "PTP": 37,
+        "LIN": 1,
+        "RRTConnectkConfigDefault": 1
+      },
+      "failed_process_attempts": [
+        {
+          "folder": "attempt-004",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100758282,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 36,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100758282,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "random_restarts": null,
+                "request_id": "471",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 430,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12377382442355156
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 425,
+            "retained_legal_configurations": 0,
+            "scope": "FACE_ATTEMPT"
+          },
+          "classification": "SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+          "wall_s": 90.39095913618803
+        },
+        {
+          "folder": "attempt-005",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT",
+            "pre_approach_height_m": 0.6000000000000001
+          },
+          "failure": {
+            "reason": "NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS",
+            "scope": "FRONT_TEMPLATE_ATTEMPT_NOT_GLOBAL_UNREACHABILITY"
+          },
+          "classification": "SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+          "wall_s": 121.08049938455224
+        }
+      ],
+      "transitions": [
+        {
+          "previous": "INITIAL",
+          "target": "carton_l07_c02",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c02",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -0.4738507840476061,
+              -0.46642585435191586,
+              -0.35455135903520246,
+              1.7851535539041579,
+              0.48589729025839207,
+              -3.3829904117272847
+            ],
+            "q_goal_rad": [
+              -0.3979853138944907,
+              -0.31738441200761514,
+              -0.25511422362801917,
+              1.7177477025744579,
+              0.402570381151846,
+              -4.871901750081754
+            ],
+            "endpoint_delta_rad": [
+              0.0758654701531154,
+              0.14904144234430072,
+              0.0994371354071833,
+              -0.0674058513297,
+              -0.08332690910654605,
+              -1.4889113383544696
+            ],
+            "cumulative_abs_joint_rad": [
+              0.0758654701531154,
+              0.14904144234430072,
+              0.0994371354071833,
+              0.0674058513297,
+              0.08332690910654605,
+              1.4889113383544696
+            ],
+            "weighted_joint_length_rad": 1.963988146695315,
+            "endpoint_joint_distance_rad": 1.963988146695315,
+            "motion_duration_s": 7.71728278,
+            "planning_wall_s": 0.15686746686697006,
+            "tcp_length_m": 0.15024356818282908,
+            "tcp_chord_m": 0.15000127068342595,
+            "tcp_length_over_chord": 1.001615302979096,
+            "physical_contact_length_m": 0.15023940068591532,
+            "physical_contact_chord_m": 0.15000127068336583,
+            "physical_contact_length_over_chord": 1.0015875199020958
+          }
+        },
+        {
+          "previous": "carton_l07_c02",
+          "target": "carton_l07_c03",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c03",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.2479213627971921,
+              -0.8970359037916819,
+              -0.5377388924861487,
+              1.687903147131572,
+              1.2692122461817477,
+              -5.08949947606232
+            ],
+            "q_goal_rad": [
+              0.083886758566182,
+              -0.39143867106640495,
+              -0.30683555715798716,
+              0.7829178880928442,
+              -0.11907085260792827,
+              -3.9209578030588457
+            ],
+            "endpoint_delta_rad": [
+              1.3318081213633741,
+              0.5055972327252769,
+              0.23090333532816154,
+              -0.9049852590387277,
+              -1.388283098789676,
+              1.1685416730034746
+            ],
+            "cumulative_abs_joint_rad": [
+              1.3318081213633743,
+              0.5055972327252767,
+              0.23090333532816154,
+              0.9049852590387277,
+              1.3882830987896755,
+              1.1685416730034746
+            ],
+            "weighted_joint_length_rad": 5.530118720248691,
+            "endpoint_joint_distance_rad": 5.530118720248691,
+            "motion_duration_s": 7.451934241,
+            "planning_wall_s": 0.18944818153977394,
+            "tcp_length_m": 1.0020415160847371,
+            "tcp_chord_m": 0.8295728767209782,
+            "tcp_length_over_chord": 1.207900528336304,
+            "physical_contact_length_m": 0.9922431578628274,
+            "physical_contact_chord_m": 0.8295728758696146,
+            "physical_contact_length_over_chord": 1.1960892005089856
+          }
+        },
+        {
+          "previous": "carton_l07_c03",
+          "target": "carton_l07_c01",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c01",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              0.5387648525010135,
+              -1.1260424500611481,
+              -0.5650157724171457,
+              0.843483031906342,
+              -0.7571923171471767,
+              -3.8263199105657604
+            ],
+            "q_goal_rad": [
+              -0.7464163606851698,
+              -0.06396944857492604,
+              -0.043041785365488416,
+              1.5934171531393089,
+              0.7466530798976668,
+              -4.743204466137703
+            ],
+            "endpoint_delta_rad": [
+              -1.2851812131861833,
+              1.062073001486222,
+              0.5219739870516573,
+              0.7499341212329669,
+              1.5038453970448435,
+              -0.9168845555719427
+            ],
+            "cumulative_abs_joint_rad": [
+              1.285181213186183,
+              1.0620730014862216,
+              0.5219739870516575,
+              0.7499341212329669,
+              1.5038453970448433,
+              0.9168845555719427
+            ],
+            "weighted_joint_length_rad": 6.039892275573816,
+            "endpoint_joint_distance_rad": 6.039892275573816,
+            "motion_duration_s": 7.755889108,
+            "planning_wall_s": 0.20491935312747955,
+            "tcp_length_m": 1.361156972400919,
+            "tcp_chord_m": 1.1033536857221322,
+            "tcp_length_over_chord": 1.233654257936391,
+            "physical_contact_length_m": 1.356231690267104,
+            "physical_contact_chord_m": 1.1033537064260677,
+            "physical_contact_length_over_chord": 1.2291903152798997
+          }
+        },
+        {
+          "previous": "carton_l07_c01",
+          "target": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT",
+            "pre_approach_height_m": 0.6000000000000001,
+            "late_receiver_sync": true
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4198698080202128,
+              -0.45344173919354397,
+              -0.346623102268061,
+              1.5870092577268429,
+              1.4207365736267565,
+              -4.820426009497792
+            ],
+            "q_goal_rad": [
+              -0.9603524100875749,
+              0.3054661512244052,
+              0.36457157252428335,
+              1.6120977173521396,
+              0.9615735072745863,
+              -4.784481064446007
+            ],
+            "endpoint_delta_rad": [
+              0.4595173979326379,
+              0.7589078904179491,
+              0.7111946747923443,
+              0.02508845962529671,
+              -0.4591630663521702,
+              0.03594494505178503
+            ],
+            "cumulative_abs_joint_rad": [
+              0.4595173979326379,
+              0.7589078904179491,
+              0.7111946747923443,
+              0.02508845962529671,
+              0.4591630663521702,
+              0.03594494505178503
+            ],
+            "weighted_joint_length_rad": 2.4498164341721833,
+            "endpoint_joint_distance_rad": 2.4498164341721833,
+            "motion_duration_s": 5.509656577,
+            "planning_wall_s": 0.15763109549880028,
+            "tcp_length_m": 0.8615079682597002,
+            "tcp_chord_m": 0.8295732428424697,
+            "tcp_length_over_chord": 1.038495365771211,
+            "physical_contact_length_m": 0.8614542415111223,
+            "physical_contact_chord_m": 0.8295732427679255,
+            "physical_contact_length_over_chord": 1.038430601542576
+          }
+        },
+        {
+          "previous": "carton_l07_c00",
+          "target": "carton_l07_c04",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "LEFT_END",
+            "target_id": "carton_l07_c04",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.472705513486043,
+              0.004693045291203671,
+              0.023872159393345117,
+              1.5726832279580276,
+              1.4727235620296326,
+              -4.731660592005941
+            ],
+            "q_goal_rad": [
+              0.5319865460025488,
+              -0.24853495577768722,
+              -0.202895250441813,
+              1.4934345081435614,
+              -0.5337523652192926,
+              -4.622590737942532
+            ],
+            "endpoint_delta_rad": [
+              2.0046920594885917,
+              -0.2532280010688909,
+              -0.2267674098351581,
+              -0.07924871981446624,
+              -2.006475927248925,
+              0.10906985406340919
+            ],
+            "cumulative_abs_joint_rad": [
+              2.004692059488591,
+              0.2697477382704131,
+              0.22676740983515814,
+              0.07924871981446624,
+              2.006475927248923,
+              0.10906985406340919
+            ],
+            "weighted_joint_length_rad": 4.696001708720964,
+            "endpoint_joint_distance_rad": 4.679481971519441,
+            "motion_duration_s": 12.122110088,
+            "planning_wall_s": 5.882933028042316,
+            "tcp_length_m": 2.1726942652708154,
+            "tcp_chord_m": 1.825976904323284,
+            "tcp_length_over_chord": 1.1898804744608895,
+            "physical_contact_length_m": 2.1684872628092045,
+            "physical_contact_chord_m": 1.8259768788818314,
+            "physical_contact_length_over_chord": 1.1875765174732744
+          }
+        }
+      ]
+    },
+    {
+      "mode": "ON",
+      "seed": 71071,
+      "status": "COMPLETE_PLANNING_ONLY",
+      "completed": 5,
+      "target_count": 5,
+      "lower_layer_preserved": true,
+      "remaining_cartons": 35,
+      "planning_wall_s": 334.49554711952806,
+      "native_request_wall_s": 145.68502421304584,
+      "pregrasp_request_wall_s": 118.98743259906769,
+      "accepted_robot_motion_s": 180.93215664599998,
+      "accepted_pregrasp_motion_s": 59.607625967000004,
+      "accepted_pregrasp_joint_rad": 30.089867292356583,
+      "accepted_pregrasp_contact_m": 5.595973166583649,
+      "mechanism_demo_s": 13.799999999999999,
+      "hardware_cycle_s": null,
+      "method_requests": {
+        "PTP": 45,
+        "LIN": 1,
+        "RRTConnectkConfigDefault": 3
+      },
+      "method_failures": {
+        "PTP": 37,
+        "LIN": 1,
+        "RRTConnectkConfigDefault": 2
+      },
+      "failed_process_attempts": [
+        {
+          "folder": "attempt-004",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100169009,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 36,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100169009,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "random_restarts": null,
+                "request_id": "456",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71071,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.1220906637609005
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 410,
+            "scope": "FACE_ATTEMPT"
+          },
+          "classification": "SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+          "wall_s": 90.38850440457463
+        },
+        {
+          "folder": "attempt-005",
+          "target_id": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT",
+            "pre_approach_height_m": 0.6000000000000001
+          },
+          "failure": "MoveItUnavailable: SINGLE_TARGET_STAGE_DEADLINE",
+          "classification": "REQUEST_FAILURE_RETAINED",
+          "wall_s": 97.26232931017876
+        }
+      ],
+      "transitions": [
+        {
+          "previous": "INITIAL",
+          "target": "carton_l07_c02",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    0.6000000000000001
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c02",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -0.4738507840476061,
+              -0.46642585435191586,
+              -0.35455135903520246,
+              1.7851535539041579,
+              0.48589729025839207,
+              -3.3829904117272847
+            ],
+            "q_goal_rad": [
+              -0.3979853138944907,
+              -0.31738441200761514,
+              -0.25511422362801917,
+              1.7177477025744579,
+              0.402570381151846,
+              -4.871901750081754
+            ],
+            "endpoint_delta_rad": [
+              0.0758654701531154,
+              0.14904144234430072,
+              0.0994371354071833,
+              -0.0674058513297,
+              -0.08332690910654605,
+              -1.4889113383544696
+            ],
+            "cumulative_abs_joint_rad": [
+              0.0758654701531154,
+              0.14904144234430072,
+              0.0994371354071833,
+              0.0674058513297,
+              0.08332690910654605,
+              1.4889113383544696
+            ],
+            "weighted_joint_length_rad": 1.963988146695315,
+            "endpoint_joint_distance_rad": 1.963988146695315,
+            "motion_duration_s": 7.71728278,
+            "planning_wall_s": 0.15982267633080482,
+            "tcp_length_m": 0.15024356818282908,
+            "tcp_chord_m": 0.15000127068342595,
+            "tcp_length_over_chord": 1.001615302979096,
+            "physical_contact_length_m": 0.15023940068591532,
+            "physical_contact_chord_m": 0.15000127068336583,
+            "physical_contact_length_over_chord": 1.0015875199020958
+          }
+        },
+        {
+          "previous": "carton_l07_c02",
+          "target": "carton_l07_c03",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c03",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.2479213627971921,
+              -0.8970359037916819,
+              -0.5377388924861487,
+              1.687903147131572,
+              1.2692122461817477,
+              -5.08949947606232
+            ],
+            "q_goal_rad": [
+              0.08388675879654084,
+              -0.3914386727855466,
+              -0.306835558167197,
+              0.7829181105235239,
+              -0.11907085588916932,
+              -3.920958025497067
+            ],
+            "endpoint_delta_rad": [
+              1.331808121593733,
+              0.5055972310061352,
+              0.23090333431895171,
+              -0.9049850366080481,
+              -1.388283102070917,
+              1.1685414505652534
+            ],
+            "cumulative_abs_joint_rad": [
+              1.331808121593733,
+              0.5055972310061352,
+              0.23090333431895171,
+              0.9049850366080481,
+              1.3882831020709165,
+              1.1685414505652534
+            ],
+            "weighted_joint_length_rad": 5.530118276163037,
+            "endpoint_joint_distance_rad": 5.530118276163039,
+            "motion_duration_s": 7.45193425,
+            "planning_wall_s": 0.19439929723739624,
+            "tcp_length_m": 1.0020414826238755,
+            "tcp_chord_m": 0.8295728708656956,
+            "tcp_length_over_chord": 1.2079004965268467,
+            "physical_contact_length_m": 0.9922431280251075,
+            "physical_contact_chord_m": 0.8295728703577593,
+            "physical_contact_length_over_chord": 1.1960891724884826
+          }
+        },
+        {
+          "previous": "carton_l07_c03",
+          "target": "carton_l07_c01",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.42
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l07_c01",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              0.5387649188535886,
+              -1.1260424538973024,
+              -0.5650157814175039,
+              0.8434831499611639,
+              -0.7571923557527053,
+              -3.8263200006610862
+            ],
+            "q_goal_rad": [
+              -0.7464163611506738,
+              -0.06396944910155189,
+              -0.04304178802695646,
+              1.5934171513092337,
+              0.7466530802898143,
+              -4.743204463508464
+            ],
+            "endpoint_delta_rad": [
+              -1.2851812800042623,
+              1.0620730047957505,
+              0.5219739933905474,
+              0.7499340013480698,
+              1.5038454360425195,
+              -0.9168844628473778
+            ],
+            "cumulative_abs_joint_rad": [
+              1.2851812800042628,
+              1.06207300479575,
+              0.5219739933905472,
+              0.7499340013480698,
+              1.5038454360425195,
+              0.9168844628473778
+            ],
+            "weighted_joint_length_rad": 6.039892178428528,
+            "endpoint_joint_distance_rad": 6.039892178428527,
+            "motion_duration_s": 7.755889209,
+            "planning_wall_s": 0.18913841247558594,
+            "tcp_length_m": 1.361156990800976,
+            "tcp_chord_m": 1.1033536875536838,
+            "tcp_length_over_chord": 1.2336542725650235,
+            "physical_contact_length_m": 1.3562317095060956,
+            "physical_contact_chord_m": 1.1033537087732632,
+            "physical_contact_length_over_chord": 1.229190330101839
+          }
+        },
+        {
+          "previous": "carton_l07_c01",
+          "target": "carton_l07_c00",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  -0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l07_c00",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "synchronization": "CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT",
+            "pre_approach_height_m": 0.6000000000000001,
+            "late_receiver_sync": true
+          },
+          "planner_id": "PTP",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4198698079467609,
+              -0.4534417391575532,
+              -0.346623102105758,
+              1.5870092580963056,
+              1.4207365735570376,
+              -4.820426009841455
+            ],
+            "q_goal_rad": [
+              -0.9603524100875745,
+              0.3054661512244054,
+              0.3645715725242832,
+              1.6120977173521394,
+              0.9615735072745863,
+              -4.784481064446005
+            ],
+            "endpoint_delta_rad": [
+              0.4595173978591863,
+              0.7589078903819586,
+              0.7111946746300412,
+              0.025088459255833806,
+              -0.4591630662824513,
+              0.03594494539544968
+            ],
+            "cumulative_abs_joint_rad": [
+              0.4595173978591863,
+              0.7589078903819585,
+              0.711194674630041,
+              0.025088459255833806,
+              0.4591630662824513,
+              0.03594494539544968
+            ],
+            "weighted_joint_length_rad": 2.449816433804921,
+            "endpoint_joint_distance_rad": 2.449816433804921,
+            "motion_duration_s": 5.509656577,
+            "planning_wall_s": 0.14968174323439598,
+            "tcp_length_m": 0.8615079682092633,
+            "tcp_chord_m": 0.8295732427945421,
+            "tcp_length_over_chord": 1.0384953657704101,
+            "physical_contact_length_m": 0.8614542414608715,
+            "physical_contact_chord_m": 0.8295732427205781,
+            "physical_contact_length_over_chord": 1.0384306015412694
+          }
+        },
+        {
+          "previous": "carton_l07_c00",
+          "target": "carton_l07_c04",
+          "option": {
+            "template": "FRONT_DIRECT_HMAX",
+            "face": {
+              "geometric_face_id": "x-",
+              "axis": 0,
+              "sign": -1,
+              "outward_normal": [
+                -1.0,
+                -0.0,
+                -0.0
+              ],
+              "contact_pose": [
+                [
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  0.0,
+                  0.84
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0,
+                  2.25
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 2.0500000000000003,
+            "segment_directions_world": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "turn_center_y_interval_world_m": [
+              -0.89,
+              0.89
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    2.0500000000000003
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    2.0500000000000003
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "requires_open_channel": false,
+            "original_role": "LEFT_END",
+            "target_id": "carton_l07_c04",
+            "height_source": "FROZEN_INITIAL_TARGET",
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false
+          },
+          "planner_id": "RRTConnectkConfigDefault",
+          "quality": {
+            "joint_weights": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "joint_units": "rad",
+            "distance_rule": "bounded_revolute_unwrapped_weighted_L1",
+            "q_start_rad": [
+              -1.4727055134860427,
+              0.004693045291203712,
+              0.023872159393345083,
+              1.5726832279580276,
+              1.4727235620296326,
+              -4.731660592005939
+            ],
+            "q_goal_rad": [
+              0.531986546003401,
+              -0.2485349557793207,
+              -0.20289525044132406,
+              1.4934345081441003,
+              -0.5337523652181871,
+              -4.6225907379427245
+            ],
+            "endpoint_delta_rad": [
+              2.004692059489444,
+              -0.2532280010705244,
+              -0.22676740983466914,
+              -0.07924871981392734,
+              -2.00647592724782,
+              0.10906985406321468
+            ],
+            "cumulative_abs_joint_rad": [
+              2.004692059489443,
+              0.2589375163090565,
+              0.2462844319897299,
+              4.464658464420079,
+              2.006475927247826,
+              5.125003857808654
+            ],
+            "weighted_joint_length_rad": 14.106052257264782,
+            "endpoint_joint_distance_rad": 4.6794819715196,
+            "motion_duration_s": 31.172863151,
+            "planning_wall_s": 10.950474429875612,
+            "tcp_length_m": 2.247674113020395,
+            "tcp_chord_m": 1.8259769043230163,
+            "tcp_length_over_chord": 1.2309433419990181,
+            "physical_contact_length_m": 2.2358046869056585,
+            "physical_contact_chord_m": 1.825976878881506,
+            "physical_contact_length_over_chord": 1.2244430434821225
+          }
+        }
+      ]
+    }
+  ],
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}
