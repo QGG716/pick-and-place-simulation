@@ -5,9 +5,8 @@
 #include "eco65_distance_policy.h"
 
 namespace m710 {
-// Separate ECO65 policy: no circular masks, neighbor permission, or FANUC wrist
-// exemption. Only the terminal bands, bound mount interfaces and target supports are
-// removed from ordinary clearance and checked here at every candidate state.
+// ECO65-specific source-bound permissions; no FANUC wrist or blanket tool waiver.
+// Target bands, mount interfaces and supports keep their independent checks.
 class Eco65Process {
   Json spec_;
   std::string stage_,target_id_;
@@ -19,6 +18,7 @@ class Eco65Process {
   bool fixed_mounts_accepted_=false;
   std::set<std::string> bands_,supports_;
   std::set<std::string> extraction_neighbors_;
+  Json cup_neighbor_pairs_=Json::array();
   std::map<std::string,ProcessBox> world_;
   struct WorldSolid {std::shared_ptr<fcl::CollisionGeometryd> shape;Eigen::Isometry3d pose;};
   std::map<std::string,WorldSolid> world_solids_;
@@ -217,6 +217,8 @@ public:
     for(const auto& id:cartons)if(id!=target_id_ && !world_.count(id))throw std::runtime_error("ECO65_OTHER_CARTON_MISSING");
     extraction_neighbors_=eco65ExtractionNeighbors(req);
     setEco65ExtractionPairs(scene,target_id_,extraction_neighbors_);
+    cup_neighbor_pairs_=eco65CupNeighborPairs(req);
+    setEco65CupNeighborPairs(scene,cup_neighbor_pairs_);
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& id:bands_) {bands.push_back(solid(state,id));acm.setEntry(id,target_id_,true);}
     base_solid=solid(state,nativeFrames().base_link);
@@ -373,5 +375,6 @@ public:
       evidence["support_fcl_exempt_pairs"].push_back({target_id_,id});
     return evidence;
   }
+  Json cupNeighborEvidence() const {return eco65CupNeighborEvidence(cup_neighbor_pairs_);}
 };
 }

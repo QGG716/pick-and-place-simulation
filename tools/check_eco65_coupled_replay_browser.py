@@ -19,6 +19,16 @@ const policyCheck=(name,display,request,response,requireNative=false)=>{
 const source=request.clearance_policy?.source_policy||request.process_policy?.collision_policy;
 check(name+'_POLICY_SCHEMA',display.policy_schema===source?.schema);
 check(name+'_POLICY_DESCRIPTOR',same(display.extraction_carton_contact??null,source?.extraction_carton_contact??null));
+if(source?.cup_neighbor_contact){
+check(name+'_CUP_POLICY_DESCRIPTOR',same(display.cup_neighbor_contact,source.cup_neighbor_contact));
+const cups=new Set(source.cup_neighbor_contact.terminal_band_links),target=request.process_policy.target_id;
+const world=new Set(request.world.map(b=>b.id)),remaining=new Set(request.process_policy.task_contract.stack_carton_ids);
+check(name+'_CUP_NAMED_NEIGHBORS_ONLY',display.cup_neighbor_pairs.every(p=>cups.has(p[0])&&p[1]!==target&&world.has(p[1])&&remaining.has(p[1])&&!(request.completed_ids||[]).includes(p[1])));
+const cupNative=response.process_policy?.cup_neighbor_contact||response.process?.cup_neighbor_contact;
+if(requireNative)check(name+'_CUP_NATIVE_EVIDENCE_PRESENT',!!cupNative);
+if(cupNative){check(name+'_CUP_NATIVE_PAIRS',same(pairKeys(display.cup_neighbor_pairs),pairKeys(cupNative.pairs)));
+check(name+'_CUP_NATIVE_EVIDENCE',same(display.cup_neighbor_native_evidence,cupNative));}
+}
 if(!source?.extraction_carton_contact)return;
 const native=response.process_policy?.extraction_carton_contact||response.process?.extraction_carton_contact;
 if(requireNative)check(name+'_NATIVE_POLICY_EVIDENCE_PRESENT',!!native&&typeof native.active==='boolean'&&Array.isArray(native.pairs));

@@ -5,6 +5,7 @@ import pytest
 from unloading_sim.eco65.collision_policy import (
     effective_collision_policy, LEGACY_POLICY, MAST_MODE, ROBOT_BODY_LINKS,
     EXTRACTION_CARTON_MODE, extraction_carton_pairs)
+from unloading_sim.eco65.collision_policy import CUP_NEIGHBOR_MODE, CUP_LIP_LINKS, cup_neighbor_pairs
 
 
 def inventory():
@@ -157,3 +158,32 @@ def test_extraction_pairs_fail_closed_on_unknown_or_inconsistent_ownership():
                     dict(completed_ids=[world[0]])):
         with pytest.raises(ValueError, match='RUNTIME_OWNERSHIP'):
             extraction_carton_pairs(policy, **dict(args, **updates))
+
+
+def test_cup_neighbor_permission_names_all_lips_but_never_target_or_rigid_parts():
+    scene = coupled_inventory()
+    scene['cup_neighbor_contact_mode'] = CUP_NEIGHBOR_MODE
+    scene['coupled_conveyor_spec']['config']['cup_neighbor_contact_mode'] = CUP_NEIGHBOR_MODE
+    policy = effective_collision_policy(scene)
+    assert policy['schema'] == 'eco65_pair_collision_policy_v4'
+    target = scene['target_box_id']
+    world = [b['id'] for b in scene['boxes']]
+    args = dict(continuous_task_mode='eco65_coupled_cycle_v1',target_id=target,world_carton_ids=world)
+    pairs = cup_neighbor_pairs(policy, **args)
+    assert len(pairs) == 132
+    assert ['part_006_lip','carton_r00_l03_c02'] in pairs
+    assert {p[0] for p in pairs} == set(CUP_LIP_LINKS)
+    assert all(p[1] != target and '_rigid' not in p[0] for p in pairs)
+    # Released target still world-owned: no cup waiver for tool withdrawal.
+    assert not any(target in p for p in pairs)
+    nxt = 'carton_r00_l03_c00'
+    later = cup_neighbor_pairs(policy, **dict(args,target_id=nxt,
+        world_carton_ids=[i for i in world if i != target],completed_ids=[target]))
+    assert len(later) == 120 and not any(target in p or nxt in p for p in later)
+    assert cup_neighbor_pairs(policy, **dict(args,continuous_task_mode='legacy')) == []
+    with pytest.raises(ValueError, match='OWNERSHIP'):
+        cup_neighbor_pairs(policy, **dict(args,world_carton_ids=world+['conveyor']))
+    changed = deepcopy(policy)
+    changed['cup_neighbor_contact']['terminal_band_links'][0] = 'part_002_rigid'
+    with pytest.raises(ValueError, match='BINDING'):
+        cup_neighbor_pairs(changed, **args)

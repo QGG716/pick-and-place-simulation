@@ -5,6 +5,9 @@ collision_policy_mode: robot_body_vision_mast_exempt_v2
 # 2026-10-20 user-authorized kinematic assumption. This affects only the
 # attached current carton against remaining original cartons in extraction.
 extraction_carton_contact_mode: attached_target_remaining_original_cartons_during_extraction
+# Explicit user permission: all twelve physical cup lips, including disabled
+# cups, may contact remaining non-target cartons. Rigid tool regions stay checked.
+cup_neighbor_contact_mode: named_terminal_bands_remaining_original_cartons
 target_id: carton_r00_l03_c01
 box_size_m: [0.150, 0.100, 0.100]
 usable_belt_width_m: 0.200

@@ -49,6 +49,7 @@ def main():
         if task:
             save_json(output/'partial_plan.json',task.result())
         report=dict(status='INCOMPLETE',complete=False,error=str(error),traceback=traceback.format_exc(),
+                    planning_wall_s=None if task is None else task.result()['planning_wall_s'],
                     physical_execution='NOT_RUN',execution_ready=False)
         save_json(output/'run_report.json',report)
         print(report)

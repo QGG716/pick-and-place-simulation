@@ -46,6 +46,11 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         geometry['robot_mast_exemption'] = policy['robot_mast_exemption']
     if 'extraction_carton_contact' in policy:
         geometry['extraction_carton_contact'] = policy['extraction_carton_contact']
+    if 'cup_neighbor_contact' in policy:
+        rule = policy['cup_neighbor_contact']
+        if sorted(geometry['terminal_band_by_contour'].values()) != rule['terminal_band_links']:
+            raise ValueError('CUP_NEIGHBOR_ACTUAL_TERMINAL_BAND_INVENTORY_CHANGED')
+        geometry['cup_neighbor_contact'] = rule
     if 'native_task' in scene:
         from .native_contact import bind_task_contract
         geometry = bind_task_contract(geometry, scene)
@@ -228,6 +233,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
                         collision_exemption_fingerprint=digest(policy['robot_mast_exemption']))
     if 'extraction_carton_contact' in policy:
         identity['extraction_carton_contact_fingerprint'] = digest(policy['extraction_carton_contact'])
+    if 'cup_neighbor_contact' in policy:
+        identity['cup_neighbor_contact_fingerprint'] = digest(policy['cup_neighbor_contact'])
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
         collision_policy=policy, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',

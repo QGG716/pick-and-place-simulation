@@ -397,8 +397,16 @@ class NativeTask:
         # the existing bounded native IK set its PTP attempts before spending
         # the OMPL budget on any branch; never substitute Python motion search.
         for pipeline, planner, scale in solvers:
-            if scale==.125 and (not self.records or (self.records[-1]['result'].get('failure') or {}).get('reason')!='OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH'):
-                continue
+            if scale==.125:
+                previous=self.records[-1]['result'] if self.records else {}
+                endpoint_retry=(previous.get('failure') or {}).get('reason')=='OUTPUT_ENDPOINT_TCP_GOAL_MISMATCH'
+                # Coupled front-grasp lifts can have a steep but continuous
+                # joint-rate profile. One final slower native LIN attempt
+                # keeps official limits and the same absolute deadline.
+                rate_retry=(self.init.get('continuous_task_mode')=='eco65_coupled_cycle_v1'
+                            and previous.get('solver_message') in ('PLANNING_FAILED','INVALID_MOTION_PLAN'))
+                if not (endpoint_retry or rate_retry):
+                    continue
             for joint_goal in goals:
                 self.counter += 1; req = self.request(q, stage, op='plan')
                 req.update(stage_id=f'{stage}-{self.counter}', pipeline_id=pipeline, planner_id=planner,

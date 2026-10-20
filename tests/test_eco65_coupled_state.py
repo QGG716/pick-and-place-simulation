@@ -102,3 +102,51 @@ def test_request_construction_crossing_connection_deadline_keeps_global_scope(
     with pytest.raises(failure,match='BUDGET_EXHAUSTED'):
         task.call({'op':'fk'})
     assert task.deadline==100.
+
+
+def test_new_initial_candidates_use_separate_native_tasks_without_resetting_budget():
+    from types import SimpleNamespace
+    from unloading_sim.eco65.coupled_task import CoupledTask
+    starts=[np.array([1.,0,0,0,0,0]),np.array([2.,0,0,0,0,0])]
+    attempted=[]
+    task=SimpleNamespace(progress_path=None,task_id='run-root',max_grasps=1,
+                         deadline=100.,cycle_failures=[])
+    task.geometry_candidates=lambda:dict(candidates=[dict(candidate_id='g',tcp_pose_D=np.eye(4).tolist())])
+    task.select_grasp=lambda g:None
+    task.select_home=lambda pose:(np.zeros(6),{})
+    task.checkpoint=lambda:None
+    task.restore=lambda saved:None
+    task.initial_candidates=lambda g,h:iter((q,dict(mode='new_simulation')) for q in starts)
+    task.state=lambda:dict(q=task.current_q.tolist())
+    task.approach=lambda g:attempted.append((task.task_id,task.current_q.copy(),task.deadline))
+    task.attach=lambda:None
+    def extract():
+        if len(attempted)==1:raise ValueError('NATIVE_EXTRACTION_FAILED')
+    task.extract_and_release=extract
+    task.save_checkpoint=lambda label:None
+    task.return_next=lambda:dict(complete=True)
+    assert CoupledTask.run(task)['complete']
+    assert len({row[0] for row in attempted})==2
+    assert all(row[2]==100. for row in attempted)
+    assert all(np.array_equal(row[1],q) for row,q in zip(attempted,starts))
+
+
+def test_diagonal_extraction_uses_actual_attached_pose_and_remaining_stack():
+    from types import SimpleNamespace
+    from unloading_sim.eco65.coupled_task import CoupledTask
+    # Identity flange/attachment frames isolate the geometry of this measured
+    # 150 x 100 x 100 mm scene. No joint solution is supplied by this fixture.
+    actual=np.eye(4);actual[:3,3]=[.205,0.,.53]
+    target=dict(id='current',pose=[.205,0.,.53],size_m=[.15,.1,.1])
+    neighbor=dict(id='remaining',pose=[.205,-.11,.53],size_m=[.15,.1,.1])
+    removed=dict(id='completed',pose=[.205,.11,1.53],size_m=[.15,.1,.1])
+    task=SimpleNamespace(robot=SimpleNamespace(named_link_frames=lambda q:{'link_6':actual}),
+        current_q=np.zeros(6),attachment=np.eye(4),target=target,
+        scene=dict(boxes=[target,neighbor,removed]),completed_ids=['completed'],
+        identity=dict(flange_from_task_tcp=np.eye(4)))
+    above=CoupledTask.clear_stack_pose(task,recovery='diagonal_above')
+    halfway=CoupledTask.clear_stack_pose(task,recovery='clear_half_rise')
+    assert above[:3,3]==pytest.approx([.130,-.050,.635])
+    assert halfway[:3,3]==pytest.approx([.03486121811340027,-.100,.5825])
+    assert actual[:3,3]==pytest.approx([.205,0.,.53])
+    assert np.array_equal(task.current_q,np.zeros(6))

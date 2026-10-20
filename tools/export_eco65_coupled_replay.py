@@ -6,6 +6,7 @@ from copy import deepcopy
 import gzip
 import hashlib
 import json
+import re
 from pathlib import Path
 import time
 import zipfile
@@ -17,6 +18,29 @@ from export_m710_search_replay import validate_attempt
 from unloading_sim.eco65.model import ROOT, load_json, robot_for
 from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.coupled_scene import coupled_conveyor_state, receiving_height_candidates
+from unloading_sim.eco65.collision_policy import cup_neighbor_pairs
+
+
+SHARED_KEYS = {'source_policy','collision_policy','robot_mast_exemption',
+               'process_geometry','task_contract','identity','camera_mount',
+               'contours','fixed_attachment_interfaces'}
+
+
+def reuse_runtime_values(value, cache):
+    """Share identical decoded records before retaining an entire large run."""
+    if isinstance(value,dict):
+        for key,child in list(value.items()):
+            if key in SHARED_KEYS | {'world'} and isinstance(child,(dict,list)):
+                encoded=json.dumps(child,sort_keys=True,separators=(',',':'),allow_nan=False)
+                ref=hashlib.sha256(encoded.encode()).hexdigest()
+                if ref in cache:
+                    value[key]=cache[ref]
+                else:
+                    cache[ref]=child
+                    reuse_runtime_values(child,cache)
+            else:reuse_runtime_values(child,cache)
+    elif isinstance(value,list):
+        for child in value:reuse_runtime_values(child,cache)
 
 
 def policy_display(request=None, result=None, *, configured_policy=None):
@@ -32,6 +56,21 @@ def policy_display(request=None, result=None, *, configured_policy=None):
                    request_scope_applies=None, permitted_pairs=[], native_evidence=None,
                    contact_observation='NO_PHYSICAL_CONTACT_OBSERVATION',
                    physical_execution='NOT_RUN', execution_ready=False)
+    cup_rule = source.get('cup_neighbor_contact')
+    display.update(cup_neighbor_contact=deepcopy(cup_rule),cup_neighbor_pairs=[],
+                   cup_neighbor_native_evidence=None)
+    if request is not None and cup_rule is not None:
+        original = set(cup_rule['original_carton_ids'])
+        display['cup_neighbor_pairs'] = cup_neighbor_pairs(source,
+            continuous_task_mode=request.get('continuous_task_mode'),
+            target_id=request.get('process_policy',{}).get('target_id'),
+            world_carton_ids=[b['id'] for b in request.get('world',[]) if b['id'] in original],
+            completed_ids=request.get('completed_ids',[]))
+        for key in ('process_policy','process'):
+            evidence = ((result or {}).get(key) or {}).get('cup_neighbor_contact')
+            if isinstance(evidence,dict) and 'pairs' in evidence:
+                display['cup_neighbor_native_evidence']=deepcopy(evidence)
+                break
     if request is None or descriptor is None:
         return display
     process = request.get('process_policy', {})
@@ -80,9 +119,11 @@ def attempts_from_run(folder, records):
     if not path.exists():
         return []
     attempts = []
+    shared = {}
     with gzip.open(path, 'rt', encoding='utf-8') as stream:
         for line in stream:
             row = json.loads(line)
+            reuse_runtime_values(row,shared)
             req = row['request']
             if req['op'] == 'init':
                 continue
@@ -90,6 +131,7 @@ def attempts_from_run(folder, records):
             if 'q_start' not in req or ('world' not in req and req['op'] not in ('ik', 'ik_batch')):
                 continue
             trace = read_trace(result, folder)
+            if trace:reuse_runtime_values(trace,shared)
             if trace:
                 captured = trace['input']
                 for key in ('identity', 'task_id', 'stage_id', 'parent_stage_id',
@@ -140,15 +182,20 @@ def share_worlds(data):
     shared = {}
     # Immutable request policies contain thousands of exact mast pairs.
     # Intern them losslessly instead of emitting megabytes per IK request.
-    shared_keys={'source_policy','collision_policy','robot_mast_exemption',
-                 'process_geometry','task_contract','identity','camera_mount',
-                 'contours','fixed_attachment_interfaces'}
+    definition_ids={}
+    visited=set()
     def intern(value):
+        if isinstance(value,(dict,list)):
+            if id(value) in visited:return
+            visited.add(id(value))
         if isinstance(value,dict):
             for key,child in list(value.items()):
-                if key in shared_keys and isinstance(child,(dict,list)):
-                    encoded=json.dumps(child,sort_keys=True,separators=(',',':'),allow_nan=False)
-                    ref=hashlib.sha256(encoded.encode()).hexdigest()
+                if key in SHARED_KEYS and isinstance(child,(dict,list)):
+                    ref=definition_ids.get(id(child))
+                    if ref is None:
+                        encoded=json.dumps(child,sort_keys=True,separators=(',',':'),allow_nan=False)
+                        ref=hashlib.sha256(encoded.encode()).hexdigest()
+                        definition_ids[id(child)]=ref
                     if ref not in shared:
                         shared[ref]=child
                         intern(child)
@@ -297,13 +344,30 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             row.pop('samples', None)
             segments.append(row)
     all_attempts = attempts_from_run(run_folder, records) if run_folder else []
+    # The first request freezes the run's root task. Alternative initial q's
+    # use distinct native trial IDs; accepted trajectory records remain one
+    # continuous trial and must never be stitched across those alternatives.
+    root_task = next((a['request'].get('task_id') for a in all_attempts
+                      if a['request'].get('task_id')),None)
+    def same_run(task_id):
+        return (task_id==root_task or isinstance(task_id,str) and root_task is not None
+                and re.fullmatch(re.escape(root_task)+r'-initial-[0-9]+-[0-9]+',task_id) is not None)
+    if root_task and plan and not same_run(plan['task_id']):
+        raise ValueError('REPLAY_PLAN_RUN_MISMATCH')
+    if plan and any(r['native_request']['task_id']!=plan['task_id'] for r in records):
+        raise ValueError('REPLAY_CANNOT_JOIN_NATIVE_TRIALS')
+    run_report = None
+    if run_folder and (run_folder/'run_report.json').exists():
+        run_report=load_json(run_folder/'run_report.json')
+        if run_report.get('planning_wall_s') is not None:
+            totals['planning_wall_s']=run_report['planning_wall_s']
     unbound_ik = [a for a in all_attempts if a['world_context_status'] == 'NOT_CAPTURED']
     attempts = [a for a in all_attempts if a['world_context_status'] == 'CAPTURED']
     for attempt in attempts:
         request = attempt['request']
         if request.get('identity') != snapshot['native_model']['init']['identity']:
             raise ValueError('REPLAY_REQUEST_MODEL_MISMATCH')
-        if plan and request.get('task_id') != plan['task_id']:
+        if root_task and not same_run(request.get('task_id')):
             raise ValueError('REPLAY_REQUEST_RUN_MISMATCH')
         # Bind mechanism to this request's own world; never current replay time.
         height = request.get('mechanism_state', {}).get(
@@ -327,6 +391,11 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             configured_policy=snapshot['native_model']['init']['collision_policy']),
         previews=previews, mechanisms=mechanisms, segments=segments, attempts=attempts,
         unbound_ik_attempts=unbound_ik,
+        run_report=run_report,
+        native_trials=dict(root_task_id=root_task,
+            displayed_task_id=plan.get('task_id') if plan else None,
+            trial_ids=sorted({a['request']['task_id'] for a in all_attempts if a['request'].get('task_id')}),
+            displayed_chain_scope='COMPLETE_PLAN' if plan and plan['complete'] else 'SINGLE_TRIAL_SUCCESSFUL_PREFIX_ONLY'),
         plan_summary=None if plan is None else {k:plan.get(k) for k in (
             'schema','complete','status','first_target_id','next_target_id','planning_wall_s',
             'physical_execution','execution_ready','j1_direction_policy','failures')},

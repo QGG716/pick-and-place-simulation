@@ -8,16 +8,24 @@ from unloading_sim.eco65.model import load_json,save_json,robot_for
 from unloading_sim.eco65.native_contact import check_contours
 
 
-def summarize(run,snapshot_path):
+def summarize(run,snapshot_path,prefix_plan=None):
     snapshot=load_json(snapshot_path)
     plan_path=run/('plan.json' if (run/'plan.json').exists() else 'partial_plan.json')
-    plan=load_json(plan_path)
+    final_plan=load_json(plan_path)
+    plan=load_json(prefix_plan) if prefix_plan else final_plan
+    if prefix_plan and (final_plan['complete'] or plan['complete']
+                        or plan['snapshot_fingerprint']!=final_plan['snapshot_fingerprint']):
+        raise ValueError('PREFIX_REQUIRES_SAME_SCENE_INCOMPLETE_RUN')
+    run_report=load_json(run/'run_report.json')
     robot=robot_for(snapshot['tool'],snapshot['scene'])
     statuses=Counter();wall=defaultdict(float);failures=[];contacts=[];calls=0
+    accepted_receipts=set()
     with gzip.open(run/'native_calls.jsonl.gz','rt',encoding='utf8') as stream:
         for line in stream:
             row=__import__('json').loads(line);q=row['request'];r=row.get('result',{})
             calls+=1;statuses[q['op']+':'+r.get('status','MISSING')]+=1
+            if r.get('status')=='SUCCESS' and q.get('stage_id'):
+                accepted_receipts.add((q['task_id'],q['stage_id']))
             wall[q.get('business_interval','INITIALIZATION')+'/'+q['op']]+=row['wall_s']
             if q['op']=='check_state_offline' and q.get('stage')=='contact':
                 target_id=q['process_policy']['target_id']
@@ -39,6 +47,9 @@ def summarize(run,snapshot_path):
                 failures.append(dict(op=q['op'],stage=q.get('stage'),q_rad=q.get('q_start'),
                     status=r.get('status'),witness=witness))
     records=plan['records']
+    if any((r['native_request']['task_id'],r['record_id']) not in accepted_receipts
+           or r['native_request']['task_id']!=plan['task_id'] for r in records):
+        raise ValueError('SUMMARY_CHAIN_NOT_ONE_CURRENT_RUN_NATIVE_TRIAL')
     first_attach=next((r for r in records if r.get('event_type')=='ATTACH'),None)
     phases=[]
     for r in records:
@@ -51,8 +62,13 @@ def summarize(run,snapshot_path):
         phases.append(item)
     candidates=load_json(run/'first_grasp_candidates.json')
     summary=dict(schema='eco65_camera_edge_clockwise_run_summary_v1',
-        run_report=load_json(run/'run_report.json'),
-        complete=plan['complete'],planning_wall_s=plan['planning_wall_s'],
+        run_report=run_report,
+        complete=final_plan['complete'],
+        planning_wall_s=run_report.get('planning_wall_s',final_plan['planning_wall_s']),
+        displayed_chain_scope='SINGLE_TRIAL_SUCCESSFUL_PREFIX_ONLY' if prefix_plan else 'FINAL_PLAN',
+        displayed_task_id=plan['task_id'],
+        prefix_plan=None if prefix_plan is None else str(prefix_plan),
+        full_run_terminal_state=final_plan['terminal_state'],
         robot_motion_s=plan['robot_motion_s'],mechanism_display_s=plan['mechanism_display_s'],
         native_calls=calls,statuses=dict(statuses),native_round_trip_wall_by_phase_s=dict(wall),
         first_target_id=plan['first_target_id'],next_target_id=plan['next_target_id'],
@@ -74,4 +90,6 @@ def summarize(run,snapshot_path):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run',type=Path,required=True);p.add_argument('--snapshot',type=Path,required=True)
-    a=p.parse_args();summarize(a.run,a.snapshot)
+    p.add_argument('--prefix-plan',type=Path,
+                   help='Report a saved successful prefix separately from the incomplete final rollback state.')
+    a=p.parse_args();summarize(a.run,a.snapshot,a.prefix_plan)

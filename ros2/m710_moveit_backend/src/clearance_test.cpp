@@ -7,10 +7,21 @@
 #include <iomanip>
 using J=nlohmann::json;
 void require(bool value,const char* message) {if(!value) throw std::runtime_error(message);}
-planning_scene::PlanningScenePtr scene(double gap) {
+planning_scene::PlanningScenePtr scene(double gap,bool cups=false) {
   std::ostringstream xml;xml<<std::setprecision(17);
   xml<<R"(<robot name="test"><link name="world"/><link name="robot"><collision><geometry><box size="0.01 0.01 0.01"/></geometry></collision></link><joint name="J1" type="prismatic"><parent link="world"/><child link="robot"/><axis xyz="1 0 0"/><limit lower="-1" upper="1" velocity="1" effort="1"/></joint><link name="tool"><collision><geometry><box size="0.01 0.01 0.01"/></geometry></collision></link><joint name="mount" type="fixed"><parent link="robot"/><child link="tool"/><origin xyz=")"<<.01+gap<<R"( 0 0"/></joint></robot>)";
-  auto urdf=urdf::parseURDF(xml.str());auto srdf=std::make_shared<srdf::Model>();
+  auto source=xml.str();
+  if(cups) {
+    source.resize(source.size()-8);
+    for(int i=1;i<12;++i) {
+      const auto name="cup_"+std::to_string(i);
+      source+="<link name=\""+name+"\"><collision><geometry><box size=\"0.01 0.01 0.01\"/></geometry></collision></link>"
+        "<joint name=\"mount_"+name+"\" type=\"fixed\"><parent link=\"robot\"/><child link=\""+name+
+        "\"/><origin xyz=\""+std::to_string(2.+.2*i)+" 0 0\"/></joint>";
+    }
+    source+="</robot>";
+  }
+  auto urdf=urdf::parseURDF(source);auto srdf=std::make_shared<srdf::Model>();
   require(bool(urdf),"URDF");require(srdf->initString(*urdf,R"(<robot name="test"><group name="manipulator"><joint name="J1"/></group></robot>)"),"SRDF");
   auto model=std::make_shared<moveit::core::RobotModel>(urdf,srdf);
   auto result=std::make_shared<planning_scene::PlanningScene>(model);
@@ -99,6 +110,52 @@ void extractionContactCases(J& out) {
     {"pairs",m710::eco65ExtractionEvidence("payload",neighbors)},{"tool_failure",tool_collision.last_failure},
     {"environment_failure",environment.last_failure},{"transit_failure",transit.last_failure}};
 }
+void cupNeighborCases(J& out) {
+  std::set<std::string> ids={"target","neighbor"},bands={"tool"};
+  for(int i=2;i<12;++i)ids.insert("box_"+std::to_string(i));
+  for(int i=1;i<12;++i)bands.insert("cup_"+std::to_string(i));
+  J rule={{"schema","eco65_cup_neighbor_contact_v1"},{"continuous_task_mode","eco65_coupled_cycle_v1"},
+    {"scope","ENUMERATED_CUP_TERMINAL_BANDS_VS_REMAINING_NON_TARGET_ORIGINAL_CARTONS"},
+    {"terminal_band_links",bands},{"original_carton_ids",ids},{"original_carton_inventory_fingerprint","synthetic"},
+    {"geometry_retained",true},{"enabled_and_disabled_cups",true},{"allow_intersection",true},
+    {"physical_execution","NOT_RUN"},{"execution_ready",false}};
+  J source={{"schema","eco65_pair_collision_policy_v4"},
+    {"compliant_cup_neighbor_contact_mode","named_terminal_bands_remaining_original_cartons"},
+    {"cup_neighbor_contact",rule},{"extraction_carton_contact",{{"original_carton_ids",ids},
+      {"original_carton_inventory_fingerprint","synthetic"}}}};
+  J process={{"cup_neighbor_contact",rule},{"target_id","target"},
+    {"task_contract",{{"stack_carton_ids",ids}}},{"terminal_band_by_contour",J::object()}};
+  for(const auto& name:bands)process["terminal_band_by_contour"][name+"_seal"]=name;
+  J request={{"continuous_task_mode","eco65_coupled_cycle_v1"},{"stage","contact"},
+    {"completed_ids",J::array()},{"process_policy",process},
+    {"clearance_policy",{{"source_policy",source},{"compliant_tool_links",bands}}},{"world",J::array()}};
+  auto s=scene(.02,true);int index=0;
+  for(const auto& id:ids) {
+    s->processCollisionObjectMsg(box(id,id=="neighbor"?.03:10.+.1*index++));
+    request["world"].push_back({{"id",id}});
+  }
+  const auto pairs=m710::eco65CupNeighborPairs(request);
+  require(pairs.size()==132,"CUP_NEIGHBOR_EXACT_PAIR_COUNT");
+  for(const auto& pair:pairs)require(pair.at(1)!="target" && pair.at(0)!="robot","CUP_SCOPE");
+  // Ordinary FCL and the optimized pair workspace see the identical ACM.
+  auto p=policy();p["tool_links"]=bands;
+  m710::Clearance before(s,p);require(!before.check(s->getCurrentState()),"CUP_CONTACT_REJECTED_BEFORE");
+  m710::setEco65CupNeighborPairs(s,pairs);
+  m710::Clearance after(s,p);require(after.check(s->getCurrentState()),"CUP_CONTACT_ACCEPTED_AFTER");
+  collision_detection::CollisionRequest cr;collision_detection::CollisionResult result;
+  s->checkCollision(cr,result);require(!result.collision,"CUP_ACM_FCL_CONSISTENT");
+  for(const auto& name:{"target","unknown_environment","neighbor"}) {
+    auto changed=s->diff();changed->decoupleParent();
+    changed->processCollisionObjectMsg(box(name,std::string(name)=="neighbor"?0.:.03));
+    m710::Clearance kept(changed,p);
+    require(!kept.check(changed->getCurrentState()),"TARGET_ENVIRONMENT_ROBOT_CHECK_RETAINED");
+  }
+  auto bad=request;bad["process_policy"]["terminal_band_by_contour"]["tool_seal"]="robot";
+  bool rejected=false;try{m710::eco65CupNeighborPairs(bad);}catch(const std::exception&){rejected=true;}
+  require(rejected,"CUP_RIGID_RECLASSIFICATION_REJECTED");
+  out["eco65_cup_neighbor"]={{"status","PASS"},{"pairs",pairs.size()},
+    {"scope","SYNTHETIC_ACTUAL_CONTACT_ACM_AND_RETAINED_TARGET_ROBOT_ENVIRONMENT_CHECKS"}};
+}
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.006}) {
@@ -146,6 +203,7 @@ int main(int argc,char** argv) {
     require(!transit.check(receiver->getCurrentState()),"RESTORED_ATTACHMENT_LEAK");
     out["stale_attachment_fail_closed"]="PASS";
     extractionContactCases(out);
+    cupNeighborCases(out);
   }
 out["status"]="PASS";std::cout<<out.dump(2)<<std::endl;rclcpp::shutdown();
 }

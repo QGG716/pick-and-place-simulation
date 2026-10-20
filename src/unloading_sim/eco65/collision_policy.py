@@ -14,6 +14,8 @@ from ..moveit2_backend import digest
 
 MAST_MODE = 'robot_body_vision_mast_exempt_v2'
 EXTRACTION_CARTON_MODE = 'attached_target_remaining_original_cartons_during_extraction'
+CUP_NEIGHBOR_MODE = 'named_terminal_bands_remaining_original_cartons'
+CUP_LIP_LINKS = [f'part_{i:03d}_lip' for i in range(2, 25, 2)]
 ROBOT_BODY_LINKS = ['base_link', 'link_1', 'link_2', 'link_3', 'link_4', 'link_5', 'link_6']
 LEGACY_POLICY = dict(schema='eco65_pair_collision_policy_v1', collision_margin_m=.002,
     mesh_error_reserve_m=.0002, required_pair_clearance_m=.0024,
@@ -123,7 +125,7 @@ def extraction_carton_pairs(policy, *, continuous_task_mode, stage, target_id,
     if (rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1'
             or stage != 'extraction' or attached_target_id is None):
         return []
-    if (policy.get('schema') != 'eco65_pair_collision_policy_v3'
+    if (policy.get('schema') not in ('eco65_pair_collision_policy_v3', 'eco65_pair_collision_policy_v4')
             or rule.get('schema') != 'eco65_attached_target_stack_exemption_v1'
             or rule.get('continuous_task_mode') != continuous_task_mode
             or rule.get('stage') != stage or rule.get('allow_intersection') is not True
@@ -139,11 +141,49 @@ def extraction_carton_pairs(policy, *, continuous_task_mode, stage, target_id,
     return [[target_id, other] for other in sorted(world)]
 
 
+def cup_neighbor_exemption(scene):
+    spec = scene.get('coupled_conveyor_spec', {})
+    if (scene.get('cup_neighbor_contact_mode') != CUP_NEIGHBOR_MODE
+            or spec.get('config', {}).get('cup_neighbor_contact_mode') != CUP_NEIGHBOR_MODE):
+        raise ValueError('CUP_NEIGHBOR_CONTACT_REQUIRES_BOUND_COUPLED_SCENE')
+    cartons = extraction_carton_exemption(scene)
+    return dict(schema='eco65_cup_neighbor_contact_v1',
+        continuous_task_mode='eco65_coupled_cycle_v1',
+        scope='ENUMERATED_CUP_TERMINAL_BANDS_VS_REMAINING_NON_TARGET_ORIGINAL_CARTONS',
+        authorization='2026-10-20_USER_AUTHORIZED_CUP_NEIGHBOR_CONTACT',
+        terminal_band_links=list(CUP_LIP_LINKS),
+        original_carton_ids=cartons['original_carton_ids'],
+        original_carton_inventory_fingerprint=cartons['original_carton_inventory_fingerprint'],
+        enabled_and_disabled_cups=True, geometry_retained=True, allow_intersection=True,
+        retained_checks=['actual_target_seal_and_edge_alignment', 'cup_vs_current_target',
+                         'rigid_tool_vs_all_cartons', 'robot_vs_cartons', 'cup_vs_other_environment',
+                         'released_target_during_withdrawal'],
+        physical_execution='NOT_RUN', execution_ready=False)
+
+
+def cup_neighbor_pairs(policy, *, continuous_task_mode, target_id, world_carton_ids,
+                       completed_ids=()):
+    rule = policy.get('cup_neighbor_contact')
+    if rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1':
+        return []
+    if (policy.get('schema') != 'eco65_pair_collision_policy_v4'
+            or rule.get('schema') != 'eco65_cup_neighbor_contact_v1'
+            or rule.get('terminal_band_links') != CUP_LIP_LINKS):
+        raise ValueError('CUP_NEIGHBOR_POLICY_BINDING_INVALID')
+    frozen, world, completed = (set(rule['original_carton_ids']),
+                                set(world_carton_ids), set(completed_ids))
+    if (target_id not in frozen or not world <= frozen or not completed <= frozen
+            or world & completed or len(world) != len(world_carton_ids)):
+        raise ValueError('CUP_NEIGHBOR_RUNTIME_OWNERSHIP_INVALID')
+    return [[cup, box] for cup in rule['terminal_band_links']
+            for box in sorted(world-completed-{target_id})]
+
+
 def effective_collision_policy(scene):
     policy = deepcopy(LEGACY_POLICY)
     mode = scene.get('collision_policy_mode')
     if mode is None:
-        if scene.get('extraction_carton_contact_mode') is not None:
+        if scene.get('extraction_carton_contact_mode') is not None or scene.get('cup_neighbor_contact_mode') is not None:
             raise ValueError('EXTRACTION_CARTON_CONTACT_REQUIRES_COUPLED_SCENE')
         return policy
     if mode != MAST_MODE:
@@ -157,4 +197,8 @@ def effective_collision_policy(scene):
         policy.update(schema='eco65_pair_collision_policy_v3',
                       stack_contact_mode=EXTRACTION_CARTON_MODE,
                       extraction_carton_contact=extraction_carton_exemption(scene))
+    if scene.get('cup_neighbor_contact_mode') is not None:
+        policy.update(schema='eco65_pair_collision_policy_v4',
+                      compliant_cup_neighbor_contact_mode=CUP_NEIGHBOR_MODE,
+                      cup_neighbor_contact=cup_neighbor_exemption(scene))
     return policy

@@ -1112,9 +1112,10 @@ public:
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       if(req.at("identity").value("robot_variant",std::string())=="ECO65-B")
         m710::validateEco65MastExemption(bound_policy,model,bound_process_geometry,bound_tools);
-      if(bound_policy.value("schema",std::string())=="eco65_pair_collision_policy_v3")
+      if(bound_policy.contains("extraction_carton_contact"))
         m710::validateEco65ExtractionContact(bound_policy,bound_process_geometry,
           req.at("coupled_cycle_binding").at("original_cartons"));
+      m710::validateEco65CupNeighbors(bound_policy,bound_process_geometry,bound_compliant);
       const auto continuous_mode=req.value("continuous_task_mode",std::string());
       if(!continuous_mode.empty()) {
         if(continuous_mode!=m710::kEcoCycleMode || !directed_j1 || !planning_only ||

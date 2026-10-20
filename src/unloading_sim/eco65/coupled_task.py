@@ -391,18 +391,36 @@ class CoupledTask(NativeTask):
                 pose[:3,3]=[*xy,height+self.desired_drop+half[2]]
                 yield pose
 
-    def clear_stack_pose(self):
+    def clear_stack_pose(self, lateral_m=0., above=False, recovery=None):
         """One geometry-derived withdrawal with room for an upright yaw turn."""
         box=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
         remaining=[b for b in self.scene['boxes'] if b['id']!=self.target['id']
                    and b['id'] not in self.completed_ids]
         front=min(b['pose'][0]-b['size_m'][0]/2 for b in remaining)
         radius=float(np.linalg.norm(np.asarray(self.target['size_m'])[:2]/2))
-        box[0,3]=min(box[0,3],front-radius-.005)
-        # A real diagonal LIN lifts off the original support before its
-        # horizontal overlap ends. The later release goal still uses the
-        # actual receiver height and drop; this rise is not hidden in metadata.
-        box[2,3]+=.006
+        top=max(b['pose'][2]+b['size_m'][2]/2 for b in remaining)
+        clear_z=max(box[2,3],top+self.target['size_m'][2]/2+.005)
+        if recovery=='diagonal_above':
+            box[0,3]-=self.target['size_m'][0]/2
+            box[1,3]-=self.target['size_m'][1]/2
+            box[2,3]=clear_z
+        elif recovery=='clear_half_rise':
+            box[0,3]=min(box[0,3],front-radius-.005)
+            box[1,3]-=self.target['size_m'][1]
+            box[2,3]=(box[2,3]+clear_z)/2
+        elif recovery is not None:
+            raise ValueError('UNKNOWN_EXTRACTION_GEOMETRY')
+        elif above:
+            # Clear every remaining carton vertically before an upright yaw
+            # turn. The endpoint is frozen stack geometry, not a guessed lift.
+            box[2,3]=clear_z
+        else:
+            box[0,3]=min(box[0,3],front-radius-.005)
+            # A real diagonal LIN lifts off the original support before its
+            # horizontal overlap ends. The release goal still uses the
+            # actual receiver height and drop.
+            box[2,3]+=.006
+            box[1,3]+=lateral_m
         return box@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
 
     def finish_release(self,height,order,route):
@@ -489,23 +507,40 @@ class CoupledTask(NativeTask):
                 # near belt because the flange lies behind the carton. First
                 # leave the stack, then use actual native loaded transfer with
                 # a finite set of upright carton yaw orientations.
-                self.restore(lifted)
-                self.move('extraction',pose=self.clear_stack_pose())
-                if order=='EXTRACT_THEN_RAISE':
-                    self.lift(height['height_m'])
-                clear=self.checkpoint()
-                for box_goal in self.release_candidates(height['height_m'],
-                                                         (-np.pi/2,np.pi/2,np.pi,0.)):
-                    self.restore(clear)
+                # A straight front withdrawal can cross a wrist/shoulder
+                # singularity. Prefer diagonal clearance derived from this
+                # box and the remaining stack, then retain the finite original
+                # alternatives. Every candidate still needs a real native LIN.
+                routes=((0.,False,'diagonal_above'),(0.,False,'clear_half_rise'),
+                        (0.,True,None),(-float(self.target['size_m'][1]),False,None),(0.,False,None))
+                for lateral,above,recovery in routes:
+                    self.restore(lifted)
                     try:
-                        tcp=box_goal@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
-                        self.move('transit',pose=tcp)
-                        self.finish_release(height,order,'CLEAR_STACK_THEN_NATIVE_LOADED_TRANSFER')
-                        return
+                        self.move('extraction',pose=self.clear_stack_pose(lateral,above,recovery))
                     except ValueError as error:
-                        self.cycle_failures.append(dict(stage='loaded_transfer_after_clear',
-                            candidate_id=self.candidate_id,receiving=height,coordination_order=order,
-                            box_goal=box_goal.tolist(),error=str(error)))
+                        self.cycle_failures.append(dict(stage='lateral_extraction',
+                            candidate_id=self.candidate_id,lateral_m=lateral,above_stack=above,
+                            geometry_recovery=recovery,error=str(error)))
+                        continue
+                    if order=='EXTRACT_THEN_RAISE':
+                        self.lift(height['height_m'])
+                    self.save_checkpoint('FIRST_CARTON_EXTRACTED')
+                    clear=self.checkpoint()
+                    for box_goal in self.release_candidates(height['height_m'],
+                                                             (-np.pi/2,np.pi/2,np.pi,0.)):
+                        self.restore(clear)
+                        try:
+                            tcp=box_goal@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
+                            self.move('transit',pose=tcp)
+                            self.finish_release(height,order,'CLEAR_STACK_THEN_NATIVE_LOADED_TRANSFER')
+                            self.adopted_process['extraction_lateral_m']=lateral
+                            self.adopted_process['extraction_above_stack']=above
+                            self.adopted_process['extraction_geometry_recovery']=recovery
+                            return
+                        except ValueError as error:
+                            self.cycle_failures.append(dict(stage='loaded_transfer_after_clear',
+                                candidate_id=self.candidate_id,receiving=height,coordination_order=order,
+                                box_goal=box_goal.tolist(),error=str(error)))
                 raise ValueError('LOADED_RELEASE_CANDIDATES_EXHAUSTED')
             except ValueError as error:
                 self.cycle_failures.append(dict(stage='lift_or_transfer',target_id=self.target['id'],
@@ -576,6 +611,7 @@ class CoupledTask(NativeTask):
         home,_=self.select_home(np.asarray(geometry['candidates'][0]['tcp_pose_D']))
         self.current_q=home.copy()
         initial=self.checkpoint()
+        task_root=self.task_id
         for index,grasp in enumerate(geometry['candidates'][:self.max_grasps]):
             self.restore(initial)
             self.select_grasp(grasp)
@@ -583,15 +619,20 @@ class CoupledTask(NativeTask):
             except ValueError as error:
                 self.cycle_failures.append(dict(stage='initial_selection',error=str(error)))
                 continue
-            for q,selection in starts:
+            for start_index,(q,selection) in enumerate(starts):
                 self.restore(initial)
                 try:
+                    # A new simulation initial-state candidate is a separate
+                    # native trial. Never change the root q of an existing
+                    # MTC task, or concatenate motions across these trials.
+                    self.task_id=f'{task_root}-initial-{index}-{start_index}'
                     self.select_grasp(grasp)
                     self.current_q=q.copy()
-                    self.initial_selection=dict(selection,q_rad=q.tolist())
+                    self.initial_selection=dict(selection,q_rad=q.tolist(),native_task_id=self.task_id)
                     self.initial_state=self.state()
                     self.approach(grasp)
                     self.attach()
+                    self.save_checkpoint('FIRST_CARTON_ATTACHED')
                     self.extract_and_release()
                     self.save_checkpoint('FIRST_CARTON_COMPLETE')
                     return self.return_next()
