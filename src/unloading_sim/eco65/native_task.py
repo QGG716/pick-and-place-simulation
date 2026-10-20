@@ -275,10 +275,10 @@ class NativeTask:
             target_id=self.target['id'], target=target, target_face=self.face, support_names=supports,
             stack_carton_ids=[b['id'] for b in self.scene['boxes']], initial_proximity=None,
             max_attachment_gap_m=.0004, maximum_penetration_m=.0004, suction_edge_margin_m=.003,
-            max_normal_misalignment_rad=self.snapshot['tool']['contact']['normal_tolerance_rad'], collision_policy=POLICY)
+            max_normal_misalignment_rad=self.snapshot['tool']['contact']['normal_tolerance_rad'], collision_policy=self.init['collision_policy'])
         if self.init['process_geometry'].get('cup_selection_mode') == INDEPENDENT:
             process.update(active_ids=self.active_ids, selection_binding=self.selection_binding())
-        clearance = dict(schema='eco65_native_process_clearance_v1', source_policy=POLICY, stage=stage,
+        clearance = dict(schema='eco65_native_process_clearance_v1', source_policy=self.init['collision_policy'], stage=stage,
             tool_links=self.init['tool_links'], compliant_tool_links=self.init['compliant_tool_links'],
             target_id=self.target['id'], payload_id='' if attached is None else self.target['id'],
             conveyor_ids=sorted({o['id'] for o in self.scene['obstacles'] if o.get('owner', '').startswith('conveyor')}
@@ -811,7 +811,7 @@ def validate_plan_contract(plan, snapshot):
         if s['stage'] in {'contact', 'extraction', 'place', 'withdrawal'} and (
                 req.get('pipeline_id') != 'pilz_industrial_motion_planner' or req.get('planner_id') != 'LIN'
                 or 'goal_pose' not in req): raise ValueError('PLAN_PROCESS_REQUIRES_LIN')
-        if req['clearance_policy']['source_policy'] != POLICY or any(
+        if req['clearance_policy']['source_policy'] != model['init']['collision_policy'] or any(
                 req['process_policy'].get(k) != v for k, v in model['init']['process_geometry'].items()):
             raise ValueError('PLAN_POLICY_OR_CONTACT_GEOMETRY_CHANGED')
         if (req['identity'] != plan['identity'] or req['task_id'] != plan['task_id'] or

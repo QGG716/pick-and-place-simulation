@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "clearance_workspace.h"
+#include "eco65_collision_policy.h"
 
 namespace m710 {
 using Json = nlohmann::json;
@@ -38,11 +39,19 @@ public:
     eco65_=policy.at("schema")=="eco65_native_process_clearance_v1";
     if(eco65_) {
       const auto& source=policy.at("source_policy");
-      if(source.at("schema")!="eco65_pair_collision_policy_v1" ||
+      if((source.at("schema")!="eco65_pair_collision_policy_v1" && source.at("schema")!="eco65_pair_collision_policy_v2") ||
          source.at("collision_margin_m")!=.002 || source.at("mesh_error_reserve_m")!=.0002 ||
          source.at("required_pair_clearance_m")!=.0024 || source.at("self_collision_clearance_m")!=.0024 ||
          source.at("contact_tolerance_m")!=.0004 || policy.at("numerical_gap_tolerance_m")!=1e-9 ||
          policy.at("receiver_reserve_m")!=0.)throw std::runtime_error("UNSUPPORTED_ECO65_CLEARANCE_POLICY");
+      if(source.at("schema")=="eco65_pair_collision_policy_v2") {
+        for(const auto& pair:source.at("robot_mast_exemption").at("exempt_pairs")) {
+          collision_detection::AllowedCollision::Type allowed;
+          if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||
+              allowed!=collision_detection::AllowedCollision::ALWAYS)
+            throw std::runtime_error("ECO65_MAST_SRDF_ACM_MISMATCH");
+        }
+      }
     } else if((policy.at("schema")!="m710_native_free_clearance_v1" && !process) ||
        policy.at("source_policy").at("schema")!="m710_poc_pair_collision_policy_v4" ||
        policy.at("source_policy").at("required_pair_clearance_m")!=.005 ||

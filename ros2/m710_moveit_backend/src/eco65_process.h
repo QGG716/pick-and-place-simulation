@@ -238,6 +238,13 @@ public:
            !mount.contains("source") || mount.at("source").empty() ||
            mount.at("maximum_penetration_m")!=.0004 || owned.count(attachment) || bands_.count(attachment))
           throw std::runtime_error("ECO65_FIXED_ATTACHMENT_INTERFACE_UNBOUND");
+        // The explicit source-bound v2 policy covers this same robot/seat
+        // pair. Do not reintroduce the old independent FCL mounting check.
+        // Tool/flange mount contacts remain in mount_pairs above.
+        if(eco65MastExempt(spec_.at("collision_policy"),robot,attachment)) {
+          acm.setEntry(robot,attachment,true);
+          continue;
+        }
         const auto* parent=state.getRobotModel()->getLinkModel(robot);
         if(!parent || parent->getShapes().empty())throw std::runtime_error("ECO65_FIXED_PARENT_GEOMETRY_MISSING");
         const auto child=solid(state,attachment);

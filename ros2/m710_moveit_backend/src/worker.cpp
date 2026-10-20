@@ -782,6 +782,8 @@ public:
       }
       bound_policy=req.at("collision_policy");bound_tools=req.at("tool_links");
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
+      if(req.at("identity").value("robot_variant",std::string())=="ECO65-B")
+        m710::validateEco65MastExemption(bound_policy,model,bound_process_geometry,bound_tools);
       if(!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
         if(!planning_only || planning_mode!="cold_from_scratch" || req.at("identity").at("robot_variant")!="ECO65-B" ||
            req.at("identity").at("task_tcp_link")!="calibration_probe_tcp" || bound_compliant!=J::array({"probe_tip"}))

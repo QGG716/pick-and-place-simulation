@@ -13,17 +13,15 @@ from .native_contact import INDEPENDENT, extract_cad_contours
 from ..moveit2_backend import digest, _rpy
 
 from .asset_inventory import CONFIG, load_robot_config, asset_inventory
-POLICY = dict(schema='eco65_pair_collision_policy_v1', collision_margin_m=.002,
-              mesh_error_reserve_m=.0002, required_pair_clearance_m=.0024,
-              self_collision_clearance_m=.0024, contact_tolerance_m=.0004,
-              seal_edge_margin_m=.003, compliant_cup_neighbor_contact_mode='check',
-              stack_contact_mode='named_support_top_only', stack_contact_stages=['extraction'])
+from .collision_policy import LEGACY_POLICY, effective_collision_policy
+POLICY = LEGACY_POLICY  # Historical entries retain their original explicit policy.
 
 
 def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_root=None):
     import trimesh
     root = Path(root); output = Path(output).resolve(); output.relative_to(root/'outputs')
     c = config or load_robot_config(); audit = asset_inventory(root, c)
+    policy = effective_collision_policy(scene)
     if audit['status'] != 'PASS': raise ValueError('BLOCKED_ASSETS:'+str(audit['failures']))
     tool = load_json(root/c['tool_config'])
     cad_to_tcp = check_transform(tool['T_tool_cad_tcp'])
@@ -36,6 +34,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     fixed_interfaces = validate_fixed_interfaces(scene)
     if fixed_interfaces:
         geometry['fixed_attachment_interfaces'] = fixed_interfaces
+    if 'robot_mast_exemption' in policy:
+        geometry['robot_mast_exemption'] = policy['robot_mast_exemption']
     if 'native_task' in scene:
         from .native_contact import bind_task_contract
         geometry = bind_task_contract(geometry, scene)
@@ -171,6 +171,11 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b, reason='Owned_tool_assembly')
     for a, b in itertools.combinations(permanent, 2):
         ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b, reason='Owned_J1_permanent_assembly')
+    for a, b in policy.get('robot_mast_exemption', {}).get('exempt_pairs', []):
+        if a not in {link.get('name') for link in original_links} or b not in permanent:
+            raise ValueError('MAST_EXEMPTION_MODEL_LINK_MISSING')
+        ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b,
+                      reason='Explicit_simulation_robot_vision_mast_exemption_v1')
     # Named flange and J1 mount contacts are checked geometrically by
     # Eco65Process at the contact tolerance; they are not SRDF exemptions.
     params = {'robot_description': ET.tostring(urdf, encoding='unicode'),
@@ -201,15 +206,30 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     identity = {k: c[k] for k in ('robot_id', 'robot_variant', 'planning_group', 'base_link', 'flange_link', 'task_tcp_link')}
     identity.update(schema='eco65_native_model_v1', model_tool_fingerprint=digest(params),
         scene_fingerprint=scene['scene_fingerprint'], asset_fingerprint=digest(audit['asset_sha256']),
-        policy_fingerprint=digest(POLICY), flange_from_task_tcp=tcp.tolist(),
+        policy_fingerprint=digest(policy), flange_from_task_tcp=tcp.tolist(),
         task_tcp_fingerprint=digest(tcp.tolist()), contact_geometry_fingerprint=digest(geometry),
         policy_scope='PLANNING_ONLY_NOT_EXECUTABLE')
+    if 'robot_mast_exemption' in policy:
+        identity.update(collision_policy_schema=policy['schema'], collision_policy_mode=policy['mode'],
+                        collision_exemption_fingerprint=digest(policy['robot_mast_exemption']))
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
-        collision_policy=POLICY, tool_links=sorted(names), compliant_tool_links=sorted(bands),
+        collision_policy=policy, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',
         expected_collision_shapes={l.get('name'): len(l.findall('collision')) for l in urdf.findall('link') if l.findall('collision')})
     if permanent:
         init['permanent_attachment_links'] = sorted(permanent)
+    if 'coupled_conveyor_spec' in scene:
+        from .coupled_scene import coupled_conveyor_state
+        from .native_scene import world_objects
+        init['coupled_cycle_binding'] = dict(schema='eco65_coupled_cycle_binding_v1',
+            mechanism_spec=scene['coupled_conveyor_spec'],
+            initial_world=world_objects(scene),
+            mechanism_initial_state=coupled_conveyor_state(scene['coupled_conveyor_spec'],
+                scene['coupled_conveyor_spec']['low_height_m']),
+            original_cartons=[{k: box[k] for k in ('id', 'pose', 'size_m', 'supported_by')}
+                              for box in scene['boxes']],
+            initial_target_id=scene['target_box_id'])
+        identity['coupled_cycle_binding_fingerprint'] = digest(init['coupled_cycle_binding'])
     return dict(init=init, tool=tool, asset_audit=audit, convex_bindings=bindings,
                 official_limits=official_limits, simulation_limits=limits,
                 hardware_capability='NOT_EVALUATED')
