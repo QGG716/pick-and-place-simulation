@@ -1,0 +1,44 @@
+{
+  "target": "carton_l06_c04",
+  "stage": "contact",
+  "height": 1.7499999999999998,
+  "cache_key": "1.750000000000",
+  "fresh_exact_match": true,
+  "differences": [
+    {
+      "id": "conveyor_longitudinal",
+      "fields": [
+        "pose"
+      ],
+      "pose_max_abs": 2.220446049250313e-16
+    },
+    {
+      "id": "conveyor_transverse",
+      "fields": [
+        "pose"
+      ],
+      "pose_max_abs": 2.220446049250313e-16
+    },
+    {
+      "id": "lift_lower_bearing",
+      "fields": [
+        "pose"
+      ],
+      "pose_max_abs": 2.220446049250313e-16
+    },
+    {
+      "id": "lift_transverse_left_mount",
+      "fields": [
+        "pose"
+      ],
+      "pose_max_abs": 4.440892098500626e-16
+    },
+    {
+      "id": "lift_transverse_right_mount",
+      "fields": [
+        "pose"
+      ],
+      "pose_max_abs": 4.440892098500626e-16
+    }
+  ]
+}

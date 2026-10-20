@@ -1,0 +1,19 @@
+{
+  "total_dispatch_and_archive_wall_s": 558.8845708779991,
+  "task_wall_s": 533.0967826321721,
+  "candidate_visit_wall_s": 482.79115046933293,
+  "dispatched_candidates": 17,
+  "accepted_candidates": 8,
+  "failed_candidates": 9,
+  "native_target_tasks": 11,
+  "process_rejected_before_native": 2,
+  "native_request_count": 1178,
+  "unvisited_options_by_target": {
+    "carton_l06_c02": 2,
+    "carton_l06_c03": 2,
+    "carton_l06_c00": 271,
+    "carton_l03_c01": 0,
+    "carton_l02_c04": 0
+  },
+  "accounting": "Nested costs, not additive. Solver costs exclude archival; this is one world, one seed."
+}

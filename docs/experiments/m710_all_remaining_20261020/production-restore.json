@@ -1,0 +1,19 @@
+{
+  "robot_backend": "PinocchioHppFclBackend",
+  "cartons": 36,
+  "historical_count": 4,
+  "height": 1.75,
+  "q": [
+    -1.435169277728941,
+    -0.35788606276290724,
+    -0.28396987212938596,
+    1.5808743257193776,
+    1.43554193753111,
+    -4.786987010375598
+  ],
+  "frozen_count": 40,
+  "receive_height_range": [
+    0.6,
+    2.1
+  ]
+}

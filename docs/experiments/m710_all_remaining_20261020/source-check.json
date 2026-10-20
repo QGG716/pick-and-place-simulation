@@ -1,0 +1,11 @@
+{
+  "measured_source_commit": "66c34d4e4464589e6ea865125ccf4e71854d5be8",
+  "delivery_code_commit": "2ccaf4e6f34117c02b7d5c5596c0803261ad0b8d",
+  "planning_files_unchanged": 202,
+  "real_production_backend": "PinocchioHppFclBackend",
+  "formal_runs": 1,
+  "formal_planning_integration_errors": 0,
+  "seed": 71070,
+  "historical_solution_use": "INITIAL_STATE_ONLY_NOT_NATIVE_SOLVER_HINTS",
+  "replay_error_retained": "replay-integration-error.json"
+}
