@@ -82,6 +82,8 @@ def main():
     p.add_argument("--worker-command",required=True);p.add_argument("--worker-binary",type=Path,required=True)
     p.add_argument("--source-commit",required=True);p.add_argument("--source-manifest",type=Path)
     p.add_argument("--development",action="store_true")
+    p.add_argument("--right-front-eccentric",action="store_true",
+        help="Opt-in original-right front +Y candidates and soft FK upper-arm preference")
     geometry=p.add_mutually_exclusive_group()
     geometry.add_argument("--longitudinal-060",action="store_true",
         help="Explicit user-authorized width experiment; preserve the archived q/cartons and Ymin")
@@ -90,6 +92,8 @@ def main():
     geometry.add_argument("--transverse-scissor-026",action="store_true",
         help="260 mm transverse support spacing with the previous 600 mm longitudinal belt")
     args=p.parse_args()
+    if args.right_front_eccentric and not args.transverse_scissor_026:
+        raise ValueError("ECCENTRIC_ROUND_REQUIRES_EXPLICIT_SCISSOR_026")
     args.seed=71070;args.task_budget_s=300.;args.stage_budget_s=90.;args.ipc_timeout_s=100.
     args.direct_first=True;args.junction_only=True
     identity=source_identity(args)
@@ -136,6 +140,9 @@ def main():
         authorized_geometry_change=origin.get("authorized_geometry_change"),
         initial_root=state.root(),worker_sha256=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest(),
         task_budget_s=300.,stage_budget_s=90.,height_visit_prefix_slice_s=20.,
+        right_front_eccentric=args.right_front_eccentric,
+        candidate_visit_prefix_slice_s=10. if args.right_front_eccentric else 20.,
+        upper_arm_preference="BOUNDED_SOFT_FK_WITH_GENERAL_SEEDS" if args.right_front_eccentric else None,
         height_resolution_m=.01,height_coarse_priority_spacing_m=.05,
         temporary_height_minimum_m=float(original.receiver.center[2]+original.receiver.half_extents[2]),
         temporary_height_domain_source="EXISTING_CONCEPT_COUPLED_GEOMETRY_MINIMUM_TO_FROZEN_HMIN",

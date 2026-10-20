@@ -76,6 +76,10 @@ class BatchState:
             predecessor_final_state_receipt=self.cycles[-1]['final_state_receipt'] if self.cycles else None)
 
     def commit(self,plan):
+        if (plan.get('target',{}).get('eccentric_authorization') is not None
+                or plan.get('target',{}).get('world_y_offset_m',0) != 0):
+            from .right_front_eccentric import validate_accepted_target
+            validate_accepted_target(plan,self.frozen,self.cartons)
         reject_late_sync(plan.get('option',{}))
         if any(s.get('generation_source')=='NATIVE_EXTERNAL_AXIS' and s.get('stage')=='extraction'
                for s in plan.get('stages',[])):
@@ -154,6 +158,13 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def validate_template(self,target):
         target.validate()
+        if target.eccentric_authority is not None:
+            if target.eccentric_authority != getattr(self,'eccentric_frozen_layer',None):
+                raise MoveItUnavailable('ECCENTRIC_FROZEN_AUTHORITY_MISMATCH')
+            if target.world_y_offset_m != self.option.get('world_y_offset_m'):
+                raise MoveItUnavailable('ECCENTRIC_CONCRETE_TARGET_CHANGED')
+            if self.option['segment_directions_world'] != [[-1.,0.,0.]]:
+                raise MoveItUnavailable('ECCENTRIC_ORIGINAL_Y_EXTRACTION_REQUIRED')
         reject_late_sync(self.option)
         if target.geometric_face_id!=self.option['face']['geometric_face_id']:
             raise MoveItUnavailable('COUPLED_BUSINESS_FACE_CHANGED')

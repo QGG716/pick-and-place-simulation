@@ -110,11 +110,24 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     raise ValueError('REQUESTED_JUNCTION_FRONT_HMIN_NOT_APPLICABLE')
             for option in business_options:
                 options.extend(synchronization_options(option,state.height,low))
-            for option_index,option in enumerate(options):
+            eccentric=getattr(args,'right_front_eccentric',False)
+            visits=options;total_visits=len(options)
+            if eccentric:
+                from unloading_sim.right_front_eccentric import offset_intervals,candidate_visits,candidate_deltas
+                faces,_=simulation_contact_targets(scene,target,built.robot.base_transform[:3,3],built.budget.pregrasp_standoff_m)
+                front=next(t for t in faces if t.face_role=='FRONT')
+                intervals=offset_intervals(front,frozen,scene.policy.data['suction'])
+                # One approach problem serves both synchronization locations.
+                options=[dict(o,synchronization='PREGRASP_OR_CONTACT') if o['synchronization']=='PREGRASP' else o
+                         for o in options if o['synchronization']!='CONTACT']
+                visits=candidate_visits(options,intervals)
+                total_visits=len(options)*sum(1 for _ in candidate_deltas(intervals))
+            for option_index,option in enumerate(visits):
                 if perf_counter()>=min(deadline,shared_stages['prefix']):
                     attempts.append(dict(target_id=target.name,complete=False,
                         failure='SHARED_TASK_BUDGET_EXHAUSTED' if perf_counter()>=deadline else 'SHARED_PREFIX_BUDGET_EXHAUSTED',
-                        unsearched_process_options=options[option_index:],unsearched_option_count=len(options)-option_index,
+                        unsearched_process_options=options[option_index:] if not eccentric else None,
+                        unsearched_option_count=total_visits-option_index,
                         classification='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY',wall_s=0.))
                     break
                 attempt_no+=1;folder=out/f'attempt-{attempt_no:03d}';folder.mkdir()
@@ -138,9 +151,11 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c=CoupledCycleConnector.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
+                    c.eccentric_frozen_layer=frozen if eccentric else None
+                    c.upper_arm_preference_enabled=eccentric
                     c.empty_approach_direct_first=args.direct_first
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
-                    c.height_visit_deadline=min(shared_stages['prefix'],perf_counter()+20.)
+                    c.height_visit_deadline=min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.))
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
@@ -152,7 +167,13 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     if not selected:
                         row['failure']='BUSINESS_FACE_NOT_CURRENTLY_EXPOSED';continue
                     if len(selected)!=1:raise ValueError('ONE_UPSTREAM_POSE_PER_FACE_REQUIRED')
-                    plan,detail=c.plan_target(selected[0],state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
+                    chosen=selected[0]
+                    if eccentric:
+                        from unloading_sim.right_front_eccentric import eccentric_target
+                        chosen=eccentric_target(chosen,frozen,option['world_y_offset_m'],scene.policy.data['suction'])
+                        row['eccentric_domain_intervals_m']=intervals
+                        row['candidate_id']=chosen.candidate_id
+                    plan,detail=c.plan_target(chosen,state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
                     save(folder/'attempt.json',detail)
                     if plan is not None:
                         # Save all required native evidence and the proposed

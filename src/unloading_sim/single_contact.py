@@ -326,6 +326,13 @@ class SingleContactConnector(PlanningOnlyConnector):
             if not getattr(self,"single_target_recovery_enabled",False):raise MoveItUnavailable("SINGLE_TARGET_RECOVERY_SCOPE")
             request.update(purpose=getattr(purpose,"value",purpose),excluded_ik=[np.asarray(q).tolist() for q in excluded_ik],
                 ik_dedup_tolerance_rad=float(self.ik["candidate_dedup_tolerance_rad"]))
+            if getattr(self,"upper_arm_preference_enabled",False):
+                from .upper_arm_preference import numerical_seed
+                index=getattr(self,"_posture_seed_index",0)
+                guess=numerical_seed(self.robot,np.asarray(start),seed,index)
+                self._posture_seed_index=index+1
+                request.update(numerical_ik_seed=guess.tolist(),
+                    numerical_seed_policy="SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",numerical_seed_index=index)
         if bounded and self._native_cancelled():
             raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
         dispatched = perf_counter()
@@ -378,7 +385,7 @@ class SingleContactConnector(PlanningOnlyConnector):
         row["expected_contact"]=dict(geometrically_eligible_mask=list(expected.geometrically_eligible_mask),
             commanded_active_mask=list(expected.commanded_active_mask),
             actual_contact_mask=None,source="EXPECTED_GEOMETRY_NOT_MEASUREMENT")
-        self._candidate_identity="single-contact:"+target.geometric_face_id
+        self._candidate_identity="single-contact:"+target.candidate_id
         initial=self.native_root_state(start,obstacles,target_contact=target.box)
         check=self._build_native_request(initial,initial,obstacles,seed=seed,stage="pregrasp")
         check.update(op="check_start")
@@ -466,6 +473,9 @@ class SingleContactConnector(PlanningOnlyConnector):
                                 "generation_source","pipeline_id","planner_id","points","time_parameterization",
                                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records],
                             final_state_receipt=contact[-1].native_receipt,events=[])
+                        if target.eccentric_authority is not None:
+                            plan["eccentric_contact_validation"]=dict(expected=deepcopy(row["expected_contact"]),
+                                actual=deepcopy(row["terminal_contact"]),suction=deepcopy(suction))
                         return self.complete_contact_plan(plan,row,contact[-1],target,obstacles,suction,seed)
         row["times"]["total_s"]=perf_counter()-began
         # Only normal bounded solver/geometry outcomes allow another face.

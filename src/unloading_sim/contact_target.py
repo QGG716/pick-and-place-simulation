@@ -28,6 +28,18 @@ class ContactTarget:
     contact_pose: np.ndarray
     approach_pose: np.ndarray
     standoff_m: float
+    world_y_offset_m: float = 0.
+    eccentric_authority: object = None
+    eccentric_suction: object = None
+    predicted_eligible_mask: tuple = ()
+
+    @property
+    def candidate_id(self):
+        from .moveit2_backend import digest
+        return self.geometric_face_id+":"+digest(dict(target=self.target_id,
+            scene=self.scene_revision, contact=self.contact_pose.tolist(),
+            approach=self.approach_pose.tolist(), delta=self.world_y_offset_m,
+            authority=None if self.eccentric_authority is None else self.eccentric_authority.evidence()))
 
     @property
     def legacy_face(self):
@@ -57,8 +69,14 @@ class ContactTarget:
             raise ValueError("CONTACT_NORMAL_OR_FRAME_MISMATCH")
         local = self.box.rotation.T @ (contact[:3, 3]-self.box.center)
         tangents = [i for i in range(3) if i != self.axis]
+        eccentric = self.eccentric_authority is not None
+        if eccentric:
+            from .right_front_eccentric import validate_eccentric
+            validate_eccentric(self)
+        elif self.world_y_offset_m != 0 or self.predicted_eligible_mask:
+            raise ValueError("ECCENTRIC_AUTHORITY_REQUIRED")
         if (abs(local[self.axis]-self.sign*self.box.half_extents[self.axis]) > 1e-12
-                or any(abs(local[i]) > self.box.half_extents[i]+1e-12 for i in tangents)):
+                or (not eccentric and any(abs(local[i]) > self.box.half_extents[i]+1e-12 for i in tangents))):
             raise ValueError("CONTACT_POINT_OUTSIDE_FACE")
         boundary = np.asarray(self.face_boundary)
         if boundary.shape != (4, 3) or not np.isfinite(boundary).all():
@@ -72,7 +90,14 @@ class ContactTarget:
         return self
 
     def evidence(self):
-        return dict(target_id=self.target_id, frame_id=self.frame_id,
+        authority = None
+        if self.eccentric_authority is not None:
+            from .right_front_eccentric import authorize
+            authority = authorize(self,self.eccentric_authority)
+        return dict(target_id=self.target_id, frame_id=self.frame_id, candidate_id=self.candidate_id,
+            world_y_offset_m=self.world_y_offset_m,
+            eccentric_authorization=authority,
+            predicted_eligible_mask=list(self.predicted_eligible_mask),
             scene_revision=self.scene_revision, source=self.source, face_role=self.face_role,
             geometric_face_id=self.geometric_face_id, legacy_geometric_face=self.legacy_face,
             face_center_m=self.face_center.tolist(), face_boundary_m=self.face_boundary.tolist(),

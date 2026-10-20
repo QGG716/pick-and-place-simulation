@@ -28,6 +28,7 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
     invocation=len(c.connection_attempts)
     direct=(getattr(c,"empty_approach_direct_first",False) and stage=="pregrasp" and
         getattr(purpose,"value",purpose)=="FREE_APPROACH" and attachment is None)
+    posture=getattr(c,"upper_arm_preference_enabled",False) and stage=="pregrasp"
     def same(a,b):return np.max(np.abs(np.asarray(a)-np.asarray(b)))<=tolerance
     def guard():
         if c._native_cancelled():raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
@@ -44,6 +45,9 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
             if not any(same(v,p["q"]) for p in pool) and not any(same(v,x) for x in invalid):
                 pool.append(dict(q=np.asarray(v).copy(),motion_s=0.,returned_prefixes=0,
                     joint_cost=float(np.abs(v-original_q).sum()),endpoint_invalid=False))
+                if posture:
+                    from .upper_arm_preference import soft_cost
+                    pool[-1]["upper_arm_preference"]=soft_cost(c.robot,v,original_q)
     def quality(path,evidence,elapsed):
         if not hasattr(c,"robot"):return None
         successful=[a for a in evidence.get("attempts",[]) if a.get("status")=="SUCCESS" and a.get("points")]
@@ -51,6 +55,13 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
         record=successful[-1]
         metrics=path_metrics(c.robot,record["points"],getattr(c,"flange_from_physical_contact",None),elapsed)
         metrics.update(planner_id=record["planner_id"],stage_id=record["stage_id"])
+        if posture:
+            from .upper_arm_preference import upper_arm
+            elevations=[upper_arm(c.robot,p["q"])["elevation_rad"] for p in record["points"]]
+            metrics["upper_arm_path"]=dict(min_elevation_rad=min(elevations),
+                mean_elevation_rad=float(np.mean(elevations)),
+                bounded_mean_posture_cost=float(.5-np.mean(elevations)/np.pi),
+                acceptance_gate=False, extra_optimization_after_success=False)
         return metrics
     try:
         while perf_counter()<c._single_connection_deadline:
@@ -111,10 +122,12 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
             if not eligible:continue
             # Fair accumulated solve time before light joint-travel ranking.
             # Returned prefixes are deferred after suffix failure, not erased.
-            candidate=min(eligible,key=lambda p:(p["returned_prefixes"],round(p["motion_s"],1),p["joint_cost"]))
+            candidate=min(eligible,key=lambda p:(p["returned_prefixes"],round(p["motion_s"],1),
+                p["upper_arm_preference"]["cost"] if posture else p["joint_cost"]))
             q=candidate["q"]
             row.update(q_goal=q.tolist(),endpoint_joint_cost_rad=candidate["joint_cost"],
                 valid_configuration_retained=True)
+            if posture:row["upper_arm_preference"]=candidate["upper_arm_preference"]
             before=perf_counter()
             path,failure,evidence=c._native_plan(start,q,obstacles,seed=seed,stage=stage,attachment=attachment,
                 support_names=(),initial_proximity=None,purpose=purpose,allow_ompl=True,
@@ -134,7 +147,7 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                 detour=m and (m["weighted_joint_length_rad"]>1.4*max(min(m["endpoint_joint_distance_rad"],best_endpoint),1e-6)
                     or (m.get("physical_contact_length_over_chord") or 0)>1.6)
                 remaining=c._single_connection_deadline-perf_counter()
-                if direct and detour and remaining>2.:
+                if direct and detour and remaining>2. and not posture:
                     limit=min(c._single_connection_deadline,perf_counter()+min(4.,remaining*.1))
                     # LIN may end at a different wrist branch than the chosen
                     # joint goal. Include that original qualified goal: a failed

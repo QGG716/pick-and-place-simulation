@@ -1133,6 +1133,17 @@ private:
       if(recovery) {budget=m710::boundedIkBudget(req.at("solver_budget_s"),stage_budget-seconds(begin));
         if(budget<=0)throw std::runtime_error("NATIVE_IK_REQUEST_DEADLINE");}
       const auto started=Clock::now();++ik_calls;bool success;
+      auto numerical_seed=q;
+      if(req.contains("numerical_ik_seed")) {
+        if(!recovery || req.at("stage")!="pregrasp" || !m710::coupledBinding(receiver_binding) ||
+           req.value("numerical_seed_policy","")!="SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1")
+          throw std::runtime_error("NUMERICAL_IK_SEED_SCOPE");
+        numerical_seed=req.at("numerical_ik_seed").get<std::vector<double>>();
+        if(numerical_seed.size()!=names.size())throw std::runtime_error("INVALID_NUMERICAL_IK_SEED");
+        for(auto x:numerical_seed)if(!std::isfinite(x))throw std::runtime_error("INVALID_NUMERICAL_IK_SEED");
+        auto probe=state;probe.setJointGroupPositions(group,numerical_seed);probe.update();
+        if(!probe.satisfiesBounds())throw std::runtime_error("NUMERICAL_IK_SEED_OUTSIDE_OFFICIAL_LIMITS");
+      }
       if(recovery) {
         kinematics::KinematicsQueryOptions exact;exact.return_approximate_solution=false;
         kinematics::KinematicsBase::IKCallbackFn callback=[&](const geometry_msgs::msg::Pose&,const std::vector<double>& candidate,moveit_msgs::msg::MoveItErrorCodes& code) {
@@ -1141,7 +1152,7 @@ private:
             for(size_t i=0;duplicate&&i<old.size();++i)duplicate=std::abs(candidate[i]-old[i])<=tolerance;
             if(duplicate) {code.val=moveit_msgs::msg::MoveItErrorCodes::NO_IK_SOLUTION;return;}}
         };
-        success=solver->searchPositionIK(pose(serial(local)),q,budget,solution,callback,error,exact);
+        success=solver->searchPositionIK(pose(serial(local)),numerical_seed,budget,solution,callback,error,exact);
       } else success=m710::invokeIk(*solver,bounded,pose(serial(local)),q,budget,solution,error);
       const double actual_ik_s=seconds(started);
       J result={{"status","NATIVE_IK_FAILED"},{"native_ik_calls",1},{"resident_native_ik_calls",ik_calls},
@@ -1160,6 +1171,12 @@ private:
       result["diagnostic_scope"]="IK_INPUT_ONLY_NO_LIVE_TASK_NO_MOTION";
 #endif
       if(recovery) {result["excluded_local_ik_count"]=excluded.size();result["ik_exclusion_scope"]="THIS_FIXED_TARGET_CONNECTION_ONLY";}
+      if(req.contains("numerical_ik_seed")) {
+        result["numerical_ik_seed"]=numerical_seed;
+        result["numerical_seed_index"]=req.at("numerical_seed_index");
+        result["real_start_q_unchanged"]=q;
+        result["numerical_seed_policy"]=req.at("numerical_seed_policy");
+      }
       if(!success || solution.size()!=names.size()) return result;
       if(recovery)result["solver_candidate_q"]=solution;
       for(double x:solution) if(!std::isfinite(x)) return result;
