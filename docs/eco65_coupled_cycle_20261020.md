@@ -76,3 +76,30 @@ $P tools/export_eco65_coupled_replay.py --snapshot "$S/snapshot.json" \
 
 全部结果为 `planning_only=True`、`physical_execution=NOT_RUN`、
 `execution_ready=false`。机构预览和起态检查不代表完整任务已经成功。
+
+## 阶段二：连续任务合同
+
+`run_eco65_coupled_cycle.py` / `coupled_task.py` 使用独立版本
+`eco65_coupled_cycle_v1`，保留原七阶段入口。记录明确分成 robot_motion、
+external_axis 和 event；每个已采用记录保存前后完整状态与同一 resident MTC
+父记录。非机器人事件通过无机器人轨迹的原生 SubTrajectory 回执加入父链。
+
+状态含真实 q、带高、统一机构状态、全部世界对象、目标、吸盘选择、局部附件变换、
+完成箱及接收历史。原生合同绑定最初十二箱和固定环境，检查身份、尺寸、静态部件、
+真实附件所有权及段间连续性；升降固定 q 并有限采样完整联动世界。
+
+业务方向为 FIRST_APPROACH / OUTBOUND / RETURN，去程 −1、回程 +1。下一箱
+pregrasp/contact 属于 RETURN。原始 J1 路径的反向总量（包括段间继承）上限
+1e-6 rad；不取模、不改端点。HOME 只作为初态提案，不要求经过 loaded HOME、
+residence 或最终回 HOME。
+
+候选优先正面抓，有限集合内保留顶抓。接收区域由动态横带有效边界及完整箱投影
+确定；高低接收候选冻结在目标初态。尝试先升后抽及先水平脱垛后升；低位接收需要
+脱垛后真实下降。释放不另造零长度运动段。附着转 world 位姿连续，名义下落保持
+姿态、q 不变；展示时间取零初速重力时间公式，位置只是规定的运动学采样，无动力学。
+退出时箱体仍在世界中；原生确认工具至少分离 10 mm 后才能 IDEAL_RECEIVER_DRAIN。
+清空是本轮假设，不表示真实横纵带输送。随后从真实末态规划至下一箱接触并附着。
+
+定向 Python 检查 27 项通过；C++ `eco65_cycle_test` 的 16 组协议/数值检查通过，
+`m710_search_trace_test` 生成 exact 路径。新 worker 已在既有 chroot 原生编译、
+安装。合成测试不是完整任务证据；完整运行与实际导出结果在阶段三另记。

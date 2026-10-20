@@ -123,13 +123,17 @@ def extraction_candidates(scene,target_pose,size,tcp,face='top'):
 
 class NativeTask:
     def __init__(self, snapshot, command, *, task_seconds=900., stage_seconds=60., attempt=0, cancelled=None, home_candidate=None,
-                 progress_path=None, rpc_seconds=180., preferred_grasp_face=None, evaluation_profile=STRICT, search_trace=False, trace_stages=('transit',), trace_requests=(), preferred_candidate_id=None):
+                 progress_path=None, rpc_seconds=180., preferred_grasp_face=None, evaluation_profile=STRICT, search_trace=False, trace_stages=('transit',), trace_requests=(), preferred_candidate_id=None, continuous_task_mode=None):
         self.evaluation_profile = checked_profile(evaluation_profile)
         from .native_io import verify_snapshot
         verify_snapshot(snapshot)
         self.snapshot = snapshot; self.scene = verify_scene(snapshot['scene'])
         self.model = snapshot['native_model']; self.init = deepcopy(self.model['init']); self.identity = self.init['identity']
         self.init['evaluation_profile'] = self.evaluation_profile
+        if continuous_task_mode is not None:
+            if continuous_task_mode != 'eco65_coupled_cycle_v1' or not self.scene.get('coupled_conveyor_spec'):
+                raise ValueError('CONTINUOUS_TASK_SCOPE_INVALID')
+            self.init['continuous_task_mode'] = continuous_task_mode
         self.directed_j1=self.evaluation_profile==CHAIN
         self.init['directed_j1_enabled']=self.directed_j1
         self.init['search_trace_enabled']=bool(search_trace)
@@ -191,7 +195,7 @@ class NativeTask:
         if checked_profile(request.get('evaluation_profile', profile)) != profile:
             raise ValueError('EVALUATION_PROFILE_MISMATCH')
         request['evaluation_profile'] = profile
-        if request['op'] in ('plan','diagnostic_connection') and profile == CHAIN:
+        if request['op'] in ('plan','diagnostic_connection','eco65_transition') and profile == CHAIN:
             request.update(request_budgets(remaining,self.stage_seconds,self.rpc_seconds))
         elif request['op'] != 'init': request['allowed_planning_time_s'] = min(self.stage_seconds, remaining)
         if request['op']=='plan' and self.init.get('search_trace_enabled'):
@@ -290,7 +294,7 @@ class NativeTask:
             parent_stage_id=self.parent, seed=6518+self.counter, start_velocity=[0.]*6, path_constraints={},
             allowed_pairs=[['base_link', 'robot_mount_plate']], process_policy=process, clearance_policy=clearance,
             clearance_mode='optimized', endpoint=endpoint, cancelled=False,
-            j1_direction=j1_direction(stage) if getattr(self,'directed_j1',False) else 0,
+            j1_direction=self.direction_for_stage(stage),
             extraction_branch_id=getattr(self,'extraction_branch_id',None),
             flange_from_task_tcp=self.identity['flange_from_task_tcp'], planning_only=True,
             planning_mode='cold_from_scratch', history_enabled=False, velocity_scale=.5, acceleration_scale=.5)
@@ -298,6 +302,12 @@ class NativeTask:
     def selection_binding(self):
         return dict(active_ids=list(self.active_ids), target_id=self.target['id'], target_face=self.face,
                     candidate_id=self.candidate_id, task_id=self.task_id, identity=self.identity)
+
+    def direction_for_stage(self,stage):
+        return j1_direction(stage) if getattr(self,'directed_j1',False) else 0
+
+    def direction_goal_valid(self,start,end,stage):
+        return j1_valid([start,end],self.direction_for_stage(stage))
 
     def select_grasp(self, grasp):
         self.face = grasp.get('target_face', 'top')
@@ -373,7 +383,7 @@ class NativeTask:
                 if all(np.max(np.abs(candidate-other))>1e-4 for other in unique): unique.append(candidate)
             goals=unique
             if getattr(self,'directed_j1',False):
-                goals=[candidate for candidate in goals if j1_valid([q,candidate],j1_direction(stage))]
+                goals=[candidate for candidate in goals if self.direction_goal_valid(q,candidate,stage)]
                 # Preplace must allow the *subsequent* nondecreasing return to fixed HOME.
                 if return_compatible and getattr(self,'final_home',None) is not None:
                     goals=[candidate for candidate in goals if candidate[0]<=self.final_home[0]+J1_EPSILON]

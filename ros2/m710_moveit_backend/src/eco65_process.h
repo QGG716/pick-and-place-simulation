@@ -13,6 +13,7 @@ class Eco65Process {
   std::string stage_,target_id_;
   ProcessBox target_;
   bool attached_;
+  bool drained_=false;
   bool record_distances_=false;
   bool fixed_mounts_accepted_=false;
   std::set<std::string> bands_,supports_;
@@ -135,6 +136,7 @@ public:
       // Worker initialization binds every task_contract field to the scene's
       // contact geometry. A motion request cannot widen these permissions.
       const auto& task=spec_.at("task_contract");
+      const bool cycle=task.value("continuous_task_mode",std::string())=="eco65_coupled_cycle_v1";
       const bool independent=task.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS";
       if(task.at("schema")!="eco65_single_carton_task_v1" || task.at("target_id")!=target_id_ ||
          (!independent && (task.at("target_face")!="top" || spec_.at("target_face")!="top")))
@@ -161,7 +163,15 @@ public:
            declared.size()+removed.size()!=12)throw std::runtime_error("ECO65_COVERAGE_CONTEXT_INVALID");
         for(const auto& id:removed)if(cartons.count(id))throw std::runtime_error("ECO65_COVERAGE_CARTON_DUPLICATE");
       }
-      if((!coverage && cartons.size()!=12) || task.at("stack_carton_ids").size()!=cartons.size() || !cartons.count(target_id_) ||
+      if(cycle) {
+        const auto completed=task.at("completed_ids").get<std::set<std::string>>();
+        if(cartons.size()+completed.size()!=12)throw std::runtime_error("ECO65_CYCLE_CARTON_COUNT_INVALID");
+        for(const auto& id:completed)if(cartons.count(id))throw std::runtime_error("ECO65_CYCLE_COMPLETED_STILL_REMAINING");
+        drained_=completed.count(target_id_);
+        if(drained_ && (attached_ || stage_!="withdrawal"))
+          throw std::runtime_error("ECO65_DRAINED_TARGET_STAGE_INVALID");
+      }
+      if((!coverage && !cycle && cartons.size()!=12) || task.at("stack_carton_ids").size()!=cartons.size() || (!drained_ && !cartons.count(target_id_)) ||
          original_supports.empty() || original_supports.count(target_id_) || receiver_supports.empty() ||
          task.at("original_support_names").size()!=original_supports.size() ||
          task.at("receiving").at("support_ids").size()!=receiver_supports.size())
@@ -181,7 +191,8 @@ public:
     if(req.at("allowed_pairs")!=Json::array({Json::array({"base_link","robot_mount_plate"})}))
       throw std::runtime_error("ECO65_UNSCOPED_ACM_PERMISSION");
     const auto& state=scene->getCurrentState();
-    if(attached_!=state.hasAttachedBody(target_id_) || attached_==scene->getWorld()->hasObject(target_id_))
+    if((drained_ && (state.hasAttachedBody(target_id_) || scene->getWorld()->hasObject(target_id_))) ||
+       (!drained_ && (attached_!=state.hasAttachedBody(target_id_) || attached_==scene->getWorld()->hasObject(target_id_))))
       throw std::runtime_error("ECO65_TARGET_OWNERSHIP_INVALID");
     if(attached_) {
       const auto* a=state.getAttachedBody(target_id_);
@@ -193,7 +204,7 @@ public:
         throw std::runtime_error("ECO65_TARGET_GEOMETRY_CHANGED");
       if((a->getGlobalCollisionBodyTransforms().at(0).matrix()-target_.pose.matrix()).cwiseAbs().maxCoeff()>1e-7)
         throw std::runtime_error("ECO65_TARGET_POSE_CHANGED");
-    } else {
+    } else if(!drained_) {
       if((world_.at(target_id_).half-target_.half).cwiseAbs().maxCoeff()>1e-12 ||
          (world_.at(target_id_).pose.matrix()-target_.pose.matrix()).cwiseAbs().maxCoeff()>1e-7)
         throw std::runtime_error("ECO65_TARGET_GEOMETRY_OR_POSE_CHANGED");
@@ -306,6 +317,7 @@ public:
       if(!valid) {failure["robot_shape_index"]=pair.a.index;failure["attachment_shape_index"]=pair.b.index;return false;}
     }
     fixed_mounts_accepted_=true;
+    if(drained_) {seal={{"status","NOT_APPLICABLE_DRAINED_TARGET"}};return true;}
     for(const auto& band:bands) {
       bool contact=fit;
       if(spec_.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS") {

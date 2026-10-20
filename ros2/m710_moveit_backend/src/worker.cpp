@@ -22,6 +22,7 @@
 #include "basic_sampled_path.h"
 #include "search_trace.h"
 #include "scene_geometry.h"
+#include "eco65_cycle.h"
 #include "native_zero_motion.h"
 #include "native_semantic_event.h"
 #include "static_prior.h"
@@ -163,7 +164,8 @@ public:
     if(r.ready) ++r.cache_hits;else generate_(r);
     if(!r.ready) return;
     if(!r.end) throw std::runtime_error("NATIVE_TASK_READY_WITHOUT_END");
-    if(r.result.value("generation_source",std::string())=="SEMANTIC_EVENT") {
+    if(r.result.value("generation_source",std::string())=="SEMANTIC_EVENT" ||
+       r.result.value("generation_source",std::string())=="EXTERNAL_AXIS") {
       std::vector<double> terminal;r.end->getCurrentState().copyJointGroupPositions(m710::nativeFrames().planning_group,terminal);
       // No-motion semantics cannot use the motion connection tolerance to
       // change the real predecessor, even by a sub-nanoradian amount.
@@ -204,6 +206,7 @@ class Worker {
   std::string planning_mode="cold_from_scratch";
   std::string evaluation_profile="strict";
   bool directed_j1=false;
+  std::unique_ptr<m710::EcoCycleBinding> cycle_binding;
   Clock::time_point request_deadline=Clock::time_point::max();
   double remainingBudget() const {return std::chrono::duration<double>(request_deadline-Clock::now()).count();}
   J static_prior_database=nullptr;
@@ -269,7 +272,7 @@ class Worker {
     auto ids=before->getWorld()->getObjectIds(),next=after->getWorld()->getObjectIds();
     const bool touch=!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1";
     std::set<std::string> a(ids.begin(),ids.end()),b(next.begin(),next.end());
-    if(!touch){a.erase(target);b.erase(target);}
+    if(!touch && !cycle_binding){a.erase(target);b.erase(target);}
     if(a!=b) throw std::runtime_error("NATIVE_TASK_WORLD_IDENTITY_CHANGED");
     for(const auto& id:a) {
       const auto x=before->getWorld()->getObject(id),y=after->getWorld()->getObject(id);
@@ -290,6 +293,23 @@ class Worker {
         for(int k=0;k<3;++k) if(sx->size[k]!=sy->size[k]) throw std::runtime_error("NATIVE_TASK_WORLD_GEOMETRY_CHANGED");
         if(!samePose(m710::worldShapePose(*x,i),m710::worldShapePose(*y,i))) throw std::runtime_error("NATIVE_TASK_WORLD_POSE_CHANGED");
       }
+    }
+    if(cycle_binding) {
+      std::vector<const moveit::core::AttachedBody*> old_attached,new_attached;
+      before->getCurrentState().getAttachedBodies(old_attached);after->getCurrentState().getAttachedBodies(new_attached);
+      if(old_attached.size()!=new_attached.size())throw std::runtime_error("ECO65_CYCLE_UNRECORDED_OWNERSHIP_CHANGE");
+      for(const auto* old:old_attached) {
+        const auto* next=after->getCurrentState().getAttachedBody(old->getName());
+        if(!next || old->getAttachedLink()!=next->getAttachedLink() || old->getTouchLinks()!=next->getTouchLinks() ||
+            old->getShapes().size()!=1 || next->getShapes().size()!=1 ||
+            old->getShapes()[0]->type!=shapes::BOX || next->getShapes()[0]->type!=shapes::BOX ||
+            (old->getShapePosesInLinkFrame()[0].matrix()-next->getShapePosesInLinkFrame()[0].matrix()).cwiseAbs().maxCoeff()>1e-12)
+          throw std::runtime_error("ECO65_CYCLE_UNRECORDED_ATTACHMENT_CHANGE");
+        const auto* x=static_cast<const shapes::Box*>(old->getShapes()[0].get());
+        const auto* y=static_cast<const shapes::Box*>(next->getShapes()[0].get());
+        for(int k=0;k<3;++k)if(x->size[k]!=y->size[k])throw std::runtime_error("ECO65_CYCLE_ATTACHMENT_SIZE_CHANGED");
+      }
+      return;
     }
     if(touch) {
       // The finite datum remains an immutable mesh in the world. Its vertices,
@@ -329,10 +349,262 @@ class Worker {
     };
     if(targetSize(before)!=targetSize(after)) throw std::runtime_error("NATIVE_TASK_TARGET_GEOMETRY_CHANGED");
   }
+  struct CycleScene {
+    planning_scene::PlanningScenePtr scene;
+    std::shared_ptr<m710::ProcessPolicy> process;
+    std::shared_ptr<m710::Clearance> clearance;
+    J evidence;
+  };
+  void checkCycleGeometry(const J& req) const {
+    if(!cycle_binding || req.at("identity")!=identity ||
+       req.at("clearance_policy").at("source_policy")!=bound_policy ||
+       req.at("clearance_policy").at("tool_links")!=bound_tools ||
+       req.at("clearance_policy").at("compliant_tool_links")!=bound_compliant)
+      throw std::runtime_error("ECO65_CYCLE_MODEL_POLICY_CHANGED");
+    cycle_binding->checkRequest(req);
+    for(auto it=bound_process_geometry.begin();it!=bound_process_geometry.end();++it)
+      if(it.key()!="task_contract" && (!req.at("process_policy").contains(it.key()) ||
+          req.at("process_policy").at(it.key())!=it.value()))
+        throw std::runtime_error("ECO65_CYCLE_CONTOUR_GEOMETRY_CHANGED");
+    auto original=bound_process_geometry.at("task_contract"),runtime=req.at("process_policy").at("task_contract");
+    for(const std::string key:{"target_id","target_face","stack_carton_ids","original_support_names","receiving",
+                              "continuous_task_mode","completed_ids"}) {original.erase(key);runtime.erase(key);}
+    if(original!=runtime)throw std::runtime_error("ECO65_CYCLE_TASK_PERMISSION_CHANGED");
+  }
+  CycleScene cycleScene(const J& req,bool world_target=false) {
+    checkCycleGeometry(req);
+    CycleScene out;out.scene=std::make_shared<planning_scene::PlanningScene>(model);
+    auto state=out.scene->getCurrentState();
+    const auto q=req.at("q_start").get<std::vector<double>>();
+    if(q.size()!=names.size())throw std::runtime_error("ECO65_CYCLE_JOINT_COUNT");
+    for(double x:q)if(!std::isfinite(x))throw std::runtime_error("ECO65_CYCLE_INVALID_Q");
+    state.setJointGroupPositions(m710::nativeFrames().planning_group,q);state.update();
+    if(!state.satisfiesBounds())throw std::runtime_error("ECO65_CYCLE_Q_OUT_OF_BOUNDS");
+    out.scene->setCurrentState(state);
+    for(const auto& body:req.at("world"))
+      if(!out.scene->processCollisionObjectMsg(object(body)))throw std::runtime_error("ECO65_CYCLE_SCENE_IMPORT_FAILED");
+    for(const auto& pair:req.at("allowed_pairs"))
+      out.scene->getAllowedCollisionMatrixNonConst().setEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),true);
+    if(!req.at("attachment").is_null()) {
+      const auto& b=req.at("attachment");
+      moveit_msgs::msg::AttachedCollisionObject a;a.link_name=m710::nativeFrames().flange_link;
+      a.object=object(b,m710::nativeFrames().flange_link);a.touch_links=b.at("touch_links").get<std::vector<std::string>>();
+      if(!out.scene->processAttachedCollisionObjectMsg(a))throw std::runtime_error("ECO65_CYCLE_ATTACH_IMPORT_FAILED");
+    }
+    out.process=std::make_shared<m710::ProcessPolicy>(out.scene,req);
+    out.clearance=std::make_shared<m710::Clearance>(out.scene,req.at("clearance_policy"),"optimized");
+    out.clearance->phase="initial";J failure=nullptr;
+    if(!out.clearance->check(out.scene->getCurrentState()))failure=out.clearance->last_failure;
+    if(failure.is_null() && !out.process->check(out.scene->getCurrentState(),req.value("endpoint",false)))
+      failure=out.process->last_failure;
+    if(failure.is_null()) {
+      collision_detection::CollisionRequest cr;collision_detection::CollisionResult result;
+      out.scene->checkCollision(cr,result);
+      if(result.collision)failure={{"reason","ECO65_CYCLE_ORDINARY_COLLISION"}};
+    }
+    if(failure.is_null() && world_target)failure=m710::ecoCycleWorldTarget(out.scene,req);
+    out.evidence={{"status",failure.is_null()?"SUCCESS":"STATE_REJECTED"},{"failure",failure},
+      {"clearance",out.clearance->evidence()},{"process",out.process->evidence()}};
+    // The complete immutable policy is already present in every archived
+    // request. Avoid multiplying its exact pair inventory by lift samples.
+    if(out.evidence.at("clearance").is_object())out.evidence["clearance"].erase("policy");
+    out.evidence["policy_fingerprint"]=identity.at("policy_fingerprint");
+    return out;
+  }
+  Eigen::Isometry3d cycleTargetPose(const planning_scene::PlanningSceneConstPtr& scene,const std::string& id) const {
+    const auto* attached=scene->getCurrentState().getAttachedBody(id);
+    const auto world=scene->getWorld()->getObject(id);
+    if(bool(attached)==bool(world))throw std::runtime_error("ECO65_CYCLE_TARGET_OWNER_REQUIRED");
+    return attached?attached->getGlobalCollisionBodyTransforms().at(0):m710::worldShapePose(*world,0);
+  }
+  void generateCycleTransition(NativeStageRecord& r) {
+    const auto begin=Clock::now();const auto& req=r.request;const auto& transition=req.at("transition");
+    const std::string event=transition.at("event_type"),kind=transition.at("kind");
+    const auto& after_req=transition.at("after_request");
+    r.result={{"status","NATIVE_TRANSITION_REJECTED"},{"generation_source",kind=="external_axis"?"EXTERNAL_AXIS":"SEMANTIC_EVENT"},
+      {"trajectory_present",false},{"returned_waypoint_count",0},{"native_solver_calls",J::object()},
+      {"mtc_generation",true},{"generated_during_task",true},{"task_id",req.at("task_id")},
+      {"stage_id",req.at("stage_id")},{"parent_stage_id",r.parent},{"request_id",req.at("request_id")},
+      {"pipeline_id",req.at("pipeline_id")},{"planner_id",req.at("planner_id")},{"event_type",event},
+      {"physical_execution","NOT_RUN"},{"execution_ready",false},{"sample_checks",J::array()}};
+    try {
+      if(kind!="event" && kind!="external_axis")throw std::runtime_error("ECO65_CYCLE_TRANSITION_KIND");
+      if((kind=="external_axis")!=(event=="COUPLED_LIFT"))throw std::runtime_error("ECO65_CYCLE_AXIS_KIND_MISMATCH");
+      const std::set<std::string> events={"ATTACH","RELEASE","NOMINAL_RECEIVE","IDEAL_RECEIVER_DRAIN","NEXT_TARGET","COUPLED_LIFT"};
+      if(!events.count(event))throw std::runtime_error("ECO65_CYCLE_EVENT_UNSUPPORTED");
+      checkCycleGeometry(after_req);
+      if(req.at("q_start")!=after_req.at("q_start") || req.at("task_id")!=after_req.at("task_id"))
+        throw std::runtime_error("ECO65_CYCLE_TRANSITION_Q_CHANGED");
+      const std::string target=req.at("process_policy").at("target_id"),next=after_req.at("process_policy").at("target_id");
+      if((event!="NEXT_TARGET" && target!=next) || (event=="NEXT_TARGET" && target==next))
+        throw std::runtime_error("ECO65_CYCLE_EVENT_TARGET_CHANGED");
+      auto complete=req.at("completed_ids").get<std::set<std::string>>();
+      auto next_complete=after_req.at("completed_ids").get<std::set<std::string>>();
+      if(event=="IDEAL_RECEIVER_DRAIN") {
+        if(complete.count(target))throw std::runtime_error("ECO65_CYCLE_DUPLICATE_DRAIN");
+        complete.insert(target);
+      }
+      if(complete!=next_complete)throw std::runtime_error("ECO65_CYCLE_UNRECORDED_COMPLETION");
+      if(event=="NEXT_TARGET" && (!complete.count(target)||complete.count(next)))
+        throw std::runtime_error("ECO65_CYCLE_NEXT_TARGET_NOT_AVAILABLE");
+      const auto& before_attachment=req.at("attachment");const auto& after_attachment=after_req.at("attachment");
+      if(event=="ATTACH") {
+        if(!before_attachment.is_null() || after_attachment.is_null() || req.at("stage")!="contact")
+          throw std::runtime_error("ECO65_CYCLE_ATTACH_STATE");
+      } else if(event=="RELEASE") {
+        if(before_attachment.is_null() || !after_attachment.is_null())throw std::runtime_error("ECO65_CYCLE_RELEASE_STATE");
+      } else if(before_attachment!=after_attachment)throw std::runtime_error("ECO65_CYCLE_UNRECORDED_ATTACHMENT");
+      const std::string interval=req.at("business_interval"),next_interval=after_req.at("business_interval");
+      const std::string expected_interval=event=="ATTACH"&&interval=="FIRST_APPROACH"?"OUTBOUND":
+        event=="RELEASE"?"RETURN":interval;
+      if(next_interval!=expected_interval || (event=="RELEASE"&&interval!="OUTBOUND"))
+        throw std::runtime_error("ECO65_CYCLE_BUSINESS_INTERVAL_CHANGED");
+      const double expected_reverse=next_interval==interval?req.at("j1_reverse_used_rad").get<double>():0.;
+      if(std::abs(after_req.at("j1_reverse_used_rad").get<double>()-expected_reverse)>1e-14)
+        throw std::runtime_error("ECO65_CYCLE_EVENT_REVERSE_BUDGET_CHANGED");
+      if(event!="NEXT_TARGET" && req.at("process_policy").at("selection_binding")!=after_req.at("process_policy").at("selection_binding"))
+        throw std::runtime_error("ECO65_CYCLE_SELECTION_CHANGED");
+      if(event!="COUPLED_LIFT" && req.at("mechanism_state")!=after_req.at("mechanism_state"))
+        throw std::runtime_error("ECO65_CYCLE_UNRECORDED_LIFT");
+      auto before_world=m710::ecoCycleObjects(req.at("world")),after_world=m710::ecoCycleObjects(after_req.at("world"));
+      if(event=="COUPLED_LIFT" && before_attachment.is_null() && !complete.count(target)) {
+        Eigen::Isometry3d original=Eigen::Isometry3d::Identity();
+        for(int k=0;k<3;++k)original.translation()[k]=cycle_binding->cartons.at(target).at("pose").at(k);
+        if((m710::processTransform(before_world.at(target).at("pose")).matrix()-original.matrix()).cwiseAbs().maxCoeff()>1e-12)
+          throw std::runtime_error("ECO65_CYCLE_LIFT_WITH_UNDRAINED_RECEIVER_FORBIDDEN");
+      }
+      auto a=before_world,b=after_world;
+      if(event=="ATTACH"||event=="RELEASE"||event=="NOMINAL_RECEIVE"||event=="IDEAL_RECEIVER_DRAIN") {a.erase(target);b.erase(target);}
+      if(a.size()!=b.size())throw std::runtime_error("ECO65_CYCLE_EVENT_WORLD_CHANGED");
+      for(const auto& item:a) {
+        if(!b.count(item.first))throw std::runtime_error("ECO65_CYCLE_EVENT_WORLD_ID_CHANGED");
+        const bool moving=event=="COUPLED_LIFT"&&cycle_binding->moving.count(item.first);
+        if((moving&&!m710::ecoCycleSameShape(item.second,b.at(item.first))) ||
+            (!moving&&item.second!=b.at(item.first)))throw std::runtime_error("ECO65_CYCLE_EVENT_UNRELATED_OBJECT_CHANGED");
+      }
+      if(event=="ATTACH" && (r.parent.empty() || tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent)->request.at("stage")!="contact"))
+        throw std::runtime_error("ECO65_CYCLE_ATTACH_WITHOUT_NATIVE_CONTACT");
+      r.clearance->phase="initial";
+      if(!r.clearance->check(r.start->getCurrentState()) || !r.process->check(r.start->getCurrentState(),event=="ATTACH")) {
+        r.result["failure"]={{"reason","ECO65_CYCLE_BEFORE_STATE_REJECTED"},
+          {"clearance",r.clearance->last_failure},{"process",r.process->last_failure}};return;
+      }
+      const bool dropped=event=="NOMINAL_RECEIVE";
+      if(dropped) {
+        if(r.parent.empty())throw std::runtime_error("ECO65_CYCLE_RECEIVE_WITHOUT_RELEASE");
+        const auto& prior=tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent)->request;
+        if(prior.at("op")!="eco65_transition" || prior.at("transition").at("event_type")!="RELEASE")
+          throw std::runtime_error("ECO65_CYCLE_RECEIVE_WITHOUT_RELEASE");
+      }
+      auto after=cycleScene(after_req,dropped);
+      r.result["after_check"]=after.evidence;
+      if(after.evidence.at("status")!="SUCCESS") {r.result["failure"]=after.evidence.at("failure");return;}
+      if(event=="ATTACH"||event=="RELEASE") {
+        if(!samePose(cycleTargetPose(r.start,target),cycleTargetPose(after.scene,target)))
+          throw std::runtime_error("ECO65_CYCLE_OWNERSHIP_TELEPORT");
+      }
+      if(event=="RELEASE") {
+        const auto pose=cycleTargetPose(r.start,target);const auto half=m710::processBox(req.at("process_policy").at("target")).half;
+        const Eigen::Vector3d extent=pose.linear().cwiseAbs()*half;
+        const auto& receiver=req.at("process_policy").at("task_contract").at("receiving");
+        const double gap=pose.translation().z()-extent.z()-receiver.at("bounds_D_m").at(1).at(2).get<double>();
+        if((pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-5 ||
+            std::abs(gap-cycle_binding->binding.at("mechanism_spec").at("config").at("desired_drop_m").get<double>())>1e-6)
+          throw std::runtime_error("ECO65_CYCLE_RELEASE_DROP_INVALID");
+        for(int k=0;k<2;++k)
+          if(pose.translation()[k]-extent[k]<receiver.at("bounds_D_m").at(0).at(k).get<double>()+receiver.at("margin_m").get<double>()-1e-6 ||
+             pose.translation()[k]+extent[k]>receiver.at("bounds_D_m").at(1).at(k).get<double>()-receiver.at("margin_m").get<double>()+1e-6)
+            throw std::runtime_error("ECO65_CYCLE_RELEASE_PROJECTION_OUTSIDE");
+      }
+      if(event=="IDEAL_RECEIVER_DRAIN") {
+        if(r.parent.empty())throw std::runtime_error("ECO65_CYCLE_DRAIN_WITHOUT_WITHDRAWAL");
+        const auto& previous=*tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent);
+        if(previous.request.at("stage")!="withdrawal" || !previous.trajectory)
+          throw std::runtime_error("ECO65_CYCLE_DRAIN_WITHOUT_WITHDRAWAL");
+        const auto carton=r.start->getWorld()->getObject(target);
+        if(!carton || carton->shapes_.size()!=1)throw std::runtime_error("ECO65_CYCLE_DRAIN_WORLD_TARGET_REQUIRED");
+        double minimum=INFINITY;std::string closest;
+        for(const auto& item:bound_tools) {
+          const auto* link=model->getLinkModel(item.get<std::string>());
+          for(size_t k=0;k<link->getShapes().size();++k) {
+            const double gap=m710::ecoCycleSolidDistance(link->getShapes()[k],r.start->getCurrentState().getCollisionBodyTransform(link,k),
+              carton->shapes_[0],m710::worldShapePose(*carton,0));
+            if(gap<minimum){minimum=gap;closest=item.get<std::string>();}
+          }
+        }
+        r.result["tool_target_separation"]={{"minimum_m",minimum},{"tool_link",closest},{"required_m",.01}};
+        if(minimum<.01-1e-9)throw std::runtime_error("ECO65_CYCLE_DRAIN_TOOL_NOT_SEPARATED");
+        const auto received=m710::ecoCycleWorldTarget(r.start,req);
+        if(!received.is_null()){r.result["failure"]=received;return;}
+        const auto box=m710::processBox(req.at("process_policy").at("target"));
+        const double bottom=box.pose.translation().z()-(box.pose.linear().cwiseAbs()*box.half).z();
+        if(std::abs(bottom-req.at("process_policy").at("task_contract").at("receiving").at("bounds_D_m").at(1).at(2).get<double>())>1e-6)
+          throw std::runtime_error("ECO65_CYCLE_DRAIN_BEFORE_RECEIVING");
+      }
+      const auto& samples=transition.at("sample_requests");
+      if(event=="COUPLED_LIFT" || dropped) {
+        if(samples.size()<2 || samples.size()>100)throw std::runtime_error("ECO65_CYCLE_FINITE_SAMPLES_REQUIRED");
+        double last=0;bool first=true;
+        const double start=event=="COUPLED_LIFT"?req.at("mechanism_state").at("height_m").get<double>():
+          m710::processTransform(before_world.at(target).at("pose")).translation().z();
+        const double end=event=="COUPLED_LIFT"?after_req.at("mechanism_state").at("height_m").get<double>():
+          m710::processTransform(after_world.at(target).at("pose")).translation().z();
+        if(start==end || (dropped && end>=start))throw std::runtime_error("ECO65_CYCLE_EMPTY_OR_REVERSED_AXIS");
+        for(size_t index=0;index<samples.size();++index) {
+          if(remainingBudget()<=1.)throw std::runtime_error("ECO65_CYCLE_SAMPLE_BUDGET_EXPIRED");
+          const auto& sample=samples.at(index);
+          if(sample.at("q_start")!=req.at("q_start") || sample.at("attachment")!=before_attachment ||
+              sample.at("completed_ids")!=req.at("completed_ids") ||
+              sample.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
+            throw std::runtime_error("ECO65_CYCLE_SAMPLE_STATE_CHANGED");
+          auto rows=m710::ecoCycleObjects(sample.at("world"));
+          if((index==0 && rows!=before_world) || (index+1==samples.size() && rows!=after_world))
+            throw std::runtime_error("ECO65_CYCLE_SAMPLE_ENDPOINT_WORLD_CHANGED");
+          const double value=event=="COUPLED_LIFT"?sample.at("mechanism_state").at("height_m").get<double>():
+            m710::processTransform(rows.at(target).at("pose")).translation().z();
+          if((first&&std::abs(value-start)>1e-12) || (!first&&(std::abs(value-last)>.010000001 ||
+                (end-start)*(value-last)<-1e-12)) || (index+1==samples.size()&&std::abs(value-end)>1e-12))
+            throw std::runtime_error("ECO65_CYCLE_SAMPLE_COVERAGE_INVALID");
+          if(rows.size()!=before_world.size())throw std::runtime_error("ECO65_CYCLE_SAMPLE_WORLD_CHANGED");
+          for(const auto& item:before_world) {
+            if(!rows.count(item.first))throw std::runtime_error("ECO65_CYCLE_SAMPLE_WORLD_ID_CHANGED");
+            if(dropped && item.first==target) {
+              auto original=m710::processTransform(item.second.at("pose")),actual=m710::processTransform(rows.at(item.first).at("pose"));
+              actual.translation().z()=original.translation().z();
+              if(!m710::ecoCycleSameShape(item.second,rows.at(item.first)) ||
+                  (original.matrix()-actual.matrix()).cwiseAbs().maxCoeff()>1e-12)
+                throw std::runtime_error("ECO65_CYCLE_DROP_MUST_BE_TRANSLATION_Z");
+            } else if(event=="COUPLED_LIFT"&&cycle_binding->moving.count(item.first)) {
+              if(!m710::ecoCycleSameShape(item.second,rows.at(item.first)))throw std::runtime_error("ECO65_CYCLE_LIFT_SHAPE_CHANGED");
+            } else if(item.second!=rows.at(item.first))throw std::runtime_error("ECO65_CYCLE_SAMPLE_UNRELATED_OBJECT_CHANGED");
+          }
+          auto checked=cycleScene(sample,dropped);
+          r.result["sample_checks"].push_back({{"index",index},{"axis_value_m",value},{"check",checked.evidence}});
+          if(checked.evidence.at("status")!="SUCCESS"){r.result["failure"]=checked.evidence.at("failure");return;}
+          first=false;last=value;
+        }
+        if(dropped) {
+          const auto box=m710::processBox(after_req.at("process_policy").at("target"));
+          const double bottom=box.pose.translation().z()-(box.pose.linear().cwiseAbs()*box.half).z();
+          if(std::abs(bottom-after_req.at("process_policy").at("task_contract").at("receiving").at("bounds_D_m").at(1).at(2).get<double>())>1e-6)
+            throw std::runtime_error("ECO65_CYCLE_RECEIVE_NOT_ON_SURFACE");
+        }
+      } else if(!samples.empty())throw std::runtime_error("ECO65_CYCLE_UNEXPECTED_EVENT_SAMPLES");
+      r.end=after.scene;r.trajectory.reset();r.ready=true;r.result["status"]="SUCCESS";
+      r.result["event_wall_s"]=seconds(begin);r.result["q_unchanged"]=true;
+      r.result["after_runtime_contract"]=after_req.at("process_policy").at("task_contract");
+      r.result["planning_only_status"]="PLANNING_ONLY_NOT_EXECUTABLE";
+    } catch(const std::exception& error) {
+      r.ready=false;r.end.reset();r.trajectory.reset();r.result["failure"]={{"reason",error.what()}};
+      r.result["event_wall_s"]=seconds(begin);
+    }
+  }
   J nativeTaskPlan(const J& req,const planning_scene::PlanningScenePtr& scene,
       const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process,bool diagnostic=false) {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
-    m710::validateNativeMotionScope(req);
+    const bool transition=req.at("op")=="eco65_transition";
+    if(transition) {if(!cycle_binding || diagnostic)throw std::runtime_error("ECO65_TRANSITION_SCOPE_REQUIRED");}
+    else m710::validateNativeMotionScope(req);
     const std::string task_id=req.at("task_id"),stage_id=req.at("stage_id");
     if(diagnostic) {
       const std::string stage=req.at("stage");
@@ -359,7 +631,7 @@ class Worker {
     }
     auto& session=*tasks.at(task_id);
     if(session.diagnostic!=diagnostic)throw std::runtime_error("DIAGNOSTIC_TASK_SCOPE_CHANGED");
-    if(req.at("clearance_policy").at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
+    if(!cycle_binding && req.at("clearance_policy").at("target_id")!=session.target_id) throw std::runtime_error("NATIVE_TASK_TARGET_ID_CHANGED");
     if(session.records.count(stage_id)) throw std::runtime_error("NATIVE_STAGE_ID_REUSED");
     if(session.records.size()>=4096) throw std::runtime_error("NATIVE_TASK_STAGE_CAPACITY");
     std::vector<std::string> ancestors;std::string cursor=parent;std::set<std::string> seen;
@@ -370,11 +642,36 @@ class Worker {
     std::reverse(ancestors.begin(),ancestors.end());
     if(ancestors.empty()) {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
+      if(cycle_binding && (req.at("business_interval")!="FIRST_APPROACH" ||
+          req.at("j1_reverse_used_rad")!=0. || req.at("process_policy").at("target_id")!=cycle_binding->binding.at("initial_target_id") ||
+          !req.at("completed_ids").empty()))
+        throw std::runtime_error("ECO65_CYCLE_INITIAL_RUNTIME_INVALID");
+      if(cycle_binding) {
+        const std::string target=req.at("process_policy").at("target_id");
+        Eigen::Isometry3d expected=Eigen::Isometry3d::Identity();
+        for(int k=0;k<3;++k)expected.translation()[k]=cycle_binding->cartons.at(target).at("pose").at(k);
+        if((cycleTargetPose(scene,target).matrix()-expected.matrix()).cwiseAbs().maxCoeff()>1e-12)
+          throw std::runtime_error("ECO65_CYCLE_INITIAL_CARTON_MOVED");
+      }
     } else {
       const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
+      const auto& previous_context=cycle_binding&&previous.request.at("op")=="eco65_transition"?
+        previous.request.at("transition").at("after_request"):previous.request;
+      if(cycle_binding && (previous_context.at("process_policy").at("target_id")!=req.at("process_policy").at("target_id") ||
+          previous_context.at("mechanism_state")!=req.at("mechanism_state") ||
+          previous_context.at("completed_ids")!=req.at("completed_ids") ||
+          previous_context.at("business_interval")!=req.at("business_interval")))
+        throw std::runtime_error("ECO65_CYCLE_PARENT_RUNTIME_CHANGED");
+      if(cycle_binding) {
+        const double expected_reverse=previous.result.contains("basic_path_check")?
+          previous.result.at("basic_path_check").at("j1_total_reverse_after_rad").get<double>():
+          previous_context.at("j1_reverse_used_rad").get<double>();
+        if(std::abs(req.at("j1_reverse_used_rad").get<double>()-expected_reverse)>1e-14)
+          throw std::runtime_error("ECO65_CYCLE_PARENT_REVERSE_BUDGET_CHANGED");
+      }
       if(req.contains("process_policy") && req.at("process_policy").contains("selection_binding")) {
-        if(!previous.request.at("process_policy").contains("selection_binding") ||
-           previous.request.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
+        if(!previous_context.at("process_policy").contains("selection_binding") ||
+           previous_context.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
           throw std::runtime_error("ECO65_ACTIVE_SELECTION_CHANGED_WITHIN_BRANCH");
       }
       if(previous.process && req.contains("process_policy") && !req.at("process_policy").at("initial_proximity").is_null()) {
@@ -396,6 +693,7 @@ class Worker {
     if(common<session.active.size()) ++session.backtracks;
     while(session.active.size()>common) {session.task->stages()->remove(-1);session.active.pop_back();}
     auto generate=[this](NativeStageRecord& r) {
+      if(r.request.at("op")=="eco65_transition") {generateCycleTransition(r);return;}
       const auto& req=r.request;const std::string pipeline=req.at("pipeline_id"),planner=req.at("planner_id");
       if(pipeline=="static_prior") {
         const auto begin=Clock::now();const std::string stage=req.at("stage");
@@ -642,7 +940,8 @@ class Worker {
             return nullptr;
           };
           r.result["basic_path_check"]=m710::basicSampledPath(r.start,*r.clearance,*r.process,path,resolution,
-              std::min(req.at("output_check_timeout_s").get<double>(),remainingBudget()-req.value("return_reserve_s",5.)),endpoint,req.value("j1_direction",0));
+              std::min(req.at("output_check_timeout_s").get<double>(),remainingBudget()-req.value("return_reserve_s",5.)),endpoint,req.value("j1_direction",0),
+              cycle_binding?req.at("j1_reverse_used_rad").get<double>():-1.,m710::kEcoCycleReverseLimit);
           failure=r.result["basic_path_check"]["failure"];
           r.result["dense_output_review"]="NOT_RUN_PROFILE";
           r.result["start_state_status"]="PASS";
@@ -711,8 +1010,13 @@ public:
     request_deadline=begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(budget));
     auto result=run(req);result["evaluation_profile"]=evaluation_profile;
     result["budget"]={{"request_budget_s",budget},{"remaining_on_return_s",remainingBudget()},{"return_reserve_s",req.value("return_reserve_s",5.)}};
-    if(req.value("search_trace",false) && !result.contains("search_trace"))
-      result["search_trace_status"]=req.value("pipeline_id",std::string())=="ompl"?"NOT_STARTED_NO_TREE":"NOT_APPLICABLE_PILZ";
+    if(req.value("search_trace",false) && !result.contains("search_trace")) {
+      const std::string pipeline=req.value("pipeline_id",std::string());
+      result["search_trace_status"]=pipeline=="ompl"?"NOT_STARTED_NO_TREE":
+        pipeline=="external_axis"?"NOT_APPLICABLE_EXTERNAL_AXIS":
+        pipeline=="semantic_event"?"NOT_APPLICABLE_SEMANTIC_EVENT":
+        req.at("op")=="ik"?"NOT_APPLICABLE_IK":"NOT_APPLICABLE_PILZ";
+    }
     result["request_wall_s"]=seconds(begin);return result;
   }
   J run(const J& req) {
@@ -784,6 +1088,14 @@ public:
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       if(req.at("identity").value("robot_variant",std::string())=="ECO65-B")
         m710::validateEco65MastExemption(bound_policy,model,bound_process_geometry,bound_tools);
+      const auto continuous_mode=req.value("continuous_task_mode",std::string());
+      if(!continuous_mode.empty()) {
+        if(continuous_mode!=m710::kEcoCycleMode || !directed_j1 || !planning_only ||
+            evaluation_profile!="chain_integration_v1" || planning_mode!="cold_from_scratch" ||
+            req.at("identity").value("robot_variant",std::string())!="ECO65-B")
+          throw std::runtime_error("ECO65_CONTINUOUS_MODE_SCOPE_INVALID");
+        cycle_binding=std::make_unique<m710::EcoCycleBinding>(req.at("coupled_cycle_binding"),bound_process_geometry);
+      }
       if(!bound_process_geometry.is_null() && bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
         if(!planning_only || planning_mode!="cold_from_scratch" || req.at("identity").at("robot_variant")!="ECO65-B" ||
            req.at("identity").at("task_tcp_link")!="calibration_probe_tcp" || bound_compliant!=J::array({"probe_tip"}))
@@ -806,9 +1118,11 @@ public:
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if(cycle_binding && req.value("continuous_task_mode",std::string())!=m710::kEcoCycleMode)
+      throw std::runtime_error("ECO65_CONTINUOUS_MODE_REQUIRED");
     if(req.value("evaluation_profile",std::string("strict"))!=evaluation_profile)
       throw std::runtime_error("EVALUATION_PROFILE_MISMATCH");
-    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
+    if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="eco65_transition") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
     if((op=="plan" || op=="diagnostic_connection" || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&
         req.value("planning_mode",std::string("cold_from_scratch"))!=planning_mode)
@@ -827,8 +1141,9 @@ public:
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
     if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
-      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task") throw std::runtime_error("UNKNOWN_OPERATION");
+      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task" && op!="eco65_transition") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
+    if(op=="eco65_transition" && !cycle_binding)throw std::runtime_error("ECO65_TRANSITION_MODE_REQUIRED");
     if(op=="retire_touch_task") {
       if(!planning_only || bound_process_geometry.value("geometry_type",std::string())!="known_tip_finite_datum_v1")throw std::runtime_error("TOUCH_TASK_RETIRE_SCOPE");
       const std::string task=req.at("task_id");const size_t count=tasks.erase(task);
@@ -1012,7 +1327,7 @@ public:
     }
     std::shared_ptr<m710::Clearance> clearance;
     std::shared_ptr<m710::ProcessPolicy> process;
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior") {
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior" || op=="eco65_transition") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
@@ -1022,8 +1337,10 @@ public:
         if(bound_process_geometry.is_null()) throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_REQUIRED");
         if(bound_process_geometry.value("geometry_type",std::string())=="cad_seal_contours_v1" ||
            bound_process_geometry.value("geometry_type",std::string())=="known_tip_finite_datum_v1") {
+          if(cycle_binding)checkCycleGeometry(req);
           for(auto it=bound_process_geometry.begin();it!=bound_process_geometry.end();++it)
-            if(!req.at("process_policy").contains(it.key()) || req.at("process_policy").at(it.key())!=it.value())
+            if(!(cycle_binding&&it.key()=="task_contract") &&
+                (!req.at("process_policy").contains(it.key()) || req.at("process_policy").at(it.key())!=it.value()))
               throw std::runtime_error("PROCESS_CONTOUR_GEOMETRY_BINDING_MISMATCH");
         } else if(req.at("process_policy").at("cups")!=bound_process_geometry.at("cups") ||
                   req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
@@ -1062,7 +1379,9 @@ public:
       if(!process)throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       const auto report=m710::basicSampledPath(scene,*clearance,*process,req.at("probe_path"),
         req.at("clearance_policy").at("edge_resolution_rad"),req.at("output_check_timeout_s"),
-        [](const moveit::core::RobotState&)->J{return nullptr;});
+        [](const moveit::core::RobotState&)->J{return nullptr;},
+        cycle_binding?m710::ecoCycleDirection(req):0,
+        cycle_binding?req.at("j1_reverse_used_rad").get<double>():-1.,m710::kEcoCycleReverseLimit);
       return {{"status",report.at("status")},{"basic_path_check",report},
         {"clearance",clearance->evidence()},{"process_policy",process->evidence()},
         {"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"},{"execution_authorized",false},
@@ -1112,11 +1431,14 @@ public:
     }
     if(op=="plan" || op=="diagnostic_connection") {
       const std::string phase=req.at("stage");
-      const int expected=directed_j1?(phase=="contact"||phase=="extraction"||phase=="transit"||phase=="place"?-1:phase=="withdrawal"||phase=="residence"?1:0):0;
+      const int expected=cycle_binding?m710::ecoCycleDirection(req):
+        directed_j1?(phase=="contact"||phase=="extraction"||phase=="transit"||phase=="place"?-1:phase=="withdrawal"||phase=="residence"?1:0):0;
       if(req.value("j1_direction",0)!=expected)throw std::runtime_error("J1_DIRECTION_POLICY_MISMATCH");
       // Validate starts and explicit goals under the SAME reserve used by OMPL.
       if(req.value("pipeline_id",std::string())=="ompl")clearance->phase="search";
-      if(req.contains("q_goal") && !m710::directedJ1(req.at("q_start").at(0),req.at("q_goal").at(0),expected))
+      if(req.contains("q_goal") && (cycle_binding?
+          (expected && req.at("j1_reverse_used_rad").get<double>()+std::max(0.,-expected*(req.at("q_goal").at(0).get<double>()-req.at("q_start").at(0).get<double>()))>m710::kEcoCycleReverseLimit):
+          !m710::directedJ1(req.at("q_start").at(0),req.at("q_goal").at(0),expected)))
         return {{"status","INVALID_GOAL_J1_DIRECTION"},{"j1_direction",expected}};
       if(!clearance->check(scene->getCurrentState())) return {{"status","INVALID_START_CLEARANCE"},{"failure",clearance->last_failure},{"clearance",clearance->evidence()},{"pipeline_calls",calls}};
       if(process && !process->check(scene->getCurrentState())) return {{"status","INVALID_START_PROCESS"},{"failure",process->last_failure},{"process_policy",process->evidence()},{"pipeline_calls",calls}};
@@ -1150,7 +1472,7 @@ public:
       return {{"status","SUCCESS"},{"stage_count",req.at("stages").size()}, {"world_count",last->getWorld()->size()},
         {"attached_objects",attached},{"mtc_composition_s",seconds(begin)},{"physical_execution","NOT_RUN"}};
     }
-    if(req.value("require_native_motion",false)) return nativeTaskPlan(req,scene,clearance,process,op=="diagnostic_connection");
+    if(req.value("require_native_motion",false) || op=="eco65_transition") return nativeTaskPlan(req,scene,clearance,process,op=="diagnostic_connection");
     const auto pipeline=req.at("pipeline_id").get<std::string>(); const auto planner=req.at("planner_id").get<std::string>();
     if(!pipelines.count(pipeline) || !((pipeline=="ompl"&&planner=="RRTConnectkConfigDefault") ||
        (pipeline=="pilz_industrial_motion_planner"&&(planner=="PTP"||planner=="LIN")))) throw std::runtime_error("PLANNER_UNAVAILABLE");

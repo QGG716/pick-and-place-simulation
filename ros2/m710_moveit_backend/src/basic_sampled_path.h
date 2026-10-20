@@ -13,7 +13,8 @@ namespace m710 {
 inline Json basicSampledPath(const planning_scene::PlanningScenePtr& scene,
                             Clearance& clearance, ProcessPolicy& process,
                             const Json& path, double resolution, double timeout_s,
-                            const std::function<Json(const moveit::core::RobotState&)>& endpoint, int direction=0) {
+                            const std::function<Json(const moveit::core::RobotState&)>& endpoint, int direction=0,
+                            double reverse_used=-1.,double reverse_limit=1e-6) {
   const auto begin=std::chrono::steady_clock::now();
   auto elapsed=[&](){return std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count();};
   Json report={{"status","BASIC_SAMPLED_INCOMPLETE"},{"sampling_rule","MAX_ABS_JOINT_DELTA_CEIL_V1"},
@@ -23,6 +24,8 @@ inline Json basicSampledPath(const planning_scene::PlanningScenePtr& scene,
     {"actual_endpoint_status","NOT_RUN"},{"continuous_swept_proof",false},{"failure",nullptr},
     {"j1_direction",direction},{"j1_tolerance_rad",kJ1DirectionEpsilon},{"j1_edge_checks",0}};
   size_t checked=0,clear=0,proc=0,collision_count=0,endpoints=0,edge=0;double fraction=0;
+  const bool total_reverse=reverse_used>=0.;double reverse=0.;
+  if(total_reverse)report["j1_total_reverse_before_rad"]=reverse_used;
   try {
     if(path.size()<2 || !std::isfinite(resolution) || resolution<=0 || !std::isfinite(timeout_s) || timeout_s<=0)
       throw std::runtime_error("INVALID_BASIC_SAMPLED_INPUT");
@@ -39,7 +42,11 @@ inline Json basicSampledPath(const planning_scene::PlanningScenePtr& scene,
     for(edge=0;edge<std::max(size_t(1),nodes.size()-1);++edge) {
       const auto& a=nodes[edge];const auto& b=nodes[std::min(edge+1,nodes.size()-1)];double maximum=0;
       report["j1_edge_checks"]=edge+1;
-      if(!directedJ1(a.at(0),b.at(0),direction)) {
+      reverse+=j1ReverseTravel(a.at(0),b.at(0),direction);
+      if(total_reverse)report["j1_total_reverse_after_rad"]=reverse_used+reverse;
+      if((total_reverse && (!std::isfinite(reverse_limit) || reverse_limit!=1e-6 ||
+           reverse_used+reverse>reverse_limit)) ||
+          (!total_reverse&&!directedJ1(a.at(0),b.at(0),direction))) {
         report["status"]="BASIC_SAMPLED_REJECTED";
         report["failure"]={{"reason","J1_DIRECTION_VIOLATION"},{"edge",edge},{"from_q",a},{"to_q",b},{"direction",direction}};
         throw std::runtime_error("J1_DIRECTION_VIOLATION");
