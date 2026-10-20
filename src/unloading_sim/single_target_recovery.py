@@ -84,6 +84,29 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                 if any(same(q,x) for x in invalid):
                     return [],None,dict(reason="SINGLE_TARGET_NO_NUMERICAL_PROGRESS"),costs
                 add(q)
+            if direct and pool and not state.get("initial_comparison_done"):
+                # A short numerical comparison at this SAME business pose. Do
+                # not let the first wrist branch become the only candidate just
+                # because its first path succeeds. No pose/roll/door scan.
+                state["initial_comparison_done"]=True
+                comparison_end=min(c._single_connection_deadline,
+                    perf_counter()+min(.3,max(0.,c._single_connection_deadline-perf_counter())*.01))
+                while perf_counter()<comparison_end:
+                    before=perf_counter()
+                    if before>=comparison_end:break
+                    alternate,failed=c.ik_pose_once(pose,start,obstacles,seed,stage=stage,
+                        attachment=None,purpose=purpose,residual_reason=residual_reason,
+                        ik_mode="bounded_target",solver_budget_s=min(.10,comparison_end-before),
+                        excluded_ik=[*invalid,*[p["q"] for p in pool]])
+                    spent=perf_counter()-before;costs["ik_s"]+=spent;row["ik_s"]+=spent;guard()
+                    row.setdefault("initial_ik_comparison",[]).append(dict(wall_s=spent,
+                        status="INCOMPLETE" if failed else "QUALIFIED",failure=brief(failed)))
+                    if failed:
+                        if failed.get("reason") not in {"NATIVE_IK_FAILED",residual_reason}:
+                            raise MoveItUnavailable("FIXED_TARGET_IK_REQUEST_FAILURE:"+str(failed.get("reason")))
+                        break  # optional comparison made no new progress
+                    count=len(pool);add(alternate)
+                    if len(pool)==count:break
             eligible=[p for p in pool if not p["endpoint_invalid"]]
             if not eligible:continue
             # Fair accumulated solve time before light joint-travel ranking.
@@ -107,37 +130,46 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                 # Improve only an actual detour, before any suffix is bound.
                 # A legal incumbent survives numerical timeout or quality loss.
                 m=incumbent[2]
-                detour=m and (m["weighted_joint_length_rad"]>1.4*max(m["endpoint_joint_distance_rad"],1e-6)
+                best_endpoint=min(p["joint_cost"] for p in eligible)
+                detour=m and (m["weighted_joint_length_rad"]>1.4*max(min(m["endpoint_joint_distance_rad"],best_endpoint),1e-6)
                     or (m.get("physical_contact_length_over_chord") or 0)>1.6)
                 remaining=c._single_connection_deadline-perf_counter()
                 if direct and detour and remaining>2.:
                     limit=min(c._single_connection_deadline,perf_counter()+min(4.,remaining*.1))
-                    alternatives=sorted((p for p in eligible if p is not candidate),key=lambda p:p["joint_cost"])
+                    # LIN may end at a different wrist branch than the chosen
+                    # joint goal. Include that original qualified goal: a failed
+                    # PTP does not mean a cheaper RRT route to it is impossible.
+                    alternatives=sorted((p for p in eligible
+                        if p["joint_cost"]<incumbent[2]["weighted_joint_length_rad"]-1e-8),
+                        key=lambda p:p["joint_cost"])
                     for alternate in alternatives:
                         if perf_counter()>=limit:break
                         then=perf_counter()
                         try:
                             better,failed,ev=c._native_plan(start,alternate["q"],obstacles,seed=seed,stage=stage,
                                 attachment=None,support_names=(),initial_proximity=None,purpose=purpose,
-                                allow_ompl=False,recovery_mode="shared_budget",search_deadline=limit,
-                                try_ptp=True,try_lin_pose=pose,try_prior=False)
+                                allow_ompl=True,recovery_mode="shared_budget",search_deadline=limit,
+                                try_ptp=False,try_lin_pose=None,try_prior=False)
                         except MoveItUnavailable as exc:
                             if str(exc)=="SINGLE_TARGET_STAGE_DEADLINE" and not c._native_cancelled():
                                 row["quality_stop"]="STAGE_DEADLINE_KEEP_INCUMBENT"
                                 costs["motion_s"]+=perf_counter()-then
                                 break
                             raise
-                        spent=perf_counter()-then;costs["motion_s"]+=spent
+                        spent=perf_counter()-then;costs["motion_s"]+=spent;alternate["motion_s"]+=spent
                         row.setdefault("quality_attempts",[]).append(dict(q=alternate["q"].tolist(),failure=brief(failed),wall_s=spent))
                         guard()
                         if failed:
                             if failed["reason"] not in {"DIRECT_CONNECTION_REJECTED","NATIVE_PLANNING_FAILED",
-                                    "NATIVE_PLANNING_TIMEOUT","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS","MOVEIT2_SEARCH_EXHAUSTED"}:
+                                    "NATIVE_PLANNING_TIMEOUT","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS",
+                                    "MOVEIT2_SEARCH_EXHAUSTED","NATIVE_NO_SEARCH_PROGRESS"}:
                                 raise MoveItUnavailable("QUALITY_REQUEST_FAILURE:"+failed["reason"])
                             continue
                         value=quality(better,ev,spent)
                         if value and value["weighted_joint_length_rad"]<incumbent[2]["weighted_joint_length_rad"]-1e-8:
                             incumbent=(better,np.asarray(better[-1]).copy(),value)
+                            row["quality_stop"]="LOWER_JOINT_TRAVEL_NATIVE_PATH"
+                            break
                 row["accepted_quality"]=incumbent[2]
                 row["incumbent_retained"]=incumbent[0] is path
                 add(incumbent[1])

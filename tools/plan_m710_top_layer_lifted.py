@@ -189,6 +189,8 @@ def main():
         command=[sys.executable,*sys.argv],pair_profile_enabled=False,task_budget_s=args.task_budget_s,stage_budget_s=args.stage_budget_s,
         approach_recovery_mode='shared_budget',ompl_attempt_quota=None,direct_first=args.direct_first,
         connection_slice_s=6.,native_rrt_request_slice_s=2.,direct_time_share_per_method=.10,
+        approach_quality_policy='same_pose_ik_comparison_and_native_rrt_incumbent_v2',
+        initial_ik_comparison_max_s=.30,quality_search_max_s=4.,quality_remaining_share=.10,
         search_operation='RESTART',tree_retained=False))
     rows=[]
     for seed in args.seeds:

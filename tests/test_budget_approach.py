@@ -126,9 +126,57 @@ def test_quality_failure_keeps_native_incumbent(monkeypatch):
     c._native_plan=plan
     path,_,failure,_=module.connect_fixed_target(c,np.eye(4),np.zeros(6),[],1,
         stage="pregrasp",purpose="FREE_APPROACH",residual_reason="FK")
-    assert path is incumbent and failure is None and len(calls)==2
+    assert path is incumbent and failure is None and len(calls)>1
+    assert all(x["allow_ompl"] and not x["try_ptp"] for x in calls[1:])
     assert c.connection_attempts[0]["incumbent_retained"]
     assert c.connection_attempts[0]["accepted_quality"]["stage_id"]=="original-native-stage"
+
+
+def test_short_same_pose_ik_comparison_precedes_motion_without_exhausting_stage(monkeypatch):
+    import unloading_sim.single_target_recovery as module
+    c,clock,_,iks,motions=fixture(monkeypatch)
+    c._native_limits=lambda:(90.,100.);c.empty_approach_direct_first=True
+    def ik(*a,**kw):
+        clock[0]+=.11;iks.append(kw)
+        if len(iks)==1:return np.ones(6),None
+        if len(iks)==2:return np.full(6,.1),None
+        return None,dict(reason="NATIVE_IK_FAILED",native=dict(bounded_search=True))
+    c.ik_pose_once=ik
+    path,q,f,cost=module.connect_fixed_target(c,np.eye(4),np.zeros(6),[],1,
+        stage="pregrasp",purpose="FREE_APPROACH",residual_reason="FK")
+    assert f is None and len(motions)==1 and len(iks)==3
+    assert np.array_equal(q,np.full(6,.1))
+    assert np.array_equal(motions[0]["start"],np.zeros(6))
+    assert cost["ik_s"]==pytest.approx(.33) and clock[0]<1.
+
+
+def test_lin_different_expensive_branch_compares_native_rrt_to_original_goal(monkeypatch):
+    import unloading_sim.single_target_recovery as module
+    c,clock,_,_,_=fixture(monkeypatch)
+    c._native_limits=lambda:(90.,100.);c.empty_approach_direct_first=True;c.robot=NS()
+    monkeypatch.setattr(module,"equivalent_bounded_configurations",lambda robot,q:[q])
+    ik_count=[0]
+    def ik(*a,**kw):
+        ik_count[0]+=1;clock[0]+=.1
+        if ik_count[0]==1:return np.full(6,.1),None
+        return None,dict(reason="NATIVE_IK_FAILED",native=dict(bounded_search=True))
+    c.ik_pose_once=ik;calls=[]
+    paths=[[np.zeros(6),np.ones(6)],[np.zeros(6),np.full(6,.1)]]
+    def plan(start,q,*a,**kw):
+        calls.append((q.copy(),kw));clock[0]+=.2
+        index=len(calls)-1
+        return paths[index],None,dict(attempts=[dict(status="SUCCESS",points=[dict(q=paths[index][-1])],
+            planner_id="LIN" if index==0 else "RRTConnectkConfigDefault",stage_id=f"native-{index}")])
+    c._native_plan=plan
+    monkeypatch.setattr(module,"path_metrics",lambda robot,p,*a:
+        dict(weighted_joint_length_rad=float(sum(p[0]["q"])),
+             endpoint_joint_distance_rad=float(sum(p[0]["q"])),physical_contact_length_over_chord=1.))
+    path,q,f,cost=module.connect_fixed_target(c,np.eye(4),np.zeros(6),[],1,
+        stage="pregrasp",purpose="FREE_APPROACH",residual_reason="FK")
+    assert f is None and path is paths[1] and len(calls)==2
+    assert np.array_equal(calls[0][0],calls[1][0])
+    assert calls[1][1]["allow_ompl"] and not calls[1][1]["try_ptp"] and calls[1][1]["try_lin_pose"] is None
+    assert c.connection_attempts[0]["accepted_quality"]["stage_id"]=="native-1"
 
 
 def test_failed_checkpoint_never_mutates_completed_state(monkeypatch,tmp_path):
