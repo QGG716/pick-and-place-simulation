@@ -10,6 +10,12 @@ from unloading_sim.moveit2_backend import box_message
 from unloading_sim.approach_quality import path_metrics
 
 
+def mechanism_key(height):
+    # Distinct native IEEE-754 endpoints can round to the same decimal string.
+    # Cache exact geometry by exact height; keep the strict world equality gate.
+    return float(height).hex()
+
+
 def export_incomplete(run,seed,output,protocol,result,attempt_name):
     """Show one isolated checked prefix. Never animate a failed goal as a path."""
     rows=[a for a in result['attempts'] if a.get('folder')]
@@ -22,7 +28,7 @@ def export_incomplete(run,seed,output,protocol,result,attempt_name):
     layout=load_workcell_layout(ROOT/protocol.get('active_layout_file','configs/workcells/m710id70_unloading_layout_v1.yaml'))
     root=attempt['root'];q=root['q_rad'];height=root['height_m'];worlds={};segments=[];time=0.
     def mechanism(h):
-        key=format(h,'.12f')
+        key=mechanism_key(h)
         worlds[key]=[box_message(b) for b in coupled_conveyor_state(layout,h,()).boxes]
         return key
     base=dict(target=attempt['target_id'],option=attempt['option'],cartons=root['world_cartons'],
@@ -100,7 +106,7 @@ def export(run,seed,output,attempt=None):
     native_time=0.;mechanism_time=0.;drop_time=0.;event_time=0.
     worlds={}
     def mechanism(h):
-        key=format(h,'.12f')
+        key=mechanism_key(h)
         if key not in worlds:worlds[key]=[box_message(b) for b in coupled_conveyor_state(layout,h,()).boxes]
         return key
     def add(segment,duration):
