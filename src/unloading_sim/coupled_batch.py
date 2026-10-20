@@ -6,6 +6,7 @@ All robot edges come from the current native Task. Failed candidates cannot comm
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
 import math
+from time import perf_counter
 import numpy as np
 from .conveyor_lift import coupled_conveyor_state
 from .coupled_lift_checks import assembly_mates, check_coupled_state
@@ -19,6 +20,7 @@ from .single_right_receiver import SingleRightReceiverConnector
 from .stage_motion_policy import MotionPurpose
 from .support import SupportRelationGraph
 from .workcell_layout import _obb_record
+from .junction_reception import reject_late_sync, require_receive_height, validate_junction_release
 
 
 def message_box(b):
@@ -74,6 +76,16 @@ class BatchState:
             predecessor_final_state_receipt=self.cycles[-1]['final_state_receipt'] if self.cycles else None)
 
     def commit(self,plan):
+        reject_late_sync(plan.get('option',{}))
+        if any(s.get('generation_source')=='NATIVE_EXTERNAL_AXIS' and s.get('stage')=='extraction'
+               for s in plan.get('stages',[])):
+            raise ValueError('EXTRACTION_THEN_LIFT_DISABLED')
+        if (plan.get('option',{}).get('reception') or {}).get('junction'):
+            measured=plan.get('actual_extraction_height_m',float('nan'))
+            if (plan.get('third_sync_disabled') is not True or
+                    not np.isfinite(measured) or abs(measured-plan['height_m'])>1e-8 or
+                    not plan.get('receive_policy_check',{}).get('reception',{}).get('passed')):
+                raise ValueError('JUNCTION_COMPLETE_ACCEPTANCE_MISSING')
         if plan['batch_root']!=self.root():raise ValueError('BATCH_COMMIT_ROOT_CHANGED')
         target=plan['target_id'];remaining=self.frozen.remaining_ids([e['target_id'] for e in self.ledger])
         events=plan['events'];types=[e['event_type'] for e in events]
@@ -111,16 +123,38 @@ def batch_scene(original,state,robot,layout):
 
 
 class CoupledBatchClient(SingleContactClient):
-    def __init__(self,client,*,binding):
+    def __init__(self,client,*,binding,expected_model_identity=None):
         self.coupled_enabled=True
+        self.expected_model_identity=expected_model_identity
         super().__init__(client,lifted_receiver_binding=binding,right_inner_enabled=True,search_trace_enabled=True)
+
+    def request(self,request,**kwargs):
+        if request.get('op')=='init' and self.expected_model_identity is not None:
+            comparable=lambda value:{k:v for k,v in value.items() if k!='scene_fingerprint'}
+            if comparable(request['identity'])!=comparable(self.expected_model_identity):
+                raise MoveItUnavailable('PREDECESSOR_MODEL_TOOL_OR_POLICY_IDENTITY_CHANGED')
+        return super().request(request,**kwargs)
 
 
 class CoupledCycleConnector(SingleRightReceiverConnector):
     lift_planner_id='COUPLED_LIFT'
 
+    def _native_limits(self):
+        stage,watchdog=super()._native_limits()
+        shared=getattr(self,'height_stage_deadlines',None)
+        if shared is not None:
+            prefix=getattr(self,'height_prefix_active',True)
+            key='prefix' if prefix else 'suffix'
+            deadline=shared.setdefault(key,perf_counter()+self.budget.stage_wall_time_s)
+            if prefix:deadline=min(deadline,self.height_visit_deadline)
+            remaining=deadline-perf_counter()
+            if remaining<=0:raise MoveItUnavailable('SINGLE_TARGET_STAGE_DEADLINE')
+            stage=min(stage,remaining)
+        return stage,watchdog
+
     def validate_template(self,target):
         target.validate()
+        reject_late_sync(self.option)
         if target.geometric_face_id!=self.option['face']['geometric_face_id']:
             raise MoveItUnavailable('COUPLED_BUSINESS_FACE_CHANGED')
 
@@ -136,11 +170,16 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def prepare_approach_start(self,start,target,obstacles,seed,row):
         if 'pre_approach_transition' not in self.receiver_binding:return start,obstacles
+        pre=self.receiver_binding['pre_approach_transition']
+        if pre['samples'][0]['world']==pre['samples'][-1]['world']:
+            self.receiver_raised=abs(pre['samples'][-1]['height_m']-self.option['height_m'])<1e-9
+            return start,obstacles
         self._pre_approach_lift=True
         try:
             state,world,success=self.lift_at(start,target,obstacles,seed,row,stage='pregrasp')
         finally:self._pre_approach_lift=False
-        self.receiver_raised=False
+        self.receiver_raised=abs(self.receiver_binding['samples'][0]['height_m']-
+                                self.receiver_binding['samples'][-1]['height_m'])<1e-9
         if not success:raise MoveItUnavailable('PRE_APPROACH_COUPLED_SWEEP_REJECTED')
         # A newly generated external-axis parent is a new connection context.
         # Keep prior prefix failures in the enclosing history, never transplant
@@ -148,35 +187,35 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         self._lift_recovery_state={}
         return state,world
 
-    def expected_contact(self,target,suction):return SingleContactConnector.expected_contact(self,target,suction)
+    def expected_contact(self,target,suction):
+        self.height_prefix_active=True
+        return SingleContactConnector.expected_contact(self,target,suction)
+
+    def _attached_suffix(self,*args,**kwargs):
+        # Prefix includes all required synchronization, contact and its checks.
+        # The suffix deadline persists if another height/configuration is tried.
+        self.height_prefix_active=False
+        return super()._attached_suffix(*args,**kwargs)
 
     def prepare_contact_start(self,start,target,obstacles,seed,row):
-        if self.option.get('late_receiver_sync'):return start,obstacles
-        return super().prepare_contact_start(start,target,obstacles,seed,row)
+        reject_late_sync(self.option)
+        if abs(bounds(next(b for b in obstacles if b.name=='conveyor_transverse'))[1][2]-self.option['height_m'])<1e-9:
+            self.receiver_raised=True
+            row['receive_sync_location']='ALREADY_AT_RECEIVE'
+            return start,obstacles
+        if self.option.get('synchronization')=='CONTACT':
+            return start,obstacles
+        end,world,success=self.lift_at(start,target,obstacles,seed,row,stage='pregrasp')
+        if not success and self.option.get('synchronization')=='PREGRASP':
+            row['failure']=dict(reason='NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS',
+                scope='ACTUAL_PREGRASP_CONFIGURATION_NOT_HEIGHT_UNREACHABILITY')
+        if success:row['receive_sync_location']='PREGRASP'
+        return end,world
 
     def complete_contact_plan(self,plan,row,end,target,obstacles,suction,seed):
-        if not self.option.get('late_receiver_sync'):return super().complete_contact_plan(plan,row,end,target,obstacles,suction,seed)
-        plan['events']=deepcopy(self.receiver_events)
-        return SingleExtractionConnector.complete_contact_plan(self,plan,row,end,target,obstacles,suction,seed)
-
-    def lift_attached_at(self,end,target,obstacles,attachment,seed):
-        world=[b for b in obstacles if b.name!=target.target_id]
-        final_world=[b for b in self.high_world() if b.name!=target.target_id]
-        req=self._build_native_request(end,end,world,seed=seed,stage='extraction',attachment=attachment)
-        receipt,_,transition=self._native_parent_for_request(end,req)
-        if transition is not None:raise MoveItUnavailable('LATE_SYNC_OWNERSHIP_CHANGED')
-        stage_s,timeout=self._native_limits();serialized=[box_message(b) for b in final_world]
-        req.update(parent_stage_id=receipt.stage_id,parent_state_receipt=receipt.evidence(),ownership_transition=None,
-            stage_id=self.native_task_id+':'+str(next(self._native_stage_ids)),pipeline_id='external_axis',planner_id='COUPLED_LIFT',
-            receiver_end_world=serialized,receiver_end_fingerprint=digest(serialized),allowed_planning_time_s=stage_s,
-            purpose=MotionPurpose.EXTRACTION_PROCESS.value)
-        raw=self.native.request(req,timeout=timeout,cancelled=self._native_cancelled)
-        if raw['status']!='SUCCESS':return None,None,raw
-        if raw.get('generation_source')!='NATIVE_EXTERNAL_AXIS' or not np.array_equal(raw.get('terminal_q'),end):
-            raise MoveItUnavailable('LATE_SYNC_RETURN_IDENTITY')
-        self.native_generated.append(dict(raw,stage='extraction',submitted_request=deepcopy(req),authoritative_status='SKIPPED_PLANNING_ONLY'))
-        state=self._native_issue_state(end,req['stage_id'],self._native_state_context(dict(req,world=serialized),endpoint=end,attachment=attachment))
-        return state,final_world,raw
+        reject_late_sync(self.option)
+        if not self.receiver_raised:row['receive_sync_location']='CONTACT'
+        return super().complete_contact_plan(plan,row,end,target,obstacles,suction,seed)
 
     @property
     def planar(self):return len(self.option['segment_directions_world'])==2
@@ -188,7 +227,10 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         return (SingleRightReceiverConnector if self.planar else SingleExtractionConnector)._initial_proximity(self,*args)
 
     def _build_native_request(self,*args,**kwargs):
+        reject_late_sync(getattr(self,'option',{}))
         req=SingleContactConnector._build_native_request(self,*args,**kwargs)
+        if kwargs.get('stage')=='extraction' and kwargs.get('attachment') is not None:
+            require_receive_height([message_box(b) for b in req['world']],self.option['height_m'])
         if getattr(self,'_pre_approach_lift',False):req['coupled_leg']='PRE_APPROACH'
         if getattr(self,'option',None) and self.planar and kwargs.get('stage')=='extraction' and kwargs.get('initial_proximity') is not None:
             req.update(receiver_template='COUPLED_PLANAR',process_substage=getattr(self,'_side_substage','RIGHT_INNER_Y'))
@@ -201,6 +243,7 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         return (SingleRightReceiverConnector if self.planar else SingleLiftedReceiverConnector).region_motion(self,*args)
 
     def complete_extraction_plan(self,plan,row,end,target,obstacles,attachment,seed):
+        reject_late_sync(self.option)
         if self.planar and self._native_selected_records(end)[-1].get('process_policy',{}).get('terminal_proximity')!=row['extraction_samples']['terminal_tracker']:
             raise MoveItUnavailable('COUPLED_FINAL_NATIVE_HISTORY_MISMATCH')
         box=attachment.box_at(end);height=StartHeight.capture(target.box)
@@ -212,12 +255,13 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             row.update(complete=False,failure=dict(reason='ACTUAL_RELEASE_REGION_NOT_REACHED',
                 scope='COMPLETE_CYCLE_CANDIDATE',blocking_stage=reason,detail=detail))
             return None,row
-        if self.option.get('late_receiver_sync'):
-            lifted,lift_world,checked=self.lift_attached_at(end,target,obstacles,attachment,seed)
-            if lifted is None:return reject('LATE_RECEIVER_SYNC',checked)
-            end=lifted;obstacles=[*lift_world,target.box]
-            plan['events'].append(dict(event_type='EXTERNAL_AXIS_MOTION',stage_id=checked['stage_id'],
-                attached=True,**checked['external_axis']))
+        actual_height=require_receive_height(obstacles,self.option['height_m'])
+        if not self.planar:
+            reception=validate_junction_release(box,target.box,obstacles,
+                self.option['face']['working_axis_into_box'],self.option['height_m'])
+            if (self.option.get('reception') or {}).get('junction') and not reception['junction']:
+                return reject('JUNCTION_REGION_CHANGED',reception)
+            check['reception']=reception
         if not check['passed']:return reject('RELEASE_HEIGHT',check)
         try:drop=nominal_drop(box,self.high_belt)
         except ValueError as exc:return reject('NOMINAL_DROP_GEOMETRY',str(exc))
@@ -249,6 +293,9 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         # check_start rejects invalid states at protocol scope; only use a native
         # checked departure, then require the restored ordinary clearance gate.
         tools,_=native_tool_collision_boxes(self,state)
+        landed_low,landed_high=bounds(landed)
+        relevant=[t for t in tools if bounds(t)[0][0]<=landed_high[0] and
+                  min(bounds(t)[1][1],landed_high[1])>=max(bounds(t)[0][1],landed_low[1])]
         direction=np.asarray(target.outward_normal)
         normal_gap=min(float(np.min(t.corners()@direction)-np.max(landed.corners()@direction)) for t in tools)
         distance=max(.005-normal_gap,0.)+2*float(self.ik['position_tolerance_m'])
@@ -270,6 +317,18 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             release_stage_id=req['stage_id'],landed_box=box_message(landed),nominal_release=dict(drop,passed=True,native=raw),
             separation=separated,target_still_attached=False,events=events,withdrawal=[np.asarray(q).tolist() for q in path],
             stages=[{k:deepcopy(r[k]) for k in ('stage','stage_id','parent_stage_id','generation_source','points','terminal_q','pipeline_id','planner_id','external_axis') if k in r} for r in records],
-            final_state_receipt=final.native_receipt,batch_root=deepcopy(self.batch_root))
+            final_state_receipt=final.native_receipt,batch_root=deepcopy(self.batch_root),
+            receive_policy_check=check,receive_sync_location=row.get('receive_sync_location'),
+            actual_extraction_height_m=actual_height,third_sync_disabled=True,
+            first_touch_tool_geometry=dict(
+                box_top_m=float(bounds(landed)[1][2]),
+                minimum_tool_bottom_m=min(float(bounds(t)[0][2]) for t in tools),
+                tool_bottoms_m={t.name:float(bounds(t)[0][2]) for t in tools},
+                outfeed_corridor_tool_bottoms_m={t.name:float(bounds(t)[0][2]) for t in relevant},
+                outfeed_vertical_envelope_gap_m=(min(float(bounds(t)[0][2]) for t in relevant)-
+                    float(landed_high[2])) if relevant else None,
+                envelope_scope='CONSERVATIVE_Y_OVERLAP_NEGATIVE_X_TOOL_ENVELOPES_NOT_PHYSICAL_TRANSPORT',
+                source='ACTUAL_RELEASE_Q_TOOL_COLLISION_GEOMETRY',
+                native_full_drop_checked=True,tool_q_held_during_drop=np.asarray(end).tolist()))
         row.update(actual_end_q_rad=np.asarray(final).tolist(),complete=True,failure=None)
         return plan,row

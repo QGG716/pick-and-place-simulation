@@ -60,7 +60,8 @@ try{
   const rendererInfo=await evaluate(`(()=>{const g=renderer.getContext(),e=g.getExtension('WEBGL_debug_renderer_info');return e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)})()`);
   console.log(JSON.stringify({renderer:rendererInfo}));
 
-  assert.equal(state.carton_count,40);assert.equal(state.completed_count,0);
+  const initialCount=await evaluate('batchData.initial_carton_count||40');
+  assert.equal(state.carton_count,initialCount);assert.equal(state.completed_count,0);
   const screenshot=async name=>{
     await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
     const r=await call('Page.captureScreenshot',{format:'png'});
@@ -74,10 +75,18 @@ try{
     assert.equal(actual.completed_count,s.completed);
     assert.ok(actual.flange_matrix_column_major.every((x,k)=>Math.abs(x-timeline.fk[i][k])<1e-7),'Rendered FK mismatch');
     assert.ok(actual.q_rad.every((x,k)=>Math.abs(x-s.q[k])<1e-9));
-    assert.equal(actual.carton_count,40-s.completed);
+    assert.equal(actual.carton_count,initialCount-s.completed);
     checks.push({segment:i,kind:s.kind,time:s.start,completed:actual.completed_count,cartons:actual.carton_count});
   }
+  for(const s of timeline.segments.filter(s=>s.kind==='drop')){
+    const a=await evaluate(`setBatchTime(${s.start});window.previewState`);
+    const b=await evaluate(`setBatchTime(${s.start+s.duration*.99});window.previewState`);
+    assert.deepEqual(a.q_rad,b.q_rad,'Tool must hold actual release q during nominal drop');
+    assert.ok(b.target_pose[2][3]<a.target_pose[2][3]);
+    checks.push({kind:'drop_fixed_robot_q',drop_m:a.target_pose[2][3]-b.target_pose[2][3]});
+  }
   await evaluate(`setBatchTime(${timeline.duration})`);await screenshot('final.png');
+  if(process.argv.includes('--side-closeup'))await evaluate('setBatchSideCloseup()');
   await call('Emulation.setDeviceMetricsOverride',{width:640,height:360,deviceScaleFactor:1,mobile:false});
   await evaluate(`(()=>{
     document.querySelector('header').style.display='none';document.querySelector('aside').style.display='none';
@@ -95,7 +104,7 @@ try{
   }
   assert.equal(errors.length,0);
   const final=await evaluate('window.previewState');assert.equal(final.completed_count,timeline.count);
-  assert.equal(final.carton_count,40-timeline.count);
+  assert.equal(final.carton_count,initialCount-timeline.count);
   await fs.writeFile(path.join(output,'browser-checks.json'),JSON.stringify({status:'PASS',errors,
     initial:state,final,checks,frames,width:640,height:360,fps:5,playback_speed:1,renderer:rendererInfo,
     classification:'NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL'},null,2));

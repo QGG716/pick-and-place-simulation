@@ -42,19 +42,49 @@ inline void validateCoupledBinding(const ProcessJson& b) {
 }
 inline ProcessJson coupledTransitionWorld(const ProcessJson& req,const ProcessJson& b) {
   const bool attached=!req.at("attachment").is_null();
+  if(req.at("stage")=="extraction")
+    throw std::runtime_error("EXTRACTION_THEN_LIFT_DISABLED");
   auto withoutTarget=[&](const ProcessJson& world){auto out=ProcessJson::array();for(const auto& box:world)
     if(!attached || box.at("id")!=b.at("target_id"))out.push_back(box);return out;};
   if(!coupledBinding(b) || !req.value("planning_only",false) || req.value("planning_mode","")!="cold_from_scratch" ||
       req.at("planner_id")!="COUPLED_LIFT" || req.at("q_start")!=req.at("q_goal") ||
       !req.at("ownership_transition").is_null() ||
       (req.value("parent_stage_id","").empty() && req.value("coupled_leg","")!="PRE_APPROACH") ||
-      (attached ? (req.at("stage")!="extraction" || !req.at("process_policy").at("initial_proximity").is_null() ||
-        !req.at("process_policy").at("support_names").empty() || req.value("parent_stage_id","").empty()) : (req.at("stage")!="pregrasp" && req.at("stage")!="contact")) ||
+      (req.at("stage")!="pregrasp" && req.at("stage")!="contact") ||
+      attached || // this existing protocol establishes ATTACH at extraction start
       req.at("world")!=withoutTarget(b.at("samples").front().at("world")) ||
       req.at("receiver_end_world")!=withoutTarget(b.at("samples").back().at("world")) ||
       req.at("process_policy").at("target_id")!=b.at("target_id"))
     throw std::runtime_error("COUPLED_TRANSITION_SCOPE_OR_WORLD_INVALID");
   return req.at("receiver_end_world");
+}
+inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& binding) {
+  if(!binding.contains("receive_contract") || req.at("stage")!="extraction")return;
+  const auto& contract=binding.at("receive_contract");
+  const double expected=contract.at("height_m");bool found=false;
+  for(const auto& raw:req.at("world"))if(raw.at("id")=="conveyor_transverse") {
+    const auto belt=processBox(raw);const double h=belt.pose.translation().z()+belt.half.z();
+    if(!std::isfinite(expected) || std::abs(h-expected)>1e-8)
+      throw std::runtime_error("EXTRACTION_BEFORE_REQUIRED_RECEIVE_HEIGHT");
+    found=true;
+  }
+  if(!found)throw std::runtime_error("RECEIVE_HEIGHT_WORLD_IDENTITY");
+  // Exact whole-mechanism world is bound at init and checked along the native
+  // parent chain. Payload ownership may differ; no fixed body may be omitted.
+  ProcessJson fixed=ProcessJson::array(),required=ProcessJson::array();
+  for(const auto& b:req.at("world"))if(b.value("category","")!="carton")fixed.push_back(b);
+  for(const auto& b:binding.at("samples").back().at("world"))if(b.value("category","")!="carton")required.push_back(b);
+  if(fixed!=required)throw std::runtime_error("RECEIVE_MECHANISM_WORLD_CHANGED");
+  if(contract.value("junction_front",false)) {
+    const auto target=processBox(contract.at("initial_target"));
+    const double h=2*target.pose.linear().row(2).cwiseAbs().dot(target.half);
+    const double hmin=target.pose.translation().z()-h/2-h-.05;
+    if(std::abs(expected-hmin)>1e-8)throw std::runtime_error("JUNCTION_FRONT_REQUIRES_HMIN");
+    const auto current=processBox(req.at("process_policy").at("target"));
+    if(std::abs(current.pose.translation().y()-target.pose.translation().y())>1e-5 ||
+        (current.pose.linear()-target.pose.linear()).cwiseAbs().maxCoeff()>2e-4)
+      throw std::runtime_error("JUNCTION_FRONT_Y_OR_ORIENTATION_CHANGED");
+  }
 }
 inline ProcessJson coupledWorldFailure(const ProcessJson& sample,const ProcessJson& binding) {
   const auto& world=sample.at("world");

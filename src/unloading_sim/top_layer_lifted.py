@@ -49,7 +49,7 @@ class FrozenTopLayer:
         return tuple(name for name in self.target_ids if name not in completed)
 
 
-def process_options(target, belt, frozen, remaining_cartons, *, occupied=()):
+def process_options(target, belt, frozen, remaining_cartons, *, occupied=(), longitudinal=None):
     """Front-first: full footprint decides Hmax versus lateral/Hmin.
 
     A middle carton outside the -Y belt boundary gets the same +Y process as
@@ -69,9 +69,17 @@ def process_options(target, belt, frozen, remaining_cartons, *, occupied=()):
     a, b, c, d = region["projection_center_limits_before_occupancy"]
     y = float(((target.center-belt.center) @ belt.rotation)[1])
     options = []
+    reception = None
+    if longitudinal is not None and a <= b and c <= y <= d:
+        from .junction_reception import reception_classification
+        from .lifted_reception import translated
+        projected = translated(target, [belt.center[0]+(a+b)/2-target.center[0],0,0])
+        reception = reception_classification(projected,belt,longitudinal)
     if a <= b and c <= d:
         if c <= y <= d:
-            name, height, legs = "FRONT_DIRECT_HMAX", expected["Hmax_world_m"], [[-1., 0., 0.]]
+            junction = reception is not None and reception["junction"]
+            name, height, legs = ("FRONT_DIRECT_HMIN" if junction else "FRONT_DIRECT_HMAX",
+                                 expected["Hmin_world_m"] if junction else expected["Hmax_world_m"], [[-1.,0.,0.]])
         else:
             sign = 1. if y < c else -1.
             name, height = "FRONT_LATERAL_HMIN", expected["Hmin_world_m"]
@@ -79,7 +87,8 @@ def process_options(target, belt, frozen, remaining_cartons, *, occupied=()):
         options.append(dict(template=name, face=directional_contact(target, [-1., 0., 0.]),
                             height_m=height, segment_directions_world=legs,
                             turn_center_y_interval_world_m=[float(c+belt.center[1]), float(d+belt.center[1])],
-                            region=deepcopy(region), requires_open_channel=len(legs) == 2))
+                            region=deepcopy(region), reception=deepcopy(reception),
+                            requires_open_channel=len(legs) == 2))
         if name=="FRONT_DIRECT_HMAX":
             options.append(dict(options[-1],template="FRONT_DIRECT_HMIN",
                 height_m=expected["Hmin_world_m"]))
@@ -99,7 +108,7 @@ def process_options(target, belt, frozen, remaining_cartons, *, occupied=()):
     return options
 
 
-def rank_remaining(frozen, cartons, completed, q, robot, belt):
+def rank_remaining(frozen, cartons, completed, q, robot, belt, *, longitudinal=None):
     """Current q and geometry; prefer direct exits and opening central space."""
     remaining = set(frozen.remaining_ids(completed))
     active = {b.name: b for b in cartons}
@@ -114,8 +123,8 @@ def rank_remaining(frozen, cartons, completed, q, robot, belt):
     rows = []
     for name in remaining:
         target = active[name]
-        options = process_options(target, belt, frozen, cartons)
-        direct = bool(options and options[0]["template"] == "FRONT_DIRECT_HMAX")
+        options = process_options(target, belt, frozen, cartons, longitudinal=longitudinal)
+        direct = bool(options and options[0]["template"].startswith("FRONT_DIRECT_"))
         channel=[]
         if options and options[0]['template']=='FRONT_LATERAL_HMIN':
             direction=options[0]['segment_directions_world'][0][1]

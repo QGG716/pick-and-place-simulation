@@ -106,12 +106,7 @@ class SingleContactClient:
                 and request.get('attachment') is not None and bool(request.get('parent_stage_id'))) or (
                 getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
                 and request.get('pipeline_id')=='pilz_industrial_motion_planner' and request.get('planner_id')=='LIN'
-                and request.get('attachment') is None and bool(request.get('parent_stage_id'))) or (
-                getattr(self,'coupled_enabled',False) and request.get('stage')=='extraction'
-                and request.get('pipeline_id')=='external_axis' and request.get('planner_id')=='COUPLED_LIFT'
-                and request.get('attachment') is not None and bool(request.get('parent_stage_id'))
-                and request.get('process_policy',{}).get('initial_proximity') is None
-                and request.get('process_policy',{}).get('support_names')==[])
+                and request.get('attachment') is None and bool(request.get('parent_stage_id')))
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))
@@ -417,6 +412,9 @@ class SingleContactConnector(PlanningOnlyConnector):
                 if not np.array_equal(prefix[0],initial):
                     raise MoveItUnavailable("PREGRASP_EXACT_START_CHANGED")
                 contact_start, obstacles = self.prepare_contact_start(prefix[-1], target, obstacles, seed, row)
+                if (row.get("failure") or {}).get("reason")=="NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS":
+                    row["times"]["total_s"]=perf_counter()-began
+                    return None,row  # Enclosing height visit may try another legal configuration.
                 # Output samples and receipt remain unchanged, including roundoff.
                 contact_goal=virtual_tcp_from_physical_contact(target.contact_pose,
                     self.flange_from_virtual_task_tcp,self.flange_from_physical_contact)

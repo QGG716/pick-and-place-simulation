@@ -19,6 +19,7 @@ from unloading_sim.top_layer_lifted import FrozenTopLayer,rank_remaining
 from unloading_sim.contact_target import simulation_contact_targets
 from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message
 from unloading_sim.moveit2_backend import MoveItUnavailable
+from unloading_sim.junction_reception import synchronization_options
 
 
 def save(path,data):
@@ -44,6 +45,8 @@ def checkpoint_candidate(state,plan,client,folder,out,row,connections):
     if any(not (folder/name).is_file() or (folder/name).stat().st_size==0 for name in required):
         raise ValueError('CHECKPOINT_REQUIRED_EVIDENCE_MISSING')
     save(out/'checkpoint.json',dict(root=proposed.root(),completed_count=len(proposed.ledger),
+        current_run_completed_count=len(proposed.cycles),
+        historical_completed_count=len(proposed.ledger)-len(proposed.cycles),
         plan_file=str(folder/'plan.json'),required_evidence_files=required))
     return proposed
 
@@ -65,60 +68,79 @@ def source_identity(args):
     return dict(source_commit=args.source_commit,development=False)
 
 
-def run_seed(args,original,built,frozen,seed,out):
+def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids=None):
     layout=original.policy.layout_validation.layout
-    state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),
+    state=initial_state or BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),
         float(original.receiver.center[2]+original.receiver.half_extents[2]))
+    historical_count=len(state.ledger);historical_ledger=deepcopy(state.ledger)
+    scope=tuple(frozen.target_ids if target_ids is None else target_ids)
+    def remaining():
+        return [n for n in frozen.remaining_ids([e['target_id'] for e in state.ledger]) if n in scope]
     initial=state.root();attempts=[];began=perf_counter();attempt_no=0
     flags=dict(qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
     def result(status):
-        n=len(state.ledger)
+        n=len(state.ledger)-historical_count
         return dict(schema='m710_coupled_top_layer_batch_v2',seed=seed,status=status,initial=initial,terminal=state.root(),
-            completed_count=n,target_count=len(frozen.target_ids),remaining_target_ids=list(frozen.remaining_ids([e['target_id'] for e in state.ledger])),
+            completed_count=n,target_count=len(scope),remaining_target_ids=remaining(),
+            historical_completed_count=historical_count,historical_ledger=historical_ledger,
             release_count=n,nominal_first_contact_count=n,separation_count=n,ideal_drain_count=n,
             ledger=state.ledger,cycles=state.cycles,attempts=attempts,planning_wall_s=perf_counter()-began,
             lower_layer_preserved=all(any(box_message(b)==box_message(o) for b in state.cartons) for o in original.cartons if o.name not in frozen.target_ids),
             hardware_lift_duration_s=None,nominal_drop_assumed=True,ideal_receiver_drain_assumed=True,**flags)
-    while frozen.remaining_ids([e['target_id'] for e in state.ledger]):
+    while remaining():
         scene=batch_scene(original,state,built.robot,layout)
         check=check_coupled_state(layout,state.height,state.cartons,designed_contacts=scene.snapshot['assembly']['designed_contacts'])
         save(out/f'world-{len(state.ledger)}.json',check)
         if not check['passed']:
             attempts.append(dict(failure='COMMITTED_WORLD_GEOMETRY_REJECTED',evidence=check));break
-        ranked=rank_remaining(frozen,state.cartons,[e['target_id'] for e in state.ledger],state.q,built.robot,scene.receiver)
+        ranked=rank_remaining(frozen,state.cartons,[e['target_id'] for e in state.ledger],state.q,built.robot,scene.receiver,
+            longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
+        ranked=[r for r in ranked if r['target_id'] in scope]
         accepted=False
         for ranked_target in ranked:
             target=next(b for b in state.cartons if b.name==ranked_target['target_id'])
             task_started=perf_counter();deadline=task_started+args.task_budget_s
+            shared_stages={'prefix':min(deadline,task_started+args.stage_budget_s)}
             options=[]
             low=float(original.receiver.center[2]+original.receiver.half_extents[2])
-            for option in ranked_target['options']:
-                options.append(option)
-                if state.height>low+.005:
-                    options.append(dict(option,synchronization='CHECKED_PRE_APPROACH_LOW_THEN_PROCESS_HEIGHT',pre_approach_height_m=low))
-                    options.append(dict(option,synchronization='CHECKED_LOW_APPROACH_EXTRACTION_THEN_ATTACHED_LIFT',pre_approach_height_m=low,late_receiver_sync=True))
+            business_options=ranked_target['options']
+            if getattr(args,'junction_only',False):
+                business_options=business_options[:1]
+                if not business_options or business_options[0]['template']!='FRONT_DIRECT_HMIN' or not business_options[0]['reception']['junction']:
+                    raise ValueError('REQUESTED_JUNCTION_FRONT_HMIN_NOT_APPLICABLE')
+            for option in business_options:
+                options.extend(synchronization_options(option,state.height,low))
             for option_index,option in enumerate(options):
-                if perf_counter()>=deadline:
-                    attempts.append(dict(target_id=target.name,complete=False,failure='SHARED_TASK_BUDGET_EXHAUSTED',
+                if perf_counter()>=min(deadline,shared_stages['prefix']):
+                    attempts.append(dict(target_id=target.name,complete=False,
+                        failure='SHARED_TASK_BUDGET_EXHAUSTED' if perf_counter()>=deadline else 'SHARED_PREFIX_BUDGET_EXHAUSTED',
                         unsearched_process_options=options[option_index:],unsearched_option_count=len(options)-option_index,
                         classification='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY',wall_s=0.))
                     break
                 attempt_no+=1;folder=out/f'attempt-{attempt_no:03d}';folder.mkdir()
                 row=dict(target_id=target.name,option=option,root=state.root(),folder=folder.name,complete=False)
                 attempts.append(row);started=perf_counter();client=None;c=None;evidence_saved=False;fatal=False
-                print(json.dumps(dict(seed=seed,attempt=attempt_no,target=target.name,process=option['template'],completed=len(state.ledger))),flush=True)
+                print(json.dumps(dict(seed=seed,attempt=attempt_no,target=target.name,process=option['template'],
+                    completed=len(state.ledger)-historical_count,historical_completed=historical_count)),flush=True)
                 try:
                     binding=coupled_binding(layout,state.cartons,state.height,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
                     if 'pre_approach_height_m' in option:
-                        pre=coupled_binding(layout,state.cartons,state.height,low,target.name,scene.snapshot['assembly']['designed_contacts'])
-                        binding=coupled_binding(layout,state.cartons,low,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
+                        temporary=option['pre_approach_height_m']
+                        pre=coupled_binding(layout,state.cartons,state.height,temporary,target.name,scene.snapshot['assembly']['designed_contacts'])
+                        binding=coupled_binding(layout,state.cartons,temporary,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
                         binding['pre_approach_transition']=pre
+                    binding['receive_contract']=dict(height_m=option['height_m'],initial_target=box_message(target),
+                        junction_front=bool((option.get('reception') or {}).get('junction') and
+                                            option['face']['geometric_face_id']=='x-'),third_sync_disabled=True)
                     os.environ['M710_MOVEIT_SEED']=str(seed)
-                    client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),binding=binding)
+                    client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),
+                        binding=binding,expected_model_identity=getattr(args,'expected_model_identity',None))
                     c=CoupledCycleConnector.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.empty_approach_direct_first=args.direct_first
+                    c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
+                    c.height_visit_deadline=min(shared_stages['prefix'],perf_counter()+20.)
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
@@ -137,7 +159,8 @@ def run_seed(args,original,built,frozen,seed,out):
                         # checkpoint BEFORE changing the completed batch root.
                         state=checkpoint_candidate(state,plan,client,folder,out,dict(row,wall_s=perf_counter()-started),c.connection_attempts)
                         row['complete']=True;accepted=True;evidence_saved=True
-                        print(json.dumps(dict(seed=seed,completed=len(state.ledger),terminal_q=state.q.tolist(),height=state.height)),flush=True)
+                        print(json.dumps(dict(seed=seed,completed=len(state.ledger)-historical_count,
+                            historical_completed=historical_count,terminal_q=state.q.tolist(),height=state.height)),flush=True)
                         break
                     row['failure']=detail.get('failure');row['classification']='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY'
                 except Exception as exc:
@@ -146,7 +169,7 @@ def run_seed(args,original,built,frozen,seed,out):
                     (folder/'exception.txt').write_text(traceback.format_exc())
                     recoverable=isinstance(exc,MoveItUnavailable) and str(exc) in {
                         'NATIVE_REQUEST_SHARED_BUDGET_EXHAUSTED','SINGLE_TARGET_STAGE_DEADLINE',
-                        'PRE_APPROACH_COUPLED_SWEEP_REJECTED','RECEIVER_REGION_STAGE_DEADLINE'}
+                        'PRE_APPROACH_COUPLED_SWEEP_REJECTED','RECEIVER_SYNC_CANDIDATE_REJECTED','RECEIVER_REGION_STAGE_DEADLINE'}
                     if not recoverable:
                         fatal=True
                         raise
@@ -163,7 +186,7 @@ def run_seed(args,original,built,frozen,seed,out):
                     save(folder/'summary.json',row);save(out/'result.json',result('REQUEST_STOPPED' if fatal else 'RUNNING'))
             if accepted:break
         if not accepted:break
-    final=result('COMPLETE_PLANNING_ONLY' if len(state.ledger)==len(frozen.target_ids) else 'INCOMPLETE_RETAINED')
+    final=result('COMPLETE_PLANNING_ONLY' if not remaining() else 'INCOMPLETE_RETAINED')
     save(out/'result.json',final);return final
 
 

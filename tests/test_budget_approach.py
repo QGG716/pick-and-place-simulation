@@ -186,8 +186,8 @@ def test_failed_checkpoint_never_mutates_completed_state(monkeypatch,tmp_path):
         Path(__file__).resolve().parents[1]/"tools/plan_m710_top_layer_lifted.py")
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     class State:
-        def __init__(self):self.ledger=[]
-        def commit(self,plan):self.ledger.append(plan["target"])
+        def __init__(self):self.ledger=[];self.cycles=[]
+        def commit(self,plan):self.ledger.append(plan["target"]);self.cycles.append(plan)
         def root(self):return dict(completed=self.ledger)
     state=State();folder=tmp_path/"attempt";folder.mkdir()
     (folder/"attempt.json").write_text("{}")

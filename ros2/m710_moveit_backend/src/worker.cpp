@@ -323,6 +323,7 @@ class Worker {
   J nativeTaskPlan(const J& req,const planning_scene::PlanningScenePtr& scene,
       const std::shared_ptr<m710::Clearance>& clearance,const std::shared_ptr<m710::ProcessPolicy>& process,bool diagnostic=false) {
     if(req.contains("path") || req.contains("stages")) throw std::runtime_error("NATIVE_COLD_EXTERNAL_PATH_FORBIDDEN");
+    if(m710::coupledBinding(receiver_binding))m710::validateReceiveHeight(req,receiver_binding);
     if(req.value("pipeline_id",std::string())=="external_axis") {
       if(m710::coupledBinding(receiver_binding))m710::coupledTransitionWorld(req,m710::activeCoupledBinding(req,receiver_binding));
       else m710::receiverTransitionWorld(req,receiver_binding);

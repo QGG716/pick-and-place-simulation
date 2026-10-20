@@ -83,7 +83,13 @@ def export(run,seed,output):
         target=None,option={},source='COMMITTED_BATCH_STATE'),1.);event_time+=1.
     data=dict(model=model,segments=segments,worlds=worlds,seed=seed,source_commit=protocol['source_commit'],
         result={k:result[k] for k in ('completed_count','target_count','lower_layer_preserved','planning_wall_s','remaining_target_ids')},
-        lower_count=len(protocol['original_cartons'])-result['target_count'],duration=time,times=dict(native_trajectory_s=native_time,lift_demo_s=mechanism_time,nominal_drop_s=drop_time,
+        lower_count=len(protocol['original_cartons'])-len(protocol['frozen']['target_ids']),
+        initial_carton_count=len(root['world_cartons']),historical_completed_count=result.get('historical_completed_count',0),
+        single_junction=protocol.get('scope')=='ONE_NEW_JUNCTION_C00',
+        junction_evidence=({k:result['cycles'][0].get(k) for k in ('option','receive_sync_location',
+            'actual_extraction_height_m','receive_policy_check','first_touch_tool_geometry')} if protocol.get('scope')=='ONE_NEW_JUNCTION_C00' else None),
+        duration=time,times=dict(native_trajectory_s=native_time,lift_demo_s=mechanism_time,nominal_drop_s=drop_time,
+            nominal_drop_distance_m=result['cycles'][0]['nominal_release']['drop_m'] if protocol.get('scope')=='ONE_NEW_JUNCTION_C00' else None,
             event_display_s=event_time,hardware_lift_s=None),physical_execution='NOT_RUN',execution_ready=False,
         qualification_status='NOT_EVALUATED',continuous_swept_proof=False)
     data['fk_witnesses']=[robot.named_link_frames(np.asarray(s['points'][0]['q'] if s['kind']=='motion' else s['q']))['flange'].T.reshape(-1).tolist() for s in segments]
