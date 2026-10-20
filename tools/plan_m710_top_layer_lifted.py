@@ -173,6 +173,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         chosen=eccentric_target(chosen,frozen,option['world_y_offset_m'],scene.policy.data['suction'])
                         row['eccentric_domain_intervals_m']=intervals
                         row['candidate_id']=chosen.candidate_id
+                        row['target']=chosen.evidence()
                     plan,detail=c.plan_target(chosen,state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
                     save(folder/'attempt.json',detail)
                     if plan is not None:
@@ -199,6 +200,10 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     if client:
                         try:
                             if not evidence_saved:
+                                if c and getattr(c,'_single_active_row',None) and not (folder/'attempt.json').exists():
+                                    failed_detail=deepcopy(c._single_active_row)
+                                    failed_detail.update(complete=False,request_exception=row.get('failure'))
+                                    save(folder/'attempt.json',failed_detail)
                                 save(folder/'requests.json',client.records)
                                 save(folder/'search-trace.json',dict(model=client.trace_inputs.get('model'),attempts=client.traces))
                                 if c:save(folder/'connection-attempts.json',c.connection_attempts)

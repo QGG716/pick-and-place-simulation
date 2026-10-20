@@ -3,8 +3,11 @@ import numpy as np
 
 
 def upper_arm(robot, q):
-    frames = robot.joint_axis_frames(q)
-    shoulder, elbow = frames["J2"][0], frames["J3"][0]
+    # Both production Pinocchio and lightweight URDF backends expose link FK.
+    # Official J2/J3 child frames are at the structural joint origins; joint
+    # rotation changes their orientation, not their origin position.
+    frames = robot.named_link_frames(q)
+    shoulder, elbow = frames["J2_link"][:3,3], frames["J3_link"][:3,3]
     u = elbow-shoulder
     length = float(np.linalg.norm(u))
     if not np.isfinite(length) or length < 1e-9:

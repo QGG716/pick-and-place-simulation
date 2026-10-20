@@ -403,6 +403,33 @@ class PinocchioHppFclBackend:
             frames.append(self.fk(q))
         return frames
 
+    def upper_arm_mechanism_gap(self, q, obstacles):
+        """Descriptive J2 mesh/scissor surface gap; never a validity result."""
+        selected=[b for b in obstacles if b.name.startswith("lift_transverse_")]
+        if not selected:return dict(surface_gap_m=None,reason="NO_SCISSOR_GEOMETRY")
+        try:
+            self._update_geometry(q)
+            gaps=[]
+            for index,shape in enumerate(self.geometry_model.geometryObjects):
+                frame=int(shape.parentFrame)
+                if str(self.model.frames[frame].name)!="J2_link":continue
+                placement=self.base_transform @ self._matrix(self.geometry_data.oMg[index])
+                tf=_transform(self.coal,placement[:3,:3],placement[:3,3])
+                for box in selected:
+                    other=self.coal.Box(*(2*box.half_extents).tolist())
+                    other_tf=_transform(self.coal,box.rotation,box.center)
+                    gap=self._distance(shape.geometry,tf,other,other_tf)
+                    if not np.isfinite(gap):
+                        return dict(surface_gap_m=None,reason="UNKNOWN_SOFT_DISTANCE")
+                    gaps.append((max(0.,gap),box.name))
+            if not gaps:return dict(surface_gap_m=None,reason="NO_OFFICIAL_J2_MESH")
+            gap,name=min(gaps)
+            return dict(surface_gap_m=float(gap),pair=["J2_link",name],
+                scope="SURFACE_DISTANCE_SOFT_RANK_ONLY_NOT_SOLID_CONTAINMENT_OR_ACCEPTANCE")
+        except Exception as exc:
+            # Optional scoring failure must not reject an otherwise valid goal.
+            return dict(surface_gap_m=None,reason="SOFT_DISTANCE_UNAVAILABLE",detail=type(exc).__name__)
+
     def link_capsules(self, q: np.ndarray) -> list[Capsule]:
         frames = self.frames(q, include_tool=True)
         # Multi-DOF joints are rejected in __init__, so one non-universe joint

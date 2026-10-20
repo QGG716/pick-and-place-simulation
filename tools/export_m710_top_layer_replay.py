@@ -58,6 +58,16 @@ def export_incomplete(run,seed,output,protocol,result,attempt_name):
             nominal_drop_distance_m=None,event_display_s=2.,hardware_lift_s=None),
         physical_execution='NOT_RUN',execution_ready=False,qualification_status='NOT_EVALUATED',continuous_swept_proof=False)
     data['fk_witnesses']=[layout.robot().named_link_frames(np.asarray(q))['flange'].T.reshape(-1).tolist() for s in segments]
+    if protocol.get('right_front_eccentric'):
+        from unloading_sim.right_front_eccentric import candidate_deltas
+        from unloading_sim.junction_reception import temporary_heights
+        domain=attempt['eccentric_domain_intervals_m']
+        delta_count=sum(1 for _ in candidate_deltas(domain))
+        height_count=sum(1 for _ in temporary_heights(attempt['option']['height_m'],
+            protocol['temporary_height_minimum_m']))
+        data['unsearched_options']=delta_count*height_count-len(rows)
+        data['unsearched_label']='未访问候选（δ/高度；两同步路线共享接近）'
+        data['integration_failure']=result['status']=='REQUEST_STOPPED'
     write_viewer(data,output)
     print(json.dumps(dict(output=str(output),candidate=attempt['folder'],completed=0,duration=time)))
 

@@ -76,3 +76,38 @@ def test_failed_optional_preference_keeps_qualified_low_goal(monkeypatch,robot):
         stage="pregrasp",purpose="FREE_APPROACH",residual_reason="FK")
     assert path and f is None and len(motions)==1 and len(calls)==2
     np.testing.assert_array_equal(q,low)
+
+
+def test_production_connector_backend_matches_official_structural_fk(robot):
+    from unloading_sim.layout_single_carton import (load_layout_motion_policy,
+        build_verified_motion_input, _build_automatic_trajectory_connector)
+    root=Path(__file__).resolve().parents[1]
+    policy=load_layout_motion_policy(root/"configs/validation/m710id70_proof_of_concept.yaml")
+    scene=build_verified_motion_input(policy,root)
+    built=_build_automatic_trajectory_connector(scene,robot)
+    assert built.connector is not None
+    actual=built.connector.robot
+    assert type(actual).__name__=="PinocchioHppFclBackend"
+    limits=actual.joint_limits.copy()
+    for index in range(8):
+        q=numerical_seed(actual,np.zeros(6),71070,index)
+        expected=upper_arm(robot,q);observed=upper_arm(actual,q)
+        np.testing.assert_allclose(observed["shoulder_world_m"],expected["shoulder_world_m"],atol=1e-12)
+        np.testing.assert_allclose(observed["elbow_world_m"],expected["elbow_world_m"],atol=1e-12)
+        assert observed["elevation_rad"]==pytest.approx(expected["elevation_rad"],abs=1e-12)
+        assert 0 <= soft_cost(actual,q,np.zeros(6))["cost"] <= 1
+    np.testing.assert_array_equal(actual.joint_limits,limits)
+    from unloading_sim.geometry import OBB
+    q=np.zeros(6)
+    far=OBB([20.,20.,20.],[.1,.1,.1],np.eye(3),"lift_transverse_test_far","environment")
+    measured=actual.upper_arm_mechanism_gap(q,[far])
+    assert measured["surface_gap_m"] > .05
+    assert measured["pair"]==["J2_link",far.name]
+    assert actual.upper_arm_mechanism_gap(q,[])["surface_gap_m"] is None
+    assert soft_cost(actual,q,q,.05)["cost"] < soft_cost(actual,q,q,.005)["cost"]
+    # Failure of optional distance scoring is neutral, never a validity verdict.
+    original=actual._distance
+    def unavailable(*a):raise RuntimeError("TEST_DISTANCE_UNAVAILABLE")
+    actual._distance=unavailable
+    assert actual.upper_arm_mechanism_gap(q,[far])["surface_gap_m"] is None
+    actual._distance=original

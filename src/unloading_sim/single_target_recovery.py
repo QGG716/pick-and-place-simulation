@@ -47,7 +47,11 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                     joint_cost=float(np.abs(v-original_q).sum()),endpoint_invalid=False))
                 if posture:
                     from .upper_arm_preference import soft_cost
-                    pool[-1]["upper_arm_preference"]=soft_cost(c.robot,v,original_q)
+                    gap=(c.robot.upper_arm_mechanism_gap(v,obstacles) if hasattr(c.robot,"upper_arm_mechanism_gap")
+                         else dict(surface_gap_m=None,reason="BACKEND_HAS_NO_OPTIONAL_GAP_METRIC"))
+                    pool[-1]["upper_arm_preference"]=dict(
+                        soft_cost(c.robot,v,original_q,clearance_m=gap["surface_gap_m"]),
+                        mechanism_surface_gap=gap)
     def quality(path,evidence,elapsed):
         if not hasattr(c,"robot"):return None
         successful=[a for a in evidence.get("attempts",[]) if a.get("status")=="SUCCESS" and a.get("points")]
