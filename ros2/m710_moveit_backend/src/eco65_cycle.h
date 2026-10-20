@@ -15,7 +15,7 @@
 namespace m710 {
 using CycleJson=nlohmann::json;
 inline constexpr const char* kEcoCycleMode="eco65_coupled_cycle_v1";
-inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_BUSINESS_INTERVAL_TOTAL_REVERSE_1E6_V1";
+inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2";
 inline constexpr double kEcoCycleReverseLimit=1e-6;
 inline int ecoCycleDirection(const CycleJson& req) {
   if(req.value("continuous_task_mode",std::string())!=kEcoCycleMode ||
@@ -24,7 +24,7 @@ inline int ecoCycleDirection(const CycleJson& req) {
       req.value("j1_reverse_limit_rad",-1.)!=kEcoCycleReverseLimit)
     throw std::runtime_error("ECO65_BUSINESS_DIRECTION_REQUIRED");
   const std::string interval=req.at("business_interval");
-  const int direction=interval=="FIRST_APPROACH"?0:interval=="OUTBOUND"?-1:interval=="RETURN"?1:2;
+  const int direction=interval=="FIRST_APPROACH"?-1:interval=="OUTBOUND"?-1:interval=="RETURN"?1:2;
   const double used=req.value("j1_reverse_used_rad",-1.);
   if(direction==2 || req.at("j1_direction")!=direction || !std::isfinite(used) ||
       used<0 || used>kEcoCycleReverseLimit)

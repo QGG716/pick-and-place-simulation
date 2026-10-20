@@ -16,8 +16,11 @@ static J pose(double x=0.,double y=0.,double z=0.) {
 int main() {
   try {
     J req={{"continuous_task_mode",m710::kEcoCycleMode},{"j1_direction_policy",m710::kEcoCycleJ1Policy},
-      {"j1_reverse_used_rad",0.},{"j1_reverse_limit_rad",1e-6},{"business_interval","FIRST_APPROACH"},{"j1_direction",0}};
-    require(m710::ecoCycleDirection(req)==0,"FIRST_APPROACH_DIRECTION");
+      {"j1_reverse_used_rad",0.},{"j1_reverse_limit_rad",1e-6},{"business_interval","FIRST_APPROACH"},{"j1_direction",-1}};
+    require(m710::ecoCycleDirection(req)==-1,"FIRST_APPROACH_DIRECTION");
+    require(m710::directedJ1(1.,.8,m710::ecoCycleDirection(req)),"FIRST_APPROACH_CLOCKWISE_ACCEPT");
+    require(!m710::directedJ1(.8,1.,m710::ecoCycleDirection(req)),"FIRST_APPROACH_COUNTERCLOCKWISE_REJECT");
+    auto old=req;old["j1_direction"]=0;rejects([&]{m710::ecoCycleDirection(old);});
     req["business_interval"]="OUTBOUND";req["j1_direction"]=-1;
     require(m710::ecoCycleDirection(req)==-1,"OUTBOUND_DIRECTION");
     req["business_interval"]="RETURN";req["j1_direction"]=1;req["stage"]="contact";
@@ -30,6 +33,15 @@ int main() {
       reverse+=m710::j1ReverseTravel(q,next,1);q=next;}
     require(reverse>m710::kEcoCycleReverseLimit,"SMALL_REVERSE_EDGES_MUST_ACCUMULATE");
     require(m710::j1ReverseTravel(3.,-3.,1)==6.,"RAW_ANGLE_MUST_NOT_WRAP");
+    J edges={{"edge_alignment",{{"schema","rigid_tool_face_edge_alignment_v1"},
+      {"axes_contact_frame",{{1.,0.,0.},{0.,0.,1.}}},{"tolerance_rad",std::acos(-1.)/180.}}}};
+    Eigen::Isometry3d contact=Eigen::Isometry3d::Identity();
+    contact.linear()<<1,0,0,0,0,-1,0,1,0;
+    require(m710::checkSealEdgeAlignment(edges,contact,2).at("status")=="PASS","CAD_EDGE_DIRECT");
+    contact.linear()=Eigen::AngleAxisd(std::acos(-1.)/2,Eigen::Vector3d::UnitZ())*contact.linear();
+    require(m710::checkSealEdgeAlignment(edges,contact,2).at("status")=="PASS","CAD_EDGE_SWAPPED");
+    contact.linear()=Eigen::AngleAxisd(std::acos(-1.)/4,Eigen::Vector3d::UnitZ())*contact.linear();
+    require(m710::checkSealEdgeAlignment(edges,contact,2).at("status")=="FAIL","CAD_EDGE_DIAGONAL_REJECTED");
     auto level=Eigen::Isometry3d::Identity();
     level.linear()=Eigen::AngleAxisd(.7,Eigen::Vector3d::UnitZ()).toRotationMatrix();
     require(m710::ecoCycleLevelBox(level),"PURE_YAW_IS_LEVEL");
@@ -72,7 +84,7 @@ int main() {
     bad=req;bad["world"].push_back({{"id","unknown"},{"size",{1,1,1}},{"pose",pose()}});
     rejects([&]{contract.checkRequest(bad);});
     std::cout<<J({{"status","PASS"},{"scope","SYNTHETIC_DIRECTION_AND_SCENE_PROTOCOL_ONLY"},
-      {"cases",19},{"accumulated_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
+      {"cases",25},{"accumulated_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
     return 0;
   } catch(const std::exception& error) {std::cerr<<error.what()<<std::endl;return 1;}
 }

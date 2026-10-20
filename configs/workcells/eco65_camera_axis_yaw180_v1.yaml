@@ -1,0 +1,8 @@
+schema: eco65_camera_axis_yaw_v1
+yaw_deg: 180.0
+pole_part_id: mast_part_019
+expected_axis_point_mast_m: [0.1045, -0.00405, 0.008]
+downward_pitch_deg: 30.0
+heading_from_link1_minus_X_deg: 90.0
+calibration_status: NOMINAL_FROM_CHANGED_INSTALLATION_NOT_CALIBRATED
+observation_source: FROZEN_SCENE_NOT_VISION_CLOSED_LOOP

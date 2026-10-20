@@ -312,6 +312,9 @@ class NativeTask:
     def direction_goal_valid(self,start,end,stage):
         return j1_valid([start,end],self.direction_for_stage(stage))
 
+    def goal_cost(self, start, goal):
+        return (float(np.abs(goal-start).sum()),)
+
     def select_grasp(self, grasp):
         self.face = grasp.get('target_face', 'top')
         self.active_ids = selected_ids(self.init['process_geometry'], grasp.get('active_ids'))
@@ -378,7 +381,7 @@ class NativeTask:
                 for value in list(goals)[:8]:
                     seed=value.copy();seed[3]=q[3];seed[5]=q[5]
                     goals.extend(self.ik(pose,seed,stage,count=1))
-            goals.sort(key=lambda candidate: float(np.abs(candidate-q).sum()))
+            goals.sort(key=lambda candidate: self.goal_cost(q,candidate))
             unique=[]
             for candidate in goals:
                 # IK numerical replicas are one branch, not repeated expensive
@@ -468,6 +471,8 @@ class NativeTask:
                 raise ValueError('FIXED_J1_MOUNT_REPRESENTATION_REJECTED:'+str(failure))
         if not in_limits or row['native_state']['status'] != 'SUCCESS':
             row['status'] = 'REJECTED'
+            if not getattr(self,'allow_initial_reselection',True):
+                raise ValueError('INHERITED_INITIAL_STATE_REJECTED_NO_RESELECTION')
             q = next(self.ik(pre, q if in_limits else np.mean(self.robot.joint_limits, axis=1), 'pregrasp', 64), None)
             if q is None: raise ValueError('NATIVE_HOME_CANDIDATES_EXHAUSTED')
             row = dict(source='BOUNDED_NATIVE_IK_SEARCH', q_rad=q.tolist(), max_candidates=64,

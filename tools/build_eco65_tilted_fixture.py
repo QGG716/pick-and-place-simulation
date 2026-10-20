@@ -33,7 +33,8 @@ def build(source,out):
     saddle=transform([.113,-.00405,.4585]);saddle=pivot_transform(pivot,[1,0,0],30.)@saddle
     box('pitch_saddle',[.083,.049,.003],saddle)
     camera['pitch_adapter']=adapter
-    camera['mount']=dict(schema='eco65_camera_mechanical_pitch_v1',downward_pitch_deg=30.,pivot_mast_m=pivot.tolist(),
+    camera['mount']=dict(schema='eco65_camera_mechanical_pitch_v1',downward_pitch_deg=30.,
+        heading_from_link1_minus_X_deg=-90.,pivot_mast_m=pivot.tolist(),
         axis_mast=[1,0,0],pre_pitch_rear_cover_lift_m=.050,T_new_from_old_mast=A.tolist(),
         pivot_basis='Project-derived axle at top of risers seated on original mast pocket walls; not the entrance pupil',
         classification='PROJECT_DERIVED_SIMULATION_DESIGN',original_CAD_read_only=True,

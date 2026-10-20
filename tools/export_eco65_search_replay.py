@@ -91,6 +91,15 @@ def export_model(snapshot):
                     asset=mesh_data(trimesh.Trimesh(vertices=points,faces=triangles,process=False)),
                     pose=np.asarray(cache.GetLocalToWorldTransform(prim)).T.tolist(),rgb=list(colors[0]) if colors else [.35,.4,.45]))
     return dict(joints=joints,links=links,meshes=assets,joint_names=native['joint_names'],identity=native['identity'],
+                joint_limits_rad=[[float(snapshot['native_model']['official_limits'][n][k])
+                    for k in ('lower','upper')] for n in native['joint_names']],
+                camera_definition=None if not camera else dict(
+                    T_link1_mast=mast['T_link1_mast'],T_mast_optical=camera['T_mast_optical'],
+                    T_mast_CAD=camera['T_mast_CAD'],
+                    axis_rotation=camera.get('axis_rotation'),mount=camera.get('mount'),
+                    calibration=camera.get('calibration')),
+                flange_from_contact_frame=native['process_geometry']['flange_from_contact_frame'],
+                edge_alignment=native['process_geometry'].get('edge_alignment'),
                 tcp_link=native['identity']['task_tcp_link'],flange_link='link_6',static_visual=static_visual,
                 cup_ids=native['process_geometry']['expected_contour_ids'])
 

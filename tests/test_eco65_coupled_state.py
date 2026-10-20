@@ -26,11 +26,14 @@ def test_next_contact_is_return_interval_not_contact_stage_outbound():
         check_business_direction(q,None)
 
 
-def test_zero_direction_only_for_initial_approach_and_small_total_numerics():
+def test_first_approach_is_clockwise_with_small_total_numerics():
     q=np.zeros((2,6))
     q[-1,0]=J1_REVERSE_LIMIT*.5
     assert check_business_direction(q,'OUTBOUND')==pytest.approx(J1_REVERSE_LIMIT*.5)
     q[-1,0]=2.
+    with pytest.raises(ValueError,match='TOTAL_REVERSE'):
+        check_business_direction(q,'FIRST_APPROACH')
+    q[-1,0]=-2.
     assert check_business_direction(q,'FIRST_APPROACH')==0.
 
 

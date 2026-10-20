@@ -20,6 +20,7 @@ def main():
     p.add_argument('--ik-seeds',type=int,default=8)
     p.add_argument('--max-grasps',type=int,default=24)
     p.add_argument('--search-trace',action='store_true')
+    p.add_argument('--initial-mode',choices=('new_simulation','inherited_state'),default='new_simulation')
     a=p.parse_args()
     output=a.output.resolve()
     output.relative_to(ROOT/'outputs')
@@ -32,7 +33,7 @@ def main():
         task=CoupledTask(snapshot,a.worker_command,home_candidate=load_json(a.home_candidate),
             task_seconds=a.task_seconds,connection_seconds=a.connection_seconds,
             stage_seconds=a.solver_seconds,rpc_seconds=a.rpc_seconds,ik_seeds=a.ik_seeds,
-            max_grasps=a.max_grasps,search_trace=a.search_trace,
+            max_grasps=a.max_grasps,initial_mode=a.initial_mode,search_trace=a.search_trace,
             trace_stages=('pregrasp','transit','residence'),progress_path=output/'native_progress.jsonl')
         plan=task.run()
         save_json(output/'plan.json',plan)

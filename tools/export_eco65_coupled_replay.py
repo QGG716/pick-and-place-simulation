@@ -137,6 +137,25 @@ def attempts_from_run(folder, records):
 def share_worlds(data):
     """Keep request worlds exact while storing repeated immutable arrays once."""
     worlds = {}
+    shared = {}
+    # Immutable request policies contain thousands of exact mast pairs.
+    # Intern them losslessly instead of emitting megabytes per IK request.
+    shared_keys={'source_policy','collision_policy','robot_mast_exemption',
+                 'process_geometry','task_contract','identity','camera_mount',
+                 'contours','fixed_attachment_interfaces'}
+    def intern(value):
+        if isinstance(value,dict):
+            for key,child in list(value.items()):
+                if key in shared_keys and isinstance(child,(dict,list)):
+                    encoded=json.dumps(child,sort_keys=True,separators=(',',':'),allow_nan=False)
+                    ref=hashlib.sha256(encoded.encode()).hexdigest()
+                    if ref not in shared:
+                        shared[ref]=child
+                        intern(child)
+                    value[key]={'shared_definition_ref':ref}
+                else:intern(child)
+        elif isinstance(value,list):
+            for child in value:intern(child)
     def walk(value):
         if isinstance(value, dict):
             if 'world' in value:
@@ -152,6 +171,8 @@ def share_worlds(data):
                 walk(child)
     walk(data)
     data['shared_worlds'] = worlds
+    intern(data)
+    data['shared_definitions']=shared
     return data
 
 
@@ -216,6 +237,17 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             if kind == 'robot_motion':
                 elapsed = float(row['times'][-1])
                 totals['robot_motion_s'] += elapsed
+                diff=np.diff(np.asarray(row['q'])[:,0])
+                direction=row['native_request'].get('j1_direction')
+                reverse=float(np.maximum(-direction*diff,0.).sum()) if direction else 0.
+                row['j1_travel']=dict(
+                    q1_start=row['q'][0][0],q1_end=row['q'][-1][0],
+                    clockwise_rad=float(np.maximum(-diff,0.).sum()),
+                    counterclockwise_rad=float(np.maximum(diff,0.).sum()),
+                    total_rad=float(np.abs(diff).sum()),direction=direction,
+                    interval=row['state_before']['business_interval'],
+                    cumulative_reverse_rad=reverse+row['native_request'].get('j1_reverse_used_rad',0.),
+                    status='PASS' if reverse+row['native_request'].get('j1_reverse_used_rad',0.)<=1e-6 else 'FAIL')
             elif kind == 'external_axis':
                 elapsed = float(row.get('duration_s', 0.))
                 if elapsed <= 0:

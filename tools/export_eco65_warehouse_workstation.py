@@ -66,7 +66,13 @@ def export(snapshot_path, home_path, config_path, out):
     actual_layout = full_face or native_12carton
     if not actual_layout: assert len(scene['boxes']) == 4
     elif c != scene['layout_config']: raise ValueError('FULL_FACE_CONFIG_CHANGED')
-    home_data = load_json(home_path); home = home_data['home_q']
+    home_data = load_json(home_path)
+    if home_data.get('schema')=='eco65_home_candidate_v1':
+        from unloading_sim.eco65.home_candidate import verify_candidate
+        verify_candidate(home_data,tool,scene)
+        home=home_data['q_rad']
+    else:
+        home = home_data['home_q']
     home_source=home_data
     if home_data.get('schema')=='eco65_native_plan_v1':
         from unloading_sim.eco65.native_task import validate_plan_contract
@@ -195,7 +201,7 @@ def export(snapshot_path, home_path, config_path, out):
         mast=dict(scene['mast']);attached=mast.get('attachment')=='link_1'
         if attached:
             from eco65_mast_attachment import evaluate
-            diagnostic=evaluate(frames['link_1'],mast)
+            diagnostic=evaluate(frames['link_1'],mast,permanent_camera)
             T=np.array(diagnostic['T_D_mast']);mast['T_D_mast']=T.tolist()
             mast['axis_diagnostic']=diagnostic
         else:T=np.array(mast['T_D_mast'])
@@ -253,11 +259,20 @@ def export(snapshot_path, home_path, config_path, out):
                  collision_mesh(row['id'],lambda:None),[.6,.2,.8],local,True,
                  world_T=frames[parent]@local)
         for row in scene['native_world_objects']:
-            if 'convex_mesh' not in row: raise ValueError('NATIVE_CONVEYOR_CONVEX_REQUIRED')
-            convex=row['convex_mesh']
+            if 'convex_mesh' in row:
+                convex=row['convex_mesh']
+                solid=trimesh.Trimesh(vertices=convex['vertices'],faces=convex['triangles'],process=False)
+            elif 'coupled_conveyor_spec' in scene and 'size' in row:
+                solid=trimesh.creation.box(row['size'])
+            else:raise ValueError('NATIVE_CONVEYOR_CONVEX_REQUIRED')
             mesh('/Workstation/NativeWorldCollision/'+row['id'],
-                 trimesh.Trimesh(vertices=convex['vertices'],faces=convex['triangles'],process=False),
+                 solid,
                  [.2,.7,.8],np.asarray(row['pose']),True)
+            if 'coupled_conveyor_spec' in scene and row.get('owner') in (
+                    'coupled_receiver','conveyor_transverse','conveyor_longitudinal'):
+                rgb=row.get('rgba',[.4,.5,.6,1.])[:3]
+                mesh('/Workstation/CoupledReceiver/'+row['id'],solid,rgb,np.asarray(row['pose']),
+                     mat=material(stage,'coupled_'+row['id'],rgb))
     frame_transforms=dict(frames,flange=flange,tool_cad=Ttool,tcp=flange@np.array(tool['T_flange_tcp']))
     for name,T in frame_transforms.items():
         pose(UsdGeom.Xform.Define(stage,'/Workstation/Frames/'+name).GetPrim(),T)

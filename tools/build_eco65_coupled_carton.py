@@ -4,6 +4,7 @@ import argparse
 from copy import deepcopy
 from pathlib import Path
 from time import perf_counter
+import yaml
 
 from unloading_sim.eco65.model import ROOT, load_json, save_json
 from unloading_sim.eco65.native_io import verify_snapshot, file_hash
@@ -15,21 +16,34 @@ from unloading_sim.eco65.coupled_scene import (CONFIG, build_coupled_scene,
 from unloading_sim.moveit2_backend import digest
 
 
-def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65-20261015", usd=False):
+def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65-20261015", usd=False,
+          camera_config=None):
     started = perf_counter()
     old = verify_snapshot(load_json(source))
     out = Path(output).resolve()
     out.relative_to(ROOT/"outputs")
     out.mkdir(parents=True, exist_ok=False)
     scene = build_coupled_scene(old["scene"], config)
+    # A grasp contract is independent of the optional camera remount.
+    scene['grasp_edge_alignment_required'] = True
     config = Path(config).resolve()
     hashes = dict(old["config_sha256"])
+    extra_assets = {}
+    if camera_config:
+        from unloading_sim.eco65.camera_installation import apply_camera_installation
+        from unloading_sim.eco65.collision_policy import effective_collision_policy
+        prior_pairs=effective_collision_policy(scene)['robot_mast_exemption']['exempt_pairs']
+        camera_config = Path(camera_config).resolve()
+        scene, extra_assets = apply_camera_installation(scene,
+            yaml.safe_load(camera_config.read_text(encoding='utf-8')), out/'camera_attachments', ROOT)
+        hashes[camera_config.relative_to(ROOT).as_posix()] = file_hash(camera_config)
     hashes[config.relative_to(ROOT).as_posix()] = file_hash(config)
     scene["config_sha256"] = hashes
     scene["scene_fingerprint"] = digest({k: v for k, v in scene.items() if k != "scene_fingerprint"})
     verify_scene(scene)
     model = build_native_model(scene, out/"model", native_asset_root=native_asset_root)
     assets = dict(old["asset_sha256"])
+    assets.update(extra_assets)
     assets.update({row["convex_path"]: row["convex_sha256"] for row in model["convex_bindings"]})
     snapshot = dict(schema="eco65_native_snapshot_v1", scene=scene, tool=model["tool"],
                     native_model=model, asset_sha256=assets, config_sha256=hashes)
@@ -72,6 +86,26 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
                   engineering_geometry=spec["engineering_geometry"],
                   wall_s=perf_counter()-started)
     save_json(out/"build_report.json", report)
+    if camera_config:
+        import numpy as np
+        from eco65_camera_mount import mount_check
+        camera=scene['permanent_camera']
+        installation=dict(axis_rotation=camera['axis_rotation'],mount=camera['mount'],
+            mount_check=mount_check(np.asarray(camera['T_link1_optical']),np.eye(4),camera),
+            nominal_extrinsics=scene['camera_extrinsics'],
+            prior_mast_exemption_pairs_unchanged=(
+                prior_pairs
+                ==model['init']['collision_policy'].get('robot_mast_exemption',{}).get('exempt_pairs')))
+        # The original small-carton source may precede the mast exemption.
+        # Current ID inventory still must be unchanged by camera remounting.
+        installation['moving_attachment_ids_unchanged']=(
+            [r['id'] for r in old['scene']['moving_attachments']]
+            ==[r['id'] for r in scene['moving_attachments']])
+        if (not installation['mount_check']['accepted'] or not installation['moving_attachment_ids_unchanged']
+                or not installation['prior_mast_exemption_pairs_unchanged']):
+            raise ValueError('CAMERA_INSTALLATION_BINDING_INVALID')
+        save_json(out/'camera_installation.json',installation)
+        save_json(out/'nominal_camera_extrinsics.json',scene['camera_extrinsics'])
     return report
 
 
@@ -82,6 +116,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=Path, default=CONFIG)
     parser.add_argument("--native-asset-root", default="/work-eco65-20261015")
     parser.add_argument("--usd", action="store_true")
+    parser.add_argument("--camera-config", type=Path)
     args = parser.parse_args()
     print(build(args.source, args.home, args.output, config=args.config,
-                native_asset_root=args.native_asset_root, usd=args.usd))
+                native_asset_root=args.native_asset_root, usd=args.usd, camera_config=args.camera_config))

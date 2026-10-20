@@ -61,6 +61,29 @@ check('COLLISION_LAYER_VISIBLE',robotObjects.filter(r=>r.item.layer==='collision
 const accessory=model.joints.filter(j=>j.child.startsWith('eco65_mast_')||j.child.includes('camera'));
 check('J1_ACCESSORY_PARENTAGE',accessory.length>0&&accessory.every(j=>{let p=j.parent;while(p!=='link_1'&&p!=='world'){const edge=model.joints.find(k=>k.child===p);if(!edge)return false;p=edge.parent;}return p==='link_1';}));
 document.getElementById('top').click();check('TOP_VIEW',Math.abs(camera.position.x-controls.target.x)<1e-9);document.getElementById('reset').click();
+if(model.camera_definition?.axis_rotation){
+const C=model.camera_definition,rotation=C.axis_rotation;
+const p=new T.Vector3(...rotation.point_mast_m);
+check('CAMERA_ACTUAL_POLE_AXIS_INVARIANT',p.distanceTo(p.clone().applyMatrix4(matrix(rotation.T_new_from_old_mast)))<1e-10);
+const previous=matrix(rotation.old_T_mast_CAD).invert().multiply(matrix(rotation.old_T_mast_optical));
+const changed=matrix(C.T_mast_CAD).invert().multiply(matrix(C.T_mast_optical));
+check('CAMERA_CAD_OPTICAL_RIGID_RELATION',close(previous.elements,changed.elements,1e-10));
+const M=matrix(C.T_link1_mast).multiply(matrix(C.T_mast_optical)),f=new T.Vector3().setFromMatrixColumn(M,2);
+check('CAMERA_THIRTY_DEGREE_DOWNWARD_PITCH',Math.abs(f.z+.5)<1e-10);
+check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);
+const visual=robotObjects.find(r=>r.item.id==='camera_camera_part_001'&&r.item.layer==='visual');
+const native=fk(currentQ)['eco65_camera_camera_part_001'];
+check('CAMERA_DISPLAY_NATIVE_SAME_TRANSFORM',!!visual&&!!native&&close(visual.object.matrix.elements,native.elements,1e-9));
+check('NEW_EXTRINSICS_NOT_CALIBRATED',C.calibration.prior_calibration_valid===false);
+check('CAMERA_DIAGNOSTICS_VISIBLE',document.getElementById('cameraInfo').textContent.includes('30.0000'));
+check('OFFICIAL_RAW_J1_LIMITS',close(model.joint_limits_rad[0],[-3.106,3.106],1e-12));
+const failed=DATA.attempts.findIndex(a=>a.request.stage==='contact'&&a.response.status==='STATE_REJECTED');
+if(failed>=0){
+document.getElementById('mode').value='search';document.getElementById('request').value=failed;chooseRequest();
+check('ACTUAL_REJECTED_CONTACT_EDGE_DIAGNOSTIC',document.getElementById('edgeInfo').textContent.includes('实际 FK'));
+check('CANDIDATE_NOT_REPORTED_AS_ACCEPTED',!active.adopted);
+}
+}
 if(DATA.segments.length){
 document.getElementById('mode').value='cycle';modeChanged();
 for(const segment of DATA.segments){
@@ -112,6 +135,10 @@ if(planner.events.length){document.getElementById('event').value=0;document.getE
 }else result.search='NOT_RUN_NO_NATIVE_REQUESTS';
 document.getElementById('mode').value=DATA.segments.length?'cycle':'preview';modeChanged();
 if(DATA.segments.length)setTime(DATA.duration_s);else preview(DATA.previews.length-1);
+if(!DATA.segments.length&&DATA.attempts.length){
+const rejected=DATA.attempts.findIndex(a=>a.request.stage==='contact'&&a.response.status==='STATE_REJECTED');
+if(rejected>=0){document.getElementById('mode').value='search';document.getElementById('request').value=rejected;modeChanged();if(failures.length)inspectFailure(0);}
+}
 result.status='PASS';
 }catch(error){result.status='FAIL';result.error=error.stack;}
 const pre=document.createElement('pre');pre.id='browser-check-result';pre.textContent=JSON.stringify(result);document.body.append(pre);

@@ -24,7 +24,7 @@ def grasp_candidates(geometry, target, size, flange_from_tcp, base_position,
         axis, sign = FACE_AXES[face]; others = [i for i in range(3) if i != axis]
         # Both bases are proper rotations and aim TCP +Z into the selected face.
         R = np.diag([1., -1., -1.]) if face == 'top' else np.array([[0.,0.,1.],[1.,0.,0.],[0.,1.,0.]])
-        for roll in (0., np.pi/2, -np.pi/2, np.pi, np.pi/4, -np.pi/4,3*np.pi/4,-3*np.pi/4):
+        for roll in (0., np.pi/2, np.pi, 3*np.pi/2):
             co, si = np.cos(roll), np.sin(roll)
             rotation = R@np.array([[co,-si,0.],[si,co,0.],[0.,0.,1.]])
             for group in groups:
@@ -59,6 +59,9 @@ def grasp_candidates(geometry, target, size, flange_from_tcp, base_position,
                         rejected.append(dict(face=face,roll_rad=roll,reason='NO_FULL_CAD_SEAL'));continue
                     report=check_contours(geometry,flange,target,size,gap=.0004,penetration=.0004,
                                           margin=margin,angle=angle,face=face,active_ids=active)
+                    if report['status']!='PASS':
+                        rejected.append(dict(face=face,roll_rad=roll,reason='TOOL_FACE_EDGES_NOT_ALIGNED'))
+                        continue
                     reserves=[r['edge_margin_m'] for r in report['contours'] if r['active']]
                     enabled_centers=np.array([centers[i] for i,r in enumerate(geometry['contours']) if r['id'] in active])
                     spread=float(np.linalg.norm(np.ptp(enabled_centers[:,:2],axis=0)))

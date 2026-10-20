@@ -30,6 +30,14 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     if not np.allclose(flange_to_cad@cad_to_tcp, tcp, atol=1e-10, rtol=0):
         raise ValueError('TOOL_TRANSFORM_CHAIN_MISMATCH')
     geometry = extract_cad_contours(tool, root)
+    if scene.get('grasp_edge_alignment_required'):
+        from .native_contact import EDGE_ALIGNMENT
+        geometry['edge_alignment'] = dict(EDGE_ALIGNMENT)
+        # Fixed TCP axes must really be the rigid CAD X/Z axes; never infer
+        # alignment axes from a selected cup subset or alter the installation.
+        if not np.allclose(cad_to_tcp[:3,:2].T, EDGE_ALIGNMENT['axes_contact_frame'],
+                           atol=1e-9, rtol=0):
+            raise ValueError('RIGID_PLATE_TCP_EDGE_AXES_CHANGED')
     from .native_scene import validate_fixed_interfaces
     fixed_interfaces = validate_fixed_interfaces(scene)
     if fixed_interfaces:

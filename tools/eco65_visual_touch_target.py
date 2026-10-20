@@ -4,6 +4,15 @@ from unloading_sim.touch_calibration import (validate_observations,validate_resu
     camera_from_board,fk,points,rigid)
 
 
+def nominal_camera_point(scene, T_D_link1, p_camera):
+    """Explicit changed-installation simulation input, never calibrated PnP evidence."""
+    from unloading_sim.eco65.camera_installation import camera_world_transform
+    T=camera_world_transform(scene,T_D_link1)
+    return dict(p_D_target_nominal=points(T,p_camera).tolist(),
+        T_D_camera_optical=T.tolist(),calibration=scene['camera_extrinsics'],
+        source='NOMINAL_CHANGED_INSTALLATION_NOT_REAL_VISION_CLOSED_LOOP')
+
+
 def predict(image,q_capture,obs,solver,validated,point_id,overlay=None):
     validate_observations(obs);validate_result(solver,obs)
     if (validated['status']!='SPECIFIED_SIMULATION_VALIDATION_PASSED' or

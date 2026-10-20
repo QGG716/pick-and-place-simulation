@@ -11,7 +11,7 @@ import numpy as np
 from ..moveit2_backend import MoveItUnavailable, digest
 from .model import transform, check_transform, save_json
 from .native_task import NativeTask
-from .native_contact import check_contours, face_outward
+from .native_contact import check_contours, face_outward, EDGE_ALIGNMENT
 from .native_cups import grasp_candidates
 from .evaluation import CHAIN, INTERPOLATION
 from .coupled_state import (MODE, J1_POLICY, J1_REVERSE_LIMIT, INTERVALS, sign_state,
@@ -20,7 +20,16 @@ from .coupled_state import (MODE, J1_POLICY, J1_REVERSE_LIMIT, INTERVALS, sign_s
 
 class CoupledTask(NativeTask):
     def __init__(self, snapshot, command, *, connection_seconds=100., ik_seeds=8,
-                 max_grasps=24, **kwargs):
+                 max_grasps=24, initial_mode='new_simulation', **kwargs):
+        if initial_mode not in ('new_simulation','inherited_state'):
+            raise ValueError('INITIAL_STATE_MODE_INVALID')
+        if snapshot['native_model']['init']['process_geometry'].get('edge_alignment')!=EDGE_ALIGNMENT:
+            raise ValueError('COUPLED_EDGE_ALIGNMENT_RULE_REQUIRED')
+        if initial_mode=='inherited_state' and kwargs.get('home_candidate') is None:
+            raise ValueError('INHERITED_INITIAL_Q_REQUIRED')
+        self.initial_mode=initial_mode
+        self.allow_initial_reselection=initial_mode=='new_simulation'
+        self.initial_selection=None
         self.business_interval = 'FIRST_APPROACH'
         self.reverse_used = dict.fromkeys(INTERVALS, 0.)
         self.connection_seconds = connection_seconds
@@ -49,6 +58,33 @@ class CoupledTask(NativeTask):
 
     def direction_for_stage(self, stage):
         return INTERVALS[self.business_interval]
+
+    def goal_cost(self,start,goal):
+        return (abs(float(goal[0]-start[0])),float(np.abs(goal[1:]-start[1:]).sum()))
+
+    def initial_candidates(self,grasp,home):
+        """New-world starting poses; never an unshown initialization trajectory."""
+        if self.initial_mode=='inherited_state':
+            yield home,dict(mode=self.initial_mode,source='EXACT_SUPPLIED_PREVIOUS_TERMINAL_Q')
+            return
+        contact=check_transform(grasp['tcp_pose_D'])
+        # A finite stand-off one carton height away from the face and toward
+        # +Y gives the clockwise approach room. Native IK and the ordinary
+        # state check decide whether each seed actually works.
+        distance=float(self.target['size_m'][2])
+        standby=contact.copy()
+        standby[:3,3]+=face_outward(self.target_pose,self.face)*distance
+        standby[1,3]+=distance
+        with self.connection():
+            values=list(self.ik(standby,home,'pregrasp'))
+        values.sort(key=lambda q:(abs(q[0]-home[0]),float(np.abs(q[1:]-home[1:]).sum())))
+        for q in values[:3]:
+            yield q,dict(mode=self.initial_mode,source='CURRENT_RUN_NATIVE_STANDOFF_IK',
+                standby_tcp_D=standby.tolist(),stand_off_m=distance,
+                camera_observation='NOT_PERFORMED_FROZEN_SCENE_INPUT',
+                hidden_initialization_motion=False)
+        yield home,dict(mode=self.initial_mode,source='PRIOR_HOME_CHECKED_CANDIDATE',
+                       camera_observation='NOT_PERFORMED_FROZEN_SCENE_INPUT')
 
     def direction_goal_valid(self,start,end,stage):
         try:
@@ -318,14 +354,12 @@ class CoupledTask(NativeTask):
     def approach(self, grasp):
         self.select_grasp(grasp)
         contact=check_transform(grasp['tcp_pose_D'])
-        seed=None
         with self.connection():
-            for candidate in self.ik(contact,self.current_q,'contact'):
-                if not self.direction_goal_valid(self.current_q,candidate,'contact'):
-                    continue
-                seed=candidate;break
-            if seed is None:raise ValueError('NATIVE_CONTACT_IK_EXHAUSTED')
-            for distance in (.025,.01,.005):
+            seeds=[q for q in self.ik(contact,self.current_q,'contact')
+                   if self.direction_goal_valid(self.current_q,q,'contact')]
+            seeds.sort(key=lambda q:self.goal_cost(self.current_q,q))
+            if not seeds:raise ValueError('NATIVE_CONTACT_IK_EXHAUSTED')
+            for seed,distance in [(q,d) for q in seeds[:3] for d in (.025,.01,.005)]:
                 cp=self.checkpoint()
                 pre=contact.copy();pre[:3,3]+=face_outward(self.target_pose,self.face)*distance
                 try:
@@ -335,7 +369,7 @@ class CoupledTask(NativeTask):
                     return
                 except ValueError as error:
                     self.cycle_failures.append(dict(stage='approach',target_id=self.target['id'],
-                        candidate_id=self.candidate_id,offset_m=distance,error=str(error)))
+                        candidate_id=self.candidate_id,offset_m=distance,contact_ik_q=seed.tolist(),error=str(error)))
                     self.restore(cp)
             raise ValueError('NATIVE_APPROACH_CONTACT_EXHAUSTED')
 
@@ -378,11 +412,14 @@ class CoupledTask(NativeTask):
         previous=self.connection_deadline
         if self.reception_deadline is None:
             start=perf_counter()
-            self.reception_deadline=min(self.deadline,start+self.connection_seconds)
+            # One shared absolute phase/task cutoff. Single connections and
+            # native calls retain their finite budgets; later grasp branches
+            # cannot restart the task clock or a fresh reception allowance.
+            self.reception_deadline=self.deadline
             self.phase_budgets['reception_release_withdrawal']=dict(
                 start_elapsed_s=start-self.started,
                 deadline_elapsed_s=self.reception_deadline-self.started,
-                maximum_s=self.connection_seconds)
+                maximum_s=self.reception_deadline-start)
         self.connection_deadline=self.reception_deadline
         try:
             if order=='EXTRACT_TRANSFER_THEN_RAISE':
@@ -541,18 +578,30 @@ class CoupledTask(NativeTask):
         initial=self.checkpoint()
         for index,grasp in enumerate(geometry['candidates'][:self.max_grasps]):
             self.restore(initial)
-            try:
-                self.select_grasp(grasp)
-                self.initial_state=self.state()
-                self.approach(grasp)
-                self.attach()
-                self.extract_and_release()
-                break
+            self.select_grasp(grasp)
+            try: starts=list(self.initial_candidates(grasp,home))
             except ValueError as error:
-                self.cycle_failures.append(dict(stage='first_cycle',candidate_index=index,
-                    candidate_id=grasp['candidate_id'],error=str(error)))
-        else:raise ValueError('FIRST_CARTON_BOUNDED_CANDIDATES_EXHAUSTED')
-        self.save_checkpoint('FIRST_CARTON_COMPLETE')
+                self.cycle_failures.append(dict(stage='initial_selection',error=str(error)))
+                continue
+            for q,selection in starts:
+                self.restore(initial)
+                try:
+                    self.select_grasp(grasp)
+                    self.current_q=q.copy()
+                    self.initial_selection=dict(selection,q_rad=q.tolist())
+                    self.initial_state=self.state()
+                    self.approach(grasp)
+                    self.attach()
+                    self.extract_and_release()
+                    self.save_checkpoint('FIRST_CARTON_COMPLETE')
+                    return self.return_next()
+                except ValueError as error:
+                    self.cycle_failures.append(dict(stage='first_cycle',candidate_index=index,
+                        initial_selection=selection,candidate_id=grasp['candidate_id'],error=str(error)))
+        raise ValueError('FIRST_CARTON_OR_CONTINUATION_BOUNDED_CANDIDATES_EXHAUSTED')
+
+    def return_next(self):
+        """Try finite next faces/heights, then let the caller revisit grasp branches."""
         drained=self.checkpoint()
         boxes=[b for b in self.scene['boxes'] if b['id'] not in self.completed_ids
                and not any(x['id'] not in self.completed_ids and
@@ -564,10 +613,12 @@ class CoupledTask(NativeTask):
             self.target=deepcopy(target);self.target_pose=self.carton_poses[target['id']].copy()
             candidates=self.geometry_candidates()['candidates']
             self.restore(drained)
-            for grasp in candidates[:self.max_grasps]:
+            for grasp,height in [(g,h) for g in candidates[:min(self.max_grasps,8)]
+                                  for h in dict.fromkeys((self.height_m,self.spec['low_height_m']))]:
                 self.restore(drained)
                 try:
                     self.select_next(target,grasp)
+                    self.lift(height)
                     self.approach(grasp)
                     self.attach(next_target=True)
                     result=self.result(complete=True)
@@ -596,6 +647,8 @@ class CoupledTask(NativeTask):
             j1_reverse_used_rad=self.reverse_used)
         result['adopted_process']=getattr(self,'adopted_process',None)
         result['phase_budgets']=deepcopy(self.phase_budgets)
+        result['initial_selection']=deepcopy(self.initial_selection)
+        result['initial_state_checks']=self.home_checks
         result['fingerprint']=digest(result)
         return result
 

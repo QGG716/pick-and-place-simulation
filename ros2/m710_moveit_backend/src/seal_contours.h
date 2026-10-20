@@ -6,6 +6,28 @@
 #include <cmath>
 
 namespace m710 {
+inline nlohmann::json checkSealEdgeAlignment(const nlohmann::json& geometry,
+    const Eigen::Isometry3d& local,int face_axis) {
+  if(!geometry.contains("edge_alignment"))return {{"status","NOT_REQUIRED_LEGACY_GEOMETRY"}};
+  const auto& rule=geometry.at("edge_alignment");
+  const double tolerance=std::acos(-1.)/180.;
+  if(rule.at("schema")!="rigid_tool_face_edge_alignment_v1" ||
+      rule.at("axes_contact_frame")!=nlohmann::json::array({{1.,0.,0.},{0.,0.,1.}}) ||
+      std::abs(rule.at("tolerance_rad").get<double>()-tolerance)>1e-12)
+    throw std::runtime_error("CONTACT_EDGE_ALIGNMENT_CONTRACT_INVALID");
+  std::vector<int> axes;for(int k=0;k<3;++k)if(k!=face_axis)axes.push_back(k);
+  const Eigen::Vector3d u=local.linear().col(0),v=local.linear().col(2);
+  auto error=[](double x){return std::acos(std::min(1.,std::abs(x)));};
+  const std::vector<double> direct={error(u[axes[0]]),error(v[axes[1]])},
+    swapped={error(u[axes[1]]),error(v[axes[0]])};
+  const bool straight=std::max(direct[0],direct[1])<=std::max(swapped[0],swapped[1]);
+  const auto chosen=straight?direct:swapped;const double maximum=std::max(chosen[0],chosen[1]);
+  return {{"status",maximum<=tolerance+1e-12?"PASS":"FAIL"},
+    {"reason",maximum<=tolerance+1e-12?nlohmann::json(nullptr):nlohmann::json("TOOL_FACE_EDGES_NOT_ALIGNED")},
+    {"matching",straight?"DIRECT":"SWAPPED"},{"angle_errors_rad",chosen},
+    {"maximum_angle_error_rad",maximum},{"tolerance_rad",tolerance},
+    {"source","ACTUAL_FLANGE_FK_AND_FIXED_RIGID_CAD_AXES"}};
+}
 inline void validateSealContours(const nlohmann::json& geometry) {
   if(geometry.at("geometry_type")!="cad_seal_contours_v1")
     throw std::runtime_error("CONTACT_GEOMETRY_TYPE_MISMATCH");
@@ -57,7 +79,8 @@ inline nlohmann::json checkSealContours(const nlohmann::json& geometry,
   for(const auto& id:active)if(!id.is_string() || !expected.count(id.get<std::string>()) || !enabled.insert(id.get<std::string>()).second)
     throw std::runtime_error("CONTACT_ACTIVE_SELECTION_INVALID");
   nlohmann::json actual=nlohmann::json::array(),ordered=nlohmann::json::array();
-  nlohmann::json results=nlohmann::json::array();bool passed=true;
+  const auto alignment=checkSealEdgeAlignment(geometry,local,axis);
+  nlohmann::json results=nlohmann::json::array();bool passed=alignment.at("status")!="FAIL";
   for(const auto& row:geometry.at("contours")) {
     const auto nv=row.at("normal").get<std::vector<double>>();
     const Eigen::Vector3d normal=local.linear()*Eigen::Vector3d(nv[0],nv[1],nv[2]);
@@ -77,6 +100,7 @@ inline nlohmann::json checkSealContours(const nlohmann::json& geometry,
       {"active",on},{"face_contact",contact}});
   }
   return {{"status",passed?"PASS":"FAIL"},{"contours",results},{"checked_count",results.size()},
+    {"edge_alignment",alignment},
     {"target_face",face},{"active_ids",ordered},{"geometrically_eligible_ids",actual},{"actual_sealed_ids",actual},
     {"contact_observation","predicted_geometry_not_physical_contact"}};
 }

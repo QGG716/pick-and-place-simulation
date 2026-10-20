@@ -13,6 +13,33 @@ TYPE = 'cad_seal_contours_v1'
 TASK_TYPE = 'eco65_single_carton_task_v1'
 INDEPENDENT = 'SIMULATED_INDEPENDENT_CUPS'
 FACE_AXES = {'top': (2, 1.), 'front': (0, -1.)}
+EDGE_ALIGNMENT = dict(schema='rigid_tool_face_edge_alignment_v1',
+    axes_contact_frame=[[1.,0.,0.],[0.,0.,1.]], tolerance_rad=float(np.radians(1.)),
+    source='RIGID_PLATE_CAD_X_Z_EQUIVALENT_TO_FIXED_TCP_X_Y',
+    allowed_matching='DIRECT_OR_SWAPPED_ABSOLUTE_DOT')
+
+
+def check_edge_alignment(geometry, local, face):
+    rule = geometry.get('edge_alignment')
+    if rule is None:
+        return dict(status='NOT_REQUIRED_LEGACY_GEOMETRY')
+    if rule != EDGE_ALIGNMENT:
+        raise ValueError('CONTACT_EDGE_ALIGNMENT_CONTRACT_INVALID')
+    axis, _ = FACE_AXES[face]
+    others = [k for k in range(3) if k != axis]
+    axes = np.asarray(rule['axes_contact_frame'])@local[:3,:3].T
+    errors = np.arccos(np.clip(np.abs(axes[:,others]),0.,1.))
+    direct = [float(errors[0,0]),float(errors[1,1])]
+    swapped = [float(errors[0,1]),float(errors[1,0])]
+    chosen = direct if max(direct)<=max(swapped) else swapped
+    passed = max(chosen)<=rule['tolerance_rad']+1e-12
+    return dict(status='PASS' if passed else 'FAIL',
+        reason=None if passed else 'TOOL_FACE_EDGES_NOT_ALIGNED',
+        matching='DIRECT' if chosen is direct else 'SWAPPED',
+        angle_errors_rad=chosen,maximum_angle_error_rad=max(chosen),
+        tolerance_rad=rule['tolerance_rad'],tool_axes_target_local=axes.tolist(),
+        face_axes_target_local=np.eye(3)[others].tolist(),
+        source='ACTUAL_FLANGE_FK_AND_FIXED_RIGID_CAD_AXES')
 
 
 def selected_ids(geometry, active_ids=None):
@@ -183,6 +210,7 @@ def check_contours(geometry, flange, target, size, *, gap, penetration,
         raise ValueError('CONTACT_TARGET_INVALID')
     local = np.linalg.inv(check_transform(target)) @ check_transform(flange) @ check_transform(
         geometry['flange_from_contact_frame'])
+    alignment = check_edge_alignment(geometry, local, face)
     results = []
     for row in geometry['contours']:
         pts = np.asarray(row['points_m']) @ local[:3, :3].T + local[:3, 3]
@@ -196,7 +224,8 @@ def check_contours(geometry, flange, target, size, *, gap, penetration,
                             max_gap_m=float(errors.max()), edge_margin_m=reserve,
                             face_contact=face_contact, active=row['id'] in active))
     actual = [r['id'] for r in results if r['valid']]
-    return dict(status='PASS' if set(active) <= set(actual) else 'FAIL',
+    return dict(status='PASS' if set(active) <= set(actual) and alignment['status']!='FAIL' else 'FAIL',
+                edge_alignment=alignment,
                 contours=results, checked_count=12,
                 target_face=face, active_ids=active, geometrically_eligible_ids=actual,
                 actual_sealed_ids=actual,
