@@ -1,0 +1,13 @@
+{
+  "measured_source_commit": "13ce5f88bb65e26f29fed2022a5d24c1ab9a6911",
+  "delivery_code_commit": "9d701375b3d9df132559e4302491a2498641ff3d",
+  "source_identity_checked_before_formal_entry": true,
+  "delivery_source_identity_checked": true,
+  "planning_core_native_configs_unchanged": true,
+  "unchanged_file_count": 196,
+  "real_production_backend": "PinocchioHppFclBackend",
+  "integration_regression_commit": "13ce5f88bb65e26f29fed2022a5d24c1ab9a6911",
+  "integration_regression_sha256": "5985d72bccb799c346b30dc4a3ba53bb47f0534e6962a45762ca5f7600c8af6c",
+  "seed": 71070,
+  "old_c00_solution_read": false
+}

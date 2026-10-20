@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "native_goal_fk_cases": 1,
+  "accepted_contact_fk_cases": 1,
+  "static_pending_targets": 60,
+  "outside_reference_valid_ring_cases": 33,
+  "upper_arm_fk_error_rad": 0,
+  "all_72_cups_preserved": true,
+  "actual_contact_geometry": {
+    "q": [
+      -0.7438861978619179,
+      0.08536079231932565,
+      0.10766014520714379,
+      1.595021513252501,
+      0.7441563203606621,
+      -4.745313484966691
+    ],
+    "q2_rad": 0.08536079231932565,
+    "alpha_rad": 1.485435534475571,
+    "shoulder": [
+      -1.2146236140921884,
+      0.24842710285745573,
+      1.165
+    ],
+    "elbow": [
+      -1.1584750255535416,
+      0.19675685870669674,
+      2.0567412864023504
+    ],
+    "candidate_id": "x-:95aabe04673eada47f451dadebf0ae21c24941fdf7f502eccb8741477552295b",
+    "delta_m": 0.33187500000000003,
+    "eligible": 18,
+    "commanded": 18,
+    "actual": 18,
+    "physical_cups": 72,
+    "face_center": [
+      0,
+      -0.84,
+      2.25
+    ],
+    "reference": [
+      0,
+      -0.5081249999999999,
+      2.25
+    ]
+  },
+  "current_request_collision_witness_verified": true,
+  "static_preview_q_unchanged": true,
+  "preview_deltas_exclude_dispatched": true,
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+}

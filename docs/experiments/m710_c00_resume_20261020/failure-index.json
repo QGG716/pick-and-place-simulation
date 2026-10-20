@@ -1,0 +1,44 @@
+{
+  "historical_integration_error": {
+    "source": "eed289495d46b8ea88c7a7c0dc8d3a9c8ecd6dec",
+    "current_run": false,
+    "reason": "AttributeError: PinocchioHppFclBackend has no joint_axis_frames",
+    "retained_at": "docs/experiments/m710_eccentric_20261020/formal-raw.tar.gz"
+  },
+  "diagnostic_checks": [
+    {
+      "run": "production-chain-v1",
+      "classification": "TEST_ASSERTION_ERROR_NOT_PRODUCTION_EXCEPTION",
+      "runtime_source_commit": "89efdff835583e9d4089328867c4cdcf3af84146",
+      "planning_wall_s": 3.836156979203224,
+      "candidate_wall_s": 2.6572151631116867,
+      "reason": "real_start_q_unchanged is a joint array, not boolean; corrected array assertion and numerical_ik_seed field",
+      "retained_source": "test-production-chain-v1.py inside integration-raw.tar.gz"
+    },
+    {
+      "run": "production-chain-v2",
+      "classification": "EXPECTED_TEST_PROBE_STOP_AFTER_REAL_NATIVE_REQUEST",
+      "runtime_source_commit": "89efdff835583e9d4089328867c4cdcf3af84146",
+      "test_source_matches_commit": "13ce5f88bb65e26f29fed2022a5d24c1ab9a6911",
+      "planning_wall_s": 3.985006768256426,
+      "candidate_wall_s": 2.7207206785678864,
+      "tests_passed": 7,
+      "pytest_wall_s": 7.29,
+      "reason": "ProbeComplete expected by pytest"
+    }
+  ],
+  "formal_runs": [
+    {
+      "run": "formal-v1",
+      "source": "13ce5f88bb65e26f29fed2022a5d24c1ab9a6911",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "completed_count": 1,
+      "planning_wall_s": 98.92787125706673,
+      "candidate_visits": 7,
+      "unsuccessful_candidate_visits": 6,
+      "production_interface_error": false,
+      "repeated_formal_search": false
+    }
+  ],
+  "costs_are_nested_not_additive": true
+}
