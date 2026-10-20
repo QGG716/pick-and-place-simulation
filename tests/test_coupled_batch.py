@@ -55,6 +55,7 @@ def test_commit_cannot_drain_early_or_change_root_and_keeps_lower_35(layout):
     assert [box_message(b) for b in state.cartons]==lower
 
 def test_both_right_of_region_front_options_are_lateral_hmin(layout):
+    layout=load_workcell_layout(Path(__file__).resolve().parents[1]/'configs/workcells/m710id70_unloading_layout_v1_rear_fixed_20261019.yaml')
     frozen=FrozenTopLayer.capture(layout.cartons());belt=next(b for b in layout.fixed_components() if b.name=='conveyor_transverse')
     for name in frozen.target_ids[:2]:
         target=next(b for b in layout.cartons() if b.name==name)
@@ -76,6 +77,7 @@ def test_native_plain_first_sample_retains_only_exact_actual_parent():
 
 
 def test_open_lateral_channel_ranks_before_blocked_neighbor(layout):
+    layout=load_workcell_layout(Path(__file__).resolve().parents[1]/'configs/workcells/m710id70_unloading_layout_v1_rear_fixed_20261019.yaml')
     from unloading_sim.top_layer_lifted import rank_remaining
     from types import SimpleNamespace
     cartons=layout.cartons();f=FrozenTopLayer.capture(cartons)

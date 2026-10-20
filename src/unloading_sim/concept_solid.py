@@ -18,6 +18,13 @@ class ConceptSolid(OBB):
                 np.any(np.abs(v)>self.half_extents+1e-12) or
                 self.solid["faces"] != [list(f) for f in FACES]):
             raise ValueError("INVALID_CONCEPT_SOLID")
+        for f in FACES:
+            normal=np.cross(v[f[1]]-v[f[0]],v[f[2]]-v[f[1]])
+            norm=np.linalg.norm(normal)
+            if norm<=1e-12:raise ValueError("DEGENERATE_CONCEPT_FACE")
+            distances=(v-v[f[0]])@(normal/norm)
+            if abs(distances[f[3]])>1e-9 or distances.max()>1e-9:
+                raise ValueError("NONCONVEX_CONCEPT_SOLID")
 
 
 def relieved_transverse(box, slope):

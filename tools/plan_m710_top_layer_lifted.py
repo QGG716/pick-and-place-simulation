@@ -18,6 +18,7 @@ from unloading_sim.coupled_lift_checks import check_coupled_state
 from unloading_sim.top_layer_lifted import FrozenTopLayer,rank_remaining
 from unloading_sim.contact_target import simulation_contact_targets
 from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message
+from unloading_sim.moveit2_backend import MoveItUnavailable
 
 
 def save(path,data):
@@ -30,6 +31,21 @@ def save(path,data):
         json.dump(data,stream,ensure_ascii=False,allow_nan=False,separators=(',',':'))
         stream.write('\n')
     pending.replace(path)
+
+
+def checkpoint_candidate(state,plan,client,folder,out,row,connections):
+    proposed=deepcopy(state);proposed.commit(plan)
+    save(folder/'plan.json',plan)
+    save(folder/'requests.json',client.records)
+    save(folder/'search-trace.json',dict(model=client.trace_inputs.get('model'),attempts=client.traces))
+    save(folder/'connection-attempts.json',connections)
+    save(folder/'summary.json',dict(row,complete=True))
+    required=['attempt.json','plan.json','requests.json','search-trace.json','connection-attempts.json','summary.json']
+    if any(not (folder/name).is_file() or (folder/name).stat().st_size==0 for name in required):
+        raise ValueError('CHECKPOINT_REQUIRED_EVIDENCE_MISSING')
+    save(out/'checkpoint.json',dict(root=proposed.root(),completed_count=len(proposed.ledger),
+        plan_file=str(folder/'plan.json'),required_evidence_files=required))
+    return proposed
 
 
 def source_identity(args):
@@ -89,7 +105,7 @@ def run_seed(args,original,built,frozen,seed,out):
                     break
                 attempt_no+=1;folder=out/f'attempt-{attempt_no:03d}';folder.mkdir()
                 row=dict(target_id=target.name,option=option,root=state.root(),folder=folder.name,complete=False)
-                attempts.append(row);started=perf_counter();client=None;c=None
+                attempts.append(row);started=perf_counter();client=None;c=None;evidence_saved=False;fatal=False
                 print(json.dumps(dict(seed=seed,attempt=attempt_no,target=target.name,process=option['template'],completed=len(state.ledger))),flush=True)
                 try:
                     binding=coupled_binding(layout,state.cartons,state.height,option['height_m'],target.name,scene.snapshot['assembly']['designed_contacts'])
@@ -102,6 +118,7 @@ def run_seed(args,original,built,frozen,seed,out):
                     c=CoupledCycleConnector.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
+                    c.empty_approach_direct_first=args.direct_first
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
@@ -116,8 +133,10 @@ def run_seed(args,original,built,frozen,seed,out):
                     plan,detail=c.plan_target(selected[0],state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
                     save(folder/'attempt.json',detail)
                     if plan is not None:
-                        state.commit(plan);row['complete']=True;accepted=True
-                        save(folder/'plan.json',plan)
+                        # Save all required native evidence and the proposed
+                        # checkpoint BEFORE changing the completed batch root.
+                        state=checkpoint_candidate(state,plan,client,folder,out,dict(row,wall_s=perf_counter()-started),c.connection_attempts)
+                        row['complete']=True;accepted=True;evidence_saved=True
                         print(json.dumps(dict(seed=seed,completed=len(state.ledger),terminal_q=state.q.tolist(),height=state.height)),flush=True)
                         break
                     row['failure']=detail.get('failure');row['classification']='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY'
@@ -125,14 +144,23 @@ def run_seed(args,original,built,frozen,seed,out):
                     row.update(failure=f'{type(exc).__name__}: {exc}',classification='REQUEST_FAILURE_RETAINED')
                     import traceback
                     (folder/'exception.txt').write_text(traceback.format_exc())
+                    recoverable=isinstance(exc,MoveItUnavailable) and str(exc) in {
+                        'NATIVE_REQUEST_SHARED_BUDGET_EXHAUSTED','SINGLE_TARGET_STAGE_DEADLINE',
+                        'PRE_APPROACH_COUPLED_SWEEP_REJECTED','RECEIVER_REGION_STAGE_DEADLINE'}
+                    if not recoverable:
+                        fatal=True
+                        raise
                 finally:
                     row['wall_s']=perf_counter()-started
                     if client:
-                        save(folder/'requests.json',client.records)
-                        save(folder/'search-trace.json',dict(model=client.trace_inputs.get('model'),attempts=client.traces))
-                        row['prior_calls']=sum('prior' in str(r.get('op')) or r.get('pipeline_id')=='static_prior' for r in client.records)
-                        client.close()
-                    save(folder/'summary.json',row);save(out/'result.json',result('RUNNING'))
+                        try:
+                            if not evidence_saved:
+                                save(folder/'requests.json',client.records)
+                                save(folder/'search-trace.json',dict(model=client.trace_inputs.get('model'),attempts=client.traces))
+                                if c:save(folder/'connection-attempts.json',c.connection_attempts)
+                            row['prior_calls']=sum('prior' in str(r.get('op')) or r.get('pipeline_id')=='static_prior' for r in client.records)
+                        finally:client.close()
+                    save(folder/'summary.json',row);save(out/'result.json',result('REQUEST_STOPPED' if fatal else 'RUNNING'))
             if accepted:break
         if not accepted:break
     final=result('COMPLETE_PLANNING_ONLY' if len(state.ledger)==len(frozen.target_ids) else 'INCOMPLETE_RETAINED')
@@ -146,6 +174,7 @@ def main():
     p.add_argument('--source-manifest',type=Path);p.add_argument('--seeds',type=int,nargs='+',default=[71070,71071])
     p.add_argument('--task-budget-s',type=float,default=300.);p.add_argument('--stage-budget-s',type=float,default=90.)
     p.add_argument('--ipc-timeout-s',type=float,default=100.);p.add_argument('--development',action='store_true')
+    p.add_argument('--direct-first',action=argparse.BooleanOptionalAction,default=True)
     args=p.parse_args()
     if len(set(args.seeds))!=len(args.seeds) or (len(args.seeds)<2 and not args.development):p.error('at least two independent prefixed seeds')
     if not 0<args.stage_budget_s<args.ipc_timeout_s or args.task_budget_s<=0:p.error('invalid resource limits')
@@ -157,7 +186,10 @@ def main():
     save(args.output/'protocol.json',dict(**source,seeds=args.seeds,selection='FIXED_BEFORE_BATCH_RUNS',
         frozen=frozen.evidence(),worker_sha256=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest(),
         configured_initial_q=original.snapshot['robot']['q_rad'],original_cartons=[box_message(b) for b in original.cartons],
-        command=[sys.executable,*sys.argv],pair_profile_enabled=False,task_budget_s=args.task_budget_s,stage_budget_s=args.stage_budget_s))
+        command=[sys.executable,*sys.argv],pair_profile_enabled=False,task_budget_s=args.task_budget_s,stage_budget_s=args.stage_budget_s,
+        approach_recovery_mode='shared_budget',ompl_attempt_quota=None,direct_first=args.direct_first,
+        connection_slice_s=6.,native_rrt_request_slice_s=2.,direct_time_share_per_method=.10,
+        search_operation='RESTART',tree_retained=False))
     rows=[]
     for seed in args.seeds:
         out=args.output/f'seed-{seed}';out.mkdir();rows.append(run_seed(args,original,built.connector,frozen,seed,out))

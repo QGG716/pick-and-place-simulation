@@ -51,6 +51,8 @@ class SingleContactClient:
             self.trace_inputs["model"]=deepcopy(request)
         if op=="init" and self.recovery_enabled:
             request=dict(request,single_target_recovery_enabled=True)
+        if op=="init":
+            self.trace_inputs["model"]=deepcopy(request)
         mode = request.get("ik_mode", "single_attempt")
         if mode not in {"single_attempt", "bounded_preplace", "bounded_target"}:
             raise MoveItUnavailable("UNKNOWN_IK_MODE")
@@ -78,7 +80,13 @@ class SingleContactClient:
         allowed &= request.get("planning_mode") == "cold_from_scratch"
         if op == "plan":
             extraction = self.extraction_enabled and request.get("stage") == "extraction"
-            allowed &= (extraction and request.get("purpose") == "EXTRACTION_PROCESS"
+            direct=(self.recovery_enabled and request.get("stage")=="pregrasp" and
+                request.get("purpose")=="FREE_APPROACH" and request.get("attachment") is None and
+                request.get("planning_only") is True and request.get("start_velocity")==[0.]*6 and
+                request.get("pipeline_id")=="pilz_industrial_motion_planner" and
+                request.get("planner_id") in {"PTP","LIN"} and request.get("empty_approach_direct") is True and
+                request.get("recovery_mode")=="shared_budget")
+            allowed &= direct or (extraction and request.get("purpose") == "EXTRACTION_PROCESS"
                 and request.get("pipeline_id") == "pilz_industrial_motion_planner"
                 and request.get("planner_id") == "LIN") or (
                 self.preplace_enabled and request.get("stage") == "transit"
@@ -400,7 +408,7 @@ class SingleContactConnector(PlanningOnlyConnector):
             before=perf_counter()
             if not recovering:
                 prefix,failure,ev=self._native_plan(initial,goal,obstacles,seed=seed,stage="pregrasp",
-                    purpose=MotionPurpose.FREE_APPROACH,allow_ompl=True,max_ompl_attempts=1,
+                    purpose=MotionPurpose.FREE_APPROACH,allow_ompl=True,recovery_mode="shared_budget",
                     try_ptp=False,try_prior=False)
                 row["times"]["pregrasp_s"]=perf_counter()-before
             row["failure"]=failure

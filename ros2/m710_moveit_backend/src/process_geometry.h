@@ -13,6 +13,19 @@ namespace m710 {
 using ProcessJson = nlohmann::json;
 inline void validateNativeMotionScope(const ProcessJson& request) {
   const std::string stage=request.at("stage");
+  if(request.value("empty_approach_direct",false)) {
+    if(stage!="pregrasp" || request.value("purpose","")!="FREE_APPROACH" ||
+        !request.at("attachment").is_null() || !request.value("planning_only",false) ||
+        request.value("planning_mode","")!="cold_from_scratch" ||
+        request.value("recovery_mode","")!="shared_budget" ||
+        request.at("pipeline_id")!="pilz_industrial_motion_planner" ||
+        (request.at("planner_id")!="PTP" && request.at("planner_id")!="LIN"))
+      throw std::runtime_error("EMPTY_APPROACH_DIRECT_SCOPE");
+  }
+  if(request.value("recovery_mode","")=="shared_budget" &&
+     (request.value("search_operation","")!="RESTART" || request.value("tree_retained",true) ||
+      request.contains("max_ompl_attempts")))
+    throw std::runtime_error("SHARED_BUDGET_RESTART_CONTRACT");
   const std::set<std::string> constrained={"contact","contact_endpoint","next_contact","support-release","extraction","place","placement","withdrawal"};
   if(constrained.count(stage) && (request.at("pipeline_id")!="pilz_industrial_motion_planner" ||
       request.at("planner_id")!="LIN" || !request.contains("goal_pose")))

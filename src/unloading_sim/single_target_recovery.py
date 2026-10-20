@@ -1,99 +1,163 @@
-"""Budget-bound recovery for a fixed pose, local to one scene/parent connection."""
-from copy import deepcopy
+"""Shared-budget local IK/method recovery. A new native request is a RESTART."""
 from time import perf_counter
 import numpy as np
 from .moveit2_backend import MoveItUnavailable, digest
+from .approach_recovery_policy import equivalent_bounded_configurations
+from .approach_quality import path_metrics
 
 
 def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=None,residual_reason,recovery_state=None):
     stage_s,_=c._native_limits()
-    deadline=perf_counter()+stage_s
-    previous=getattr(c,'_single_connection_deadline',None)
-    c._single_connection_deadline=min(deadline,previous) if previous is not None else deadline
+    previous=getattr(c,"_single_connection_deadline",None)
+    c._single_connection_deadline=min(perf_counter()+stage_s,previous) if previous is not None else perf_counter()+stage_s
     original_q=np.asarray(start).copy();original_pose=np.asarray(pose).copy()
-    # Bind current parent/attachment/world exactly; never share exclusions across calls.
     def current_context():
         request=c._build_native_request(start,None,obstacles,seed=seed,stage=stage,attachment=attachment,goal_pose=pose)
         receipt,_,transition=c._native_parent_for_request(start,request)
         return digest(dict(request=request,parent=receipt.evidence(),transition=transition))
-    context_key=current_context();excluded=[];attempt=0;last_failure=None
-    if recovery_state is not None:
-        if recovery_state and recovery_state.get('context_sha256')!=context_key:
-            raise MoveItUnavailable('FIXED_TARGET_RECOVERY_CONTEXT_CHANGED')
-        recovery_state.setdefault('context_sha256',context_key)
-        excluded=recovery_state.setdefault('attempted_local_ik',[])
-    def check_context():
-        if c._native_cancelled():raise MoveItUnavailable('REQUEST_CANCELLED_OR_DEADLINE')
-        if current_context()!=context_key or not np.array_equal(start,original_q) or not np.array_equal(pose,original_pose):
-            raise MoveItUnavailable('FIXED_TARGET_CONTEXT_CHANGED')
-    def brief(failure):
-        if failure is None:return None
-        return dict(reason=failure.get('reason'),native_request_id=failure.get('native',{}).get('request_id'),
-            requests=[{k:a.get(k) for k in ('request_id','stage_id','status','solver_message','moveit_error_code')}
-                for a in failure.get('attempts',[])])
-    costs=dict(ik_s=0.,motion_s=0.)
-    if not hasattr(c,'connection_attempts'):c.connection_attempts=[]
+    context=current_context();state={} if recovery_state is None else recovery_state
+    if state and state.get("context_sha256")!=context:
+        c._single_connection_deadline=previous
+        raise MoveItUnavailable("FIXED_TARGET_RECOVERY_CONTEXT_CHANGED")
+    state.setdefault("context_sha256",context)
+    invalid=state.setdefault("invalid_local_ik",[])
+    pool=state.setdefault("valid_local_ik",[])
+    tolerance=c.ik["candidate_dedup_tolerance_rad"]
+    costs=dict(ik_s=0.,motion_s=0.);last_failure=None;attempt=0
+    if not hasattr(c,"connection_attempts"):c.connection_attempts=[]
     invocation=len(c.connection_attempts)
+    direct=(getattr(c,"empty_approach_direct_first",False) and stage=="pregrasp" and
+        getattr(purpose,"value",purpose)=="FREE_APPROACH" and attachment is None)
+    def same(a,b):return np.max(np.abs(np.asarray(a)-np.asarray(b)))<=tolerance
+    def guard():
+        if c._native_cancelled():raise MoveItUnavailable("REQUEST_CANCELLED_OR_DEADLINE")
+        if current_context()!=context or not np.array_equal(start,original_q) or not np.array_equal(pose,original_pose):
+            raise MoveItUnavailable("FIXED_TARGET_CONTEXT_CHANGED")
+    def brief(f):
+        if f is None:return None
+        return dict(reason=f.get("reason"),native_request_id=f.get("native",{}).get("request_id"),
+            requests=[{k:a.get(k) for k in ("request_id","stage_id","status","solver_message","moveit_error_code")}
+                      for a in f.get("attempts",[])])
+    def add(q):
+        variants=equivalent_bounded_configurations(c.robot,q) if hasattr(c,"robot") else [q]
+        for v in variants:
+            if not any(same(v,p["q"]) for p in pool) and not any(same(v,x) for x in invalid):
+                pool.append(dict(q=np.asarray(v).copy(),motion_s=0.,returned_prefixes=0,
+                    joint_cost=float(np.abs(v-original_q).sum()),endpoint_invalid=False))
+    def quality(path,evidence,elapsed):
+        if not hasattr(c,"robot"):return None
+        successful=[a for a in evidence.get("attempts",[]) if a.get("status")=="SUCCESS" and a.get("points")]
+        if not successful:return None
+        record=successful[-1]
+        metrics=path_metrics(c.robot,record["points"],getattr(c,"flange_from_physical_contact",None),elapsed)
+        metrics.update(planner_id=record["planner_id"],stage_id=record["stage_id"])
+        return metrics
     try:
         while perf_counter()<c._single_connection_deadline:
-            check_context()
-            attempt+=1;row=dict(connection_id=invocation,attempt=attempt,stage=stage,
-                context_sha256=context_key,method='IK_RECOVERY_THEN_RRT_RESTART',tree_retained=False,
-                excluded_local_ik_count=len(excluded),remaining_stage_s=c._single_connection_deadline-perf_counter())
+            guard();attempt+=1
+            row=dict(connection_id=invocation,attempt=attempt,stage=stage,context_sha256=context,
+                method="DIRECT_PREFERRED_WITH_RRT_RESTART" if direct else "BUDGET_RRT_RESTART",
+                tree_retained=False,recovery_mode="shared_budget",invalid_endpoint_count=len(invalid),
+                retained_legal_configuration_count=sum(not p["endpoint_invalid"] for p in pool),
+                remaining_stage_s=c._single_connection_deadline-perf_counter())
             c.connection_attempts.append(row)
+            # Enumeration excludes known q only to obtain a DIFFERENT numerical
+            # solution. Known legal configurations remain in the planning pool.
+            excluded=[*invalid,*[p["q"] for p in pool if not p["endpoint_invalid"]]]
             before=perf_counter()
-            try:
-                q,failure=c.ik_pose_once(pose,start,obstacles,seed,stage=stage,attachment=attachment,
-                    purpose=purpose,residual_reason=residual_reason,ik_mode='bounded_target',solver_budget_s=.10,
-                    excluded_ik=excluded)
-            except MoveItUnavailable as exc:
-                row.update(status='IK_INTERRUPTED',detail=str(exc));raise
-            finally:
-                row['ik_s']=perf_counter()-before;costs['ik_s']+=row['ik_s']
-            check_context()
+            q,failure=c.ik_pose_once(pose,start,obstacles,seed,stage=stage,attachment=attachment,
+                purpose=purpose,residual_reason=residual_reason,ik_mode="bounded_target",
+                solver_budget_s=.10,excluded_ik=excluded)
+            row["ik_s"]=perf_counter()-before;costs["ik_s"]+=row["ik_s"];guard()
             if failure:
-                last_failure=failure;row.update(status='IK_NOT_COMPLETED',failure=brief(failure),motion_s=None)
-                raw=failure.get('native',{})
-                unaccepted=raw.get('solver_candidate_q',raw.get('q'))
+                last_failure=failure;row.update(status="IK_NOT_COMPLETED",failure=brief(failure))
+                if failure.get("reason") not in {"NATIVE_IK_FAILED",residual_reason}:
+                    raise MoveItUnavailable("FIXED_TARGET_IK_REQUEST_FAILURE:"+str(failure.get("reason")))
+                raw=failure.get("native",{});unaccepted=raw.get("solver_candidate_q",raw.get("q"))
                 if unaccepted is not None:
-                    u=np.asarray(unaccepted,dtype=float)
-                    if u.shape==(6,) and np.isfinite(u).all():excluded.append(u.copy())
-                if failure.get('reason') not in {'NATIVE_IK_FAILED',residual_reason}:
-                    raise MoveItUnavailable('FIXED_TARGET_IK_REQUEST_FAILURE:'+str(failure.get('reason')))
-                # A bounded KDL failure used its current RNG stream; no reseeding.
-                # A malformed mock/adapter reporting no bounded work must not spin.
-                if not raw.get('bounded_search',False) and unaccepted is None:
-                    return [],None,dict(reason='SINGLE_TARGET_NO_NUMERICAL_PROGRESS',last_failure=failure),costs
-                continue
-            if any(np.max(np.abs(q-old))<=c.ik['candidate_dedup_tolerance_rad'] for old in excluded):
-                row.update(status='REPEATED_EXCLUDED_IK',q=q.tolist())
-                return [],None,dict(reason='SINGLE_TARGET_NO_NUMERICAL_PROGRESS'),costs
-            excluded.append(q.copy());row['q_goal']=q.tolist()
+                    u=np.asarray(unaccepted,float)
+                    if u.shape!=(6,) or not np.isfinite(u).all():raise MoveItUnavailable("INVALID_NATIVE_IK_RETURN")
+                    if not any(same(u,x) for x in invalid):invalid.append(u.copy())
+                if not pool and not raw.get("bounded_search",False) and unaccepted is None:
+                    return [],None,dict(reason="SINGLE_TARGET_NO_NUMERICAL_PROGRESS",last_failure=failure),costs
+            else:
+                if any(same(q,x) for x in invalid):
+                    return [],None,dict(reason="SINGLE_TARGET_NO_NUMERICAL_PROGRESS"),costs
+                add(q)
+            eligible=[p for p in pool if not p["endpoint_invalid"]]
+            if not eligible:continue
+            # Fair accumulated solve time before light joint-travel ranking.
+            # Returned prefixes are deferred after suffix failure, not erased.
+            candidate=min(eligible,key=lambda p:(p["returned_prefixes"],round(p["motion_s"],1),p["joint_cost"]))
+            q=candidate["q"]
+            row.update(q_goal=q.tolist(),endpoint_joint_cost_rad=candidate["joint_cost"],
+                valid_configuration_retained=True)
             before=perf_counter()
-            try:
-                # One native request per loop iteration; the loop, not this IPC
-                # transaction size, governs the available solver opportunities.
-                path,failure,_=c._native_plan(start,q,obstacles,seed=seed,stage=stage,attachment=attachment,
-                    support_names=(),initial_proximity=None,purpose=purpose,allow_ompl=True,max_ompl_attempts=1,
-                    try_ptp=False,try_prior=False)
-            except MoveItUnavailable as exc:
-                row.update(status='MOTION_INTERRUPTED',detail=str(exc));raise
-            finally:
-                row['motion_s']=perf_counter()-before;costs['motion_s']+=row['motion_s']
-            row.update(status='SUCCESS' if failure is None else 'CONNECTION_NOT_COMPLETED',failure=brief(failure))
-            check_context()
-            if perf_counter()>=c._single_connection_deadline:break
-            if failure is None:return path,q,None,costs
+            path,failure,evidence=c._native_plan(start,q,obstacles,seed=seed,stage=stage,attachment=attachment,
+                support_names=(),initial_proximity=None,purpose=purpose,allow_ompl=True,
+                recovery_mode="shared_budget",search_deadline=min(c._single_connection_deadline,before+6.),
+                try_ptp=direct,try_lin_pose=pose if direct else None,try_prior=False)
+            elapsed=perf_counter()-before;row["motion_s"]=elapsed;costs["motion_s"]+=elapsed
+            candidate["motion_s"]+=elapsed
+            row.update(status="SUCCESS" if failure is None else "CONNECTION_NOT_COMPLETED",failure=brief(failure))
+            guard()
+            if failure is None:
+                incumbent=(path,np.asarray(path[-1]).copy(),quality(path,evidence,elapsed))
+                row["raw_candidate_quality"]=incumbent[2]
+                # Improve only an actual detour, before any suffix is bound.
+                # A legal incumbent survives numerical timeout or quality loss.
+                m=incumbent[2]
+                detour=m and (m["weighted_joint_length_rad"]>1.4*max(m["endpoint_joint_distance_rad"],1e-6)
+                    or (m.get("physical_contact_length_over_chord") or 0)>1.6)
+                remaining=c._single_connection_deadline-perf_counter()
+                if direct and detour and remaining>2.:
+                    limit=min(c._single_connection_deadline,perf_counter()+min(4.,remaining*.1))
+                    alternatives=sorted((p for p in eligible if p is not candidate),key=lambda p:p["joint_cost"])
+                    for alternate in alternatives:
+                        if perf_counter()>=limit:break
+                        then=perf_counter()
+                        try:
+                            better,failed,ev=c._native_plan(start,alternate["q"],obstacles,seed=seed,stage=stage,
+                                attachment=None,support_names=(),initial_proximity=None,purpose=purpose,
+                                allow_ompl=False,recovery_mode="shared_budget",search_deadline=limit,
+                                try_ptp=True,try_lin_pose=pose,try_prior=False)
+                        except MoveItUnavailable as exc:
+                            if str(exc)=="SINGLE_TARGET_STAGE_DEADLINE" and not c._native_cancelled():
+                                row["quality_stop"]="STAGE_DEADLINE_KEEP_INCUMBENT"
+                                costs["motion_s"]+=perf_counter()-then
+                                break
+                            raise
+                        spent=perf_counter()-then;costs["motion_s"]+=spent
+                        row.setdefault("quality_attempts",[]).append(dict(q=alternate["q"].tolist(),failure=brief(failed),wall_s=spent))
+                        guard()
+                        if failed:
+                            if failed["reason"] not in {"DIRECT_CONNECTION_REJECTED","NATIVE_PLANNING_FAILED",
+                                    "NATIVE_PLANNING_TIMEOUT","INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS","MOVEIT2_SEARCH_EXHAUSTED"}:
+                                raise MoveItUnavailable("QUALITY_REQUEST_FAILURE:"+failed["reason"])
+                            continue
+                        value=quality(better,ev,spent)
+                        if value and value["weighted_joint_length_rad"]<incumbent[2]["weighted_joint_length_rad"]-1e-8:
+                            incumbent=(better,np.asarray(better[-1]).copy(),value)
+                row["accepted_quality"]=incumbent[2]
+                row["incumbent_retained"]=incumbent[0] is path
+                add(incumbent[1])
+                selected=next((p for p in pool if same(p["q"],incumbent[1])),candidate)
+                selected["returned_prefixes"]+=1
+                return incumbent[0],incumbent[1],None,costs
             last_failure=failure
-            if failure.get('reason') not in {'MOVEIT2_SEARCH_EXHAUSTED','NATIVE_PLANNING_FAILED','NATIVE_PLANNING_TIMEOUT',
-                    'SEARCH_EXHAUSTED','INVALID_GOAL_CLEARANCE','INVALID_GOAL_PROCESS','INVALID_GOAL_AUTHORITY'}:
-                raise MoveItUnavailable('FIXED_TARGET_CONNECTION_REQUEST_FAILURE:'+str(failure.get('reason')))
-        return [],None,dict(reason='SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED',last_failure=last_failure,
-            interpretation='INCOMPLETE_NOT_GLOBAL_UNREACHABILITY',attempts=attempt),costs
+            if failure.get("reason") in {"INVALID_GOAL_CLEARANCE","INVALID_GOAL_PROCESS","INVALID_GOAL_AUTHORITY"}:
+                invalid.append(q.copy());candidate["endpoint_invalid"]=True
+            elif failure.get("reason")=="NATIVE_NO_SEARCH_PROGRESS":
+                return [],None,dict(reason="SINGLE_TARGET_NO_NUMERICAL_PROGRESS",last_failure=failure),costs
+            elif failure.get("reason") not in {"MOVEIT2_SEARCH_EXHAUSTED","NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT","SEARCH_EXHAUSTED"}:
+                raise MoveItUnavailable("FIXED_TARGET_CONNECTION_REQUEST_FAILURE:"+str(failure.get("reason")))
+        return [],None,dict(reason="SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",last_failure=last_failure,
+            interpretation="INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",attempts=attempt,
+            retained_legal_configurations=sum(not p["endpoint_invalid"] for p in pool)),costs
     except MoveItUnavailable as exc:
-        if str(exc) in {'SINGLE_TARGET_STAGE_DEADLINE','REQUEST_CANCELLED_OR_DEADLINE'} and not c._native_cancelled() and perf_counter()>=c._single_connection_deadline:
-            return [],None,dict(reason='SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED',last_failure=last_failure,
-                interpretation='INCOMPLETE_NOT_GLOBAL_UNREACHABILITY',attempts=attempt),costs
+        if str(exc) in {"SINGLE_TARGET_STAGE_DEADLINE","REQUEST_CANCELLED_OR_DEADLINE"} and not c._native_cancelled() and perf_counter()>=c._single_connection_deadline:
+            return [],None,dict(reason="SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",last_failure=last_failure,
+                interpretation="INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",attempts=attempt),costs
         raise
     finally:
         c._single_connection_deadline=previous

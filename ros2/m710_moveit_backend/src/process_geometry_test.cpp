@@ -37,6 +37,19 @@ int main() {
   motion["planner_id"]="LIN";invalid=false;try {m710::validateNativeMotionScope(motion);} catch(const std::exception&) {invalid=true;}
   require(invalid,"PROCESS_JOINT_GOAL_WITHOUT_TCP_REJECTED");
   motion["goal_pose"]=identity();motion.erase("q_goal");m710::validateNativeMotionScope(motion);
+  J approach={{"stage","pregrasp"},{"purpose","FREE_APPROACH"},{"attachment",nullptr},
+    {"planning_only",true},{"planning_mode","cold_from_scratch"},{"recovery_mode","shared_budget"},
+    {"search_operation","RESTART"},{"tree_retained",false},{"empty_approach_direct",true},
+    {"pipeline_id","pilz_industrial_motion_planner"},{"planner_id","PTP"}};
+  for(const auto method:{"PTP","LIN"}){approach["planner_id"]=method;m710::validateNativeMotionScope(approach);}
+  for(const auto field:{"stage","purpose","attachment","planning_mode","search_operation","tree_retained"}) {
+    auto bad=approach;
+    if(std::string(field)=="attachment")bad[field]={{"id","payload"}};
+    else if(std::string(field)=="tree_retained")bad[field]=true;
+    else bad[field]="ILLEGAL";
+    invalid=false;try{m710::validateNativeMotionScope(bad);}catch(const std::exception&){invalid=true;}
+    require(invalid,"EMPTY_APPROACH_SCOPE_MUST_REJECT");
+  }
   // Source bellows extend 10 mm beyond the nominally compressed contact
   // plane. Production URDF import must use the core's compressed boxes;
   // the additional-compression threshold remains exactly 5 mm.

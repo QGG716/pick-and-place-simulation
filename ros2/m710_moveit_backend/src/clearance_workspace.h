@@ -3,6 +3,7 @@
 #include <chrono>
 #include <functional>
 #include "pair_profile.h"
+#include "concept_solid.h"
 
 namespace m710 {
 // Reuse MoveIt's unpadded FCL assets. Mutable objects and the world snapshot are
@@ -57,16 +58,56 @@ public:
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      const std::set<std::string>& tools={},bool reuse=false,bool qualify_fixed_narrow=true,bool pair_profile_enabled=false)
+      const std::set<std::string>& tools={},bool reuse=false,bool qualify_fixed_narrow=true,bool pair_profile_enabled=false,
+      const nlohmann::json& concept_solids=nlohmann::json::array())
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),pair_profile_enabled_(pair_profile_enabled),context_(scene->getCurrentState()) {
     reuse_=reuse;qualify_fixed_narrow_=qualify_fixed_narrow;
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
+    std::map<std::string,nlohmann::json> solid_specs;
+    for(const auto& spec:concept_solids) {
+      validateSolid(spec);
+      if(!spec.contains("solid") || !solid_specs.emplace(spec.at("id").get<std::string>(),spec).second)
+        throw std::runtime_error("CONCEPT_SOLID_BINDING_INVALID");
+    }
+    std::set<std::string> bound_solids;
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
       if(!o || !o->collisionGeometry()) throw std::runtime_error("MISSING_FCL_GEOMETRY");
       const auto* d=static_cast<const collision_detection::CollisionGeometryData*>(o->collisionGeometry()->getUserData());
       if(!d) throw std::runtime_error("MISSING_FCL_METADATA");
       Body b;b.object=o;b.name=d->getID();b.type=d->type;b.shape=d->shape_index;
+      if(b.type==collision_detection::BodyTypes::WORLD_OBJECT && solid_specs.count(b.name)) {
+        const auto source=scene->getWorld()->getObject(b.name);
+        if(!source || source->shapes_.size()!=1 || b.shape!=0 || source->shapes_[0]->type!=shapes::MESH)
+          throw std::runtime_error("CONCEPT_SOLID_NATIVE_SHAPE_MISMATCH");
+        const auto* mesh=static_cast<const shapes::Mesh*>(source->shapes_[0].get());
+        const auto vertices=solidVertices(solid_specs.at(b.name));
+        if(mesh->vertex_count!=8 || mesh->triangle_count!=12)throw std::runtime_error("CONCEPT_SOLID_NATIVE_TOPOLOGY_MISMATCH");
+        std::vector<int> mapping;std::set<int> unique;
+        for(size_t i=0;i<mesh->vertex_count;++i) {
+          const Eigen::Vector3d v(mesh->vertices[3*i],mesh->vertices[3*i+1],mesh->vertices[3*i+2]);
+          int found=-1;for(size_t k=0;k<vertices.size();++k)if((v-vertices[k]).norm()<1e-12)found=k;
+          if(found<0 || !unique.insert(found).second)throw std::runtime_error("CONCEPT_SOLID_NATIVE_VERTEX_MISMATCH");
+          mapping.push_back(found);
+        }
+        std::set<std::array<int,3>> expected,actual;
+        for(const auto& f:solidFaces())for(int i:{1,2}){std::array<int,3> t{f[0],f[i],f[i+1]};std::sort(t.begin(),t.end());expected.insert(t);}
+        for(size_t i=0;i<mesh->triangle_count;++i) {
+          std::array<int,3> t;for(int k=0;k<3;++k)t[k]=mapping.at(mesh->triangles[3*i+k]);
+          std::sort(t.begin(),t.end());actual.insert(t);
+        }
+        if(actual!=expected)throw std::runtime_error("CONCEPT_SOLID_NATIVE_FACE_MISMATCH");
+        // Use the exact same closed convex volume, including containment.
+        // MoveIt's ROS message remains the identical boundary mesh; triangle
+        // surface distance alone cannot certify a small body inside a solid.
+        auto convex=solidFcl(solid_specs.at(b.name));
+        convex->setUserData(o->collisionGeometry()->getUserData());
+        b.object=std::make_shared<fcl::CollisionObjectd>(convex,o->getTransform());
+        b.object->computeAABB();bound_solids.insert(b.name);
+      } else if(b.type==collision_detection::BodyTypes::WORLD_OBJECT && b.name=="conveyor_transverse" &&
+                scene->getWorld()->getObject(b.name)->shapes_.at(b.shape)->type==shapes::MESH) {
+        throw std::runtime_error("CONCEPT_SOLID_BINDING_REQUIRED");
+      }
       if(b.type==collision_detection::BodyTypes::ROBOT_LINK) b.link=d->ptr.link;
       if(b.type==collision_detection::BodyTypes::ROBOT_ATTACHED) b.touch=d->ptr.ab->getTouchLinks();
       // Only box tool/payload pairs whose actual model chains are fixed to
@@ -85,6 +126,7 @@ public:
     for(const auto* body:attached_) expected+=body->getShapes().size();
     if(moving_!=expected) throw std::runtime_error("MISSING_ROBOT_FCL_GEOMETRY");
     for(const auto& item:fcl_objs_) for(const auto& o:item.second.collision_objects_) add(o);
+    if(bound_solids.size()!=solid_specs.size())throw std::runtime_error("CONCEPT_SOLID_WORLD_BINDING_MISSING");
     for(const auto& id:scene->getWorld()->getObjectIds()) expected+=scene->getWorld()->getObject(id)->shapes_.size();
     if(bodies_.size()!=expected) throw std::runtime_error("MISSING_WORLD_FCL_GEOMETRY");
     stats.geometry_prepare_s=elapsed(t);const auto filtering=Clock::now();

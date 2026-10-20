@@ -103,7 +103,8 @@ class SingleLiftedReceiverConnector(SingleExtractionConnector):
                 return plan,row
             reason=(row.get("failure") or {}).get("reason")
             retry=reason in {"NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS","NATIVE_PLANNING_FAILED",
-                "CONTACT_NORMAL_LINE_OR_ORIENTATION","CONTACT_ENDPOINT_FK","TERMINAL_CONTACT_GEOMETRY_NOT_SATISFIED"}
+                "CONTACT_NORMAL_LINE_OR_ORIENTATION","CONTACT_ENDPOINT_FK","TERMINAL_CONTACT_GEOMETRY_NOT_SATISFIED",
+                "RECEIVER_REGION_SEARCH_INCOMPLETE","ACTUAL_RELEASE_REGION_NOT_REACHED"}
             if reason=="NO_CHECKED_RECEIVER_SYNC_AT_GENERATED_ENDPOINTS" and any(
                     (s["response"].get("failure") or {}).get("reason")=="RECEIVER_WORLD_CLEARANCE"
                     for s in self.receiver_sync_attempts):

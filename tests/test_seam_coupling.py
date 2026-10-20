@@ -68,6 +68,10 @@ def test_relief_is_actual_solid_and_penetration_is_detected(layout):
     assert solid_signed_gap(a,b)>=-1e-9
     assert solid_signed_gap(a,replace(b,center=b.center+np.array([.02,0,0])))<-.001
     assert box_message(a)["solid"]["vertices_m"]==a.solid["vertices_m"]
+    from copy import deepcopy
+    malformed=deepcopy(a.solid);malformed["vertices_m"][0][0]+=.001
+    with pytest.raises(ValueError,match="NONCONVEX"):
+        replace(a,solid=malformed)
 
 
 @pytest.mark.parametrize("h",[float("nan"),float("inf"),.59,2.1001,3.4])

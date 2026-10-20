@@ -41,18 +41,14 @@ def test_geometry_selects_front_direct_and_lateral_including_middle(scene):
     by_name = {b.name: b for b in cartons}
     options = {n: process_options(by_name[n], belt, frozen, cartons) for n in frozen.target_ids}
     ordered = sorted(frozen.target_ids, key=lambda n: by_name[n].center[1])
-    # Both the right end (-.84) and the next middle carton (-.42) protrude
-    # beyond the belt's -Y limit once the full .4 m footprint is considered.
-    for n in ordered[:2]:
-        assert options[n][0]["template"] == "FRONT_LATERAL_HMIN"
-        assert options[n][0]["height_m"] == pytest.approx(1.75)
-        assert options[n][0]["segment_directions_world"] == [[0., 1., 0.], [-1., 0., 0.]]
-    for n in ordered[2:]:
+    for n in ordered:
         assert options[n][0]["template"] == "FRONT_DIRECT_HMAX"
         assert options[n][0]["height_m"] == pytest.approx(2.05)
-    assert options[ordered[0]][1]["template"] == "RIGHT_INNER_HMAX"
-    assert options[ordered[-1]][1]["template"] == "LEFT_INNER_HMIN"
-    assert options[ordered[-1]][1]["segment_directions_world"][0] == [0., -1., 0.]
+        assert options[n][1]["template"] == "FRONT_DIRECT_HMIN"
+        assert options[n][1]["height_m"] == pytest.approx(1.75)
+    assert options[ordered[0]][-1]["template"] == "RIGHT_INNER_HMAX"
+    assert options[ordered[-1]][-1]["template"] == "LEFT_INNER_HMIN"
+    assert options[ordered[-1]][-1]["segment_directions_world"][0] == [0., -1., 0.]
 
 
 def test_last_remaining_keeps_original_role_and_height(scene):
@@ -61,7 +57,7 @@ def test_last_remaining_keeps_original_role_and_height(scene):
     remaining = [b for b in cartons if b.name not in frozen.target_ids or b.name == right.name]
     options = process_options(right, belt, frozen, remaining)
     assert options[0]["original_role"] == "RIGHT_END"
-    assert options[1]["template"] == "RIGHT_INNER_HMAX"
+    assert options[-1]["template"] == "RIGHT_INNER_HMAX"
     moved = OBB(right.center+[0, 0, -.1], right.half_extents, right.rotation, right.name, right.category)
     with pytest.raises(ValueError, match="FROZEN_TARGET_GEOMETRY_CHANGED"):
         process_options(moved, belt, frozen, [moved])

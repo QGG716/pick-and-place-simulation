@@ -197,7 +197,8 @@ def test_single_target_dispatch_counts_and_real_terminal_start(failure_stage):
         calls.append(kw["stage"])
         assert kw["try_ptp"] is False and kw["try_prior"] is False
         if kw["stage"]=="pregrasp":
-            assert kw["allow_ompl"] is True and kw["max_ompl_attempts"]==1
+            assert kw["allow_ompl"] is True and kw["recovery_mode"]=="shared_budget"
+            assert "max_ompl_attempts" not in kw
         else:
             assert np.array_equal(start,actual) and not np.array_equal(start,np.ones(6))
             assert kw["allow_ompl"] is False and kw["max_ompl_attempts"]==0

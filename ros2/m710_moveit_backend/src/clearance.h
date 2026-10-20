@@ -53,11 +53,13 @@ public:
     query_range_=gap_+reserve_+.001;
     if(scene->getCollisionDetectorName()!="FCL") throw std::runtime_error("FCL_REQUIRED");
     if(mode!="reference" && mode!="optimized") throw std::runtime_error("UNKNOWN_CLEARANCE_MODE");
+    const auto solids=policy.value("concept_solids",Json::array());
+    if(!solids.empty() && mode!="optimized")throw std::runtime_error("CONCEPT_SOLID_REQUIRES_CONVEX_WORKSPACE");
     if(mode=="optimized") {
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},tools_,native_check_reuse,qualify_fixed_narrow,pair_profile_enabled);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},tools_,native_check_reuse,qualify_fixed_narrow,pair_profile_enabled,solids);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }

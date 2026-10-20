@@ -332,7 +332,12 @@ class Worker {
           req.at("q_start")!=req.at("q_goal") || req.at("attachment").is_null() || req.value("parent_stage_id","").empty())
         throw std::runtime_error("NOMINAL_RELEASE_SCOPE_INVALID");
     }
-    else m710::validateNativeMotionScope(req);
+    else {
+      if(single_target_recovery_enabled && !diagnostic && req.at("stage")=="pregrasp" &&
+          req.at("pipeline_id")=="pilz_industrial_motion_planner" && !req.value("empty_approach_direct",false))
+        throw std::runtime_error("EMPTY_APPROACH_DIRECT_SCOPE_MARKER_REQUIRED");
+      m710::validateNativeMotionScope(req);
+    }
     const std::string connection_scope=req.value("connection_scope",std::string());
     if(!connection_scope.empty()) {
       if(!planning_only || planning_mode!="static_prior_fast" || req.at("stage")!="pregrasp" ||

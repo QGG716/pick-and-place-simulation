@@ -30,6 +30,7 @@ inline void validateSolid(const ProcessJson& box) {
   for(const auto& f:solidFaces()) {
     Eigen::Vector3d n=(v[f[1]]-v[f[0]]).cross(v[f[2]]-v[f[1]]);
     if(n.norm()<1e-12)throw std::runtime_error("DEGENERATE_CONCEPT_FACE");n.normalize();
+    if(std::abs(n.dot(v[f[3]]-v[f[0]]))>1e-9)throw std::runtime_error("NONPLANAR_CONCEPT_FACE");
     for(const auto& p:v)if(n.dot(p-v[f[0]])>1e-9)throw std::runtime_error("NONCONVEX_CONCEPT_SOLID");
   }
 }

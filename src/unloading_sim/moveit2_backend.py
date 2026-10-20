@@ -1131,6 +1131,9 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             receiver_reserve_m=self.budget.receiver_runtime_clearance_reserve_m,
             edge_resolution_rad=self.budget.edge_resolution_rad,
             allowed_pairs=pairs,attachment_contact_scope="fixed_rigid_attachment_cup_compression_remains_authoritative")
+        solids=[b for b in world if "solid" in b]
+        if solids:
+            request["clearance_policy"]["concept_solids"]=solids
         if getattr(self, "require_native_motion", False):
             request["clearance_policy"]["schema"] = "m710_native_process_clearance_v1"
             request.update(task_id=self.native_task_id, require_native_motion=True,
@@ -1177,8 +1180,25 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     def _native_plan(self,start,goal,obstacles,*,seed,attachment=None,support_names=(),target_contact=None,stage,
                      goal_pose=None,initial_proximity=None,allow_ompl=True,max_ompl_attempts=None,purpose=None,
-                     try_ptp=True, connection_scope=None, try_prior=True):
+                     try_ptp=True, connection_scope=None, try_prior=True,
+                     recovery_mode="legacy_quota", search_deadline=None, try_lin_pose=None):
         started=perf_counter(); attempts=[]; seen=set()
+        budget_driven=recovery_mode=="shared_budget"
+        if recovery_mode not in {"legacy_quota","shared_budget"}:
+            raise MoveItUnavailable("UNKNOWN_NATIVE_RECOVERY_MODE")
+        if budget_driven:
+            if max_ompl_attempts is not None or connection_scope is not None or try_prior:
+                raise MoveItUnavailable("BUDGET_MODE_CANNOT_INHERIT_QUOTA_OR_PRIOR")
+            stage_seconds,_=self._native_limits()
+            shared=started+stage_seconds
+            search_deadline=shared if search_deadline is None else min(float(search_deadline),shared)
+            if not np.isfinite(search_deadline):
+                raise MoveItUnavailable("BUDGET_MODE_REQUIRES_FINITE_DEADLINE")
+        elif search_deadline is not None or try_lin_pose is not None:
+            raise MoveItUnavailable("BUDGET_ONLY_ARGUMENT")
+        empty_approach=(stage=="pregrasp" and getattr(purpose,"value",purpose)=="FREE_APPROACH" and attachment is None)
+        if try_lin_pose is not None and (not budget_driven or not empty_approach or goal_pose is not None):
+            raise MoveItUnavailable("EMPTY_APPROACH_DIRECT_SCOPE")
         if connection_scope is not None:
             if (connection_scope not in {"DIRECT_ONLY", "GLOBAL_ALLOWED"}
                     or not self._approach_layering_enabled(stage=stage, purpose=purpose, attachment=attachment)
@@ -1229,10 +1249,10 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 return [],detail,dict(backend="moveit2",endpoint_authority=endpoints,endpoint_authority_s=perf_counter()-endpoint_started)
         endpoint_s=perf_counter()-endpoint_started
         # No free-space fallback for constrained linear process motion.
-        ompl_attempts = self.budget.stage_connection_attempts if max_ompl_attempts is None else max_ompl_attempts
+        ompl_attempts = 0 if budget_driven else (self.budget.stage_connection_attempts if max_ompl_attempts is None else max_ompl_attempts)
         schedule=[("pilz_industrial_motion_planner","LIN")] if goal_pose is not None else [
-            *([("pilz_industrial_motion_planner","PTP")] if try_ptp else []),*( [("ompl","RRTConnectkConfigDefault")]*
-                (ompl_attempts if allow_ompl and not constrained else 0))]
+            *([("pilz_industrial_motion_planner","PTP")] if try_ptp else []),
+            *([("pilz_industrial_motion_planner","LIN")] if try_lin_pose is not None else [])]
         if (getattr(self, "planning_mode", "cold_from_scratch") == "static_prior_fast"
                 and getattr(self, "static_prior_loaded", False) and self.planning_only
                 and stage in {"pregrasp", "transit", "residence"} and goal_pose is None and try_prior):
@@ -1241,10 +1261,24 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if connection_scope:
             schedule = [(pipeline, planner) for pipeline, planner in schedule
                 if not (planner in {"CHECKED_JOINT_DIRECT", "PTP"} and planner in prior_direct)]
+        from .approach_recovery_policy import native_schedule
+        schedule=native_schedule(schedule,budget_driven=budget_driven,legacy_attempts=ompl_attempts,
+            deadline=search_deadline,now=perf_counter,allow_ompl=allow_ompl and goal_pose is None,constrained=constrained)
         context=self._context_identity(obstacles,attachment=attachment,support_names=support_names,target_contact=target_contact,stage=stage)
         for pipeline,planner in schedule:
             if self._deadline_reached(): break
             submitted={**request,"pipeline_id":pipeline,"planner_id":planner}
+            if budget_driven:
+                submitted.update(recovery_mode="shared_budget",search_operation="RESTART",tree_retained=False)
+                if pipeline=="pilz_industrial_motion_planner" and empty_approach:
+                    submitted["empty_approach_direct"]=True
+                if planner=="LIN" and try_lin_pose is not None:
+                    failure=self.capability_check(self.robot.fk(start),try_lin_pose,stage=stage,location="empty_approach_lin")
+                    if failure:
+                        attempts.append(dict(status="LIN_CAPABILITY_NOT_APPLICABLE",failure=failure,
+                            pipeline_id=pipeline,planner_id=planner,stage=stage))
+                        continue
+                    submitted.pop("q_goal",None);submitted["goal_pose"]=np.asarray(try_lin_pose).tolist()
             if connection_scope:
                 submitted["connection_scope"] = connection_scope
                 if planner == "SPARSE_PRM" and "CHECKED_JOINT_DIRECT" in prior_direct:
@@ -1259,6 +1293,13 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 stage_seconds, timeout = self._native_limits()
                 submitted["allowed_planning_time_s"] = stage_seconds
                 submitted["stage_id"] = self.native_task_id+":"+str(next(self._native_stage_ids))
+            if budget_driven:
+                remaining=search_deadline-perf_counter()
+                if remaining<=0:break
+                # Direct planners together get at most 20% of this connection's
+                # time slice. At least 80% remains available to OMPL fallback.
+                allowance=min(2.,remaining) if pipeline=="ompl" else min(.75,max(0.,search_deadline-started)*.10,remaining)
+                submitted["allowed_planning_time_s"]=min(submitted["allowed_planning_time_s"],allowance)
             # An uncovered graph must yield to the next legal branch/fallback.
             # This query-only ceiling cannot enlarge the shared fast/task budget.
             if pipeline == "static_prior":
@@ -1273,6 +1314,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 cancelled=self._native_cancelled if strict else self._deadline_reached)
             request_round_trip_s=perf_counter()-request_started
             attempt={**raw,"request_round_trip_s":request_round_trip_s,
+                "recovery_mode":recovery_mode,"search_operation":"RESTART","tree_retained":False,
                 "planning_phase":submitted["planning_phase"],
                 "connection_scope":connection_scope,
                 "connection_call_id":getattr(self, "_connection_call_id", None),
@@ -1319,6 +1361,11 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     stream.write(json.dumps(diagnostic, allow_nan=False)+"\n")
             attempts.append(attempt)
             if raw["status"]!="SUCCESS":
+                if budget_driven and (raw["status"] in {"ERROR","CANCELLED","NATIVE_PROCESSING_FAILED"} or
+                        raw["status"].startswith(("INVALID_START","NATIVE_TASK_")) or
+                        any(w in raw["status"] for w in ("IDENTITY","CONTEXT","MISMATCH"))):
+                    self.native_evidence.extend(attempts)
+                    raise MoveItUnavailable("REQUEST_STOP:"+raw["status"])
                 if connection_scope:
                     # Only actual geometric rejection can eliminate a later direct
                     # edge. Timeout/cancel/protocol failures are never that proof.
@@ -1342,7 +1389,21 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                                     "METHOD" if local_timeout else "REQUEST",
                                 can_continue_candidates=local_timeout or invalid_goal)), dict(
                             backend="moveit2", success=False, attempts=attempts, connection_scope=connection_scope)
-                if raw["status"].startswith(("INVALID_START","INVALID_GOAL")): break
+                if raw["status"].startswith(("INVALID_START","INVALID_GOAL")):
+                    if not (budget_driven and planner=="LIN" and try_lin_pose is not None):break
+                    # LIN may select a different endpoint IK. Its rejection
+                    # does not invalidate the separately checked joint goal.
+                    continue
+                if budget_driven:
+                    recoverable={"NATIVE_PLANNING_FAILED","NATIVE_PLANNING_TIMEOUT","SEARCH_EXHAUSTED","TIMEOUT"}
+                    if raw["status"] not in recoverable:
+                        self.native_evidence.extend(attempts)
+                        raise MoveItUnavailable("UNKNOWN_NATIVE_RECOVERY_FAILURE:"+raw["status"])
+                    solver_calls=raw.get("native_solver_calls")
+                    no_work=(solver_calls==0 or isinstance(solver_calls,dict) and sum(solver_calls.values())==0)
+                    if pipeline=="ompl" and no_work:
+                        self.native_evidence.extend(attempts)
+                        return [],dict(reason="NATIVE_NO_SEARCH_PROGRESS",attempts=attempts),dict(backend="moveit2",attempts=attempts)
                 continue
             if strict and (any(raw.get(key) != submitted.get(key) for key in ("task_id", "stage_id", "parent_stage_id"))
                     or raw.get("mtc_generation") is not True
@@ -1355,7 +1416,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 self.native_evidence.extend(attempts)
                 return [],attempt["failure"],dict(backend="moveit2",success=False,attempts=attempts)
             try:
-                path=validate_native_result(raw,start,goal,self.native_joint_names,
+                path=validate_native_result(raw,start,None if "goal_pose" in submitted else goal,self.native_joint_names,
                     allow_stationary_place=self.planning_only and stage=="place",
                     allow_semantic_place=(self.planning_only and stage=="place"
                         and getattr(self,"planning_mode","cold_from_scratch")=="static_prior_fast"))
@@ -1399,7 +1460,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                     # not more random seeds. Preserve the actual candidate + gate.
                     self.native_evidence.extend(attempts)
                     detail=dict(reason="NATIVE_AUTHORITY_MISMATCH",stage=stage,authority_failure=failure,
-                        path_sha256=path_id,remaining_attempts=len(schedule)-len(attempts))
+                        path_sha256=path_id,remaining_attempts=None if budget_driven else max(0,ompl_attempts-len(attempts)))
                     return [],detail,dict(backend="moveit2",success=False,attempts=attempts)
                 continue
             attempt["end_to_end_s"]=perf_counter()-started

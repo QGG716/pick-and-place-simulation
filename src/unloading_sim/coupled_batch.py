@@ -37,7 +37,7 @@ def coupled_binding(layout, cartons, start_height, end_height, target_id, contac
     states=[coupled_conveyor_state(layout,float(h),cartons) for h in np.linspace(start_height,end_height,n+1)]
     # Match FrozenLayoutMotionInput's ordering, including every mechanism body.
     world=lambda s:[box_message(b) for b in s.boxes if b.category!='carton']+[box_message(b) for b in s.boxes if b.category=='carton']
-    return dict(schema='m710_coupled_receiver_v3',target_id=target_id,
+    return dict(schema='m710_coupled_receiver_v3' if states[0].mechanism['geometry_revision']=='upper_seam_lower_slider_v3' else 'm710_coupled_receiver_v2',target_id=target_id,
         samples=[dict(height_m=s.mechanism['height_m'],world=world(s),scene_fingerprint=s.scene_fingerprint) for s in states],
         moving_ids=states[0].mechanism['moving_object_ids'],assembly_pairs=[list(p) for p in assembly_mates(states[0])],
         designed_contacts=[list(p) for p in contacts],maximum_height_step_m=abs(end_height-start_height)/max(n,1),
@@ -82,7 +82,10 @@ class BatchState:
         if [types.index(t) for t in required]!=sorted(types.index(t) for t in required):raise ValueError('DRAIN_EVENT_ORDER')
         if any(e.get('target_id')!=target for e in events if e['event_type'] in required):raise ValueError('DRAIN_TARGET_CHANGED')
         if not plan['separation']['passed'] or not plan['nominal_release']['passed']:raise ValueError('DRAIN_WITHOUT_CHECKS')
-        self.q=np.asarray(plan['end_q_rad']);self.height=float(plan['height_m'])
+        q=np.asarray(plan['end_q_rad'],float);height=float(plan['height_m'])
+        if q.shape!=(6,) or not np.isfinite(q).all() or not np.isfinite(height):
+            raise ValueError('BATCH_INVALID_TERMINAL_NUMERIC_STATE')
+        self.q=q;self.height=height
         self.cartons=tuple(b for b in self.cartons if b.name!=target)
         self.ledger.append(dict(target_id=target,last_pose=plan['landed_box'],source='IDEAL_RECEIVER_DRAIN',
             source_stage_id=plan['release_stage_id'],physical_outfeed=False))
