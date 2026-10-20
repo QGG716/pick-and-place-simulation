@@ -1,0 +1,1133 @@
+{
+  "source_commit": "99569e7b7e4eaa2f499b3c1fde9fcaa0a606ca23",
+  "worker_sha256": "1498f580d4150efee5a91198155b3bcffe84277ad08e19cf7408a454532e46ab",
+  "authorized_geometry_change": {
+    "source": "USER_FOLLOWUP_TRANSVERSE_SCISSOR_WIDTH",
+    "from_width_m": 0.7,
+    "to_width_m": 0.6,
+    "alignment": "YMIN_FIXED",
+    "from_layout_fingerprint": "b01f825da1eba212c27bc59eea0a56543d981beb5418d6801f39c81bb1dc89b9",
+    "to_layout_fingerprint": "44bfef539adddc72e8b84622312183353810ebf97233ce12aec8d36c296aa2ec",
+    "config": "/work-transverse-scissor026-formal-20261020/configs/workcells/m710id70_unloading_layout_v1_transverse_scissor_026.yaml",
+    "previous_policy_fingerprint": "33389172753c2705ea05f011d3a3846ccf0ba6b18cf2997452d6efb2ebf86e5e",
+    "new_policy_fingerprint": "063a6ff1c0de6bbdfcd25c2f5503678ce56592e2aa01aae38050fc55f9504a97",
+    "cartons_unchanged": true,
+    "archived_q_unchanged": true,
+    "old_geometry_results_reused": false,
+    "previous_experiment_layout": "m710id70_unloading_layout_v1_longitudinal_060.yaml",
+    "transverse_support_spacing_from_m": 0.46,
+    "transverse_support_spacing_to_m": 0.26,
+    "transverse_support_outer_width_from_m": 0.56,
+    "transverse_support_outer_width_to_m": 0.36,
+    "support_centering": "SYMMETRIC_X_ABOUT_UNCHANGED_TRANSVERSE_DECK",
+    "arm_lengths_cross_sections_and_deck_unchanged": true
+  },
+  "status": "INCOMPLETE_RETAINED",
+  "completed": 0,
+  "target_count": 1,
+  "initial_cartons": 37,
+  "terminal_cartons": 37,
+  "lower_layer_preserved": true,
+  "same_predecessor_as_width060": true,
+  "planning_wall_s": 91.89086220413446,
+  "all_native_request_wall_s": 50.931164406239986,
+  "numerical_ik_successes": 32,
+  "invalid_goal_requests": 144,
+  "unsearched_height_sync_options": 365,
+  "attempts": [
+    {
+      "folder": "attempt-001",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.0999999999999999,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.49999999999999994,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.75,
+        "pre_approach_height_m": 1.75,
+        "synchronization": "ALREADY_AT_RECEIVE",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.102789458,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.102789458,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "113",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 71,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.12878673151135445
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 68,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.122348692268133,
+      "native_wall_s": 12.612533006817102,
+      "numerical_ik_successes": 8,
+      "invalid_goal_requests": 36,
+      "native_coupled_samples": 32,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "folder": "attempt-002",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.0999999999999999,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.49999999999999994,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.7,
+        "pre_approach_height_m": 1.7,
+        "synchronization": "PREGRASP",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100017613,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100017613,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "117",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 75,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.12558390945196152
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 71,
+        "retained_legal_configurations": 0,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.56276621669531,
+      "native_wall_s": 12.838283434510231,
+      "numerical_ik_successes": 8,
+      "invalid_goal_requests": 36,
+      "native_coupled_samples": 37,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "folder": "attempt-003",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.0999999999999999,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.49999999999999994,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.7,
+        "pre_approach_height_m": 1.7,
+        "synchronization": "CONTACT",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100017177,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100017177,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "113",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 71,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.1274440810084343
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 69,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.71176068484783,
+      "native_wall_s": 12.887603886425495,
+      "numerical_ik_successes": 8,
+      "invalid_goal_requests": 36,
+      "native_coupled_samples": 37,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    },
+    {
+      "folder": "attempt-004",
+      "option": {
+        "template": "FRONT_DIRECT_HMIN",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              -0.84
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              2.25
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.75,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.89,
+          0.89
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                -0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.51,
+                0.89,
+                2.0500000000000003
+              ],
+              [
+                -0.5900000000000001,
+                0.89,
+                2.0500000000000003
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.89,
+            0.89
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "LONGITUDINAL_INLET_JUNCTION",
+          "junction": true,
+          "outfeed_direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000002,
+              -1.0999999999999999,
+              2.05
+            ],
+            [
+              -0.9000000000000002,
+              -0.49999999999999994,
+              2.05
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -1.04
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.8500000000000001,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -1.04
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ],
+            [
+              -0.25000000000000006,
+              -0.6399999999999999
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "RIGHT_END",
+        "target_id": "carton_l07_c00",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false,
+        "H_current_m": 2.0500000000000003,
+        "H_receive_m": 1.75,
+        "H_temporary_m": 1.65,
+        "pre_approach_height_m": 1.65,
+        "synchronization": "PREGRASP",
+        "height_resolution_m": 0.01,
+        "third_sync_disabled": true
+      },
+      "complete": false,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100096002,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 36,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100096002,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "random_restarts": null,
+            "request_id": "110",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 68,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.12485742568969727
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 65,
+        "scope": "FACE_ATTEMPT"
+      },
+      "wall_s": 21.587452705949545,
+      "native_wall_s": 12.592744078487158,
+      "numerical_ik_successes": 8,
+      "invalid_goal_requests": 36,
+      "native_coupled_samples": 42,
+      "rejected_pairs": [
+        {
+          "pair": [
+            "J2_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        },
+        {
+          "pair": [
+            "J2_link",
+            "lift_transverse_left_arm_1_0"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_longitudinal"
+          ],
+          "recorded_examples": 10
+        },
+        {
+          "pair": [
+            "J3_link",
+            "conveyor_transverse"
+          ],
+          "recorded_examples": 8
+        }
+      ]
+    }
+  ],
+  "cycles": [],
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false
+}

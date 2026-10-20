@@ -1,0 +1,94 @@
+{
+  ".gitattributes": {
+    "bytes": 20,
+    "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+  },
+  "026-source-manifest.json": {
+    "bytes": 33240,
+    "sha256": "e9dbea9e4f6a4d9464abeb8c6483ec47d8c3086e9598de14ecf2c9c723c70fdc"
+  },
+  "analyze.py": {
+    "bytes": 2759,
+    "sha256": "19a247f74621ff7e2fffc361ec33dc61276254ca47394e5dd69346b5e659d6e0"
+  },
+  "browser-checks.json": {
+    "bytes": 32984,
+    "sha256": "af87d7d81012780d25812ff916873e705a47c49e5f7cc1845be9dcdf964b1476"
+  },
+  "ffprobe.json": {
+    "bytes": 2280,
+    "sha256": "4a2a11361f64348bebbb626a93967bcc82a09c8a34b16d78b9a43ee6a2a247da"
+  },
+  "focused-tests-026.log": {
+    "bytes": 99,
+    "sha256": "fcfa90920b95315df12f481309caac01f80bc29a7b334d30dea527b7c7c0ea4c"
+  },
+  "focused-tests.log": {
+    "bytes": 99,
+    "sha256": "c0c2b3fa6de5bffaca3aa38838157344b24b57bd7df25abdae618e30e0d85488"
+  },
+  "formal026-raw.tar.gz": {
+    "bytes": 8774553,
+    "sha256": "af8766e025e5c560a5210c18e09f014eb634aa167e37232bf947e6d78ad04284"
+  },
+  "frozen-paired-j2-probe-026.json": {
+    "bytes": 2544518,
+    "sha256": "b8060b3f6bcf2101b81176519b11b28ac6fcfff987621eb14fc452989bb59b21"
+  },
+  "native-reuse-026.json": {
+    "bytes": 2801,
+    "sha256": "eafeb2f77e4d96884a0dd1f3ff0fdd8942349468e86363953c85c2f91e291bbf"
+  },
+  "native-reuse.json": {
+    "bytes": 2869,
+    "sha256": "bd1d7f30d7468ac2883459d54fbd5f508f4ef6a9b65b4fe2df8c9232ca93de8e"
+  },
+  "offline-viewers.zip": {
+    "bytes": 2916447,
+    "sha256": "5486923e1c228e276a628ba8db341f28bd7a4b2d8f29ec00b5039339847e0c21"
+  },
+  "paired-j2-probe-026.json": {
+    "bytes": 2544518,
+    "sha256": "b8060b3f6bcf2101b81176519b11b28ac6fcfff987621eb14fc452989bb59b21"
+  },
+  "paired-j2-probe-026.log": {
+    "bytes": 235,
+    "sha256": "d6aeaf61fdea620b519877852c049de5d481010b1d42ad6fcb579ba4fbce3187"
+  },
+  "paired-j2-probe.json": {
+    "bytes": 2544230,
+    "sha256": "aa340321356b8e579c03e3c93109403443965fe81944502b60aecdc5a4927ed8"
+  },
+  "paired-j2-probe.log": {
+    "bytes": 235,
+    "sha256": "d6aeaf61fdea620b519877852c049de5d481010b1d42ad6fcb579ba4fbce3187"
+  },
+  "README.md": {
+    "bytes": 3369,
+    "sha256": "d9be70041fe51396466eea5809990ebb9b6fd6b607b6733311c9ea4ea2f49cc9"
+  },
+  "scissor026-prefix-side.mp4": {
+    "bytes": 48934,
+    "sha256": "4fcd6685570acbe8f6f1f4d13be31b344c2c6240e3dd9943add2dbdc96fec36f"
+  },
+  "source-manifest.json": {
+    "bytes": 33089,
+    "sha256": "5553bdc1e4466582039ae53955d57143264755ecc97ef350cdf3382277802965"
+  },
+  "summary.json": {
+    "bytes": 31069,
+    "sha256": "d840fcb6813edca6a473f8b556124a6b579eeef4f0345e0a19007b9c019c0d85"
+  },
+  "verification.json": {
+    "bytes": 481,
+    "sha256": "72906c3221eac1437227ffb8607686d0b4cf411ab53215e870b4f9fbb4d8e1de"
+  },
+  "video-side.png": {
+    "bytes": 28808,
+    "sha256": "d329bc78f2d8bbd34edfb822ca1737aa7ec0866f1f2274c5d290b72ab1ce5fe6"
+  },
+  "viewer-initial.png": {
+    "bytes": 122668,
+    "sha256": "70b8cdaab5b812db425555d832591488b3de43f440f99fbc9cda882094fdc8fe"
+  }
+}

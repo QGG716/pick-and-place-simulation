@@ -1,0 +1,1302 @@
+{
+  "recording": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "\u5019\u9009\u521d\u59cb\u964d\u5e26 \u00b7 \u539f\u751f\u68c0\u67e5\u901a\u8fc7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 6,
+      "phase": "\u63a5\u8fd1\u672a\u5b8c\u6210 \u00b7 \u5019\u9009\u672a\u63a5\u53d7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 1.75,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "lift",
+        "time": 0,
+        "completed": 0,
+        "cartons": 37
+      },
+      {
+        "segment": 1,
+        "kind": "final",
+        "time": 4,
+        "completed": 0,
+        "cartons": 37
+      }
+    ],
+    "frames": 31,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "check-002": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "\u5019\u9009\u521d\u59cb\u964d\u5e26 \u00b7 \u539f\u751f\u68c0\u67e5\u901a\u8fc7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 6,
+      "phase": "\u63a5\u8fd1\u672a\u5b8c\u6210 \u00b7 \u5019\u9009\u672a\u63a5\u53d7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 1.7,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "lift",
+        "time": 0,
+        "completed": 0,
+        "cartons": 37
+      },
+      {
+        "segment": 1,
+        "kind": "final",
+        "time": 4,
+        "completed": 0,
+        "cartons": 37
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "check-003": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "\u5019\u9009\u521d\u59cb\u964d\u5e26 \u00b7 \u539f\u751f\u68c0\u67e5\u901a\u8fc7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 6,
+      "phase": "\u63a5\u8fd1\u672a\u5b8c\u6210 \u00b7 \u5019\u9009\u672a\u63a5\u53d7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 1.7,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "lift",
+        "time": 0,
+        "completed": 0,
+        "cartons": 37
+      },
+      {
+        "segment": 1,
+        "kind": "final",
+        "time": 4,
+        "completed": 0,
+        "cartons": 37
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "check-004": {
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "\u5019\u9009\u521d\u59cb\u964d\u5e26 \u00b7 \u539f\u751f\u68c0\u67e5\u901a\u8fc7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 2.0500000000000003,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 6,
+      "phase": "\u63a5\u8fd1\u672a\u5b8c\u6210 \u00b7 \u5019\u9009\u672a\u63a5\u53d7",
+      "completed_count": 0,
+      "carton_count": 37,
+      "q_rad": [
+        -1.4198698080202128,
+        -0.45344173919354397,
+        -0.346623102268061,
+        1.5870092577268429,
+        1.4207365736267565,
+        -4.820426009497792
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999973,
+        4.758229782408918e-09,
+        7.358654492695127e-08,
+        0,
+        4.758202492265508e-09,
+        -0.9999999999999312,
+        3.7082293177781445e-07,
+        0,
+        7.358654667972265e-08,
+        -3.708229314031142e-07,
+        -0.9999999999999285,
+        0,
+        -1.0328960984322093,
+        -0.41999977546259065,
+        2.2499999211655957,
+        1
+      ],
+      "height_m": 1.65,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l07_c00",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "lift",
+        "time": 0,
+        "completed": 0,
+        "cartons": 37
+      },
+      {
+        "segment": 1,
+        "kind": "final",
+        "time": 4,
+        "completed": 0,
+        "cartons": 37
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  "candidate-checks": {
+    "status": "PASS",
+    "layout": false,
+    "checks": [
+      {
+        "index": 0,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 1,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 2,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 3,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 4,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 5,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 6,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 7,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 8,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 9,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 10,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 11,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 12,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 13,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 14,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 15,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 16,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 17,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 18,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 19,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 20,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 21,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 22,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 23,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 24,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 25,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 26,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 27,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 28,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 29,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 30,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 31,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 32,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 33,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 34,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 35,
+        "label": "attempt-001 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 36,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 37,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 38,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 39,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 40,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 41,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 42,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 43,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 44,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 45,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 46,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 47,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 48,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 49,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 50,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 51,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 52,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 53,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 54,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 55,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 56,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 57,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 58,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 59,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 60,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 61,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 62,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 63,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 64,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 65,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 66,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 67,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 68,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 69,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 70,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 71,
+        "label": "attempt-002 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 72,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 73,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 74,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 75,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 76,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 77,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 78,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 79,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 80,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 81,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 82,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 83,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 84,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 85,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 86,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 87,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 88,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 89,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 90,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 91,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 92,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 93,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 94,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 95,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 96,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 97,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 98,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 99,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 100,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 101,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 102,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 103,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 104,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 105,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 106,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 107,
+        "label": "attempt-003 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 108,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 109,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 110,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 111,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 112,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 113,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 114,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 115,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 116,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 117,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 118,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 119,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 120,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 121,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 122,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 123,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 124,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 125,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 126,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 127,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 128,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 129,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 130,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 131,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 132,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 133,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 134,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 135,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 136,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 137,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 138,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 139,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 140,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 141,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 142,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      },
+      {
+        "index": 143,
+        "label": "attempt-004 carton_l07_c00 \u00b7 \u5931\u8d25",
+        "points": 0,
+        "solid_count": 1
+      }
+    ],
+    "errors": [],
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  }
+}
