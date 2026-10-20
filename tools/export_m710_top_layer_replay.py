@@ -158,6 +158,7 @@ def export(run,seed,output,attempt=None):
         lower_count=len(protocol['original_cartons'])-len(protocol['frozen']['target_ids']),
         initial_carton_count=len(root['world_cartons']),historical_completed_count=result.get('historical_completed_count',0),
         single_junction=protocol.get('scope')=='ONE_NEW_JUNCTION_C00',
+        all_remaining=protocol.get('scope')=='ALL_REMAINING_FROM_ACCEPTED_C00',
         geometry_variant=protocol.get('authorized_geometry_change'),
         junction_evidence=({k:result['cycles'][0].get(k) for k in ('option','receive_sync_location',
             'actual_extraction_height_m','receive_policy_check','first_touch_tool_geometry')} if protocol.get('scope')=='ONE_NEW_JUNCTION_C00' else None),

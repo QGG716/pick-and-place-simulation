@@ -8,6 +8,7 @@
 const D=/*__DATA__*/;
 const T=THREE,$=id=>document.getElementById(id),mat=a=>new T.Matrix4().set(...a.flat()),vec=a=>new T.Vector3(...a);
 if(D.single_junction){document.title='M710 c00 · 交汇区 Hmin 单箱回放';document.querySelector('h1').textContent='FANUC M-710 · c00 交汇区 Hmin 单箱';document.querySelector('header small').textContent=`c01 已提交末态 → 本轮新增 ${D.result.completed_count}/1 · ${D.incomplete_run?'未完成：仅显示独立候选的已检查前缀':'名义接收与理想清空'} · 非物理执行`;}
+if(D.all_remaining){document.title='M710 | Remaining carton batch';document.querySelector('h1').textContent='FANUC M-710 | '+D.result.completed_count+'/'+D.result.target_count+' remaining cartons';document.querySelector('header small').textContent='Accepted native trajectories | Nominal reception and ideal drain | Physical execution NOT_RUN';}
 const scene=new T.Scene();scene.background=new T.Color('#172536');
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);$('view').appendChild(renderer.domElement);
 const camera=new T.PerspectiveCamera(43,1,.01,100);camera.up.set(0,0,1);const controls=new T.OrbitControls(camera,renderer.domElement);
@@ -35,10 +36,11 @@ function draw(t){time=Math.max(0,Math.min(D.duration,t));const s=D.segments.find
  const processLabel=({FRONT_DIRECT_HMIN:'正抓直出 / Hmin',FRONT_DIRECT_HMAX:'正抓直出 / Hmax',FRONT_LATERAL_HMIN:'正抓横移 / Hmin',LEFT_INNER_HMIN:'左内侧 / Hmin',RIGHT_INNER_HMAX:'右内侧 / Hmax'})[s.option.template]||'—';
  const phaseLabel=({pregrasp:'接近',contact:'接触',extraction:'抽离',withdrawal:'撤离'})[s.phase]||s.phase;
  const nominal=s.completed+(s.kind==='landed'||(s.kind==='motion'&&s.phase==='withdrawal')?1:0);
- $('hud').innerHTML=`<b>${D.single_junction?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count}</b> · ${s.target||'任务结束'}<br>${phaseLabel} · 回放 ${time.toFixed(1)} s<br>附着 ${attached?'是':'否'} · 吸盘 ${attached||s.phase==='contact'?(s.commanded_count+' / 72 命令'):'关闭'}<br>名义接收 ${nominal} · 理想清空 ${s.completed} · 实测接收 0`;
+ $('hud').innerHTML=`<b>${(D.single_junction||D.all_remaining)?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count}</b> · ${s.target||'任务结束'}<br>${phaseLabel} · 回放 ${time.toFixed(1)} s<br>附着 ${attached?'是':'否'} · 吸盘 ${attached||s.phase==='contact'?(s.commanded_count+' / 72 命令'):'关闭'}<br>名义接收 ${nominal} · 理想清空 ${s.completed} · 实测接收 0`;
  $('source').textContent=D.incomplete_run?`未接受候选 ${D.candidate_folder} · ${D.integration_failure?'IK 后程序异常；未检查目标碰撞':'未生成接近轨迹'}`:'规划回放 · 非物理执行';
  $('seek').value=time;$('clock').textContent=`${time.toFixed(1)} / ${D.duration.toFixed(1)} s`;
- $('counts').textContent=`${D.single_junction?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count} · 保留下层 ${D.lower_count}`+(D.single_junction?` · 历史完成 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`:'');
+ $('counts').textContent=`${(D.single_junction||D.all_remaining)?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count} · 保留下层 ${D.lower_count}`+(D.single_junction?` · 历史完成 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`:'');
+ if(D.all_remaining)$('counts').textContent=`This run ${s.completed}/${D.result.target_count} | Historical ${D.historical_completed_count} | Remaining ${D.initial_carton_count-s.completed}`;
  $('detail').textContent=`${s.target||'—'}\n${s.option.template||'—'}\nH=${height.toFixed(3)} m\n${s.phase}\n${s.source}`;
  if(D.geometry_variant){const g=D.geometry_variant;
   $('detail').textContent+=g.transverse_support_spacing_to_m!==undefined?
