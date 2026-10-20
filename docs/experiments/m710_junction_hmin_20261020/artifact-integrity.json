@@ -1,4 +1,12 @@
 {
+  ".gitattributes": {
+    "bytes": 20,
+    "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+  },
+  "README.md": {
+    "bytes": 5418,
+    "sha256": "6f2672a97181af227df404afcc5a36b4d73b84c8db4f088c815b8ea86a75f9a7"
+  },
   "analyze.py": {
     "bytes": 2987,
     "sha256": "9475b7bef0adac9199efec80e886aa1686207f187ddc2c2a58c402747555bf71"
@@ -66,10 +74,6 @@
   "raw-runs.tar.gz": {
     "bytes": 8950972,
     "sha256": "0f5a0ffcbb15bafdd2eeb207c71872c23f581ed62afdfd3ab0a41fd6786b3622"
-  },
-  "README.md": {
-    "bytes": 5418,
-    "sha256": "6f2672a97181af227df404afcc5a36b4d73b84c8db4f088c815b8ea86a75f9a7"
   },
   "recording-initial.png": {
     "bytes": 120629,
