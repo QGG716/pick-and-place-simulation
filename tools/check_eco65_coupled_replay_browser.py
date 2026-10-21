@@ -193,6 +193,36 @@ if(!DATA.segments.length&&DATA.attempts.length){
 const rejected=DATA.attempts.findIndex(a=>a.request.stage==='contact'&&a.response.status==='STATE_REJECTED');
 if(rejected>=0){document.getElementById('mode').value='search';document.getElementById('request').value=rejected;modeChanged();if(failures.length)inspectFailure(0);}
 }
+if(typeof openFirstFailure==='function'&&failedRequests.length){
+check('FAILURE_CATALOGUE_MATCHES_NATIVE_STATUSES',failedRequests.length===DATA.attempts.filter(a=>a.response.status!=='SUCCESS').length);
+document.getElementById('failureFilter').value='collision';document.getElementById('failureFilter').dispatchEvent(new Event('change'));
+check('GEOMETRIC_FAILURE_FILTER_USES_REAL_WITNESSES',filteredFailures.length===failedRequests.filter(({a})=>hasPair(a)).length&&filteredFailures.every(({a})=>hasPair(a)));
+if(filteredFailures.length>1){const previous=active;document.getElementById('nextFailure').click();check('NEXT_FAILURE_SELECTS_OWN_REQUEST',active!==previous&&state.world===(failures[Number(document.getElementById('failure').value)]?.state?.world||active.request.world));}
+document.getElementById('failureFilter').value='all';fillFailureCatalogue();
+const pairIndex=failedRequests.find(({a})=>hasPair(a))?.index;
+if(pairIndex!==undefined){
+openFailure(pairIndex);
+check('FAILURE_PANEL_VISIBLE',!document.getElementById('diagnosis').hidden);
+const selected=failures[Number(document.getElementById('failure').value)],pair=pairOf(selected.witness);
+check('DIAGNOSTIC_USES_ACTUAL_REJECTED_Q',close(currentQ,selected.q,1e-12));
+check('DIAGNOSTIC_USES_REQUEST_OR_SAMPLE_WORLD',state.world===(selected.state?.world||active.request.world));
+check('EXACT_FAILURE_OBJECTS_LOCATED',same(window.replay.highlightedIds,pair));
+check('FAILURE_COLLIDERS_VISIBLE_WITH_COLLISION_LAYER_OFF',!layers.collision&&diagnosticObjects.length>0&&diagnosticObjects.every(o=>o.visible));
+check('REASON_NAMES_EXACT_OBJECT_IDS',pair.every(id=>document.getElementById('diagnosisPairs').textContent.includes(id)));
+check('RIGID_CUP_NEIGHBOR_SCOPE_EXPLAINED',!pair.some(id=>id.endsWith('_rigid'))||document.getElementById('diagnosisPolicy').textContent.includes('刚性'));
+const sentinel=failures.findIndex(f=>(f.witness.original||f.witness).surface_distance_m<0);
+if(sentinel>=0){inspectFailure(sentinel);check('NEGATIVE_DISTANCE_NOT_FAKE_PENETRATION_DEPTH',document.getElementById('diagnosisReason').textContent.includes('未记录穿透深度')&&!document.getElementById('diagnosisReason').textContent.includes('-1000'));}
+}
+for(const status of ['NATIVE_IK_FAILED','NATIVE_SOLVER_DEADLINE_EXPIRED']){
+const index=failedRequests.find(({a})=>a.response.status===status&&!witnesses(a).length)?.index;
+if(index!==undefined){openFailure(index);check(status+'_NO_INVENTED_COLLISION',window.replay.highlightedIds.length===0&&document.getElementById('diagnosisPairs').children.length===0);check(status+'_ACTUAL_SEED_CONTEXT',state.world===active.request.world&&close(currentQ,active.request.q_start,1e-12));check(status+'_NO_FALSE_INFEASIBILITY_CLAIM',document.getElementById('diagnosisOutcome').textContent.includes(status==='NATIVE_IK_FAILED'?'不能据此断言':'超时不代表'));}
+}
+document.getElementById('backToCycle').click();check('CYCLE_CLEARS_FAILURE_OVERLAY',document.getElementById('diagnosis').hidden&&window.replay.highlightedIds.length===0);
+if(document.documentElement.dataset.startInFailures==='true'){
+openFirstFailure();document.querySelector('aside').scrollTop=0;controls.update();updateDiagnosticLabels();renderer.render(scene,camera);
+result.failure_view={request_index:DATA.attempts.indexOf(active),status:active.response.status,pair:window.replay.highlightedIds,reason:document.getElementById('diagnosisReason').textContent,failed_requests:failedRequests.length};
+}
+}
 result.status='PASS';
 }catch(error){result.status='FAIL';result.error=error.stack;}
 const pre=document.createElement('pre');pre.id='browser-check-result';pre.textContent=JSON.stringify(result);document.body.append(pre);

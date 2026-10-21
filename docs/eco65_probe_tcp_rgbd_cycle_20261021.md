@@ -99,3 +99,31 @@ J1 累计反向数值量：首次接近 `2.17343636e-7 rad`、带载去程 `0`�
 
 实际命令见交付包 `evidence/tcp_20261021_build04/commands_executed.txt`；
 使用相同命令重跑时必须选择新的输出目录。
+
+## 三维失败诊断补充
+
+`tools/refresh_eco65_coupled_viewer.py` 可将既有完整回放更新为诊断界面，
+先验证源 HTML 的 SHA256，再确认压缩数据与该 HTML 内嵌数据完全一致。
+输出的 `.data.json.gz` 与源文件逐字节相同；此次没有重新规划或改变接受轨迹。
+
+cycle03 的 373 个请求中，250 个返回失败：206 次 IK 未求得解、19 次原生规划失败、
+16 次原生求解截止、9 次状态检查拒绝。这些候选失败与最终完整任务成功分别显示。
+例如界面请求 #22 的首个拒绝样本为 `part_006_rigid` 对 `carton_r00_l03_c00`，
+实测间隙 1.516137 mm，要求 2.400 mm。柔性唇的邻箱许可不覆盖刚性内件。
+
+页面提供失败类型筛选、前后请求切换、逐个拒绝样本选择、对象聚焦及完整流程回放。
+红色 A、黄色 B 仅高亮记录中的精确碰撞对象，其他视觉几何变灰；即使关闭碰撞图层，
+这两个对象仍可见。姿态和场景使用各请求或升降拒绝样本自己的记录。
+负距离标记不解释为穿透深度；IK/超时无几何见证时显示种子/请求起点，
+不虚构碰撞位置，也不把预算耗尽解释为不可达证明。
+
+本地离线诊断包生成命令（输出路径须为新的路径）：
+
+```powershell
+.venv/Scripts/python.exe tools/refresh_eco65_coupled_viewer.py --source outputs/eco65_native/tcp_20261021_delivery03/replay.html --output outputs/eco65_native/tcp_20261021_failure_viewer02/failures.html --failures
+.venv/Scripts/python.exe tools/check_eco65_coupled_replay_browser.py --html outputs/eco65_native/tcp_20261021_failure_viewer02/failures.html --browser 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' --output outputs/eco65_native/tcp_20261021_failure_viewer02/browser01
+```
+
+离线 Edge 定向浏览器检查 PASS（3148 项，含已有场景与回放检查），
+实际截图为 `failure_viewer02/browser01/checked.png`（上述完整输出路径下）。
+最终 world / attached / completed 仍为 10 / 1 / 1。

@@ -468,6 +468,8 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
     payload = json.dumps(data, separators=(',', ':'), allow_nan=False)
     html = template.replace('/*__VENDOR__*/', (vendor/'three.min.js').read_text()+'\n'+
                             (vendor/'OrbitControls.js').read_text())
+    html = html.replace('/*__DIAGNOSTICS__*/',
+                        (ROOT/'tools/search_replay/eco65_failure_diagnostics.js').read_text(encoding='utf-8'))
     html = html.replace('/*__DATA__*/', payload.replace('</', '<\\/'))
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(html, encoding='utf-8')
