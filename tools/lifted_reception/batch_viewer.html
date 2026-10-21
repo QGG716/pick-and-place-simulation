@@ -9,6 +9,7 @@ const D=/*__DATA__*/;
 const T=THREE,$=id=>document.getElementById(id),mat=a=>new T.Matrix4().set(...a.flat()),vec=a=>new T.Vector3(...a);
 if(D.single_junction){document.title='M710 c00 · 交汇区 Hmin 单箱回放';document.querySelector('h1').textContent='FANUC M-710 · c00 交汇区 Hmin 单箱';document.querySelector('header small').textContent=`c01 已提交末态 → 本轮新增 ${D.result.completed_count}/1 · ${D.incomplete_run?'未完成：仅显示独立候选的已检查前缀':'名义接收与理想清空'} · 非物理执行`;}
 if(D.all_remaining){document.title='M710 | 剩余箱体续跑';document.querySelector('h1').textContent='FANUC M-710 | 本轮完整抓放 '+D.result.completed_count+'/'+D.result.target_count;document.querySelector('header small').textContent='本轮原生轨迹 · 名义接收与理想清空 · 物理执行 NOT_RUN';}
+if(D.mount_comparison){document.title='M710 | 安装位置对照';document.querySelector('h1').textContent='FANUC M-710 | '+D.mounting_variant+' · '+D.segments[0].target;document.querySelector('header small').textContent='独立单箱试验 · 本次原生轨迹 · 名义接收与理想清空 · 物理执行 NOT_RUN';}
 const scene=new T.Scene();scene.background=new T.Color('#172536');
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);$('view').appendChild(renderer.domElement);
 const camera=new T.PerspectiveCamera(43,1,.01,100);camera.up.set(0,0,1);const controls=new T.OrbitControls(camera,renderer.domElement);
@@ -41,6 +42,7 @@ function draw(t){time=Math.max(0,Math.min(D.duration,t));const s=D.segments.find
  $('seek').value=time;$('clock').textContent=`${time.toFixed(1)} / ${D.duration.toFixed(1)} s`;
  $('counts').textContent=`${(D.single_junction||D.all_remaining)?'本轮新增':'顶层'} ${s.completed}/${D.result.target_count} · 保留下层 ${D.lower_count}`+(D.single_junction?` · 历史完成 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`:'');
  if(D.all_remaining)$('counts').textContent=`本轮 ${s.completed}/${D.result.target_count} · 历史 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`;
+ if(D.mount_comparison){$('counts').textContent=`本格独立试验 ${s.completed}/1 · 初态历史 ${D.historical_completed_count} · 现场 ${D.initial_carton_count-s.completed} 箱`;$('hud').innerHTML=$('hud').innerHTML.replace('顶层','本格');}
  $('detail').textContent=`${s.target||'—'}\n${s.option.template||'—'}\nH=${height.toFixed(3)} m\n${s.phase}\n${s.source}`;
  if(D.geometry_variant){const g=D.geometry_variant;
   $('detail').textContent+=g.transverse_support_spacing_to_m!==undefined?

@@ -566,10 +566,17 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         }
 
     seam = layout.data["conveyors"].get("coupling", {}).get("geometry_revision") == "upper_seam_lower_slider_v3"
-    narrow = layout.data["evidence"]["approval_basis"] in {
+    # Explicit user-approved mounting trials; the historical layout stays fixed.
+    mounting_trials = {
+        "user_20261021_mount_y_minus_100": [-1.325, .25, .6],
+        "user_20261021_mount_x_minus_100": [-1.425, .35, .6],
+        "user_20261021_mount_xy_minus_100": [-1.425, .25, .6],
+    }
+    approval = layout.data["evidence"]["approval_basis"]
+    narrow = approval in {
         "user_20261020_longitudinal_width_060_ymin_fixed",
         "user_20261020_transverse_scissor_spacing_030_longitudinal_060",
-        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"}
+        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"} or approval in mounting_trials
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
@@ -585,7 +592,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "transverse_longitudinal_join": _contact_check(transverse, longitudinal, 0 if seam else 1, -1, tolerance),
         "chassis_floor_contact": {"status": "PASS" if abs(_interval(world["chassis"], 2)[0]) <= tolerance else "FAIL", "gap_m": _interval(world["chassis"], 2)[0]},
         "robot_mount_surface": {"status": "PASS" if abs(base[2] - _interval(world["chassis"], 2)[1]) <= tolerance else "FAIL", "gap_m": float(base[2] - _interval(world["chassis"], 2)[1])},
-        "robot_base_origin_world": vector(base, [-1.325, 0.35, 0.6]),
+        "robot_base_origin_world": vector(base, mounting_trials.get(approval, [-1.325, 0.35, 0.6])),
         "robot_base_official_bbox_min": vector(base_min, [-0.3385, -0.275, 0.0]),
         "robot_base_official_bbox_max": vector(base_max, [0.225, 0.275, 0.245]),
         "robot_base_front_edge": {"status": "PASS" if abs(base_front - float(robot["base_front_edge_x_world_m"])) <= tolerance else "FAIL", "actual_x_m": base_front},
@@ -624,6 +631,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
     support_variants = {
         "user_20261020_transverse_scissor_spacing_030_longitudinal_060": .30,
         "user_20261020_transverse_scissor_spacing_026_longitudinal_060": .26}
+    support_variants.update({name: .26 for name in mounting_trials})
     if layout.data["evidence"]["approval_basis"] in support_variants:
         checks["transverse_support_spacing"] = scalar(
             layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.),

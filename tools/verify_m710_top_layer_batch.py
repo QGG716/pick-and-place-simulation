@@ -7,7 +7,9 @@ def verify(run):
     protocol=json.loads((run/'protocol.json').read_text());reports=[]
     original={b['id']:b for b in protocol['original_cartons']};all_targets=set(protocol['frozen']['target_ids'])
     targets=set(protocol.get('scoped_target_ids',all_targets))
-    assert len(original)==40 and len(all_targets)==5
+    paired_mount=protocol.get('scope')=='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON'
+    assert len(original)==40 and (len(all_targets) in (5,40) if paired_mount else len(all_targets)==5)
+    if paired_mount:assert len(targets)==1 and protocol.get('third_sync_disabled')
     for seed in protocol['seeds']:
         folder=run/f'seed-{seed}';r=json.loads((folder/'result.json').read_text())
         q=protocol['configured_initial_q'];height=r['initial']['height_m']
@@ -58,6 +60,15 @@ def verify(run):
             selection=cycle['attachment']['selection']
             assert all(len(selection[k])==72 for k in ('actual_contact_mask','commanded_active_mask','geometrically_eligible_mask'))
             assert selection['actual_contact_mask']==selection['commanded_active_mask'] and any(selection['actual_contact_mask'])
+            if paired_mount:
+                assert cycle['attachment']['pose_continuity_max_abs']<1e-8
+                assert cycle['third_sync_disabled'] and cycle['nominal_release']['passed']
+                assert abs(cycle['actual_extraction_height_m']-cycle['height_m'])<1e-8
+                if cycle['option']['reception']['junction']:
+                    assert cycle['receive_policy_check']['reception']['passed']
+                if not protocol['right_front_eccentric']:
+                    assert cycle['target'].get('world_y_offset_m',0.)==0
+                    assert cycle['target'].get('eccentric_authorization') is None
             assert cycle['separation']['passed'] and cycle['separation']['response']['status']=='SUCCESS'
             types=[e['event_type'] for e in cycle['events']]
             required=['RELEASE','NOMINAL_FIRST_CONTACT','SAFE_TOOL_SEPARATION','IDEAL_RECEIVER_DRAIN']
@@ -85,7 +96,9 @@ def verify(run):
             completed=len(removed)-len(historical),targets=len(targets),
             historical_completed=len(historical),initial_cartons=len(r['initial']['world_cartons']),
             remaining_cartons=len(r['terminal']['world_cartons']),
-            native_stages=stages,coupled_native_samples=lift_samples,nominal_drop_samples=drop_samples,lower_cartons_unchanged=35,
+            native_stages=stages,coupled_native_samples=lift_samples,nominal_drop_samples=drop_samples,
+            lower_cartons_unchanged=35 if len(all_targets)==5 else None,
+            unscoped_cartons_unchanged=len(original)-len(targets),
             failed_attempts=sum(not a.get('complete') for a in r['attempts']),planning_wall_s=r['planning_wall_s']))
     return dict(source_commit=protocol['source_commit'],runs=reports,physical_execution='NOT_RUN',execution_ready=False)
 
