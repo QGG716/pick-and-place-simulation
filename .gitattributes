@@ -98,3 +98,5 @@ docs/experiments/m710_extra_x200_20261021/** -text -whitespace
 docs/m710_extra_x200_20261021.md text eol=lf
 docs/experiments/m710_population_x300_20261021/** -text -whitespace
 docs/m710_population_x300_20261021.md text eol=lf
+docs/experiments/m710_l04_departure_20261021/** -text -whitespace
+docs/m710_l04_tool_departure_20261021.md text eol=lf
