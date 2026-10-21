@@ -51,12 +51,16 @@ const F=frames[model.flange_link].clone().multiply(matrix(model.flange_from_cont
 arrow(position(F),axis(F,0),0xff6c83);arrow(position(F),axis(F,2),0x7df69c);
 if(C){
 const M=L.clone().multiply(matrix(C.T_link1_mast)),opt=M.clone().multiply(matrix(C.T_mast_optical));
+arrow(position(M),axis(M,0),0x53e7e9,.14);
 const forward=axis(opt,2),arm=axis(L,0).negate();
 const yaw=Math.atan2(arm.x*forward.y-arm.y*forward.x,arm.x*forward.x+arm.y*forward.y)*180/Math.PI;
 const pitch=Math.asin(Math.max(-1,Math.min(1,-forward.z)))*180/Math.PI;
 arrow(position(opt),forward,0xffc45e,.22);
 if(C.axis_rotation){const p=new T.Vector3(...C.axis_rotation.point_mast_m),a=p.clone().applyMatrix4(M),b=p.clone().add(new T.Vector3(0,0,.5)).applyMatrix4(M);groups.orientation.add(line([a,b],0xffe079));}
-$('cameraInfo').textContent=`黄色：桅杆本体轴；橙色：optical +Z\n蓝色：link_1 局部 −X\n实际下俯 ${pitch.toFixed(4)}° · 相对 link_1 水平角 ${yaw.toFixed(4)}°\n${model.layout_installation?`底座开关面：−X；桅杆底座：${model.layout_installation.config.additional_mast_yaw_deg?'较上一版 +'+model.layout_installation.config.additional_mast_yaw_deg+'°':'相对原安装 +'+model.layout_installation.config.mast_world_yaw_delta_deg+'°'}\n相同原始 J1 下，相机世界朝向保持\n`:''}${C.calibration?.status||'历史安装'}\n目标来源：冻结场景；没有实际视觉识别闭环`;
+const install=model.layout_installation?.config,delta=install?.additional_mast_yaw_deg;
+const mountText=install?`底座开关面：−X；桅杆底座：${delta!==undefined?'较上一版'+(delta<0?'顺时针':'逆时针')+Math.abs(delta)+'°':'相对原安装 '+install.mast_world_yaw_delta_deg+'°'}\n`:'';
+const cameraText=install?.camera_orientation==='WORLD_HEADING_AT_REFERENCE_J1'?`J1=${install.camera_reference_raw_j1_rad} rad：底座水平轴平行 X，相机水平朝 +Y\n当前相机视线 D=[${forward.toArray().map(v=>v.toFixed(6)).join(', ')}]\n`:(install?'相同原始 J1 下，相机世界朝向保持\n':'');
+$('cameraInfo').textContent=`黄色：桅杆本体轴；橙色：optical +Z\n青色：安装底座水平轴；蓝色：link_1 局部 −X\n实际下俯 ${pitch.toFixed(4)}° · 相对 link_1 水平角 ${yaw.toFixed(4)}°\n${mountText}${cameraText}${C.calibration?.status||'历史安装'}\n目标来源：冻结场景；没有实际视觉识别闭环`;
 }
 let target=state.world.find(b=>b.id===state.target_id),B=target?matrix(target.pose):null;
 if(state.attachment?.id===state.target_id)B=frames[model.flange_link].clone().multiply(matrix(state.attachment.pose));

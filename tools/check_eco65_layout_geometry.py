@@ -2,6 +2,7 @@
 import argparse
 from pathlib import Path
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from unloading_sim.eco65.model import load_json, save_json, robot_for
 from unloading_sim.eco65.coupled_scene import coupled_conveyor_state
@@ -22,6 +23,12 @@ def bounds(row):
 
 def check(snapshot, previous):
     scene, old = snapshot['scene'], previous['scene']
+    cfg = scene['layout_installation']['config']
+    mast_only = cfg['schema'] == 'eco65_incremental_mast_remount_v2'
+    if mast_only:
+        for key in ('base_position_m', 'base_rpy_rad', 'native_world_objects', 'obstacles',
+                    'mesh_obstacles', 'boxes', 'coupled_state', 'coupled_conveyor_spec'):
+            assert scene[key] == old[key], key
     spec = scene['coupled_conveyor_spec']
     rows, reference = [], None
     for height in (.18, .33, .43, .45):
@@ -65,23 +72,37 @@ def check(snapshot, previous):
         b = robot_for(snapshot['tool'], scene).named_link_frames(q)
         A = a['link_1'] @ old['mast']['T_link1_mast']
         B = b['link_1'] @ scene['mast']['T_link1_mast']
-        yaw_error = float(np.max(abs(B[:3, :3] @ A[:3, :3].T - np.diag([-1., -1., 1.]))))
+        expected_delta = Rotation.from_euler('z', cfg['additional_mast_yaw_deg'], degrees=True).as_matrix()
+        yaw_error = float(np.max(abs(B[:3, :3] @ A[:3, :3].T - expected_delta)))
         assert yaw_error < 1e-12
         ca = A @ old['permanent_camera']['T_mast_optical']
         cb = B @ scene['permanent_camera']['T_mast_optical']
-        camera_error = float(np.max(abs(ca[:3, :3] - cb[:3, :3])))
+        if mast_only:
+            # +Y is specified at the unchanged delivered preview J1=0. The
+            # physical mast/camera remain attached to J1 at other joint angles.
+            desired = Rotation.from_euler('z', q1-cfg['camera_reference_raw_j1_rad']).as_matrix() @ [0., np.sqrt(3)/2, -.5]
+            camera_error = float(np.max(abs(cb[:3, 2] - desired)))
+            assert all(np.max(abs(a[name]-b[name])) < 1e-12 for name in a)
+            if q1 == 0.:
+                assert np.max(abs(B[:3, 0] - [-1., 0., 0.])) < 1e-12
+        else:
+            camera_error = float(np.max(abs(ca[:3, :3] - cb[:3, :3])))
         assert camera_error < 1e-12
         assert np.max(abs(b['base_link'] - a['base_link'])) < 1e-12
         assert np.max(abs(b['base_link'][:3, :3] @ [1., 0., 0.] - [-1., 0., 0.])) < 1e-12
         assert abs(B[2, 3] - A[2, 3]) < 1e-12
-        installation.append(dict(raw_j1_rad=q1, mast_add180_matrix_error=yaw_error,
-                                 camera_orientation_matrix_error=camera_error,
+        installation.append(dict(raw_j1_rad=q1, mast_delta_deg=cfg['additional_mast_yaw_deg'],
+                                 mast_rotation_matrix_error=yaw_error,
+                                 camera_orientation_error=camera_error,
+                                 camera_forward_D=cb[:3, 2].tolist(),
+                                 mast_horizontal_axis_D=B[:3, 0].tolist(),
                                  mast_z_m=float(B[2, 3]), switch_normal_D=[-1., 0., 0.]))
     return dict(status='PASS', scope='LAYOUT_GEOMETRY_ONLY', planning_only=True,
                 native_planning='NOT_RUN', physical_execution='NOT_RUN', execution_ready=False,
                 snapshot_fingerprint=snapshot['fingerprint'], previous_snapshot_fingerprint=previous['fingerprint'],
                 belt_geometry_revision=spec['belt_geometry_revision'],
                 conveyor_assemblies=2, world_cartons=12, attached_cartons=0, completed_cartons=0,
+                unchanged_robot_cartons_conveyors_verified=mast_only,
                 heights=rows, installation=installation)
 
 

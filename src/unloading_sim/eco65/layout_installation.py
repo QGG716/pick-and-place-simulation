@@ -8,19 +8,25 @@ from .model import ROOT, URDF, check_transform, transform
 from .camera_installation import pole_axis, installation_fingerprint
 from ..moveit2_backend import digest
 
-CONFIG = ROOT/'configs/workcells/eco65_base_mast_remount_v2.yaml'
+CONFIG = ROOT/'configs/workcells/eco65_base_mast_remount_v3.yaml'
 
 
 def remount_transforms(scene, config):
     """World yaw is compared at identical raw J1, not by editing joint angles."""
-    if (config['schema'] != 'eco65_base_mast_remount_v1' or config['enable_hardware']
-            or scene.get('layout_installation')):
+    incremental = config['schema'] == 'eco65_incremental_mast_remount_v2'
+    previous = scene.get('layout_installation')
+    if (config['schema'] not in ('eco65_base_mast_remount_v1', 'eco65_incremental_mast_remount_v2')
+            or config['enable_hardware'] or (previous and not incremental)):
         raise ValueError('LAYOUT_REMOUNT_CONFIG_OR_SOURCE_INVALID')
+    if incremental and (not previous or previous['config']['geometry_revision'] != config['previous_geometry_revision']):
+        raise ValueError('LAYOUT_REMOUNT_PREVIOUS_REVISION_MISMATCH')
     old_rpy = np.asarray(scene.get('base_rpy_rad', [0., 0., 0.]), float)
     if not np.allclose(old_rpy[:2], 0.):
         raise ValueError('LAYOUT_REMOUNT_REQUIRES_VERTICAL_J1')
     old_base = Rotation.from_euler('xyz', old_rpy).as_matrix()
     new_base = Rotation.from_euler('z', config['robot_base_yaw_deg'], degrees=True).as_matrix()
+    if incremental and not np.allclose(new_base, old_base, atol=1e-12, rtol=0):
+        raise ValueError('MAST_ONLY_REMOUNT_CANNOT_MOVE_ROBOT_BASE')
     world_delta = Rotation.from_euler('z', config['mast_world_yaw_delta_deg'], degrees=True).as_matrix()
     mast = scene['mast']; M = check_transform(mast['T_link1_mast'])
     # Rotate about the J1 line through the parent origin. Its vertical location
@@ -28,13 +34,36 @@ def remount_transforms(scene, config):
     L = transform(rotation=new_base.T@world_delta@old_base)
     new_M = L@M
     axis = pole_axis(mast); p = np.asarray(axis['point_mast_m'])
-    R = new_M[:3,:3].T@new_base.T@old_base@M[:3,:3]
+    C = check_transform(scene['permanent_camera']['T_mast_optical'])
+    expected_camera = old_base@M[:3,:3]@C[:3,:3]
+    if config['camera_orientation'] == 'WORLD_HEADING_AT_REFERENCE_J1':
+        reference = Rotation.from_euler('z', config['camera_reference_raw_j1_rad']).as_matrix()
+        before = reference@expected_camera
+        forward = before[:, 2]
+        pitch = np.radians(config['camera_downward_pitch_deg'])
+        heading = np.asarray(config['camera_horizontal_heading_D'], float)
+        if (not np.allclose(heading, [0., 1., 0.], atol=1e-12, rtol=0)
+                or abs(config['camera_downward_pitch_deg']-30.) > 1e-10
+                or abs(forward[2]+np.sin(pitch)) > 1e-10):
+            raise ValueError('CAMERA_HEADING_OR_EXISTING_PITCH_INVALID')
+        yaw = np.arctan2(heading[1], heading[0])-np.arctan2(forward[1], forward[0])
+        desired = Rotation.from_euler('z', yaw).as_matrix()@before
+        expected_camera = reference.T@desired
+        horizontal_axis = new_base@reference@new_M[:3,:3]@np.array([1., 0., 0.])
+        if abs(abs(horizontal_axis[0])-1.) > 1e-10:
+            raise ValueError('MAST_HORIZONTAL_AXIS_NOT_PARALLEL_TO_X')
+    elif config['camera_orientation'] != 'PRESERVE_WORLD_ORIENTATION_AT_SAME_RAW_J1':
+        raise ValueError('CAMERA_ORIENTATION_MODE_INVALID')
+    R = new_M[:3,:3].T@new_base.T@expected_camera@C[:3,:3].T
+    if not np.allclose(R@[0., 0., 1.], [0., 0., 1.], atol=1e-10):
+        raise ValueError('CAMERA_ADJUSTMENT_MUST_ROTATE_ABOUT_POLE_Z')
     A = transform(p-R@p, R)
     switch = new_base@np.asarray(config['switch_face_normal_base'])
     if not np.allclose(switch, config['switch_face_normal_D'], atol=1e-12):
         raise ValueError('SWITCH_FACE_NOT_MINUS_X')
     return dict(old_base=old_base, new_base=new_base, local_mast_delta=L,
-                old_mast=M, new_mast=new_M, camera_counterrotation=A, axis=axis)
+                old_mast=M, new_mast=new_M, camera_counterrotation=A, axis=axis,
+                expected_camera_world_orientation_at_j1_zero=expected_camera)
 
 
 def apply_layout_installation(scene, config, output, root=ROOT):
@@ -48,7 +77,6 @@ def apply_layout_installation(scene, config, output, root=ROOT):
     t = remount_transforms(scene, config)
     result = deepcopy(scene); mast = result['mast']; camera = result['permanent_camera']
     M, N, A = t['old_mast'], t['new_mast'], t['camera_counterrotation']
-    camera_before = t['old_base']@M[:3,:3]@np.asarray(camera['T_mast_optical'])[:3,:3]
     result['base_rpy_rad'] = [0., 0., float(np.radians(config['robot_base_yaw_deg']))]
     mast['T_link1_mast'] = N.tolist()
     # Part 019 is the round pole with integral upper pocket. Turn it in its
@@ -81,6 +109,11 @@ def apply_layout_installation(scene, config, output, root=ROOT):
         T_camera_counterrotation_mast=A.tolist(), counterrotated_mast_parts=sorted(moving),
         mechanical_relation='ROUND_POLE_REINDEXED_IN_UNCHANGED_LOWER_CLAMP',
         source_camera_installation_fingerprint=installation_fingerprint(scene['permanent_camera']))
+    if config['camera_orientation'] == 'WORLD_HEADING_AT_REFERENCE_J1':
+        camera['layout_remount'].update(
+            reference_raw_j1_rad=config['camera_reference_raw_j1_rad'],
+            horizontal_heading_D=config['camera_horizontal_heading_D'],
+            downward_pitch_deg=config['camera_downward_pitch_deg'])
     calibration = camera['calibration']
     calibration.update(T_parent_child=camera['T_link1_optical'], prior_calibration_valid=False,
         installation_fingerprint=installation_fingerprint(camera))
@@ -150,8 +183,9 @@ def apply_layout_installation(scene, config, output, root=ROOT):
     interfaces += [dict(parent_link='link_1',attachment_id=ident,maximum_penetration_m=.0004,
                        source=deepcopy(interface)) for ident in seat_ids]
     result['fixed_attachment_interfaces'] = interfaces
-    error = float(np.max(abs(t['new_base']@N[:3,:3]@np.asarray(camera['T_mast_optical'])[:3,:3]-camera_before)))
-    if error > 1e-10: raise ValueError('REMOUNT_CAMERA_WORLD_ORIENTATION_CHANGED')
+    error = float(np.max(abs(t['new_base']@N[:3,:3]@np.asarray(camera['T_mast_optical'])[:3,:3]
+                             -t['expected_camera_world_orientation_at_j1_zero'])))
+    if error > 1e-10: raise ValueError('REMOUNT_CAMERA_WORLD_ORIENTATION_INCORRECT')
     result['layout_installation'] = dict(config=deepcopy(config),
         old_base_rpy_rad=scene.get('base_rpy_rad',[0.,0.,0.]),new_base_rpy_rad=result['base_rpy_rad'],
         old_T_link1_mast=M.tolist(),new_T_link1_mast=N.tolist(),

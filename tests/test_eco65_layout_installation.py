@@ -35,7 +35,7 @@ def test_remount_at_same_raw_q_preserves_camera_and_turns_mast_world_ccw90(q1):
 def test_current_mast_base_adds_180_to_previous_layout_without_turning_camera(q1):
     scene = source_scene()
     old = remount_transforms(scene, yaml.safe_load(CONFIG.with_name('eco65_base_mast_remount_v1.yaml').read_text()))
-    new = remount_transforms(scene, yaml.safe_load(CONFIG.read_text()))
+    new = remount_transforms(scene, yaml.safe_load(CONFIG.with_name('eco65_base_mast_remount_v2.yaml').read_text()))
     J = Rotation.from_euler('z', q1).as_matrix()
     a = old['new_base'] @ J @ old['new_mast'][:3, :3]
     b = new['new_base'] @ J @ new['new_mast'][:3, :3]
@@ -45,6 +45,47 @@ def test_current_mast_base_adds_180_to_previous_layout_without_turning_camera(q1
         a @ (old['camera_counterrotation'] @ C)[:3, :3], abs=1e-12)
     assert new['new_mast'][:3, 3] == pytest.approx(old['new_mast'][:3, 3])
     assert new['new_base'] == pytest.approx(old['new_base'])
+
+
+def delivered_layout_scene():
+    scene = source_scene()
+    cfg = yaml.safe_load(CONFIG.with_name('eco65_base_mast_remount_v2.yaml').read_text())
+    t = remount_transforms(scene, cfg)
+    scene['base_rpy_rad'] = [0., 0., np.pi]
+    scene['mast']['T_link1_mast'] = t['new_mast'].tolist()
+    for key in ('T_mast_CAD', 'T_mast_optical'):
+        scene['permanent_camera'][key] = (t['camera_counterrotation'] @ scene['permanent_camera'][key]).tolist()
+    scene['layout_installation'] = dict(config=cfg)
+    return scene
+
+
+def test_mast_only_clockwise90_and_camera_plus_y_down30_at_unchanged_q():
+    scene = delivered_layout_scene()
+    original = deepcopy(scene)
+    t = remount_transforms(scene, yaml.safe_load(CONFIG.read_text()))
+    before = t['old_base'] @ t['old_mast'][:3, :3]
+    after = t['new_base'] @ t['new_mast'][:3, :3]
+    assert after @ before.T == pytest.approx(np.array([[0., 1., 0.], [-1., 0., 0.], [0., 0., 1.]]), abs=1e-12)
+    assert after[:, 0] == pytest.approx([-1., 0., 0.], abs=1e-12)
+    C = np.asarray(scene['permanent_camera']['T_mast_optical'])
+    adjusted = t['camera_counterrotation'] @ C
+    assert after @ adjusted[:3, 2] == pytest.approx([0., np.sqrt(3)/2, -.5], abs=1e-12)
+    assert t['new_base'] == pytest.approx(t['old_base'])
+    assert t['new_mast'][:3, 3] == pytest.approx(t['old_mast'][:3, 3])
+    p = np.r_[t['axis']['point_mast_m'], 1.]
+    assert t['camera_counterrotation'] @ p == pytest.approx(p)
+    assert np.linalg.inv(t['camera_counterrotation'] @ scene['permanent_camera']['T_mast_CAD']) @ adjusted == pytest.approx(
+        np.linalg.inv(scene['permanent_camera']['T_mast_CAD']) @ C)
+    assert scene == original
+
+
+def test_mast_only_rejects_wrong_predecessor_and_robot_base_change():
+    cfg = yaml.safe_load(CONFIG.read_text())
+    with pytest.raises(ValueError, match='PREVIOUS_REVISION_MISMATCH'):
+        remount_transforms(source_scene(), cfg)
+    cfg['robot_base_yaw_deg'] = 0.
+    with pytest.raises(ValueError, match='CANNOT_MOVE_ROBOT_BASE'):
+        remount_transforms(delivered_layout_scene(), cfg)
 
 
 def test_fixed_base_yaw_changes_fk_and_initial_state_identity_without_rewriting_q():

@@ -24,7 +24,11 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
     out = Path(output).resolve()
     out.relative_to(ROOT/"outputs")
     out.mkdir(parents=True, exist_ok=False)
-    scene = build_coupled_scene(old["scene"], config)
+    layout_definition = yaml.safe_load(Path(layout_config).read_text(encoding='utf-8')) if layout_config else None
+    # An incremental mast adjustment must preserve the exact conveyor state,
+    # cartons and world solids of the delivered layout, including its height.
+    mast_only = layout_definition and layout_definition['schema'] == 'eco65_incremental_mast_remount_v2'
+    scene = deepcopy(old['scene']) if mast_only else build_coupled_scene(old["scene"], config)
     # A grasp contract is independent of the optional camera remount.
     scene['grasp_edge_alignment_required'] = True
     config = Path(config).resolve()
@@ -45,7 +49,7 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
         from unloading_sim.eco65.layout_installation import apply_layout_installation
         layout_config = Path(layout_config).resolve()
         scene, layout_assets = apply_layout_installation(scene,
-            yaml.safe_load(layout_config.read_text(encoding='utf-8')), out/'layout_attachments', ROOT)
+            layout_definition, out/'layout_attachments', ROOT)
         extra_assets.update(layout_assets)
         hashes[layout_config.relative_to(ROOT).as_posix()] = file_hash(layout_config)
         save_json(out/'layout_installation.json', scene['layout_installation'])

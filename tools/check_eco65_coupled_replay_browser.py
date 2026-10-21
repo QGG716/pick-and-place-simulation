@@ -97,7 +97,15 @@ if(C.layout_remount){
 const old=matrix(C.layout_remount.old_T_link1_optical),oldR=new T.Matrix4().makeRotationZ(C.layout_remount.old_base_rpy_rad[2]);
 const newR=new T.Matrix4().makeRotationZ(C.layout_remount.new_base_rpy_rad[2]);
 const oldWorld=oldR.multiply(old),newWorld=newR.multiply(M);
-check('CAMERA_WORLD_ORIENTATION_PRESERVED',[0,1,2].every(i=>new T.Vector3().setFromMatrixColumn(oldWorld,i).distanceTo(new T.Vector3().setFromMatrixColumn(newWorld,i))<1e-10));
+if(C.layout_remount.optical_orientation==='WORLD_HEADING_AT_REFERENCE_J1'){
+const reference=new T.Matrix4().makeRotationZ(C.layout_remount.reference_raw_j1_rad).multiply(newWorld);
+check('CAMERA_HORIZONTAL_PLUS_Y_DOWN30_AT_REFERENCE_J1',new T.Vector3().setFromMatrixColumn(reference,2).distanceTo(new T.Vector3(0,Math.sqrt(3)/2,-.5))<1e-10);
+const oldMount=matrix(model.layout_installation.old_T_link1_mast),newMount=matrix(model.layout_installation.new_T_link1_mast);
+const rotation=newMount.clone().multiply(oldMount.clone().invert()),expected=new T.Matrix4().makeRotationZ(-Math.PI/2);
+check('MAST_BASE_CLOCKWISE_90',close(rotation.elements,expected.elements,1e-10));
+const horizontal=new T.Vector3().setFromMatrixColumn(new T.Matrix4().makeRotationZ(C.layout_remount.new_base_rpy_rad[2]).multiply(newMount),0);
+check('MAST_BASE_HORIZONTAL_AXIS_PARALLEL_X',horizontal.distanceTo(new T.Vector3(-1,0,0))<1e-10);
+}else check('CAMERA_WORLD_ORIENTATION_PRESERVED',[0,1,2].every(i=>new T.Vector3().setFromMatrixColumn(oldWorld,i).distanceTo(new T.Vector3().setFromMatrixColumn(newWorld,i))<1e-10));
 const base=fk(currentQ).base_link,switchNormal=new T.Vector3(1,0,0).transformDirection(base);
 check('BASE_SWITCH_FACE_MINUS_X',switchNormal.distanceTo(new T.Vector3(-1,0,0))<1e-10);
 }else check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);

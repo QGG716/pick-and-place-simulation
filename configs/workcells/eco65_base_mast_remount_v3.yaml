@@ -1,0 +1,20 @@
+schema: eco65_incremental_mast_remount_v2
+geometry_revision: eco65_mast_cw90_camera_plus_y_down30_v3
+previous_geometry_revision: eco65_switch_minus_x_mast_add180_v2
+# Relative to layout_corrected_20261021_scene01, not to the original installation.
+mast_world_yaw_delta_deg: -90.0
+additional_mast_yaw_deg: -90.0
+robot_base_yaw_deg: 180.0
+switch_face_normal_base: [1.0, 0.0, 0.0]
+switch_face_normal_D: [-1.0, 0.0, 0.0]
+rotation_reference: SAME_RAW_J1_BEFORE_AND_AFTER_INSTALLATION
+mast_pivot: J1_AXIS
+# The supplier mount's longitudinal CAD axis is mast +X. After adjustment it
+# points along world -X at the unchanged preview q=0, parallel to world X.
+camera_orientation: WORLD_HEADING_AT_REFERENCE_J1
+camera_reference_raw_j1_rad: 0.0
+camera_horizontal_heading_D: [0.0, 1.0, 0.0]
+camera_downward_pitch_deg: 30.0
+camera_counterrotation_part_ids: [mast_part_019]
+seat_max_thickness_m: 0.015
+enable_hardware: false
