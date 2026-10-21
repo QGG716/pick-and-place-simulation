@@ -145,8 +145,8 @@ def main():
     overlay = (ROOT / 'tools/search_replay/five_failures.js').read_text(encoding='utf-8')
     template = template.replace('</html>', '<script>\n' + overlay + '\n</script></html>')
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / 'index.html').write_text(template, encoding='utf-8')
-    (OUT / 'source-checks.json').write_text(json.dumps(dict(status='PASS', source_commit=summary['source_commit'], checks=checks), indent=2) + '\n')
+    (OUT / 'index.html').write_text(template, encoding='utf-8', newline='\n')
+    (OUT / 'source-checks.json').write_text(json.dumps(dict(status='PASS', source_commit=summary['source_commit'], checks=checks), indent=2) + '\n', newline='\n')
     print(json.dumps(dict(cases=len(cases), output=str(OUT / 'index.html'))))
 
 
