@@ -1,4 +1,5 @@
 #include <pilz_industrial_motion_planner/trajectory_functions.h>
+#include <dlfcn.h>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -6,6 +7,9 @@
 using namespace pilz_industrial_motion_planner;
 void require(bool v,const char* why) { if (!v) throw std::runtime_error(why); }
 int main() {
+  // Also run this test linked only to the diagnostic library. Load the real
+  // Pilz implementation locally, matching the worker's plugin visibility.
+  require(dlopen("libtrajectory_generation_common.so",RTLD_NOW|RTLD_LOCAL)!=nullptr,"LOCAL_PILZ_LOAD");
   JointLimitsContainer limits;
   JointLimit b;b.has_velocity_limits=true;b.max_velocity=4.53786;
   b.has_acceleration_limits=true;b.max_acceleration=.5;

@@ -20,8 +20,13 @@ bool verifySampleJointLimits(const std::map<std::string,double>& previous,
     Dl_info info{};
     if (!dladdr(reinterpret_cast<void*>(&verifySampleJointLimits),&info) || !info.dli_sname)
       throw std::runtime_error("PILZ_SAMPLE_CHECK_SYMBOL_UNAVAILABLE");
-    auto fn=reinterpret_cast<Original>(dlsym(RTLD_NEXT,info.dli_sname));
-    if (!fn) throw std::runtime_error("PILZ_ORIGINAL_SAMPLE_CHECK_UNAVAILABLE");
+    // Pilz is plugin-loaded with local visibility in the production worker;
+    // RTLD_NEXT alone only worked in the directly linked regression process.
+    // Resolve the original definition through its actual library handle.
+    static void* library=dlopen("libtrajectory_generation_common.so",RTLD_NOW|RTLD_LOCAL);
+    auto fn=library?reinterpret_cast<Original>(dlsym(library,info.dli_sname)):nullptr;
+    if (!fn || fn==&verifySampleJointLimits)
+      throw std::runtime_error("PILZ_ORIGINAL_SAMPLE_CHECK_UNAVAILABLE");
     return fn;
   }();
   const char* scope=std::getenv("M710_PLANNING_ONLY_ALL_JOINT_RATES_EXCEPTION");
