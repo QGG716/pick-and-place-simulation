@@ -6,6 +6,7 @@ import tarfile
 
 TARGET = 'carton_l05_c03'
 SCOPE = 'XY_TOP_L05_J4_VELOCITY_RESTART'
+RATES_SCOPE = 'XY_TOP_L05_ALL_JOINT_RATES_RESTART'
 
 
 def restore_before_l05(run, state, mounting_variant):

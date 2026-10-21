@@ -33,10 +33,11 @@ def main():
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
         help='Separate synthetic exposed low-row fixture, never part of formal 40-box counts')
-    p.add_argument('--l05-j4-velocity-restart',type=Path,
+    p.add_argument('--l05-limit-restart','--l05-j4-velocity-restart',dest='l05_j4_velocity_restart',type=Path,
         help='Separate user-approved diagnostic, restoring the accepted prefix before failed l05_c03')
-    p.add_argument('--l05-j4-velocity-worker-command')
-    p.add_argument('--l05-j4-velocity-library',type=Path)
+    p.add_argument('--l05-limit-worker-command','--l05-j4-velocity-worker-command',dest='l05_j4_velocity_worker_command')
+    p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
+    p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
     args.output.mkdir(parents=True,exist_ok=False)
     layout_path=Path(__file__).resolve().parents[1]/'configs/workcells'/POPULATION_LAYOUTS[args.mounting_variant]
@@ -48,19 +49,22 @@ def main():
     diagnostic=None
     normal_worker_command=args.worker_command
     if args.l05_j4_velocity_restart:
-        from l05_velocity_diagnostic import restore_before_l05, TARGET, SCOPE
+        from l05_velocity_diagnostic import restore_before_l05, TARGET, SCOPE, RATES_SCOPE
         if args.integration_top_fixture or not args.l05_j4_velocity_worker_command or not args.l05_j4_velocity_library:
             raise ValueError('L05_DIAGNOSTIC_CONFIGURATION_INCOMPLETE')
         predecessor=restore_before_l05(args.l05_j4_velocity_restart,state,args.mounting_variant)
         save(args.output/'predecessor.json',predecessor)
-        diagnostic=dict(target_id=TARGET,joint='J4',ignored_check='PILZ_JOINT_VELOCITY_ONLY',
-            acceleration_deceleration_retained=True,other_joints_retained=True,
+        all_rates=args.l05_motion_limit_policy=='all_joint_rates'
+        diagnostic=dict(target_id=TARGET,joint='ALL_SIX' if all_rates else 'J4',
+            ignored_check='PILZ_ALL_JOINT_VELOCITY_ACCELERATION_DECELERATION' if all_rates else 'PILZ_JOINT_VELOCITY_ONLY',
+            acceleration_deceleration_retained=not all_rates,other_joints_retained=not all_rates,
+            ik_and_position_limits_retained=True,
             position_collision_and_process_checks_retained=True,physical_execution='NOT_RUN',
             library_sha256=hashlib.sha256(args.l05_j4_velocity_library.read_bytes()).hexdigest(),
             library_path=str(args.l05_j4_velocity_library),
             worker_command=args.l05_j4_velocity_worker_command,
             baseline_summary_sha256=predecessor['summary_sha256'])
-    elif args.l05_j4_velocity_worker_command or args.l05_j4_velocity_library:
+    elif args.l05_j4_velocity_worker_command or args.l05_j4_velocity_library or args.l05_motion_limit_policy!='j4_velocity_only':
         raise ValueError('L05_DIAGNOSTIC_RESTART_REQUIRED')
     if args.integration_top_fixture:
         # Valid exposed low-row geometry for production-interface regression.
@@ -83,7 +87,7 @@ def main():
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
-    protocol=dict(**identity,**FLAGS,seeds=[71070],scope=SCOPE if diagnostic else 'XY_TOP_NEW_WORLD_40',
+    protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else 'XY_TOP_NEW_WORLD_40',
         integration_fixture=args.integration_top_fixture,original_cartons=[box_message(b) for b in original.cartons],
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
         configured_initial_q=state.q.tolist(),historical_completed_count=len(history),
@@ -122,7 +126,7 @@ def main():
         args.right_front_eccentric=name in eccentric_ids;args.junction_only=args.right_front_eccentric
         folder=args.output/f'task-{len(outcomes)+1:03d}';folder.mkdir()
         save(folder/'dispatch.json',dict(selection=selected,root=state.root(),right_front_eccentric=args.right_front_eccentric,
-            j4_velocity_diagnostic_enabled=diagnostic_enabled))
+            motion_limit_diagnostic_enabled=diagnostic_enabled))
         checkpoint('RUNNING')
         print(json.dumps(dict(event='CARTON_TASK_START',target=name,remaining=len(state.cartons))),flush=True)
         try:
@@ -137,7 +141,7 @@ def main():
             checkpoint('INTEGRATION_ERROR_RETAINED');raise
         outcome=dict(target_id=name,status=result['status'],completed_count=result['completed_count'],
             planning_wall_s=result['planning_wall_s'],attempts=result['attempts'],root=result['initial'],terminal=result['terminal'])
-        if diagnostic:outcome['j4_velocity_diagnostic_enabled']=diagnostic_enabled
+        if diagnostic:outcome['motion_limit_diagnostic_enabled']=diagnostic_enabled
         outcome['evidence']=archive_task(folder,args.output);outcomes.append(outcome)
         current=checkpoint('RUNNING')
         print(json.dumps(dict(event='CARTON_TASK_RECORDED',target=name,completed=current['completed_count'],

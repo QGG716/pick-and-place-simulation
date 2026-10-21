@@ -34,7 +34,8 @@ def expected_population_mount(protocol):
 def verify(run, replay=None):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
-    diagnostic = protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
+    all_rates = protocol['scope']=='XY_TOP_L05_ALL_JOINT_RATES_RESTART'
+    diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     xy_top = diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
@@ -50,9 +51,14 @@ def verify(run, replay=None):
     if diagnostic:
         policy=protocol['planning_diagnostic']
         assert policy==summary['planning_diagnostic']
-        assert policy['target_id']=='carton_l05_c03' and policy['joint']=='J4'
-        assert policy['ignored_check']=='PILZ_JOINT_VELOCITY_ONLY'
-        assert policy['acceleration_deceleration_retained'] and policy['other_joints_retained']
+        assert policy['target_id']=='carton_l05_c03'
+        if all_rates:
+            assert policy['joint']=='ALL_SIX' and policy['ignored_check']=='PILZ_ALL_JOINT_VELOCITY_ACCELERATION_DECELERATION'
+            assert not policy['acceleration_deceleration_retained'] and not policy['other_joints_retained']
+            assert policy['ik_and_position_limits_retained']
+        else:
+            assert policy['joint']=='J4' and policy['ignored_check']=='PILZ_JOINT_VELOCITY_ONLY'
+            assert policy['acceleration_deceleration_retained'] and policy['other_joints_retained']
         assert policy['position_collision_and_process_checks_retained'] and policy['physical_execution']=='NOT_RUN'
         predecessor=json.loads((run/'predecessor.json').read_text())
         assert initial==predecessor['new_native_root']
@@ -97,8 +103,9 @@ def verify(run, replay=None):
             result = read("result.json")
             if diagnostic:
                 enabled=name=='carton_l05_c03'
-                assert outcome['j4_velocity_diagnostic_enabled']==enabled
-                assert read('dispatch.json')['j4_velocity_diagnostic_enabled']==enabled
+                assert outcome.get('motion_limit_diagnostic_enabled',outcome.get('j4_velocity_diagnostic_enabled'))==enabled
+                dispatch=read('dispatch.json')
+                assert dispatch.get('motion_limit_diagnostic_enabled',dispatch.get('j4_velocity_diagnostic_enabled'))==enabled
             assert result["initial"] == root
             assert result["completed_count"] in (0, 1)
             assert len(result["cycles"]) == result["completed_count"]
@@ -114,9 +121,10 @@ def verify(run, replay=None):
                 detail = read(folder+"/attempt.json") if folder+"/attempt.json" in outcome["evidence"]["file_sha256"] else {}
                 trace = read(folder+"/search-trace.json")
                 if diagnostic:
-                    markers=raw(folder+'/worker.log').decode(errors='replace').count('M710_DIAGNOSTIC_J4_VELOCITY_IGNORED')
+                    marker='M710_DIAGNOSTIC_JOINT_RATE_IGNORED' if all_rates else 'M710_DIAGNOSTIC_J4_VELOCITY_IGNORED'
+                    markers=raw(folder+'/worker.log').decode(errors='replace').count(marker)
                     if name!='carton_l05_c03':assert markers==0
-                    counts['diagnostic_j4_velocity_bypasses']+=markers
+                    counts['diagnostic_joint_rate_bypasses' if all_rates else 'diagnostic_j4_velocity_bypasses']+=markers
                 if xy_top:
                     model = trace['model']
                     urdf = ET.fromstring(model['parameters']['robot_description'])
