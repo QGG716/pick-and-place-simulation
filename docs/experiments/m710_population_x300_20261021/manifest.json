@@ -1,0 +1,33 @@
+{
+  "source_commit": "cb6eb0199fb07f10bff632edf3aaa1234f679c00",
+  "sha256": {
+    "accepted-cycles-checks.json": "c1608ae2a10a8e07c40b7d9af01907a12ffbd29ba0b5b4b335cf675bb51aca64",
+    "accepted-cycles.html": "bc64fff1f7431346fb88639250a78cc213f73b53a5045cdbfd20056760e21fd6",
+    "all-targets.json": "45d273cbb998db0b09c0a72145b9ac6c73f7bb7176cc3e3d5cf38eab1c885719",
+    "browser-checks.json": "2410ba6034de3d615d7ff4745d18b309ebf61a05055942dfc000063adbf1446c",
+    "build-delivery.py": "1c41806460270950474bb94a50779f8a7d7eaf902d3456e98e6a9de2e6781af5",
+    "costs.json": "83448241c8ea6312cf69333ec2f20011ac33f63070d99966485dbbc2080959b5",
+    "failure-diagnostics.json": "1d8882f19ce3db783340333e1690a7c2857eadd03d97ded2073ae66d74ac49d4",
+    "failure-diagnostics.py": "c97426fea7dbb61b3b5a9f0beb43473332aea70a7e973557df07594e0d464776",
+    "final.png": "afa0d39776d067f65c96c06d7b8d8472efbcb9e6582202adefad454c12f69260",
+    "focused-tests.log": "8ca6453635bbd631fb5dd897c1281408591d5f22aed166274e3a2e627795494e",
+    "formal-raw-receipt.json": "f329c53785db8935cc8860c32780991ba1dd62dd97b636103dbda46b1935d45d",
+    "formal-raw.tar.xz": "c4a6e17360f5a1d757dd802f493176b3453d911d5cd41122f128322ff924425e",
+    "formal-run.log": "a2e13ab2828291836463ead3b445ca5fefdfc2b9bff9530c2d20587aa4367f27",
+    "formal-v1.sh": "dc95c64b2bdaac6108c5ed7cfc13cb51149e638b6a872770ca23aca17d22fcd2",
+    "index.html": "972486bca0428854bfd3911ae26f5f19bae2e1895d34260ce27b7bde2bacc32d",
+    "initial.png": "10f7bc34d7ae2e48b9c3e1c8d9babd5f8916ecd720f40a89f28c0b877c141603",
+    "LICENSE.FANUC.txt": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+    "LICENSE.three": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84",
+    "measured-source-overlay.tar.gz": "a964e17060dc962343abc6b3422f64c91f6b80c141c317c9e7622509965e8363",
+    "offline-replay.zip": "9b5f35be32e1611205c89c1c7ebf841bc52684671d7ddb5bcfda8ba63e1fb9f4",
+    "pack-evidence.py": "e440a2e60b67a67eacfcad142b64a324896fccbdd31313807360742d2b492cde",
+    "protocol.json": "4324760bb0c0e54ba8bcd6c51b2bb949556713935e68a75ebb80cf191fef6dd3",
+    "README.txt": "1e8d61982f02b9a31a269b935e8e32335189fadb02fc764e8328fd6032ac0cbc",
+    "source-check.json": "c343a18db43e4e326cdbd4a16bf4bf61f928f81327d59d3baae71d8b85307c2b",
+    "source-manifest.json": "9846a4ff0e22ca4aab51a829e9bbdede8c3c073fb63ef470d0e883468680768a",
+    "summarize-cycles.py": "5877b935570ca7c43cc44842d56f6f89f85c2ab055d5df9b7533454ec8e02ca2",
+    "summary.json": "7bcbb45fcb32ff4f5606b4d788268f367fb600085dbee57d8a9d8fbbac3f372b",
+    "verification.json": "5f6fbaa6a3de43460e671bddda314307d0b61b75d835f5a6c5900b3f8d2854d3"
+  }
+}

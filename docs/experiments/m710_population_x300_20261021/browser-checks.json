@@ -1,0 +1,1219 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "initial": {
+    "time": 0,
+    "phase": "pregrasp",
+    "completed_count": 0,
+    "carton_count": 40,
+    "q_rad": [
+      -0.4738507840476061,
+      -0.46642585435191586,
+      -0.35455135903520246,
+      1.7851535539041579,
+      0.48589729025839207,
+      -3.3829904117272847
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999966624,
+      -0.000002580425970788447,
+      1.284195648154629e-7,
+      0,
+      -1.284217051917729e-7,
+      -8.294742018244428e-7,
+      0.9999999999996478,
+      0,
+      -0.000002580425864467947,
+      -0.9999999999963267,
+      -8.294745331705045e-7,
+      0,
+      -0.7675012684336553,
+      -0.09999932489470238,
+      2.2499996481858484,
+      1
+    ],
+    "height_m": 0.6000000000000001,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": "carton_l07_c02",
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "final": {
+    "time": 829.088615513672,
+    "phase": "整批结束",
+    "completed_count": 19,
+    "carton_count": 21,
+    "q_rad": [
+      -1.2053233902620804,
+      0.23666593975061423,
+      -0.6283044505586668,
+      -1.8541940157820636,
+      -1.3368411988153077,
+      -0.6723013417678597
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999998728,
+      -3.4831463108231375e-7,
+      -3.649565076535577e-7,
+      0,
+      -3.483146713103371e-7,
+      -0.9999999999999332,
+      -1.1030614655016535e-7,
+      0,
+      -3.649564692481034e-7,
+      1.1030627383723512e-7,
+      -0.9999999999999274,
+      0,
+      -1.032896206850269,
+      -0.839999720588199,
+      1.3500000621785253,
+      1
+    ],
+    "height_m": 0.8499999999999999,
+    "attached": false,
+    "nominal_count": 19,
+    "drain_count": 19,
+    "physical_count": 0,
+    "target": null,
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "segment": 0,
+      "kind": "motion",
+      "time": 0,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 1,
+      "kind": "lift",
+      "time": 7.538138301,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 2,
+      "kind": "motion",
+      "time": 11.538138301,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 3,
+      "kind": "motion",
+      "time": 14.538139646,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 4,
+      "kind": "drop",
+      "time": 35.293139645,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 5,
+      "kind": "landed",
+      "time": 35.39410324658322,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 6,
+      "kind": "motion",
+      "time": 35.99410324658322,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 7,
+      "kind": "landed",
+      "time": 36.504008019583225,
+      "completed": 0,
+      "cartons": 40
+    },
+    {
+      "segment": 8,
+      "kind": "motion",
+      "time": 37.30400801958322,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 9,
+      "kind": "motion",
+      "time": 42.776464690583225,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 10,
+      "kind": "motion",
+      "time": 45.77646469158323,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 11,
+      "kind": "drop",
+      "time": 66.53146469158322,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 12,
+      "kind": "landed",
+      "time": 66.63242833593031,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 13,
+      "kind": "motion",
+      "time": 67.23242833593031,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 14,
+      "kind": "landed",
+      "time": 67.74233208393031,
+      "completed": 1,
+      "cartons": 39
+    },
+    {
+      "segment": 15,
+      "kind": "lift",
+      "time": 68.5423320839303,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 16,
+      "kind": "motion",
+      "time": 72.5423320839303,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 17,
+      "kind": "motion",
+      "time": 78.9244272329303,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 18,
+      "kind": "motion",
+      "time": 81.9244272689303,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 19,
+      "kind": "drop",
+      "time": 102.6794272679303,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 20,
+      "kind": "landed",
+      "time": 102.9465522219554,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 21,
+      "kind": "motion",
+      "time": 103.5465522219554,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 22,
+      "kind": "landed",
+      "time": 104.05645698095539,
+      "completed": 2,
+      "cartons": 38
+    },
+    {
+      "segment": 23,
+      "kind": "motion",
+      "time": 104.85645698095539,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 24,
+      "kind": "motion",
+      "time": 110.91482168995539,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 25,
+      "kind": "motion",
+      "time": 113.91482174895539,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 26,
+      "kind": "drop",
+      "time": 134.6698217489554,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 27,
+      "kind": "landed",
+      "time": 134.9369467075234,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 28,
+      "kind": "motion",
+      "time": 135.53694670752338,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 29,
+      "kind": "landed",
+      "time": 136.04684691152337,
+      "completed": 3,
+      "cartons": 37
+    },
+    {
+      "segment": 30,
+      "kind": "motion",
+      "time": 136.8468469115234,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 31,
+      "kind": "lift",
+      "time": 147.35808896452338,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 32,
+      "kind": "motion",
+      "time": 151.35808896452338,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 33,
+      "kind": "motion",
+      "time": 154.35810932052337,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 34,
+      "kind": "drop",
+      "time": 175.11310931952337,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 35,
+      "kind": "landed",
+      "time": 175.214072959123,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 36,
+      "kind": "motion",
+      "time": 175.814072959123,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 37,
+      "kind": "landed",
+      "time": 176.32397762212298,
+      "completed": 4,
+      "cartons": 36
+    },
+    {
+      "segment": 38,
+      "kind": "lift",
+      "time": 177.123977622123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 39,
+      "kind": "motion",
+      "time": 181.123977622123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 40,
+      "kind": "lift",
+      "time": 188.340960525123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 41,
+      "kind": "motion",
+      "time": 192.340960525123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 42,
+      "kind": "motion",
+      "time": 195.340960525123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 43,
+      "kind": "drop",
+      "time": 216.095960524123,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 44,
+      "kind": "landed",
+      "time": 216.1969242503033,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 45,
+      "kind": "motion",
+      "time": 216.7969242503033,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 46,
+      "kind": "landed",
+      "time": 217.3068294583033,
+      "completed": 5,
+      "cartons": 35
+    },
+    {
+      "segment": 47,
+      "kind": "motion",
+      "time": 218.1068294583033,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 48,
+      "kind": "motion",
+      "time": 224.3199062113033,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 49,
+      "kind": "motion",
+      "time": 227.3199062443033,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 50,
+      "kind": "drop",
+      "time": 248.0749062433033,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 51,
+      "kind": "landed",
+      "time": 248.17586996540285,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 52,
+      "kind": "motion",
+      "time": 248.77586996540285,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 53,
+      "kind": "landed",
+      "time": 249.28577274540285,
+      "completed": 6,
+      "cartons": 34
+    },
+    {
+      "segment": 54,
+      "kind": "lift",
+      "time": 250.08577274540286,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 55,
+      "kind": "motion",
+      "time": 254.08577274540286,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 56,
+      "kind": "motion",
+      "time": 260.63115894340285,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 57,
+      "kind": "motion",
+      "time": 263.63115894340285,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 58,
+      "kind": "drop",
+      "time": 284.38615894240286,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 59,
+      "kind": "landed",
+      "time": 284.6532838508244,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 60,
+      "kind": "motion",
+      "time": 285.2532838508244,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 61,
+      "kind": "landed",
+      "time": 285.7631891358244,
+      "completed": 7,
+      "cartons": 33
+    },
+    {
+      "segment": 62,
+      "kind": "motion",
+      "time": 286.5631891358244,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 63,
+      "kind": "motion",
+      "time": 292.58379130582443,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 64,
+      "kind": "motion",
+      "time": 295.5837913188244,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 65,
+      "kind": "drop",
+      "time": 316.3387913188244,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 66,
+      "kind": "landed",
+      "time": 316.6059162293696,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 67,
+      "kind": "motion",
+      "time": 317.2059162293696,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 68,
+      "kind": "landed",
+      "time": 317.71582139536963,
+      "completed": 8,
+      "cartons": 32
+    },
+    {
+      "segment": 69,
+      "kind": "motion",
+      "time": 318.51582139536964,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 70,
+      "kind": "lift",
+      "time": 364.6652394803696,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 71,
+      "kind": "motion",
+      "time": 368.6652394803696,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 72,
+      "kind": "motion",
+      "time": 371.6652395613696,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 73,
+      "kind": "drop",
+      "time": 392.4202395613696,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 74,
+      "kind": "landed",
+      "time": 392.5212030462194,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 75,
+      "kind": "motion",
+      "time": 393.1212030462194,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 76,
+      "kind": "landed",
+      "time": 393.63111415721943,
+      "completed": 9,
+      "cartons": 31
+    },
+    {
+      "segment": 77,
+      "kind": "lift",
+      "time": 394.43111415721944,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 78,
+      "kind": "motion",
+      "time": 398.43111415721944,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 79,
+      "kind": "lift",
+      "time": 406.3208988542194,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 80,
+      "kind": "motion",
+      "time": 410.3208988542194,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 81,
+      "kind": "motion",
+      "time": 413.3208988542194,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 82,
+      "kind": "drop",
+      "time": 434.0758988532194,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 83,
+      "kind": "landed",
+      "time": 434.1768625636964,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 84,
+      "kind": "motion",
+      "time": 434.7768625636964,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 85,
+      "kind": "landed",
+      "time": 435.2867652106964,
+      "completed": 10,
+      "cartons": 30
+    },
+    {
+      "segment": 86,
+      "kind": "motion",
+      "time": 436.0867652106964,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 87,
+      "kind": "motion",
+      "time": 443.8886025276964,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 88,
+      "kind": "motion",
+      "time": 446.8886087086964,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 89,
+      "kind": "drop",
+      "time": 467.6436087076964,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 90,
+      "kind": "landed",
+      "time": 467.74457241536555,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 91,
+      "kind": "motion",
+      "time": 468.3445724153656,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 92,
+      "kind": "landed",
+      "time": 468.8544760863656,
+      "completed": 11,
+      "cartons": 29
+    },
+    {
+      "segment": 93,
+      "kind": "lift",
+      "time": 469.6544760863656,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 94,
+      "kind": "motion",
+      "time": 473.6544760863656,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 95,
+      "kind": "motion",
+      "time": 501.7383429523656,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 96,
+      "kind": "motion",
+      "time": 504.7383434373656,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 97,
+      "kind": "drop",
+      "time": 525.4933434363655,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 98,
+      "kind": "landed",
+      "time": 525.7604683207888,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 99,
+      "kind": "motion",
+      "time": 526.3604683207889,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 100,
+      "kind": "landed",
+      "time": 526.8703772327889,
+      "completed": 12,
+      "cartons": 28
+    },
+    {
+      "segment": 101,
+      "kind": "motion",
+      "time": 527.6703772327888,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 102,
+      "kind": "motion",
+      "time": 533.7294684527889,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 103,
+      "kind": "motion",
+      "time": 536.7294684707889,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 104,
+      "kind": "drop",
+      "time": 557.4844684707889,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 105,
+      "kind": "landed",
+      "time": 557.7515934581838,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 106,
+      "kind": "motion",
+      "time": 558.3515934581839,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 107,
+      "kind": "landed",
+      "time": 558.8614950601839,
+      "completed": 13,
+      "cartons": 27
+    },
+    {
+      "segment": 108,
+      "kind": "motion",
+      "time": 559.6614950601838,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 109,
+      "kind": "lift",
+      "time": 605.8109123801838,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 110,
+      "kind": "motion",
+      "time": 609.8109123801838,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 111,
+      "kind": "motion",
+      "time": 612.8109124671838,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 112,
+      "kind": "drop",
+      "time": 633.5659124661838,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 113,
+      "kind": "landed",
+      "time": 633.6668762051714,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 114,
+      "kind": "motion",
+      "time": 634.2668762051715,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 115,
+      "kind": "landed",
+      "time": 634.7767792721714,
+      "completed": 14,
+      "cartons": 26
+    },
+    {
+      "segment": 116,
+      "kind": "lift",
+      "time": 635.5767792721714,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 117,
+      "kind": "motion",
+      "time": 639.5767792721714,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 118,
+      "kind": "lift",
+      "time": 647.4765976301713,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 119,
+      "kind": "motion",
+      "time": 651.4765976301713,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 120,
+      "kind": "motion",
+      "time": 654.4765978711713,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 121,
+      "kind": "drop",
+      "time": 675.2315978701713,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 122,
+      "kind": "landed",
+      "time": 675.3325615804677,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 123,
+      "kind": "motion",
+      "time": 675.9325615804677,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 124,
+      "kind": "landed",
+      "time": 676.4424634504677,
+      "completed": 15,
+      "cartons": 25
+    },
+    {
+      "segment": 125,
+      "kind": "lift",
+      "time": 677.2424634504677,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 126,
+      "kind": "motion",
+      "time": 681.2424634504677,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 127,
+      "kind": "motion",
+      "time": 687.9727721694677,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 128,
+      "kind": "motion",
+      "time": 690.9727892444677,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 129,
+      "kind": "drop",
+      "time": 711.7277892434677,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 130,
+      "kind": "landed",
+      "time": 711.994914162435,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 131,
+      "kind": "motion",
+      "time": 712.594914162435,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 132,
+      "kind": "landed",
+      "time": 713.1048208664349,
+      "completed": 16,
+      "cartons": 24
+    },
+    {
+      "segment": 133,
+      "kind": "motion",
+      "time": 713.9048208664349,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 134,
+      "kind": "lift",
+      "time": 722.2412915184349,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 135,
+      "kind": "motion",
+      "time": 726.2412915184349,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 136,
+      "kind": "motion",
+      "time": 729.2412916734348,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 137,
+      "kind": "drop",
+      "time": 749.9962916734348,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 138,
+      "kind": "landed",
+      "time": 750.0972551768145,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 139,
+      "kind": "motion",
+      "time": 750.6972551768146,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 140,
+      "kind": "landed",
+      "time": 751.2071638798145,
+      "completed": 17,
+      "cartons": 23
+    },
+    {
+      "segment": 141,
+      "kind": "lift",
+      "time": 752.0071638798145,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 142,
+      "kind": "motion",
+      "time": 756.0071638798145,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 143,
+      "kind": "motion",
+      "time": 802.1565810618144,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 144,
+      "kind": "motion",
+      "time": 805.1565811618144,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 145,
+      "kind": "drop",
+      "time": 825.9115811618144,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 146,
+      "kind": "landed",
+      "time": 826.178706149672,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 147,
+      "kind": "motion",
+      "time": 826.7787061496721,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 148,
+      "kind": "landed",
+      "time": 827.2886155136721,
+      "completed": 18,
+      "cartons": 22
+    },
+    {
+      "segment": 149,
+      "kind": "final",
+      "time": 828.088615513672,
+      "completed": 19,
+      "cartons": 21
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900485061613047
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.049004892128864164
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430349117063427
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430349233740766
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900488752030041
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900497156795014
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.049004967606581795
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.34303479458038133
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430348000347927
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.049004737298025125
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900495632397184
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900495359833834
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430347329445185
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430349974116047
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.049004984000460716
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900495614873224
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.3430348216655963
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.04900475528579551
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.34303499859990483
+    }
+  ],
+  "frames": 0,
+  "width": 640,
+  "height": 360,
+  "fps": 5,
+  "playback_speed": 1,
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+}

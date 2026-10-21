@@ -1,0 +1,9 @@
+{
+  "file": "population-x300-formal-raw.tar.xz",
+  "sha256": "c4a6e17360f5a1d757dd802f493176b3453d911d5cd41122f128322ff924425e",
+  "bytes": 4109308,
+  "files": 303,
+  "wall_s": 250.40669274999527,
+  "preservation": "All original evidence file bytes preserved; gzip storage containers expanded",
+  "original_task_archive_receipts_preserved": true
+}
