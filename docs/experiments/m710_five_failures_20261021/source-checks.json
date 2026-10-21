@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "source_commit": "f37448f998d0e82401c096a72c198b28e58fd2c2",
+  "checks": [
+    {
+      "target_id": "carton_l05_c03",
+      "kind": "region",
+      "source_file_hashes_verified": true,
+      "native_q_and_world_preserved": true,
+      "generated_trajectory_points": 0,
+      "collision_pair": null,
+      "region_sample_count": 346
+    },
+    {
+      "target_id": "carton_l04_c02",
+      "kind": "region",
+      "source_file_hashes_verified": true,
+      "native_q_and_world_preserved": true,
+      "generated_trajectory_points": 0,
+      "collision_pair": null,
+      "region_sample_count": 346
+    },
+    {
+      "target_id": "carton_l03_c01",
+      "kind": "collision",
+      "source_file_hashes_verified": true,
+      "native_q_and_world_preserved": true,
+      "generated_trajectory_points": 0,
+      "collision_pair": [
+        "tool_rigid_0",
+        "carton_l04_c02"
+      ],
+      "region_sample_count": 0
+    },
+    {
+      "target_id": "carton_l03_c04",
+      "kind": "collision",
+      "source_file_hashes_verified": true,
+      "native_q_and_world_preserved": true,
+      "generated_trajectory_points": 0,
+      "collision_pair": [
+        "tool_rigid_0",
+        "carton_l04_c03"
+      ],
+      "region_sample_count": 0
+    },
+    {
+      "target_id": "carton_l03_c00",
+      "kind": "ik",
+      "source_file_hashes_verified": true,
+      "native_q_and_world_preserved": true,
+      "generated_trajectory_points": 0,
+      "collision_pair": null,
+      "region_sample_count": 0
+    }
+  ]
+}
