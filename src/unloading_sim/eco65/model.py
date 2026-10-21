@@ -1,6 +1,6 @@
 """ECO65-B model, private scene, and complete convex-mesh distance checks."""
 from __future__ import annotations
-import hashlib,json
+import gzip,hashlib,json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import numpy as np
@@ -14,7 +14,11 @@ URDF=OFFICIAL/"description/rm_models/ECO65/urdf/ECO65-B/urdf/ECO65-B.urdf"
 LOCAL=ROOT/"configs/local/eco65_desktop"
 OUTPUT=ROOT/"outputs/eco65_desktop_round1/round1"
 
-def load_json(p):return json.loads(Path(p).read_text(encoding="utf-8"))
+def load_json(p):
+    p=Path(p)
+    if p.suffix=='.gz':
+        with gzip.open(p,'rt',encoding='utf-8') as stream:return json.load(stream)
+    return json.loads(p.read_text(encoding="utf-8"))
 def save_json(p,value):
     p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text(json.dumps(value,ensure_ascii=False,indent=2,allow_nan=False),encoding="utf-8")

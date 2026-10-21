@@ -3,7 +3,7 @@ const diagnosticGroup=new T.Group();scene.add(diagnosticGroup);
 let diagnosticObjects=[],diagnosticBoxes=[],diagnosticWitness=null,filteredFailures=[];
 const failureColors=[0xff506d,0xffc857];
 const failedRequests=DATA.attempts.map((a,index)=>({a,index})).filter(({a})=>a.response.status!=='SUCCESS');
-const statusLabels={NATIVE_IK_FAILED:'本次 IK 未求得解',NATIVE_PLANNING_FAILED:'原生运动规划失败',NATIVE_SOLVER_DEADLINE_EXPIRED:'原生求解达到截止时间',STATE_REJECTED:'状态检查拒绝'};
+const statusLabels={NATIVE_IK_FAILED:'本次 IK 未求得解',NATIVE_PLANNING_FAILED:'原生运动规划失败',NATIVE_PATH_REJECTED:'原生路径检查拒绝',NATIVE_SOLVER_DEADLINE_EXPIRED:'原生求解达到截止时间',STATE_REJECTED:'状态检查拒绝'};
 const stageLabels={pregrasp:'接近预抓取位',contact:'抓取接触',extraction:'脱垛抽离',transit:'带载转运',departure:'工具退出',return:'返回下一箱'};
 function statusLabel(a){return statusLabels[a.response.status]||a.response.status||'未记录结果';}
 function witnesses(a){return [...(a.failure_samples||[]),...(a.trace?.planners||[]).flatMap(p=>(p.checked_samples||[]).filter(s=>!s[1]).map(s=>({q:s[0],witness:s[2]})))];}
@@ -86,7 +86,12 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
   if(w){
     if(w.reason==='CLEARANCE_INSUFFICIENT')reason='采样拒绝原因：间隙不足';
     else if(w.reason==='INTERSECTION_OR_CONTACT')reason='采样拒绝原因：检测到接触或相交';
+    else if(w.reason==='J1_DIRECTION_VIOLATION')reason='采样拒绝原因：J1 运动方向违反要求';
     else reason='采样拒绝原因：'+(w.reason||'未记录具体原因');
+    if(w.from_q&&w.to_q){
+      reason+=`\n原始 J1 ${w.from_q[0].toFixed(7)} → ${w.to_q[0].toFixed(7)} rad\n变化 ${(w.to_q[0]-w.from_q[0]).toExponential(4)} rad`;
+      if(w.direction)reason+='\n要求：'+(w.direction<0?'顺时针 / 原始角非增':'逆时针 / 原始角非减');
+    }
     const gap=w.surface_distance_m,required=w.required_pair_clearance_m;
     if(Number.isFinite(gap)&&gap>=0)reason+=`\n实测间隙 ${(gap*1000).toFixed(3)} mm`;
     else if(Number.isFinite(gap)&&gap<0)reason+='\n返回值是相交标记，未记录穿透深度。';
@@ -118,7 +123,7 @@ function openFailure(index,focus=true){
   // Every sample retains its recorded request world or explicit transition world.
   let sample=failures.findIndex(f=>pairOf(f.witness).length===2);
   if(sample<0&&failures.length)sample=0;
-  if(sample>=0){inspectFailure(sample);if(focus)focusFailure();}
+  if(sample>=0){inspectFailure(sample);if(focus){if(diagnosticBoxes.length)focusFailure();else reset();}}
   else {reset();renderDiagnosis(null,active.request.op==='ik'?'当前显示本次 IK 种子；没有返回解，也没有失败碰撞姿态。':'当前显示本请求起点；未采集可定位的失败状态。');}
 }
 function stepFailure(delta){const index=filteredFailures.findIndex(r=>String(r.index)===$('failedRequest').value);if(filteredFailures.length)openFailure(filteredFailures[(index+delta+filteredFailures.length)%filteredFailures.length].index);}

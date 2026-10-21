@@ -457,8 +457,9 @@ class Worker {
         if(before_attachment.is_null() || !after_attachment.is_null())throw std::runtime_error("ECO65_CYCLE_RELEASE_STATE");
       } else if(before_attachment!=after_attachment)throw std::runtime_error("ECO65_CYCLE_UNRECORDED_ATTACHMENT");
       const std::string interval=req.at("business_interval"),next_interval=after_req.at("business_interval");
-      const std::string expected_interval=event=="ATTACH"&&interval=="FIRST_APPROACH"?"OUTBOUND":
-        event=="RELEASE"?"RETURN":interval;
+      if(req.value("completion_goal",std::string())!=after_req.value("completion_goal",std::string()))
+        throw std::runtime_error("ECO65_CYCLE_COMPLETION_GOAL_CHANGED");
+      const std::string expected_interval=m710::ecoCycleNextInterval(req,event);
       if(next_interval!=expected_interval || (event=="RELEASE"&&interval!="OUTBOUND"))
         throw std::runtime_error("ECO65_CYCLE_BUSINESS_INTERVAL_CHANGED");
       const double expected_reverse=next_interval==interval?req.at("j1_reverse_used_rad").get<double>():0.;

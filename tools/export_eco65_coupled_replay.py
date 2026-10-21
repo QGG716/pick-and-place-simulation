@@ -177,6 +177,9 @@ def attempts_from_run(folder, records):
                             *(result.get('clearance') or {}).get('rejected_examples', [])]:
                 if isinstance(witness, dict) and witness.get('q_rad'):
                     witnesses.append(dict(q=witness['q_rad'], witness=witness))
+                elif isinstance(witness,dict) and witness.get('from_q') and witness.get('to_q'):
+                    sample=dict(q=witness['to_q'],witness=witness,source='SAME_NATIVE_REJECTED_EDGE_ENDPOINT')
+                    if sample not in witnesses:witnesses.append(sample)
             process_failure = (result.get('process') or {}).get('last_failure')
             if req['op'] == 'check_state_offline' and isinstance(process_failure, dict):
                 witnesses.append(dict(q=req['q_start'], witness=process_failure,
@@ -427,7 +430,7 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             trial_ids=sorted({a['request']['task_id'] for a in all_attempts if a['request'].get('task_id')}),
             displayed_chain_scope='COMPLETE_PLAN' if plan and plan['complete'] else 'SINGLE_TRIAL_SUCCESSFUL_PREFIX_ONLY'),
         plan_summary=None if plan is None else {k:plan.get(k) for k in (
-            'schema','complete','status','first_target_id','next_target_id','planning_wall_s',
+            'schema','complete','status','completion_goal','inventory_ids','process_history','first_target_id','next_target_id','planning_wall_s',
             'physical_execution','execution_ready','j1_direction_policy','failures')},
         initial_state=plan['initial_state'] if plan else previews[0]['state'],
         terminal_state=plan['terminal_state'] if plan else None,
@@ -490,7 +493,7 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
         archive.writestr('records/snapshot.json', json.dumps(snapshot))
         archive.write(vendor/'LICENSE.three', 'LICENSE.three')
         if plan_path:
-            archive.write(plan_path, 'records/cycle.json')
+            archive.write(plan_path, 'records/cycle.json.gz' if Path(plan_path).suffix=='.gz' else 'records/cycle.json')
         if run_folder:
             run_folder = Path(run_folder)
             for path in sorted(run_folder.rglob('*')):

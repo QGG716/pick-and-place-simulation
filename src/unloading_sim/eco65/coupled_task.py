@@ -341,7 +341,9 @@ class CoupledTask(NativeTask):
         local=np.linalg.inv(self.robot.named_link_frames(self.current_q)['link_6'])@self.target_pose
         def change():
             self.attachment=local.copy()
-            if not next_target:self.business_interval='OUTBOUND'
+            if not next_target:
+                self.business_interval='OUTBOUND'
+                self.reverse_used['OUTBOUND']=0.
         record=self.transition('ATTACH',change)
         record['actual_seal']=seal
 
@@ -411,9 +413,9 @@ class CoupledTask(NativeTask):
         box=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
         remaining=[b for b in self.scene['boxes'] if b['id']!=self.target['id']
                    and b['id'] not in self.completed_ids]
-        front=min(b['pose'][0]-b['size_m'][0]/2 for b in remaining)
+        front=min(b['pose'][0]-b['size_m'][0]/2 for b in remaining or [self.target])
         radius=float(np.linalg.norm(np.asarray(self.target['size_m'])[:2]/2))
-        top=max(b['pose'][2]+b['size_m'][2]/2 for b in remaining)
+        top=max(b['pose'][2]+b['size_m'][2]/2 for b in remaining or [self.target])
         clear_z=max(box[2,3],top+self.target['size_m'][2]/2+.005)
         if recovery=='diagonal_above':
             box[0,3]-=self.target['size_m'][0]/2
@@ -478,7 +480,8 @@ class CoupledTask(NativeTask):
     def _extract_and_release(self):
         attached=self.checkpoint()
         heights=frozen_receive_heights(self.original_boxes[self.target['id']],
-            self.spec['low_height_m'],self.spec['high_height_m'],self.desired_drop)
+            self.spec['low_height_m'],self.spec['high_height_m'],self.desired_drop,
+            hardware_fallback=getattr(self,'completion_goal',None)=='ALL_CARTONS_DRAINED')
         # Start with the least external-axis travel from the actual accepted
         # height. Both frozen candidates remain available within this same
         # connection deadline; a high belt must not consume the whole budget
@@ -573,6 +576,7 @@ class CoupledTask(NativeTask):
         def release():
             self.target_pose=actual.copy();self.carton_poses[target]=actual.copy()
             self.attachment=None;self.business_interval='RETURN'
+            self.reverse_used['RETURN']=0.
         self.transition('RELEASE',release)
         receive=actual.copy();receive[2,3]-=region['actual_gap_m']
         cp=self.checkpoint();samples=[]
@@ -661,7 +665,7 @@ class CoupledTask(NativeTask):
                         initial_selection=selection,candidate_id=grasp['candidate_id'],error=str(error)))
         raise ValueError('FIRST_CARTON_OR_CONTINUATION_BOUNDED_CANDIDATES_EXHAUSTED')
 
-    def return_next(self):
+    def return_next(self, *, complete_carton=False):
         """Try finite next faces/heights, then let the caller revisit grasp branches."""
         drained=self.checkpoint()
         boxes=[b for b in self.scene['boxes'] if b['id'] not in self.completed_ids
@@ -698,7 +702,10 @@ class CoupledTask(NativeTask):
                     self.select_next(target,grasp)
                     self.lift(height)
                     self.approach(grasp)
-                    self.attach(next_target=True)
+                    self.attach(next_target=not complete_carton)
+                    if complete_carton:
+                        self.extract_and_release()
+                        return
                     result=self.result(complete=True)
                     result['validation']=validate_cycle(result,self.snapshot)
                     result.pop('fingerprint');result['fingerprint']=digest(result)

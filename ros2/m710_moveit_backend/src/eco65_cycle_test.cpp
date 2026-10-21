@@ -29,6 +29,13 @@ int main() {
     require(m710::ecoCycleDirection(req)==-1,"OUTBOUND_DIRECTION");
     req["business_interval"]="RETURN";req["j1_direction"]=1;req["stage"]="contact";
     require(m710::ecoCycleDirection(req)==1,"NEXT_CONTACT_MUST_REMAIN_RETURN");
+    require(m710::ecoCycleNextInterval(req,"ATTACH")=="RETURN","SINGLE_CYCLE_CONTACT_STOP_COMPATIBILITY");
+    auto batch=req;batch["completion_goal"]="ALL_CARTONS_DRAINED";
+    require(m710::ecoCycleNextInterval(batch,"ATTACH")=="OUTBOUND","BATCH_NEXT_CONTACT_THEN_OUTBOUND");
+    require(m710::ecoCycleNextInterval(batch,"NEXT_TARGET")=="RETURN","BATCH_NEXT_APPROACH_REMAINS_RETURN");
+    batch["business_interval"]="OUTBOUND";
+    require(m710::ecoCycleNextInterval(batch,"RELEASE")=="RETURN","BATCH_RELEASE_STARTS_RETURN");
+    batch["completion_goal"]="UNKNOWN";rejects([&]{m710::ecoCycleNextInterval(batch,"ATTACH");});
     auto bad=req;bad.erase("business_interval");rejects([&]{m710::ecoCycleDirection(bad);});
     bad=req;bad["j1_direction"]=-1;rejects([&]{m710::ecoCycleDirection(bad);});
     bad=req;bad["j1_reverse_used_rad"]=1.1e-6;rejects([&]{m710::ecoCycleDirection(bad);});

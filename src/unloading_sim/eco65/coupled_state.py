@@ -94,13 +94,18 @@ def receiving_geometry(pose, size, bounds, *, desired_drop=None, margin=.01):
                 margin_m=margin, desired_drop_m=desired_drop)
 
 
-def frozen_receive_heights(box, low, high, desired_drop=.05):
+def frozen_receive_heights(box, low, high, desired_drop=.05, *, hardware_fallback=False):
     bottom = float(box['pose'][2]-box['size_m'][2]/2)
     values = [('HIGH', bottom-desired_drop),
               ('LOW', bottom-box['size_m'][2]-desired_drop)]
-    return [dict(name=name, height_m=h, frozen_initial_bottom_m=bottom,
+    candidates = [dict(name=name, height_m=h, frozen_initial_bottom_m=bottom,
                  desired_drop_m=desired_drop) for name, h in values
             if low-1e-12 <= h <= high+1e-12]
+    if not candidates and hardware_fallback:
+        candidates.append(dict(name='HARDWARE_LOW_WITH_NATIVE_PAYLOAD_HEIGHT_ADJUSTMENT',
+            height_m=low, frozen_initial_bottom_m=bottom, desired_drop_m=desired_drop,
+            required_box_bottom_at_release_m=low+desired_drop))
+    return candidates
 
 
 def validate_cycle(plan, snapshot, *, require_complete=True):
@@ -116,6 +121,11 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
             or plan['physical_execution'] != 'NOT_RUN' or plan['execution_ready'] is not False):
         raise ValueError('CYCLE_IDENTITY_OR_POLICY_CHANGED')
     ids = [x['id'] for x in snapshot['scene']['boxes']]
+    batch = plan.get('completion_goal') == 'ALL_CARTONS_DRAINED'
+    if plan.get('completion_goal') not in (None, 'ALL_CARTONS_DRAINED'):
+        raise ValueError('CYCLE_COMPLETION_GOAL_INVALID')
+    if batch and plan.get('inventory_ids') != ids:
+        raise ValueError('BATCH_INVENTORY_CHANGED')
     sizes = {x['id']: x['size_m'] for x in snapshot['scene']['boxes']}
     robot = robot_for(snapshot['tool'], snapshot['scene'])
     from .coupled_scene import coupled_conveyor_state, with_coupled_state
@@ -140,6 +150,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
     parent = previous['parent_stage_id']
     seen = set()
     reversal = {name: 0. for name in INTERVALS}
+    legs = [dict(interval=previous['business_interval'],target_id=previous['target_id'],reverse_rad=0.)]
     events = []
     for record in plan['records']:
         before, after = record['state_before'], record['state_after']
@@ -153,6 +164,8 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
             raise ValueError('CYCLE_NATIVE_PARENT_CHANGED')
         seen.add(record['record_id'])
         req, result = record['native_request'], record['native_result']
+        if batch and req.get('completion_goal') != 'ALL_CARTONS_DRAINED':
+            raise ValueError('BATCH_NATIVE_GOAL_MISSING')
         policy = snapshot['native_model']['init']['collision_policy']
         if (req['clearance_policy']['source_policy'] != policy
                 or req['process_policy']['collision_policy'] != policy
@@ -175,7 +188,13 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
             if (req.get('business_interval') != interval or req.get('j1_direction') != direction or
                     req.get('j1_direction_policy')!=plan['j1_direction_policy']):
                 raise ValueError('CYCLE_DIRECTION_MISSING')
-            reversal[interval] = check_business_direction(q, interval, reversal[interval],plan['j1_direction_policy'])
+            if batch:
+                if abs(req['j1_reverse_used_rad']-legs[-1]['reverse_rad'])>1e-12:
+                    raise ValueError('BATCH_DIRECTION_BUDGET_DISCONTINUITY')
+                legs[-1]['reverse_rad']=check_business_direction(q,interval,legs[-1]['reverse_rad'],plan['j1_direction_policy'])
+                reversal[interval]+=reverse_travel(q,direction)
+            else:
+                reversal[interval] = check_business_direction(q, interval, reversal[interval],plan['j1_direction_policy'])
             if (before['height_m'] != after['height_m']
                     or before['world'] != after['world']
                     or before['attachment'] != after['attachment']):
@@ -229,10 +248,27 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
                         raise ValueError('CYCLE_NOMINAL_DROP_INVALID')
             else:
                 raise ValueError('CYCLE_RECORD_KIND_INVALID')
+        if batch:
+            expected_interval=('OUTBOUND' if record.get('event_type')=='ATTACH' else
+                               'RETURN' if record.get('event_type')=='RELEASE' else before['business_interval'])
+            if after['business_interval']!=expected_interval:
+                raise ValueError('BATCH_BUSINESS_INTERVAL_CHANGED')
+            if after['business_interval']!=before['business_interval']:
+                legs.append(dict(interval=after['business_interval'],target_id=after['target_id'],reverse_rad=0.))
         previous, parent = after, record['record_id']
     if previous != plan['terminal_state']:
         raise ValueError('CYCLE_TERMINAL_STATE_CHANGED')
-    if require_complete:
+    if require_complete and batch:
+        completed=previous['completed_ids']
+        expected=[]
+        for i,target in enumerate(completed):
+            if i:expected.append(('NEXT_TARGET',completed[i-1]))
+            expected.extend((event,target) for event in ('ATTACH','RELEASE','NOMINAL_RECEIVE','IDEAL_RECEIVER_DRAIN'))
+        if (not plan['complete'] or len(completed)!=len(ids) or set(completed)!=set(ids)
+                or previous['attachment'] is not None or previous['remaining_ids']
+                or events!=expected or completed[0]!=plan['first_target_id']):
+            raise ValueError('BATCH_INCOMPLETE')
+    elif require_complete:
         first, second = plan['first_target_id'], plan['next_target_id']
         if (not plan['complete'] or first == second
                 or events != [('ATTACH', first), ('RELEASE', first), ('NOMINAL_RECEIVE', first),
@@ -241,6 +277,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
                 or previous['target_id'] != second or previous['attachment']['id'] != second):
             raise ValueError('CYCLE_INCOMPLETE')
     return dict(status='PASS',complete=plan['complete'],j1_reverse_used_rad=reversal,
+                j1_business_legs=legs if batch else None,
                 world_cartons=len(set(x['id'] for x in previous['world']) & set(ids)),
                 attached_cartons=int(previous['attachment'] is not None),
                 completed_cartons=len(previous['completed_ids']))

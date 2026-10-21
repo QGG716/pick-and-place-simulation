@@ -14,11 +14,12 @@ from export_eco65_coupled_replay import export
 def deliver(a):
     out=a.output.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     snapshot=load_json(a.snapshot);binding=snapshot['scene']['perception_binding'];cal=binding['calibration']
-    run=load_json(a.run/'run_report.json');plan_path=a.run/('plan.json' if run.get('complete') else 'partial_plan.json')
+    run=load_json(a.run/'run_report.json');plan_path=a.run/run.get('plan_file','plan.json' if run.get('complete') else 'partial_plan.json')
     replay=export(a.snapshot,out/'replay.html',plan_path=plan_path,run_folder=a.run)
     plan=load_json(plan_path);stages=[]
     for r in plan['records']:
         stages.append(dict(kind=r['kind'],stage=r['stage'],native_status=r['native_result']['status'],
+            target_before=r['state_before']['target_id'],target_after=r['state_after']['target_id'],
             q_start=r['state_before']['q'],q_end=r['state_after']['q'],
             height_start_m=r['state_before']['height_m'],height_end_m=r['state_after']['height_m']))
     reasons={};successes={};native_wall=0.
@@ -31,6 +32,8 @@ def deliver(a):
                 key=' / '.join(f.get('pair',[]))+':'+f.get('reason','UNKNOWN');reasons[key]=reasons.get(key,0)+1
     validation=cal['tcp_heldout_validation'];det=binding['detection']
     report=dict(schema='eco65_tcp_perception_pipeline_delivery_v1',complete=run.get('complete',False),
+        completion_goal=plan.get('completion_goal'),inventory_ids=[b['id'] for b in snapshot['scene']['boxes']],
+        process_history=plan.get('process_history'),
         target_id=plan['first_target_id'],next_target_id=plan.get('next_target_id'),
         source_layout_snapshot_fingerprint=binding['source_layout_snapshot_fingerprint'],
         planning_snapshot_fingerprint=snapshot['fingerprint'],calibration=dict(method=cal['calibration_method'],status=cal['status'],
@@ -56,10 +59,12 @@ def deliver(a):
         shutil.copytree(source,dest,ignore=shutil.ignore_patterns('*.usdc','*.usda','*.obj','geometry','*.mp4','*.tar.gz'))
     # Real input imagery is retained alongside the embedded offline viewer.
     image=next(p for p in evidence.rglob('detections.png'))
+    task_label=('全部 '+str(len(snapshot['scene']['boxes']))+' 箱连续卸垛'
+                if plan.get('completion_goal')=='ALL_CARTONS_DRAINED' else '首箱抓放与下一箱接触')
     body=f'''<!doctype html><meta charset="utf-8"><title>ECO65 TCP 标定与流程结果</title>
 <style>body{{font:16px system-ui;max-width:1050px;margin:30px auto;padding:0 22px;background:#101820;color:#e7f0f5}}a{{color:#80ddd1}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;background:#18232f;padding:18px}}img{{max-width:640px;width:100%}}</style>
 <h1>ECO65 · 探针尖端 TCP 标定 → 视觉 → 原生规划</h1>
-<p>目标 carton_r00_l03_c01。{'完整任务已完成。' if report['complete'] else '完整任务尚未跑通；以下保留本次成功步骤与失败证据。'}</p>
+<p>{task_label}。已完成 {len(report['completed_cartons'])} 箱。{'完整任务已完成。' if report['complete'] else '完整任务尚未跑通；以下保留本次成功步骤与失败证据。'}</p>
 <p><a href="replay.html">打开离线三维回放与真实搜索诊断</a> · <a href="report.json">完整数值报告</a></p>
 <p>新标定：9 个探针触点、6 张图像；留出触点最大误差 {validation['held_out_max_3d_m']*1000:.3f} mm。探针尖端沿用已知法兰偏置，相机外参重新求解。内参为经渲染射线核对的仿真投影参数。</p>
 <p>标定触点是原生 IK/FK 加静态几何接触观测，未执行连续探针运动。箱体检测来自新的 RGB-D；不可见部分由已知尺寸和堆叠先验补全。</p>

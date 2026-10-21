@@ -18,6 +18,14 @@ inline constexpr const char* kEcoCycleMode="eco65_coupled_cycle_v1";
 inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2";
 inline constexpr const char* kEcoCaptureJ1Policy="RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3";
 inline constexpr double kEcoCycleReverseLimit=1e-6;
+inline std::string ecoCycleNextInterval(const CycleJson& req,const std::string& event) {
+  const std::string goal=req.value("completion_goal",std::string());
+  if(!goal.empty() && goal!="ALL_CARTONS_DRAINED")
+    throw std::runtime_error("ECO65_CYCLE_COMPLETION_GOAL_INVALID");
+  const std::string interval=req.at("business_interval");
+  if(event=="ATTACH" && (interval=="FIRST_APPROACH" || goal=="ALL_CARTONS_DRAINED"))return "OUTBOUND";
+  return event=="RELEASE"?"RETURN":interval;
+}
 inline int ecoCycleDirection(const CycleJson& req) {
   if(req.value("continuous_task_mode",std::string())!=kEcoCycleMode ||
       (req.value("j1_direction_policy",std::string())!=kEcoCycleJ1Policy &&
