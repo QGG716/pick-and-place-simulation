@@ -51,3 +51,19 @@ def test_paired_inputs_rebuild_only_initial_world_without_native_receipts():
         corrupt["root"]["world_cartons"][0]["pose"][0][3] += .01
         with pytest.raises(ValueError, match="INITIAL_CARTONS_CHANGED"):
             make_state(corrupt, SimpleNamespace(cartons=layout.cartons()))
+
+
+def test_additional_x_200_retreat_keeps_y_and_all_other_geometry():
+    old = load_workcell_layout(ROOT/"configs/workcells"/LAYOUTS["xy_minus_100"])
+    layout = load_workcell_layout(ROOT/"configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml")
+    np.testing.assert_allclose(layout.robot_base_transform()[:3, 3], [-1.625, .250, .600], atol=1e-12)
+    assert layout.data["robot"]["base_front_edge_x_world_m"] == -1.400
+    assert audit_layout_constraints(layout)["overall_status"] == "PASS"
+    assert layout.assets == old.assets
+    for key in ("assembly", "chassis", "conveyors", "tool", "trailer", "carton_stack"):
+        assert layout.data[key] == old.data[key]
+    assert [box_message(b) for b in layout.fixed_components()] == [box_message(b) for b in old.fixed_components()]
+    for axis in (0, 1):
+        changed = deepcopy(layout.data)
+        changed["robot"]["base_origin_xy_a_m"][axis] += .01
+        assert audit_layout_constraints(replace(layout, data=changed))["overall_status"] == "FAIL"

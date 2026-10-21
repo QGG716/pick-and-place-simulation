@@ -51,9 +51,10 @@ def load_cases(path):
     return data
 
 
-def make_context(layout_name):
+def make_context(layout_name, *, layout_path=None):
     policy = load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
-    layout = load_workcell_layout(ROOT/"configs/workcells"/LAYOUTS[layout_name])
+    layout = load_workcell_layout(layout_path if layout_path is not None else
+                                 ROOT/"configs/workcells"/LAYOUTS[layout_name])
     audit = audit_layout_constraints(layout)
     if audit["overall_status"] != "PASS":
         raise ValueError("MOUNT_LAYOUT_AUDIT_REJECTED:"+layout_name)
