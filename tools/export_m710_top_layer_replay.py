@@ -116,7 +116,7 @@ def export(run,seed,output,attempt=None):
         assert cycle['batch_root']['q_rad']==q and cycle['batch_root']['height_m']==height
         cartons=cycle['batch_root']['world_cartons'];base=dict(target=cycle['target_id'],option=cycle['option'],cartons=cartons,
             commanded_count=sum(cycle['attachment']['selection']['commanded_active_mask']))
-        first=True
+        first=True;extraction_leg=0
         for stage in cycle['stages']:
             req=requests[stage['stage_id']]
             assert req['q_start']==q
@@ -144,7 +144,11 @@ def export(run,seed,output,attempt=None):
             else:
                 points=stage['points'];assert points[0]['q']==q
                 duration=points[-1]['t'];assert duration>0
-                add(dict(base,kind='motion',phase=stage['stage'],points=points,world=mechanism(height),
+                phase=stage['stage']
+                if phase=='extraction' and cycle['option']['template']=='TOP_FIXED_MINIMUM_RECEIVER':
+                    extraction_leg+=1
+                    phase='top_lift' if extraction_leg==1 else 'top_transfer'
+                add(dict(base,kind='motion',phase=phase,points=points,world=mechanism(height),
                     attachment=req.get('attachment'),landed=cycle['landed_box'] if stage['stage']=='withdrawal' else None,
                     source='CURRENT_RUN_NATIVE_JOINT_TRAJECTORY',stage_id=stage['stage_id'],
                     planner_id=stage['planner_id'],q_start=points[0]['q'],q_goal=points[-1]['q'],

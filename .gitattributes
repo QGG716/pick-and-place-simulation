@@ -90,3 +90,5 @@ docs/experiments/m710_mount_comparison_20261021/** -text -whitespace
 docs/m710_mount_comparison_20261021.md text eol=lf
 tools/search_replay/eccentric_overlay.js text eol=lf
 tools/check_m710_eccentric_viewer.mjs text eol=lf
+docs/experiments/m710_xy_top_population_20261021/** -text -whitespace
+docs/m710_xy_top_population_20261021.md text eol=lf

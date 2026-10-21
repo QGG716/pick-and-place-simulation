@@ -5,10 +5,12 @@ committed root; archived native stages retain their original IDs and parents.
 """
 import argparse
 from collections import Counter
+from contextlib import ExitStack
 import hashlib
 import json
 from pathlib import Path
 import tarfile
+import xml.etree.ElementTree as ET
 
 
 def save(path, value):
@@ -32,6 +34,7 @@ def verify(run, replay=None):
     assert len(original) == 40 and len(protocol["frozen"]["target_ids"]) == 40
     outcomes, attempts, cycles, replay_attempts = [], [], [], []
     counts = Counter()
+    native_collision_policy = None
     if replay:
         replay.mkdir(parents=True, exist_ok=False)
         (replay/"seed-71070").mkdir()
@@ -40,11 +43,23 @@ def verify(run, replay=None):
         name = outcome["target_id"]
         assert name in targets and outcome["root"] == root
         archive = run/outcome["evidence"]["archive"]
-        assert hashlib.sha256(archive.read_bytes()).hexdigest() == outcome["evidence"]["sha256"]
         prefix = archive.name.removesuffix(".tar.gz")
-        with tarfile.open(archive) as tar:
+        with ExitStack() as stack:
+            if archive.exists():
+                assert hashlib.sha256(archive.read_bytes()).hexdigest() == outcome["evidence"]["sha256"]
+                tar = stack.enter_context(tarfile.open(archive))
+                read_bytes = lambda file: tar.extractfile(prefix+"/"+file).read()
+            else:
+                # Losslessly expanded offline bundle; check original per-file
+                # digests below, without requiring the storage gzip container.
+                expanded = (run/prefix).resolve()
+                assert expanded.parent == run.resolve() and expanded.is_dir()
+                def read_bytes(file):
+                    path = (expanded/file).resolve()
+                    assert path.is_relative_to(expanded)
+                    return path.read_bytes()
             def raw(file):
-                value = tar.extractfile(prefix+"/"+file).read()
+                value = read_bytes(file)
                 assert hashlib.sha256(value).hexdigest() == outcome["evidence"]["file_sha256"][file]
                 return value
 
@@ -66,6 +81,16 @@ def verify(run, replay=None):
                 connections = read(folder+"/connection-attempts.json")
                 detail = read(folder+"/attempt.json") if folder+"/attempt.json" in outcome["evidence"]["file_sha256"] else {}
                 trace = read(folder+"/search-trace.json")
+                if xy_top:
+                    model = trace['model']
+                    urdf = ET.fromstring(model['parameters']['robot_description'])
+                    mount = next(j for j in urdf.findall('joint') if
+                        j.find('parent').get('link') == 'world' and j.find('child').get('link') == 'base_link')
+                    xyz = list(map(float,mount.find('origin').get('xyz').split()))
+                    assert max(abs(a-b) for a,b in zip(xyz,[-1.425,.25,.6])) < 1e-12
+                    assert list(map(float,mount.find('origin').get('rpy').split())) == [0.,0.,0.]
+                    if native_collision_policy is None:native_collision_policy = model['collision_policy']
+                    assert model['collision_policy'] == native_collision_policy
                 successful = [c for c in calls if c["status"] == "SUCCESS"]
                 local = Counter(numerical_ik_success=sum(c["op"] == "ik" for c in successful))
                 witnesses = []
