@@ -14,19 +14,28 @@ from .native_task import NativeTask
 from .native_contact import check_contours, face_outward, EDGE_ALIGNMENT
 from .native_cups import grasp_candidates
 from .evaluation import CHAIN, INTERPOLATION
-from .coupled_state import (MODE, J1_POLICY, J1_REVERSE_LIMIT, INTERVALS, sign_state,
+from .coupled_state import (MODE, J1_POLICY, J1_CAPTURE_POLICY, business_direction, J1_REVERSE_LIMIT, INTERVALS, sign_state,
     check_business_direction, receiving_geometry, frozen_receive_heights, validate_cycle)
 
 
 class CoupledTask(NativeTask):
     def __init__(self, snapshot, command, *, connection_seconds=100., ik_seeds=8,
-                 max_grasps=24, initial_mode='new_simulation', **kwargs):
+                 max_grasps=24, initial_mode='new_simulation', first_approach_direction='clockwise', **kwargs):
+        if first_approach_direction not in ('clockwise','counterclockwise'):raise ValueError('FIRST_APPROACH_DIRECTION_REQUIRED')
+        self.j1_policy=J1_CAPTURE_POLICY if first_approach_direction=='counterclockwise' else J1_POLICY
         if initial_mode not in ('new_simulation','inherited_state'):
             raise ValueError('INITIAL_STATE_MODE_INVALID')
         if snapshot['native_model']['init']['process_geometry'].get('edge_alignment')!=EDGE_ALIGNMENT:
             raise ValueError('COUPLED_EDGE_ALIGNMENT_RULE_REQUIRED')
         if initial_mode=='inherited_state' and kwargs.get('home_candidate') is None:
             raise ValueError('INHERITED_INITIAL_Q_REQUIRED')
+        perception=snapshot['scene'].get('perception_binding')
+        if perception:
+            from .perception import require_tcp_calibration
+            require_tcp_calibration(perception['calibration'])
+        if perception and (initial_mode!='inherited_state' or
+                kwargs['home_candidate']['q_rad']!=perception['initial_q_rad']):
+            raise ValueError('PERCEPTION_PLAN_MUST_CONTINUE_ACTUAL_CAPTURE_Q')
         self.initial_mode=initial_mode
         self.allow_initial_reselection=initial_mode=='new_simulation'
         self.initial_selection=None
@@ -57,7 +66,7 @@ class CoupledTask(NativeTask):
         self.next_target_id = None
 
     def direction_for_stage(self, stage):
-        return INTERVALS[self.business_interval]
+        return business_direction(self.business_interval,getattr(self,'j1_policy',J1_POLICY))
 
     def goal_cost(self,start,goal):
         return (abs(float(goal[0]-start[0])),float(np.abs(goal[1:]-start[1:]).sum()))
@@ -65,7 +74,10 @@ class CoupledTask(NativeTask):
     def initial_candidates(self,grasp,home):
         """New-world starting poses; never an unshown initialization trajectory."""
         if self.initial_mode=='inherited_state':
-            yield home,dict(mode=self.initial_mode,source='EXACT_SUPPLIED_PREVIOUS_TERMINAL_Q')
+            binding=self.scene.get('perception_binding')
+            yield home,dict(mode=self.initial_mode,source='ACTUAL_RGBD_CAPTURE_Q' if binding else 'EXACT_SUPPLIED_PREVIOUS_TERMINAL_Q',
+                camera_observation='FRESH_CALIBRATED_SIMULATED_RGBD' if binding else 'NOT_PERFORMED_FROZEN_SCENE_INPUT',
+                perception_binding_fingerprint=binding['fingerprint'] if binding else None)
             return
         contact=check_transform(grasp['tcp_pose_D'])
         # A finite stand-off one carton height away from the face and toward
@@ -89,7 +101,7 @@ class CoupledTask(NativeTask):
     def direction_goal_valid(self,start,end,stage):
         try:
             check_business_direction([start,end],self.business_interval,
-                                     self.reverse_used[self.business_interval])
+                                     self.reverse_used[self.business_interval],self.j1_policy)
             return True
         except ValueError:
             return False
@@ -117,8 +129,8 @@ class CoupledTask(NativeTask):
             request={**context,**request}
         if request['op'] != 'init':
             request.update(continuous_task_mode=MODE, business_interval=self.business_interval,
-                           j1_direction=INTERVALS[self.business_interval],
-                           j1_direction_policy=J1_POLICY,
+                           j1_direction=self.direction_for_stage(request.get('stage')),
+                           j1_direction_policy=getattr(self,'j1_policy',J1_POLICY),
                            j1_reverse_used_rad=self.reverse_used[self.business_interval],
                            j1_reverse_limit_rad=J1_REVERSE_LIMIT)
         deadline = self.deadline
@@ -195,8 +207,8 @@ class CoupledTask(NativeTask):
                        support_names=contract['original_support_names'] if stage=='extraction'
                        else contract['receiving']['support_ids'] if stage=='place' else [])
         req.update(world=world,scene_fingerprint=digest(world),continuous_task_mode=MODE,
-                   business_interval=self.business_interval,j1_direction_policy=J1_POLICY,
-                   j1_direction=INTERVALS[self.business_interval],
+                   business_interval=self.business_interval,j1_direction_policy=self.j1_policy,
+                   j1_direction=self.direction_for_stage(stage),
                    j1_reverse_used_rad=self.reverse_used[self.business_interval],
                    j1_reverse_limit_rad=J1_REVERSE_LIMIT,
                    mechanism_state=dict(height_m=self.height_m,
@@ -232,7 +244,7 @@ class CoupledTask(NativeTask):
             value = super().motion(self.current_q.copy(),stage,pose=pose,goal=goal,ik_seed=seed)
         record = self.stages[-1]
         self.reverse_used[self.business_interval] = check_business_direction(
-            record['q'],self.business_interval,self.reverse_used[self.business_interval])
+            record['q'],self.business_interval,self.reverse_used[self.business_interval],self.j1_policy)
         self.current_q = value.copy()
         after = self.state()
         self.cycle_records.append(dict(kind='robot_motion',record_id=record['stage_id'],
@@ -657,13 +669,30 @@ class CoupledTask(NativeTask):
                    abs(x['pose'][0]-b['pose'][0])<1e-8 and abs(x['pose'][1]-b['pose'][1])<1e-8
                    and x['pose'][2]>b['pose'][2]+1e-8 for x in self.scene['boxes'])]
         boxes.sort(key=lambda b:(-b['pose'][2],abs(b['pose'][1]),b['pose'][1]))
+        pools=[]
+        current_tcp=self.robot.fk(self.current_q)
         for target in boxes:
             self.restore(drained)
             self.target=deepcopy(target);self.target_pose=self.carton_poses[target['id']].copy()
             candidates=self.geometry_candidates()['candidates']
+            # Keep a front attempt, then prefer the actual outgoing tool
+            # orientation/cup family. The old first-eight slice could omit that
+            # family and spend the entire return budget on one carton.
+            front=next((g for g in candidates if g['target_face']=='front'),None)
+            candidates.sort(key=lambda g:(
+                g['target_face']!=drained['face'],
+                float(np.linalg.norm(np.asarray(g['tcp_pose_D'])[:3,:3]-current_tcp[:3,:3])),
+                len(set(g['active_ids'])^set(drained['active_ids'])),
+                float(np.linalg.norm(np.asarray(g['tcp_pose_D'])[:3,3]-current_tcp[:3,3]))))
+            if front is not None:
+                candidates=[front]+[g for g in candidates if g['candidate_id']!=front['candidate_id']]
+            pools.append((target,candidates[:min(self.max_grasps,8)]))
             self.restore(drained)
-            for grasp,height in [(g,h) for g in candidates[:min(self.max_grasps,8)]
-                                  for h in dict.fromkeys((self.height_m,self.spec['low_height_m']))]:
+        heights=list(dict.fromkeys((self.height_m,self.spec['low_height_m'])))
+        # Round-robin targets before lowering or revisiting a grasp family;
+        # every candidate still uses this run's same absolute task deadline.
+        for rank in range(max((len(g) for _,g in pools),default=0)):
+            for height,target,grasp in [(h,t,g[rank]) for h in heights for t,g in pools if rank<len(g)]:
                 self.restore(drained)
                 try:
                     self.select_next(target,grasp)
@@ -685,7 +714,7 @@ class CoupledTask(NativeTask):
         result=dict(schema=MODE,status='PLANNING_ONLY_NOT_EXECUTABLE',planning_only=True,
             complete=complete,physical_execution='NOT_RUN',execution_ready=False,
             identity=self.identity,snapshot_fingerprint=self.snapshot['fingerprint'],task_id=self.task_id,
-            evaluation_profile=CHAIN,replay_interpolation=INTERPOLATION,j1_direction_policy=J1_POLICY,
+            evaluation_profile=CHAIN,replay_interpolation=INTERPOLATION,j1_direction_policy=self.j1_policy,
             first_target_id=self.first_target_id,next_target_id=self.next_target_id,
             initial_state=getattr(self,'initial_state',state),terminal_state=state,records=self.cycle_records,
             planning_wall_s=perf_counter()-self.started,
@@ -698,6 +727,7 @@ class CoupledTask(NativeTask):
         result['phase_budgets']=deepcopy(self.phase_budgets)
         result['initial_selection']=deepcopy(self.initial_selection)
         result['initial_state_checks']=self.home_checks
+        result['perception_binding_fingerprint']=self.scene.get('perception_binding',{}).get('fingerprint')
         result['fingerprint']=digest(result)
         return result
 

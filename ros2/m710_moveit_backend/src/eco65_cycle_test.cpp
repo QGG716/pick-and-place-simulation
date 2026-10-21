@@ -21,6 +21,10 @@ int main() {
     require(m710::directedJ1(1.,.8,m710::ecoCycleDirection(req)),"FIRST_APPROACH_CLOCKWISE_ACCEPT");
     require(!m710::directedJ1(.8,1.,m710::ecoCycleDirection(req)),"FIRST_APPROACH_COUNTERCLOCKWISE_REJECT");
     auto old=req;old["j1_direction"]=0;rejects([&]{m710::ecoCycleDirection(old);});
+    auto capture=req;capture["j1_direction_policy"]=m710::kEcoCaptureJ1Policy;capture["j1_direction"]=1;
+    require(m710::ecoCycleDirection(capture)==1,"CAPTURE_TO_FIRST_CONTACT_CCW");
+    capture["business_interval"]="OUTBOUND";rejects([&]{m710::ecoCycleDirection(capture);});
+    capture["j1_direction"]=-1;require(m710::ecoCycleDirection(capture)==-1,"ATTACHED_OUTBOUND_STILL_CW");
     req["business_interval"]="OUTBOUND";req["j1_direction"]=-1;
     require(m710::ecoCycleDirection(req)==-1,"OUTBOUND_DIRECTION");
     req["business_interval"]="RETURN";req["j1_direction"]=1;req["stage"]="contact";

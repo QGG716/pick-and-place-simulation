@@ -32,6 +32,8 @@ def capture(prepared,output,perturb=False,scene_only=False):
         root=UsdGeom.Xform.Define(stage,'/World').GetPrim();stage.SetDefaultPrim(root)
         root.GetReferences().AddReference(Path(os.path.relpath(source,output)).as_posix(),'/World')
         station='/World/Workstation';mast=station+'/Robot/link_1/Mast';mount=mast+'/CameraMount';optical=mount+'/camera_optical';camera_path=optical+'/RenderCamera'
+        current=c.get('current_native_layout',False)
+        if current:optical=mast+'/CameraFrame';camera_path=optical+'/RenderCamera'
         def pose(path,T):
             prim=stage.GetPrimAtPath(path) or UsdGeom.Xform.Define(stage,path).GetPrim()
             if not prim.GetTypeName():prim=UsdGeom.Xform.Define(stage,path).GetPrim()
@@ -47,11 +49,12 @@ def capture(prepared,output,perturb=False,scene_only=False):
             pose(path,T);UsdShade.MaterialBindingAPI.Apply(obj.GetPrim()).Bind(mat)
             if collision:UsdPhysics.CollisionAPI.Apply(obj.GetPrim());UsdPhysics.MeshCollisionAPI.Apply(obj.GetPrim()).CreateApproximationAttr('convexHull')
             return obj
-        for pid in c['camera']['replaced_mast_parts']:
+        for pid in ([] if current else c['camera']['replaced_mast_parts']):
             for prefix in ['visual_','collision_']:stage.OverridePrim(mast+'/'+prefix+pid).SetActive(False)
-        stage.OverridePrim(mast+'/CameraFrame').SetActive(False)
-        M=transform([.113,-.00405,.410]);pose(mount,M)
-        for p in c['camera']['parts']:
+        if not current:stage.OverridePrim(mast+'/CameraFrame').SetActive(False)
+        M=np.eye(4) if current else transform([.113,-.00405,.410])
+        if not current:pose(mount,M)
+        for p in ([] if current else c['camera']['parts']):
             if file_hash(ROOT/p['visual'])!=p['visual_sha256']:raise ValueError('CAMERA_MESH_CHANGED')
             mat=material(p['id'],p['rgb'] or [.3,.3,.3])
             mesh(mount+'/CameraBody/'+p['id'],trimesh.load(ROOT/p['visual'],process=False),mat,np.linalg.inv(M)@c['camera']['T_mast_CAD'])
@@ -66,6 +69,7 @@ def capture(prepared,output,perturb=False,scene_only=False):
         cam.GetPrim().SetCustomDataByKey('projection_units','dimensionless ratio; not manufacturer sensor/focal specification')
         materials={k:material(k,color) for k,color in [('probe',[.3,.4,.5]),('fixture',[.7,.7,.7]),('stud',[.9,.5,.1])]}
         extras=accessory_meshes(s,c)
+        if current:extras=[r for r in extras if r['category'] in ('probe','fixture')]
         for row in extras:
             if row['category']=='camera_adapter':mesh(station+'/Robot/link_1/CameraPitchAdapter/'+row['name'],row['mesh'],materials['fixture'],collision=True)
             if row['category']=='probe':mesh(station+'/Robot/link_6/CalibrationProbe/'+row['name'],row['mesh'],materials['probe'],collision=True)
@@ -164,6 +168,22 @@ def capture(prepared,output,perturb=False,scene_only=False):
         save_json(observations/'observations.json',dict(schema='known_tip_touch_observations_v1',kinematics=c['kinematics'],
             camera={k:c['camera'][k] for k in ['resolution','K','distortion','pixel_convention']},board=c['board'],probe=c['probe'],
             photos=photos,touches=c['touches'],thresholds=c['thresholds'],source='SIMULATION',identifiers=ids))
+        if current:
+            # Calibration accessories are removed for the unloading capture.
+            # This is a new static simulation setup, not a claimed robot move.
+            state(c['display_q'],placement[first['board_placement_id']])
+            stage.GetPrimAtPath(station+'/CalibrationBoard').SetActive(False)
+            stage.GetPrimAtPath(station+'/Robot/link_6/CalibrationProbe').SetActive(False)
+            native,a,d=render();image=observations/'images/cartons.png'
+            cv2.imwrite(str(image),cv2.cvtColor(a,cv2.COLOR_RGB2BGR));np.save(observations/'images/cartons_depth_z.npy',d)
+            from unloading_sim.eco65.camera_installation import installation_fingerprint
+            vision=dict(schema='eco65_fresh_simulated_perception_observations_v1',source='SYNTHETIC_RENDERED_RGBD',
+                snapshot_fingerprint=s['fingerprint'],installation_fingerprint=installation_fingerprint(s['scene']['permanent_camera']),
+                resolution=[width,height],carton_image=dict(image='images/cartons.png',sha256=file_hash(image),
+                    depth='images/cartons_depth_z.npy',depth_sha256=file_hash(observations/'images/cartons_depth_z.npy'),
+                    q_rad=c['display_q'],T_D_link1=robot.named_link_frames(c['display_q'])['link_1'].tolist()),
+                physical_execution='NOT_RUN',physics_steps=0,calibration_observations_sha256=file_hash(observations/'observations.json'))
+            vision['fingerprint']=digest(vision);save_json(observations/'vision_observations.json',vision)
         save_json(output/'truth/truth.json',dict(T_L_C=X.tolist(),perturbation=delta.tolist(),placements=c['placements'],snapshot_fingerprint=s['fingerprint']))
         save_json(output/'camera_chain_readback.json',dict(checks=readbacks,perturbed=perturb,source_USD=str(source),optical_to_USD=OPTICAL_FROM_USD.tolist()))
         stage.GetRootLayer().Save()

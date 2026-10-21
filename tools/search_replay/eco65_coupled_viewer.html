@@ -4,6 +4,7 @@
 </style>
 <header><div><h1>ECO65 · 连续抓放与联动机构</h1><small id="identity"></small></div><div class="badge">PLANNING_ONLY · KINEMATIC_REPLAY<br>physical_execution=NOT_RUN · execution_ready=false</div></header>
 <main><aside>
+<section id="perceptionPanel" hidden><h3>探针 TCP 标定 → 视觉</h3><select id="perceptionImage"></select><a id="perceptionLink" target="_blank"><img id="perceptionPhoto" style="width:100%" alt="本次仿真采集图像"></a><div id="perceptionSummary" class="metric"></div><small>图像与探针触点属于本次新布局。触点为原生 IK/FK 和几何接触观测，未运行实物接触。</small></section>
 <section><h3>显示内容</h3><select id="mode"><option value="preview">机构预览 · 实际三高度</option><option value="cycle">同次任务 · 接受阶段与事件</option><option value="search">真实原生请求 · 搜索诊断</option></select><div id="result" class="metric"></div></section>
 <section><h3>当前碰撞接受策略</h3><div id="policyScope" class="metric"></div><details><summary>具名对象对与原生策略证据</summary><pre id="policyEvidence"></pre></details></section><section id="previewPanel"><h3>同源机构几何</h3><select id="height"></select><div id="mechanism" class="metric"></div><small>高度是场景参数。所有刚体姿态来自 Python 的统一机构函数。</small></section>
 <section id="cyclePanel"><h3>任务播放</h3><select id="stage"></select><button id="play">播放 / 暂停</button> <select id="speed" style="width:80px"><option>.5</option><option selected>1</option><option>2</option><option>4</option></select><input id="timeline" type="range" min="0" step=".001" value="0"><div id="motionTime" class="metric"></div><div id="times" class="metric"></div></section>
@@ -20,6 +21,7 @@ restoreDefinitions(DATA);
 function restoreWorlds(value){if(Array.isArray(value)){for(const child of value)restoreWorlds(child);}else if(value&&typeof value==="object"){if(value.world_ref)value.world=DATA.shared_worlds[value.world_ref];for(const [key,child]of Object.entries(value))if(key!=="world"&&key!=="shared_worlds")restoreWorlds(child);}}
 restoreWorlds(DATA);
 const $=id=>document.getElementById(id),T=THREE,model=DATA.model,view=$('viewport'),matrix=a=>new T.Matrix4().set(...a.flat()),position=m=>new T.Vector3().setFromMatrixPosition(m);
+if(DATA.perception_binding){const b=DATA.perception_binding,c=b.calibration;$('perceptionPanel').hidden=false;for(const [i,r]of (DATA.perception_images||[]).entries())$('perceptionImage').add(new Option(r.label,i));const show=()=>{const r=DATA.perception_images[Number($('perceptionImage').value)];if(r){$('perceptionPhoto').src=r.data_url;$('perceptionLink').href=r.data_url;}};$('perceptionImage').onchange=show;show();$('perceptionSummary').textContent=`${c.tcp_observations.touches.length} 个新触点 · ${c.views.length} 张新标定图\n留出触点最大误差 ${(c.tcp_heldout_validation.held_out_max_3d_m*1000).toFixed(3)} mm\n探针尖端（法兰坐标 m）：${c.tcp_observations.probe.p_F_tip_m.map(v=>v.toFixed(6)).join(', ')}\n识别目标：${b.assignments.find(r=>r.id===DATA.model.target_id)?.id||'carton_r00_l03_c01'}`;}
 const scene=new T.Scene();scene.background=new T.Color('#101820');const camera=new T.PerspectiveCamera(43,1,.005,100);camera.up.set(0,0,1);
 const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));view.prepend(renderer.domElement);
 const controls=new T.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;scene.add(new T.HemisphereLight(0xdbeeff,0x263028,1.6));const sun=new T.DirectionalLight(0xffffff,1.3);sun.position.set(-2,-3,5);scene.add(sun);
@@ -60,7 +62,9 @@ if(C.axis_rotation){const p=new T.Vector3(...C.axis_rotation.point_mast_m),a=p.c
 const install=model.layout_installation?.config,delta=install?.additional_mast_yaw_deg;
 const mountText=install?`底座开关面：−X；桅杆底座：${delta!==undefined?'较上一版'+(delta<0?'顺时针':'逆时针')+Math.abs(delta)+'°':'相对原安装 '+install.mast_world_yaw_delta_deg+'°'}\n`:'';
 const cameraText=install?.camera_orientation==='WORLD_HEADING_AT_REFERENCE_J1'?`J1=${install.camera_reference_raw_j1_rad} rad：底座水平轴平行 X，相机水平朝 +Y\n当前相机视线 D=[${forward.toArray().map(v=>v.toFixed(6)).join(', ')}]\n`:(install?'相同原始 J1 下，相机世界朝向保持\n':'');
-$('cameraInfo').textContent=`黄色：桅杆本体轴；橙色：optical +Z\n青色：安装底座水平轴；蓝色：link_1 局部 −X\n实际下俯 ${pitch.toFixed(4)}° · 相对 link_1 水平角 ${yaw.toFixed(4)}°\n${mountText}${cameraText}${C.calibration?.status||'历史安装'}\n目标来源：冻结场景；没有实际视觉识别闭环`;
+const perception=DATA.perception_binding;
+const calibrationText=perception?`本布局探针尖端 TCP 标定：${perception.calibration.status}（仿真观测）\n留出触点最大误差：${(perception.calibration.tcp_heldout_validation.held_out_max_3d_m*1000).toFixed(3)} mm\n留出图像 RMS：${perception.calibration.views.filter(v=>v.split==='validation').map(v=>v.rms_px.toFixed(3)).join(' / ')} px\n目标来源：本次 TCP 标定后的 RGB-D；遮挡部分由已知箱尺寸与堆叠先验补全\n实物相机与硬件未执行`:`${C.calibration?.status||'历史安装'}\n目标来源：冻结场景；没有实际视觉识别闭环`;
+$('cameraInfo').textContent=`黄色：桅杆本体轴；橙色：optical +Z\n青色：安装底座水平轴；蓝色：link_1 局部 −X\n实际下俯 ${pitch.toFixed(4)}° · 相对 link_1 水平角 ${yaw.toFixed(4)}°\n${mountText}${cameraText}${calibrationText}`;
 }
 let target=state.world.find(b=>b.id===state.target_id),B=target?matrix(target.pose):null;
 if(state.attachment?.id===state.target_id)B=frames[model.flange_link].clone().multiply(matrix(state.attachment.pose));

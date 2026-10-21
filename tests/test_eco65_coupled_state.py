@@ -37,6 +37,15 @@ def test_first_approach_is_clockwise_with_small_total_numerics():
     assert check_business_direction(q,'FIRST_APPROACH')==0.
 
 
+def test_capture_first_approach_policy_does_not_relax_loaded_or_return_direction():
+    from unloading_sim.eco65.coupled_state import J1_CAPTURE_POLICY
+    q=np.zeros((2,6));q[:,0]=[-1.57,-.4]
+    assert check_business_direction(q,'FIRST_APPROACH',policy=J1_CAPTURE_POLICY)==0.
+    assert check_business_direction(q,'RETURN',policy=J1_CAPTURE_POLICY)==0.
+    with pytest.raises(ValueError,match='TOTAL_REVERSE'):
+        check_business_direction(q,'OUTBOUND',policy=J1_CAPTURE_POLICY)
+
+
 def test_receive_candidates_are_frozen_from_initial_150x100x100_carton():
     box=dict(pose=[.205,0,.53],size_m=[.15,.1,.1])
     rows=frozen_receive_heights(box,.18,.46)
@@ -150,3 +159,33 @@ def test_diagonal_extraction_uses_actual_attached_pose_and_remaining_stack():
     assert halfway[:3,3]==pytest.approx([.03486121811340027,-.100,.5825])
     assert actual[:3,3]==pytest.approx([.205,0.,.53])
     assert np.array_equal(task.current_q,np.zeros(6))
+
+
+def test_return_search_reaches_other_carton_and_retains_matching_tool_family(monkeypatch):
+    from types import SimpleNamespace
+    from unloading_sim.eco65 import coupled_task
+    task=coupled_task.CoupledTask.__new__(coupled_task.CoupledTask)
+    boxes=[dict(id='left',pose=[.2,.11,.53]),dict(id='right',pose=[.2,-.11,.53])]
+    task.scene=dict(boxes=boxes);task.completed_ids=[];task.current_q=np.zeros(6)
+    task.robot=SimpleNamespace(fk=lambda q:np.eye(4));task.height_m=.33
+    task.spec=dict(low_height_m=.18);task.max_grasps=8;task.deadline=123.
+    task.carton_poses={b['id']:np.eye(4) for b in boxes};task.cycle_failures=[];task.snapshot={}
+    task.checkpoint=lambda:dict(face='top',active_ids=['known_cup'])
+    task.restore=lambda cp:None
+    # The compatible family lies beyond the old first-eight truncation.
+    front=[dict(candidate_id='front'+str(i),target_face='front',active_ids=['other'],
+                tcp_pose_D=np.eye(4).tolist()) for i in range(10)]
+    compatible=dict(candidate_id='compatible',target_face='top',active_ids=['known_cup'],tcp_pose_D=np.eye(4).tolist())
+    task.geometry_candidates=lambda:dict(candidates=front+[compatible])
+    attempts=[]
+    task.select_next=lambda target,g:attempts.append((target['id'],g['candidate_id'],task.deadline))
+    task.lift=lambda h:None
+    def approach(g):
+        if attempts[-1][0]!='left' or g['candidate_id']!='compatible':raise ValueError('bounded rejection')
+    task.approach=approach;task.attach=lambda **kw:None
+    task.result=lambda **kw:dict(complete=True,fingerprint='old')
+    monkeypatch.setattr(coupled_task,'validate_cycle',lambda *args:dict(status='PASS'))
+    assert task.return_next()['complete']
+    assert {row[0] for row in attempts[:2]}=={'left','right'}
+    assert attempts[-1][1]=='compatible'
+    assert all(row[2]==123. for row in attempts)

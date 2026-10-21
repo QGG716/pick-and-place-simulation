@@ -92,7 +92,11 @@ class StaticGeometry:
         import mujoco as mj
         from pxr import Usd,UsdGeom
         from build_eco65_full_face_layout import verify_static
-        verify_static(s)
+        current = c.get('current_native_layout',False)
+        if current:
+            from unloading_sim.eco65.native_io import verify_snapshot
+            verify_snapshot(s)
+        else: verify_static(s)
         self.mj=mj;self.robot=robot_for(s['tool'],s['scene']);self.entries=[]
         self.sources=verify_scene_sources(c)
         if s['fingerprint']!=self.sources['files']['snapshot']['fingerprint']:raise ValueError('GEOMETRY_SNAPSHOT_MISMATCH')
@@ -109,16 +113,21 @@ class StaticGeometry:
         old=self.robot.named_link_frames(manifest['home_q_rad']);cad=np.array(s['tool']['T_flange_tool_cad'])
         for row in manifest['collision_records']:
             path=row['path']
+            if current and '/NativeWorldCollision/' in path:
+                add(path,row['points'],'D',row['T_D'],'environment',path.rsplit('/',1)[1]);continue
+            if current and '/NativeCollision/' in path:
+                parent=path.split('/')[3];owner=path.rsplit('/',1)[1]
+                add(path,row['points'],parent,np.linalg.inv(old[parent])@row['T_D'],'accessory',owner);continue
             if '/Mast/' in path or '/MountingSeat/' in path:continue
             if '/Robot/' in path:
                 owner=path.split('/')[3];add(path,row['points'],owner,np.linalg.inv(old[owner])@row['T_D'],'robot',owner)
             else:
-                owner=path.rsplit('/',1)[1].removeprefix('collision_')
+                owner=path.rsplit('/',1)[1].removeprefix('collision_').removesuffix('_collision')
                 add(path,row['points'],'link_6',np.linalg.inv(old['link_6'])@row['T_D'],'tool',owner)
         for obj in s['scene']['obstacles']+[dict(id=b['id'],size_m=b['size_m'],position_m=b['pose']) for b in s['scene']['boxes']]:
             add(obj['id'],trimesh.creation.box(obj['size_m']).vertices,'D',transform(obj['position_m']),'environment',obj['id'])
         self.conveyor_count=0
-        for item in s['scene']['conveyors']['items']:
+        for item in ([] if current else s['scene']['conveyors']['items']):
             stage=Usd.Stage.Open(str(ROOT/item['usd_path']))
             for row in item['meshes']:
                 if not row['collision']:continue
@@ -128,17 +137,25 @@ class StaticGeometry:
                 for part in trimesh.Trimesh(v,np.array(faces),process=True).split(only_watertight=False):
                     if len(part.vertices)<4 or np.linalg.matrix_rank(part.vertices-part.vertices.mean(0))<3:continue
                     add(item['id']+':'+row['prim']+':component_'+str(self.conveyor_count),part.convex_hull.vertices,'D',np.eye(4),'environment',item['id']);self.conveyor_count+=1
-        self.extra=accessory_meshes(s,c);self.config=c;folder=out/'geometry';folder.mkdir()
+        self.extra=accessory_meshes(s,c)
+        if current:self.extra=[r for r in self.extra if r['category'] in ('probe','fixture')]
+        self.config=c;folder=out/'geometry';folder.mkdir()
         for row in self.extra:
             row['mesh'].export(folder/(row['name']+'.obj'))
             add(row['name'],row['mesh'].vertices,row['frame'],np.eye(4),'accessory' if row['category']=='camera_adapter' else row['category'],row['name'])
         self.model=mj.MjModel.from_xml_string(ET.tostring(xml,encoding='unicode'));self.data=mj.MjData(self.model)
         for e in self.entries:e['gid']=self.model.geom(e['name']).id;e['bid']=self.model.body(e['name']).mocapid[0]
         adjacent={frozenset([j.parent,j.child]) for j in self.robot.joints};mount=mounting_pairs(s['tool']);self.pairs=[]
+        native_disabled=set()
+        if current:
+            srdf=ET.fromstring(s['native_model']['init']['parameters']['robot_description_semantic'])
+            native_disabled={frozenset([r.get('link1'),r.get('link2')]) for r in srdf.findall('disable_collisions')}
         skipped=dict(same_rigid_assembly=0,static_environment_internal=0,URDF_adjacent_links=0,named_fixed_interfaces=[])
         for i,a in enumerate(self.entries):
             for b in self.entries[i+1:]:
                 if a['kind']==b['kind']=='environment':skipped['static_environment_internal']+=1;continue
+                if current and (a['owner']==b['owner'] or frozenset([a['owner'],b['owner']]) in native_disabled):
+                    skipped['same_rigid_assembly']+=1;continue
                 if a['kind']==b['kind'] and a['frame']==b['frame'] and a['kind'] in ['tool','accessory','probe','fixture']:
                     skipped['same_rigid_assembly']+=1;continue
                 if a['kind']==b['kind']=='robot' and frozenset([a['owner'],b['owner']]) in adjacent:skipped['URDF_adjacent_links']+=1;continue

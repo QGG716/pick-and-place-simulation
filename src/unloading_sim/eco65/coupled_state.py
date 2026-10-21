@@ -10,6 +10,7 @@ from .transfer_policy import endpoint_fk
 
 MODE = 'eco65_coupled_cycle_v1'
 J1_POLICY = 'RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2'
+J1_CAPTURE_POLICY = 'RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3'
 J1_REVERSE_LIMIT = 1e-6
 INTERVALS = {'FIRST_APPROACH': -1, 'OUTBOUND': -1, 'RETURN': 1}
 EVENTS = ('ATTACH', 'RELEASE', 'NOMINAL_RECEIVE', 'IDEAL_RECEIVER_DRAIN', 'NEXT_TARGET')
@@ -22,10 +23,15 @@ def reverse_travel(q, direction):
     return float(np.maximum(0., -direction*np.diff(values[:, 0])).sum())
 
 
-def check_business_direction(q, interval, already_used=0.):
+def business_direction(interval, policy=J1_POLICY):
+    if policy not in (J1_POLICY,J1_CAPTURE_POLICY):raise ValueError('BUSINESS_DIRECTION_POLICY_REQUIRED')
     if interval not in INTERVALS:
         raise ValueError('BUSINESS_INTERVAL_REQUIRED')
-    used = already_used+reverse_travel(q, INTERVALS[interval])
+    return 1 if interval=='FIRST_APPROACH' and policy==J1_CAPTURE_POLICY else INTERVALS[interval]
+
+
+def check_business_direction(q, interval, already_used=0., policy=J1_POLICY):
+    used = already_used+reverse_travel(q, business_direction(interval,policy))
     if not np.isfinite(used) or used > J1_REVERSE_LIMIT:
         raise ValueError('BUSINESS_J1_TOTAL_REVERSE_EXCEEDED')
     return used
@@ -104,7 +110,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         raise ValueError('CYCLE_PLAN_IDENTITY_INVALID')
     if (plan['snapshot_fingerprint'] != snapshot['fingerprint']
             or plan['identity'] != snapshot['native_model']['init']['identity']
-            or plan['j1_direction_policy'] != J1_POLICY
+            or plan['j1_direction_policy'] not in (J1_POLICY,J1_CAPTURE_POLICY)
             or plan['evaluation_profile'] != CHAIN
             or plan['replay_interpolation'] != INTERPOLATION
             or plan['physical_execution'] != 'NOT_RUN' or plan['execution_ready'] is not False):
@@ -165,10 +171,11 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
                     or not np.any(np.abs(np.diff(q, axis=0)) > 1e-12)):
                 raise ValueError('CYCLE_NATIVE_MOTION_INVALID')
             interval = before['business_interval']
-            direction = INTERVALS[interval]
-            if req.get('business_interval') != interval or req.get('j1_direction') != direction:
+            direction = business_direction(interval,plan['j1_direction_policy'])
+            if (req.get('business_interval') != interval or req.get('j1_direction') != direction or
+                    req.get('j1_direction_policy')!=plan['j1_direction_policy']):
                 raise ValueError('CYCLE_DIRECTION_MISSING')
-            reversal[interval] = check_business_direction(q, interval, reversal[interval])
+            reversal[interval] = check_business_direction(q, interval, reversal[interval],plan['j1_direction_policy'])
             if (before['height_m'] != after['height_m']
                     or before['world'] != after['world']
                     or before['attachment'] != after['attachment']):

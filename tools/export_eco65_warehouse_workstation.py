@@ -287,6 +287,9 @@ def export(snapshot_path, home_path, config_path, out):
         collision_records=collision_records,obstacles=[o for o in scene['obstacles'] if o['role']!='warehouse_environment'])
     if native:
         manifest.update(native_snapshot=True, T_W_D=scene['T_W_D'], environment=scene['environment'])
+        if 'coupled_conveyor_spec' in scene:
+            manifest['coupled_belts'] = [dict(id=r['id'], owner=r['owner'])
+                for r in scene['native_world_objects'] if r.get('role') == 'conveyor_belt']
     if full_face:
         manifest.update(full_face_static=True,layout_config=c,conveyors=scene['conveyors'],top_geometry=scene['top_geometry'],
             mast=mast if scene.get('mast',{}).get('parts') else scene.get('mast'),status=scene['status'],native_snapshot=False,frozen_environment=True)

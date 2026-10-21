@@ -664,6 +664,7 @@ class Worker {
       if(cycle_binding && (previous_context.at("process_policy").at("target_id")!=req.at("process_policy").at("target_id") ||
           previous_context.at("mechanism_state")!=req.at("mechanism_state") ||
           previous_context.at("completed_ids")!=req.at("completed_ids") ||
+          previous_context.at("j1_direction_policy")!=req.at("j1_direction_policy") ||
           previous_context.at("business_interval")!=req.at("business_interval")))
         throw std::runtime_error("ECO65_CYCLE_PARENT_RUNTIME_CHANGED");
       if(cycle_binding) {

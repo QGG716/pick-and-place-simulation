@@ -174,7 +174,25 @@ def main():
                 source_obstacle=next(o for o in data['obstacles'] if o['id']==path)
                 expected=(source_obstacle['position_m'][2]+(1 if side else -1)*source_obstacle['size_m'][2]/2
                           +translation[2])
-            if (data.get('full_face_static') or data.get('native_12carton')) and path.startswith('conveyor_'):
+            if data.get('coupled_belts') and path.startswith('conveyor_'):
+                owner = path.removesuffix('_belt'); actual_bounds = []; expected_bounds = []
+                for row in data['coupled_belts']:
+                    if row['owner'] != owner: continue
+                    prim = stage.GetPrimAtPath('/World/Workstation/CoupledReceiver/'+row['id'])
+                    if not prim or not prim.IsA(UsdGeom.Mesh): raise ValueError('COUPLED_BELT_PRIM_MISSING')
+                    r = bbox.ComputeWorldBound(prim).ComputeAlignedRange()
+                    actual_bounds.append([np.array(r.GetMin()), np.array(r.GetMax())])
+                    record = next(c for c in data['collision_records']
+                                  if c['path']=='/Workstation/NativeWorldCollision/'+row['id'])
+                    T = np.asarray(record['T_D']); points = np.asarray(record['points'])@T[:3,:3].T+T[:3,3]+translation
+                    expected_bounds.append([points.min(axis=0), points.max(axis=0)])
+                if not actual_bounds: raise ValueError('COUPLED_BELT_EMPTY')
+                actual = np.array([np.min(np.array(actual_bounds)[:,0],axis=0),np.max(np.array(actual_bounds)[:,1],axis=0)])
+                expected_bounds = np.array([np.min(np.array(expected_bounds)[:,0],axis=0),np.max(np.array(expected_bounds)[:,1],axis=0)])
+                if not np.allclose(actual,expected_bounds,atol=2e-6,rtol=0): raise ValueError('COUPLED_BELT_DISPLAY_COLLISION_MISMATCH')
+                heights[name] = expected = float(actual[side,2])
+                belt_readback[owner] = dict(bounds_W_m=actual.tolist(), source='CURRENT_COUPLED_COLLISION_SOLIDS')
+            elif (data.get('full_face_static') or data.get('native_12carton')) and path.startswith('conveyor_'):
                 item=next(r for r in data['conveyors']['items'] if r['id']==path.removesuffix('_belt'))
                 from unloading_sim.eco65.model import ROOT
                 source_path=(ROOT/item['usd_path']).resolve();source_path.relative_to(ROOT)

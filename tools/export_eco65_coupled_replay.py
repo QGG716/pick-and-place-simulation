@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from copy import deepcopy
 import gzip
 import hashlib
@@ -413,6 +414,7 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
         fixtures.append(dict(q=q, frames={k:np.asarray(v).tolist()
             for k, v in robot.named_link_frames(q).items()}))
     return share_worlds(dict(schema='eco65_coupled_replay_v1', model=model,
+        perception_binding=snapshot['scene'].get('perception_binding'),
         snapshot_fingerprint=snapshot['fingerprint'],
         collision_policy=snapshot['native_model']['init']['collision_policy'],
         preview_display_policy=policy_display(
@@ -446,6 +448,21 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
     plan = load_json(plan_path) if plan_path else None
     data = prepare_data(snapshot, plan, Path(run_folder) if run_folder else None, preview_q,
                         check_cycle=check_cycle)
+    binding=data.get('perception_binding')
+    if binding:
+        data['perception_images']=[]
+        rows=binding.get('evidence_images')
+        if rows is None:
+            sources=[ROOT/name for name in snapshot['asset_sha256'] if name.endswith('/vision_observations.json')
+                     and load_json(ROOT/name).get('fingerprint')==binding['observations']['fingerprint']]
+            if len(sources)!=1:raise ValueError('PERCEPTION_IMAGE_SOURCE_AMBIGUOUS')
+            rows=[dict(path=(sources[0].parent/r['image']).relative_to(ROOT).as_posix(),sha256=r['sha256'],
+                       label=r.get('sample_id','cartons_RGBD'),q_rad=r['q_rad'])
+                  for r in [*binding['calibration']['tcp_observations']['photos'],binding['observations']['carton_image']]]
+        for row in rows:
+            body=(ROOT/row['path']).read_bytes()
+            if hashlib.sha256(body).hexdigest()!=row['sha256']:raise ValueError('PERCEPTION_REPLAY_IMAGE_CHANGED')
+            data['perception_images'].append(dict(row,data_url='data:image/png;base64,'+base64.b64encode(body).decode('ascii')))
     vendor = ROOT / 'tools/search_replay/vendor'
     template = (ROOT / 'tools/search_replay/eco65_coupled_viewer.html').read_text(encoding='utf-8')
     payload = json.dumps(data, separators=(',', ':'), allow_nan=False)
