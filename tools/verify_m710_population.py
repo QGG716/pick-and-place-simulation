@@ -17,10 +17,24 @@ def save(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, separators=(",", ":"))+"\n", encoding="utf-8")
 
 
+def expected_population_mount(protocol):
+    """Bind saved native geometry to one explicit approved population layout."""
+    mounts = {'xy_minus_100': [-1.425, .25, .6],
+              'x_minus_300_y_minus_100': [-1.625, .25, .6]}
+    variant = protocol.get('mounting_variant', 'xy_minus_100')
+    if variant not in mounts:
+        raise ValueError('UNKNOWN_POPULATION_MOUNT')
+    expected = 'configs/workcells/m710id70_unloading_layout_v1_mount_'+variant+'.yaml'
+    if protocol['active_layout_file'] != expected:
+        raise ValueError('POPULATION_LAYOUT_VARIANT_MISMATCH')
+    return mounts[variant]
+
+
 def verify(run, replay=None):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
     xy_top = protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     assert summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
                                   ("COMPLETE_PLANNING_ONLY", "INCOMPLETE_RETAINED"))
@@ -87,7 +101,7 @@ def verify(run, replay=None):
                     mount = next(j for j in urdf.findall('joint') if
                         j.find('parent').get('link') == 'world' and j.find('child').get('link') == 'base_link')
                     xyz = list(map(float,mount.find('origin').get('xyz').split()))
-                    assert max(abs(a-b) for a,b in zip(xyz,[-1.425,.25,.6])) < 1e-12
+                    assert max(abs(a-b) for a,b in zip(xyz,expected_mount)) < 1e-12
                     assert list(map(float,mount.find('origin').get('rpy').split())) == [0.,0.,0.]
                     if native_collision_policy is None:native_collision_policy = model['collision_policy']
                     assert model['collision_policy'] == native_collision_policy

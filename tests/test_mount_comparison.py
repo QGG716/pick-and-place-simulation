@@ -67,3 +67,16 @@ def test_additional_x_200_retreat_keeps_y_and_all_other_geometry():
         changed = deepcopy(layout.data)
         changed["robot"]["base_origin_xy_a_m"][axis] += .01
         assert audit_layout_constraints(replace(layout, data=changed))["overall_status"] == "FAIL"
+
+
+def test_population_evidence_rejects_mixed_mount_labels():
+    from verify_m710_population import expected_population_mount
+    protocol = dict(mounting_variant='x_minus_300_y_minus_100',
+        active_layout_file='configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml')
+    assert expected_population_mount(protocol) == [-1.625, .250, .600]
+    protocol['mounting_variant'] = 'xy_minus_100'
+    with pytest.raises(ValueError, match='LAYOUT_VARIANT_MISMATCH'):
+        expected_population_mount(protocol)
+    protocol['mounting_variant'] = 'unreviewed'
+    with pytest.raises(ValueError, match='UNKNOWN_POPULATION_MOUNT'):
+        expected_population_mount(protocol)

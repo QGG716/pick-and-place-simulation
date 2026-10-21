@@ -1,4 +1,4 @@
-"""One new 40-carton world: XY -100 mm, low top suction, fixed low receiver."""
+"""One new 40-carton world at an explicit approved mount, with low top suction."""
 import argparse
 from copy import deepcopy
 import hashlib
@@ -14,6 +14,11 @@ from unloading_sim.carton_population import FrozenCartonPopulation, rank_populat
 from unloading_sim.coupled_batch import batch_scene
 from unloading_sim.lifted_reception import bounds
 
+POPULATION_LAYOUTS = {
+    'xy_minus_100': 'm710id70_unloading_layout_v1_mount_xy_minus_100.yaml',
+    'x_minus_300_y_minus_100': 'm710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml',
+}
+
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -24,11 +29,13 @@ def main():
     p.add_argument('--source-manifest',type=Path)
     p.add_argument('--development',action='store_true')
     p.add_argument('--check-only',action='store_true')
+    p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
         help='Separate synthetic exposed low-row fixture, never part of formal 40-box counts')
     args=p.parse_args();identity=source_identity(args)
     args.output.mkdir(parents=True,exist_ok=False)
-    original,built,audit=make_context('xy_minus_100')
+    layout_path=Path(__file__).resolve().parents[1]/'configs/workcells'/POPULATION_LAYOUTS[args.mounting_variant]
+    original,built,audit=make_context(args.mounting_variant,layout_path=layout_path)
     layout=original.policy.layout_validation.layout
     frozen=FrozenCartonPopulation.capture(original.cartons)
     minimum=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
@@ -59,7 +66,7 @@ def main():
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
         configured_initial_q=state.q.tolist(),historical_completed_count=len(history),
         active_layout_file=str(layout.config_path.relative_to(Path(__file__).resolve().parents[1])).replace('\\','/'),
-        mounting_variant='xy_minus_100',worker_sha256=worker_sha,task_budget_s=300.,stage_budget_s=90.,
+        mounting_variant=args.mounting_variant,worker_sha256=worker_sha,task_budget_s=300.,stage_budget_s=90.,
         low_top_minimum_m=minimum,low_definition='FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM',
         low_receiver_rule='LOW_TOP_ONLY_FIXED_AT_MINIMUM_AFTER_CHECKED_UNLOADED_LOWERING',
         upper_receiver_rule='EXISTING_FRONT_SIDE_HMIN_HMAX_SYNCHRONIZATION',
