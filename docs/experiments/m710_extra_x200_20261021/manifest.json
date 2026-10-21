@@ -1,0 +1,32 @@
+{
+  "source_commit": "e2043983e6f19e63f8ca475963e0801e1d26b982",
+  "report_sha256": "efbd4279f366c90265ca7e2dbe6fcdb1d9525ff2b3360b00f04527956f3e6394",
+  "sha256": {
+    "browser-checks.json": "32827e926fc627ffb1dfe013a0be1e2b0c88851cf253c51ffcc5283d8af4ba80",
+    "carton_l04_c02-checks.json": "73632d3e203d8698395efca0308c493b7b8617a909c90306c89210e2f50157eb",
+    "carton_l04_c02.html": "2b1cc3bf6355ecee48b8805b2af7b29654030f7369ccd37fe7d91b8aef144332",
+    "carton_l05_c03-checks.json": "183ae87a51ec83262c41e1cfd50c91dc58305e137f058855e0cc6bafe49b7d39",
+    "carton_l05_c03.html": "c11920fb6fd30739e1d81195c2b4f817e857caacab62431580dd8c38f1dfc9a9",
+    "delivery-checks.json": "c550617ba5bb4bb5203637846ec99edd7bb9cc5c8fa29456d17230b97c4fbc78",
+    "formal-run.log": "c2e05dc1ad451482252b03e92ebc5ca680f68ea536c4d58944e72837f1021fe7",
+    "index.html": "cbb0beba3fda01f1eab712c785d61d3ab6bc132e45c217a5c39c9ca1de6cc0fd",
+    "initial-state-checks.json": "4c08d990087fd1dfd640c43f349db54e54831c364c68af09ec9d97a84b31955f",
+    "l04_c02-final.png": "e6083b308cfddb1ddc81bd396117064c4fa5888ae07606a832ba11f00a0b586b",
+    "l04_c02-initial.png": "5bca4ee935bb96e2f5b538165e244c3b7cfa40775fee6077e0caeb0100de65de",
+    "l05_c03-final.png": "04ac2e29d0031769f2556779b8774ba5713367aa279185bfe0f1c5adbcf31357",
+    "l05_c03-initial.png": "ef9ef348f658f48173635f90fc6eb381c5c60b2bfba1d2187293f28a80908bed",
+    "LICENSE.FANUC.txt": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+    "LICENSE.three": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84",
+    "lineage-checks.json": "0a2242350826c0a097edc2b75204de661091fb0e45393d554476cc7c2212fc29",
+    "measured-source-manifest.json": "91e2fc45bb275dee31fbcab75a0ed1b865971987ff867e3df68e279cdcfff914",
+    "measured-source-overlay.tar.gz": "68f4d76081be982fb845c711c19c37e32b847a2b67250b966fc9373c2daaa216",
+    "offline-replay.zip": "c364485218ec0f813bf90a217578ba31dfd54383151aba7c5cefbbebfed064d4",
+    "protocol.json": "d806504664c322ead327e99ba9df4f179aa596dfbc947fedd7ae10c3e50c0c03",
+    "raw-manifest.json": "9e5ab8fccad6083a8611177065aee22ea37c0f27b564aa1ca6856f87f98b8893",
+    "raw-records.tar.xz": "94c9b89e31585a80a93d68980e9e8833a4aa9e4b1a70c7fe4c6840b52e8da510",
+    "README.txt": "10af554e30fb7db88b8c99e53e9fdd8a03187a3096e5e967e5f78146edb998bf",
+    "source-and-validation.json": "bf2ce0d697acc95ba7de19a518d511884e0741282126268655081a085fde5e0d",
+    "summary.json": "7456632f31a67923216ec0f9c2291ff957c1291b44e2c02760ae56dc157820af",
+    "verification.json": "7bd6c6e39549368a6786d8cc36bfe5bb8147c6d9d8a4a402196a62bd6ab116a7"
+  }
+}

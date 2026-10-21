@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "raw_archive_sha256": "94c9b89e31585a80a93d68980e9e8833a4aa9e4b1a70c7fe4c6840b52e8da510",
+  "raw_files_verified": 43,
+  "measured_source_files_verified": 311,
+  "verifier_hash_match": true,
+  "browser_viewers_passed": 2,
+  "offline_zip_links_and_hashes_passed": true,
+  "qualified_planning_cycles": 2,
+  "physical_execution": "NOT_RUN"
+}

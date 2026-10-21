@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>额外后移200 mm：两箱完整规划验证</title>
+<style>body{margin:0;background:#101c29;color:#e7eef5;font:16px/1.7 system-ui,sans-serif}main{max-width:980px;margin:44px auto;padding:0 24px}h1{font-size:30px;line-height:1.35}a{color:#74deed}table{border-collapse:collapse;width:100%;margin:24px 0}td,th{padding:12px;text-align:left;border-bottom:1px solid #354858}.links{display:flex;gap:16px;flex-wrap:wrap}.links a{background:#23394b;padding:12px 20px;border-radius:8px;text-decoration:none}.note{color:#b8c9d8}img{width:100%;border-radius:8px;margin:16px 0}code{overflow-wrap:anywhere}</style>
+<main><h1>额外沿−X后移200 mm：两箱完整规划均通过</h1>
+<p>机械臂基座世界坐标 <b>[−1.625, 0.250, 0.600] m</b>。Y保持当前位置，底盘和输送带不动。两次独立历史场景验证完成 <b>2/2</b>，没有物理执行。</p>
+<table><thead><tr><th>箱体</th><th>完整抓放</th><th>任务墙钟</th><th>接收高度 / 杯数</th><th>场景箱数</th></tr></thead><tbody>
+<tr><td>l05_c03</td><td>1/1</td><td>4.449 s</td><td>1.45 m / 48</td><td>29 → 28</td></tr>
+<tr><td>l04_c02</td><td>1/1</td><td>4.461 s</td><td>1.15 m / 48</td><td>26 → 25</td></tr>
+</tbody></table>
+<div class="links"><a href="carton_l05_c03.html">播放 l05_c03 完整三维回放</a><a href="carton_l04_c02.html">播放 l04_c02 完整三维回放</a></div>
+<p>两箱都在第一个接收终点通过：接近 → contact及实际杯几何复核 → 附着 → −X抽离 → 接收区验收 → 同位姿释放 → 约50 mm名义下落 → 名义首次触带 → 工具分离 → IDEAL_RECEIVER_DRAIN。delta均为0，带高全程保持。</p>
+<p class="note">机器人由本次原生q驱动。名义下落和理想清空是显式假设，实测接收为0。任务墙钟不是机器人动作周期。每箱历史台账分别为11箱和14箱，两次场景不能拼成连续卸箱结果，也不能据此修改原实验17/40成功率。</p>
+<img src="l05_c03-final.png" alt="l05_c03本次独立规划完成后的三维场景，剩余28箱">
+<p><a href="verification.json">逐阶段验证与全部成本</a> · <a href="browser-checks.json">回放浏览器验证</a> · <a href="source-and-validation.json">源码与测试记录</a> · <a href="raw-records.tar.xz">原始记录</a></p>
+<p class="note">实测源码 <code>e2043983e6f19e63f8ca475963e0801e1d26b982</code><br>qualification_status=NOT_EVALUATED · continuous_swept_proof=false<br>physical_execution=NOT_RUN · execution_ready=false</p></main></html>

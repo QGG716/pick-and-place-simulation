@@ -1,0 +1,36 @@
+{
+  "source_commit": "e2043983e6f19e63f8ca475963e0801e1d26b982",
+  "source_files_verified": 311,
+  "assets_equal_to_baseline_files": 67,
+  "worker_sha256": "0bab47de68ae112583afa76a285b74dccd16ff29518d8e11e6d1ac6bfb77756a",
+  "baseline_runtime_sha256": "f5258b83563779ceec8cff9455e98ac06be539dbeec3249c6461ef704809ab7b",
+  "overlay_sha256": "68f4d76081be982fb845c711c19c37e32b847a2b67250b966fc9373c2daaa216",
+  "changed_existing_sources": [
+    "src/unloading_sim/workcell_layout.py",
+    "tools/export_m710_top_layer_replay.py",
+    "tools/lifted_reception/batch_viewer.html",
+    "tools/plan_m710_mount_comparison.py",
+    "tools/verify_m710_population.py"
+  ],
+  "added_sources": [
+    "configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml",
+    "tools/audit_m710_endpoint_arm_branches.py",
+    "tools/check_m710_five_failures.mjs",
+    "tools/export_m710_five_failures.py",
+    "tools/plan_m710_extraction_retreat.py",
+    "tools/probe_m710_extraction_endpoint.py",
+    "tools/rerun_m710_extraction_failures.py",
+    "tools/search_replay/five_failures.js"
+  ],
+  "runtime_changed_only_src_file": "src/unloading_sim/workcell_layout.py: add literal authorized mount to layout audit",
+  "native_planner_binary_unchanged": true,
+  "focused_regression_result": "5 passed, 1 deselected in 0.49s",
+  "production_integration_errors": 0,
+  "formal_runs": 2,
+  "complete_cycles": 2,
+  "development_notes": [
+    "Local Python has no pytest; used existing server planning venv without installing dependencies.",
+    "Local archive assembly initially used invalid tar read/append mode; rebuilt and hash-verified before upload. No planning used that artifact.",
+    "One parallel SwiftShader screenshot timed out; same unchanged l05_c03 viewer passed sequential hardware-rendered check. No planning rerun."
+  ]
+}

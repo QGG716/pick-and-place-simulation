@@ -1,0 +1,9 @@
+nohup: ignoring input
+{"event": "RETREAT_TRIAL_START", "target": "carton_l05_c03"}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 11}
+{"seed": 71070, "completed": 1, "historical_completed": 11, "terminal_q": [0.3870165928290456, -1.0107622580603832, -1.1629970112423178, -1.214593375423869, 0.4144706051393288, -1.9568869423211097], "height": 1.45}
+{"event": "RETREAT_TRIAL_RECORDED", "target": "carton_l05_c03", "complete": true, "wall_s": 4.448552264017053}
+{"event": "RETREAT_TRIAL_START", "target": "carton_l04_c02"}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 14}
+{"seed": 71070, "completed": 1, "historical_completed": 14, "terminal_q": [-0.5399563297889898, -0.7568636428359039, -1.3735341562497694, 0.803268259545968, 0.795755977043677, -3.7690390424344318], "height": 1.15}
+{"event": "RETREAT_TRIAL_RECORDED", "target": "carton_l04_c02", "complete": true, "wall_s": 4.460610473994166}

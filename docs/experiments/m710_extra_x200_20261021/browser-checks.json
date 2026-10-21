@@ -1,0 +1,310 @@
+[
+  {
+    "target_id": "l05_c03",
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 29,
+      "q_rad": [
+        -0.8557066150249174,
+        -1.2694151703112198,
+        -1.2220102412204734,
+        1.6119263262281744,
+        0.8566816761354585,
+        -4.775139517018203
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999994741,
+        -1.7298282650735075e-07,
+        -1.0109718773347598e-06,
+        0,
+        -1.7298277186815466e-07,
+        -0.9999999999999837,
+        5.402157814138331e-08,
+        0,
+        -1.0109718866560533e-06,
+        -5.402140329513472e-08,
+        -0.9999999999994877,
+        0,
+        -1.2328959676241613,
+        3.833352100690579e-07,
+        1.6499997008356493,
+        1
+      ],
+      "height_m": 1.45,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l05_c03",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 35.45581662066911,
+      "phase": "鏁存壒缁撴潫",
+      "completed_count": 1,
+      "carton_count": 28,
+      "q_rad": [
+        0.3870165928290456,
+        -1.0107622580603832,
+        -1.1629970112423178,
+        -1.214593375423869,
+        0.4144706051393288,
+        -1.9568869423211097
+      ],
+      "flange_matrix_column_major": [
+        0.999999999999361,
+        7.404290157109195e-07,
+        -8.545549185778878e-07,
+        0,
+        7.404289682275946e-07,
+        -0.9999999999997244,
+        -5.542659964330454e-08,
+        0,
+        -8.545549596554648e-07,
+        5.542596698271396e-08,
+        -0.9999999999996334,
+        0,
+        -1.0328960680880395,
+        0.4199998775430276,
+        1.6499996716782241,
+        1
+      ],
+      "height_m": 1.45,
+      "attached": false,
+      "nominal_count": 1,
+      "drain_count": 1,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 1,
+        "kind": "motion",
+        "time": 8.689943764,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 11.689945631,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 3,
+        "kind": "drop",
+        "time": 32.44494563,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 4,
+        "kind": "landed",
+        "time": 32.545909337669116,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 5,
+        "kind": "motion",
+        "time": 33.14590933766912,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 6,
+        "kind": "landed",
+        "time": 33.655816620669114,
+        "completed": 0,
+        "cartons": 29
+      },
+      {
+        "segment": 7,
+        "kind": "final",
+        "time": 34.45581662066911,
+        "completed": 1,
+        "cartons": 28
+      },
+      {
+        "kind": "drop_fixed_robot_q",
+        "drop_m": 0.04900495359831747
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  },
+  {
+    "target_id": "l04_c02",
+    "status": "PASS",
+    "errors": [],
+    "initial": {
+      "time": 0,
+      "phase": "pregrasp",
+      "completed_count": 0,
+      "carton_count": 26,
+      "q_rad": [
+        -1.3741913477184622,
+        -0.016501294579807407,
+        -0.5752942541614483,
+        1.4655894017350797,
+        1.4044009748060793,
+        -4.144815506390614
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999999963,
+        6.192291585049858e-08,
+        5.984726465790846e-08,
+        0,
+        6.192296130477653e-08,
+        -0.9999999999997096,
+        -7.595606745791628e-07,
+        0,
+        5.984721759355202e-08,
+        7.595606784094322e-07,
+        -0.9999999999997098,
+        0,
+        -1.2328960926099666,
+        -0.8399998298074706,
+        1.6499999425589487,
+        1
+      ],
+      "height_m": 1.15,
+      "attached": false,
+      "nominal_count": 0,
+      "drain_count": 0,
+      "physical_count": 0,
+      "target": "carton_l04_c02",
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "final": {
+      "time": 33.64684074629638,
+      "phase": "鏁存壒缁撴潫",
+      "completed_count": 1,
+      "carton_count": 25,
+      "q_rad": [
+        -0.5399563297889898,
+        -0.7568636428359039,
+        -1.3735341562497694,
+        0.803268259545968,
+        0.795755977043677,
+        -3.7690390424344318
+      ],
+      "flange_matrix_column_major": [
+        0.9999999999996632,
+        -6.561153222950367e-07,
+        -4.93238389187578e-07,
+        0,
+        -6.561151879863785e-07,
+        -0.9999999999997478,
+        2.7257803231206523e-07,
+        0,
+        -4.93238568098534e-07,
+        -2.7257770890409816e-07,
+        -0.9999999999998412,
+        0,
+        -1.0328959711176542,
+        1.3364628067003005e-07,
+        1.3499995784336623,
+        1
+      ],
+      "height_m": 1.15,
+      "attached": false,
+      "nominal_count": 1,
+      "drain_count": 1,
+      "physical_count": 0,
+      "target": null,
+      "continuous": true,
+      "physical_execution": "NOT_RUN"
+    },
+    "checks": [
+      {
+        "segment": 0,
+        "kind": "motion",
+        "time": 0,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 1,
+        "kind": "motion",
+        "time": 6.880968252,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 2,
+        "kind": "motion",
+        "time": 9.880971815999999,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 3,
+        "kind": "drop",
+        "time": 30.635971815999998,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 4,
+        "kind": "landed",
+        "time": 30.736935526296378,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 5,
+        "kind": "motion",
+        "time": 31.33693552629638,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 6,
+        "kind": "landed",
+        "time": 31.84684074629638,
+        "completed": 0,
+        "cartons": 26
+      },
+      {
+        "segment": 7,
+        "kind": "final",
+        "time": 32.64684074629638,
+        "completed": 1,
+        "cartons": 25
+      },
+      {
+        "kind": "drop_fixed_robot_q",
+        "drop_m": 0.04900495614871825
+      }
+    ],
+    "frames": 0,
+    "width": 640,
+    "height": 360,
+    "fps": 5,
+    "playback_speed": 1,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+  }
+]
