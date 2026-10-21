@@ -1,0 +1,82 @@
+schema: m710id70_unloading_layout_v1
+layout_id: m710id70_unloading_layout_v1
+units: {length: metre, angle: radian, mass: kilogram}
+world:
+  origin: initial_stack_front_face_width_center_floor_projection
+  axes: {x: into_trailer, y: left_when_facing_into_trailer, z: up}
+  floor_z_m: 0.0
+assembly:
+  # A is the chassis-bottom projected centre. All fixed equipment is derived
+  # as T_W_component = T_W_A @ T_A_component.
+  world_xyz_m: [-1.950, 0.350, 0.0]
+  world_rpy_rad: [0.0, 0.0, 0.0]
+chassis:
+  size_xyz_m: [2.100, 1.500, 0.600]
+  center_a_m: [0.0, 0.0, 0.300]
+conveyors:
+  body_thickness_m: 0.120
+  body_thickness_source: retained_engineering_assumption_not_manufacturing_dimension
+  surface_z_a_m: 0.600
+  coupling:
+    geometry_revision: upper_seam_lower_slider_v3
+    maximum_surface_height_world_m: 2.100
+    # Symmetric X spacing; retain 1.25 m arms, sections and 100 mm feet.
+    transverse_support_spacing_m: 0.260
+  transverse:
+    size_xy_m: [0.700, 2.200]
+    center_xy_a_m: [1.400, -0.350]
+  longitudinal:
+    size_xy_m: [2.800, 0.600]
+    center_xy_a_m: [-0.350, -1.150]
+robot:
+  model: fanuc_m710id_70
+  model_config: ../robots/fanuc_m710id_70.yaml
+  urdf_path: ../../assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf
+  mounting_surface_z_a_m: 0.600
+  # The official base collision mesh spans X [-0.3385, 0.225] m at q=0.
+  # Additional -X 0.100 m from the x_minus_300_y_minus_100 trial; Y and all other geometry stay fixed.
+  base_origin_xy_a_m: [0.225, -0.100]
+  base_support_bbox_min_xyz_m: [-0.3385, -0.275, 0.0]
+  base_support_bbox_max_xyz_m: [0.225, 0.275, 0.245]
+  base_front_edge_x_world_m: -1.500
+  positioning_basis: fanuc_official_base_collision_mesh_bbox_at_fb40c9803a826ba68c7c8e28ba904a25efa7fcd2
+  positioning_status: EXECUTION_QUALIFIED_CAD_COLLISION
+tool:
+  load_config: ../tools/unloading_gripper_20kg.yaml
+  geometry_config: ../tools/unloading_gripper_10kg.yaml
+  # The 58 boxes are hash-bound CAD-derived engineering geometry, but the
+  # source audit does not yet contain a per-solid semantic classification and
+  # outward-containment certificate.  They therefore remain useful for
+  # fail-closed diagnostics, not for accepting a complete execution path.
+  geometry_status: CAD_DERIVED_COMPOUND_OBB_COVERAGE_UNVERIFIED
+  # 0.2275 m is the STEP solid extreme. The active 0.250 m TCP remains the
+  # explicit planning/working transform from the 20 kg tool config.
+  physical_step_length_m: 0.2275
+  planning_tcp_status: PROJECT_EXECUTION_FRAME_EXPLICITLY_ADAPTED_FROM_OFFICIAL_FLANGE
+trailer:
+  inner_width_m: 2.300
+  right_wall_y_m: -1.150
+  left_wall_y_m: 1.150
+  # Fixed development-scene assumptions, not user-confirmed measurements.
+  # The opening is on -X and the closed end wall is farther inside on +X.
+  opening_x_m: -3.200
+  closed_end_wall_x_m: 3.200
+  length_m: 6.400
+  height_m: 2.700
+  wall_thickness_m: 0.050
+  length_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
+  height_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
+carton_stack:
+  carton_size_xyz_m: [0.600, 0.400, 0.300]
+  front_face_x_m: 0.0
+  depth_rows: 1
+  width_columns: 5
+  height_layers: 8
+  column_gap_m: 0.020
+  layer_gap_m: 0.0
+  center_y_m: [-0.840, -0.420, 0.0, 0.420, 0.840]
+  no_pallet: true
+evidence:
+  approval_basis: user_20261021_mount_x_minus_400_y_minus_100
+  development_scene_assumptions: [trailer_length_6p4m, trailer_height_2p7m, trailer_opening_x_minus_3p2m]
+  unconfirmed: [trailer_length, trailer_height, real_robot_mounting_plate_cad, conveyor_manufacturing_details]

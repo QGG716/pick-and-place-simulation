@@ -20,7 +20,8 @@ def save(path, value):
 def expected_population_mount(protocol):
     """Bind saved native geometry to one explicit approved population layout."""
     mounts = {'xy_minus_100': [-1.425, .25, .6],
-              'x_minus_300_y_minus_100': [-1.625, .25, .6]}
+              'x_minus_300_y_minus_100': [-1.625, .25, .6],
+              'x_minus_400_y_minus_100': [-1.725, .25, .6]}
     variant = protocol.get('mounting_variant', 'xy_minus_100')
     if variant not in mounts:
         raise ValueError('UNKNOWN_POPULATION_MOUNT')

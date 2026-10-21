@@ -69,14 +69,35 @@ def test_additional_x_200_retreat_keeps_y_and_all_other_geometry():
         assert audit_layout_constraints(replace(layout, data=changed))["overall_status"] == "FAIL"
 
 
-def test_population_evidence_rejects_mixed_mount_labels():
+@pytest.mark.parametrize('variant,expected', [
+    ('x_minus_300_y_minus_100', [-1.625, .250, .600]),
+    ('x_minus_400_y_minus_100', [-1.725, .250, .600]),
+])
+def test_population_evidence_rejects_mixed_mount_labels(variant, expected):
     from verify_m710_population import expected_population_mount
-    protocol = dict(mounting_variant='x_minus_300_y_minus_100',
-        active_layout_file='configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml')
-    assert expected_population_mount(protocol) == [-1.625, .250, .600]
+    protocol = dict(mounting_variant=variant,
+        active_layout_file=f'configs/workcells/m710id70_unloading_layout_v1_mount_{variant}.yaml')
+    assert expected_population_mount(protocol) == expected
     protocol['mounting_variant'] = 'xy_minus_100'
     with pytest.raises(ValueError, match='LAYOUT_VARIANT_MISMATCH'):
         expected_population_mount(protocol)
     protocol['mounting_variant'] = 'unreviewed'
     with pytest.raises(ValueError, match='UNKNOWN_POPULATION_MOUNT'):
         expected_population_mount(protocol)
+
+
+def test_additional_x_100_from_current_mount_keeps_the_rest_of_the_world():
+    old = load_workcell_layout(ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml')
+    layout = load_workcell_layout(ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_400_y_minus_100.yaml')
+    np.testing.assert_allclose(layout.robot_base_transform()[:3, 3], [-1.725, .250, .600], atol=1e-12)
+    assert layout.data['robot']['base_front_edge_x_world_m'] == -1.500
+    assert audit_layout_constraints(layout)['overall_status'] == 'PASS'
+    assert layout.assets == old.assets
+    for key in ('assembly', 'chassis', 'conveyors', 'tool', 'trailer', 'carton_stack'):
+        assert layout.data[key] == old.data[key]
+    assert [box_message(b) for b in layout.fixed_components()] == [box_message(b) for b in old.fixed_components()]
+    assert [box_message(b) for b in layout.cartons()] == [box_message(b) for b in old.cartons()]
+    for axis in (0, 1):
+        changed = deepcopy(layout.data)
+        changed['robot']['base_origin_xy_a_m'][axis] += .01
+        assert audit_layout_constraints(replace(layout, data=changed))['overall_status'] == 'FAIL'

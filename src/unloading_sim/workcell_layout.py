@@ -572,6 +572,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "user_20261021_mount_x_minus_100": [-1.425, .35, .6],
         "user_20261021_mount_xy_minus_100": [-1.425, .25, .6],
         "user_20261021_mount_x_minus_300_y_minus_100": [-1.625, .25, .6],
+        "user_20261021_mount_x_minus_400_y_minus_100": [-1.725, .25, .6],
     }
     approval = layout.data["evidence"]["approval_basis"]
     narrow = approval in {
