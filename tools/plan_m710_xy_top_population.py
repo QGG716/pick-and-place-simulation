@@ -33,6 +33,10 @@ def main():
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
         help='Separate synthetic exposed low-row fixture, never part of formal 40-box counts')
+    p.add_argument('--l05-j4-velocity-restart',type=Path,
+        help='Separate user-approved diagnostic, restoring the accepted prefix before failed l05_c03')
+    p.add_argument('--l05-j4-velocity-worker-command')
+    p.add_argument('--l05-j4-velocity-library',type=Path)
     args=p.parse_args();identity=source_identity(args)
     args.output.mkdir(parents=True,exist_ok=False)
     layout_path=Path(__file__).resolve().parents[1]/'configs/workcells'/POPULATION_LAYOUTS[args.mounting_variant]
@@ -41,6 +45,23 @@ def main():
     frozen=FrozenCartonPopulation.capture(original.cartons)
     minimum=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
     state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),minimum)
+    diagnostic=None
+    normal_worker_command=args.worker_command
+    if args.l05_j4_velocity_restart:
+        from l05_velocity_diagnostic import restore_before_l05, TARGET, SCOPE
+        if args.integration_top_fixture or not args.l05_j4_velocity_worker_command or not args.l05_j4_velocity_library:
+            raise ValueError('L05_DIAGNOSTIC_CONFIGURATION_INCOMPLETE')
+        predecessor=restore_before_l05(args.l05_j4_velocity_restart,state,args.mounting_variant)
+        save(args.output/'predecessor.json',predecessor)
+        diagnostic=dict(target_id=TARGET,joint='J4',ignored_check='PILZ_JOINT_VELOCITY_ONLY',
+            acceleration_deceleration_retained=True,other_joints_retained=True,
+            position_collision_and_process_checks_retained=True,physical_execution='NOT_RUN',
+            library_sha256=hashlib.sha256(args.l05_j4_velocity_library.read_bytes()).hexdigest(),
+            library_path=str(args.l05_j4_velocity_library),
+            worker_command=args.l05_j4_velocity_worker_command,
+            baseline_summary_sha256=predecessor['summary_sha256'])
+    elif args.l05_j4_velocity_worker_command or args.l05_j4_velocity_library:
+        raise ValueError('L05_DIAGNOSTIC_RESTART_REQUIRED')
     if args.integration_top_fixture:
         # Valid exposed low-row geometry for production-interface regression.
         # No removed fixture carton is counted as a successful task.
@@ -62,7 +83,7 @@ def main():
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
-    protocol=dict(**identity,**FLAGS,seeds=[71070],scope='XY_TOP_NEW_WORLD_40',
+    protocol=dict(**identity,**FLAGS,seeds=[71070],scope=SCOPE if diagnostic else 'XY_TOP_NEW_WORLD_40',
         integration_fixture=args.integration_top_fixture,original_cartons=[box_message(b) for b in original.cartons],
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
         configured_initial_q=state.q.tolist(),historical_completed_count=len(history),
@@ -73,6 +94,7 @@ def main():
         upper_receiver_rule='EXISTING_FRONT_SIDE_HMIN_HMAX_SYNCHRONIZATION',
         eccentric_authorized_ids=sorted(eccentric_ids),third_sync_disabled=True,
         no_historical_solution_hints=True,attempted_target_restarts=False)
+    if diagnostic:protocol.update(planning_diagnostic=diagnostic,search_operation='NEW_NATIVE_TASK_FROM_VERIFIED_PREFIX',tree_retained=False)
     save(args.output/'protocol.json',protocol)
     outcomes=[];attempted=set();started=perf_counter()
     def checkpoint(status):
@@ -85,6 +107,7 @@ def main():
             remaining_target_ids=[b.name for b in state.cartons],planning_wall_s=perf_counter()-started,
             native_task_wall_s=sum(o.get('planning_wall_s',0.) for o in outcomes),
             release_count=n,nominal_first_contact_count=n,separation_count=n,ideal_drain_count=n)
+        if diagnostic:row['planning_diagnostic']=diagnostic
         save(args.output/'summary.json',row);return row
     while state.cartons:
         scene=batch_scene(original,state,built.robot,layout)
@@ -92,9 +115,14 @@ def main():
             built.robot,scene.receiver,longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
         if not ranked:break
         selected=ranked[0];name=selected['target_id'];attempted.add(name)
+        diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
+        args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
+        if diagnostic and not outcomes and name!=diagnostic['target_id']:
+            raise ValueError('L05_DIAGNOSTIC_FIRST_TARGET_CHANGED')
         args.right_front_eccentric=name in eccentric_ids;args.junction_only=args.right_front_eccentric
         folder=args.output/f'task-{len(outcomes)+1:03d}';folder.mkdir()
-        save(folder/'dispatch.json',dict(selection=selected,root=state.root(),right_front_eccentric=args.right_front_eccentric))
+        save(folder/'dispatch.json',dict(selection=selected,root=state.root(),right_front_eccentric=args.right_front_eccentric,
+            j4_velocity_diagnostic_enabled=diagnostic_enabled))
         checkpoint('RUNNING')
         print(json.dumps(dict(event='CARTON_TASK_START',target=name,remaining=len(state.cartons))),flush=True)
         try:
@@ -109,6 +137,7 @@ def main():
             checkpoint('INTEGRATION_ERROR_RETAINED');raise
         outcome=dict(target_id=name,status=result['status'],completed_count=result['completed_count'],
             planning_wall_s=result['planning_wall_s'],attempts=result['attempts'],root=result['initial'],terminal=result['terminal'])
+        if diagnostic:outcome['j4_velocity_diagnostic_enabled']=diagnostic_enabled
         outcome['evidence']=archive_task(folder,args.output);outcomes.append(outcome)
         current=checkpoint('RUNNING')
         print(json.dumps(dict(event='CARTON_TASK_RECORDED',target=name,completed=current['completed_count'],
@@ -116,7 +145,7 @@ def main():
         if args.integration_top_fixture:break
     final=checkpoint('INTEGRATION_FIXTURE_FINISHED' if args.integration_top_fixture else
         ('COMPLETE_PLANNING_ONLY' if not state.cartons else 'INCOMPLETE_RETAINED'))
-    if not args.integration_top_fixture and len(outcomes)+len(final['blocked'])!=40:
+    if not args.integration_top_fixture and len(outcomes)+len(final['blocked'])!=len(scope):
         raise ValueError('POPULATION_ACCOUNTING_GAP')
     print(json.dumps(dict(status=final['status'],completed=final['completed_count'],targets=len(scope))),flush=True)
 

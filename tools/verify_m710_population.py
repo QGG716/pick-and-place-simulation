@@ -34,7 +34,8 @@ def expected_population_mount(protocol):
 def verify(run, replay=None):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
-    xy_top = protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    diagnostic = protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
+    xy_top = diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     assert summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
@@ -44,8 +45,20 @@ def verify(run, replay=None):
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    if diagnostic:
+        policy=protocol['planning_diagnostic']
+        assert policy==summary['planning_diagnostic']
+        assert policy['target_id']=='carton_l05_c03' and policy['joint']=='J4'
+        assert policy['ignored_check']=='PILZ_JOINT_VELOCITY_ONLY'
+        assert policy['acceleration_deceleration_retained'] and policy['other_joints_retained']
+        assert policy['position_collision_and_process_checks_retained'] and policy['physical_execution']=='NOT_RUN'
+        predecessor=json.loads((run/'predecessor.json').read_text())
+        assert initial==predecessor['new_native_root']
+        assert initial==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert len(predecessor['prefix'])==11
+        assert initial['completed']==[p['target_id'] for p in predecessor['prefix']]
     assert len(original) == 40 and len(protocol["frozen"]["target_ids"]) == 40
     outcomes, attempts, cycles, replay_attempts = [], [], [], []
     counts = Counter()
@@ -82,6 +95,10 @@ def verify(run, replay=None):
                 return json.loads(raw(file))
 
             result = read("result.json")
+            if diagnostic:
+                enabled=name=='carton_l05_c03'
+                assert outcome['j4_velocity_diagnostic_enabled']==enabled
+                assert read('dispatch.json')['j4_velocity_diagnostic_enabled']==enabled
             assert result["initial"] == root
             assert result["completed_count"] in (0, 1)
             assert len(result["cycles"]) == result["completed_count"]
@@ -96,6 +113,10 @@ def verify(run, replay=None):
                 connections = read(folder+"/connection-attempts.json")
                 detail = read(folder+"/attempt.json") if folder+"/attempt.json" in outcome["evidence"]["file_sha256"] else {}
                 trace = read(folder+"/search-trace.json")
+                if diagnostic:
+                    markers=raw(folder+'/worker.log').decode(errors='replace').count('M710_DIAGNOSTIC_J4_VELOCITY_IGNORED')
+                    if name!='carton_l05_c03':assert markers==0
+                    counts['diagnostic_j4_velocity_bypasses']+=markers
                 if xy_top:
                     model = trace['model']
                     urdf = ET.fromstring(model['parameters']['robot_description'])
@@ -271,6 +292,7 @@ def verify(run, replay=None):
                         counts=dict(counts), outcomes=outcomes, blocked=summary["blocked"],
                         physical_execution="NOT_RUN", execution_ready=False,
                         qualification_status="NOT_EVALUATED", continuous_swept_proof=False)
+    if diagnostic:verification.update(planning_diagnostic=protocol['planning_diagnostic'],historical_completed_count=11)
     save(run/"verification.json", verification)
     return verification
 
