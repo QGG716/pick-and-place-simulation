@@ -1,0 +1,177 @@
+{
+  "source_commit": "cb6eb0199fb07f10bff632edf3aaa1234f679c00",
+  "source_trace_sha256": "78742f5463eb816a9ac049ca8c43908bebcc104eeefef4e9851579cd5d6166e0",
+  "script_sha256": "9c44ad130f96e818d564a583e127d091c772f8d701464028340c2db7a2334984",
+  "method": "Rigid base translation equivalence: same production robot with +X relative target; convert FK back to unchanged world target",
+  "current_base_xyz_m": [
+    -1.625,
+    0.24999999999999997,
+    0.6
+  ],
+  "current_layout_unchanged": true,
+  "solver_requests_added": 0,
+  "rows": [
+    {
+      "stage_id": "native-cold-c25e5112aad94f9d81a00595a723b99e:5",
+      "minimum_extra_retreat_m": 0.004997150168837406,
+      "threshold_scope": "SAME_SHOULDER_ELBOW_BRANCH_ZERO_J3_LIMIT_MARGIN_ONLY",
+      "trials": [
+        {
+          "additional_base_minus_x_m": 0.0,
+          "new_world_base_x_m": -1.625,
+          "q_deg": [
+            22.17463680599219,
+            -49.65167136068259,
+            -80.76569897506928,
+            -218.26428059776626,
+            -37.550307905394426,
+            32.01891068001048
+          ],
+          "J3_lower_margin_deg": -0.2656989750692851,
+          "within_all_six_joint_limits": false,
+          "position_error_m": 6.661338147750939e-16,
+          "orientation_error_rad": 4.92481363937711e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.01,
+          "new_world_base_x_m": -1.635,
+          "q_deg": [
+            21.704200959902945,
+            -47.94354961543358,
+            -80.2331562915923,
+            -216.6899064966335,
+            -38.23977211305525,
+            30.337217522957943
+          ],
+          "J3_lower_margin_deg": 0.26684370840771127,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 3.188872858294072e-16,
+          "orientation_error_rad": 3.2501614694223295e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.02,
+          "new_world_base_x_m": -1.645,
+          "q_deg": [
+            21.25240409792241,
+            -46.28984460015229,
+            -79.69733459110597,
+            -215.23671611957067,
+            -38.92172268127246,
+            28.79184498054383
+          ],
+          "J3_lower_margin_deg": 0.8026654088940355,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 1.0092732890935159e-12,
+          "orientation_error_rad": 1.2050685979603277e-12,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.05,
+          "new_world_base_x_m": -1.675,
+          "q_deg": [
+            19.998863932780193,
+            -41.63145848045981,
+            -78.07174457734132,
+            -211.49674104458404,
+            -40.890155788296674,
+            24.85345616856621
+          ],
+          "J3_lower_margin_deg": 2.42825542265868,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 3.3766115072321297e-16,
+          "orientation_error_rad": 1.7443676775479842e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        }
+      ]
+    },
+    {
+      "stage_id": "native-cold-c25e5112aad94f9d81a00595a723b99e:264",
+      "minimum_extra_retreat_m": 0.005152620347189298,
+      "threshold_scope": "SAME_SHOULDER_ELBOW_BRANCH_ZERO_J3_LIMIT_MARGIN_ONLY",
+      "trials": [
+        {
+          "additional_base_minus_x_m": 0.0,
+          "new_world_base_x_m": -1.625,
+          "q_deg": [
+            22.182103079345875,
+            -49.67866861447792,
+            -80.7739516244741,
+            -218.28977408534163,
+            -37.539552282692554,
+            32.04619928337041
+          ],
+          "J3_lower_margin_deg": -0.2739516244740835,
+          "within_all_six_joint_limits": false,
+          "position_error_m": 4.742874840267547e-16,
+          "orientation_error_rad": 5.693899625473202e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.01,
+          "new_world_base_x_m": -1.635,
+          "q_deg": [
+            21.71136891189714,
+            -47.969681519823105,
+            -80.24146126968307,
+            -216.71342248096275,
+            -38.22910029002119,
+            30.362282188548757
+          ],
+          "J3_lower_margin_deg": 0.2585387303169348,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 1.2412670766236366e-16,
+          "orientation_error_rad": 3.8761029603094447e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.02,
+          "new_world_base_x_m": -1.645,
+          "q_deg": [
+            21.259290382474294,
+            -46.315149112349154,
+            -79.70568925956607,
+            -215.25843649737385,
+            -38.911197450567784,
+            28.814889189133694
+          ],
+          "J3_lower_margin_deg": 0.794310740433927,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 1.0186047219119508e-12,
+          "orientation_error_rad": 1.2257953190186996e-12,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        },
+        {
+          "additional_base_minus_x_m": 0.05,
+          "new_world_base_x_m": -1.675,
+          "q_deg": [
+            20.004994099118818,
+            -41.65449831374956,
+            -78.08023472312523,
+            -211.5140193790825,
+            -40.880327571651975,
+            24.871495229843056
+          ],
+          "J3_lower_margin_deg": 2.41976527687478,
+          "within_all_six_joint_limits": true,
+          "position_error_m": 2.220446049250313e-16,
+          "orientation_error_rad": 1.8728095130503563e-16,
+          "collision_checked": false,
+          "full_cycle_planned": false
+        }
+      ]
+    }
+  ],
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}
