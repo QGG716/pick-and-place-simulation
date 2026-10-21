@@ -1,0 +1,1616 @@
+{
+  "source_commit": "655b49571f4422b2a86a4c2a02c0df830aedf0e8",
+  "solver_calls_added": 0,
+  "rows": [
+    {
+      "target_id": "carton_l03_c02",
+      "planning_wall_s": 91.1458273739845,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.101384284,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.101384284,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -2.5238649924946177,
+                  0.1616282194276324,
+                  -0.37284488966421625,
+                  -0.46292132642356165,
+                  -1.2192030845049713,
+                  -3.923818218939306
+                ],
+                "numerical_seed_index": 516,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  0.8511470620152264,
+                  -0.18466759062805288,
+                  -1.0617552342565468,
+                  2.163778119855199,
+                  -1.1357666173010357,
+                  0.5588774308055793
+                ],
+                "request_id": "523",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 517,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12337670600390993
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 518,
+            "scope": "FACE_ATTEMPT"
+          },
+          "option": {
+            "template": "TOP_FIXED_MINIMUM_RECEIVER",
+            "face": {
+              "geometric_face_id": "z+",
+              "axis": 2,
+              "sign": 1,
+              "outward_normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "contact_pose": [
+                [
+                  1.0,
+                  0.0,
+                  -0.0,
+                  0.3
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  -0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.0,
+                  1.1999999999999997
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 0.6,
+            "pre_approach_height_m": 0.6,
+            "synchronization": "ALREADY_AT_RECEIVE",
+            "stationary_receiver_during_target": true,
+            "release_bottom_world_m": 0.9499999999999998,
+            "segment_directions_world": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    1.15
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "reception": {
+              "region_class": "TRANSVERSE",
+              "junction": false,
+              "outfeed_direction_world": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "inlet_edge_world": [
+                [
+                  -0.8999999999999999,
+                  -1.0999999999999999,
+                  1.1500000000000001
+                ],
+                [
+                  -0.8999999999999999,
+                  -0.49999999999999994,
+                  1.1500000000000001
+                ]
+              ],
+              "influence_polygon_world_xy_m": [
+                [
+                  -0.9,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -0.49999999999999994
+                ],
+                [
+                  -0.9,
+                  -0.49999999999999994
+                ]
+              ],
+              "box_projection_world_xy_m": [
+                [
+                  -0.8500000000000001,
+                  -0.2
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.2
+                ],
+                [
+                  -0.8500000000000001,
+                  0.2
+                ],
+                [
+                  -0.8500000000000001,
+                  0.2
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.2
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.2
+                ],
+                [
+                  -0.25000000000000006,
+                  0.2
+                ],
+                [
+                  -0.25000000000000006,
+                  0.2
+                ]
+              ],
+              "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+              "physical_transport": "NOT_RUN"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l03_c02",
+            "height_source": "FROZEN_HMIN_BELOW_MECHANISM_MINIMUM",
+            "low_layer_threshold_m": 0.6,
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_TOP_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "third_sync_disabled": true
+          },
+          "contact_complete": false,
+          "contact_end_q_rad": null,
+          "native_log_errors": {},
+          "native_velocity_limit_events": [],
+          "native_log_first_errors": [],
+          "operation_counts": [
+            {
+              "op": "init",
+              "stage": null,
+              "planner": null,
+              "status": "READY",
+              "count": 1
+            },
+            {
+              "op": "fk",
+              "stage": null,
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 3
+            },
+            {
+              "op": "check_start",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "plan",
+              "stage": "pregrasp",
+              "planner": "COUPLED_LIFT",
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_FAILED",
+              "count": 517
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_REQUEST_DEADLINE",
+              "count": 1
+            }
+          ],
+          "native_failures": [
+            {
+              "stage": "pregrasp",
+              "solver_message": null,
+              "moveit_error_code": null,
+              "count": 518
+            }
+          ],
+          "region_failure_counts": {},
+          "region_samples": 0,
+          "non_extraction_failures": [],
+          "collision_witnesses": []
+        }
+      ],
+      "unsearched": []
+    },
+    {
+      "target_id": "carton_l03_c03",
+      "planning_wall_s": 91.1213397590036,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.102368231,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.102368231,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.9275907947434714,
+                  1.5081298595004393,
+                  -0.21523988776374692,
+                  -3.335689093272441,
+                  0.9571688404586465,
+                  -0.023525686355596598
+                ],
+                "numerical_seed_index": 509,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  0.8511470620152264,
+                  -0.18466759062805288,
+                  -1.0617552342565468,
+                  2.163778119855199,
+                  -1.1357666173010357,
+                  0.5588774308055793
+                ],
+                "request_id": "516",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 510,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12446017499314621
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 511,
+            "scope": "FACE_ATTEMPT"
+          },
+          "option": {
+            "template": "TOP_FIXED_MINIMUM_RECEIVER",
+            "face": {
+              "geometric_face_id": "z+",
+              "axis": 2,
+              "sign": 1,
+              "outward_normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "contact_pose": [
+                [
+                  1.0,
+                  0.0,
+                  -0.0,
+                  0.3
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  -0.0,
+                  0.42
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.0,
+                  1.1999999999999997
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 0.6,
+            "pre_approach_height_m": 0.6,
+            "synchronization": "ALREADY_AT_RECEIVE",
+            "stationary_receiver_during_target": true,
+            "release_bottom_world_m": 0.9499999999999998,
+            "segment_directions_world": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    1.15
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "reception": {
+              "region_class": "TRANSVERSE",
+              "junction": false,
+              "outfeed_direction_world": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "inlet_edge_world": [
+                [
+                  -0.8999999999999999,
+                  -1.0999999999999999,
+                  1.1500000000000001
+                ],
+                [
+                  -0.8999999999999999,
+                  -0.49999999999999994,
+                  1.1500000000000001
+                ]
+              ],
+              "influence_polygon_world_xy_m": [
+                [
+                  -0.9,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -0.49999999999999994
+                ],
+                [
+                  -0.9,
+                  -0.49999999999999994
+                ]
+              ],
+              "box_projection_world_xy_m": [
+                [
+                  -0.8500000000000001,
+                  0.21999999999999997
+                ],
+                [
+                  -0.8500000000000001,
+                  0.21999999999999997
+                ],
+                [
+                  -0.8500000000000001,
+                  0.62
+                ],
+                [
+                  -0.8500000000000001,
+                  0.62
+                ],
+                [
+                  -0.25000000000000006,
+                  0.21999999999999997
+                ],
+                [
+                  -0.25000000000000006,
+                  0.21999999999999997
+                ],
+                [
+                  -0.25000000000000006,
+                  0.62
+                ],
+                [
+                  -0.25000000000000006,
+                  0.62
+                ]
+              ],
+              "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+              "physical_transport": "NOT_RUN"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l03_c03",
+            "height_source": "FROZEN_HMIN_BELOW_MECHANISM_MINIMUM",
+            "low_layer_threshold_m": 0.6,
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_TOP_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "third_sync_disabled": true
+          },
+          "contact_complete": false,
+          "contact_end_q_rad": null,
+          "native_log_errors": {},
+          "native_velocity_limit_events": [],
+          "native_log_first_errors": [],
+          "operation_counts": [
+            {
+              "op": "init",
+              "stage": null,
+              "planner": null,
+              "status": "READY",
+              "count": 1
+            },
+            {
+              "op": "fk",
+              "stage": null,
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 3
+            },
+            {
+              "op": "check_start",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "plan",
+              "stage": "pregrasp",
+              "planner": "COUPLED_LIFT",
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_FAILED",
+              "count": 510
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_REQUEST_DEADLINE",
+              "count": 1
+            }
+          ],
+          "native_failures": [
+            {
+              "stage": "pregrasp",
+              "solver_message": null,
+              "moveit_error_code": null,
+              "count": 511
+            }
+          ],
+          "region_failure_counts": {},
+          "region_samples": 0,
+          "non_extraction_failures": [],
+          "collision_witnesses": []
+        }
+      ],
+      "unsearched": []
+    },
+    {
+      "target_id": "carton_l03_c01",
+      "planning_wall_s": 91.14705026199226,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100093835,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100093835,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -0.5906629333517275,
+                  -0.19111361912264724,
+                  2.266870686087894,
+                  3.274903198569503,
+                  -1.816316293270519,
+                  2.957030169322116
+                ],
+                "numerical_seed_index": 515,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  0.8511470620152264,
+                  -0.18466759062805288,
+                  -1.0617552342565468,
+                  2.163778119855199,
+                  -1.1357666173010357,
+                  0.5588774308055793
+                ],
+                "request_id": "522",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 516,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11921530397376046
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 517,
+            "scope": "FACE_ATTEMPT"
+          },
+          "option": {
+            "template": "TOP_FIXED_MINIMUM_RECEIVER",
+            "face": {
+              "geometric_face_id": "z+",
+              "axis": 2,
+              "sign": 1,
+              "outward_normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "contact_pose": [
+                [
+                  1.0,
+                  0.0,
+                  -0.0,
+                  0.3
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  -0.0,
+                  -0.42
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.0,
+                  1.1999999999999997
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 0.6,
+            "pre_approach_height_m": 0.6,
+            "synchronization": "ALREADY_AT_RECEIVE",
+            "stationary_receiver_during_target": true,
+            "release_bottom_world_m": 0.9499999999999998,
+            "segment_directions_world": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.8900000000000001,
+                  0.8900000000000001
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    -0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    0.8900000000000001,
+                    1.15
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.8900000000000001,
+                    1.15
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "reception": {
+              "region_class": "LONGITUDINAL_INLET_JUNCTION",
+              "junction": true,
+              "outfeed_direction_world": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "inlet_edge_world": [
+                [
+                  -0.8999999999999999,
+                  -1.0999999999999999,
+                  1.1500000000000001
+                ],
+                [
+                  -0.8999999999999999,
+                  -0.49999999999999994,
+                  1.1500000000000001
+                ]
+              ],
+              "influence_polygon_world_xy_m": [
+                [
+                  -0.9,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -0.49999999999999994
+                ],
+                [
+                  -0.9,
+                  -0.49999999999999994
+                ]
+              ],
+              "box_projection_world_xy_m": [
+                [
+                  -0.8500000000000001,
+                  -0.62
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.62
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.21999999999999997
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.21999999999999997
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.62
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.62
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.21999999999999997
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.21999999999999997
+                ]
+              ],
+              "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+              "physical_transport": "NOT_RUN"
+            },
+            "requires_open_channel": false,
+            "original_role": "MIDDLE",
+            "target_id": "carton_l03_c01",
+            "height_source": "FROZEN_HMIN_BELOW_MECHANISM_MINIMUM",
+            "low_layer_threshold_m": 0.6,
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_TOP_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "third_sync_disabled": true
+          },
+          "contact_complete": false,
+          "contact_end_q_rad": null,
+          "native_log_errors": {},
+          "native_velocity_limit_events": [],
+          "native_log_first_errors": [],
+          "operation_counts": [
+            {
+              "op": "init",
+              "stage": null,
+              "planner": null,
+              "status": "READY",
+              "count": 1
+            },
+            {
+              "op": "fk",
+              "stage": null,
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 3
+            },
+            {
+              "op": "check_start",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "plan",
+              "stage": "pregrasp",
+              "planner": "COUPLED_LIFT",
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_FAILED",
+              "count": 516
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_REQUEST_DEADLINE",
+              "count": 1
+            }
+          ],
+          "native_failures": [
+            {
+              "stage": "pregrasp",
+              "solver_message": null,
+              "moveit_error_code": null,
+              "count": 517
+            }
+          ],
+          "region_failure_counts": {},
+          "region_samples": 0,
+          "non_extraction_failures": [],
+          "collision_witnesses": []
+        }
+      ],
+      "unsearched": []
+    },
+    {
+      "target_id": "carton_l03_c04",
+      "planning_wall_s": 91.1537331790023,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100031658,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100031658,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.46599837877872075,
+                  -0.7519881067307045,
+                  1.0132535510559713,
+                  -3.841203522661126,
+                  -2.074490759300123,
+                  -1.3716378729005534
+                ],
+                "numerical_seed_index": 517,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  0.8511470620152264,
+                  -0.18466759062805288,
+                  -1.0617552342565468,
+                  2.163778119855199,
+                  -1.1357666173010357,
+                  0.5588774308055793
+                ],
+                "request_id": "524",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 518,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12215288099832833
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 519,
+            "scope": "FACE_ATTEMPT"
+          },
+          "option": {
+            "template": "TOP_FIXED_MINIMUM_RECEIVER",
+            "face": {
+              "geometric_face_id": "z+",
+              "axis": 2,
+              "sign": 1,
+              "outward_normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "contact_pose": [
+                [
+                  1.0,
+                  0.0,
+                  -0.0,
+                  0.3
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  -0.0,
+                  0.84
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.0,
+                  1.1999999999999997
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 0.6,
+            "pre_approach_height_m": 0.6,
+            "synchronization": "ALREADY_AT_RECEIVE",
+            "stationary_receiver_during_target": true,
+            "release_bottom_world_m": 0.9499999999999998,
+            "segment_directions_world": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    1.15
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    1.15
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "reception": {
+              "region_class": "TRANSVERSE",
+              "junction": false,
+              "outfeed_direction_world": [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              "inlet_edge_world": [
+                [
+                  -0.8999999999999999,
+                  -1.0999999999999999,
+                  1.1500000000000001
+                ],
+                [
+                  -0.8999999999999999,
+                  -0.49999999999999994,
+                  1.1500000000000001
+                ]
+              ],
+              "influence_polygon_world_xy_m": [
+                [
+                  -0.9,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -0.49999999999999994
+                ],
+                [
+                  -0.9,
+                  -0.49999999999999994
+                ]
+              ],
+              "box_projection_world_xy_m": [
+                [
+                  -0.8500000000000001,
+                  0.6399999999999999
+                ],
+                [
+                  -0.8500000000000001,
+                  0.6399999999999999
+                ],
+                [
+                  -0.8500000000000001,
+                  1.04
+                ],
+                [
+                  -0.8500000000000001,
+                  1.04
+                ],
+                [
+                  -0.25000000000000006,
+                  0.6399999999999999
+                ],
+                [
+                  -0.25000000000000006,
+                  0.6399999999999999
+                ],
+                [
+                  -0.25000000000000006,
+                  1.04
+                ],
+                [
+                  -0.25000000000000006,
+                  1.04
+                ]
+              ],
+              "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+              "physical_transport": "NOT_RUN"
+            },
+            "requires_open_channel": false,
+            "original_role": "LEFT_END",
+            "target_id": "carton_l03_c04",
+            "height_source": "FROZEN_HMIN_BELOW_MECHANISM_MINIMUM",
+            "low_layer_threshold_m": 0.6,
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_TOP_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "third_sync_disabled": true
+          },
+          "contact_complete": false,
+          "contact_end_q_rad": null,
+          "native_log_errors": {},
+          "native_velocity_limit_events": [],
+          "native_log_first_errors": [],
+          "operation_counts": [
+            {
+              "op": "init",
+              "stage": null,
+              "planner": null,
+              "status": "READY",
+              "count": 1
+            },
+            {
+              "op": "fk",
+              "stage": null,
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 3
+            },
+            {
+              "op": "check_start",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "plan",
+              "stage": "pregrasp",
+              "planner": "COUPLED_LIFT",
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_FAILED",
+              "count": 518
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_REQUEST_DEADLINE",
+              "count": 1
+            }
+          ],
+          "native_failures": [
+            {
+              "stage": "pregrasp",
+              "solver_message": null,
+              "moveit_error_code": null,
+              "count": 519
+            }
+          ],
+          "region_failure_counts": {},
+          "region_samples": 0,
+          "non_extraction_failures": [],
+          "collision_witnesses": []
+        }
+      ],
+      "unsearched": []
+    },
+    {
+      "target_id": "carton_l03_c00",
+      "planning_wall_s": 91.11845006101066,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.10012284,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.10012284,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.46599837877872075,
+                  -0.7519881067307045,
+                  1.0132535510559713,
+                  -3.841203522661126,
+                  -2.074490759300123,
+                  -1.3716378729005534
+                ],
+                "numerical_seed_index": 517,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  0.8511470620152264,
+                  -0.18466759062805288,
+                  -1.0617552342565468,
+                  2.163778119855199,
+                  -1.1357666173010357,
+                  0.5588774308055793
+                ],
+                "request_id": "524",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 518,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12157119601033628
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 519,
+            "scope": "FACE_ATTEMPT"
+          },
+          "option": {
+            "template": "TOP_FIXED_MINIMUM_RECEIVER",
+            "face": {
+              "geometric_face_id": "z+",
+              "axis": 2,
+              "sign": 1,
+              "outward_normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "contact_pose": [
+                [
+                  1.0,
+                  0.0,
+                  -0.0,
+                  0.3
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  -0.0,
+                  -0.84
+                ],
+                [
+                  0.0,
+                  0.0,
+                  -1.0,
+                  1.1999999999999997
+                ],
+                [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "working_axis_into_box": [
+                -0.0,
+                -0.0,
+                -1.0
+              ],
+              "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+            },
+            "height_m": 0.6,
+            "pre_approach_height_m": 0.6,
+            "synchronization": "ALREADY_AT_RECEIVE",
+            "stationary_receiver_during_target": true,
+            "release_bottom_world_m": 0.9499999999999998,
+            "segment_directions_world": [
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "region": {
+              "rectangles_belt_local_m": [
+                [
+                  -0.03999999999999998,
+                  0.03999999999999998,
+                  -0.89,
+                  0.89
+                ]
+              ],
+              "polygons_world_m": [
+                [
+                  [
+                    -0.5900000000000001,
+                    -0.89,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    -0.89,
+                    1.15
+                  ],
+                  [
+                    -0.51,
+                    0.89,
+                    1.15
+                  ],
+                  [
+                    -0.5900000000000001,
+                    0.89,
+                    1.15
+                  ]
+                ]
+              ],
+              "projection_center_limits_before_occupancy": [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ],
+              "edge_reserve_m": 0.01,
+              "occupied_exclusions": [],
+              "geometric_fit": true,
+              "region_status": "GEOMETRIC_REGION_AVAILABLE",
+              "robot_reachability": "NOT_EVALUATED",
+              "sample_pass_does_not_qualify_region": true,
+              "exists": true,
+              "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+              "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+              "receiver_id": "conveyor_transverse"
+            },
+            "reception": {
+              "region_class": "LONGITUDINAL_INLET_JUNCTION",
+              "junction": true,
+              "outfeed_direction_world": [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              "inlet_edge_world": [
+                [
+                  -0.8999999999999999,
+                  -1.0999999999999999,
+                  1.1500000000000001
+                ],
+                [
+                  -0.8999999999999999,
+                  -0.49999999999999994,
+                  1.1500000000000001
+                ]
+              ],
+              "influence_polygon_world_xy_m": [
+                [
+                  -0.9,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -1.0999999999999999
+                ],
+                [
+                  -0.20000000000000007,
+                  -0.49999999999999994
+                ],
+                [
+                  -0.9,
+                  -0.49999999999999994
+                ]
+              ],
+              "box_projection_world_xy_m": [
+                [
+                  -0.8500000000000001,
+                  -1.04
+                ],
+                [
+                  -0.8500000000000001,
+                  -1.04
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.6399999999999999
+                ],
+                [
+                  -0.8500000000000001,
+                  -0.6399999999999999
+                ],
+                [
+                  -0.25000000000000006,
+                  -1.04
+                ],
+                [
+                  -0.25000000000000006,
+                  -1.04
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.6399999999999999
+                ],
+                [
+                  -0.25000000000000006,
+                  -0.6399999999999999
+                ]
+              ],
+              "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+              "physical_transport": "NOT_RUN"
+            },
+            "requires_open_channel": false,
+            "original_role": "RIGHT_END",
+            "target_id": "carton_l03_c00",
+            "height_source": "FROZEN_HMIN_BELOW_MECHANISM_MINIMUM",
+            "low_layer_threshold_m": 0.6,
+            "endpoint": "REGION_NOT_FIXED_POINT",
+            "acceptance": "NOT_PLANNED",
+            "spatial_orientation": "UPSTREAM_TOP_FACE_POSE_HELD",
+            "fixed_wrist_joint_values": false,
+            "third_sync_disabled": true
+          },
+          "contact_complete": false,
+          "contact_end_q_rad": null,
+          "native_log_errors": {},
+          "native_velocity_limit_events": [],
+          "native_log_first_errors": [],
+          "operation_counts": [
+            {
+              "op": "init",
+              "stage": null,
+              "planner": null,
+              "status": "READY",
+              "count": 1
+            },
+            {
+              "op": "fk",
+              "stage": null,
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 3
+            },
+            {
+              "op": "check_start",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "plan",
+              "stage": "pregrasp",
+              "planner": "COUPLED_LIFT",
+              "status": "SUCCESS",
+              "count": 1
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_FAILED",
+              "count": 518
+            },
+            {
+              "op": "ik",
+              "stage": "pregrasp",
+              "planner": null,
+              "status": "NATIVE_IK_REQUEST_DEADLINE",
+              "count": 1
+            }
+          ],
+          "native_failures": [
+            {
+              "stage": "pregrasp",
+              "solver_message": null,
+              "moveit_error_code": null,
+              "count": 519
+            }
+          ],
+          "region_failure_counts": {},
+          "region_samples": 0,
+          "non_extraction_failures": [],
+          "collision_witnesses": []
+        }
+      ],
+      "unsearched": []
+    }
+  ]
+}

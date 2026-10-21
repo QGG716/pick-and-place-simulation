@@ -1,0 +1,12 @@
+{
+  "status": "PASS_NATIVE_Q_AND_BATCH_ROOT_CONTINUITY",
+  "seed": 71070,
+  "cycles": 9,
+  "segments": 70,
+  "native_trajectory_s": 358.62822952299996,
+  "lift_demo_s": 24.0,
+  "nominal_drop_s": 1.5733179506417783,
+  "nominal_drop_distance_m": null,
+  "event_display_s": 13.6,
+  "hardware_lift_s": null
+}

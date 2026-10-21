@@ -1,0 +1,229 @@
+{
+  "total_dispatch_and_archive_wall_s": 577.3537122650014,
+  "native_task_wall_s": 563.338052235049,
+  "candidate_visit_wall_s": 548.7252590479911,
+  "costs_are_nested_not_additive": true,
+  "dispatched_candidates": 15,
+  "accepted_candidates": 9,
+  "failed_candidates": 6,
+  "native_requests": 2914,
+  "request_counts": {
+    "diagnostic_joint_rate_bypasses": 4,
+    "native_requests": 2914,
+    "accepted_native_stages": 51,
+    "nominal_drop_samples": 834,
+    "numerical_ik_success": 44,
+    "target_check_passed": 18,
+    "pregrasp": 9,
+    "contact": 9,
+    "extraction": 18,
+    "withdrawal": 9,
+    "checked_lift_samples": 270,
+    "checked_lift": 11
+  },
+  "tasks": [
+    {
+      "target_id": "carton_l05_c03",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 4.282290092000039,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l05_c01",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 11.965625524026109,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l05_c00",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 9.877420268021524,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l05_c04",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 8.783492955000838,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l04_c02",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 38.54615001002094,
+      "dispatched_candidates": 2,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l04_c03",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 5.848647165985312,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l04_c01",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 11.06479470198974,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l04_c00",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 9.05549564800458,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l04_c04",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 8.227735235006548,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c02",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 91.1458273739845,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c03",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 91.1213397590036,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c01",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 91.14705026199226,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c04",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 91.1537331790023,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c00",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 91.11845006101066,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l00_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c02",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c03",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c04",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c02",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c03",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c04",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l02_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l02_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l02_c02",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l02_c03",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l02_c04",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    }
+  ]
+}

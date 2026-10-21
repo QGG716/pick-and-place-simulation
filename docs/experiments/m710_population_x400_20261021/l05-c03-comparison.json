@@ -1,0 +1,517 @@
+{
+  "scope": "READ_ONLY_COMPARISON_OF_TWO_FORMAL_RUNS",
+  "solver_calls_added": 0,
+  "rows": [
+    {
+      "experiment": "population-x300-20261021",
+      "source_commit": "cb6eb0199fb07f10bff632edf3aaa1234f679c00",
+      "complete": true,
+      "wall_s": 6.850639556010719,
+      "option": {
+        "template": "FRONT_DIRECT_HMAX",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              1.65
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.45,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.8900000000000001,
+          0.8900000000000001
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.5900000000000001,
+                0.8900000000000001,
+                1.45
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.8900000000000001,
+            0.8900000000000001
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "TRANSVERSE",
+          "junction": false,
+          "outfeed_direction_world": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000001,
+              -1.0999999999999999,
+              1.45
+            ],
+            [
+              -0.9000000000000001,
+              -0.49999999999999994,
+              1.45
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "MIDDLE",
+        "target_id": "carton_l05_c03",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false
+      },
+      "contact_q_rad": [
+        0.13706619326434227,
+        0.12880316789411114,
+        -0.42253141125024113,
+        -3.399063852300127,
+        -0.5664021391900255,
+        0.21864350527674126
+      ],
+      "contact_q_deg": [
+        7.853314387971285,
+        7.379877908247516,
+        -24.20926657634533,
+        -194.7520130322763,
+        -32.45245208276987,
+        12.52735007030362
+      ],
+      "contact_complete": true,
+      "extraction_requests": 3,
+      "first_extraction_goal_pose": [
+        [
+          5.5329635179166255e-08,
+          -9.97881812199072e-08,
+          0.9999999999999933,
+          -0.7777000102402886
+        ],
+        [
+          7.409416472037297e-08,
+          -0.9999999999999921,
+          -9.978818536759972e-08,
+          0.4199999799830057
+        ],
+        [
+          0.9999999999999956,
+          7.409417021597697e-08,
+          -5.5329627490774413e-08,
+          1.6499999203371867
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "first_extraction_scene_fingerprint": "ea6f6262409d03d150e63c17ae04e18de6e628ed49c3c306335487a192ff755b",
+      "native_error_counts": {},
+      "extraction_statuses": {
+        "SUCCESS": 3
+      }
+    },
+    {
+      "experiment": "population-x400-20261021",
+      "source_commit": "90c83043005797e07c8671fccf9da862f6484ac7",
+      "complete": false,
+      "wall_s": 112.2868244999845,
+      "option": {
+        "template": "FRONT_DIRECT_HMAX",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              1.65
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.45,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.8900000000000001,
+          0.8900000000000001
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.5900000000000001,
+                0.8900000000000001,
+                1.45
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.8900000000000001,
+            0.8900000000000001
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "TRANSVERSE",
+          "junction": false,
+          "outfeed_direction_world": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000001,
+              -1.0999999999999999,
+              1.45
+            ],
+            [
+              -0.9000000000000001,
+              -0.49999999999999994,
+              1.45
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "MIDDLE",
+        "target_id": "carton_l05_c03",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false
+      },
+      "contact_q_rad": [
+        0.12689429972728394,
+        0.2337464342578416,
+        -0.30036364482609135,
+        -6.528739367447254,
+        0.5475518377150392,
+        3.3523867930205338
+      ],
+      "contact_q_deg": [
+        7.270507818641443,
+        13.392684159206485,
+        -17.2095691677015,
+        -374.0692112956384,
+        31.372409365703923,
+        192.07761453547366
+      ],
+      "contact_complete": true,
+      "extraction_requests": 475,
+      "first_extraction_goal_pose": [
+        [
+          1.1686330337507598e-07,
+          -2.536662939381182e-07,
+          0.9999999999999608,
+          -0.7777000207308256
+        ],
+        [
+          3.4952456290371353e-07,
+          -0.9999999999999066,
+          -2.536663347707524e-07,
+          0.41999998135286276
+        ],
+        [
+          0.9999999999999319,
+          3.4952459251891277e-07,
+          -1.1686321471637838e-07,
+          1.6499999256009334
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "first_extraction_scene_fingerprint": "ea6f6262409d03d150e63c17ae04e18de6e628ed49c3c306335487a192ff755b",
+      "native_error_counts": {
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 31.3323, while the limit is 4.53786. ": 120,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Inverse kinematics solution at 18.9s violates the joint velocity/acceleration/deceleration limits.": 475,
+        "[moveit.pilz_industrial_motion_planner.trajectory_generator]: Failed to generate valid joint trajectory from the Cartesian path": 475,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 94.1643, while the limit is 4.53786. ": 1,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 94.1641, while the limit is 4.53786. ": 107,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 62.7482, while the limit is 4.53786. ": 77,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 125.58, while the limit is 4.53786. ": 113,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 94.1642, while the limit is 4.53786. ": 17,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 62.7481, while the limit is 4.53786. ": 12,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 31.3322, while the limit is 4.53786. ": 6,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 94.164, while the limit is 4.53786. ": 5,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 62.7483, while the limit is 4.53786. ": 4,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 31.332, while the limit is 4.53786. ": 1,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 31.3324, while the limit is 4.53786. ": 5,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 94.1639, while the limit is 4.53786. ": 2,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 31.3321, while the limit is 4.53786. ": 2,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 62.748, while the limit is 4.53786. ": 2,
+        "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint velocity limit of J4 violated. Set the velocity scaling factor lower! Actual joint velocity is 62.7484, while the limit is 4.53786. ": 1
+      },
+      "extraction_statuses": {
+        "NATIVE_PLANNING_FAILED": 475
+      }
+    }
+  ],
+  "first_extraction_scene_fingerprint_equal": true,
+  "max_first_goal_matrix_delta": 2.754304223029358e-07
+}

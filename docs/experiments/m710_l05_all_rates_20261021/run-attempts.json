@@ -1,0 +1,54 @@
+{
+  "all_previous_failures_retained": true,
+  "runs": [
+    {
+      "run": "formal-v1",
+      "status": "ABORTED_INCOMPLETE_DIAGNOSTIC_IMPLEMENTATION",
+      "source_commit": "b0943ebd6aed34ce08d023e6668c6e0e42dc73fc",
+      "reason": "PILZ_ORIGINAL_SAMPLE_CHECK_UNAVAILABLE under worker plugin local loading",
+      "stored_native_requests": 117,
+      "recorded_candidate_wall_s": 91.43680225597927,
+      "observed_wall_from_protocol_file_to_abort_s": 104.76577639579773,
+      "cost_scope": "Observed file timestamp interval; includes overhead; partial outcomes excluded from final experiment"
+    },
+    {
+      "run": "formal-v2",
+      "status": "ABORTED_INCOMPLETE_DIAGNOSTIC_IMPLEMENTATION",
+      "source_commit": "5cc1ed3483bc8be25817b6caa2bc9a46cd36ec6d",
+      "reason": "MoveIt satisfiesBounds also checks velocities; all six rejected sample positions are within official limits. Requested all-rate exception incompletely applied.",
+      "stored_native_requests": 957,
+      "recorded_candidate_wall_s": 285.7063194439979,
+      "observed_wall_from_protocol_file_to_abort_s": 335.38845658302307,
+      "cost_scope": "Observed file timestamp interval; includes overhead; partial outcomes excluded from final experiment"
+    },
+    {
+      "run": "formal-v3-startup",
+      "reason": "Test fixtures absent from new runtime; pytest exited before planner startup",
+      "native_requests": 0,
+      "wall_s": null,
+      "stop_unix_time": 1792579596.935921
+    },
+    {
+      "run": "formal-v3-startup-res",
+      "reason": "Raw tool CAD res directory missing from isolated runtime; no native planning started",
+      "native_requests": 0,
+      "wall_s": null,
+      "stop_unix_time": 1792579633.864058
+    },
+    {
+      "run": "formal-v3-startup-directory",
+      "reason": "Fail-closed existing-output check rejected empty directory retained by CAD startup failure",
+      "native_requests": 0,
+      "wall_s": null,
+      "stop_unix_time": 1792579667.7703862
+    },
+    {
+      "run": "formal-v3",
+      "status": "INCOMPLETE_RETAINED",
+      "source_commit": "655b49571f4422b2a86a4c2a02c0df830aedf0e8",
+      "planning_wall_s": 577.3537122650014,
+      "native_task_wall_s": 563.338052235049,
+      "completed_count": 9
+    }
+  ]
+}

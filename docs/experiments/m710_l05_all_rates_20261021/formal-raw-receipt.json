@@ -1,0 +1,9 @@
+{
+  "file": "l05-all-rates-formal-raw.tar.xz",
+  "sha256": "3566e98c47a862fc536c676fa1107a5473fbff29f883180d737004ad551a4c60",
+  "bytes": 16732100,
+  "files": 254,
+  "wall_s": 12.833197669009678,
+  "preservation": "All original evidence file bytes preserved; gzip storage containers expanded",
+  "original_task_archive_receipts_preserved": true
+}

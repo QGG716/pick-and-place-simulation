@@ -1,0 +1,31 @@
+{
+  "scope": "SEPARATE_J4_VELOCITY_ONLY_EXPERIMENT",
+  "all_previous_failures_retained": true,
+  "runs": [
+    {
+      "run": "formal-v1",
+      "result": "STARTUP_INTEGRATION_ERROR",
+      "reason": "Diagnostic wrapper referenced absent /mount-install/setup.bash",
+      "repair": "Reuse the existing /worker.sh environment setup; add only scoped preload",
+      "native_planning_requests": 0,
+      "recorded_task_wall_s": 0.3058760300045833
+    },
+    {
+      "run": "formal-v2",
+      "result": "INPUT_PATH_INTEGRATION_ERROR",
+      "reason": "Launch-script substitution also changed the predecessor path",
+      "repair": "Change only the output argument; restore original predecessor path",
+      "native_planning_requests": 0,
+      "recorded_task_wall_s": null,
+      "wall_time_status": "NOT_MEASURED"
+    },
+    {
+      "run": "formal-v3",
+      "result": "INCOMPLETE_RETAINED",
+      "source_commit": "b6abb7ac39fe67fa6d82d3673aaad13d45ea1ae3",
+      "recorded_task_wall_s": 576.0099613610073,
+      "native_task_wall_s": 560.9860049230047,
+      "completed_count": 7
+    }
+  ]
+}

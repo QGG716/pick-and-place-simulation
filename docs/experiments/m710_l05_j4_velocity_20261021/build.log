@@ -1,0 +1,7 @@
+nohup: ignoring input
+M710_DIAGNOSTIC_J4_VELOCITY_IGNORED target=carton_l05_c03 velocity_rad_s=31.300000000000001 limit_rad_s=4.5378600000000002 physical_execution=NOT_RUN
+M710_DIAGNOSTIC_J4_VELOCITY_IGNORED target=carton_l05_c03 velocity_rad_s=31.299999999999997 limit_rad_s=4.5378600000000002 physical_execution=NOT_RUN
+[ERROR] [1792578152.234476783] [moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint acceleration limit of J4 violated. Set the acceleration scaling factor lower! Actual joint acceleration is 313, while the limit is 0.5. 
+M710_DIAGNOSTIC_J4_VELOCITY_IGNORED target=carton_l05_c03 velocity_rad_s=31.299999999999997 limit_rad_s=4.5378600000000002 physical_execution=NOT_RUN
+[ERROR] [1792578152.234500679] [moveit.pilz_industrial_motion_planner.trajectory_functions]: Joint deceleration limit of J4 violated. Set the acceleration scaling factor lower! Actual joint deceleration is -313, while the limit is -0.5. 
+PASS: default, target, joint, finite, position, acceleration and deceleration boundaries

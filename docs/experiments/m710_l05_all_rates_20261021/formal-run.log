@@ -1,0 +1,54 @@
+nohup: ignoring input
+{"event": "CARTON_TASK_START", "target": "carton_l05_c03", "remaining": 29}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 11}
+{"seed": 71070, "completed": 1, "historical_completed": 11, "terminal_q": [0.3176234989437215, -0.8248068993575123, -1.1019760124375395, 5.40653840951263, 0.41844127789108937, -2.3096160438212094], "height": 1.45}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l05_c03", "completed": 1, "remaining": 28, "attempted": 1, "task_s": 4.282290092000039}
+{"event": "CARTON_TASK_START", "target": "carton_l05_c01", "remaining": 28}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c01", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 12}
+{"seed": 71070, "completed": 1, "historical_completed": 12, "terminal_q": [-0.9134904132791181, -0.3417460860815888, -0.8481949463174279, 4.354162933200954, -1.0071275615732995, -0.9595988371438395], "height": 1.15}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l05_c01", "completed": 2, "remaining": 27, "attempted": 2, "task_s": 11.965625524026109}
+{"event": "CARTON_TASK_START", "target": "carton_l05_c00", "remaining": 27}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c00", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 13}
+{"seed": 71070, "completed": 1, "historical_completed": 13, "terminal_q": [-1.127831680800873, 0.08822291248984979, -0.46713157929116894, 4.4672893462595535, -1.1980181614217793, -0.9689978154276506], "height": 1.15}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l05_c00", "completed": 3, "remaining": 26, "attempted": 3, "task_s": 9.877420268021524}
+{"event": "CARTON_TASK_START", "target": "carton_l05_c04", "remaining": 26}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c04", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 14}
+{"seed": 71070, "completed": 1, "historical_completed": 14, "terminal_q": [0.8511470959050476, -0.42832757379314046, -0.9057198018747964, 1.9536243913593296, -0.9453872440570792, 0.9682610444682809], "height": 1.45}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l05_c04", "completed": 4, "remaining": 25, "attempted": 4, "task_s": 8.783492955000838}
+{"event": "CARTON_TASK_START", "target": "carton_l04_c02", "remaining": 25}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 15}
+{"seed": 71070, "attempt": 2, "target": "carton_l04_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 15}
+{"seed": 71070, "completed": 1, "historical_completed": 15, "terminal_q": [-0.45032941510853663, -0.5388714951625617, -1.2834785190869344, 3.7612576333268564, -0.8472557109583393, -0.441245530116486], "height": 1.15}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l04_c02", "completed": 5, "remaining": 24, "attempted": 5, "task_s": 38.54615001002094}
+{"event": "CARTON_TASK_START", "target": "carton_l04_c03", "remaining": 24}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 16}
+{"seed": 71070, "completed": 1, "historical_completed": 16, "terminal_q": [0.3176233038495806, -0.6064132227568633, -1.3143939610235786, 2.6735225163046814, -0.7645731208688413, 0.3498313103833619], "height": 1.15}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l04_c03", "completed": 6, "remaining": 23, "attempted": 6, "task_s": 5.848647165985312}
+{"event": "CARTON_TASK_START", "target": "carton_l04_c01", "remaining": 23}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c01", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 17}
+{"seed": 71070, "completed": 1, "historical_completed": 17, "terminal_q": [-0.9134903830377528, -0.1045845864879446, -0.994672850542452, 4.17212826744886, -1.1761079143683704, -0.5700921997671351], "height": 0.8499999999999999}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l04_c01", "completed": 7, "remaining": 22, "attempted": 7, "task_s": 11.06479470198974}
+{"event": "CARTON_TASK_START", "target": "carton_l04_c00", "remaining": 22}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c00", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 18}
+{"seed": 71070, "completed": 1, "historical_completed": 18, "terminal_q": [-1.1278316629387033, 0.2739481344588587, -0.580629803161131, 4.368744471951682, -1.2855387251438006, -0.6663889481946276], "height": 0.8499999999999999}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l04_c00", "completed": 8, "remaining": 21, "attempted": 8, "task_s": 9.05549564800458}
+{"event": "CARTON_TASK_START", "target": "carton_l04_c04", "remaining": 21}
+{"seed": 71070, "attempt": 1, "target": "carton_l04_c04", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 19}
+{"seed": 71070, "completed": 1, "historical_completed": 19, "terminal_q": [0.8511470620152264, -0.18466759062805288, -1.0617552342565468, 2.163778119855199, -1.1357666173010357, 0.5588774308055793], "height": 1.15}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l04_c04", "completed": 9, "remaining": 20, "attempted": 9, "task_s": 8.227735235006548}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c02", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c02", "process": "TOP_FIXED_MINIMUM_RECEIVER", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c02", "completed": 9, "remaining": 20, "attempted": 10, "task_s": 91.1458273739845}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c03", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c03", "process": "TOP_FIXED_MINIMUM_RECEIVER", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c03", "completed": 9, "remaining": 20, "attempted": 11, "task_s": 91.1213397590036}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c01", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c01", "process": "TOP_FIXED_MINIMUM_RECEIVER", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c01", "completed": 9, "remaining": 20, "attempted": 12, "task_s": 91.14705026199226}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c04", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c04", "process": "TOP_FIXED_MINIMUM_RECEIVER", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c04", "completed": 9, "remaining": 20, "attempted": 13, "task_s": 91.1537331790023}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c00", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c00", "process": "TOP_FIXED_MINIMUM_RECEIVER", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c00", "completed": 9, "remaining": 20, "attempted": 14, "task_s": 91.11845006101066}
+{"status": "INCOMPLETE_RETAINED", "completed": 9, "targets": 29}

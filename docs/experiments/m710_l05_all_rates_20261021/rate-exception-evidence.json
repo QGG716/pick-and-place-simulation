@@ -1,0 +1,271 @@
+{
+  "source_commit": "655b49571f4422b2a86a4c2a02c0df830aedf0e8",
+  "target_id": "carton_l05_c03",
+  "complete": true,
+  "planning_diagnostic": {
+    "target_id": "carton_l05_c03",
+    "joint": "ALL_SIX",
+    "ignored_check": "PILZ_ALL_JOINT_VELOCITY_ACCELERATION_DECELERATION",
+    "acceleration_deceleration_retained": false,
+    "other_joints_retained": false,
+    "ik_and_position_limits_retained": true,
+    "position_collision_and_process_checks_retained": true,
+    "physical_execution": "NOT_RUN",
+    "library_sha256": "2027195d3a4b3ce8b22d2f0547430a724c81d577b0b012580d4b81d71660aefd",
+    "library_path": "/l05-all-rates-20261021/libl05_joint_rates_bounds.so",
+    "worker_command": "/bin/bash /l05-all-rates-20261021/worker-rates-bounds.sh",
+    "baseline_summary_sha256": "d304c58717529c5ea1ded8a18180e329f083d3f8e10d728b9c798d789cda3b54"
+  },
+  "solver_calls_added": 0,
+  "attempts": [
+    {
+      "folder": "attempt-001",
+      "complete": true,
+      "contact_q_rad": [
+        0.12689429972728394,
+        0.2337464342578416,
+        -0.30036364482609135,
+        -6.528739367447254,
+        0.5475518377150392,
+        3.3523867930205338
+      ],
+      "marker_count": 4,
+      "peaks_by_joint": {
+        "J4": {
+          "count": 2,
+          "peak_velocity": {
+            "target": "carton_l05_c03",
+            "joint": "J4",
+            "velocity_rad_s": 125.58004517338574,
+            "acceleration_rad_s2": 1256.6211332148007,
+            "delta_q_rad": 12.558004517338574,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 4.537856055185257,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          },
+          "peak_acceleration": {
+            "target": "carton_l05_c03",
+            "joint": "J4",
+            "velocity_rad_s": -0.0852791905150152,
+            "acceleration_rad_s2": -1256.6532436390075,
+            "delta_q_rad": -0.00852791905150152,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 4.537856055185257,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          },
+          "peak_delta_q": {
+            "target": "carton_l05_c03",
+            "joint": "J4",
+            "velocity_rad_s": 125.58004517338574,
+            "acceleration_rad_s2": 1256.6211332148007,
+            "delta_q_rad": 12.558004517338574,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 4.537856055185257,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          }
+        },
+        "J6": {
+          "count": 2,
+          "peak_velocity": {
+            "target": "carton_l05_c03",
+            "joint": "J6",
+            "velocity_rad_s": -62.746033566066046,
+            "acceleration_rad_s2": -628.3017546618262,
+            "delta_q_rad": -6.274603356606605,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 6.457718232379019,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          },
+          "peak_acceleration": {
+            "target": "carton_l05_c03",
+            "joint": "J6",
+            "velocity_rad_s": 0.08752432231001972,
+            "acceleration_rad_s2": 628.3355788837606,
+            "delta_q_rad": 0.008752432231001972,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 6.457718232379019,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          },
+          "peak_delta_q": {
+            "target": "carton_l05_c03",
+            "joint": "J6",
+            "velocity_rad_s": -62.746033566066046,
+            "acceleration_rad_s2": -628.3017546618262,
+            "delta_q_rad": -6.274603356606605,
+            "dt_s": 0.1,
+            "velocity_limit_rad_s": 6.457718232379019,
+            "acceleration_limit_rad_s2": 0.5,
+            "deceleration_limit_rad_s2": -0.5,
+            "physical_execution": "NOT_RUN"
+          }
+        }
+      },
+      "state_velocity_bypasses": 1,
+      "native_plan_statuses": [
+        {
+          "stage": "pregrasp",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "stage": "contact",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "stage": "extraction",
+          "status": "SUCCESS",
+          "count": 2
+        },
+        {
+          "stage": "withdrawal",
+          "status": "SUCCESS",
+          "count": 1
+        }
+      ],
+      "native_log_errors": {},
+      "full_event_log": "task-001/attempt-001/worker.log"
+    }
+  ],
+  "other_target_logs_checked_without_rate_exemption": 14,
+  "accepted_trajectory_peaks": [
+    {
+      "stage": "pregrasp",
+      "stage_id": "native-cold-0104ab23794a4c6e8687c6556f7e8752:1",
+      "samples": 73,
+      "peak_abs_velocity_rad_s": [
+        0.1631393347625701,
+        0.24939718385468684,
+        0.18267742760925954,
+        0.35100363713266747,
+        0.006996284132939761,
+        0.3202763585685391
+      ],
+      "peak_abs_delta_q_rad": [
+        0.016405634458947743,
+        0.02507990509686525,
+        0.01837042614903439,
+        0.035297663637897436,
+        0.0007035610401562309,
+        0.03220766390990448
+      ]
+    },
+    {
+      "stage": "contact",
+      "stage_id": "native-cold-0104ab23794a4c6e8687c6556f7e8752:2",
+      "samples": 32,
+      "peak_abs_velocity_rad_s": [
+        0.004312172056522567,
+        0.042267463417231255,
+        0.050055943003674,
+        0.005695649242971612,
+        0.00887455087596245,
+        0.004074626230154976
+      ],
+      "peak_abs_delta_q_rad": [
+        0.00043121720565225674,
+        0.0042267463417231255,
+        0.0050055943003674,
+        0.0005695649242971612,
+        0.000887455087596245,
+        0.0004074626230154976
+      ]
+    },
+    {
+      "stage": "extraction",
+      "stage_id": "native-cold-0104ab23794a4c6e8687c6556f7e8752:3",
+      "samples": 209,
+      "peak_abs_velocity_rad_s": [
+        0.021469486711084285,
+        0.07036000061051761,
+        0.050068117398645584,
+        125.58004517338574,
+        0.01823755579417885,
+        62.746033566066046
+      ],
+      "peak_abs_delta_q_rad": [
+        0.0021469486711084285,
+        0.0070360000610517615,
+        0.005006811739864558,
+        12.558004517338574,
+        0.001823755579417885,
+        6.274603356606605
+      ]
+    },
+    {
+      "stage": "withdrawal",
+      "stage_id": "native-cold-0104ab23794a4c6e8687c6556f7e8752:5",
+      "samples": 7,
+      "peak_abs_velocity_rad_s": [
+        0.010428594072476871,
+        0.032790280392043236,
+        0.012395972485179652,
+        0.052316784431196695,
+        0.005545452857498856,
+        0.05411744298563281
+      ],
+      "peak_abs_delta_q_rad": [
+        0.0010428594072476871,
+        0.0032790280392043236,
+        0.0012395972485179652,
+        0.0052316784431196695,
+        0.0005545452857498856,
+        0.005411744298563281
+      ]
+    }
+  ],
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "accepted_sample_position_limits": {
+    "samples_checked": 321,
+    "all_pass": true,
+    "joints": {
+      "J1": {
+        "lower_rad": -3.2288591161895095,
+        "upper_rad": 3.2288591161895095,
+        "observed_min_rad": -0.45032942678676857,
+        "observed_max_rad": 0.3176234989437215
+      },
+      "J2": {
+        "lower_rad": -1.3089969389957472,
+        "upper_rad": 2.6179938779914944,
+        "observed_min_rad": -0.8248068993575123,
+        "observed_max_rad": 0.2337464342578416
+      },
+      "J3": {
+        "lower_rad": -1.4049900478554354,
+        "upper_rad": 3.5779249665883754,
+        "observed_min_rad": -1.1019760124375395,
+        "observed_max_rad": -0.30036364482609135
+      },
+      "J4": {
+        "lower_rad": -6.981317007977318,
+        "upper_rad": 6.981317007977318,
+        "observed_min_rad": -6.978763814095689,
+        "observed_max_rad": 5.579240703242885
+      },
+      "J5": {
+        "lower_rad": -2.181661564992912,
+        "upper_rad": 2.181661564992912,
+        "observed_min_rad": 0.41844127789108937,
+        "observed_max_rad": 0.5774820141889901
+      },
+      "J6": {
+        "lower_rad": -6.981317007977318,
+        "upper_rad": 6.981317007977318,
+        "observed_min_rad": -2.487617309690621,
+        "observed_max_rad": 3.786986046915984
+      }
+    }
+  }
+}

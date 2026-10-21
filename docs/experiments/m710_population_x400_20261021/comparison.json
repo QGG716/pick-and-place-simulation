@@ -1,0 +1,27 @@
+{
+  "previous_source_commit": "cb6eb0199fb07f10bff632edf3aaa1234f679c00",
+  "source_commit": "90c83043005797e07c8671fccf9da862f6484ac7",
+  "previous_completed": 19,
+  "current_completed": 18,
+  "denominator": 40,
+  "gained": [],
+  "lost": [
+    "carton_l05_c03"
+  ],
+  "initial_cartons_equal": true,
+  "configured_initial_q_equal": true,
+  "initial_height_equal": true,
+  "current_mount_world_m": [
+    -1.725,
+    0.25,
+    0.6
+  ],
+  "previous_mount_world_m": [
+    -1.625,
+    0.25,
+    0.6
+  ],
+  "previous_wall_s": 844.6296147740213,
+  "current_wall_s": 854.6284757349931,
+  "scope": "TWO_MEASURED_NEW_WORLD_RUNS_NOT_A_SUCCESS_RATE_NONREGRESSION_PROOF"
+}
