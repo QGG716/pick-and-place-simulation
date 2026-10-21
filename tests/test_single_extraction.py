@@ -84,7 +84,8 @@ def suffix_fixture():
     c._native_selected_records=lambda state:[
         dict(stage="pregrasp",stage_id="pregrasp",parent_stage_id=""),
         dict(stage="contact",stage_id="contact",parent_stage_id="pregrasp"),
-        dict(stage="extraction",stage_id="extraction",parent_stage_id="contact")]
+        dict(stage="extraction",stage_id="extraction",parent_stage_id="contact",
+             submitted_request=dict(ownership_transition='ATTACH'))]
     checks=[]
     def endpoint(req,**kw):
         checks.append(req)

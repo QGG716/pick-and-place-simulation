@@ -87,6 +87,9 @@ def extraction_sample_check(connector, path, attachment, target, geometry, track
 
 
 class SingleExtractionConnector(SingleContactConnector):
+    def attachment_support_names(self, target, obstacles):
+        return sorted(self.native_scene.support_graph.supported_by[target.target_id])
+
     def plan_extraction(self, start, target, attachment, payload_world, supports, tracker, seed, row):
         before = perf_counter()
         goal, geometry, failure = extraction_geometry(self, target, attachment, start, payload_world, supports)
@@ -193,7 +196,7 @@ class SingleExtractionConnector(SingleContactConnector):
             key: deepcopy(terminal[key]) for key in
             ("actual_contact_mask", "commanded_active_mask", "geometrically_eligible_mask")}
         payload_world = [b for b in obstacles if b.name != target.target_id]
-        supports = sorted(self.native_scene.support_graph.supported_by[target.target_id])
+        supports = self.attachment_support_names(target, obstacles)
         tracker, failure = self._initial_proximity(target.box, payload_world, supports)
         row["attachment"] = dict(status="PREPARED_PLANNING_CONTEXT", target_id=target.target_id,
             contact_q_rad=np.asarray(start).tolist(), parent_receipt=start.native_receipt,
@@ -266,9 +269,16 @@ class SingleExtractionConnector(SingleContactConnector):
             target_id=target.target_id, q_rad=np.asarray(start).tolist(),
             parent_stage_id=plan["stages"][-1]["stage_id"], next_stage_id=records[-extra]["stage_id"],
             physical_execution="NOT_RUN", measured=False)
+        transition = records[-extra]["submitted_request"].get("ownership_transition")
+        if transition == "ATTACH":
+            events = [*plan["events"], event]
+        elif transition is None and sum(e.get("event_type") == "ATTACH" for e in plan["events"]) == 1:
+            events = plan["events"]
+        else:
+            raise MoveItUnavailable("EXTRACTION_ATTACHMENT_EVENT_LINEAGE_INVALID")
         plan.update(status=MARKER, extraction=[np.asarray(q).tolist() for q in path],
             end_q_rad=np.asarray(path[-1]).tolist(), final_state_receipt=path[-1].native_receipt,
-            extraction_geometry=geometry, attachment=row["attachment"], events=[*plan["events"],event],
+            extraction_geometry=geometry, attachment=row["attachment"], events=events,
             stages=[{k:deepcopy(r[k]) for k in ("stage","stage_id","parent_stage_id",
                 "generation_source","pipeline_id","planner_id","points","time_parameterization",
                 "native_solver_calls","authoritative_status","native_output_status") if k in r} for r in records])

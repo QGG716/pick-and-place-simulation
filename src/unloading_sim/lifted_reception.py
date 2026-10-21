@@ -156,7 +156,7 @@ def layer_role(target, original_cartons, remaining_cartons):
                 removed_from_original_layer=[n for n in ids if n not in active])
 
 
-def directional_contact(target, outward):
+def directional_contact(target, outward, *, in_plane_x=None):
     """Resolve a WORLD template to a real local box face, including rotated boxes."""
     n = np.asarray(outward, dtype=float)
     projections = target.rotation.T @ n
@@ -165,7 +165,9 @@ def directional_contact(target, outward):
     if abs(projections[axis]) < 1-1e-10:
         return None
     actual = sign*target.rotation[:, axis]
-    x = np.array([0., 0., 1.])
+    x = np.asarray([0., 0., 1.] if in_plane_x is None else in_plane_x, dtype=float)
+    if x.shape != (3,) or not np.isfinite(x).all() or abs(np.linalg.norm(x)-1) > 1e-10:
+        raise ValueError('INVALID_CONTACT_IN_PLANE_AXIS')
     if abs(x @ actual) > 1e-10:
         return None
     z = -actual

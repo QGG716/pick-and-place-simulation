@@ -26,6 +26,12 @@ def authorize(target, frozen):
             or target.target_id not in frozen.target_ids
             or frozen.evidence()["roles"][target.target_id]["role"] != "RIGHT_END"):
         raise ValueError("ORIGINAL_RIGHT_ONLY")
+    if frozen.evidence().get('selection')=='ALL_ORIGINAL_CARTONS_HIGHEST_REMOVABLE_FIRST':
+        # Extending scheduling to 40 cartons cannot extend the original top-row
+        # eccentric permission to the right ends of newly exposed lower rows.
+        from .lifted_reception import bounds
+        if abs(bounds(target.box)[1][2]-max(bounds(b)[1][2] for b in boxes))>1e-8:
+            raise ValueError('ECCENTRIC_ORIGINAL_TOP_LAYER_ONLY')
     top = [b for b in boxes if b.name in frozen.target_ids]
     if any(b.center[1] < target.box.center[1]-1e-12 for b in top):
         raise ValueError("ORIGINAL_RIGHT_ONLY")

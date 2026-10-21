@@ -18,14 +18,17 @@ def save(path, value):
 def verify(run, replay=None):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
-    assert summary["status"] in ("COMPLETE_PLANNING_ONLY", "INCOMPLETE_RETAINED")
-    assert protocol["scope"] == "ALL_REMAINING_FROM_ACCEPTED_C00"
+    xy_top = protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    fixture = xy_top and protocol.get("integration_fixture", False)
+    assert summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
+                                  ("COMPLETE_PLANNING_ONLY", "INCOMPLETE_RETAINED"))
+    assert xy_top or protocol["scope"] == "ALL_REMAINING_FROM_ACCEPTED_C00"
     original = {b["id"]: b for b in protocol["original_cartons"]}
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == 36
-    assert len(initial["completed"]) == summary["historical_completed_count"] == 4
+    assert len(targets) == summary["target_count"] == (20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (20 if fixture else 0 if xy_top else 4)
     assert len(original) == 40 and len(protocol["frozen"]["target_ids"]) == 40
     outcomes, attempts, cycles, replay_attempts = [], [], [], []
     counts = Counter()
@@ -103,12 +106,21 @@ def verify(run, replay=None):
                 assert result["completed_count"] == 1
                 cycle = result["cycles"][0]
                 assert cycle["batch_root"] == root and cycle["target_id"] == name
-                assert cycle["target"].get("world_y_offset_m", 0.) == 0
-                assert cycle["target"].get("eccentric_authorization") is None
+                eccentric = xy_top and name in protocol['eccentric_authorized_ids']
+                if not eccentric:
+                    assert cycle["target"].get("world_y_offset_m", 0.) == 0
+                    assert cycle["target"].get("eccentric_authorization") is None
+                low_top = xy_top and protocol['frozen']['heights'][name]['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9
+                if low_top:
+                    assert cycle['option']['template'] == 'TOP_FIXED_MINIMUM_RECEIVER'
+                    assert cycle['target']['face_role'] == 'TOP'
+                    assert cycle['stationary_low_receiver']['height_m'] == .6
+                    assert cycle['stationary_low_receiver']['throughout_contact_lift_transfer_release']
                 requests = {t["request"]["stage_id"]: t["request"] for t in trace["attempts"]}
                 responses = {c["stage_id"]: c["response"] for c in successful if c["op"] == "plan"}
                 q, height, parent = root["q_rad"], root["height_m"], ""
                 extraction_started = False
+                extraction_count = 0
                 for stage in cycle["stages"]:
                     req, resp = requests[stage["stage_id"]], responses[stage["stage_id"]]
                     assert req["q_start"] == q and req["parent_stage_id"] == parent
@@ -121,6 +133,7 @@ def verify(run, replay=None):
                         assert all(c["passed"] for c in axis["checks"])
                         assert axis["maximum_height_step_m"] <= .010000001 and not axis["continuous_swept_proof"]
                         height = axis["to_height_m"]
+                        if low_top:assert height == .6 and stage['stage'] == 'pregrasp'
                         counts["checked_lift_samples"] += len(axis["checks"])
                     elif stage["generation_source"] == "SEMANTIC_EVENT":
                         drop = resp["nominal_release"]
@@ -129,8 +142,17 @@ def verify(run, replay=None):
                         counts["nominal_drop_samples"] += len(drop["checks"])
                     else:
                         if stage["stage"] == "extraction":
+                            extraction_count += 1
                             extraction_started = True
                             assert abs(height-cycle["actual_extraction_height_m"]) < 1e-8
+                            if low_top:
+                                assert height == .6
+                                if extraction_count == 1:
+                                    assert req['ownership_transition'] == 'ATTACH'
+                                else:
+                                    assert req.get('ownership_transition') is None
+                                    policy = req['process_policy']
+                                    assert not policy.get('initial_proximity') and not policy.get('support_names')
                         assert stage["points"][0]["q"] == q and stage["points"][-1]["t"] > 0
                         assert max(abs(v) for v in stage["points"][-1]["v"]) <= 1e-8
                         q = stage["points"][-1]["q"]
@@ -145,6 +167,15 @@ def verify(run, replay=None):
                 assert cycle["third_sync_disabled"] and cycle["nominal_release"]["passed"]
                 assert cycle["separation"]["passed"] and cycle["separation"]["response"]["status"] == "SUCCESS"
                 events = [e["event_type"] for e in cycle["events"]]
+                if low_top:
+                    assert extraction_count == 2 and events.count('ATTACH') == 1
+                    lift = cycle['stationary_low_receiver']['top_lift']
+                    assert lift['sample_check']['passed']
+                    assert lift['terminal_check']['status'] == 'SUCCESS'
+                    assert lift['terminal_check']['free_space_rules_restored']
+                    assert lift['geometry']['direction_world'] == [0.,0.,1.]
+                    assert cycle['extraction_geometry']['direction_world'] == [-1.,0.,0.]
+                    assert height == .6
                 required = ["RELEASE", "NOMINAL_FIRST_CONTACT", "SAFE_TOOL_SEPARATION", "IDEAL_RECEIVER_DRAIN"]
                 assert all(events.count(e) == 1 for e in required)
                 assert [events.index(e) for e in required] == sorted(events.index(e) for e in required)
@@ -170,7 +201,8 @@ def verify(run, replay=None):
     assert root == summary["terminal"]
     attempted = {o["target_id"] for o in outcomes}
     blocked = {b["target_id"] for b in summary["blocked"]}
-    assert len(attempted) == len(outcomes) and not attempted & blocked and attempted | blocked == targets
+    assert len(attempted) == len(outcomes) and not attempted & blocked
+    if not fixture:assert attempted | blocked == targets
     # A box left under a failed carton must remain an actual support, not a
     # made-up failure count or a box silently removed to expose its successors.
     import sys
@@ -194,7 +226,8 @@ def verify(run, replay=None):
     verification = dict(status="PASS_SAVED_NATIVE_LINEAGE_POPULATION_AND_FAILURE_RETENTION",
                         source_commit=protocol["source_commit"], completed_count=completed,
                         target_count=len(targets), attempted_count=len(outcomes), blocked_count=len(blocked),
-                        planning_wall_s=summary["planning_wall_s"], native_task_wall_s=summary["native_task_wall_s"],
+                        planning_wall_s=summary["planning_wall_s"], native_task_wall_s=summary.get("native_task_wall_s",sum(o['planning_wall_s'] for o in outcomes)),
+                        integration_fixture=fixture,
                         counts=dict(counts), outcomes=outcomes, blocked=summary["blocked"],
                         physical_execution="NOT_RUN", execution_ready=False,
                         qualification_status="NOT_EVALUATED", continuous_swept_proof=False)

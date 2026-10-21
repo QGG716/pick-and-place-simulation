@@ -46,6 +46,7 @@ def receiver_fixture():
         path=[start,(start+end)/2,end]
         kw['initial_proximity']._update_released(kw['attachment'].box_at(end))
         record=dict(task_id='task',stage_id=stage,parent_stage_id='contact',stage='extraction',
+            submitted_request=dict(ownership_transition='ATTACH'),
             status='SUCCESS',request_id=100+len(calls),points=[dict(q=np.asarray(s).tolist()) for s in path])
         generated[stage]=record
         return path,None,dict(attempts=[record])

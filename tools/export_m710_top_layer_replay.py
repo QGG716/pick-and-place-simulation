@@ -164,7 +164,7 @@ def export(run,seed,output,attempt=None):
         lower_count=len(protocol['original_cartons'])-len(protocol['frozen']['target_ids']),
         initial_carton_count=len(root['world_cartons']),historical_completed_count=result.get('historical_completed_count',0),
         single_junction=protocol.get('scope')=='ONE_NEW_JUNCTION_C00',
-        all_remaining=protocol.get('scope')=='ALL_REMAINING_FROM_ACCEPTED_C00',
+        all_remaining=protocol.get('scope') in ('ALL_REMAINING_FROM_ACCEPTED_C00','XY_TOP_NEW_WORLD_40'),
         mount_comparison=protocol.get('scope')=='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON',
         mounting_variant=protocol.get('variant'),
         geometry_variant=protocol.get('authorized_geometry_change'),

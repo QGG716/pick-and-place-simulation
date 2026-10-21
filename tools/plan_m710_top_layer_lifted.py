@@ -105,6 +105,14 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
             options=[]
             low=float(original.receiver.center[2]+original.receiver.half_extents[2])
             business_options=ranked_target['options']
+            low_top=False
+            if getattr(args,'low_top_minimum_m',None) is not None:
+                from unloading_sim.low_top_receiver import low_top_option
+                option=low_top_option(target,scene.receiver,
+                    next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+                    frozen,args.low_top_minimum_m)
+                if option is not None:
+                    business_options=[option];low_top=True
             if getattr(args,'junction_only',False):
                 business_options=business_options[:1]
                 if not business_options or business_options[0]['template']!='FRONT_DIRECT_HMIN' or not business_options[0]['reception']['junction']:
@@ -117,8 +125,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend(synchronization_options(option,state.height,low))
-            eccentric=getattr(args,'right_front_eccentric',False)
+                options.extend([option] if low_top else synchronization_options(option,state.height,low))
+            eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
             if eccentric:
                 from unloading_sim.right_front_eccentric import offset_intervals,candidate_visits,candidate_deltas
@@ -156,14 +164,19 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     os.environ['M710_MOVEIT_SEED']=str(seed)
                     client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),
                         binding=binding,expected_model_identity=getattr(args,'expected_model_identity',None))
-                    c=CoupledCycleConnector.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
+                    connector_type=CoupledCycleConnector
+                    if low_top:
+                        from unloading_sim.low_top_receiver import LowTopReceiverConnector
+                        connector_type=LowTopReceiverConnector
+                    c=connector_type.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
-                    c.height_visit_deadline=min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.))
+                    c.height_visit_deadline=(shared_stages['prefix'] if low_top else
+                        min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.)))
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)

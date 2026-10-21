@@ -259,7 +259,7 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             raise MoveItUnavailable('COUPLED_FINAL_NATIVE_HISTORY_MISMATCH')
         box=attachment.box_at(end);height=StartHeight.capture(target.box)
         gap=float(bounds(box)[0][2]-bounds(self.high_belt)[1][2])
-        expected=height.z_b-self.option['height_m']
+        expected=self.release_bottom_world_m(target)-self.option['height_m']
         check=dict(passed=abs(gap-expected)<=self.ik['position_tolerance_m'],actual_gap_m=gap,expected_gap_m=expected)
         row['release_ready_check']=check
         def reject(reason,detail):
@@ -343,3 +343,6 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
                 native_full_drop_checked=True,tool_q_held_during_drop=np.asarray(end).tolist()))
         row.update(actual_end_q_rad=np.asarray(final).tolist(),complete=True,failure=None)
         return plan,row
+
+    def release_bottom_world_m(self, target):
+        return StartHeight.capture(target.box).z_b
