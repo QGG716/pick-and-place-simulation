@@ -1,0 +1,17 @@
+{
+  "formal-raw": {
+    "bytes": 305656645,
+    "sha256": "56e2ce5501c956515fc30a4ef1a22601a195bdf29929faf074b4dd899d91316a",
+    "file_count": 342
+  },
+  "measured-source": {
+    "bytes": 22171191,
+    "sha256": "5ed38e95129b322263dfee9edba55d608db6127b1f969d3796fab06fb2cf5d31",
+    "file_count": 551
+  },
+  "replays": {
+    "bytes": 10868522,
+    "sha256": "052201d5ad6d3cc6572f2d44e6c3621e587ea30b98e793789332b61b1ec796ad",
+    "file_count": 32
+  }
+}

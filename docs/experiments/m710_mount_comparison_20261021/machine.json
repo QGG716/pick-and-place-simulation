@@ -1,0 +1,8 @@
+{
+  "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+  "cpu": "Intel(R) Xeon(R) Platinum 8470Q",
+  "cpu_affinity": "Cpus_allowed_list:\t0-207",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition, 580.119.02",
+  "planning_device": "CPU",
+  "physical_execution": "NOT_RUN"
+}

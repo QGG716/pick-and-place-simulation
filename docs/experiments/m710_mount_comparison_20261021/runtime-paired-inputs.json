@@ -1,0 +1,6525 @@
+{
+  "schema": "m710_mount_paired_inputs_v1",
+  "cases": [
+    {
+      "target_id": "carton_l06_c02",
+      "root": {
+        "q_rad": [
+          1.3362086521068457,
+          -0.7538396689948786,
+          -0.49430514621505084,
+          1.5095413536059774,
+          -1.3442049576056432,
+          -4.445882974720699
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 2.0500000000000003,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01",
+          "carton_l07_c00",
+          "carton_l07_c04"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "right_front_eccentric": false,
+      "source_file": "docs/experiments/m710_all_remaining_20261020/summary.json",
+      "source_sha256": "0d932bd65e633d1772daafeb2f566d713c04137a12c58facc5dd4bc9c90cc5e9",
+      "source_field": "outcomes[target_id].root",
+      "use": "INITIAL_CONDITION_ONLY_NO_OLD_SOLUTION_OR_ATTACHMENT"
+    },
+    {
+      "target_id": "carton_l06_c03",
+      "root": {
+        "q_rad": [
+          1.3362086521068457,
+          -0.7538396689948786,
+          -0.49430514621505084,
+          1.5095413536059774,
+          -1.3442049576056432,
+          -4.445882974720699
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 2.0500000000000003,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01",
+          "carton_l07_c00",
+          "carton_l07_c04"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "right_front_eccentric": false,
+      "source_file": "docs/experiments/m710_all_remaining_20261020/summary.json",
+      "source_sha256": "0d932bd65e633d1772daafeb2f566d713c04137a12c58facc5dd4bc9c90cc5e9",
+      "source_field": "outcomes[target_id].root",
+      "use": "INITIAL_CONDITION_ONLY_NO_OLD_SOLUTION_OR_ATTACHMENT"
+    },
+    {
+      "target_id": "carton_l06_c00",
+      "root": {
+        "q_rad": [
+          1.3362088465848017,
+          -0.8703577924287577,
+          -0.8337572133311438,
+          -1.5795419998075686,
+          1.3363689272472905,
+          -1.5331658477537116
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 1.7499999999999998,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01",
+          "carton_l07_c00",
+          "carton_l07_c04",
+          "carton_l06_c01",
+          "carton_l06_c04"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "right_front_eccentric": false,
+      "source_file": "docs/experiments/m710_all_remaining_20261020/summary.json",
+      "source_sha256": "0d932bd65e633d1772daafeb2f566d713c04137a12c58facc5dd4bc9c90cc5e9",
+      "source_field": "outcomes[target_id].root",
+      "use": "INITIAL_CONDITION_ONLY_NO_OLD_SOLUTION_OR_ATTACHMENT"
+    },
+    {
+      "target_id": "carton_l07_c00",
+      "root": {
+        "q_rad": [
+          -1.4198698080202128,
+          -0.45344173919354397,
+          -0.346623102268061,
+          1.5870092577268429,
+          1.4207365736267565,
+          -4.820426009497792
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 2.0500000000000003,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l07_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l07_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "right_front_eccentric": true,
+      "source_file": "docs/experiments/m710_c00_resume_20261020/predecessor.json",
+      "source_sha256": "010eb65f9a67a7b250dad34e1a576c761fc37abe576a7d9bda42a54c75637c36",
+      "source_field": "new_native_root",
+      "use": "INITIAL_CONDITION_ONLY_NO_OLD_SOLUTION_OR_ATTACHMENT"
+    },
+    {
+      "target_id": "carton_l07_c04",
+      "root": {
+        "q_rad": [
+          -1.435169277728941,
+          -0.35788606276290724,
+          -0.28396987212938596,
+          1.5808743257193776,
+          1.43554193753111,
+          -4.786987010375598
+        ],
+        "velocity_rad_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "height_m": 1.75,
+        "world_cartons": [
+          {
+            "id": "carton_l00_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l00_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.15
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l01_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.44999999999999996
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l02_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l03_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.0499999999999998
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l04_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.3499999999999999
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l05_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.65
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c00",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c01",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c02",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c03",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.42
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l06_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                1.9499999999999997
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          },
+          {
+            "id": "carton_l07_c04",
+            "size": [
+              0.6,
+              0.4,
+              0.3
+            ],
+            "pose": [
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.3
+              ],
+              [
+                0.0,
+                1.0,
+                0.0,
+                0.84
+              ],
+              [
+                0.0,
+                0.0,
+                1.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "category": "carton",
+            "geometry_source": "frozen_layout_or_audited_tool_OBB"
+          }
+        ],
+        "completed": [
+          "carton_l07_c02",
+          "carton_l07_c03",
+          "carton_l07_c01",
+          "carton_l07_c00"
+        ],
+        "predecessor_final_state_receipt": null
+      },
+      "right_front_eccentric": false,
+      "source_file": "docs/experiments/m710_all_remaining_20261020/summary.json",
+      "source_sha256": "0d932bd65e633d1772daafeb2f566d713c04137a12c58facc5dd4bc9c90cc5e9",
+      "source_field": "outcomes[target_id].root",
+      "use": "INITIAL_CONDITION_ONLY_NO_OLD_SOLUTION_OR_ATTACHMENT"
+    }
+  ]
+}

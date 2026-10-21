@@ -1,0 +1,424 @@
+{
+  "experiment_wall_s": 1178.2483265039918,
+  "task_wall_s": 1128.8159145289974,
+  "candidate_wall_s": 1028.9584705700981,
+  "costs_are_nested_not_additive": true,
+  "dispatched_candidates": 40,
+  "request_counts": {
+    "native_requests": 2667,
+    "numerical_ik_success": 226,
+    "checked_lift": 68,
+    "target_check_passed": 65,
+    "pregrasp": 44,
+    "contact": 23,
+    "extraction": 32,
+    "withdrawal": 16
+  },
+  "accepted_lineage_counts": {
+    "native_stages": 101,
+    "coupled_native_samples": 1667,
+    "nominal_drop_samples": 1466
+  },
+  "cells": [
+    {
+      "variant": "baseline",
+      "target_id": "carton_l06_c02",
+      "completed": false,
+      "wall_s": 142.94986438401975,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 2,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.86892946800799
+        },
+        {
+          "folder": "attempt-002",
+          "complete": false,
+          "wall_s": 113.08653980900999
+        }
+      ]
+    },
+    {
+      "variant": "y_minus_100",
+      "target_id": "carton_l06_c02",
+      "completed": true,
+      "wall_s": 55.27501532100723,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.8867041360063
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 30.05774316302268
+        }
+      ]
+    },
+    {
+      "variant": "x_minus_100",
+      "target_id": "carton_l06_c02",
+      "completed": true,
+      "wall_s": 60.03510361502413,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.848740610003006
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 34.98689733599895
+        }
+      ]
+    },
+    {
+      "variant": "xy_minus_100",
+      "target_id": "carton_l06_c02",
+      "completed": true,
+      "wall_s": 57.01887553700362,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.890298494981835
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 31.829211788019165
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "target_id": "carton_l06_c03",
+      "completed": false,
+      "wall_s": 152.8291415630083,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 2,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.816154475003714
+        },
+        {
+          "folder": "attempt-002",
+          "complete": false,
+          "wall_s": 117.77882812600001
+        }
+      ]
+    },
+    {
+      "variant": "y_minus_100",
+      "target_id": "carton_l06_c03",
+      "completed": false,
+      "wall_s": 144.57916748899152,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 2,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.90094565000618
+        },
+        {
+          "folder": "attempt-002",
+          "complete": false,
+          "wall_s": 113.66106204799144
+        }
+      ]
+    },
+    {
+      "variant": "x_minus_100",
+      "target_id": "carton_l06_c03",
+      "completed": true,
+      "wall_s": 59.067956940998556,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 22.850008059001993
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 31.740361005009618
+        }
+      ]
+    },
+    {
+      "variant": "xy_minus_100",
+      "target_id": "carton_l06_c03",
+      "completed": true,
+      "wall_s": 58.027359817991965,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 20.865401689021382
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 32.754242661001626
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "target_id": "carton_l06_c00",
+      "completed": false,
+      "wall_s": 94.06825278498582,
+      "dispatched_candidates": 4,
+      "unsearched_option_count": 271,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 22.417533225001534
+        },
+        {
+          "folder": "attempt-002",
+          "complete": false,
+          "wall_s": 21.539843920996645
+        },
+        {
+          "folder": "attempt-003",
+          "complete": false,
+          "wall_s": 22.297811137977988
+        },
+        {
+          "folder": "attempt-004",
+          "complete": false,
+          "wall_s": 16.241158084012568
+        }
+      ]
+    },
+    {
+      "variant": "y_minus_100",
+      "target_id": "carton_l06_c00",
+      "completed": true,
+      "wall_s": 15.314889492001384,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 13.530217890016502
+        }
+      ]
+    },
+    {
+      "variant": "x_minus_100",
+      "target_id": "carton_l06_c00",
+      "completed": true,
+      "wall_s": 15.352030197973363,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 13.559721616009483
+        }
+      ]
+    },
+    {
+      "variant": "xy_minus_100",
+      "target_id": "carton_l06_c00",
+      "completed": true,
+      "wall_s": 15.588530274981167,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 13.824155743001029
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "target_id": "carton_l07_c00",
+      "completed": true,
+      "wall_s": 102.01606366899796,
+      "dispatched_candidates": 7,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 11.867243621993111
+        },
+        {
+          "folder": "attempt-002",
+          "complete": false,
+          "wall_s": 11.86583791099838
+        },
+        {
+          "folder": "attempt-003",
+          "complete": false,
+          "wall_s": 12.248316037002951
+        },
+        {
+          "folder": "attempt-004",
+          "complete": false,
+          "wall_s": 11.366576696018456
+        },
+        {
+          "folder": "attempt-005",
+          "complete": false,
+          "wall_s": 12.381894165009726
+        },
+        {
+          "folder": "attempt-006",
+          "complete": false,
+          "wall_s": 12.503933234984288
+        },
+        {
+          "folder": "attempt-007",
+          "complete": true,
+          "wall_s": 15.99025365000125
+        }
+      ]
+    },
+    {
+      "variant": "y_minus_100",
+      "target_id": "carton_l07_c00",
+      "completed": true,
+      "wall_s": 32.38106905401219,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 11.302233255992178
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 17.735682402009843
+        }
+      ]
+    },
+    {
+      "variant": "x_minus_100",
+      "target_id": "carton_l07_c00",
+      "completed": true,
+      "wall_s": 30.88100505899638,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 11.897360154020134
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 15.897400755988201
+        }
+      ]
+    },
+    {
+      "variant": "xy_minus_100",
+      "target_id": "carton_l07_c00",
+      "completed": true,
+      "wall_s": 32.389288367005065,
+      "dispatched_candidates": 2,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": false,
+          "wall_s": 11.629609162017005
+        },
+        {
+          "folder": "attempt-002",
+          "complete": true,
+          "wall_s": 17.071657378983218
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "target_id": "carton_l07_c04",
+      "completed": true,
+      "wall_s": 16.683381139999256,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 15.627845595998224
+        }
+      ]
+    },
+    {
+      "variant": "y_minus_100",
+      "target_id": "carton_l07_c04",
+      "completed": true,
+      "wall_s": 16.923215654998785,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 15.918558703997405
+        }
+      ]
+    },
+    {
+      "variant": "x_minus_100",
+      "target_id": "carton_l07_c04",
+      "completed": true,
+      "wall_s": 12.253482458996587,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 11.30428661897895
+        }
+      ]
+    },
+    {
+      "variant": "xy_minus_100",
+      "target_id": "carton_l07_c04",
+      "completed": true,
+      "wall_s": 15.182221708004363,
+      "dispatched_candidates": 1,
+      "unsearched_option_count": 0,
+      "attempts": [
+        {
+          "folder": "attempt-001",
+          "complete": true,
+          "wall_s": 14.117271091003204
+        }
+      ]
+    }
+  ]
+}

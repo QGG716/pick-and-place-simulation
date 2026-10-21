@@ -1,0 +1,18 @@
+{
+  "measured_source": "cf40c1dda5a3fdda9001053289aca29bb5b88785",
+  "previous_measured_source": "66c34d4e4464589e6ea865125ccf4e71854d5be8",
+  "native_cpp_identical": true,
+  "changed_core_files": [
+    "src/unloading_sim/workcell_layout.py"
+  ],
+  "source_manifest_sha256": "bdb0108c0971c50e93adbb20c792088dad4ab09f7b8996af5b544395e0d7aa8d",
+  "historical_solutions_used_as_solver_hints": false,
+  "git_fixture_sha256": "ff3a742af9fe5835a9321822b8a0f831bfeb903ddb04b921bf34625410212144",
+  "runtime_inputs_sha256": "f68f6e8ae9067384de55d2a8b7e82c49273000e86940318620ce0d45b664373f",
+  "git_fixture_and_runtime_inputs_json_equal": true,
+  "input_export_line_endings": {
+    "git_fixture": "LF",
+    "measured_git_archive": "CRLF",
+    "byte_exact_runtime_copy": "runtime-paired-inputs.json"
+  }
+}

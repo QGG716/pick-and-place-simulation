@@ -86,5 +86,7 @@ docs/experiments/m710_receiver_acceptance_20261019/** -text -whitespace
 docs/experiments/m710_eccentric_20261020/** -text -whitespace
 docs/experiments/m710_c00_resume_20261020/** -text -whitespace
 docs/experiments/m710_all_remaining_20261020/** -text -whitespace
+docs/experiments/m710_mount_comparison_20261021/** -text -whitespace
+docs/m710_mount_comparison_20261021.md text eol=lf
 tools/search_replay/eccentric_overlay.js text eol=lf
 tools/check_m710_eccentric_viewer.mjs text eol=lf

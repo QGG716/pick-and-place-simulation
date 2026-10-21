@@ -1,0 +1,258 @@
+[
+  {
+    "variant": "baseline",
+    "target_id": "carton_l06_c02",
+    "complete": false,
+    "wall_s": 142.94986438401975,
+    "accepted": null,
+    "failure": "抽离：J2 / 左墙净空 4.359 mm，小于 5 mm；150 个端点后阶段预算到期。另 2 个工艺选项未访问。"
+  },
+  {
+    "variant": "y_minus_100",
+    "target_id": "carton_l06_c02",
+    "complete": true,
+    "wall_s": 55.27501532100723,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 0.6000000000000001,
+      "receive_height_m": 1.7499999999999998,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "x_minus_100",
+    "target_id": "carton_l06_c02",
+    "complete": true,
+    "wall_s": 60.03510361502413,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 0.6000000000000001,
+      "receive_height_m": 1.7499999999999998,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "xy_minus_100",
+    "target_id": "carton_l06_c02",
+    "complete": true,
+    "wall_s": 57.01887553700362,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 0.6000000000000001,
+      "receive_height_m": 1.7499999999999998,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "baseline",
+    "target_id": "carton_l06_c03",
+    "complete": false,
+    "wall_s": 152.8291415630083,
+    "accepted": null,
+    "failure": "抽离：345 个端点后阶段预算到期，末次 NO_IK_SOLUTION；没有本次抽离碰撞见证。另 2 个工艺选项未访问。"
+  },
+  {
+    "variant": "y_minus_100",
+    "target_id": "carton_l06_c03",
+    "complete": false,
+    "wall_s": 144.57916748899152,
+    "accepted": null,
+    "failure": "抽离：J3 / 纵带净空 3.623 mm，小于 5 mm；194 个端点后阶段预算到期。另 2 个工艺选项未访问。"
+  },
+  {
+    "variant": "x_minus_100",
+    "target_id": "carton_l06_c03",
+    "complete": true,
+    "wall_s": 59.067956940998556,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 0.6000000000000001,
+      "receive_height_m": 1.7499999999999998,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "xy_minus_100",
+    "target_id": "carton_l06_c03",
+    "complete": true,
+    "wall_s": 58.027359817991965,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 0.6000000000000001,
+      "receive_height_m": 1.7499999999999998,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "baseline",
+    "target_id": "carton_l06_c00",
+    "complete": false,
+    "wall_s": 94.06825278498582,
+    "accepted": null,
+    "failure": "接触 / Hmin 同步前缀未闭合；J2 / 横带净空 4.351 mm，小于 5 mm；共享前缀到期，271 个选项未访问。"
+  },
+  {
+    "variant": "y_minus_100",
+    "target_id": "carton_l06_c00",
+    "complete": true,
+    "wall_s": 15.314889492001384,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.4499999999999997,
+      "receive_height_m": 1.4499999999999997,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "x_minus_100",
+    "target_id": "carton_l06_c00",
+    "complete": true,
+    "wall_s": 15.352030197973363,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.4499999999999997,
+      "receive_height_m": 1.4499999999999997,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "xy_minus_100",
+    "target_id": "carton_l06_c00",
+    "complete": true,
+    "wall_s": 15.588530274981167,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.4499999999999997,
+      "receive_height_m": 1.4499999999999997,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "baseline",
+    "target_id": "carton_l07_c00",
+    "complete": true,
+    "wall_s": 102.01606366899796,
+    "accepted": {
+      "delta_m": 0.33187500000000003,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 1.75,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 18
+    },
+    "failure": null
+  },
+  {
+    "variant": "y_minus_100",
+    "target_id": "carton_l07_c00",
+    "complete": true,
+    "wall_s": 32.38106905401219,
+    "accepted": {
+      "delta_m": 0.22125,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 1.75,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 30
+    },
+    "failure": null
+  },
+  {
+    "variant": "x_minus_100",
+    "target_id": "carton_l07_c00",
+    "complete": true,
+    "wall_s": 30.88100505899638,
+    "accepted": {
+      "delta_m": 0.22125,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 1.75,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 30
+    },
+    "failure": null
+  },
+  {
+    "variant": "xy_minus_100",
+    "target_id": "carton_l07_c00",
+    "complete": true,
+    "wall_s": 32.389288367005065,
+    "accepted": {
+      "delta_m": 0.22125,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 1.75,
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cups": 30
+    },
+    "failure": null
+  },
+  {
+    "variant": "baseline",
+    "target_id": "carton_l07_c04",
+    "complete": true,
+    "wall_s": 16.683381139999256,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 2.0500000000000003,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "y_minus_100",
+    "target_id": "carton_l07_c04",
+    "complete": true,
+    "wall_s": 16.923215654998785,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 2.0500000000000003,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "x_minus_100",
+    "target_id": "carton_l07_c04",
+    "complete": true,
+    "wall_s": 12.253482458996587,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 2.0500000000000003,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  },
+  {
+    "variant": "xy_minus_100",
+    "target_id": "carton_l07_c04",
+    "complete": true,
+    "wall_s": 15.182221708004363,
+    "accepted": {
+      "delta_m": 0.0,
+      "temporary_height_m": 1.75,
+      "receive_height_m": 2.0500000000000003,
+      "receive_sync_location": "PREGRASP",
+      "cups": 48
+    },
+    "failure": null
+  }
+]

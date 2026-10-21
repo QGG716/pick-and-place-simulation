@@ -1,0 +1,9 @@
+{
+  "file": "formal-raw.tar.xz",
+  "bytes": 8015552,
+  "sha256": "2aea631a15acddcb9440a64a4852a321783b94ad47d18477bada26259cc62176",
+  "file_count": 342,
+  "pack_and_verify_s": 523.4350351640023,
+  "source_tar_gz_sha256": "56e2ce5501c956515fc30a4ef1a22601a195bdf29929faf074b4dd899d91316a",
+  "lossless_recompression": true
+}

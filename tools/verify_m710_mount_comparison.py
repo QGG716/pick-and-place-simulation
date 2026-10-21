@@ -3,6 +3,7 @@ import argparse
 from collections import Counter
 import json
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 from plan_m710_mount_comparison import LAYOUTS, TARGETS, FLAGS, save
 from verify_m710_top_layer_batch import verify
@@ -16,13 +17,24 @@ def main():
     summary=json.loads((a.run/"summary.json").read_text())
     assert summary["status"]=="COMPARISON_COMPLETE"
     assert len(summary["outcomes"])==len(LAYOUTS)*len(TARGETS)==20
-    rows=[]
+    rows=[];collision_policy=None
+    expected_mounts={"baseline":[-1.325,.35,.6],"y_minus_100":[-1.325,.25,.6],
+                     "x_minus_100":[-1.425,.35,.6],"xy_minus_100":[-1.425,.25,.6]}
     for target in TARGETS:
         paired_root=None
         for variant in LAYOUTS:
             run=a.run/variant/target
             checked=verify(run)
             r=json.loads((run/"seed-71070/result.json").read_text())
+            first=next(x for x in r["attempts"] if "folder" in x)
+            model=json.loads((run/"seed-71070"/first["folder"]/"search-trace.json").read_text())["model"]
+            urdf=ET.fromstring(model["parameters"]["robot_description"])
+            mount=next(j for j in urdf.findall("joint") if j.find("parent").get("link")=="world" and j.find("child").get("link")=="base_link")
+            xyz=list(map(float,mount.find("origin").get("xyz").split()))
+            assert max(abs(x-y) for x,y in zip(xyz,expected_mounts[variant]))<1e-12
+            assert list(map(float,mount.find("origin").get("rpy").split()))==[0.]*3
+            if collision_policy is None:collision_policy=model["collision_policy"]
+            assert model["collision_policy"]==collision_policy
             if paired_root is None:paired_root=r["initial"]
             assert r["initial"]==paired_root
             counts=Counter();attempts=[];pairs=Counter();first_witness={}
@@ -61,10 +73,13 @@ def main():
                     selected_configurations=[{k:c[k] for k in ("stage","attempt","q_goal","status","failure","upper_arm_preference") if k in c} for c in connections]))
             cycle=r["cycles"][0] if r["cycles"] else None
             rows.append(dict(variant=variant,target_id=target,complete=bool(cycle),
+                native_model_mount_world_m=xyz,
                 status=r["status"],wall_s=r["planning_wall_s"],counts=dict(counts),attempts=attempts,
                 accepted=None if cycle is None else dict(
                     delta_m=cycle["target"].get("world_y_offset_m",0.),
                     receive_height_m=cycle["height_m"],option=cycle["option"],
+                    receive_sync_location=cycle.get("receive_sync_location"),
+                    temporary_height_m=cycle["option"].get("pre_approach_height_m",r["initial"]["height_m"]),
                     cups=sum(cycle["attachment"]["selection"]["actual_contact_mask"]),
                     actual_extraction_height_m=cycle["actual_extraction_height_m"]),
                 collision_witness_groups=[dict(key=json.loads(k),recorded_example_count=n,example=first_witness[k]) for k,n in pairs.most_common()],

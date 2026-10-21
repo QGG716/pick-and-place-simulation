@@ -1,0 +1,160 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "initial": {
+    "time": 0,
+    "phase": "联动升降",
+    "completed_count": 0,
+    "carton_count": 37,
+    "q_rad": [
+      -1.4198698080202128,
+      -0.45344173919354397,
+      -0.346623102268061,
+      1.5870092577268429,
+      1.4207365736267565,
+      -4.820426009497792
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999999973,
+      4.758229782408918e-9,
+      7.358654492695127e-8,
+      0,
+      4.758202492265508e-9,
+      -0.9999999999999312,
+      3.7082293177781445e-7,
+      0,
+      7.358654667972265e-8,
+      -3.708229314031142e-7,
+      -0.9999999999999285,
+      0,
+      -1.0328960984322093,
+      -0.41999977546259065,
+      2.2499999211655957,
+      1
+    ],
+    "height_m": 2.0500000000000003,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": "carton_l07_c00",
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "final": {
+    "time": 35.91200879411385,
+    "phase": "整批结束",
+    "completed_count": 1,
+    "carton_count": 36,
+    "q_rad": [
+      -1.435169277728941,
+      -0.35788606276290724,
+      -0.28396987212938596,
+      1.5808743257193776,
+      1.43554193753111,
+      -4.786987010375598
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999998436,
+      2.4457600944494118e-9,
+      -5.597069034739277e-7,
+      0,
+      2.4462034003869513e-9,
+      -0.9999999999996863,
+      7.921103645225358e-7,
+      0,
+      -5.597069015345503e-7,
+      -7.921103658270479e-7,
+      -0.9999999999995296,
+      0,
+      -1.0328961549788693,
+      -0.5081247899744952,
+      2.250000087376678,
+      1
+    ],
+    "height_m": 1.75,
+    "attached": false,
+    "nominal_count": 1,
+    "drain_count": 1,
+    "physical_count": 0,
+    "target": null,
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "segment": 0,
+      "kind": "lift",
+      "time": 0,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 1,
+      "kind": "motion",
+      "time": 4,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 2,
+      "kind": "motion",
+      "time": 8.979976136000001,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 3,
+      "kind": "motion",
+      "time": 11.979976139000001,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 4,
+      "kind": "drop",
+      "time": 32.734976139,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 5,
+      "kind": "landed",
+      "time": 33.002101067113855,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 6,
+      "kind": "motion",
+      "time": 33.60210106711386,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 7,
+      "kind": "landed",
+      "time": 34.112008794113855,
+      "completed": 0,
+      "cartons": 37
+    },
+    {
+      "segment": 8,
+      "kind": "final",
+      "time": 34.91200879411385,
+      "completed": 1,
+      "cartons": 36
+    },
+    {
+      "kind": "drop_fixed_robot_q",
+      "drop_m": 0.34303484515721117
+    }
+  ],
+  "frames": 0,
+  "width": 640,
+  "height": 360,
+  "fps": 5,
+  "playback_speed": 1,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "classification": "NATIVE_PLANNING_COUPLED_GEOMETRY_NOMINAL_DROP_NOT_PHYSICAL"
+}

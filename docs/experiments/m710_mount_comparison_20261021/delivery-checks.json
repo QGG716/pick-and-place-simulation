@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "raw_files_verified": 342,
+  "measured_source_manifest_files_verified": 301,
+  "decoded_input_identity": "PASS",
+  "raw_inputs_byte_identity": "PASS",
+  "offline_bundle_hashes_and_links": "PASS",
+  "browser_viewers_passed": 16,
+  "production_initial_states_passed": 20,
+  "focused_regression_tests_passed": 24,
+  "formal_trial_count": 20,
+  "complete_cycle_count": 16,
+  "formal_integration_exceptions": 0,
+  "read_only_verifier_sha256": "0db0fcba6aa1bf6b6e77b0770c1d99fc7ef03e105c2165bc3a1e5c7b578a2ead"
+}

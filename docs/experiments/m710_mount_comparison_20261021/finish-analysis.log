@@ -1,0 +1,16 @@
+{"baseline": {"complete": 2, "targets": 5, "wall_s": 508.5467035410111}, "y_minus_100": {"complete": 4, "targets": 5, "wall_s": 264.4733570110111}, "x_minus_100": {"complete": 5, "targets": 5, "wall_s": 177.589578271989}, "xy_minus_100": {"complete": 5, "targets": 5, "wall_s": 178.20627570498618}}
+{"output": "/mount-replays/x_minus_100-carton_l06_c02.html", "completed": 1, "duration": 46.81619967587163}
+{"output": "/mount-replays/xy_minus_100-carton_l06_c02.html", "completed": 1, "duration": 42.99688921365576}
+{"output": "/mount-replays/x_minus_100-carton_l06_c03.html", "completed": 1, "duration": 59.39146097218258}
+{"output": "/mount-replays/xy_minus_100-carton_l06_c03.html", "completed": 1, "duration": 58.4131006891667}
+{"output": "/mount-replays/y_minus_100-carton_l06_c00.html", "completed": 1, "duration": 74.79237164740299}
+{"output": "/mount-replays/x_minus_100-carton_l06_c00.html", "completed": 1, "duration": 78.11761337140891}
+{"output": "/mount-replays/xy_minus_100-carton_l06_c00.html", "completed": 1, "duration": 75.8819351058264}
+{"output": "/mount-replays/baseline-carton_l07_c00.html", "completed": 1, "duration": 35.91200879411385}
+{"output": "/mount-replays/y_minus_100-carton_l07_c00.html", "completed": 1, "duration": 35.88725407014157}
+{"output": "/mount-replays/x_minus_100-carton_l07_c00.html", "completed": 1, "duration": 35.94503498644728}
+{"output": "/mount-replays/xy_minus_100-carton_l07_c00.html", "completed": 1, "duration": 36.11057487143002}
+{"output": "/mount-replays/baseline-carton_l07_c04.html", "completed": 1, "duration": 43.099738880747495}
+{"output": "/mount-replays/y_minus_100-carton_l07_c04.html", "completed": 1, "duration": 42.95203912344862}
+{"output": "/mount-replays/x_minus_100-carton_l07_c04.html", "completed": 1, "duration": 39.52982371024952}
+{"output": "/mount-replays/xy_minus_100-carton_l07_c04.html", "completed": 1, "duration": 42.09149093275036}
