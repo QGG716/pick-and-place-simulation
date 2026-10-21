@@ -50,6 +50,13 @@ if(native)check(name+'_NATIVE_FREE_TRANSIT_NO_EXEMPTION',native.active===false&&
 };
 try{
 check('VIEWER_READY',window.REPLAY_READY===true);
+if(DATA.perception_binding){
+const calibration=DATA.perception_binding.calibration;
+check('TCP_CALIBRATION_PANEL',!document.getElementById('perceptionPanel').hidden);
+check('TCP_METHOD',calibration.calibration_method==='TCP_FK_REFERENCED_CAMERA_EXTRINSICS');
+check('FRESH_IMAGES_EMBEDDED',DATA.perception_images.length===calibration.tcp_observations.photos.length+1&&DATA.perception_images.every(r=>r.data_url.startsWith('data:image/png;base64,')));
+check('OFFLINE_CALIBRATION_IMAGE_LOADED',document.getElementById('perceptionPhoto').naturalWidth>0);
+}
 check('TWELVE_PHYSICAL_CUPS',model.cup_ids.length===12);
 let maximum=0;
 for(const fixture of DATA.fk_fixtures){const frames=window.replay.fk(fixture.q);

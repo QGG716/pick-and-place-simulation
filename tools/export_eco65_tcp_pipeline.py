@@ -15,7 +15,7 @@ def deliver(a):
     out=a.output.resolve();out.relative_to(ROOT/'outputs');out.mkdir(parents=True,exist_ok=False)
     snapshot=load_json(a.snapshot);binding=snapshot['scene']['perception_binding'];cal=binding['calibration']
     run=load_json(a.run/'run_report.json');plan_path=a.run/('plan.json' if run.get('complete') else 'partial_plan.json')
-    export(a.snapshot,out/'replay.html',plan_path=plan_path,run_folder=a.run)
+    replay=export(a.snapshot,out/'replay.html',plan_path=plan_path,run_folder=a.run)
     plan=load_json(plan_path);stages=[]
     for r in plan['records']:
         stages.append(dict(kind=r['kind'],stage=r['stage'],native_status=r['native_result']['status'],
@@ -40,7 +40,8 @@ def deliver(a):
         vision=dict(status=det['status'],selected=det['detections'][det['selected_column_rank']],assumptions=det['assumptions']),
         planning=run,stages=stages,native_outcomes=successes,collision_failure_counts=reasons,
         native_requests_including_ipc_wall_s=native_wall,
-        robot_motion_s=plan['robot_motion_s'],mechanism_display_s=plan['mechanism_display_s'],event_display_s=plan['event_display_s'],
+        robot_motion_s=plan['robot_motion_s'],mechanism_display_s=plan['mechanism_display_s'],
+        event_display_s=replay['times']['event_display_s'],nominal_drop_s=replay['times']['nominal_drop_s'],
         task_policy=plan['j1_direction_policy'],adopted_process=plan.get('adopted_process'),
         completed_cartons=plan['terminal_state']['completed_ids'] if plan['terminal_state'] else [],
         calibration_motion='DISCRETE_STATIC_NATIVE_IK_FK_AND_GEOMETRIC_TOUCH; NO_CONTINUOUS_TOUCH_PATH_CLAIM',
