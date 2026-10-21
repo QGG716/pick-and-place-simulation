@@ -268,8 +268,11 @@ class CoupledTask(NativeTask):
     def restore(self, cp):
         for key in ('parent','height_m','target','target_pose','attachment','carton_poses','completed_ids',
                     'receiver_history','business_interval','reverse_used','face','active_ids','candidate_id',
-                    'stages','accepted_state','next_target_id'):
+                    'accepted_state','next_target_id'):
             setattr(self,key,deepcopy(cp[key]))
+        # Accepted native stage rows are immutable. Backtracking changes the
+        # history list, never the original receipts/geometry in its prefix.
+        self.stages=list(cp['stages'])
         self.current_q=cp['q'].copy()
         self.cycle_records=list(cp['records'])
 
@@ -477,6 +480,11 @@ class CoupledTask(NativeTask):
         with self.connection():
             return self._extract_and_release()
 
+    def require_connection_budget(self):
+        limit=min(self.deadline,self.connection_deadline or self.deadline)
+        if perf_counter()>=limit:
+            raise ValueError('NATIVE_CONNECTION_BUDGET_EXHAUSTED')
+
     def _extract_and_release(self):
         attached=self.checkpoint()
         heights=frozen_receive_heights(self.original_boxes[self.target['id']],
@@ -491,14 +499,20 @@ class CoupledTask(NativeTask):
         # belt obstructs link_2. The final raise is a checked fixed-q operation,
         # with the same attachment, before release.
         orders=('EXTRACT_TRANSFER_THEN_RAISE','RAISE_THEN_EXTRACT','EXTRACT_THEN_RAISE')
-        for height,order in [(h,o) for h in heights for o in orders]:
+        choices=[(h,o) for h in heights for o in (
+            ('SET_RECEIVER_THEN_EXTRACT','EXTRACT_THEN_RAISE','EXTRACT_TRANSFER_THEN_RAISE')
+            if getattr(self,'completion_goal',None)=='ALL_CARTONS_DRAINED' and h['height_m']<self.height_m-1e-10
+            else orders)]
+        for height,order in choices:
+            self.require_connection_budget()
             self.restore(attached)
             try:
                 # This order is a real candidate, not a mandatory low/reset cycle.
-                if order=='RAISE_THEN_EXTRACT':
+                if order in ('RAISE_THEN_EXTRACT','SET_RECEIVER_THEN_EXTRACT'):
                     self.lift(height['height_m'])
                 lifted=self.checkpoint()
                 for box_goal in self.release_candidates(height['height_m']):
+                    self.require_connection_budget()
                     self.restore(lifted)
                     try:
                         tcp=box_goal@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
@@ -537,6 +551,7 @@ class CoupledTask(NativeTask):
                 routes=((0.,False,'diagonal_above'),(0.,False,'clear_half_rise'),
                         (0.,True,None),(-float(self.target['size_m'][1]),False,None),(0.,False,None))
                 for lateral,above,recovery in routes:
+                    self.require_connection_budget()
                     self.restore(lifted)
                     try:
                         self.move('extraction',pose=self.clear_stack_pose(lateral,above,recovery))
@@ -551,6 +566,7 @@ class CoupledTask(NativeTask):
                     clear=self.checkpoint()
                     for box_goal in self.release_candidates(height['height_m'],
                                                              (-np.pi/2,np.pi/2,np.pi,0.)):
+                        self.require_connection_budget()
                         self.restore(clear)
                         try:
                             tcp=box_goal@np.linalg.inv(self.attachment)@np.asarray(self.identity['flange_from_task_tcp'])
@@ -697,6 +713,9 @@ class CoupledTask(NativeTask):
         # every candidate still uses this run's same absolute task deadline.
         for rank in range(max((len(g) for _,g in pools),default=0)):
             for height,target,grasp in [(h,t,g[rank]) for h in heights for t,g in pools if rank<len(g)]:
+                if perf_counter()>=self.deadline:
+                    self.restore(drained)
+                    raise ValueError('NEXT_CARTON_ABSOLUTE_BUDGET_EXHAUSTED')
                 self.restore(drained)
                 try:
                     self.select_next(target,grasp)

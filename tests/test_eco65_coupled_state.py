@@ -164,6 +164,7 @@ def test_diagonal_extraction_uses_actual_attached_pose_and_remaining_stack():
 def test_return_search_reaches_other_carton_and_retains_matching_tool_family(monkeypatch):
     from types import SimpleNamespace
     from unloading_sim.eco65 import coupled_task
+    monkeypatch.setattr(coupled_task,'perf_counter',lambda:0.)
     task=coupled_task.CoupledTask.__new__(coupled_task.CoupledTask)
     boxes=[dict(id='left',pose=[.2,.11,.53]),dict(id='right',pose=[.2,-.11,.53])]
     task.scene=dict(boxes=boxes);task.completed_ids=[];task.current_q=np.zeros(6)
