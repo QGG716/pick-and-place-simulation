@@ -17,7 +17,7 @@ def source_scene():
 
 @pytest.mark.parametrize('q1',[-2.,0.,1.7])
 def test_remount_at_same_raw_q_preserves_camera_and_turns_mast_world_ccw90(q1):
-    scene=source_scene();cfg=yaml.safe_load(CONFIG.read_text())
+    scene=source_scene();cfg=yaml.safe_load(CONFIG.with_name('eco65_base_mast_remount_v1.yaml').read_text())
     t=remount_transforms(scene,cfg);J=Rotation.from_euler('z',q1).as_matrix()
     assert t['new_base']@np.array([1.,0.,0.])==pytest.approx([-1.,0.,0.],abs=1e-12)
     old=t['old_base']@J@t['old_mast'][:3,:3]
@@ -29,6 +29,22 @@ def test_remount_at_same_raw_q_preserves_camera_and_turns_mast_world_ccw90(q1):
     p=np.r_[t['axis']['point_mast_m'],1.]
     assert t['camera_counterrotation']@p==pytest.approx(p)
     assert np.linalg.inv(t['camera_counterrotation']@scene['permanent_camera']['T_mast_CAD'])@(t['camera_counterrotation']@C)==pytest.approx(np.linalg.inv(scene['permanent_camera']['T_mast_CAD'])@C)
+
+
+@pytest.mark.parametrize('q1', [-2., 0., 1.7])
+def test_current_mast_base_adds_180_to_previous_layout_without_turning_camera(q1):
+    scene = source_scene()
+    old = remount_transforms(scene, yaml.safe_load(CONFIG.with_name('eco65_base_mast_remount_v1.yaml').read_text()))
+    new = remount_transforms(scene, yaml.safe_load(CONFIG.read_text()))
+    J = Rotation.from_euler('z', q1).as_matrix()
+    a = old['new_base'] @ J @ old['new_mast'][:3, :3]
+    b = new['new_base'] @ J @ new['new_mast'][:3, :3]
+    assert b @ a.T == pytest.approx(np.diag([-1., -1., 1.]), abs=1e-12)
+    C = np.asarray(scene['permanent_camera']['T_mast_optical'])
+    assert b @ (new['camera_counterrotation'] @ C)[:3, :3] == pytest.approx(
+        a @ (old['camera_counterrotation'] @ C)[:3, :3], abs=1e-12)
+    assert new['new_mast'][:3, 3] == pytest.approx(old['new_mast'][:3, 3])
+    assert new['new_base'] == pytest.approx(old['new_base'])
 
 
 def test_fixed_base_yaw_changes_fk_and_initial_state_identity_without_rewriting_q():

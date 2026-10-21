@@ -8,7 +8,7 @@ from .model import ROOT, URDF, check_transform, transform
 from .camera_installation import pole_axis, installation_fingerprint
 from ..moveit2_backend import digest
 
-CONFIG = ROOT/'configs/workcells/eco65_base_mast_remount_v1.yaml'
+CONFIG = ROOT/'configs/workcells/eco65_base_mast_remount_v2.yaml'
 
 
 def remount_transforms(scene, config):

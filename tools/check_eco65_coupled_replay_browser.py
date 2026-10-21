@@ -65,7 +65,20 @@ let error=0;
 for(const b of expected.world){const objects=worldObjects.filter(o=>o.userData.id===b.id);
 check('PREVIEW_OBJECT_PRESENT_'+i+'_'+b.id,objects.length===2);
 for(const object of objects)error=Math.max(error,...matrix(b.pose).elements.map((v,j)=>Math.abs(v-object.matrix.elements[j])));}
-check('SAME_NATIVE_WORLD_POSES_'+i,error<1e-12);}
+check('SAME_NATIVE_WORLD_POSES_'+i,error<1e-12);
+// Independently inspect the rendered mesh vertices. Matching the source pose
+// alone misses a local mesh that was converted from world coordinates twice.
+const belts=worldObjects.filter(o=>o.userData.layer==='visual'&&o.userData.role==='conveyor_belt');
+check('TWO_CONVEYOR_ASSEMBLIES_'+i,new Set(belts.map(o=>o.userData.owner)).size===2);
+for(const owner of ['conveyor_transverse','conveyor_longitudinal']){
+const own=belts.filter(o=>o.userData.owner===owner);check('BELT_PRESENT_'+i+owner,own.length>0);
+const yMin=Math.min(...own.map(o=>new T.Box3().setFromBufferAttribute(o.geometry.getAttribute('position')).applyMatrix4(o.matrix).min.y));
+check('ACTUAL_MESH_YMIN_'+i+owner,Math.abs(yMin+.3)<1e-6);
+const frames=worldObjects.filter(o=>o.userData.layer==='visual'&&o.userData.owner===owner&&o.userData.role==='conveyor_frame');
+check('BELT_FRAME_ALIGNMENT_'+i+owner,frames.length===1&&Math.abs(new T.Box3().setFromBufferAttribute(frames[0].geometry.getAttribute('position')).applyMatrix4(frames[0].matrix).min.y-yMin)<1e-6);
+}
+check('NO_OLD_STATIC_CONVEYORS_'+i,!model.static_visual.some(o=>o.id.startsWith('conveyor_')));
+}
 const collision=document.querySelector('input[data-layer="collision"]');collision.click();
 check('COLLISION_LAYER_VISIBLE',robotObjects.filter(r=>r.item.layer==='collision').every(r=>r.object.visible));collision.click();
 const accessory=model.joints.filter(j=>j.child.startsWith('eco65_mast_')||j.child.includes('camera'));

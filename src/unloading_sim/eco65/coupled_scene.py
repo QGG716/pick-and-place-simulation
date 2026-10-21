@@ -79,6 +79,33 @@ def _relieved_frame(xsize, ysize, top_depth, depth, slope):
     return _hull(vertices)
 
 
+def _validate_local_belts(spec):
+    """Reject translated/rotated templates, including the old rebuild defect.
+
+    Mesh coordinates have STL float32 precision. Validate actual aggregate
+    contours, independently of their placement metadata and frame poses.
+    """
+    templates = spec['belt_templates']
+    ids = [row['id'] for row in templates]
+    if len(ids) != len(set(ids)) or {row['owner'] for row in templates} != OWNERS:
+        raise ValueError('ECO65_LOCAL_BELT_INVENTORY_INVALID')
+    tol = 1e-6
+    for owner in sorted(OWNERS):
+        v = np.concatenate([np.asarray(row['convex_mesh']['vertices'], float)
+                            for row in templates if row['owner'] == owner])
+        x, y = ((spec['transverse_width_m'], spec['transverse_length_m'])
+                if owner == 'conveyor_transverse' else
+                (spec['longitudinal_length_m'], spec['transverse_width_m']))
+        bounds = np.array([v.min(axis=0), v.max(axis=0)])
+        expected = np.array([[-x/2, -y/2, -spec['belt_depth_m']], [x/2, y/2, 0.]])
+        relief = spec['seam_relief_slope']*spec['belt_depth_m'] if owner == 'conveyor_transverse' else 0.
+        if (not np.all(np.isfinite(v))
+                or not -tol <= bounds[0, 0]-expected[0, 0] <= relief+tol
+                or not np.allclose(bounds[0, 1:], expected[0, 1:], atol=tol, rtol=0)
+                or not np.allclose(bounds[1], expected[1], atol=tol, rtol=0)):
+            raise ValueError('ECO65_BELT_NOT_SURFACE_CENTRED_LOCAL:'+owner)
+
+
 def make_coupled_spec(source_scene, config=None):
     """Freeze the measured effective belts and replaced structural ownership."""
     if config is None:
@@ -112,7 +139,21 @@ def make_coupled_spec(source_scene, config=None):
                         "conveyor_longitudinal": [*np.mean(lb[:, :2], axis=0), low]}
     templates = []
     source_objects = [o for o in source_scene["native_world_objects"] if o.get("owner") in OWNERS]
-    for row in source_objects:
+    previous = source_scene.get('coupled_conveyor_spec')
+    if previous:
+        # Native objects in a coupled source already carry a moving pose.
+        # Reuse their immutable local templates, never convert that pose again.
+        identity = dict(previous)
+        if identity.pop('fingerprint') != digest(identity):
+            raise ValueError('ECO65_COUPLED_SPEC_IDENTITY_INVALID')
+        _validate_local_belts(previous)
+        if (previous['geometry_revision'] != REVISION
+                or abs(previous['seam_relief_slope']-slope) > 1e-12
+                or previous['source_belt_bounds_D_m'] != {
+                    name: items[name]['belt_bounds_D_m'] for name in sorted(OWNERS)}):
+            raise ValueError('ECO65_COUPLED_REBUILD_REQUIRES_ORIGINAL_BELT_SOURCE')
+        templates = deepcopy(previous['belt_templates'])
+    for row in ([] if previous else source_objects):
         if row.get("role") != "conveyor_belt":
             continue
         owner = row["owner"]
@@ -136,6 +177,7 @@ def make_coupled_spec(source_scene, config=None):
     if any(o.get("owner") in OWNERS for o in source_scene.get("obstacles", [])):
         raise ValueError("ECO65_UNEXPECTED_STATIC_CONVEYOR_PROXY")
     spec = dict(schema="eco65_coupled_spec_v1", geometry_revision=REVISION,
+                belt_geometry_revision="surface_centred_local_rebuild_v2",
                 source_scene_fingerprint=source_scene["scene_fingerprint"],
                 low_height_m=low, high_height_m=high, config=c, longitudinal_length_m=length,
                 transverse_width_m=width, transverse_length_m=transverse_length,
@@ -239,6 +281,7 @@ def coupled_conveyor_state(spec, height_m):
     expected = check.pop("fingerprint")
     if digest(check) != expected or spec.get("geometry_revision") != REVISION:
         raise ValueError("ECO65_COUPLED_SPEC_IDENTITY_INVALID")
+    _validate_local_belts(spec)
     c = spec["config"]
     H, low, high = float(height_m), spec["low_height_m"], spec["high_height_m"]
     if not np.isfinite(H) or not low-1e-12 <= H <= high+1e-12:
@@ -361,6 +404,13 @@ def coupled_conveyor_state(spec, height_m):
                      margin_m=c["receiving_margin_m"],
                      box_pose_D=transform([transverse[0], 0., H+.05]).tolist(),
                      effective_surface_definition="MEASURED_TOP_BELT_RECTANGLE_NOT_WORLD_AABB")
+    actual_ymin = {owner: float(min(
+        (np.asarray(row['convex_mesh']['vertices']) @ np.asarray(row['pose'])[:3, :3].T
+         + np.asarray(row['pose'])[:3, 3])[:, 1].min()
+        for row in world if row.get('owner') == owner and row.get('role') == 'conveyor_belt'))
+        for owner in sorted(OWNERS)}
+    if any(abs(y-lo[1]) > 1e-6 for y in actual_ymin.values()):
+        raise ValueError('ECO65_ACTUAL_BELT_YMIN_MISALIGNED')
     mechanism = dict(schema="eco65_coupled_scissor_v1", geometry_revision=REVISION,
                      height_m=H, tilt_rad=theta, longitudinal_length_m=length,
                      upper_endpoint_D_m=upper.tolist(), lower_endpoint_D_m=lower.tolist(),
@@ -368,6 +418,7 @@ def coupled_conveyor_state(spec, height_m):
                      moving_object_ids=[i for i in ids if i not in fixed], stacks=stacks,
                      lower_hinges=lower_hinges,
                      additional_mates=mates, seam=dict(gap_m=0., ymin_m=lo[1],
+                         actual_belt_ymin_m=actual_ymin,
                          upper_edge_D_m=upper.tolist(), relief_slope=spec["seam_relief_slope"]),
                      geometry_origin=spec["engineering_geometry"],
                      physical_execution="NOT_RUN", execution_ready=False)

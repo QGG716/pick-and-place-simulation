@@ -90,6 +90,35 @@ def test_feet_and_rails_fixed_but_heads_and_carriages_move(spec):
             assert vertices(row)[:, 2].min() >= -1e-10, row["id"]
 
 
+@pytest.mark.parametrize('height', [.18, .33, .43, .45])
+def test_rebuilding_coupled_scene_never_converts_local_belts_a_second_time(height):
+    original = build_coupled_scene(source_scene())
+    rebuilt = build_coupled_scene(with_coupled_state(original, height))
+    rebuilt_again = build_coupled_scene(rebuilt)
+    for scene in (original, rebuilt, rebuilt_again):
+        state = coupled_conveyor_state(scene['coupled_conveyor_spec'], height)
+        assert state['world_objects'] == coupled_conveyor_state(original['coupled_conveyor_spec'], height)['world_objects']
+        belts = [r for r in state['world_objects'] if r['role'] == 'conveyor_belt']
+        assert len(belts) == 2
+        for row in belts:
+            v = vertices(row)
+            assert v[:, 1].min() == pytest.approx(-.3, abs=1e-9)
+            frame = next(r for r in state['world_objects']
+                         if r['owner'] == row['owner'] and r['role'] == 'conveyor_frame')
+            assert vertices(frame)[:, 1].min() == pytest.approx(v[:, 1].min(), abs=1e-9)
+        assert scene['mesh_obstacles'] == []
+
+
+def test_rebuilding_previously_corrupted_local_templates_is_rejected():
+    scene = build_coupled_scene(source_scene())
+    spec = scene['coupled_conveyor_spec']
+    for row in spec['belt_templates']:
+        row['convex_mesh']['vertices'] = (np.array(row['convex_mesh']['vertices']) + [0., -.097840139, 0.]).tolist()
+    spec['fingerprint'] = digest({k: v for k, v in spec.items() if k != 'fingerprint'})
+    with pytest.raises(ValueError, match='ECO65_BELT_NOT_SURFACE_CENTRED_LOCAL'):
+        build_coupled_scene(scene)
+
+
 def test_frames_and_belt_solids_use_nonpenetrating_seam_plane(spec):
     slope, xmin = spec["seam_relief_slope"], spec["transverse_xmin_m"]
     for h in np.linspace(.18, .45, 10):
