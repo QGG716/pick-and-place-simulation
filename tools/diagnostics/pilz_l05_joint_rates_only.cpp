@@ -7,6 +7,54 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
+#include <moveit/robot_state/robot_state.h>
+
+namespace {
+bool allRatesException() {
+  const char* scope=std::getenv("M710_PLANNING_ONLY_ALL_JOINT_RATES_EXCEPTION");
+  return scope && std::strcmp(scope,"carton_l05_c03")==0;
+}
+template<class Function> Function originalBounds(const char* symbol) {
+  static void* library=dlopen("libmoveit_robot_state.so",RTLD_NOW|RTLD_LOCAL);
+  auto fn=library?reinterpret_cast<Function>(dlsym(library,symbol)):nullptr;
+  if (!fn) throw std::runtime_error("MOVEIT_ORIGINAL_BOUNDS_CHECK_UNAVAILABLE");
+  return fn;
+}
+bool finiteState(const moveit::core::RobotState& state) {
+  for (std::size_t i=0;i<state.getVariableCount();++i)
+    if (!std::isfinite(state.getVariablePositions()[i]) ||
+        (state.hasVelocities() && !std::isfinite(state.getVariableVelocities()[i]))) return false;
+  return true;
+}
+}
+
+namespace moveit::core {
+// MoveIt 2.5.10 satisfiesBounds checks positions AND populated velocities.
+// Preserve the real trajectory and RobotModel. Only the temporary predicate
+// input drops velocity presence; the original position predicate still runs.
+bool RobotState::satisfiesBounds(double margin) const {
+  using Original=bool (*)(const RobotState*,double);
+  static auto original=originalBounds<Original>("_ZNK6moveit4core10RobotState15satisfiesBoundsEd");
+  if (!allRatesException() || !hasVelocities()) return original(this,margin);
+  if (!finiteState(*this)) return false;
+  RobotState positions(*this);positions.dropVelocities();
+  const bool accepted=original(&positions,margin);
+  if (accepted && !original(this,margin)) std::fprintf(stderr,
+    "M710_DIAGNOSTIC_STATE_VELOCITY_IGNORED target=carton_l05_c03 scope=all position_bounds_pass=true physical_execution=NOT_RUN\n");
+  return accepted;
+}
+bool RobotState::satisfiesBounds(const JointModelGroup* group,double margin) const {
+  using Original=bool (*)(const RobotState*,const JointModelGroup*,double);
+  static auto original=originalBounds<Original>("_ZNK6moveit4core10RobotState15satisfiesBoundsEPKNS0_15JointModelGroupEd");
+  if (!allRatesException() || !hasVelocities()) return original(this,group,margin);
+  if (!finiteState(*this)) return false;
+  RobotState positions(*this);positions.dropVelocities();
+  const bool accepted=original(&positions,group,margin);
+  if (accepted && !original(this,group,margin)) std::fprintf(stderr,
+    "M710_DIAGNOSTIC_STATE_VELOCITY_IGNORED target=carton_l05_c03 scope=group position_bounds_pass=true physical_execution=NOT_RUN\n");
+  return accepted;
+}
+}
 
 namespace pilz_industrial_motion_planner {
 bool verifySampleJointLimits(const std::map<std::string,double>& previous,

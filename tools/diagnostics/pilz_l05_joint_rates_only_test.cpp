@@ -4,6 +4,9 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <moveit/robot_state/robot_state.h>
+#include <urdf_parser/urdf_parser.h>
+#include <srdfdom/model.h>
 using namespace pilz_industrial_motion_planner;
 void require(bool v,const char* why) { if (!v) throw std::runtime_error(why); }
 int main() {
@@ -33,5 +36,24 @@ int main() {
     require(!limits.verifyVelocityLimit(entry.first,31.3),"ORIGINAL_CONTAINER_UNCHANGED");
     require(limits.getLimit(entry.first).has_acceleration_limits,"ORIGINAL_ACCELERATION_METADATA_UNCHANGED");
   }
-  std::cout<<"PASS: explicit target, six-joint rate exception, position, finite, duration and original metadata\n";
+  auto urdf=urdf::parseURDF(R"(<robot name="bounds"><link name="base"/><link name="tip"/>
+    <joint name="J4" type="revolute"><parent link="base"/><child link="tip"/><axis xyz="0 0 1"/>
+    <limit lower="-1" upper="1" effort="1" velocity="1"/></joint></robot>)");
+  auto srdf=std::make_shared<srdf::Model>();
+  require(urdf && srdf->initString(*urdf,R"(<robot name="bounds"><group name="arm"><joint name="J4"/></group></robot>)"),"STATE_MODEL");
+  auto model=std::make_shared<moveit::core::RobotModel>(urdf,srdf);
+  moveit::core::RobotState state(model);state.setToDefaultValues();
+  state.setVariableVelocity("J4",100.);const auto* group=model->getJointModelGroup("arm");
+  unsetenv("M710_PLANNING_ONLY_ALL_JOINT_RATES_EXCEPTION");
+  require(!state.satisfiesBounds() && !state.satisfiesBounds(group),"DEFAULT_STATE_VELOCITY_RETAINED");
+  setenv("M710_PLANNING_ONLY_ALL_JOINT_RATES_EXCEPTION","carton_l04_c03",1);
+  require(!state.satisfiesBounds() && !state.satisfiesBounds(group),"OTHER_TARGET_STATE_VELOCITY_RETAINED");
+  setenv("M710_PLANNING_ONLY_ALL_JOINT_RATES_EXCEPTION","carton_l05_c03",1);
+  require(state.satisfiesBounds() && state.satisfiesBounds(group),"SCOPED_STATE_VELOCITY_EXCEPTION");
+  require(state.hasVelocities() && state.getVariableVelocity("J4")==100.,"ORIGINAL_STATE_VELOCITY_UNCHANGED");
+  state.setVariablePosition("J4",2.);
+  require(!state.satisfiesBounds() && !state.satisfiesBounds(group),"STATE_POSITION_LIMIT_RETAINED");
+  state.setVariablePosition("J4",0.);state.setVariableVelocity("J4",std::numeric_limits<double>::quiet_NaN());
+  require(!state.satisfiesBounds() && !state.satisfiesBounds(group),"STATE_FINITE_RETAINED");
+  std::cout<<"PASS: explicit target, six-joint rate exception, original state position predicate, finite, duration and unchanged trajectory/metadata\n";
 }
