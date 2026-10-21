@@ -1,0 +1,13 @@
+{
+  "production_fixture": "Synthetic exposed l03_c02, one complete cycle; excluded from formal counts",
+  "development_source_v2": "Reconstructed from retained v1 export and the exact three uploaded changed files",
+  "formal_planning_integration_errors": 0,
+  "retained_events": [
+    "v1: directional_contact returned None for top normal; explicit in-plane axis added",
+    "unit fixtures: missing submitted_request ownership_transition; corrected fixture provenance",
+    "two lifted_reception assertions fail also on baseline cf40c1d; retained without geometry changes",
+    "read-only verifier initially read terminal_check.passed instead of status and free_space_rules_restored",
+    "delivery-only verification initially used host-absolute symlinks inaccessible inside chroot; relative links passed",
+    "local Python had no pytest; focused tests used existing pinned production venv; dependencies not upgraded"
+  ]
+}

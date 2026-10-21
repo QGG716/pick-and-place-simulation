@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "layout": false,
+  "checks": [
+    {
+      "target": "carton_l03_c01",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l04_c02"
+      ],
+      "actual_q_matches": true,
+      "production_fk_matches": true,
+      "trajectory_synthesized": false
+    },
+    {
+      "target": "carton_l03_c04",
+      "pair": [
+        "tool_rigid_0",
+        "carton_l04_c03"
+      ],
+      "actual_q_matches": true,
+      "production_fk_matches": true,
+      "trajectory_synthesized": false
+    }
+  ],
+  "errors": [],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+}

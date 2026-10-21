@@ -1,0 +1,14 @@
+{
+  "measured_source_commit": "f37448f998d0e82401c096a72c198b28e58fd2c2",
+  "delivery_code_commit": "87efc0ca0783c10b487749c6ea457b92fe42a2aa",
+  "planning_files_unchanged": 208,
+  "changed_read_only_files": [
+    "tools/export_m710_top_layer_replay.py",
+    "tools/lifted_reception/batch_viewer.html",
+    "tools/verify_m710_population.py"
+  ],
+  "formal_planning_runs": 1,
+  "formal_integration_errors": 0,
+  "seed": 71070,
+  "source_manifest_files": 303
+}

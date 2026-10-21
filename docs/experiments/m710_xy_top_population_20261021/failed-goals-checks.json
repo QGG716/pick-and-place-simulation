@@ -1,0 +1,144 @@
+{
+  "status": "PASS_CURRENT_REJECTED_Q_AND_WORLD",
+  "source_commit": "f37448f998d0e82401c096a72c198b28e58fd2c2",
+  "cases": [
+    {
+      "target_id": "carton_l03_c01",
+      "witness": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c02"
+        ],
+        "phase": "endpoint",
+        "q_rad": [
+          -0.3704715801173657,
+          0.8060999978101261,
+          0.557709539570775,
+          4.9449832673076344e-08,
+          -1.3224058554010105,
+          -2.7711212498641427
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "INTERSECTION_OR_CONTACT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": -1.0
+      },
+      "q_rad": [
+        -0.3704715801173657,
+        0.8060999978101261,
+        0.557709539570775,
+        4.9449832673076344e-08,
+        -1.3224058554010105,
+        -2.7711212498641427
+      ],
+      "flange_column_major": [
+        -5.092002125506312e-09,
+        -4.944297506137563e-08,
+        -0.9999999999999988,
+        0.0,
+        -1.6423476340010623e-07,
+        -0.9999999999999853,
+        4.944297589899066e-08,
+        0.0,
+        -0.9999999999999865,
+        1.6423476362215084e-07,
+        5.091994027581138e-09,
+        0.0,
+        0.29999999102074404,
+        -0.4199999838673055,
+        1.5174999968183926,
+        1.0
+      ],
+      "source_archive": "task-020.tar.gz",
+      "source_archive_sha256": "2456e333388829d8e75fdc75587b51c406c61c0caf9afa805156b7cf08e5b164",
+      "stage_id": "native-cold-7f1236dd9649411faf9b3c05bee6cdbc:2",
+      "native_response": {
+        "request_id": "12",
+        "status": "INVALID_GOAL_CLEARANCE",
+        "failure": {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "tool_rigid_0",
+            "carton_l04_c02"
+          ],
+          "query_range_m": 0.006,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.005,
+          "surface_distance_m": -1.0
+        }
+      }
+    },
+    {
+      "target_id": "carton_l03_c04",
+      "witness": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "tool_rigid_0",
+          "carton_l04_c03"
+        ],
+        "phase": "endpoint",
+        "q_rad": [
+          0.32955612014466945,
+          0.7666266804968642,
+          0.4945030698187698,
+          2.2937993434464683e-10,
+          -1.298672715806827,
+          -3.471148774407121
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "INTERSECTION_OR_CONTACT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": -1.0
+      },
+      "q_rad": [
+        0.32955612014466945,
+        0.7666266804968642,
+        0.4945030698187698,
+        2.2937993434464683e-10,
+        -1.298672715806827,
+        -3.471148774407121
+      ],
+      "flange_column_major": [
+        3.6479524956334325e-10,
+        -1.0873453526460962e-10,
+        -0.9999999999999999,
+        0.0,
+        -6.110061345765416e-10,
+        -1.0,
+        1.0873452364788138e-10,
+        0.0,
+        -1.0,
+        6.110061900876929e-10,
+        -3.647953323557568e-10,
+        0.0,
+        0.29999999906812924,
+        0.8399999997887784,
+        1.5174999995925782,
+        1.0
+      ],
+      "source_archive": "task-021.tar.gz",
+      "source_archive_sha256": "22fe7f19cda18fc4611b19df0ae70dddc0ad91e1fe25b05b960b508944bfa5a5",
+      "stage_id": "native-cold-9d55e83c20c24fdea1b8a519a6badb76:2",
+      "native_response": {
+        "request_id": "11",
+        "status": "INVALID_GOAL_CLEARANCE",
+        "failure": {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "tool_rigid_0",
+            "carton_l04_c03"
+          ],
+          "query_range_m": 0.006,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.005,
+          "surface_distance_m": -1.0
+        }
+      }
+    }
+  ]
+}
