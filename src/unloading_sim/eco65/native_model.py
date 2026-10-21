@@ -101,7 +101,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
     ET.SubElement(urdf, 'link', name='world')
     mount = ET.SubElement(urdf, 'joint', name='eco65_fixed_installation', type='fixed')
     ET.SubElement(mount, 'parent', link='world'); ET.SubElement(mount, 'child', link=c['base_link'])
-    ET.SubElement(mount, 'origin', xyz=' '.join(map(str, scene['base_position_m'])), rpy='0 0 0')
+    ET.SubElement(mount, 'origin', xyz=' '.join(map(str, scene['base_position_m'])),
+                  rpy=' '.join(map(str, scene.get('base_rpy_rad', [0., 0., 0.]))))
     original_links = [l for l in urdf.findall('link') if l.get('name') != 'world']
     for link in original_links:
         # Source independent geometry uses the pinned visual mesh convex hull.

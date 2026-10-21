@@ -49,7 +49,8 @@ def axes(ax, pose, length=.025, name=''):
 
 def manual_fk(q, scene):
     """Independent direct XML chain multiplication, distinct from URDFRobot."""
-    frames = {'base_link': transform(scene['base_position_m'])}
+    frames = {'base_link': transform(scene['base_position_m'],
+        Rotation.from_euler('xyz', scene.get('base_rpy_rad', [0.,0.,0.])).as_matrix())}
     for j, angle in zip(ET.parse(URDF).getroot().findall('joint'), q):
         origin = j.find('origin'); xyz = np.fromstring(origin.get('xyz'), sep=' ')
         rpy = np.fromstring(origin.get('rpy'), sep=' ')

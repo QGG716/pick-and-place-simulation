@@ -79,12 +79,19 @@ def rotate_camera(camera, mast, config):
     return result
 
 
+def installation_fingerprint(camera):
+    identity = camera['axis_rotation']
+    if camera.get('layout_remount'):
+        identity = dict(axis_rotation=identity, layout_remount=camera['layout_remount'])
+    return digest(identity)
+
+
 def camera_world_transform(scene, world_from_link1, extrinsics=None):
     """Current nominal optical conversion; stale calibration is not a fallback."""
     expected=scene['permanent_camera']['calibration']
     supplied=scene['camera_extrinsics'] if extrinsics is None else extrinsics
     matrix=supplied.get('T_parent_child',supplied.get('transform'))
-    installation=digest(scene['permanent_camera']['axis_rotation'])
+    installation=installation_fingerprint(scene['permanent_camera'])
     # The first remount run recorded the same nominal matrix as "transform".
     # Accept that captured descriptor only when it equals this scene's own
     # definition; external descriptors must carry the installation identity.

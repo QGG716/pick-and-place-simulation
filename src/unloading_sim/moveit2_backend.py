@@ -352,6 +352,7 @@ class ResidentMoveItClient:
         with self._lock:
             request = {**payload, "request_id": str(next(self._ids))}
             started = perf_counter()
+            completed_read_only_deadline = False
             try:
                 self.process.stdin.write(json.dumps(request, allow_nan=False)+"\n")
                 self.process.stdin.flush()
@@ -370,10 +371,20 @@ class ResidentMoveItClient:
                     raise MoveItUnavailable("MOVEIT2_REQUEST_ID_MISMATCH")
                 result["transport_and_worker_s"] = perf_counter()-started
                 if result.get("status") == "ERROR":
-                    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+                    # This is a complete, correlated reply, not an IPC timeout.
+                    # check_state_offline does not append or accept task stages;
+                    # the worker creates a fresh deadline/scene diff next time.
+                    # Keep all other errors (including planning errors) fatal.
+                    completed_read_only_deadline = (
+                        request.get("op") == "check_state_offline" and
+                        result.get("detail") == "NATIVE_ABSOLUTE_DEADLINE_EXPIRED")
+                    error = MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+                    error.response = result
+                    raise error
                 return result
             except Exception:
-                self.close()
+                if not completed_read_only_deadline:
+                    self.close()
                 raise
 
     def close(self):

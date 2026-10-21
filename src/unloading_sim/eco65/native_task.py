@@ -245,6 +245,8 @@ class NativeTask:
             return result
         except Exception as error:
             record['error'] = str(error)
+            if isinstance(error, MoveItUnavailable) and hasattr(error, 'response'):
+                record['result'] = error.response
             progress('FAILED', error=str(error), wall_s=perf_counter()-started)
             raise
         finally:

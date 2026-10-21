@@ -57,12 +57,14 @@ def accessory_meshes(s,c):
         m=m.copy();m.apply_transform(T);out.append(dict(name=name,frame=frame,mesh=m,category=category))
     for p in mast['parts']:
         if p['id'] not in ['mast_part_001','mast_part_010']:continue
-        add(p['id'],'link_1',trimesh.load(ROOT/p['collision'],process=False),T)
+        add(p['id'],'link_1',trimesh.load(ROOT/p['collision'],process=False),T@np.asarray(p.get('T_mast',np.eye(4))))
+    pole=next(p for p in mast['parts'] if p['id']=='mast_part_019')
+    head=T@np.asarray(pole.get('T_mast',np.eye(4)))
     # Exact primitive dimensions read from original mast_part_019 planar faces.
-    add('mast_pole','link_1',trimesh.creation.cylinder(radius=.0125,height=.4,sections=32),T@transform([.1045,-.00405,.208]))
+    add('mast_pole','link_1',trimesh.creation.cylinder(radius=.0125,height=.4,sections=32),head@transform([.1045,-.00405,.208]))
     for name,size,center in [('pocket_floor',[.087,.049,.002],[.113,-.00405,.409]),
         ('pocket_left',[.002,.049,.04],[.0705,-.00405,.43]),('pocket_right',[.002,.049,.04],[.1555,-.00405,.43])]:
-        add(name,'link_1',trimesh.creation.box(size),T@transform(center))
+        add(name,'link_1',trimesh.creation.box(size),head@transform(center))
     add('mounting_seat','link_1',trimesh.load(ROOT/mast['mount_interface']['seat']['mesh'],process=False))
     # A single conservative outer camera hull for external distance queries;
     # original per-part meshes remain the actual visual source.

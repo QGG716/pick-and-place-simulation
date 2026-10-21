@@ -14,10 +14,11 @@ from unloading_sim.eco65.home_candidate import make_candidate
 from unloading_sim.eco65.coupled_scene import (CONFIG, build_coupled_scene,
     coupled_conveyor_state, receiving_height_candidates, export_state_usd)
 from unloading_sim.moveit2_backend import digest
+from unloading_sim.eco65.layout_installation import CONFIG as LAYOUT_CONFIG
 
 
 def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65-20261015", usd=False,
-          camera_config=None):
+          camera_config=None, layout_config=None):
     started = perf_counter()
     old = verify_snapshot(load_json(source))
     out = Path(output).resolve()
@@ -37,6 +38,17 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
         scene, extra_assets = apply_camera_installation(scene,
             yaml.safe_load(camera_config.read_text(encoding='utf-8')), out/'camera_attachments', ROOT)
         hashes[camera_config.relative_to(ROOT).as_posix()] = file_hash(camera_config)
+        camera_pairs_unchanged = prior_pairs == effective_collision_policy(scene)['robot_mast_exemption']['exempt_pairs']
+        camera_ids_unchanged = ([r['id'] for r in old['scene']['moving_attachments']]
+                               == [r['id'] for r in scene['moving_attachments']])
+    if layout_config:
+        from unloading_sim.eco65.layout_installation import apply_layout_installation
+        layout_config = Path(layout_config).resolve()
+        scene, layout_assets = apply_layout_installation(scene,
+            yaml.safe_load(layout_config.read_text(encoding='utf-8')), out/'layout_attachments', ROOT)
+        extra_assets.update(layout_assets)
+        hashes[layout_config.relative_to(ROOT).as_posix()] = file_hash(layout_config)
+        save_json(out/'layout_installation.json', scene['layout_installation'])
     hashes[config.relative_to(ROOT).as_posix()] = file_hash(config)
     scene["config_sha256"] = hashes
     scene["scene_fingerprint"] = digest({k: v for k, v in scene.items() if k != "scene_fingerprint"})
@@ -79,6 +91,8 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
                   box_ids=[row["id"] for row in scene["boxes"]],
                   target_id=scene["box"]["id"], box_size_m=scene["box"]["size_m"],
                   base_position_m=deepcopy(scene["base_position_m"]),
+                  base_rpy_rad=scene.get('base_rpy_rad',[0.,0.,0.]),
+                  layout_installation=scene.get('layout_installation'),
                   source_belt_bounds_D_m=spec["source_belt_bounds_D_m"],
                   receiving_height_candidates=candidates, previews=previews,
                   replaced_object_ids=spec["replaced_object_ids"],
@@ -93,18 +107,17 @@ def build(source, home, output, *, config=CONFIG, native_asset_root="/work-eco65
         installation=dict(axis_rotation=camera['axis_rotation'],mount=camera['mount'],
             mount_check=mount_check(np.asarray(camera['T_link1_optical']),np.eye(4),camera),
             nominal_extrinsics=scene['camera_extrinsics'],
-            prior_mast_exemption_pairs_unchanged=(
-                prior_pairs
-                ==model['init']['collision_policy'].get('robot_mast_exemption',{}).get('exempt_pairs')))
+            prior_mast_exemption_pairs_unchanged=camera_pairs_unchanged)
         # The original small-carton source may precede the mast exemption.
         # Current ID inventory still must be unchanged by camera remounting.
-        installation['moving_attachment_ids_unchanged']=(
-            [r['id'] for r in old['scene']['moving_attachments']]
-            ==[r['id'] for r in scene['moving_attachments']])
+        installation['moving_attachment_ids_unchanged']=camera_ids_unchanged
+        installation['inventory_check_scope']='CAMERA_REMOUNT_BEFORE_OPTIONAL_BASE_MAST_LAYOUT_CHANGE'
         if (not installation['mount_check']['accepted'] or not installation['moving_attachment_ids_unchanged']
                 or not installation['prior_mast_exemption_pairs_unchanged']):
             raise ValueError('CAMERA_INSTALLATION_BINDING_INVALID')
         save_json(out/'camera_installation.json',installation)
+        save_json(out/'nominal_camera_extrinsics.json',scene['camera_extrinsics'])
+    elif layout_config:
         save_json(out/'nominal_camera_extrinsics.json',scene['camera_extrinsics'])
     return report
 
@@ -117,6 +130,9 @@ if __name__ == "__main__":
     parser.add_argument("--native-asset-root", default="/work-eco65-20261015")
     parser.add_argument("--usd", action="store_true")
     parser.add_argument("--camera-config", type=Path)
+    parser.add_argument("--layout-config", type=Path,
+                        help='Fixed base/mast installation; use '+str(LAYOUT_CONFIG.relative_to(ROOT)))
     args = parser.parse_args()
     print(build(args.source, args.home, args.output, config=args.config,
-                native_asset_root=args.native_asset_root, usd=args.usd, camera_config=args.camera_config))
+                native_asset_root=args.native_asset_root, usd=args.usd, camera_config=args.camera_config,
+                layout_config=args.layout_config))

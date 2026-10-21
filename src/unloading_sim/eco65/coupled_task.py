@@ -136,7 +136,10 @@ class CoupledTask(NativeTask):
                 # Building/serializing a request can cross the connection
                 # deadline after the entry check. Do not mistake that bounded
                 # candidate exhaustion for the whole task's absolute deadline.
-                if (str(error)=='NATIVE_TASK_BUDGET_EXHAUSTED'
+                recoverable = (str(error)=='NATIVE_TASK_BUDGET_EXHAUSTED' or
+                    (request['op']=='check_state_offline' and
+                     str(error)=='NATIVE_ABSOLUTE_DEADLINE_EXPIRED'))
+                if (recoverable
                         and self.connection_deadline is not None
                         and perf_counter()<deadline):
                     raise ValueError('NATIVE_CONNECTION_BUDGET_EXHAUSTED') from error
@@ -464,6 +467,11 @@ class CoupledTask(NativeTask):
         attached=self.checkpoint()
         heights=frozen_receive_heights(self.original_boxes[self.target['id']],
             self.spec['low_height_m'],self.spec['high_height_m'],self.desired_drop)
+        # Start with the least external-axis travel from the actual accepted
+        # height. Both frozen candidates remain available within this same
+        # connection deadline; a high belt must not consume the whole budget
+        # before the reachable lower receiver is even attempted.
+        heights.sort(key=lambda h: abs(h['height_m']-self.height_m))
         # Keep the receiver low during arm transit when the high longitudinal
         # belt obstructs link_2. The final raise is a checked fixed-q operation,
         # with the same attachment, before release.

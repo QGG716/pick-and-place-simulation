@@ -187,6 +187,7 @@ def prepare_attachments(scene, camera, output):
             maximum_penetration_m=.0004, source=deepcopy(mast['mount_interface'])))
     for part in mast['parts']:
         if part['id'] in replaced: continue
+        part_pose = M@check_transform(part.get('T_mast', np.eye(4)))
         # The connected silver bracket is concave. Decompose its original
         # surface, never its already-filled single-hull collision proxy.
         kind = 'visual' if part['id'] == 'mast_part_001' else 'collision'
@@ -201,12 +202,12 @@ def prepare_attachments(scene, camera, output):
             if not pieces: raise ValueError('MOUNT_DECOMPOSITION_EMPTY')
             for index, (vertices, faces) in enumerate(pieces):
                 ident = add(f'eco65_mast_mast_part_001__convex_{index:03d}',
-                    trimesh.Trimesh(vertices, faces, process=True), M, 'permanent_mast',
+                    trimesh.Trimesh(vertices, faces, process=True), part_pose, 'permanent_mast',
                     dict(part_id=part['id'], mesh=part[kind], sha256=part[kind+'_sha256'],
                          decomposition='CoACD_no_preprocessing_no_decimation', component=index))
                 interface(ident)
             continue
-        ident = add('eco65_mast_'+part['id'], trimesh.load(path, force='mesh', process=False), M,
+        ident = add('eco65_mast_'+part['id'], trimesh.load(path, force='mesh', process=False), part_pose,
             'permanent_mast', dict(part_id=part['id'], mesh=part[kind], sha256=part[kind+'_sha256']))
         if part['id'] == 'mast_part_001':
             interface(ident)

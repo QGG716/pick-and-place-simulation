@@ -232,9 +232,10 @@ def export(snapshot_path, home_path, config_path, out):
             dark=['mast_part_006','mast_part_016']+(['mast_part_019'] if attached else [])
             rgb=part['rgb'] or (([.035,.04,.045] if attached else [.08,.10,.12]) if part['id'] in dark else [.43,.46,.50])
             mat=material(stage,part['id'],rgb,metallic=.4,roughness=.4)
-            mesh(mast_path+'/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,np.eye(4),mat=mat)
+            part_local=np.asarray(part.get('T_mast',np.eye(4)))
+            mesh(mast_path+'/visual_'+part['id'],trimesh.load(ROOT/part['visual'],process=False),rgb,part_local,mat=mat)
             if not native_12carton:
-                mesh(mast_path+'/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],np.eye(4),True,world_T=T)
+                mesh(mast_path+'/collision_'+part['id'],trimesh.load(ROOT/part['collision'],process=False),[.6,.2,.8],part_local,True,world_T=T@part_local)
         if permanent_camera:
             if not attached: raise ValueError('PERMANENT_CAMERA_REQUIRES_J1_ATTACHMENT')
             camera_path=mast_path+'/PermanentCamera'

@@ -10,6 +10,8 @@ def equipment_identity(scene):
     identity = dict(config_sha256=scene['config_sha256'], base_position_m=scene['base_position_m'],
         T_W_D=scene['T_W_D'], boxes=scene['boxes'],
         obstacles=[o for o in scene['obstacles'] if o['owner'] != 'warehouse'])
+    if 'base_rpy_rad' in scene:
+        identity['base_rpy_rad'] = scene['base_rpy_rad']
     if scene.get('schema') == 'eco65_native_12carton_scene_v1':
         identity.update(native_world_objects=scene['native_world_objects'],
             moving_attachments=scene['moving_attachments'],

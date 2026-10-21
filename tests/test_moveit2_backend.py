@@ -97,6 +97,44 @@ def test_response_generation_mismatch_is_fatal():
     assert client.process.poll() is not None
 
 
+@pytest.mark.parametrize('op,detail,reusable',[
+    ('check_state_offline','NATIVE_ABSOLUTE_DEADLINE_EXPIRED',True),
+    ('plan','NATIVE_ABSOLUTE_DEADLINE_EXPIRED',False),
+    ('check_state_offline','UNKNOWN_MODEL_TCP_CONTEXT',False),
+])
+def test_transport_only_reuses_completed_read_only_native_deadline(op,detail,reusable):
+    import sys
+    script = '''import sys,json
+for line in sys.stdin:
+    r=json.loads(line)
+    answer={'request_id':r['request_id'],'status':'SUCCESS'}
+    if 'detail' in r: answer.update(status='ERROR',detail=r['detail'])
+    print(json.dumps(answer),flush=True)
+'''
+    client=ResidentMoveItClient([sys.executable,'-u','-c',script])
+    try:
+        with pytest.raises(MoveItUnavailable,match=detail) as failure:
+            client.request(dict(op=op,detail=detail))
+        assert failure.value.response['request_id']=='1'
+        if reusable:
+            assert client.process.poll() is None
+            result=client.request(dict(op='check_state_offline'))
+            assert result['status']=='SUCCESS' and result['request_id']=='2'
+        else:
+            assert client.process.poll() is not None
+    finally:
+        client.close()
+
+
+def test_transport_timeout_still_poisons_read_only_worker():
+    import sys
+    script='import sys,time; sys.stdin.readline(); time.sleep(2)'
+    client=ResidentMoveItClient([sys.executable,'-u','-c',script])
+    with pytest.raises(MoveItUnavailable,match='MOVEIT2_REQUEST_TIMEOUT'):
+        client.request(dict(op='check_state_offline'),timeout=.02)
+    assert client.process.poll() is not None
+
+
 def test_actual_nonzero_start_velocity_is_not_replaced_by_zero():
     scene=SimpleNamespace(snapshot={"robot":{"qd_rad_s":[0.,0.,.01,0.,0.,0.]}})
     with pytest.raises(MoveItUnavailable,match="START_VELOCITY"):

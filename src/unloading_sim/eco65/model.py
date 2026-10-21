@@ -62,7 +62,8 @@ def asset_check():
 def robot_for(tool,scene):
     require_simulation(scene)
     robot=URDFRobot.from_urdf(URDF,active_joint_names=[f"joint_{i}" for i in range(1,7)],
-        base_link="base_link",tip_link="link_6",base_position=scene["base_position_m"],tool_length=0.,
+        base_link="base_link",tip_link="link_6",base_position=scene["base_position_m"],
+        base_rpy=scene.get('base_rpy_rad',[0.,0.,0.]),tool_length=0.,
         link_radii=[.055,.055,.050,.045,.040,.035],name="official_realman_eco65_b")
     robot.tip_from_tcp=check_transform(tool["T_flange_tcp"])
     robot.self_collision_exclusions=set() # No inherited capsule/FANUC policy; World owns mesh checks.

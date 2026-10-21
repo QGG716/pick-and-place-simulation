@@ -62,7 +62,8 @@ def export_model(snapshot):
         T=np.asarray(mast['T_link1_mast'])
         for part in mast['parts']:
             if camera and part['id'] in camera['replaced_mast_parts']:continue
-            mesh_item('link_1','eco65_mast_'+part['id'],load_mesh(part['visual']),T,'visual',part.get('rgb'))
+            mesh_item('link_1','eco65_mast_'+part['id'],load_mesh(part['visual']),
+                      T@np.asarray(part.get('T_mast',np.eye(4))),'visual',part.get('rgb'))
         seat=mast.get('mount_interface',{}).get('seat')
         if seat:mesh_item('link_1','eco65_mast_mounting_seat',load_mesh(seat['mesh']),np.eye(4),'visual')
         if camera:
@@ -93,11 +94,12 @@ def export_model(snapshot):
     return dict(joints=joints,links=links,meshes=assets,joint_names=native['joint_names'],identity=native['identity'],
                 joint_limits_rad=[[float(snapshot['native_model']['official_limits'][n][k])
                     for k in ('lower','upper')] for n in native['joint_names']],
+                layout_installation=scene.get('layout_installation'),
                 camera_definition=None if not camera else dict(
                     T_link1_mast=mast['T_link1_mast'],T_mast_optical=camera['T_mast_optical'],
                     T_mast_CAD=camera['T_mast_CAD'],
                     axis_rotation=camera.get('axis_rotation'),mount=camera.get('mount'),
-                    calibration=camera.get('calibration')),
+                    calibration=camera.get('calibration'),layout_remount=camera.get('layout_remount')),
                 flange_from_contact_frame=native['process_geometry']['flange_from_contact_frame'],
                 edge_alignment=native['process_geometry'].get('edge_alignment'),
                 tcp_link=native['identity']['task_tcp_link'],flange_link='link_6',static_visual=static_visual,

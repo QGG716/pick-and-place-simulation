@@ -1,0 +1,12 @@
+schema: eco65_base_mast_remount_v1
+geometry_revision: eco65_switch_minus_x_mast_ccw90_v1
+robot_base_yaw_deg: 180.0
+switch_face_normal_base: [1.0, 0.0, 0.0]
+switch_face_normal_D: [-1.0, 0.0, 0.0]
+mast_world_yaw_delta_deg: 90.0
+rotation_reference: SAME_RAW_J1_BEFORE_AND_AFTER_INSTALLATION
+mast_pivot: J1_AXIS
+camera_orientation: PRESERVE_WORLD_ORIENTATION_AT_SAME_RAW_J1
+camera_counterrotation_part_ids: [mast_part_019]
+seat_max_thickness_m: 0.015
+enable_hardware: false

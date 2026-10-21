@@ -112,6 +112,30 @@ def read_trace(result, folder):
         return json.load(stream)
 
 
+def transition_failures(request, result):
+    """Use the checked after/sample world for a failed stopped-axis transition."""
+    transition = request.get('transition', {})
+    checks = []
+    if result.get('after_check') and transition.get('after_request'):
+        checks.append(('AFTER_STATE', transition['after_request'], result['after_check']))
+    samples = transition.get('sample_requests', [])
+    for row in result.get('sample_checks', []):
+        checks.append(('SAMPLE_'+str(row['index']), samples[row['index']], row['check']))
+    failures = []
+    for label, req, check in checks:
+        witness = check.get('failure')
+        if check.get('status') == 'SUCCESS' or not isinstance(witness, dict):
+            continue
+        process = req.get('process_policy', {})
+        state = dict(q=req['q_start'],world=req['world'],attachment=req.get('attachment'),
+            active_ids=process.get('active_ids', []),target_id=process.get('target_id'),
+            target_face=process.get('target_face'),height_m=req.get('mechanism_state',{}).get('height_m'),
+            business_interval=req.get('business_interval'),completed_ids=req.get('completed_ids',[]))
+        failures.append(dict(q=req['q_start'],witness=witness,state=state,
+            source='SAME_NATIVE_TRANSITION_'+label))
+    return failures
+
+
 def attempts_from_run(folder, records):
     """Use actual requests, responses and same-call search traces, including failures."""
     adopted = {r['record_id'] for r in records}
@@ -147,7 +171,7 @@ def attempts_from_run(folder, records):
                               position_error_m=r.get('position_error_m'),
                               orientation_error_rad=r.get('orientation_error_rad'))
                           for r in ik_results if 'q' in r]
-            witnesses = []
+            witnesses = transition_failures(req, result)
             for witness in [result.get('failure'), (result.get('basic_path_check') or {}).get('failure'),
                             *(result.get('clearance') or {}).get('rejected_examples', [])]:
                 if isinstance(witness, dict) and witness.get('q_rad'):
@@ -379,6 +403,10 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
                     break
         if height is not None:
             attempt['mechanism_ref'] = mechanism(height)
+        for failure in attempt['failure_samples']:
+            state = failure.get('state')
+            if state is not None and state['height_m'] is not None:
+                state['mechanism_ref'] = mechanism(state['height_m'])
     fixtures = []
     fixture_q = [q0] + [s['state_after']['q'] for s in segments[:4]]
     for q in fixture_q:

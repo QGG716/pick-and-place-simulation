@@ -80,7 +80,14 @@ const changed=matrix(C.T_mast_CAD).invert().multiply(matrix(C.T_mast_optical));
 check('CAMERA_CAD_OPTICAL_RIGID_RELATION',close(previous.elements,changed.elements,1e-10));
 const M=matrix(C.T_link1_mast).multiply(matrix(C.T_mast_optical)),f=new T.Vector3().setFromMatrixColumn(M,2);
 check('CAMERA_THIRTY_DEGREE_DOWNWARD_PITCH',Math.abs(f.z+.5)<1e-10);
-check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);
+if(C.layout_remount){
+const old=matrix(C.layout_remount.old_T_link1_optical),oldR=new T.Matrix4().makeRotationZ(C.layout_remount.old_base_rpy_rad[2]);
+const newR=new T.Matrix4().makeRotationZ(C.layout_remount.new_base_rpy_rad[2]);
+const oldWorld=oldR.multiply(old),newWorld=newR.multiply(M);
+check('CAMERA_WORLD_ORIENTATION_PRESERVED',[0,1,2].every(i=>new T.Vector3().setFromMatrixColumn(oldWorld,i).distanceTo(new T.Vector3().setFromMatrixColumn(newWorld,i))<1e-10));
+const base=fk(currentQ).base_link,switchNormal=new T.Vector3(1,0,0).transformDirection(base);
+check('BASE_SWITCH_FACE_MINUS_X',switchNormal.distanceTo(new T.Vector3(-1,0,0))<1e-10);
+}else check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);
 const visual=robotObjects.find(r=>r.item.id==='camera_camera_part_001'&&r.item.layer==='visual');
 const native=fk(currentQ)['eco65_camera_camera_part_001'];
 check('CAMERA_DISPLAY_NATIVE_SAME_TRANSFORM',!!visual&&!!native&&close(visual.object.matrix.elements,native.elements,1e-9));
@@ -121,6 +128,15 @@ result.complete_task=DATA.plan_summary.complete?'TESTED':'PARTIAL_ONLY';
 }else result.complete_task='NOT_RUN_NO_PLAN';
 if(DATA.attempts.length){
 document.getElementById('mode').value='search';modeChanged();
+const transitionIndex=DATA.attempts.findIndex(a=>a.failure_samples.some(f=>f.state));
+if(transitionIndex>=0){
+document.getElementById('request').value=transitionIndex;chooseRequest();
+const index=failures.findIndex(f=>f.state);inspectFailure(index);
+check('TRANSITION_FAILURE_ACTUAL_WORLD',state.world===failures[index].state.world);
+check('TRANSITION_FAILURE_ACTUAL_HEIGHT',state.height_m===failures[index].state.height_m);
+check('TRANSITION_FAILURE_HOLDS_ACTUAL_Q',close(currentQ,failures[index].q,1e-12));
+chooseRequest();check('TRANSITION_REQUEST_RESTORES_START_WORLD',state.world===active.request.world);
+}
 const policyIndices=[DATA.attempts.findIndex(a=>a.request.stage==='extraction'&&a.display_policy?.native_evidence?.active),DATA.attempts.findIndex(a=>a.request.stage==='transit'&&a.display_policy?.native_evidence)];
 for(const i of [...new Set(policyIndices.filter(i=>i>=0))]){
 document.getElementById('request').value=i;chooseRequest();policyCheck('SEARCH_'+i,active.display_policy,active.request,active.response);
