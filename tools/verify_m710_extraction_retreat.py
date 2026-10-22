@@ -21,11 +21,18 @@ def main():
     from unloading_sim.upper_arm_preference import upper_arm
     protocol=json.loads((a.run/'protocol.json').read_text())
     summary=json.loads((a.run/'summary.json').read_text())
-    assert summary['status']=='TRIALS_FINISHED' and len(summary['outcomes'])==2
-    _,connector,_=make_context('x_minus_300_y_minus_100',layout_path=a.runtime_root/protocol['active_layout_file'])
+    single=protocol.get('trial')=='l05_extra_x100'
+    targets=('carton_l05_c03',) if single else ('carton_l05_c03','carton_l04_c02')
+    variant='x_minus_500_y_minus_100' if single else 'x_minus_300_y_minus_100'
+    expected_base=[-1.825,.25,.6] if single else [-1.625,.25,.6]
+    assert summary['status']=='TRIALS_FINISHED' and len(summary['outcomes'])==len(targets)
+    assert tuple(o['target_id'] for o in summary['outcomes'])==targets
+    assert protocol['active_layout_file']==f'configs/workcells/m710id70_unloading_layout_v1_mount_{variant}.yaml'
+    if single:assert protocol['motion_limit_exception'] is False
+    _,connector,_=make_context(variant,layout_path=a.runtime_root/protocol['active_layout_file'])
     robot=connector.robot
     assert type(robot).__name__=='PinocchioHppFclBackend'
-    np.testing.assert_allclose(robot.base_transform[:3,3],[-1.625,.25,.6],atol=1e-12)
+    np.testing.assert_allclose(robot.base_transform[:3,3],expected_base,atol=1e-12)
     rows=[]
     for outcome in summary['outcomes']:
         target=outcome['target_id'];run=a.run/target;folder=run/'seed-71070'
@@ -42,7 +49,7 @@ def main():
             trace=json.loads((d/'search-trace.json').read_text());detail=json.loads((d/'attempt.json').read_text())
             urdf=ET.fromstring(trace['model']['parameters']['robot_description'])
             joint=next(j for j in urdf.findall('joint') if j.find('parent').get('link')=='world' and j.find('child').get('link')=='base_link')
-            np.testing.assert_allclose(list(map(float,joint.find('origin').get('xyz').split())),[-1.625,.25,.6],atol=1e-12)
+            np.testing.assert_allclose(list(map(float,joint.find('origin').get('xyz').split())),expected_base,atol=1e-12)
             witnesses=[];local=Counter()
             for c in calls:
                 local['native_requests']+=1
@@ -92,8 +99,8 @@ def main():
             accepted=accepted,verification=checked,native_task_ids=native_ids))
     report=dict(**FLAGS,source_commit=protocol['source_commit'],worker_sha256=protocol['worker_sha256'],
         verifier_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),rows=rows,
-        completed=sum(r['complete'] for r in rows),targets=2,experiment_wall_s=summary['experiment_wall_s'],
-        scope='TWO_INDEPENDENT_PLANNING_TRIALS_NOT_WHOLE_STACK_RATE')
+        completed=sum(r['complete'] for r in rows),targets=len(targets),experiment_wall_s=summary['experiment_wall_s'],
+        scope='ONE_L05_EXTRA_X_100_TRIAL' if single else 'TWO_INDEPENDENT_PLANNING_TRIALS_NOT_WHOLE_STACK_RATE')
     save(a.run/'verification.json',report)
     print(json.dumps([{k:r[k] for k in ('target_id','complete','planning_wall_s','counts')} for r in rows]))
 

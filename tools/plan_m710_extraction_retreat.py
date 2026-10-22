@@ -1,4 +1,4 @@
-"""Two independent complete-cycle trials after the authorized extra -X 200 mm.
+"""Explicit user-authorized mounting trials using the complete-cycle planner.
 
 Keep each original task's initial q, carton world, receiver height and ledger.
 No previous candidate, trajectory, attachment or native parent is imported.
@@ -30,33 +30,50 @@ def main():
     p.add_argument('--source-manifest', type=Path, required=True)
     p.add_argument('--worker-command', default='/bin/bash /worker.sh')
     p.add_argument('--worker-binary', type=Path, default=Path('/mount-build/m710_moveit_worker'))
+    p.add_argument('--trial', choices=('extra_x200', 'l05_extra_x100'), default='extra_x200')
     args = p.parse_args()
     args.development = False
     identity = source_identity(args)
     old_path = args.previous_run/'summary.json'
     old = json.loads(old_path.read_text())
+    single = args.trial == 'l05_extra_x100'
+    variant = 'x_minus_500_y_minus_100' if single else 'x_minus_300_y_minus_100'
+    layout_file = f'configs/workcells/m710id70_unloading_layout_v1_mount_{variant}.yaml'
+    previous_variant = 'x_minus_400_y_minus_100' if single else 'xy_minus_100'
+    targets = ('carton_l05_c03',) if single else TARGETS
+    expected_base = [-1.825, .250, .600] if single else [-1.625, .250, .600]
+    if single:
+        prior_protocol = json.loads((args.previous_run/'protocol.json').read_text())
+        if (prior_protocol['mounting_variant'] != previous_variant
+                or prior_protocol['scope'] != 'XY_TOP_NEW_WORLD_40'
+                or old['source_commit'] != prior_protocol['source_commit']):
+            raise ValueError('L05_RETREAT_PREDECESSOR_LAYOUT_MISMATCH')
+        prior = next(o for o in old['outcomes'] if o['target_id'] == targets[0])
+        if prior['completed_count'] != 0 or len(prior['root']['world_cartons']) != 29:
+            raise ValueError('L05_RETREAT_PREDECESSOR_FAILURE_MISMATCH')
     args.output.mkdir(parents=True, exist_ok=False)
     args.task_budget_s, args.stage_budget_s, args.ipc_timeout_s = 300., 90., 100.
     args.direct_first, args.upper_arm_preference = True, True
     args.receive_height_range, args.low_top_minimum_m = (.60, 2.10), .60
     args.right_front_eccentric = args.junction_only = False
-    original, built, audit = make_context('x_minus_300_y_minus_100', layout_path=ROOT/LAYOUT)
+    original, built, audit = make_context(variant, layout_path=ROOT/layout_file)
     assert type(built.robot).__name__ == 'PinocchioHppFclBackend'
     layout = original.policy.layout_validation.layout
-    np.testing.assert_allclose(built.robot.base_transform[:3, 3], [-1.625, .250, .600], atol=1e-12)
-    previous_layout = load_workcell_layout(ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_xy_minus_100.yaml')
+    np.testing.assert_allclose(built.robot.base_transform[:3, 3], expected_base, atol=1e-12)
+    previous_layout = load_workcell_layout(ROOT/f'configs/workcells/m710id70_unloading_layout_v1_mount_{previous_variant}.yaml')
     for key in ('assembly', 'chassis', 'conveyors', 'tool', 'trailer', 'carton_stack'):
         assert layout.data[key] == previous_layout.data[key], key
     worker_sha = hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
-    protocol = dict(**identity, **FLAGS, active_layout_file=LAYOUT, targets=TARGETS,
-        additional_mount_translation_world_m=[-.2, 0., 0.], base_world_m=[-1.625, .250, .600],
+    protocol = dict(**identity, **FLAGS, active_layout_file=layout_file, targets=targets,
+        trial=args.trial, mounting_variant=variant, motion_limit_exception=False,
+        additional_mount_translation_world_m=[-.1 if single else -.2, 0., 0.], base_world_m=expected_base,
         worker_sha256=worker_sha, seed=71070, task_budget_s=300., stage_budget_s=90.,
-        scope='TWO_INDEPENDENT_EXTRA_X_200_TRIALS_NOT_CONTINUOUS_BATCH',
+        scope='ONE_L05_EXTRA_X_100_TRIAL' if single else 'TWO_INDEPENDENT_EXTRA_X_200_TRIALS_NOT_CONTINUOUS_BATCH',
         previous_summary_sha256=hashlib.sha256(old_path.read_bytes()).hexdigest(),
         command=[sys.executable, *sys.argv], layout_audit=audit)
     save(args.output/'protocol.json', protocol)
     checks, cases = [], []
-    for target in TARGETS:
+    for target in targets:
         previous = next(o for o in old['outcomes'] if o['target_id'] == target)
         root = deepcopy(previous['root'])
         receipt = root['predecessor_final_state_receipt']
@@ -83,8 +100,8 @@ def main():
         save(run/'input.json', check)
         # Existing lineage verifier and replay consume this established format.
         save(run/'protocol.json', dict(**identity, **FLAGS, seeds=[71070],
-            scope='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON', variant='x_minus_300_y_minus_100',
-            active_layout_file=LAYOUT, frozen=state.frozen.evidence(), scoped_target_ids=[target],
+            scope='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON', variant=variant,
+            active_layout_file=layout_file, frozen=state.frozen.evidence(), scoped_target_ids=[target],
             original_cartons=[box_message(b) for b in original.cartons],
             configured_initial_q=state.q.tolist(), initial_root=state.root(),
             historical_completed_count=len(state.ledger), right_front_eccentric=False,
@@ -104,7 +121,7 @@ def main():
         outcomes.append(dict(target_id=target, complete=result['completed_count'] == 1,
             status=result['status'], planning_wall_s=perf_counter()-started,
             initial=result['initial'], terminal=result['terminal'], attempts=result['attempts']))
-        save(args.output/'summary.json', dict(**protocol, status='RUNNING' if len(outcomes)<2 else 'TRIALS_FINISHED',
+        save(args.output/'summary.json', dict(**protocol, status='RUNNING' if len(outcomes)<len(targets) else 'TRIALS_FINISHED',
             outcomes=outcomes, experiment_wall_s=perf_counter()-began))
         print(json.dumps(dict(event='RETREAT_TRIAL_RECORDED', target=target,
             complete=outcomes[-1]['complete'], wall_s=outcomes[-1]['planning_wall_s'])), flush=True)

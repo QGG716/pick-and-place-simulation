@@ -86,11 +86,15 @@ def test_population_evidence_rejects_mixed_mount_labels(variant, expected):
         expected_population_mount(protocol)
 
 
-def test_additional_x_100_from_current_mount_keeps_the_rest_of_the_world():
-    old = load_workcell_layout(ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml')
-    layout = load_workcell_layout(ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_400_y_minus_100.yaml')
-    np.testing.assert_allclose(layout.robot_base_transform()[:3, 3], [-1.725, .250, .600], atol=1e-12)
-    assert layout.data['robot']['base_front_edge_x_world_m'] == -1.500
+@pytest.mark.parametrize('old_x,new_x,base_x,front_x', [
+    (300, 400, -1.725, -1.500),
+    (400, 500, -1.825, -1.600),
+])
+def test_additional_x_100_from_current_mount_keeps_the_rest_of_the_world(old_x,new_x,base_x,front_x):
+    old = load_workcell_layout(ROOT/f'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_{old_x}_y_minus_100.yaml')
+    layout = load_workcell_layout(ROOT/f'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_{new_x}_y_minus_100.yaml')
+    np.testing.assert_allclose(layout.robot_base_transform()[:3, 3], [base_x, .250, .600], atol=1e-12)
+    assert layout.data['robot']['base_front_edge_x_world_m'] == front_x
     assert audit_layout_constraints(layout)['overall_status'] == 'PASS'
     assert layout.assets == old.assets
     for key in ('assembly', 'chassis', 'conveyors', 'tool', 'trailer', 'carton_stack'):
