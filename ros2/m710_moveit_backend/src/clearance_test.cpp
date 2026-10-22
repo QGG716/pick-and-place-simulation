@@ -158,6 +158,19 @@ void cupNeighborCases(J& out) {
 }
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
+  J pairPolicy={{"schema","eco65_pair_collision_policy_v5"},{"robot_tool_exemption",{
+    {"schema","eco65_named_robot_tool_exemption_v1"},{"scope","EXACT_LINK_3_VS_PART_026_ONLY"},
+    {"exempt_pairs",J::array({J::array({"link_3","part_026"})})},{"tool_semantic","conservative_rigid"},
+    {"tool_mesh_sha256","e40dd92e8d06fba77b65e5b078ad7f0ab21bb9b1ad29e564ab4e3675be18e9f4"},
+    {"geometry_retained",true},{"allow_intersection",true},{"physical_execution","NOT_RUN"},{"execution_ready",false}}}};
+  require(m710::eco65RobotToolExempt(pairPolicy,"link_3","part_026"),"EXACT_PAIR_REQUIRED");
+  require(m710::eco65RobotToolExempt(pairPolicy,"part_026","link_3"),"EXACT_PAIR_SYMMETRIC");
+  for(const auto& pair:J::array({J::array({"link_2","part_026"}),J::array({"link_3","part_027"}),
+      J::array({"link_6","part_041_region_2"}),J::array({"part_026","robot_mount_plate"})}))
+    require(!m710::eco65RobotToolExempt(pairPolicy,pair[0],pair[1]),"OTHER_PAIRS_RETAINED");
+  auto forged=pairPolicy;forged["robot_tool_exemption"]["exempt_pairs"].push_back({"link_3","part_027"});
+  bool scopeRejected=false;try{m710::eco65RobotToolPairs(forged);}catch(const std::exception&){scopeRejected=true;}
+  require(scopeRejected,"WIDER_ROBOT_TOOL_PERMISSION_REJECTED");out["named_robot_tool_exemption"]="PASS";
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.006}) {
     auto s=scene(gap);m710::Clearance c(s,policy(),mode);bool valid=c.check(s->getCurrentState());
     require(valid==(gap+1e-9>=.005),"THRESHOLD_CLASSIFICATION");out["threshold_cases"].push_back({{"gap",gap},{"valid",valid},{"failure",c.last_failure}});

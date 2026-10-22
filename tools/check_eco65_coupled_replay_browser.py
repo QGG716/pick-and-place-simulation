@@ -18,6 +18,10 @@ const objectIds=world=>world.map(b=>b.id).sort();
 const policyCheck=(name,display,request,response,requireNative=false)=>{
 const source=request.clearance_policy?.source_policy||request.process_policy?.collision_policy;
 check(name+'_POLICY_SCHEMA',display.policy_schema===source?.schema);
+if(source?.robot_tool_exemption){
+check(name+'_ROBOT_TOOL_POLICY_DESCRIPTOR',same(display.robot_tool_exemption,source.robot_tool_exemption));
+check(name+'_EXACT_ROBOT_TOOL_PAIR',same(source.robot_tool_exemption.exempt_pairs,[['link_3','part_026']]));
+}
 check(name+'_POLICY_DESCRIPTOR',same(display.extraction_carton_contact??null,source?.extraction_carton_contact??null));
 if(source?.cup_neighbor_contact){
 check(name+'_CUP_POLICY_DESCRIPTOR',same(display.cup_neighbor_contact,source.cup_neighbor_contact));

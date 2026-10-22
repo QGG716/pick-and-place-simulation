@@ -15,6 +15,8 @@ from ..moveit2_backend import digest
 MAST_MODE = 'robot_body_vision_mast_exempt_v2'
 EXTRACTION_CARTON_MODE = 'attached_target_remaining_original_cartons_during_extraction'
 CUP_NEIGHBOR_MODE = 'named_terminal_bands_remaining_original_cartons'
+ROBOT_TOOL_MODE = 'explicit_link_3_part_026_simulation_exemption_v1'
+PART_026_SHA256 = 'e40dd92e8d06fba77b65e5b078ad7f0ab21bb9b1ad29e564ab4e3675be18e9f4'
 CUP_LIP_LINKS = [f'part_{i:03d}_lip' for i in range(2, 25, 2)]
 ROBOT_BODY_LINKS = ['base_link', 'link_1', 'link_2', 'link_3', 'link_4', 'link_5', 'link_6']
 LEGACY_POLICY = dict(schema='eco65_pair_collision_policy_v1', collision_margin_m=.002,
@@ -125,7 +127,7 @@ def extraction_carton_pairs(policy, *, continuous_task_mode, stage, target_id,
     if (rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1'
             or stage != 'extraction' or attached_target_id is None):
         return []
-    if (policy.get('schema') not in ('eco65_pair_collision_policy_v3', 'eco65_pair_collision_policy_v4')
+    if (policy.get('schema') not in ('eco65_pair_collision_policy_v3', 'eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5')
             or rule.get('schema') != 'eco65_attached_target_stack_exemption_v1'
             or rule.get('continuous_task_mode') != continuous_task_mode
             or rule.get('stage') != stage or rule.get('allow_intersection') is not True
@@ -166,7 +168,7 @@ def cup_neighbor_pairs(policy, *, continuous_task_mode, target_id, world_carton_
     rule = policy.get('cup_neighbor_contact')
     if rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1':
         return []
-    if (policy.get('schema') != 'eco65_pair_collision_policy_v4'
+    if (policy.get('schema') not in ('eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5')
             or rule.get('schema') != 'eco65_cup_neighbor_contact_v1'
             or rule.get('terminal_band_links') != CUP_LIP_LINKS):
         raise ValueError('CUP_NEIGHBOR_POLICY_BINDING_INVALID')
@@ -179,10 +181,24 @@ def cup_neighbor_pairs(policy, *, continuous_task_mode, target_id, world_carton_
             for box in sorted(world-completed-{target_id})]
 
 
+def robot_tool_exemption():
+    """One user-authorized rigid pair; no robot/tool category-wide permission."""
+    return dict(schema='eco65_named_robot_tool_exemption_v1',
+        scope='EXACT_LINK_3_VS_PART_026_ONLY',
+        authorization='2026-10-22_USER_AUTHORIZED_LINK_3_PART_026_SIMULATION_CONTACT',
+        exempt_pairs=[['link_3', 'part_026']], tool_semantic='conservative_rigid',
+        tool_mesh_sha256=PART_026_SHA256, geometry_retained=True,
+        allow_intersection=True, physical_execution='NOT_RUN', execution_ready=False,
+        retained_checks=['all_other_robot_tool_pairs', 'robot_self_nonexempt',
+                         'tool_vs_environment', 'robot_vs_environment', 'payload_checks'])
+
+
 def effective_collision_policy(scene):
     policy = deepcopy(LEGACY_POLICY)
     mode = scene.get('collision_policy_mode')
     if mode is None:
+        if scene.get('robot_tool_exemption_mode') is not None:
+            raise ValueError('ROBOT_TOOL_EXEMPTION_REQUIRES_BOUND_COUPLED_POLICY')
         if scene.get('extraction_carton_contact_mode') is not None or scene.get('cup_neighbor_contact_mode') is not None:
             raise ValueError('EXTRACTION_CARTON_CONTACT_REQUIRES_COUPLED_SCENE')
         return policy
@@ -201,4 +217,10 @@ def effective_collision_policy(scene):
         policy.update(schema='eco65_pair_collision_policy_v4',
                       compliant_cup_neighbor_contact_mode=CUP_NEIGHBOR_MODE,
                       cup_neighbor_contact=cup_neighbor_exemption(scene))
+    if scene.get('robot_tool_exemption_mode') is not None:
+        if (scene['robot_tool_exemption_mode'] != ROBOT_TOOL_MODE or
+                policy['schema'] != 'eco65_pair_collision_policy_v4'):
+            raise ValueError('ROBOT_TOOL_EXEMPTION_EXACT_SCOPE_REQUIRED')
+        policy.update(schema='eco65_pair_collision_policy_v5',
+                      robot_tool_exemption=robot_tool_exemption())
     return policy

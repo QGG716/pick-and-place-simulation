@@ -231,7 +231,10 @@ public:
       if(robot!=nativeFrames().flange_link || !owned.count(tool) || bands_.count(tool) ||
          !mounted.insert(tool).second || mount.at("maximum_penetration_m")!=.0004)
         throw std::runtime_error("ECO65_MOUNT_IDENTITY_INVALID");
-      mount_pairs.push_back({solid(state,robot),solid(state,tool)});
+      // Only the separately validated exact user pair can skip an independent
+      // FCL contact check. Current flange contacts are link_6 and remain checked.
+      if(!eco65RobotToolExempt(spec_.at("collision_policy"),robot,tool))
+        mount_pairs.push_back({solid(state,robot),solid(state,tool)});
       acm.setEntry(robot,tool,true);
     }
     if(spec_.contains("fixed_attachment_interfaces")) {

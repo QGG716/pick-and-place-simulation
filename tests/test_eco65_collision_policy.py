@@ -6,6 +6,28 @@ from unloading_sim.eco65.collision_policy import (
     effective_collision_policy, LEGACY_POLICY, MAST_MODE, ROBOT_BODY_LINKS,
     EXTRACTION_CARTON_MODE, extraction_carton_pairs)
 from unloading_sim.eco65.collision_policy import CUP_NEIGHBOR_MODE, CUP_LIP_LINKS, cup_neighbor_pairs
+from unloading_sim.eco65.collision_policy import ROBOT_TOOL_MODE
+
+
+def test_explicit_link3_part026_permission_preserves_existing_rules():
+    scene = coupled_inventory()
+    scene['cup_neighbor_contact_mode'] = CUP_NEIGHBOR_MODE
+    scene['coupled_conveyor_spec']['config']['cup_neighbor_contact_mode'] = CUP_NEIGHBOR_MODE
+    before = effective_collision_policy(scene)
+    scene['robot_tool_exemption_mode'] = ROBOT_TOOL_MODE
+    policy = effective_collision_policy(scene)
+    assert policy['schema'] == 'eco65_pair_collision_policy_v5'
+    assert policy['robot_tool_exemption']['exempt_pairs'] == [['link_3', 'part_026']]
+    assert {k:policy[k] for k in before if k!='schema'} == {k:v for k,v in before.items() if k!='schema'}
+    ids = [b['id'] for b in scene['boxes']]; target = scene['target_box_id']
+    assert len(cup_neighbor_pairs(policy, continuous_task_mode='eco65_coupled_cycle_v1',
+        target_id=target, world_carton_ids=ids)) == 132
+    assert len(extraction_carton_pairs(policy, continuous_task_mode='eco65_coupled_cycle_v1',
+        stage='extraction', target_id=target, attached_target_id=target,
+        world_carton_ids=[i for i in ids if i!=target])) == 11
+    scene['robot_tool_exemption_mode'] = 'all_robot_tool'
+    with pytest.raises(ValueError, match='EXACT_SCOPE'):
+        effective_collision_policy(scene)
 
 
 def inventory():

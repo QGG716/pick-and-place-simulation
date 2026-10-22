@@ -52,6 +52,7 @@ def policy_display(request=None, result=None, *, configured_policy=None):
     source = source or {}
     descriptor = source.get('extraction_carton_contact')
     display = dict(policy_schema=source.get('schema'), policy_mode=source.get('mode'),
+                   robot_tool_exemption=deepcopy(source.get('robot_tool_exemption')),
                    extraction_carton_contact=deepcopy(descriptor),
                    source='FROZEN_MODEL_CONFIGURATION' if request is None else 'ACTUAL_NATIVE_REQUEST_POLICY',
                    request_scope_applies=None, permitted_pairs=[], native_evidence=None,

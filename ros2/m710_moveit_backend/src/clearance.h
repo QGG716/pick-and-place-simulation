@@ -54,8 +54,13 @@ public:
             throw std::runtime_error("ECO65_MAST_SRDF_ACM_MISMATCH");
         }
       }
-      if(source.at("schema")=="eco65_pair_collision_policy_v3" ||
-          source.at("schema")=="eco65_pair_collision_policy_v4") {
+      for(const auto& pair:eco65RobotToolPairs(source)) {
+        collision_detection::AllowedCollision::Type allowed;
+        if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||
+            allowed!=collision_detection::AllowedCollision::ALWAYS)
+          throw std::runtime_error("ECO65_ROBOT_TOOL_SRDF_ACM_MISMATCH");
+      }
+      if(source.at("schema")=="eco65_pair_collision_policy_v3" || eco65HasCupPolicy(source)) {
         if(request.is_null() || request.at("clearance_policy")!=policy)
           throw std::runtime_error("ECO65_EXTRACTION_RUNTIME_CONTEXT_REQUIRED");
         const auto expected=eco65ExtractionNeighbors(request);
@@ -73,7 +78,7 @@ public:
             throw std::runtime_error("ECO65_EXTRACTION_PERMISSION_LEAKED_TO_OTHER_STAGE");
         }
       }
-      if(source.at("schema")=="eco65_pair_collision_policy_v4") {
+      if(eco65HasCupPolicy(source)) {
         for(const auto& pair:eco65CupNeighborPairs(request)) {
           collision_detection::AllowedCollision::Type allowed;
           if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||

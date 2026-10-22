@@ -1118,6 +1118,7 @@ public:
         m710::validateEco65ExtractionContact(bound_policy,bound_process_geometry,
           req.at("coupled_cycle_binding").at("original_cartons"));
       m710::validateEco65CupNeighbors(bound_policy,bound_process_geometry,bound_compliant);
+      m710::validateEco65RobotToolExemption(bound_policy,model,bound_process_geometry,bound_tools);
       const auto continuous_mode=req.value("continuous_task_mode",std::string());
       if(!continuous_mode.empty()) {
         if(continuous_mode!=m710::kEcoCycleMode || !directed_j1 || !planning_only ||

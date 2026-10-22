@@ -44,6 +44,13 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         geometry['fixed_attachment_interfaces'] = fixed_interfaces
     if 'robot_mast_exemption' in policy:
         geometry['robot_mast_exemption'] = policy['robot_mast_exemption']
+    if 'robot_tool_exemption' in policy:
+        rule = policy['robot_tool_exemption']
+        parts = [p for p in tool['collisions'] if p['id'] == 'part_026']
+        if (len(parts) != 1 or parts[0]['semantic'] != rule['tool_semantic'] or
+                parts[0]['mesh_sha256'] != rule['tool_mesh_sha256']):
+            raise ValueError('ROBOT_TOOL_EXEMPTION_SOURCE_CHANGED')
+        geometry['robot_tool_exemption'] = rule
     if 'extraction_carton_contact' in policy:
         geometry['extraction_carton_contact'] = policy['extraction_carton_contact']
     if 'cup_neighbor_contact' in policy:
@@ -194,6 +201,11 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
                       reason='Explicit_simulation_robot_vision_mast_exemption_v1')
     # Named flange and J1 mount contacts are checked geometrically by
     # Eco65Process at the contact tolerance; they are not SRDF exemptions.
+    for a, b in policy.get('robot_tool_exemption', {}).get('exempt_pairs', []):
+        if a != 'link_3' or b != 'part_026' or b not in names:
+            raise ValueError('ROBOT_TOOL_EXEMPTION_MODEL_LINK_MISSING')
+        ET.SubElement(srdf, 'disable_collisions', link1=a, link2=b,
+                      reason='Explicit_user_simulation_link_3_part_026_v1')
     params = {'robot_description': ET.tostring(urdf, encoding='unicode'),
               'robot_description_semantic': ET.tostring(srdf, encoding='unicode')}
     pg = c['planning_group']; limits = c['simulation_limits']
@@ -236,6 +248,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         identity['extraction_carton_contact_fingerprint'] = digest(policy['extraction_carton_contact'])
     if 'cup_neighbor_contact' in policy:
         identity['cup_neighbor_contact_fingerprint'] = digest(policy['cup_neighbor_contact'])
+    if 'robot_tool_exemption' in policy:
+        identity['robot_tool_exemption_fingerprint'] = digest(policy['robot_tool_exemption'])
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
         collision_policy=policy, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',
