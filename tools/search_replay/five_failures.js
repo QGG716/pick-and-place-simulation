@@ -2,9 +2,9 @@
 const diagnosticStyle=document.createElement('style');
 diagnosticStyle.textContent=`main{grid-template-columns:360px 1fr}aside>section,aside>details{display:none}aside>#failurePanel{display:block;border:0}#hud{top:auto;bottom:58px;font-size:13px;max-width:520px}#failurePanel h2{font-size:20px;margin:14px 0 8px}#failurePanel p{line-height:1.65;margin:8px 0}#failurePanel .case-buttons{display:grid;gap:6px}#failurePanel .case-buttons button{text-align:left;padding:9px 10px}#failurePanel .case-buttons button.active{border-color:#69d9ea;background:#19485b}#failurePanel .stage-row{display:flex;flex-wrap:wrap;gap:5px;margin:14px 0}.stage-chip{padding:4px 6px;border-radius:4px;font-size:12px;background:#263346}.stage-chip.ok{color:#71e5b5}.stage-chip.bad{color:#ffb575}.stage-chip.idle{color:#8b9aaf}#failurePanel .legend{font-size:12px;color:#b6c9dc}#failurePanel select{width:100%}#failurePanel details{font-size:12px;margin-top:14px}#failurePanel .counter{font-size:12px;color:#a9bfd4}header h1{font-size:20px}#notice{font-size:11px}.evidence-title{color:#ffc789}#failurePanel #regionControls[hidden]{display:none}@media(max-width:900px){main{grid-template-columns:300px 1fr}aside{padding:10px}}`;
 document.head.append(diagnosticStyle);
-document.title='5 箱失败原因 · 本轮原生记录';
-document.querySelector('h1').textContent='5 箱失败原因 · 三维检查';
-document.querySelector('header .badge').innerHTML='本次规划记录 · 非物理执行<br>机器人安装 −X / −Y 各 100 mm';
+document.title=DATA.inspection_title||'5 箱失败原因 · 本轮原生记录';
+document.querySelector('h1').textContent=DATA.inspection_title||'5 箱失败原因 · 三维检查';
+document.querySelector('header .badge').innerHTML=DATA.inspection_subtitle||'本次规划记录 · 非物理执行<br>机器人安装 −X / −Y 各 100 mm';
 $('identity').textContent='实测源码 '+DATA.raw.source_commit.slice(0,12)+' · 拖动旋转 / 滚轮缩放 / 右键平移';
 const failurePanel=document.createElement('section');failurePanel.id='failurePanel';
 failurePanel.innerHTML=`<div class="case-buttons">${DATA.inspection_cases.map((c,i)=>`<button data-case="${i}">${c.target_id.replace('carton_','')} · ${c.kind==='collision'?'工具碰撞':c.kind==='region'?'抽离未完成':'IK 未求解'}</button>`).join('')}</div>
@@ -16,7 +16,7 @@ failurePanel.innerHTML=`<div class="case-buttons">${DATA.inspection_cases.map((c
 <label><input type="checkbox" id="diagnosticGhosts" checked> 显示请求位置</label>
 <label>背景透明度 <input id="failureOpacity" type="range" min="0" max=".8" step=".05" value=".15"></label>
 <details><summary>本次原始状态与证据</summary><pre id="failureEvidence"></pre></details>
-<p class="counter">5 箱都未完成完整抓放。图中每个箱的环境取自它当时的请求，不是将最终剩余场景套到所有任务上。</p>`;
+<p class="counter">${DATA.inspection_summary||'5 箱都未完成完整抓放。图中每个箱的环境取自它当时的请求，不是将最终剩余场景套到所有任务上。'}</p>`;
 document.querySelector('aside').prepend(failurePanel);
 const annotationGroup=new T.Group(),labelGroup=new T.Group(),sampleGroup=new T.Group();scene.add(annotationGroup,labelGroup,sampleGroup);
 let failureIndex=0;
@@ -89,4 +89,4 @@ $('regionSample').oninput=e=>showRegionSample(Number(e.target.value));$('focusFa
 $('failureOpacity').oninput=styleFailureWorld;$('diagnosticLabels').onchange=e=>labelGroup.visible=e.target.checked;
 $('diagnosticGhosts').onchange=e=>annotationGroup.visible=sampleGroup.visible=e.target.checked;
 window.failureInspection={show:showFailure,get index(){return failureIndex;},get q(){return currentQ;},get case(){return DATA.inspection_cases[failureIndex];}};
-const initialCase=DATA.inspection_cases.findIndex(c=>c.target_id==='carton_'+location.hash.slice(1));showFailure(initialCase>=0?initialCase:2,false);resize();
+const initialCase=DATA.inspection_cases.findIndex(c=>c.target_id==='carton_'+location.hash.slice(1));showFailure(initialCase>=0?initialCase:Math.min(2,DATA.inspection_cases.length-1),false);resize();

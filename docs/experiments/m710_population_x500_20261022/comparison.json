@@ -1,0 +1,26 @@
+{
+  "previous_source_commit": "90c83043005797e07c8671fccf9da862f6484ac7",
+  "source_commit": "66604f4fd4a346be8d1947f3d3d44c544a5ad407",
+  "previous_completed": 18,
+  "current_completed": 20,
+  "denominator": 40,
+  "gained": [
+    "carton_l04_c03",
+    "carton_l05_c03"
+  ],
+  "lost": [],
+  "initial_cartons_equal": true,
+  "initial_q_equal": true,
+  "initial_height_equal": true,
+  "current_mount_world_m": [
+    -1.825,
+    0.25,
+    0.6
+  ],
+  "previous_mount_world_m": [
+    -1.725,
+    0.25,
+    0.6
+  ],
+  "scope": "SEPARATE_MEASURED_NEW_WORLD_RUNS_NOT_NONREGRESSION_PROOF"
+}

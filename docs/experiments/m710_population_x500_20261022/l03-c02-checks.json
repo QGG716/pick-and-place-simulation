@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "source_commit": "66604f4fd4a346be8d1947f3d3d44c544a5ad407",
+  "source_archive_sha256": "c361a7a68fd48d93b17e068fde95c865d767fcd57a0b62d4ad97f4b81768706b",
+  "all_source_files_verified": true,
+  "production_backend": "PinocchioHppFclBackend",
+  "ik_calls": 344,
+  "ik_success": 0,
+  "collision_witnesses": 0,
+  "generated_robot_motion_points": 0,
+  "lift_checked_samples": 56,
+  "solver_calls_added": 0,
+  "physical_execution": "NOT_RUN"
+}
