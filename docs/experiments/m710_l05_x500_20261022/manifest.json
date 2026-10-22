@@ -1,6 +1,7 @@
 {
   "source_commit": "e0c33a6b599eff6493e320b9f7242e927b1e7834",
   "sha256": {
+    ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
     "browser-checks.json": "b43a1c2ea71ea7c27b06abcdea4f3c06d39a804a913bf4d6bb270eb2594b135f",
     "comparison.json": "7acd9adc7f8af04b8f8e7cc97f675f0a3c8ab24e7a3a21266ad0a81b1903b251",
     "costs.json": "b5ef9fb0503cc6ca8b590bb75e4acece4bb15413e4f62185239efa1669899679",
@@ -21,7 +22,7 @@
     "LICENSE.three": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84",
     "machine.json": "d2903d19f35d876203874a7f5f502bd3d4c1b647a0934c11ab44894b7b01c8ea",
     "measured-source.tar.gz": "8dec7338311166a5f9f6f177a1f2feaa65002a168f751832fa99055a563c409d",
-    "offline-replay.zip": "e00a4dd0249c15abd6f5d788b601691aea3c4e72658bfe8178ab2d24b40b7622",
+    "offline-replay.zip": "65672f1f962dc7df6150f6601126fc7a43c324b8defc6f50a7098fd574ac209e",
     "protocol.json": "2748cfb58d5fbb31be5665d9803af7390989b85317f94f346a83873f2943b6f0",
     "raw-records.tar.xz": "7edd442127df4780bfb9ab168eb71d3596cdca7750e06697e524bcd0d1ca1afe",
     "README.txt": "d9b4eb6029fba3850e192b2b0b6f76dec80d08b824aa2d1a4a9cc7951683315b",
