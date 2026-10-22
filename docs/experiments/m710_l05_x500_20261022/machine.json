@@ -1,0 +1,7 @@
+{
+  "platform": "Linux-5.15.0-25-generic-x86_64-with-glibc2.35",
+  "cpu": "Genuine Intel(R) CPU $0000%@",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, 595.91.07",
+  "planning_device": "CPU",
+  "physical_execution": "NOT_RUN"
+}

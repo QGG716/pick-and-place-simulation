@@ -1,0 +1,726 @@
+{
+  "source_commit": "e0c33a6b599eff6493e320b9f7242e927b1e7834",
+  "source_reverified_after_run": true,
+  "solver_calls_added": 0,
+  "completed_count": 1,
+  "target_count": 1,
+  "planning_wall_s": 7.9784997630049475,
+  "initial_cartons": 29,
+  "remaining_cartons": 28,
+  "historical_completed": 11,
+  "attempts": [
+    {
+      "folder": "attempt-001",
+      "complete": true,
+      "failure": null,
+      "option": {
+        "template": "FRONT_DIRECT_HMAX",
+        "face": {
+          "geometric_face_id": "x-",
+          "axis": 0,
+          "sign": -1,
+          "outward_normal": [
+            -1.0,
+            -0.0,
+            -0.0
+          ],
+          "contact_pose": [
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0,
+              0.42
+            ],
+            [
+              1.0,
+              0.0,
+              0.0,
+              1.65
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "working_axis_into_box": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+        },
+        "height_m": 1.45,
+        "segment_directions_world": [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "turn_center_y_interval_world_m": [
+          -0.8900000000000001,
+          0.8900000000000001
+        ],
+        "region": {
+          "rectangles_belt_local_m": [
+            [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ]
+          ],
+          "polygons_world_m": [
+            [
+              [
+                -0.5900000000000001,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                -0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.51,
+                0.8900000000000001,
+                1.45
+              ],
+              [
+                -0.5900000000000001,
+                0.8900000000000001,
+                1.45
+              ]
+            ]
+          ],
+          "projection_center_limits_before_occupancy": [
+            -0.03999999999999998,
+            0.03999999999999998,
+            -0.8900000000000001,
+            0.8900000000000001
+          ],
+          "edge_reserve_m": 0.01,
+          "occupied_exclusions": [],
+          "geometric_fit": true,
+          "region_status": "GEOMETRIC_REGION_AVAILABLE",
+          "robot_reachability": "NOT_EVALUATED",
+          "sample_pass_does_not_qualify_region": true,
+          "exists": true,
+          "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+          "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+          "receiver_id": "conveyor_transverse"
+        },
+        "reception": {
+          "region_class": "TRANSVERSE",
+          "junction": false,
+          "outfeed_direction_world": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "inlet_edge_world": [
+            [
+              -0.9000000000000001,
+              -1.0999999999999999,
+              1.45
+            ],
+            [
+              -0.9000000000000001,
+              -0.49999999999999994,
+              1.45
+            ]
+          ],
+          "influence_polygon_world_xy_m": [
+            [
+              -0.9,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -1.0999999999999999
+            ],
+            [
+              -0.20000000000000007,
+              -0.49999999999999994
+            ],
+            [
+              -0.9,
+              -0.49999999999999994
+            ]
+          ],
+          "box_projection_world_xy_m": [
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.21999999999999997
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.8500000000000001,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.21999999999999997
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ],
+            [
+              -0.25000000000000006,
+              0.62
+            ]
+          ],
+          "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+          "physical_transport": "NOT_RUN"
+        },
+        "requires_open_channel": false,
+        "original_role": "MIDDLE",
+        "target_id": "carton_l05_c03",
+        "height_source": "FROZEN_INITIAL_TARGET",
+        "endpoint": "REGION_NOT_FIXED_POINT",
+        "acceptance": "NOT_PLANNED",
+        "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+        "fixed_wrist_joint_values": false
+      },
+      "operations": [
+        {
+          "op": "init",
+          "stage": null,
+          "planner": null,
+          "status": "READY",
+          "count": 1
+        },
+        {
+          "op": "fk",
+          "stage": null,
+          "planner": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "check_start",
+          "stage": "pregrasp",
+          "planner": null,
+          "status": "SUCCESS",
+          "count": 2
+        },
+        {
+          "op": "ik",
+          "stage": "pregrasp",
+          "planner": null,
+          "status": "SUCCESS",
+          "count": 3
+        },
+        {
+          "op": "plan",
+          "stage": "pregrasp",
+          "planner": "PTP",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "contact",
+          "planner": "LIN",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "extraction",
+          "planner": "LIN",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "check_extraction_end",
+          "stage": "extraction",
+          "planner": null,
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "extraction",
+          "planner": "NOMINAL_DROP_RELEASE",
+          "status": "SUCCESS",
+          "count": 1
+        },
+        {
+          "op": "plan",
+          "stage": "withdrawal",
+          "planner": "LIN",
+          "status": "SUCCESS",
+          "count": 1
+        }
+      ],
+      "contact_q_rad": [
+        0.11812118841227674,
+        0.33787932450973024,
+        -0.16972766572381345,
+        -6.522641640397085,
+        0.5199970622969908,
+        3.350375394005191
+      ],
+      "terminal_contact": {
+        "actual_contact_mask": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "commanded_active_mask": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "geometrically_eligible_mask": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "measured": false,
+        "attached": false
+      },
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "native_log_errors": {
+        "[moveit_robot_state.robot_state]: Attached body 'carton_l05_c03' not found": 56
+      },
+      "collision_witnesses": [],
+      "native_round_trip_s": 3.143536159012001,
+      "times": {
+        "target_geometry_s": 0.005669759993907064,
+        "ik_s": 0.19124730105977505,
+        "pregrasp_s": 0.39565055997809395,
+        "contact_s": 0.3319834300200455,
+        "terminal_check_s": 0.008477380964905024,
+        "total_s": 5.774971271981485,
+        "attachment_context_s": 0.010828884958755225,
+        "extraction_target_s": 0.0021242760121822357,
+        "extraction_s": 0.9255605189828202,
+        "extraction_sample_check_s": 1.8354525809991173,
+        "terminal_separation_s": 0.10890840197680518,
+        "release_ready_check_s": null,
+        "region_search_s": 4.3171670460142195
+      }
+    }
+  ],
+  "stage_metrics": [
+    {
+      "stage": "pregrasp",
+      "planner": "PTP",
+      "point_count": 72,
+      "duration_s": 7.076428977,
+      "max_abs_velocity_rad_s": [
+        0.16137789697667076,
+        0.2803908732132291,
+        0.21804399270543737,
+        0.3500000000000002,
+        0.001770380529062706,
+        0.32020561804537356
+      ],
+      "max_abs_acceleration_rad_s2": [
+        0.046107970564763054,
+        0.08011167806092255,
+        0.062298283630124934,
+        0.1,
+        0.00050582300830363,
+        0.09148731944153525
+      ],
+      "max_step_rad": [
+        0.01619231470741786,
+        0.02813382343687787,
+        0.021878070145249007,
+        0.0351182550632414,
+        0.00017763621422461906,
+        0.03212875019200068
+      ],
+      "joint_min_deg": [
+        -25.80197554542744,
+        -44.07027375726095,
+        -61.895270207819586,
+        -374.0688954603504,
+        31.00907366860995,
+        126.45480749660359
+      ],
+      "joint_max_deg": [
+        7.270518950722137,
+        13.392524958325597,
+        -17.20972848390224,
+        -302.3405281280773,
+        31.37189225405713,
+        192.07716804807805
+      ]
+    },
+    {
+      "stage": "contact",
+      "planner": "LIN",
+      "point_count": 32,
+      "duration_s": 3.000061359,
+      "max_abs_velocity_rad_s": [
+        0.0037043625334098884,
+        0.04169713872422709,
+        0.05369284216585446,
+        0.0033159305365604297,
+        0.012340451232705218,
+        0.0016816646423833959
+      ],
+      "max_abs_acceleration_rad_s2": [
+        0.007530253158441469,
+        0.08347845740162563,
+        0.10832923767385982,
+        0.007136787367123532,
+        0.025552700409747775,
+        0.0038696046203323675
+      ],
+      "max_step_rad": [
+        0.00037043625334098884,
+        0.004169713872422709,
+        0.005369284216585446,
+        0.00033159305365604297,
+        0.0012340451232705218,
+        0.00016816646423833959
+      ],
+      "joint_min_deg": [
+        6.767845567093063,
+        13.392524958325597,
+        -17.20972848390224,
+        -374.0688954603504,
+        29.79363702881892,
+        191.95827424793217
+      ],
+      "joint_max_deg": [
+        7.270518950722137,
+        19.359059279138695,
+        -9.724678912581755,
+        -373.71983727104094,
+        31.37189225405713,
+        192.07716804807805
+      ]
+    },
+    {
+      "stage": "extraction",
+      "planner": "LIN",
+      "point_count": 209,
+      "duration_s": 20.755,
+      "max_abs_velocity_rad_s": [
+        0.015667170286709498,
+        0.06392793697036381,
+        0.05370788534093701,
+        0.06628553991337327,
+        0.018231659376287124,
+        0.06753635325028817
+      ],
+      "max_abs_acceleration_rad_s2": [
+        0.03245255389455748,
+        0.1293709694008105,
+        0.10831095600511709,
+        0.14044429629294086,
+        0.03652707305132341,
+        0.14335137209209314
+      ],
+      "max_step_rad": [
+        0.0015667170286709498,
+        0.006392793697036381,
+        0.005370788534093701,
+        0.006628553991337327,
+        0.0018231659376287124,
+        0.006753635325028817
+      ],
+      "joint_min_deg": [
+        6.767845567093063,
+        -36.97835496422762,
+        -58.76424467636192,
+        -396.3552387792178,
+        26.394466519950182,
+        191.95836484933056
+      ],
+      "joint_max_deg": [
+        15.279265654479124,
+        19.359059279138695,
+        -9.724678912581755,
+        -373.71983727104094,
+        33.08726517250317,
+        213.3979736646682
+      ]
+    },
+    {
+      "stage": "withdrawal",
+      "planner": "LIN",
+      "point_count": 7,
+      "duration_s": 0.509900849,
+      "max_abs_velocity_rad_s": [
+        0.007552662517653075,
+        0.029842317023724974,
+        0.014236057952921044,
+        0.032951856189464834,
+        0.008354445406731359,
+        0.033655423442353616
+      ],
+      "max_abs_acceleration_rad_s2": [
+        0.03304830056851116,
+        0.13014368803547782,
+        0.06206820478427133,
+        0.14465989464360618,
+        0.03641946612227276,
+        0.14778603652350064
+      ],
+      "max_step_rad": [
+        0.0007552662517653075,
+        0.0029842317023724974,
+        0.0014236057952921044,
+        0.0032951856189464834,
+        0.0008354445406731359,
+        0.0033655423442353616
+      ],
+      "joint_min_deg": [
+        15.279265654479124,
+        -37.462107701032394,
+        -58.994722992432756,
+        -396.8905540945624,
+        26.25913202720536,
+        213.3979736646682
+      ],
+      "joint_max_deg": [
+        15.401824756146976,
+        -36.97835496422762,
+        -58.76424467636192,
+        -396.3552387792178,
+        26.394466519950182,
+        213.9447671542238
+      ]
+    }
+  ],
+  "unsearched": [],
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

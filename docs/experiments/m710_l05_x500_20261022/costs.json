@@ -1,0 +1,29 @@
+{
+  "startup_error": {
+    "folder": "formal-v1",
+    "status": "INTEGRATION_ERROR_RETAINED",
+    "reason": "PIPELINE_UNAVAILABLE:ompl",
+    "root_cause": "Retained libm710_search_trace.so had not been copied into the plugin installation prefix.",
+    "experiment_wall_s": 5.899923957011197,
+    "init_requests": 1,
+    "ik_requests": 0,
+    "plan_requests": 0
+  },
+  "repaired_trial": {
+    "folder": "formal-v2",
+    "experiment_wall_s": 8.28878118598368,
+    "task_planning_wall_s": 7.9784997630049475,
+    "business_candidates": 1,
+    "numerical_ik_requests": 3,
+    "plan_requests": 5,
+    "seed": 71070,
+    "delta_m": 0.0,
+    "height_m": 1.45,
+    "accepted_complete_cycles": 1
+  },
+  "total_recorded_experiment_wall_s": 14.188705142994877,
+  "timing_scope": "Sum of the two entry-point experiment timers; environment restoration and checks are separate.",
+  "no_search_rerun_for_success": true,
+  "worker_binary_changed": false,
+  "seed_or_initial_q_changed": false
+}

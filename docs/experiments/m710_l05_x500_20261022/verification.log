@@ -1,0 +1,1 @@
+[{"target_id": "carton_l05_c03", "complete": true, "planning_wall_s": 8.267802627990022, "counts": {"native_requests": 15, "numerical_ik_success": 3, "explicit_q_goal_check_passed": 2, "pregrasp:PTP": 1, "contact:LIN": 1, "extraction:LIN": 1, "extraction:NOMINAL_DROP_RELEASE": 1, "withdrawal:LIN": 1}}]

@@ -1,0 +1,35 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>l05_c03 · 后退100 mm验证结果</title>
+<style>body{font:16px/1.7 system-ui,sans-serif;background:#101b2a;color:#e3edf7;margin:0}main{max-width:1050px;margin:auto;padding:32px 26px}h1{font-size:30px;margin:8px 0}h2{font-size:21px;color:#87dfe1;margin-top:30px}a{color:#84dbff}.tag{color:#77e6b0;font-weight:700}.card{background:#1b2b40;padding:20px;border-radius:12px;margin:18px 0}.buttons a{display:inline-block;padding:10px 18px;background:#17697e;color:white;text-decoration:none;border-radius:7px;margin:8px 10px 8px 0}table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:9px 12px;border-bottom:1px solid #344a60;text-align:left}code{overflow-wrap:anywhere}.muted{color:#a9bbce}img{width:100%;border-radius:10px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0d1520;padding:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style>
+<main><div class="tag">完整抓放规划通过 · 1/1</div><h1>l05_c03：再后退100 mm，本次成功</h1>
+<p>累计 −X 500 mm、−Y 100 mm，Y保持当前位置。使用与400 mm失败记录相同的初始关节角和箱体场景，保留全部关节运动限制。</p>
+<div class="buttons"><a href="replay.html">打开本次三维回放</a><a href="offline-replay.zip">下载离线回放</a><a href="raw-records.tar.xz">原始记录</a></div>
+<div class="card"><b>实际路线：</b>接近 → 接触 → 附着 → −X抽离 → 完整接收区域验收 → 同位姿释放 → 50 mm名义下落 → 名义首次触带 → 工具分离 → 理想清空。<br>
+<b>实际参数：</b>delta=0；带高1.45 m，开始时已处于接收高度，无需升降；有效/命令/接触杯均为48/72，采用 ideal_independent_cups 理想承载假设。<br>
+<b>计数：</b>本次29→28箱，历史11箱单列。物理执行未运行；名义下落与理想清空不代表物理接收。</div>
+<h2>抽离LIN已通过，J4没有角度跳变</h2><table><tr><th>指标</th><th>本次实测</th></tr>
+<tr><td>抽离原生轨迹</td><td>209点，20.755秒</td></tr><tr><td>抽离J4角度</td><td>约 −373.72° → −396.36°，连续变化</td></tr>
+<tr><td>抽离J4峰值速度 / 原限值</td><td>0.06629 / 4.53786 rad/s</td></tr>
+<tr><td>抽离J4峰值加速度 / 规划限值</td><td>0.14044 / 0.50000 rad/s²</td></tr>
+<tr><td>全流程J4最小位置余量</td><td>3.109°；工具分离末态约 −396.89°</td></tr>
+<tr><td>接触q2 / 上臂仰角</td><td>19.359° / 70.641°，两者分别记录</td></tr>
+<tr><td>附着位姿连续性误差</td><td>2.22e-16</td></tr></table>
+<p>本次通过说明：在该初态与固定策略下，额外后退100 mm避开了原先抽离阶段的J4问题。它只证明这一箱的一次规划结果；J4剩余位置余量仍较小。</p>
+<h2>各阶段证据</h2><table><tr><th>阶段</th><th>结果</th></tr>
+<tr><td>数值IK</td><td>3次成功；属于同一个业务候选的数值求解</td></tr><tr><td>显式q目标端点检查</td><td>2次通过；后续LIN端点及路径由原生完整检查验收</td></tr>
+<tr><td>接近 / 接触 / 抽离</td><td>PTP 72点 / LIN 32点 / LIN 209点，均通过</td></tr>
+<tr><td>释放及名义下落</td><td>同位姿解除附着，26个名义下落检查点通过；工具q保持不变</td></tr>
+<tr><td>工具分离 / 理想清空</td><td>LIN 7点通过，显式IDEAL_RECEIVER_DRAIN完成</td></tr>
+<tr><td>本次碰撞拒绝见证</td><td>0；原生碰撞与工艺检查保持启用</td></tr></table>
+<h2>启动错误与实际尝试成本</h2><table><tr><th>记录</th><th>耗时与范围</th><th>结果</th></tr>
+<tr><td>formal-v1</td><td>5.900秒，1次init，0次IK、0次plan</td><td>新环境漏装插件库到安装目录；PIPELINE_UNAVAILABLE:ompl</td></tr>
+<tr><td>formal-v2</td><td>入口8.289秒；任务规划7.978秒</td><td>补齐原库后，1个候选、3次IK、5个plan请求全部通过</td></tr></table>
+<p>两次入口计时合计 14.189秒；环境恢复与检查另计。原始失败保留，修复未改变源码、worker字节、seed、初态或规则。没有通过重复失败搜索挑选成功。</p>
+<details><summary>保留的日志说明</summary><p>成功运行的worker日志含56条“Attached body 'carton_l05_c03' not found”。原生返回的完整任务验收、释放前实际附着匹配、释放后唯一所有权及终态检查均通过；原日志完整保留。本轮未修改worker，也不把这些文字当作碰撞见证。</p></details>
+<h2>回放校验</h2><p>三维机器人由本次原生q驱动；浏览器逐阶段FK、关节角、箱数和名义下落固定工具q检查通过，浏览器错误为0。</p>
+<div class="grid"><a href="replay.html"><img src="initial.png" alt="本次起始状态"></a><a href="replay.html"><img src="final.png" alt="本次完整规划结束状态"></a></div>
+<h2>源码与复现</h2><p>实测源码SHA：<code>e0c33a6b599eff6493e320b9f7242e927b1e7834</code><br>原生worker SHA256：<code>0bab47de68ae112583afa76a285b74dccd16ff29518d8e11e6d1ac6bfb77756a</code><br>相较实测源码的运行中修改：无。推送状态：未推送。</p>
+<pre>chroot /root/autodl-tmp/m710-l05-x500-20261022/rootfs /bin/bash /formal.sh /reproduce-l05-x500</pre><p class="muted">以上是复现命令，未再次执行。完整环境步骤、原始启动错误与修复见setup-records.tar.gz；需先恢复对应源码和锁定依赖，并使用不存在的输出目录。</p>
+<p><a href="diagnostics.json">详细诊断</a> · <a href="verification.json">原生父链与工艺校验</a> · <a href="browser-checks.json">回放校验</a> · <a href="costs.json">全部尝试成本</a> · <a href="comparison.json">历史对照</a><br>
+<a href="measured-source.tar.gz">实测源码和资产快照</a> · <a href="source-manifest.json">源码文件哈希</a> · <a href="setup-records.tar.gz">环境与修复记录</a> · <a href="README.txt">复现说明</a></p>
+<p class="muted">qualification_status=NOT_EVALUATED · continuous_swept_proof=false<br>physical_execution=NOT_RUN · execution_ready=false</p></main></html>

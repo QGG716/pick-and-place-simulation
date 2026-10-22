@@ -1,0 +1,22 @@
+{"event": "RETREAT_TRIAL_START", "target": "carton_l05_c03"}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 11}
+Traceback (most recent call last):
+  File "/work/tools/plan_m710_extraction_retreat.py", line 131, in <module>
+    main()
+  File "/work/tools/plan_m710_extraction_retreat.py", line 113, in main
+    result = run_seed(args, original, built, state.frozen, 71070, folder,
+  File "/work/tools/plan_m710_top_layer_lifted.py", line 171, in run_seed
+    c=connector_type.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
+  File "/work/src/unloading_sim/single_contact.py", line 223, in from_existing
+    self=super().from_existing(*args,**kwargs)
+  File "/work/src/unloading_sim/planning_only.py", line 55, in from_existing
+    self = super().from_existing(*args, **kwargs)
+  File "/work/src/unloading_sim/moveit2_backend.py", line 692, in from_existing
+    self.native_startup=self.native.request(init)
+  File "/work/src/unloading_sim/coupled_batch.py", line 140, in request
+    return super().request(request,**kwargs)
+  File "/work/src/unloading_sim/single_contact.py", line 154, in request
+    response = self.client.request(request, **kwargs)
+  File "/work/src/unloading_sim/moveit2_backend.py", line 374, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: PIPELINE_UNAVAILABLE:ompl

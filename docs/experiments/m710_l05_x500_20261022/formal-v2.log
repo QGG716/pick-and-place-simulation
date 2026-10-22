@@ -1,0 +1,4 @@
+{"event": "RETREAT_TRIAL_START", "target": "carton_l05_c03"}
+{"seed": 71070, "attempt": 1, "target": "carton_l05_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 11}
+{"seed": 71070, "completed": 1, "historical_completed": 11, "terminal_q": [0.2688125528099375, -0.6538371241197388, -1.0296521575199533, -6.927046939014776, 0.4583083125906267, 3.734040604253824], "height": 1.45}
+{"event": "RETREAT_TRIAL_RECORDED", "target": "carton_l05_c03", "complete": true, "wall_s": 8.267802627990022}
