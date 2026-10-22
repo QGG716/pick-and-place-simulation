@@ -218,7 +218,7 @@ def verify_scene(scene, *, require_environment=True):
         if coverage is not None:expected_ids-=set(coverage['removed_carton_ids'])
         if (len(scene['boxes']) != len(expected_ids) or {b['id'] for b in scene['boxes']} != expected_ids
                 or set(task['stack_carton_ids']) != expected_ids
-                or (coverage is None and task['target_id'] != 'carton_r00_l03_c01')
+                or (coverage is None and not task.get('target_selection') and task['target_id'] != 'carton_r00_l03_c01')
                 or scene['target_box_id'] != task['target_id'] or scene['box']['id'] != task['target_id']
                 or task['target_face'] not in ('top','front') or not scene['moving_attachments']
                 or not scene['native_world_objects'] or scene.get('enable_hardware') is not False

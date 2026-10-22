@@ -389,6 +389,9 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
         run_report=load_json(run_folder/'run_report.json')
         if run_report.get('planning_wall_s') is not None:
             totals['planning_wall_s']=run_report['planning_wall_s']
+            totals['planning_wall_scope']='FULL_RUN'
+        elif plan:
+            totals['planning_wall_scope']='ACCEPTED_PREFIX_CHECKPOINT'
     unbound_ik = [a for a in all_attempts if a['world_context_status'] == 'NOT_CAPTURED']
     attempts = [a for a in all_attempts if a['world_context_status'] == 'CAPTURED']
     for attempt in attempts:
@@ -430,7 +433,7 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             trial_ids=sorted({a['request']['task_id'] for a in all_attempts if a['request'].get('task_id')}),
             displayed_chain_scope='COMPLETE_PLAN' if plan and plan['complete'] else 'SINGLE_TRIAL_SUCCESSFUL_PREFIX_ONLY'),
         plan_summary=None if plan is None else {k:plan.get(k) for k in (
-            'schema','complete','status','completion_goal','inventory_ids','process_history','first_target_id','next_target_id','planning_wall_s',
+            'schema','complete','status','completion_goal','inventory_ids','process_history','ik_posture_preference','first_target_id','next_target_id','planning_wall_s',
             'physical_execution','execution_ready','j1_direction_policy','failures')},
         initial_state=plan['initial_state'] if plan else previews[0]['state'],
         terminal_state=plan['terminal_state'] if plan else None,

@@ -95,7 +95,15 @@ def validate_task_contract(scene):
     selected = highest[np.flatnonzero(np.abs(centered-np.min(centered)) <= 1e-8)]
     if len(selected) != 1:
         raise ValueError('NATIVE_TASK_TOP_CENTER_AMBIGUOUS')
-    target = boxes[int(selected[0])] if coverage is None else by_id[contract['target_id']]
+    explicit = contract.get('target_selection')
+    if explicit is not None:
+        if (coverage is not None or explicit.get('schema')!='eco65_explicit_exposed_target_v1'
+                or explicit.get('target_id')!=contract['target_id']
+                or explicit.get('inventory_scope')!='UNCHANGED_TWELVE_CARTONS'
+                or explicit.get('source')!='USER_REQUEST'
+                or contract['target_id'] not in {boxes[int(i)]['id'] for i in highest}):
+            raise ValueError('NATIVE_TASK_EXPLICIT_TARGET_NOT_EXPOSED')
+    target = boxes[int(selected[0])] if coverage is None and explicit is None else by_id[contract['target_id']]
     if (contract.get('target_id') != target['id'] or scene.get('target_box_id') != target['id']
             or scene.get('box') != target or target.get('supports')):
         raise ValueError('NATIVE_TASK_TARGET_IS_NOT_TOP_CENTER')

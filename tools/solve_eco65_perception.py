@@ -28,9 +28,10 @@ def run(a):
         intrinsics_source='KNOWN_SIMULATION_PROJECTION_WITH_RENDERED_RAY_VALIDATION',
         physical_execution='NOT_RUN',execution_ready=False))
     require_tcp_calibration(cal);save_json(out/'calibration.json',cal)
-    d=detect(a.observations,out/'calibration.json',out/'vision');print('TCP_CALIBRATION_AND_VISION',d['status'])
+    d=detect(a.observations,out/'calibration.json',out/'vision',selected_column_rank=a.target_column_rank);print('TCP_CALIBRATION_AND_VISION',d['status'])
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--target-column-rank',type=int,choices=(0,1,2),default=1)
     for key in ('observations','tcp-observations','solver','validation','output'):p.add_argument('--'+key,type=Path,required=True)
     run(p.parse_args())

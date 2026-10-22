@@ -28,6 +28,8 @@ def build(a):
     out=a.output.resolve(); out.relative_to(ROOT/'outputs'); out.mkdir(parents=True,exist_ok=False)
     columns=sorted({b['column'] for b in scene['boxes']},key=lambda c:np.mean([b['pose'][1] for b in scene['boxes'] if b['column']==c]))
     if len(columns)!=len(detection['detections']):raise ValueError('OBSERVED_COLUMN_INVENTORY_MISMATCH')
+    if columns[detection['selected_column_rank']] != scene['box']['column']:
+        raise ValueError('OBSERVED_TARGET_SELECTION_MISMATCH')
     assignments=[]
     for column,d in zip(columns,detection['detections']):
         group=[b for b in scene['boxes'] if b['column']==column]; top=max(b['layer'] for b in group)

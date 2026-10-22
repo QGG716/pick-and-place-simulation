@@ -50,6 +50,7 @@ if(native)check(name+'_NATIVE_FREE_TRANSIT_NO_EXEMPTION',native.active===false&&
 };
 try{
 check('VIEWER_READY',window.REPLAY_READY===true);
+check('EMPTY_NATIVE_PAIR_NOT_LOCALIZED',pairOf({pair:['','']}).length===0);
 if(DATA.perception_binding){
 const calibration=DATA.perception_binding.calibration;
 check('TCP_CALIBRATION_PANEL',!document.getElementById('perceptionPanel').hidden);
@@ -63,6 +64,10 @@ for(const fixture of DATA.fk_fixtures){const frames=window.replay.fk(fixture.q);
 for(const [name,reference]of Object.entries(fixture.frames)){const columns=reference[0].map((_,i)=>reference.map(row=>row[i])).flat();
 maximum=Math.max(maximum,...columns.map((v,i)=>Math.abs(v-frames[name][i])));}}
 result.maximum_fk_matrix_error=maximum;check('PYTHON_FK_MATCH',maximum<1e-8);
+if(model.base_translation){
+const p=new T.Vector3().setFromMatrixPosition(fk(currentQ).base_link);
+check('TRANSLATED_BASE_RENDERED_AT_DECLARED_POSITION',close(p.toArray(),model.base_translation.new_base_position_m,1e-12));
+}
 check('THREE_REAL_HEIGHT_PREVIEWS',DATA.previews.length===3);
 for(let i=0;i<DATA.previews.length;i++){
 preview(i);const expected=DATA.previews[i].state;
@@ -221,10 +226,20 @@ const index=failedRequests.find(({a})=>a.response.status===status&&!witnesses(a)
 if(index!==undefined){openFailure(index);check(status+'_NO_INVENTED_COLLISION',window.replay.highlightedIds.length===0&&document.getElementById('diagnosisPairs').children.length===0);check(status+'_ACTUAL_SEED_CONTEXT',state.world===active.request.world&&close(currentQ,active.request.q_start,1e-12));check(status+'_NO_FALSE_INFEASIBILITY_CLAIM',document.getElementById('diagnosisOutcome').textContent.includes(status==='NATIVE_IK_FAILED'?'不能据此断言':'超时不代表'));}
 }
 document.getElementById('backToCycle').click();check('CYCLE_CLEARS_FAILURE_OVERLAY',document.getElementById('diagnosis').hidden&&window.replay.highlightedIds.length===0);
+if(DATA.segments.length){document.getElementById('completedEnd').click();
+check('COMPLETED_END_BUTTON_RESTORES_TERMINAL',close(currentQ,DATA.terminal_state.q,1e-12)&&same(state.completed_ids,DATA.terminal_state.completed_ids));}
 if(document.documentElement.dataset.startInFailures==='true'){
 openFirstFailure();document.querySelector('aside').scrollTop=0;controls.update();updateDiagnosticLabels();renderer.render(scene,camera);
 result.failure_view={request_index:DATA.attempts.indexOf(active),status:active.response.status,pair:window.replay.highlightedIds,reason:document.getElementById('diagnosisReason').textContent,failed_requests:failedRequests.length};
 }
+}
+const checkedContact=DATA.attempts.find(a=>a.request.op==='check_state_offline'&&a.request.stage==='contact'&&a.response.status==='SUCCESS');
+if(checkedContact){
+selectInspectionTarget(targetOf(checkedContact),false);targetQuick('contact_ik');
+check('CONTACT_IK_BUTTON_SHOWS_CHECKED_CANDIDATE',active===checkedContact&&close(currentQ,checkedContact.request.q_start,1e-12));
+check('CONTACT_IK_DOES_NOT_INVENT_ATTACHMENT',state.attachment===checkedContact.request.attachment);
+targetQuick('approach');
+if(active.request.stage==='pregrasp'&&hasPair(active))check('APPROACH_COLLISION_BUTTON_OWNS_WORLD',state.world===active.request.world&&window.replay.highlightedIds.length===2);
 }
 result.status='PASS';
 }catch(error){result.status='FAIL';result.error=error.stack;}

@@ -52,6 +52,15 @@ def deliver(a):
     terminal=plan['terminal_state'] or {}
     report['terminal_inventory']=dict(world_cartons=[x['id'] for x in terminal.get('world',[]) if x.get('category')=='carton'],
         attached=terminal.get('attachment'),completed_ids=terminal.get('completed_ids',[]))
+    wall=run.get('planning_wall_s')
+    wall_scope='FULL_RUN'
+    if wall is None:
+        wall=run.get('prefix_planning_wall_s',plan.get('planning_wall_s'))
+        wall_scope='ACCEPTED_PREFIX_CHECKPOINT'
+    report['displayed_planning_wall_s']=wall
+    report['displayed_planning_wall_scope']=wall_scope
+    wall_text='未记录' if wall is None else f'{wall:.3f} s'
+    wall_label='截至已完成前缀的规划墙钟' if wall_scope=='ACCEPTED_PREFIX_CHECKPOINT' else '规划墙钟'
     save_json(out/'report.json',report)
     evidence=out/'evidence';evidence.mkdir()
     for source in a.evidence:
@@ -69,7 +78,7 @@ def deliver(a):
 <p>新标定：9 个探针触点、6 张图像；留出触点最大误差 {validation['held_out_max_3d_m']*1000:.3f} mm。探针尖端沿用已知法兰偏置，相机外参重新求解。内参为经渲染射线核对的仿真投影参数。</p>
 <p>标定触点是原生 IK/FK 加静态几何接触观测，未执行连续探针运动。箱体检测来自新的 RGB-D；不可见部分由已知尺寸和堆叠先验补全。</p>
 <img src="{image.relative_to(out).as_posix()}" alt="本次 RGB-D 检测">
-<p>规划墙钟 {run.get('planning_wall_s',0):.3f} s；接受轨迹机器人时间 {plan['robot_motion_s']:.3f} s；机构展示时间 {plan['mechanism_display_s']:.3f} s。</p>
+<p>{wall_label} {wall_text}；接受轨迹机器人时间 {plan['robot_motion_s']:.3f} s；机构展示时间 {plan['mechanism_display_s']:.3f} s。</p>
 <p>planning_only=True · physical_execution=NOT_RUN · execution_ready=false</p>
 <pre>{html.escape(json.dumps(report,ensure_ascii=False,indent=2))}</pre>'''
     (out/'report.html').write_text(body,encoding='utf8')

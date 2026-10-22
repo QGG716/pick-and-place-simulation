@@ -95,6 +95,7 @@ def export_model(snapshot):
                 joint_limits_rad=[[float(snapshot['native_model']['official_limits'][n][k])
                     for k in ('lower','upper')] for n in native['joint_names']],
                 layout_installation=scene.get('layout_installation'),
+                base_translation=scene.get('base_translation'),
                 camera_definition=None if not camera else dict(
                     T_link1_mast=mast['T_link1_mast'],T_mast_optical=camera['T_mast_optical'],
                     T_mast_CAD=camera['T_mast_CAD'],

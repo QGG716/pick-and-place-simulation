@@ -1,10 +1,25 @@
 // Presentation of recorded native failures only. No IK or collision calculation here.
 const diagnosticGroup=new T.Group();scene.add(diagnosticGroup);
 let diagnosticObjects=[],diagnosticBoxes=[],diagnosticWitness=null,filteredFailures=[];
+let selectedFailureTarget='';
+let displayedPosture=null;
+const targetOf=a=>a.request.process_policy?.target_id||a.request.process_policy?.task_contract?.target_id;
 const failureColors=[0xff506d,0xffc857];
 const failedRequests=DATA.attempts.map((a,index)=>({a,index})).filter(({a})=>a.response.status!=='SUCCESS');
 const statusLabels={NATIVE_IK_FAILED:'本次 IK 未求得解',NATIVE_PLANNING_FAILED:'原生运动规划失败',NATIVE_PATH_REJECTED:'原生路径检查拒绝',NATIVE_SOLVER_DEADLINE_EXPIRED:'原生求解达到截止时间',STATE_REJECTED:'状态检查拒绝'};
 const stageLabels={pregrasp:'接近预抓取位',contact:'抓取接触',extraction:'脱垛抽离',transit:'带载转运',departure:'工具退出',return:'返回下一箱'};
+function showPosture(frames,q){
+  const shoulder=position(frames.link_2),elbow=position(frames.link_3),wrist=position(frames.link_6),tool=position(frames[model.tcp_link]);
+  const boxes=DATA.previews[0].state.world.filter(b=>b.category==='carton');
+  if(!boxes.length)return;
+  const center=new T.Vector3();boxes.forEach(b=>center.add(position(matrix(b.pose))));center.multiplyScalar(1/boxes.length);
+  const toward=center.sub(shoulder);toward.z=0;toward.normalize();
+  const upper=elbow.clone().sub(shoulder).normalize();
+  displayedPosture={upper_arm_tilt_deg:Math.acos(Math.max(-1,Math.min(1,upper.z)))*180/Math.PI,
+    wrist_forward_of_elbow_m:wrist.clone().sub(elbow).dot(toward),tcp_forward_of_elbow_m:tool.clone().sub(elbow).dot(toward)};
+  const p=displayedPosture;
+  $('postureMetrics').textContent=`实际 FK 构型\n上臂（肩→肘）偏离 +Z：${p.upper_arm_tilt_deg.toFixed(2)}°\n腕部相对肘部朝箱堆方向：${(p.wrist_forward_of_elbow_m*1000).toFixed(1)} mm\n吸具 TCP 相对肘部：${(p.tcp_forward_of_elbow_m*1000).toFixed(1)} mm\n负值表示折回肩侧；原始 J2 ${(q[1]*180/Math.PI).toFixed(2)}°。\n${(active?.request?.ik_posture_preference||DATA.plan_summary?.ik_posture_preference)?'本次使用肩肘展开偏好（软排序）；显示的仍是原始记录姿态。':'这是已有姿态的 FK 测量，不代表旧规划已使用新的构型偏好。'}`;
+}
 function statusLabel(a){return statusLabels[a.response.status]||a.response.status||'未记录结果';}
 function witnesses(a){return [...(a.failure_samples||[]),...(a.trace?.planners||[]).flatMap(p=>(p.checked_samples||[]).filter(s=>!s[1]).map(s=>({q:s[0],witness:s[2]})))];}
 function hasPair(a){return witnesses(a).some(f=>pairOf(f.witness).length===2);}
@@ -80,6 +95,7 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
   if(r.solver_message)outcome+='\n返回：'+r.solver_message;
   $('diagnosisOutcome').textContent=outcome;
   $('diagnosisPose').textContent=witness?'当前为记录中的真实拒绝采样姿态（不是实际执行碰撞）':poseLabel;
+  if(w?.reason==='NATIVE_ABSOLUTE_DEADLINE_EXPIRED')$('diagnosisPose').textContent='记录中的检查超时状态；未证明该姿态发生碰撞。';
   $('diagnosisPairs').replaceChildren();
   pair.forEach((id,i)=>{const row=document.createElement('div');row.className='pairRow '+(i?'pairB':'pairA');const label=document.createElement('b');label.textContent=(i?'B':'A')+' · '+objectLabel(id);const code=document.createElement('code');code.textContent=id;row.append(label,code);$('diagnosisPairs').append(row);});
   let reason='本请求没有当前姿态的碰撞见证；不生成碰撞位置。';
@@ -87,6 +103,7 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
     if(w.reason==='CLEARANCE_INSUFFICIENT')reason='采样拒绝原因：间隙不足';
     else if(w.reason==='INTERSECTION_OR_CONTACT')reason='采样拒绝原因：检测到接触或相交';
     else if(w.reason==='J1_DIRECTION_VIOLATION')reason='采样拒绝原因：J1 运动方向违反要求';
+    else if(w.reason==='NATIVE_ABSOLUTE_DEADLINE_EXPIRED')reason='检查达到截止时间，未获得该状态的完整检查结论。';
     else reason='采样拒绝原因：'+(w.reason||'未记录具体原因');
     if(w.from_q&&w.to_q){
       reason+=`\n原始 J1 ${w.from_q[0].toFixed(7)} → ${w.to_q[0].toFixed(7)} rad\n变化 ${(w.to_q[0]-w.from_q[0]).toExponential(4)} rad`;
@@ -102,6 +119,11 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
   $('diagnosisReason').textContent=reason;
   const rigid=pair.find(id=>id.endsWith('_rigid')),neighbor=pair.find(id=>id!==state.target_id&&state.world.some(b=>b.id===id&&b.category==='carton'));
   $('diagnosisPolicy').textContent=rigid&&neighbor&&a.display_policy?.cup_neighbor_contact?'此处是吸盘刚性内件。当前邻箱接触许可覆盖柔性吸盘唇，未覆盖该刚性件。':'';
+  if(pair.some(id=>/^link_[1-6]$/.test(id))&&pair.some(id=>id.endsWith('_lip')))
+    $('diagnosisPolicy').textContent='此处是吸盘与机械臂自身的接触。允许吸盘接触邻箱的策略不豁免这一对象对。';
+  if(a.error){$('diagnosisOutcome').textContent+='\n记录错误：'+a.error;
+    if(a.error==='NATIVE_ABSOLUTE_DEADLINE_EXPIRED')$('diagnosisReason').textContent='检查预算耗尽，未取得完整检查返回；不能认定此姿态碰撞或目标不可达。';}
+  if(r.status==='SUCCESS')$('diagnosisOutcome').textContent+='\n'+(a.adopted?'该段纳入最终采用流程。':'该段属于未完成箱的候选分支，未纳入最终采用流程。');
   const round=Number.isFinite(a.round_trip_s)?a.round_trip_s.toFixed(3)+' s':'未记录';
   $('diagnosisContext').textContent=`目标 ${state.target_id||'未记录'}\n横带 ${Number(state.height_m).toFixed(3)} m · ${state.attachment?'已附着 '+state.attachment.id:'空载'}\n原始 J1 ${currentQ[0].toFixed(6)} rad · 本请求往返墙钟 ${round}`;
   $('diagnosisNote').textContent=pair.length?'彩色实体与外框标出记录中的两个对象；环境半透明辅助观察。未采集接触点，不绘制虚构接触位置。':'当前仅显示该请求自己的场景与姿态参考，不是推测出的失败接触位。';
@@ -111,10 +133,10 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
 }
 function fillFailureCatalogue(){
   const filter=$('failureFilter').value,old=$('failedRequest').value;
-  filteredFailures=failedRequests.filter(({a})=>filter==='all'||(filter==='collision'?hasPair(a):failureCategory(a)===filter));
+  filteredFailures=failedRequests.filter(({a})=>(!selectedFailureTarget||targetOf(a)===selectedFailureTarget)&&(filter==='all'||(filter==='collision'?hasPair(a):failureCategory(a)===filter)));
   $('failedRequest').replaceChildren(...filteredFailures.map(({a,index})=>new Option(`#${index+1} · ${stageLabels[a.request.stage]||a.request.stage||a.request.op} · ${statusLabel(a)}${hasPair(a)?' · 有几何见证':''}`,index)));
   if(filteredFailures.some(r=>String(r.index)===old))$('failedRequest').value=old;
-  $('failurePosition').textContent=`筛选 ${filteredFailures.length} / ${failedRequests.length} 个失败请求 · 几何见证可与超时重叠`;
+  $('failurePosition').textContent=`${selectedFailureTarget||'全部箱体'} · 筛选 ${filteredFailures.length} 个失败请求 · 几何见证可与超时重叠`;
   $('previousFailure').disabled=$('nextFailure').disabled=!filteredFailures.length;
 }
 function openFailure(index,focus=true){
@@ -128,9 +150,65 @@ function openFailure(index,focus=true){
 }
 function stepFailure(delta){const index=filteredFailures.findIndex(r=>String(r.index)===$('failedRequest').value);if(filteredFailures.length)openFailure(filteredFailures[(index+delta+filteredFailures.length)%filteredFailures.length].index);}
 function openFirstFailure(){
-  $('failureFilter').value='all';fillFailureCatalogue();const first=failedRequests.find(({a})=>hasPair(a))||failedRequests[0];
+  $('failureFilter').value='all';fillFailureCatalogue();const first=filteredFailures.find(({a})=>hasPair(a))||filteredFailures[0];
   layers.trajectory=false;document.querySelector('[data-layer="trajectory"]').checked=false;
   if(first)openFailure(first.index);
+}
+
+// Target inspection navigates original requests individually; it never stitches
+// rejected branches into the accepted task trajectory or recalculates IK.
+function targetRows(){return DATA.attempts.map((a,index)=>({a,index})).filter(({a})=>!selectedFailureTarget||targetOf(a)===selectedFailureTarget);}
+function targetEvidenceRows(){return targetRows().filter(({a})=>
+  a.request.op==='plan'||
+  (a.request.op==='check_state_offline'&&a.request.stage==='contact'&&a.response.status==='SUCCESS')||
+  a.request.transition?.event_type==='ATTACH'||
+  (a.request.stage==='transit'&&a.response.status!=='SUCCESS'&&a.request.op!=='ik'));}
+function targetQuick(kind){
+  const rows=targetRows(),predicates={
+    collision:a=>a.request.stage==='transit'&&hasPair(a),
+    approach:a=>a.request.stage==='pregrasp'&&hasPair(a),
+    contact_ik:a=>a.request.op==='check_state_offline'&&a.request.stage==='contact'&&a.response.status==='SUCCESS',
+    direction:a=>witnesses(a).some(f=>(f.witness.original||f.witness).reason==='J1_DIRECTION_VIOLATION'),
+    transfer:a=>a.request.stage==='transit'&&a.request.op==='plan'&&a.response.status!=='SUCCESS',
+    budget:a=>a.error==='NATIVE_ABSOLUTE_DEADLINE_EXPIRED',
+    extraction:a=>a.request.stage==='extraction'&&a.request.op==='plan'&&a.response.status==='SUCCESS',
+    contact:a=>a.request.stage==='contact'&&a.request.op==='plan'&&a.response.status==='SUCCESS'};
+  const row=rows.find(({a})=>predicates[kind](a));if(row)openTargetEvidence(row.index);
+}
+function openTargetEvidence(index){
+  const a=DATA.attempts[index];if(!a||targetOf(a)!==selectedFailureTarget)return;
+  $('targetEvidence').value=index;layers.trajectory=false;document.querySelector('[data-layer="trajectory"]').checked=false;
+  openFailure(index);
+  if(a.response.status==='SUCCESS'&&a.native_path?.length)setRequestTime(a.native_path.at(-1).t);
+  $('targetEdge').hidden=!witnesses(a).some(f=>(f.witness.original||f.witness).from_q);
+  $('targetPath').disabled=!a.native_path?.length;
+  $('targetEvidenceNote').textContent=`请求 #${index+1} · ${a.request.stage_id||a.request.op}\n此前已完成 ${a.request.completed_ids?.length||0} 箱 · ${statusLabel(a)}\n${a.adopted?'纳入最终流程':'候选分支；未纳入主回放'}。每个请求单独使用其原始场景。`;
+}
+function inspectTargetEdge(end){
+  const f=witnesses(active).find(f=>(f.witness.original||f.witness).from_q);if(!f)return;
+  const w=f.witness.original||f.witness;restoreRequestWorld();pose(w[end],end==='from_q'?'记录中违规边起点':'记录中违规边终点',f.witness);
+  $('diagnosisPose').textContent=end==='from_q'?'显示原生记录的违规边起点。':'显示原生记录的违规边终点。';summaryState('J1 违规边 · '+(end==='from_q'?'起点':'终点'));
+}
+function selectInspectionTarget(id,open=true){
+  selectedFailureTarget=id;$('diagnosticTarget').value=id;$('failureFilter').value='all';fillFailureCatalogue();
+  const rows=targetRows(),success=(stage,event)=>rows.filter(({a})=>a.response.status==='SUCCESS'&&(event?a.request.transition?.event_type===event:a.request.op==='plan'&&a.request.stage===stage)).length;
+  $('targetSummary').textContent=`${id}\n${rows.length} 条原生请求 · 附着成功 ${success(null,'ATTACH')} 次 · 抽离成功 ${success('extraction')} 次 · 释放成功 ${success(null,'RELEASE')} 次\n成功候选段不等于整箱完成。此处保留未被最终采用的尝试。`;
+  $('targetEvidence').replaceChildren(...targetEvidenceRows().map(({a,index})=>new Option(`#${index+1} · ${a.request.stage_id||a.request.op} · ${statusLabel(a)}`,index)));
+  const budget=(DATA.plan_summary?.failures||[]).filter(f=>f.target_id===id&&String(f.error).includes('BUDGET'));
+  $('targetBudget').textContent=budget.length?`${budget.length} 条调度预算耗尽记录（不是 ${budget.length} 个独立原生失败姿态）。\n`+JSON.stringify(budget,null,2):'已接受前缀中没有该箱的调度预算耗尽记录。';
+  if(open){const first=rows.find(({a})=>a.request.stage==='transit'&&hasPair(a))||rows.find(({a})=>hasPair(a))||rows.find(({a})=>a.response.status!=='SUCCESS');if(first)openTargetEvidence(first.index);}
+}
+function initTargetInspection(){
+  const ids=[...new Set(DATA.attempts.map(targetOf).filter(Boolean))];if(!ids.length)return;
+  $('targetInspection').hidden=false;$('diagnosticTarget').replaceChildren(...ids.map(id=>new Option(id,id)));
+  $('diagnosticTarget').onchange=()=>selectInspectionTarget($('diagnosticTarget').value);
+  $('targetEvidence').onchange=()=>openTargetEvidence(Number($('targetEvidence').value));
+  document.querySelectorAll('[data-target-case]').forEach(b=>b.onclick=()=>targetQuick(b.dataset.targetCase));
+  $('targetEdgeStart').onclick=()=>inspectTargetEdge('from_q');$('targetEdgeEnd').onclick=()=>inspectTargetEdge('to_q');
+  $('targetPath').onclick=()=>{if(active?.native_path?.length){setRequestTime(0);requestPlaying=true;}};
+  const id=document.documentElement.dataset.focusTarget||(ids.length===1?ids[0]:null);
+  if(id&&ids.includes(id)){selectInspectionTarget(id);document.querySelector('aside').scrollTop=0;}
+  else $('targetSummary').textContent='选择箱体，查看其独立候选请求和失败证据。';
 }
 function initFailureDiagnostics(){
   const counts=new Map();failedRequests.forEach(({a})=>counts.set(statusLabel(a),(counts.get(statusLabel(a))||0)+1));

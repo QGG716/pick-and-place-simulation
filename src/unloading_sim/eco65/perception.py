@@ -53,7 +53,7 @@ def require_tcp_calibration(cal):
     return cal
 
 
-def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.1)):
+def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.1), selected_column_rank=1):
     """Observe three top cartons from rendered RGB and Z depth, without GT masks."""
     import cv2
     started = perf_counter(); path = Path(observations_path); root = path.parent
@@ -106,12 +106,12 @@ def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.
     invT = np.linalg.inv(T)
     for i,d in enumerate(detections):
         p = invT@np.r_[d['pose_D_m'],1.]; pix = K@p[:3]; uv = tuple(np.round(pix[:2]/pix[2]).astype(int))
-        cv2.circle(overlay,uv,8,(0,0,255),2); cv2.putText(overlay,'TOP '+str(i)+(' TARGET' if i==1 else ''),uv,cv2.FONT_HERSHEY_SIMPLEX,.5,(0,0,255),1)
+        cv2.circle(overlay,uv,8,(0,0,255),2); cv2.putText(overlay,'TOP '+str(i)+(' TARGET' if i==selected_column_rank else ''),uv,cv2.FONT_HERSHEY_SIMPLEX,.5,(0,0,255),1)
     cv2.imwrite(str(out/'detections.png'),overlay)
     result = signed(dict(schema='eco65_calibrated_rgbd_detection_v1',status='PASS',source=obs['source'],
         calibration_fingerprint=cal['fingerprint'],observation_fingerprint=obs['fingerprint'],
         image_sha256=row['sha256'],depth_sha256=hashlib.sha256(depth_path.read_bytes()).hexdigest(),
-        detections=detections,selected_column_rank=1,selection='HIGHEST_VISIBLE_LAYER_MIDDLE_OF_THREE_COLUMNS',
+        detections=detections,selected_column_rank=selected_column_rank,selection='HIGHEST_VISIBLE_LAYER_REQUESTED_COLUMN',
         assumptions=['KNOWN_150x100x100_MM_CARTON_SIZE','AXIS_ALIGNED_STACK','HIDDEN_FACES_CONSTRAINT_COMPLETED'],
         instance_ground_truth_used=False,nominal_camera_transform_used=False,
         observed_plane_spread_m=dict(top=float(np.std(top_points[:,2])),front=float(np.std(fp[:,0]))),

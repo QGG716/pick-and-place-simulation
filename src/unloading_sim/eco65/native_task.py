@@ -334,10 +334,21 @@ class NativeTask:
             reports.append(dict(q_rad=np.asarray(q).tolist(), max_matrix_error=error))
         return reports
 
-    def ik(self, pose, seed, stage, count=32):
+    def ik_seed_candidates(self, seed, count):
         rng = np.random.default_rng(6518+self.counter)
+        return [np.asarray(seed), *rng.uniform(self.robot.joint_limits[:,0],self.robot.joint_limits[:,1],(count-1,6))]
+
+    def transit_seed_candidates(self, q):
+        home_seed=getattr(self,'final_home',None)
+        for elbow in (-1.,1.):
+            for wrist in (-1.,1.):
+                seed=np.array([q[0] if home_seed is None else home_seed[0],1.5,elbow*1.5,
+                               -elbow*1.5,wrist*np.pi/2,q[5]])
+                yield np.clip(seed,self.robot.joint_limits[:,0],self.robot.joint_limits[:,1])
+
+    def ik(self, pose, seed, stage, count=32):
         unique = []
-        for q in [np.asarray(seed), *rng.uniform(self.robot.joint_limits[:, 0], self.robot.joint_limits[:, 1], (count-1, 6))]:
+        for q in self.ik_seed_candidates(seed,count):
             self.counter += 1
             req = dict(op='ik', identity=self.identity, q_start=q.tolist(), goal_pose=check_transform(pose).tolist(),
                 evaluation_profile=getattr(self, 'evaluation_profile', STRICT),
@@ -368,16 +379,12 @@ class NativeTask:
         goals = [None] if constrained else ([np.asarray(goal)] if goal is not None else list(self.ik(pose, q if ik_seed is None else ik_seed, stage)))
         if not constrained:
             if stage=='transit' and pose is not None and self.evaluation_profile==CHAIN:
-                # Finite elbow/wrist seeds cover both shoulder branches, including
-                # the negative-J1 preplace branch needed for a monotone HOME return.
-                # Only native IK and the unchanged state checker produce goals.
-                home_seed=getattr(self,'final_home',None)
-                for elbow in (-1.,1.):
-                    for wrist in (-1.,1.):
-                        seed=np.array([q[0] if home_seed is None else home_seed[0],1.5,elbow*1.5,
-                                       -elbow*1.5,wrist*np.pi/2,q[5]])
-                        seed=np.clip(seed,self.robot.joint_limits[:,0],self.robot.joint_limits[:,1])
-                        goals.extend(self.ik(pose,seed,stage,count=1))
+                # Mode-specific finite elbow/wrist seeds: the continuous task
+                # prefers an upright/open branch from actual q; the legacy entry
+                # retains its original seed set. Only native IK and the unchanged
+                # state checker produce goals.
+                for seed in self.transit_seed_candidates(q):
+                    goals.extend(self.ik(pose,seed,stage,count=1))
                 # Ask native IK for a closer finite wrist branch. These are seeds,
                 # never edited solutions or +/-2pi post-processing of a path.
                 for value in list(goals)[:8]:

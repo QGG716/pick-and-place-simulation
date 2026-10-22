@@ -14,6 +14,7 @@ from .native_task import NativeTask
 from .native_contact import check_contours, face_outward, EDGE_ALIGNMENT
 from .native_cups import grasp_candidates
 from .evaluation import CHAIN, INTERPOLATION
+from . import posture_preference
 from .coupled_state import (MODE, J1_POLICY, J1_CAPTURE_POLICY, business_direction, J1_REVERSE_LIMIT, INTERVALS, sign_state,
     check_business_direction, receiving_geometry, frozen_receive_heights, validate_cycle)
 
@@ -69,7 +70,17 @@ class CoupledTask(NativeTask):
         return business_direction(self.business_interval,getattr(self,'j1_policy',J1_POLICY))
 
     def goal_cost(self,start,goal):
-        return (abs(float(goal[0]-start[0])),float(np.abs(goal[1:]-start[1:]).sum()))
+        return posture_preference.goal_cost(self.robot,start,goal,self.posture_stack_center())
+
+    def posture_stack_center(self):
+        # Use the frozen stack, never the moving attached carton's current pose.
+        return np.mean([b['pose'][:3] for b in self.scene['boxes']],axis=0)
+
+    def ik_seed_candidates(self,seed,count):
+        return posture_preference.ik_seeds(self.robot,seed,count,6518+self.counter,self.posture_stack_center())
+
+    def transit_seed_candidates(self,q):
+        return posture_preference.transit_seeds(self.robot,q,self.posture_stack_center())
 
     def initial_candidates(self,grasp,home):
         """New-world starting poses; never an unshown initialization trajectory."""
@@ -89,7 +100,7 @@ class CoupledTask(NativeTask):
         standby[1,3]+=distance
         with self.connection():
             values=list(self.ik(standby,home,'pregrasp'))
-        values.sort(key=lambda q:(abs(q[0]-home[0]),float(np.abs(q[1:]-home[1:]).sum())))
+        values.sort(key=lambda q:self.goal_cost(home,q))
         for q in values[:3]:
             yield q,dict(mode=self.initial_mode,source='CURRENT_RUN_NATIVE_STANDOFF_IK',
                 standby_tcp_D=standby.tolist(),stand_off_m=distance,
@@ -207,6 +218,7 @@ class CoupledTask(NativeTask):
                        support_names=contract['original_support_names'] if stage=='extraction'
                        else contract['receiving']['support_ids'] if stage=='place' else [])
         req.update(world=world,scene_fingerprint=digest(world),continuous_task_mode=MODE,
+                   ik_posture_preference=deepcopy(posture_preference.POLICY),
                    business_interval=self.business_interval,j1_direction_policy=self.j1_policy,
                    j1_direction=self.direction_for_stage(stage),
                    j1_reverse_used_rad=self.reverse_used[self.business_interval],
@@ -391,6 +403,31 @@ class CoupledTask(NativeTask):
                     self.cycle_failures.append(dict(stage='approach',target_id=self.target['id'],
                         candidate_id=self.candidate_id,offset_m=distance,contact_ik_q=seed.tolist(),error=str(error)))
                     self.restore(cp)
+                    # The straight camera-capture posture can fold a rigid
+                    # tool into link_3 when all joints turn together. Try one
+                    # genuine wrist-first connection per contact branch,
+                    # inside this same absolute approach deadline. This is a
+                    # native checked joint waypoint, never an edited IK goal
+                    # or a replacement simulation initial state.
+                    if (distance==.025 and self.business_interval=='FIRST_APPROACH'
+                            and self.attachment is None):
+                        wrist=self.current_q.copy();wrist[3:]=seed[3:]
+                        if np.max(np.abs(wrist-self.current_q))<1e-5:continue
+                        try:
+                            checked=self.call(self.request(wrist,'pregrasp'))
+                            if checked['status']!='SUCCESS':
+                                raise ValueError('WRIST_PREPARATION_ENDPOINT_REJECTED')
+                            self.move('pregrasp',goal=wrist)
+                            self.cycle_records[-1]['motion_purpose']='WRIST_PREPARATION_BEFORE_APPROACH'
+                            self.move('pregrasp',pose=pre,seed=seed)
+                            self.move('contact',pose=contact)
+                            if self.seal()['status']!='PASS':raise ValueError('ACTUAL_CONTACT_SEAL_FAILED')
+                            return
+                        except ValueError as recovery_error:
+                            self.cycle_failures.append(dict(stage='wrist_preparation',
+                                target_id=self.target['id'],candidate_id=self.candidate_id,
+                                waypoint_q=wrist.tolist(),error=str(recovery_error)))
+                            self.restore(cp)
             raise ValueError('NATIVE_APPROACH_CONTACT_EXHAUSTED')
 
     def release_candidates(self, height, yaws=(0.,)):
@@ -662,10 +699,13 @@ class CoupledTask(NativeTask):
             for start_index,(q,selection) in enumerate(starts):
                 self.restore(initial)
                 try:
-                    # A new simulation initial-state candidate is a separate
-                    # native trial. Never change the root q of an existing
-                    # MTC task, or concatenate motions across these trials.
-                    self.task_id=f'{task_root}-initial-{index}-{start_index}'
+                    # Inherited capture q/world are identical across grasp
+                    # branches. Reuse that native root (the worker compares
+                    # both exactly), rather than consuming a session per
+                    # grasp and hitting its eight-session capacity. Actual
+                    # alternative initial states still require separate roots.
+                    self.task_id=(task_root if self.initial_mode=='inherited_state'
+                                  else f'{task_root}-initial-{index}-{start_index}')
                     self.select_grasp(grasp)
                     self.current_q=q.copy()
                     self.initial_selection=dict(selection,q_rad=q.tolist(),native_task_id=self.task_id)
@@ -754,6 +794,7 @@ class CoupledTask(NativeTask):
         result['initial_selection']=deepcopy(self.initial_selection)
         result['initial_state_checks']=self.home_checks
         result['perception_binding_fingerprint']=self.scene.get('perception_binding',{}).get('fingerprint')
+        result['ik_posture_preference']=deepcopy(posture_preference.POLICY)
         result['fingerprint']=digest(result)
         return result
 
