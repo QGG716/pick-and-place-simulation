@@ -383,6 +383,17 @@ class CoupledTask(NativeTask):
         candidates=front[:4]+top[:4]+front[4:]+top[4:]
         return dict(geometry,candidates=candidates)
 
+    def approach_offsets(self):
+        offsets=[(.025,0.),(.01,0.),(.005,0.)]
+        # With explicitly relaxed rigid-tool/carton contacts, the remaining
+        # terminal lips still require a face-aligned approach. Give the native
+        # solver finite stand-offs outside the box before approaching its face.
+        # Both lateral sides are retained; native raw-J1/path checks decide.
+        if (self.face=='front' and getattr(self,'scene',{}).get('rigid_tool_carton_contact_mode')):
+            depth,width=map(float,self.target['size_m'][:2])
+            offsets=[(depth,-width),(depth,width),(depth,0.),*offsets]
+        return offsets
+
     def approach(self, grasp):
         self.select_grasp(grasp)
         contact=check_transform(grasp['tcp_pose_D'])
@@ -391,9 +402,10 @@ class CoupledTask(NativeTask):
                    if self.direction_goal_valid(self.current_q,q,'contact')]
             seeds.sort(key=lambda q:self.goal_cost(self.current_q,q))
             if not seeds:raise ValueError('NATIVE_CONTACT_IK_EXHAUSTED')
-            for seed,distance in [(q,d) for q in seeds[:3] for d in (.025,.01,.005)]:
+            for seed,distance,lateral in [(q,d,y) for q in seeds[:3] for d,y in self.approach_offsets()]:
                 cp=self.checkpoint()
                 pre=contact.copy();pre[:3,3]+=face_outward(self.target_pose,self.face)*distance
+                pre[:3,3]+=self.target_pose[:3,1]*lateral
                 try:
                     self.move('pregrasp',pose=pre,seed=seed)
                     self.move('contact',pose=contact)
@@ -401,7 +413,8 @@ class CoupledTask(NativeTask):
                     return
                 except ValueError as error:
                     self.cycle_failures.append(dict(stage='approach',target_id=self.target['id'],
-                        candidate_id=self.candidate_id,offset_m=distance,contact_ik_q=seed.tolist(),error=str(error)))
+                        candidate_id=self.candidate_id,offset_m=distance,lateral_m=lateral,
+                        pregrasp_tcp_D=pre.tolist(),contact_ik_q=seed.tolist(),error=str(error)))
                     self.restore(cp)
                     # The straight camera-capture posture can fold a rigid
                     # tool into link_3 when all joints turn together. Try one

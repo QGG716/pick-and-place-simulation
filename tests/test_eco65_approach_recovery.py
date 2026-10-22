@@ -4,6 +4,15 @@ import pytest
 from unloading_sim.eco65.coupled_task import CoupledTask
 
 
+def test_relaxed_rigid_tool_trial_keeps_finite_real_lip_approach_standoffs():
+    task=CoupledTask.__new__(CoupledTask);task.face='front'
+    task.scene={'rigid_tool_carton_contact_mode':'enumerated_rigid_tool_original_cartons_v1'}
+    task.target={'size_m':[.15,.1,.1]}
+    assert task.approach_offsets()==[(.15,-.1),(.15,.1),(.15,0.),(.025,0.),(.01,0.),(.005,0.)]
+    task.face='top';assert task.approach_offsets()==[(.025,0.),(.01,0.),(.005,0.)]
+    task.face='front';task.scene={};assert task.approach_offsets()==[(.025,0.),(.01,0.),(.005,0.)]
+
+
 @pytest.mark.parametrize('endpoint_allowed',[True,False])
 def test_wrist_recovery_uses_current_state_and_keeps_same_connection_deadline(endpoint_allowed):
     task=CoupledTask.__new__(CoupledTask)

@@ -7,7 +7,7 @@ from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.native_scene import verify_scene
 from unloading_sim.eco65.native_model import build_native_model
 from unloading_sim.eco65.home_candidate import verify_candidate
-from unloading_sim.eco65.collision_policy import ROBOT_TOOL_MODE
+from unloading_sim.eco65.collision_policy import ROBOT_TOOL_MODE, RIGID_CARTON_MODE, rigid_tool_inventory
 from unloading_sim.moveit2_backend import digest
 
 
@@ -17,9 +17,14 @@ def build(a):
     out = a.output.resolve(); out.relative_to(ROOT/'outputs'); out.mkdir(parents=True, exist_ok=False)
     scene = deepcopy(source['scene'])
     scene['robot_tool_exemption_mode'] = ROBOT_TOOL_MODE
+    pairs=[['link_3','part_026']]
+    if a.rigid_tool_carton_contact:
+        scene['rigid_tool_carton_contact_mode']=RIGID_CARTON_MODE
+        scene['rigid_tool_carton_inventory']=rigid_tool_inventory(source['tool'])
+        pairs=[[p['id'],b['id']] for p in scene['rigid_tool_carton_inventory'] for b in scene['boxes']]
     scene['collision_policy_revision'] = dict(
         source_snapshot_fingerprint=source['fingerprint'], physical_layout_changed=False,
-        calibration_reused_without_changes=True, exact_added_pairs=[['link_3', 'part_026']],
+        calibration_reused_without_changes=True, exact_added_pairs=pairs,
         reason='2026-10-22 explicit user simulation authorization')
     scene['scene_fingerprint'] = digest({k:v for k,v in scene.items() if k!='scene_fingerprint'})
     verify_scene(scene)
@@ -33,7 +38,9 @@ def build(a):
     save_json(out/'snapshot.json', snapshot); save_json(out/'home_candidate.json', home)
     report = dict(status='BUILT_REQUIRES_NATIVE_RUN', snapshot_fingerprint=snapshot['fingerprint'],
         **scene['collision_policy_revision'], planning_only=True, physical_execution='NOT_RUN', execution_ready=False)
-    save_json(out/'build_report.json', report); print(report)
+    save_json(out/'build_report.json', report)
+    print(dict(snapshot_fingerprint=snapshot['fingerprint'],status=report['status'],
+               exact_added_pair_count=len(pairs),physical_layout_changed=False))
 
 
 if __name__ == '__main__':
@@ -41,4 +48,6 @@ if __name__ == '__main__':
     p.add_argument('--snapshot', required=True); p.add_argument('--home-candidate', required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--native-asset-root', default='/work-eco65-20261015')
+    p.add_argument('--rigid-tool-carton-contact',action='store_true',
+                   help='Explicit user-authorized rigid tool versus named target/neighbor carton simulation waiver')
     build(p.parse_args())

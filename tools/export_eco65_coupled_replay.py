@@ -19,7 +19,7 @@ from export_m710_search_replay import validate_attempt
 from unloading_sim.eco65.model import ROOT, load_json, robot_for
 from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.coupled_scene import coupled_conveyor_state, receiving_height_candidates
-from unloading_sim.eco65.collision_policy import cup_neighbor_pairs
+from unloading_sim.eco65.collision_policy import cup_neighbor_pairs, rigid_tool_carton_pairs
 
 
 SHARED_KEYS = {'source_policy','collision_policy','robot_mast_exemption',
@@ -53,12 +53,27 @@ def policy_display(request=None, result=None, *, configured_policy=None):
     descriptor = source.get('extraction_carton_contact')
     display = dict(policy_schema=source.get('schema'), policy_mode=source.get('mode'),
                    robot_tool_exemption=deepcopy(source.get('robot_tool_exemption')),
+                   rigid_tool_carton_contact=deepcopy(source.get('rigid_tool_carton_contact')),
+                   rigid_tool_carton_pairs=[],rigid_tool_carton_native_evidence=None,
                    extraction_carton_contact=deepcopy(descriptor),
                    source='FROZEN_MODEL_CONFIGURATION' if request is None else 'ACTUAL_NATIVE_REQUEST_POLICY',
                    request_scope_applies=None, permitted_pairs=[], native_evidence=None,
                    contact_observation='NO_PHYSICAL_CONTACT_OBSERVATION',
                    physical_execution='NOT_RUN', execution_ready=False)
     cup_rule = source.get('cup_neighbor_contact')
+    rigid_rule=source.get('rigid_tool_carton_contact')
+    if request is not None and rigid_rule is not None:
+        original=set(rigid_rule['original_carton_ids'])
+        display['rigid_tool_carton_pairs']=rigid_tool_carton_pairs(source,
+            continuous_task_mode=request.get('continuous_task_mode'),
+            world_carton_ids=[b['id'] for b in request.get('world',[]) if b['id'] in original],
+            attached_target_id=(request.get('attachment') or {}).get('id'),
+            completed_ids=request.get('completed_ids',[]))
+        for key in ('process_policy','process'):
+            evidence=((result or {}).get(key) or {}).get('rigid_tool_carton_contact')
+            if isinstance(evidence,dict) and 'pairs' in evidence:
+                display['rigid_tool_carton_native_evidence']=deepcopy(evidence)
+                break
     display.update(cup_neighbor_contact=deepcopy(cup_rule),cup_neighbor_pairs=[],
                    cup_neighbor_native_evidence=None)
     if request is not None and cup_rule is not None:

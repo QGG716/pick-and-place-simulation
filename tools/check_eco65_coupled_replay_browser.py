@@ -18,6 +18,13 @@ const objectIds=world=>world.map(b=>b.id).sort();
 const policyCheck=(name,display,request,response,requireNative=false)=>{
 const source=request.clearance_policy?.source_policy||request.process_policy?.collision_policy;
 check(name+'_POLICY_SCHEMA',display.policy_schema===source?.schema);
+if(source?.rigid_tool_carton_contact){
+check(name+'_RIGID_CARTON_DESCRIPTOR',same(display.rigid_tool_carton_contact,source.rigid_tool_carton_contact));
+const native=response.process_policy?.rigid_tool_carton_contact||response.process?.rigid_tool_carton_contact;
+if(requireNative)check(name+'_RIGID_CARTON_NATIVE_PRESENT',!!native);
+if(native)check(name+'_RIGID_CARTON_ACTUAL_PAIRS',same(pairKeys(display.rigid_tool_carton_pairs),pairKeys(native.pairs)));
+check(name+'_RIGID_CARTON_NO_ROBOT_OR_LIP',display.rigid_tool_carton_pairs.every(p=>source.rigid_tool_carton_contact.rigid_tool_links.includes(p[0])&&!p[0].endsWith('_lip')));
+}
 if(source?.robot_tool_exemption){
 check(name+'_ROBOT_TOOL_POLICY_DESCRIPTOR',same(display.robot_tool_exemption,source.robot_tool_exemption));
 check(name+'_EXACT_ROBOT_TOOL_PAIR',same(source.robot_tool_exemption.exempt_pairs,[['link_3','part_026']]));

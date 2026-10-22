@@ -156,6 +156,42 @@ void cupNeighborCases(J& out) {
   out["eco65_cup_neighbor"]={{"status","PASS"},{"pairs",pairs.size()},
     {"scope","SYNTHETIC_ACTUAL_CONTACT_ACM_AND_RETAINED_TARGET_ROBOT_ENVIRONMENT_CHECKS"}};
 }
+void rigidCartonCases(J& out) {
+  const auto tools=m710::eco65RigidToolIds();std::set<std::string> ids;
+  for(int i=0;i<12;++i)ids.insert("box_"+std::to_string(i));
+  J extraction={{"schema","eco65_attached_target_stack_exemption_v1"},
+    {"continuous_task_mode","eco65_coupled_cycle_v1"},{"stage","extraction"},
+    {"scope","ATTACHED_TARGET_VS_REMAINING_ORIGINAL_CARTONS_ONLY"},{"original_carton_ids",ids},
+    {"original_carton_inventory_fingerprint",std::string(64,'b')},{"allow_intersection",true},
+    {"geometry_retained",true},{"physical_execution","NOT_RUN"},{"execution_ready",false}};
+  J rule={{"schema","eco65_rigid_tool_carton_contact_v1"},
+    {"scope","ENUMERATED_RIGID_TOOL_VS_ORIGINAL_CARTONS_WORLD_OR_ATTACHED"},
+    {"continuous_task_mode","eco65_coupled_cycle_v1"},{"rigid_tool_links",tools},
+    {"rigid_tool_members",J::array()},{"original_carton_ids",ids},
+    {"original_carton_inventory_fingerprint",std::string(64,'b')},{"include_current_target",true},
+    {"include_attached_target",true},{"include_released_target",true},{"geometry_retained",true},
+    {"allow_intersection",true},{"physical_execution","NOT_RUN"},{"execution_ready",false}};
+  for(const auto& id:tools)rule["rigid_tool_members"].push_back({{"id",id},{"semantic","conservative_rigid"},{"mesh_sha256",std::string(64,'a')}});
+  J source={{"schema","eco65_pair_collision_policy_v6"},{"rigid_tool_carton_contact",rule},
+    {"extraction_carton_contact",extraction},{"stack_contact_mode","attached_target_remaining_original_cartons_during_extraction"},
+    {"stack_contact_stages",{"extraction"}}};
+  J req={{"clearance_policy",{{"source_policy",source}}},{"continuous_task_mode","eco65_coupled_cycle_v1"},
+    {"process_policy",{{"rigid_tool_carton_contact",rule},{"target_id","box_0"},{"task_contract",{{"stack_carton_ids",ids}}}}},
+    {"completed_ids",J::array()},{"attachment",nullptr},{"world",J::array()}};
+  for(const auto& id:ids)req["world"].push_back({{"id",id}});
+  const auto world=m710::eco65RigidCartonPairs(req);require(world.size()==540,"RIGID_CARTON_EXACT_540_PAIRS");
+  auto attached=req;attached["world"].erase(0);attached["attachment"]={{"id","box_0"}};
+  require(m710::eco65RigidCartonPairs(attached)==world,"RIGID_CARTON_ATTACHED_CONTINUITY");
+  auto drained=attached;drained["attachment"]=nullptr;drained["completed_ids"]={"box_0"};
+  ids.erase("box_0");drained["process_policy"]["task_contract"]["stack_carton_ids"]=ids;
+  require(m710::eco65RigidCartonPairs(drained).size()==495,"RIGID_CARTON_DRAIN_REMOVES_PAIRS");
+  auto bad=req;bad["attachment"]={{"id","box_0"}};bool rejected=false;
+  try{m710::eco65RigidCartonPairs(bad);}catch(const std::exception&){rejected=true;}
+  require(rejected,"RIGID_CARTON_DUPLICATE_OWNERSHIP_REJECTED");
+  bad=req;bad["clearance_policy"]["source_policy"]["rigid_tool_carton_contact"]["rigid_tool_links"].push_back("link_3");rejected=false;
+  try{m710::eco65RigidCartonPairs(bad);}catch(const std::exception&){rejected=true;}
+  require(rejected,"RIGID_CARTON_ROBOT_WIDENING_REJECTED");out["rigid_carton_policy"]="PASS";
+}
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   J pairPolicy={{"schema","eco65_pair_collision_policy_v5"},{"robot_tool_exemption",{
@@ -171,6 +207,7 @@ int main(int argc,char** argv) {
   auto forged=pairPolicy;forged["robot_tool_exemption"]["exempt_pairs"].push_back({"link_3","part_027"});
   bool scopeRejected=false;try{m710::eco65RobotToolPairs(forged);}catch(const std::exception&){scopeRejected=true;}
   require(scopeRejected,"WIDER_ROBOT_TOOL_PERMISSION_REJECTED");out["named_robot_tool_exemption"]="PASS";
+  rigidCartonCases(out);
   for(double gap:{.004,.005-2e-9,.005-.5e-9,.005,.005+.5e-9,.006}) {
     auto s=scene(gap);m710::Clearance c(s,policy(),mode);bool valid=c.check(s->getCurrentState());
     require(valid==(gap+1e-9>=.005),"THRESHOLD_CLASSIFICATION");out["threshold_cases"].push_back({{"gap",gap},{"valid",valid},{"failure",c.last_failure}});

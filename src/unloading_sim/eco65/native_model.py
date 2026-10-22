@@ -53,6 +53,12 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         geometry['robot_tool_exemption'] = rule
     if 'extraction_carton_contact' in policy:
         geometry['extraction_carton_contact'] = policy['extraction_carton_contact']
+    if 'rigid_tool_carton_contact' in policy:
+        from .collision_policy import rigid_tool_inventory
+        rule=policy['rigid_tool_carton_contact']
+        if rigid_tool_inventory(tool)!=rule['rigid_tool_members']:
+            raise ValueError('RIGID_TOOL_CARTON_MODEL_SOURCE_CHANGED')
+        geometry['rigid_tool_carton_contact']=rule
     if 'cup_neighbor_contact' in policy:
         rule = policy['cup_neighbor_contact']
         if sorted(geometry['terminal_band_by_contour'].values()) != rule['terminal_band_links']:
@@ -250,6 +256,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         identity['cup_neighbor_contact_fingerprint'] = digest(policy['cup_neighbor_contact'])
     if 'robot_tool_exemption' in policy:
         identity['robot_tool_exemption_fingerprint'] = digest(policy['robot_tool_exemption'])
+    if 'rigid_tool_carton_contact' in policy:
+        identity['rigid_tool_carton_contact_fingerprint']=digest(policy['rigid_tool_carton_contact'])
     init = dict(op='init', parameters=params, identity=identity, joint_names=c['joint_names'], seed=6518,
         collision_policy=policy, tool_links=sorted(names), compliant_tool_links=sorted(bands),
         process_geometry=geometry, planning_only=True, planning_mode='cold_from_scratch',

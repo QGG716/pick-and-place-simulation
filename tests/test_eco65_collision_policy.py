@@ -7,6 +7,33 @@ from unloading_sim.eco65.collision_policy import (
     EXTRACTION_CARTON_MODE, extraction_carton_pairs)
 from unloading_sim.eco65.collision_policy import CUP_NEIGHBOR_MODE, CUP_LIP_LINKS, cup_neighbor_pairs
 from unloading_sim.eco65.collision_policy import ROBOT_TOOL_MODE
+from unloading_sim.eco65.collision_policy import RIGID_CARTON_MODE, RIGID_TOOL_LINKS, rigid_tool_carton_pairs
+
+
+def test_rigid_carton_policy_follows_world_attached_released_and_drained_ownership():
+    scene=coupled_inventory()
+    scene.update(cup_neighbor_contact_mode=CUP_NEIGHBOR_MODE,robot_tool_exemption_mode=ROBOT_TOOL_MODE,
+        rigid_tool_carton_contact_mode=RIGID_CARTON_MODE,
+        rigid_tool_carton_inventory=[dict(id=i,semantic='conservative_rigid',mesh_sha256='a'*64) for i in RIGID_TOOL_LINKS])
+    scene['coupled_conveyor_spec']['config']['cup_neighbor_contact_mode']=CUP_NEIGHBOR_MODE
+    policy=effective_collision_policy(scene)
+    assert policy['schema']=='eco65_pair_collision_policy_v6'
+    assert len(RIGID_TOOL_LINKS)==45 and 'part_006_rigid' in RIGID_TOOL_LINKS
+    ids=[b['id'] for b in scene['boxes']];target=scene['target_box_id']
+    args=dict(continuous_task_mode='eco65_coupled_cycle_v1',world_carton_ids=ids)
+    world=rigid_tool_carton_pairs(policy,**args)
+    attached=rigid_tool_carton_pairs(policy,**dict(args,world_carton_ids=[i for i in ids if i!=target],attached_target_id=target))
+    assert world==attached and len(world)==540
+    assert ['part_000',target] in world and ['part_006_rigid',target] in world
+    assert not any('link_3' in p or 'part_006_lip' in p or 'robot_mount_plate' in p for p in world)
+    drained=rigid_tool_carton_pairs(policy,**dict(args,world_carton_ids=[i for i in ids if i!=target],completed_ids=[target]))
+    assert len(drained)==495 and not any(target in p for p in drained)
+    for change in (dict(attached_target_id=target),dict(world_carton_ids=ids[:-1]),
+                   dict(world_carton_ids=ids+['unknown']),dict(completed_ids=[target])):
+        with pytest.raises(ValueError,match='OWNERSHIP'):
+            rigid_tool_carton_pairs(policy,**dict(args,**change))
+    scene['rigid_tool_carton_inventory'][0]['id']='link_3'
+    with pytest.raises(ValueError,match='EXACT_INVENTORY'):effective_collision_policy(scene)
 
 
 def test_explicit_link3_part026_permission_preserves_existing_rules():

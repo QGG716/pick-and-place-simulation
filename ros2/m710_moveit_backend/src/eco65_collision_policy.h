@@ -10,14 +10,15 @@ using EcoPolicyJson = nlohmann::json;
 inline bool eco65HasMastPolicy(const EcoPolicyJson& policy) {
   const auto schema=policy.value("schema",std::string());
   return schema=="eco65_pair_collision_policy_v2" || schema=="eco65_pair_collision_policy_v3" ||
-    schema=="eco65_pair_collision_policy_v4" || schema=="eco65_pair_collision_policy_v5";
+    schema=="eco65_pair_collision_policy_v4" || schema=="eco65_pair_collision_policy_v5" || schema=="eco65_pair_collision_policy_v6";
 }
 inline bool eco65HasCupPolicy(const EcoPolicyJson& policy) {
   const auto schema=policy.value("schema",std::string());
-  return schema=="eco65_pair_collision_policy_v4" || schema=="eco65_pair_collision_policy_v5";
+  return schema=="eco65_pair_collision_policy_v4" || schema=="eco65_pair_collision_policy_v5" || schema=="eco65_pair_collision_policy_v6";
 }
 inline EcoPolicyJson eco65RobotToolPairs(const EcoPolicyJson& policy) {
-  if(policy.value("schema",std::string())!="eco65_pair_collision_policy_v5")return EcoPolicyJson::array();
+  if(policy.value("schema",std::string())!="eco65_pair_collision_policy_v5" &&
+      policy.value("schema",std::string())!="eco65_pair_collision_policy_v6")return EcoPolicyJson::array();
   const auto& e=policy.at("robot_tool_exemption");
   const auto pairs=EcoPolicyJson::array({EcoPolicyJson::array({"link_3","part_026"})});
   if(e.at("schema")!="eco65_named_robot_tool_exemption_v1" ||

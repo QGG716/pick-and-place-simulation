@@ -216,6 +216,7 @@ public:
     {"touch_process",touch_?touch_->evidence_:Json(nullptr)},{"contact_distance_samples",eco65_?eco65_->distance_samples:Json(nullptr)},
     {"extraction_carton_contact",eco65_?eco65_->extractionContactEvidence():Json(nullptr)},
     {"cup_neighbor_contact",eco65_?eco65_->cupNeighborEvidence():Json(nullptr)},
+    {"rigid_tool_carton_contact",eco65_?eco65_->rigidCartonEvidence():Json(nullptr)},
     {"schema",eco65_?"eco65_native_process_evidence_v1":"m710_native_process_evidence_v1"},{"stage",stage_},{"target_id",target_id_},
     {"attached",attached_},{"state_checks",state_checks_},{"ordered_checks",ordered_checks_},{"relaxed_stack",relaxed_},
     {"support_names",supports_},{"last_seal",last_seal},{"last_failure",last_failure},{"terminal_proximity",terminal_proximity_},{"continuous_swept_proof",false}};}

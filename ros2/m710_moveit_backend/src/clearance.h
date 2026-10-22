@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "clearance_workspace.h"
 #include "eco65_collision_policy.h"
+#include "eco65_rigid_carton_policy.h"
 
 namespace m710 {
 using Json = nlohmann::json;
@@ -59,6 +60,12 @@ public:
         if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||
             allowed!=collision_detection::AllowedCollision::ALWAYS)
           throw std::runtime_error("ECO65_ROBOT_TOOL_SRDF_ACM_MISMATCH");
+      }
+      for(const auto& pair:eco65RigidCartonPairs(request)) {
+        collision_detection::AllowedCollision::Type allowed;
+        if(!acm_.getEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),allowed) ||
+            allowed!=collision_detection::AllowedCollision::ALWAYS)
+          throw std::runtime_error("ECO65_RIGID_CARTON_ACM_MISMATCH");
       }
       if(source.at("schema")=="eco65_pair_collision_policy_v3" || eco65HasCupPolicy(source)) {
         if(request.is_null() || request.at("clearance_policy")!=policy)

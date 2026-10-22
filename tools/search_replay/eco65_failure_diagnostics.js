@@ -118,7 +118,7 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
   }
   $('diagnosisReason').textContent=reason;
   const rigid=pair.find(id=>id.endsWith('_rigid')),neighbor=pair.find(id=>id!==state.target_id&&state.world.some(b=>b.id===id&&b.category==='carton'));
-  $('diagnosisPolicy').textContent=rigid&&neighbor&&a.display_policy?.cup_neighbor_contact?'此处是吸盘刚性内件。当前邻箱接触许可覆盖柔性吸盘唇，未覆盖该刚性件。':'';
+  $('diagnosisPolicy').textContent=a.display_policy?.rigid_tool_carton_contact?'本请求已豁免具名刚性工具件与原有纸箱（含目标、附着及释放箱）的碰撞；实际吸盘唇密封接触及其他环境检查仍保留。':rigid&&neighbor&&a.display_policy?.cup_neighbor_contact?'此处是吸盘刚性内件。当前邻箱接触许可覆盖柔性吸盘唇，未覆盖该刚性件。':'';
   if(pair.some(id=>/^link_[1-6]$/.test(id))&&pair.some(id=>id.endsWith('_lip')))
     $('diagnosisPolicy').textContent='此处是吸盘与机械臂自身的接触。允许吸盘接触邻箱的策略不豁免这一对象对。';
   if(a.error){$('diagnosisOutcome').textContent+='\n记录错误：'+a.error;

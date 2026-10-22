@@ -19,6 +19,7 @@ class Eco65Process {
   std::set<std::string> bands_,supports_;
   std::set<std::string> extraction_neighbors_;
   Json cup_neighbor_pairs_=Json::array();
+  Json rigid_carton_pairs_=Json::array();
   std::map<std::string,ProcessBox> world_;
   struct WorldSolid {std::shared_ptr<fcl::CollisionGeometryd> shape;Eigen::Isometry3d pose;};
   std::map<std::string,WorldSolid> world_solids_;
@@ -219,6 +220,8 @@ public:
     setEco65ExtractionPairs(scene,target_id_,extraction_neighbors_);
     cup_neighbor_pairs_=eco65CupNeighborPairs(req);
     setEco65CupNeighborPairs(scene,cup_neighbor_pairs_);
+    rigid_carton_pairs_=eco65RigidCartonPairs(req);
+    setEco65RigidCartonPairs(scene,rigid_carton_pairs_);
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& id:bands_) {bands.push_back(solid(state,id));acm.setEntry(id,target_id_,true);}
     base_solid=solid(state,nativeFrames().base_link);
@@ -379,5 +382,6 @@ public:
     return evidence;
   }
   Json cupNeighborEvidence() const {return eco65CupNeighborEvidence(cup_neighbor_pairs_);}
+  Json rigidCartonEvidence() const {return eco65RigidCartonEvidence(rigid_carton_pairs_);}
 };
 }

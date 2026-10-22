@@ -16,6 +16,10 @@ MAST_MODE = 'robot_body_vision_mast_exempt_v2'
 EXTRACTION_CARTON_MODE = 'attached_target_remaining_original_cartons_during_extraction'
 CUP_NEIGHBOR_MODE = 'named_terminal_bands_remaining_original_cartons'
 ROBOT_TOOL_MODE = 'explicit_link_3_part_026_simulation_exemption_v1'
+RIGID_CARTON_MODE = 'enumerated_rigid_tool_original_cartons_v1'
+RIGID_TOOL_LINKS = sorted([f'part_{i:03d}'+('_rigid' if i in range(2,25,2) else '')
+                          for i in range(43) if i!=41]+
+                         [f'part_041_region_{i}' for i in range(3)])
 PART_026_SHA256 = 'e40dd92e8d06fba77b65e5b078ad7f0ab21bb9b1ad29e564ab4e3675be18e9f4'
 CUP_LIP_LINKS = [f'part_{i:03d}_lip' for i in range(2, 25, 2)]
 ROBOT_BODY_LINKS = ['base_link', 'link_1', 'link_2', 'link_3', 'link_4', 'link_5', 'link_6']
@@ -127,7 +131,7 @@ def extraction_carton_pairs(policy, *, continuous_task_mode, stage, target_id,
     if (rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1'
             or stage != 'extraction' or attached_target_id is None):
         return []
-    if (policy.get('schema') not in ('eco65_pair_collision_policy_v3', 'eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5')
+    if (policy.get('schema') not in ('eco65_pair_collision_policy_v3', 'eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5', 'eco65_pair_collision_policy_v6')
             or rule.get('schema') != 'eco65_attached_target_stack_exemption_v1'
             or rule.get('continuous_task_mode') != continuous_task_mode
             or rule.get('stage') != stage or rule.get('allow_intersection') is not True
@@ -168,7 +172,7 @@ def cup_neighbor_pairs(policy, *, continuous_task_mode, target_id, world_carton_
     rule = policy.get('cup_neighbor_contact')
     if rule is None or continuous_task_mode != 'eco65_coupled_cycle_v1':
         return []
-    if (policy.get('schema') not in ('eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5')
+    if (policy.get('schema') not in ('eco65_pair_collision_policy_v4', 'eco65_pair_collision_policy_v5', 'eco65_pair_collision_policy_v6')
             or rule.get('schema') != 'eco65_cup_neighbor_contact_v1'
             or rule.get('terminal_band_links') != CUP_LIP_LINKS):
         raise ValueError('CUP_NEIGHBOR_POLICY_BINDING_INVALID')
@@ -193,10 +197,57 @@ def robot_tool_exemption():
                          'tool_vs_environment', 'robot_vs_environment', 'payload_checks'])
 
 
+def rigid_tool_inventory(tool):
+    rows = sorted((dict(id=p['id'], semantic=p['semantic'], mesh_sha256=p['mesh_sha256'])
+                   for p in tool['collisions'] if p['semantic']=='conservative_rigid'), key=lambda p:p['id'])
+    if [p['id'] for p in rows] != RIGID_TOOL_LINKS:
+        raise ValueError('RIGID_TOOL_CARTON_SOURCE_INVENTORY_CHANGED')
+    return rows
+
+
+def rigid_tool_carton_exemption(scene):
+    rows = scene.get('rigid_tool_carton_inventory', [])
+    if (scene.get('rigid_tool_carton_contact_mode') != RIGID_CARTON_MODE or
+            [p.get('id') for p in rows] != RIGID_TOOL_LINKS or
+            any(p.get('semantic')!='conservative_rigid' or
+                not re.fullmatch('[0-9a-f]{64}',p.get('mesh_sha256','')) for p in rows)):
+        raise ValueError('RIGID_TOOL_CARTON_EXACT_INVENTORY_REQUIRED')
+    original=extraction_carton_exemption(scene)
+    return dict(schema='eco65_rigid_tool_carton_contact_v1',
+        scope='ENUMERATED_RIGID_TOOL_VS_ORIGINAL_CARTONS_WORLD_OR_ATTACHED',
+        continuous_task_mode='eco65_coupled_cycle_v1',
+        authorization='2026-10-22_USER_AUTHORIZED_RIGID_TOOL_TARGET_AND_NEIGHBOR_CARTON_CONTACT',
+        rigid_tool_links=list(RIGID_TOOL_LINKS),rigid_tool_members=deepcopy(rows),
+        original_carton_ids=original['original_carton_ids'],
+        original_carton_inventory_fingerprint=original['original_carton_inventory_fingerprint'],
+        include_current_target=True,include_attached_target=True,include_released_target=True,
+        allow_intersection=True,geometry_retained=True,physical_execution='NOT_RUN',execution_ready=False,
+        retained_checks=['actual_target_seal_and_edge_alignment','terminal_band_vs_current_target',
+                         'robot_vs_cartons','tool_vs_non_carton_environment','payload_vs_environment',
+                         'robot_tool_nonexempt','joint_limits_and_business_direction'])
+
+
+def rigid_tool_carton_pairs(policy, *, continuous_task_mode, world_carton_ids,
+                           attached_target_id=None, completed_ids=()):
+    rule=policy.get('rigid_tool_carton_contact')
+    if rule is None or continuous_task_mode!='eco65_coupled_cycle_v1':return []
+    if (policy.get('schema')!='eco65_pair_collision_policy_v6' or
+            rule.get('rigid_tool_links')!=RIGID_TOOL_LINKS):
+        raise ValueError('RIGID_TOOL_CARTON_POLICY_BINDING_INVALID')
+    original=set(rule['original_carton_ids']);world=set(world_carton_ids);done=set(completed_ids)
+    attached=set() if attached_target_id is None else {attached_target_id}
+    if (len(world)!=len(world_carton_ids) or len(done)!=len(completed_ids) or
+            world & attached or (world|attached)&done or world|attached|done!=original):
+        raise ValueError('RIGID_TOOL_CARTON_OWNERSHIP_INVALID')
+    return [[tool,box] for tool in RIGID_TOOL_LINKS for box in sorted(world|attached)]
+
+
 def effective_collision_policy(scene):
     policy = deepcopy(LEGACY_POLICY)
     mode = scene.get('collision_policy_mode')
     if mode is None:
+        if scene.get('rigid_tool_carton_contact_mode') is not None:
+            raise ValueError('RIGID_TOOL_CARTON_REQUIRES_BOUND_COUPLED_POLICY')
         if scene.get('robot_tool_exemption_mode') is not None:
             raise ValueError('ROBOT_TOOL_EXEMPTION_REQUIRES_BOUND_COUPLED_POLICY')
         if scene.get('extraction_carton_contact_mode') is not None or scene.get('cup_neighbor_contact_mode') is not None:
@@ -223,4 +274,13 @@ def effective_collision_policy(scene):
             raise ValueError('ROBOT_TOOL_EXEMPTION_EXACT_SCOPE_REQUIRED')
         policy.update(schema='eco65_pair_collision_policy_v5',
                       robot_tool_exemption=robot_tool_exemption())
+    if scene.get('rigid_tool_carton_contact_mode') is not None:
+        if policy['schema']!='eco65_pair_collision_policy_v5':
+            raise ValueError('RIGID_TOOL_CARTON_REQUIRES_BOUND_COUPLED_POLICY')
+        policy.update(schema='eco65_pair_collision_policy_v6',
+                      rigid_tool_carton_contact=rigid_tool_carton_exemption(scene))
+        policy['cup_neighbor_contact']['retained_checks'].remove('rigid_tool_vs_all_cartons')
+        policy['extraction_carton_contact']['retained_checks'].remove('tool_and_all_cups_vs_cartons')
+        policy['robot_tool_exemption']['retained_checks'].remove('tool_vs_environment')
+        policy['robot_tool_exemption']['retained_checks'].append('tool_vs_non_carton_environment')
     return policy
