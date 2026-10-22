@@ -72,6 +72,7 @@ def test_additional_x_200_retreat_keeps_y_and_all_other_geometry():
 @pytest.mark.parametrize('variant,expected', [
     ('x_minus_300_y_minus_100', [-1.625, .250, .600]),
     ('x_minus_400_y_minus_100', [-1.725, .250, .600]),
+    ('x_minus_500_y_minus_100', [-1.825, .250, .600]),
 ])
 def test_population_evidence_rejects_mixed_mount_labels(variant, expected):
     from verify_m710_population import expected_population_mount

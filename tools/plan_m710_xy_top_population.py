@@ -18,6 +18,7 @@ POPULATION_LAYOUTS = {
     'xy_minus_100': 'm710id70_unloading_layout_v1_mount_xy_minus_100.yaml',
     'x_minus_300_y_minus_100': 'm710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100.yaml',
     'x_minus_400_y_minus_100': 'm710id70_unloading_layout_v1_mount_x_minus_400_y_minus_100.yaml',
+    'x_minus_500_y_minus_100': 'm710id70_unloading_layout_v1_mount_x_minus_500_y_minus_100.yaml',
 }
 
 
