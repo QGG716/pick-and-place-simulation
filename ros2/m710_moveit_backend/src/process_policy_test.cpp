@@ -84,14 +84,14 @@ int main(int argc,char** argv) {
   tool_req["clearance_policy"]["tool_links"]={"cup"};
   tool_req["clearance_policy"]["source_policy"]["tool_chassis_contact_target_ids"]={"target"};
   tool_req["process_policy"]["collision_policy"]=tool_req["clearance_policy"]["source_policy"];
-  tool_req["allowed_pairs"]={{"cup","chassis"}};
+  tool_req["allowed_pairs"]=J::array({J::array({"cup","chassis"})});
   {m710::ProcessPolicy permitted(scene(),tool_req);}
   for(int invalid=0;invalid<5;++invalid) {
     auto r=tool_req;
     if(invalid==0)r["planning_only"]=false;
-    if(invalid==1)r["allowed_pairs"]={{"cup","trailer_left_wall"}};
-    if(invalid==2)r["allowed_pairs"]={{"target","chassis"}};
-    if(invalid==3)r["allowed_pairs"]={{"flange","chassis"}};
+    if(invalid==1)r["allowed_pairs"]=J::array({J::array({"cup","trailer_left_wall"})});
+    if(invalid==2)r["allowed_pairs"]=J::array({J::array({"target","chassis"})});
+    if(invalid==3)r["allowed_pairs"]=J::array({J::array({"flange","chassis"})});
     if(invalid==4) {
       r["clearance_policy"]["source_policy"]["tool_chassis_contact_target_ids"]={"other_layer"};
       r["process_policy"]["collision_policy"]=r["clearance_policy"]["source_policy"];
