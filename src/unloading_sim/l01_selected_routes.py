@@ -9,10 +9,14 @@ TOP_TEMPLATE = 'SELECTED_TOP_HMAX'
 ORDER = ('carton_l01_c01', 'carton_l01_c00', 'carton_l01_c04')
 TOP_TARGET = 'carton_l01_c04'
 C01_CHANNEL_SCOPE = 'XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
+C01_FRONT_SCOPE = 'XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX'
+FRONT_TEMPLATE = 'SELECTED_FRONT_POS_Y_HMAX'
 C01 = 'carton_l01_c01'
 
 
-def selected_routes_permission(frozen, *, finite_c01_channel=False):
+def selected_routes_permission(frozen, *, finite_c01_channel=False, front_c01=False):
+    if front_c01 and not finite_c01_channel:
+        raise ValueError('C01_FRONT_REQUIRES_FINITE_NONJUNCTION_CHANNEL')
     evidence=frozen.evidence();routes={}
     if evidence['original_carton_count']!=40:
         raise ValueError('SELECTED_ROUTES_ORIGINAL_POPULATION_CHANGED')
@@ -23,7 +27,8 @@ def selected_routes_permission(frozen, *, finite_c01_channel=False):
             raise ValueError('SELECTED_ROUTES_ORIGINAL_LAYER_CHANGED')
         top=name==TOP_TARGET
         routes[name]=dict(start_box_identity=h['start_box_identity'],height_m=h['Hmax_world_m'],
-            template=TOP_TEMPLATE if top else SIDE_TEMPLATE,geometric_face_id='z+' if top else 'y+',
+            template=TOP_TEMPLATE if top else FRONT_TEMPLATE if front_c01 else SIDE_TEMPLATE,
+            geometric_face_id='z+' if top else 'x-' if front_c01 else 'y+',
             segment_directions_world=[[0.,0.,1.] if top else [0.,1.,0.],[-1.,0.,0.]],
             original_role=evidence['roles'][name]['role'])
         if finite_c01_channel:routes[name]['finite_side_channel']=True
@@ -34,7 +39,8 @@ def selected_routes_permission(frozen, *, finite_c01_channel=False):
 
 def selected_route_option(target,belt,longitudinal,frozen,current_height,permission):
     finite=permission.get('routes',{}).get(C01,{}).get('finite_side_channel',False)
-    if permission!=selected_routes_permission(frozen,finite_c01_channel=finite):
+    front=permission.get('routes',{}).get(C01,{}).get('template')==FRONT_TEMPLATE
+    if permission!=selected_routes_permission(frozen,finite_c01_channel=finite,front_c01=front):
         raise ValueError('SELECTED_ROUTES_PERMISSION_CHANGED')
     route=permission['routes'].get(target.name)
     if route is None:raise ValueError('TARGET_OUTSIDE_SELECTED_ROUTES')
@@ -45,7 +51,7 @@ def selected_route_option(target,belt,longitudinal,frozen,current_height,permiss
         from .low_top_receiver import _fixed_top_option
         option=_fixed_top_option(target,belt,longitudinal,frozen,current_height,h,'USER_SELECTED_TOP_HMAX')
     else:
-        option=dict(face=directional_contact(target,[0.,1.,0.]),height_m=current_height,
+        option=dict(face=directional_contact(target,[-1.,0.,0.] if front else [0.,1.,0.]),height_m=current_height,
             pre_approach_height_m=current_height,synchronization='ALREADY_AT_RECEIVE',
             stationary_receiver_during_target=True,requires_open_channel=True,
             region=receiving_region(target,belt),endpoint='REGION_NOT_FIXED_POINT',

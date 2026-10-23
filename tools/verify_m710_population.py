@@ -30,12 +30,12 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
-    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'):
+    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     extension=protocol.get('tool_connector_extension_m',0.)
     if extension:
-        if extension!=.1 or protocol['scope']!='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX':
+        if extension!=.1 or protocol['scope'] not in ('XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX'):
             raise ValueError('UNAPPROVED_POPULATION_TOOL_EXTENSION')
         expected=expected.removesuffix('.yaml')+'_tool_extension100.yaml'
     if protocol['active_layout_file'] != expected:
@@ -50,7 +50,9 @@ def verify(run, replay=None, *, retained_prefix=False):
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
     bottom_two_top=protocol['scope']=='XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP'
-    finite_c01=protocol['scope']=='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
+    front_c01=protocol['scope']=='XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX'
+    finite_c01=front_c01 or protocol['scope']=='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
+    assert bool(protocol.get('front_c01_suction',False))==front_c01
     selected_routes=finite_c01 or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
     l01_tool=selected_routes or protocol['scope']=='XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'
     layer_top=bottom_two_top or protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
@@ -94,7 +96,7 @@ def verify(run, replay=None, *, retained_prefix=False):
         if selected_routes:
             from unloading_sim.l01_selected_routes import selected_routes_permission
             from unloading_sim.carton_population import FrozenCartonPopulation
-            routes_permission=selected_routes_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])),finite_c01_channel=finite_c01)
+            routes_permission=selected_routes_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])),finite_c01_channel=finite_c01,front_c01=front_c01)
             assert routes_permission==protocol['selected_routes_permission']
             assert set(routes_permission['routes'])==targets
             assert [o['target_id'] for o in summary['outcomes']]==routes_permission['dispatch_order']

@@ -88,3 +88,22 @@ def test_c01_turn_uses_full_projection_not_center_and_needs_only_120mm():
     assert not check['passed']
     assert not nonjunction_side_turn(translated(target,[0,.12,0]),world.values())['passed']
     assert nonjunction_side_turn(translated(target,[0,.1202,0]),world.values())['passed']
+
+
+def test_c01_front_only_changes_face_keeps_short_y_x_route_and_hmax():
+    boxes,frozen,world,height=setup()
+    side=selected_routes_permission(frozen,finite_c01_channel=True)
+    front=selected_routes_permission(frozen,finite_c01_channel=True,front_c01=True)
+    assert front['dispatch_order']==['carton_l01_c01']
+    option=selected_route_option(boxes['carton_l01_c01'],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,front)
+    assert option['face']['geometric_face_id']=='x-'
+    assert option['face']['outward_normal']==[-1.,0.,0.]
+    assert option['segment_directions_world']==[[0.,1.,0.],[-1.,0.,0.]]
+    assert option['height_m']==option['pre_approach_height_m']==pytest.approx(.25)
+    assert option['finite_side_channel'] and option['original_role']=='MIDDLE'
+    target=SimpleNamespace(target_id='carton_l01_c01',box=boxes['carton_l01_c01'],geometric_face_id='x-',world_y_offset_m=0.,eccentric_authority=None)
+    validate_selected_route(target,option,front,height)
+    with pytest.raises(ValueError):validate_selected_route(target,option,side,height)
+    with pytest.raises(ValueError):selected_routes_permission(frozen,front_c01=True)
+    for name in ('carton_l01_c00','carton_l01_c04'):
+        with pytest.raises(ValueError):selected_route_option(boxes[name],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,front)
