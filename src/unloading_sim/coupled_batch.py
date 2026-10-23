@@ -188,14 +188,13 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         if 'pre_approach_transition' not in self.receiver_binding:return start,obstacles
         pre=self.receiver_binding['pre_approach_transition']
         if pre['samples'][0]['world']==pre['samples'][-1]['world']:
-            self.receiver_raised=abs(pre['samples'][-1]['height_m']-self.option['height_m'])<1e-9
+            self.receiver_raised=pre['samples'][-1]['world']==self.receiver_binding['samples'][-1]['world']
             return start,obstacles
         self._pre_approach_lift=True
         try:
             state,world,success=self.lift_at(start,target,obstacles,seed,row,stage='pregrasp')
         finally:self._pre_approach_lift=False
-        self.receiver_raised=abs(self.receiver_binding['samples'][0]['height_m']-
-                                self.receiver_binding['samples'][-1]['height_m'])<1e-9
+        self.receiver_raised=self.receiver_binding['samples'][0]['world']==self.receiver_binding['samples'][-1]['world']
         if not success:raise MoveItUnavailable('PRE_APPROACH_COUPLED_SWEEP_REJECTED')
         # A newly generated external-axis parent is a new connection context.
         # Keep prior prefix failures in the enclosing history, never transplant
@@ -215,7 +214,10 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def prepare_contact_start(self,start,target,obstacles,seed,row):
         reject_late_sync(self.option)
-        if abs(bounds(next(b for b in obstacles if b.name=='conveyor_transverse'))[1][2]-self.option['height_m'])<1e-9:
+        # The native receive contract binds the exact complete mechanism world.
+        # A height tolerance cannot establish that equality: even float-roundoff
+        # differences require the existing checked transition/parent update.
+        if [box_message(b) for b in obstacles]==self.receiver_binding['samples'][-1]['world']:
             self.receiver_raised=True
             row['receive_sync_location']='ALREADY_AT_RECEIVE'
             return start,obstacles

@@ -107,3 +107,26 @@ def test_lower_receive_height_is_an_actual_pre_approach_candidate(receive):
     assert routes[1]['synchronization']=='ALREADY_AT_RECEIVE'
     assert all(r['face']==option['face'] and r['height_m']==receive for r in routes)
     assert len(list(synchronization_options(option,receive,.25,include_receive_before_approach=True)))==2
+
+
+def test_near_equal_height_does_not_skip_exact_native_world_sync(layout):
+    from unloading_sim.coupled_batch import CoupledCycleConnector,message_box
+    start_height=.5499999999999998;end_height=.5499999999999999
+    binding=coupled_binding(layout,(),start_height,end_height,'opaque',())
+    assert binding['samples'][0]['world']!=binding['samples'][-1]['world']
+    c=CoupledCycleConnector.__new__(CoupledCycleConnector)
+    c.option=dict(height_m=end_height);c.receiver_binding=binding;c.receiver_raised=False
+    world=[message_box(b) for b in binding['samples'][0]['world']]
+    expected=[message_box(b) for b in binding['samples'][-1]['world']]
+    calls=[]
+    def checked_lift(start,target,obstacles,seed,row,*,stage):
+        calls.append(stage)
+        return 'checked-parent',expected,True
+    c.lift_at=checked_lift
+    row={};state,actual=c.prepare_contact_start('old-parent',None,world,71070,row)
+    assert calls==['pregrasp'] and state=='checked-parent'
+    assert row['receive_sync_location']=='PREGRASP'
+    assert [box_message(b) for b in actual]==binding['samples'][-1]['world']
+    row={};state,actual=c.prepare_contact_start('checked-parent',None,expected,71070,row)
+    assert calls==['pregrasp'] and c.receiver_raised
+    assert row['receive_sync_location']=='ALREADY_AT_RECEIVE'

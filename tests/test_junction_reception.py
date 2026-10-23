@@ -13,7 +13,7 @@ from unloading_sim.junction_reception import (
     reception_classification,require_receive_height,validate_junction_release,
     temporary_heights,synchronization_options,reject_late_sync)
 from unloading_sim.coupled_batch import CoupledCycleConnector,CoupledBatchClient,nominal_drop,message_box
-from unloading_sim.moveit2_backend import MoveItUnavailable
+from unloading_sim.moveit2_backend import MoveItUnavailable,box_message
 from time import perf_counter
 
 
@@ -106,6 +106,7 @@ def test_hmin_direct_does_not_force_another_lift(layout):
     obstacles,_=world(layout,1.75);q=np.arange(6.)
     c=CoupledCycleConnector.__new__(CoupledCycleConnector)
     c.option=dict(height_m=1.75,synchronization="ALREADY_AT_RECEIVE")
+    c.receiver_binding=dict(samples=[dict(world=[box_message(b) for b in obstacles])])
     c.lift_at=lambda *a,**k:pytest.fail("unnecessary height motion")
     row={};end,actual=c.prepare_contact_start(q,None,obstacles,71070,row)
     assert end is q and actual is obstacles and c.receiver_raised
@@ -116,6 +117,7 @@ def test_allowed_sync_locations_use_actual_state_and_keep_target(layout,where):
     obstacles,by=world(layout,1.70);high,_=world(layout,1.75);q=np.arange(6.)
     c=CoupledCycleConnector.__new__(CoupledCycleConnector)
     c.option=dict(height_m=1.75,synchronization=where);c.receiver_raised=False
+    c.receiver_binding=dict(samples=[dict(world=[box_message(b) for b in high])])
     seen=[]
     def lift(start,target,world,seed,row,**kw):
         assert start is q and world is obstacles and any(b is by["carton_l07_c00"] for b in world)
@@ -130,6 +132,7 @@ def test_allowed_sync_locations_use_actual_state_and_keep_target(layout,where):
 def test_failed_pregrasp_sync_does_not_claim_contact_at_hmin(layout):
     obstacles,_=world(layout,1.70);c=CoupledCycleConnector.__new__(CoupledCycleConnector)
     c.option=dict(height_m=1.75,synchronization="PREGRASP");c.receiver_raised=False
+    c.receiver_binding=dict(samples=[dict(world=[box_message(b) for b in world(layout,1.75)[0]])])
     c.lift_at=lambda q,t,w,s,r,**kw:(q,w,False)  # Synthetic intermediate-sweep failure.
     row={}
     c.prepare_contact_start(np.zeros(6),None,obstacles,71070,row)

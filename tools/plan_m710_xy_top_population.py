@@ -33,6 +33,8 @@ def main():
     p.add_argument('--check-only',action='store_true')
     p.add_argument('--continue-min250-from',type=Path,
         help='Verified x500 terminal, 250 mm requested minimum and strict box-top suction rule')
+    p.add_argument('--continue-min250-repair-from',type=Path,
+        help='Retain three checked completions before the receive-world synchronization integration error')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
         help='Separate synthetic exposed low-row fixture, never part of formal 40-box counts')
@@ -42,6 +44,8 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
+    if args.continue_min250_repair_from and not args.continue_min250_from:
+        raise ValueError('MIN250_REPAIR_REQUIRES_ORIGINAL_PREDECESSOR')
     if args.continue_min250_from and (args.mounting_variant!='x_minus_500_y_minus_100'
             or args.integration_top_fixture or args.l05_j4_velocity_restart):
         raise ValueError('MIN250_CONTINUATION_SCOPE_CHANGED')
@@ -61,6 +65,10 @@ def main():
         from min250_continuation import restore_population_terminal,SCOPE as MIN250_SCOPE
         predecessor=restore_population_terminal(args.continue_min250_from,state,args.mounting_variant)
         save(args.output/'predecessor.json',predecessor)
+        if args.continue_min250_repair_from:
+            from min250_continuation import restore_before_world_sync_repair
+            repair_predecessor=restore_before_world_sync_repair(args.continue_min250_repair_from,state)
+            save(args.output/'restart-predecessor.json',repair_predecessor)
     diagnostic=None
     normal_worker_command=args.worker_command
     if args.l05_j4_velocity_restart:
@@ -120,6 +128,9 @@ def main():
             predecessor_summary_sha256=predecessor['summary_sha256'],
             include_receive_before_approach=True,
             requested_minimum_geometry_unqualified=True,all_joint_rate_limits_retained=True)
+        if args.continue_min250_repair_from:
+            protocol.update(integration_repair_restart=True,this_round_predecessor_completed_count=3,
+                search_operation=repair_predecessor['search_operation'],attempted_target_restarts=True)
     save(args.output/'protocol.json',protocol)
     outcomes=[];attempted=set();started=perf_counter()
     def checkpoint(status):

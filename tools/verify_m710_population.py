@@ -35,29 +35,32 @@ def expected_population_mount(protocol):
     return mounts[variant]
 
 
-def verify(run, replay=None):
+def verify(run, replay=None, *, retained_prefix=False):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
     all_rates = protocol['scope']=='XY_TOP_L05_ALL_JOINT_RATES_RESTART'
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
+    repair=continuation and protocol.get('integration_repair_restart',False)
     xy_top = continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
-    assert summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
+    stopped=retained_prefix and continuation and summary['status']=='INTEGRATION_ERROR_RETAINED'
+    assert stopped or summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
                                   ("COMPLETE_PLANNING_ONLY", "INCOMPLETE_RETAINED"))
     assert xy_top or protocol["scope"] == "ALL_REMAINING_FROM_ACCEPTED_C00"
     original = {b["id"]: b for b in protocol["original_cartons"]}
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
     if continuation:
         predecessor=json.loads((run/'predecessor.json').read_text())
-        assert initial==predecessor['new_native_root']
+        retained=json.loads((run/'restart-predecessor.json').read_text()) if repair else predecessor
+        assert initial==retained['new_native_root']
         assert initial==protocol['initial_root']
-        assert initial==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert initial==dict(retained['archived_root'],predecessor_final_state_receipt=None)
         assert len(predecessor['outcomes'])==25 and sum(o['completed_count'] for o in predecessor['outcomes'])==20
         assert protocol['predecessor_summary_sha256']==predecessor['summary_sha256']
         assert protocol['low_definition']=='FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
@@ -90,6 +93,20 @@ def verify(run, replay=None):
         save(replay/"protocol.json", protocol)
     for outcome in summary["outcomes"]:
         name = outcome["target_id"]
+        if stopped and outcome.get('status')=='INTEGRATION_ERROR_RETAINED':
+            assert outcome is summary['outcomes'][-1] and 'evidence' not in outcome
+            folder=(run/outcome['folder']).resolve()
+            assert folder.is_relative_to(run.resolve())
+            partial=json.loads((folder/'result.json').read_text())
+            assert partial['initial']==root==partial['terminal']
+            assert partial['completed_count']==0 and not partial['cycles']
+            assert 'RECEIVE_MECHANISM_WORLD_CHANGED' in (folder/'integration-exception.txt').read_text()
+            hashes={str(p.relative_to(folder)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in folder.rglob('*') if p.is_file()}
+            outcomes.append(dict(target_id=name,complete=False,status='INTEGRATION_ERROR_RETAINED',
+                counts={},attempts=partial['attempts'],planning_wall_s=partial['planning_wall_s'],
+                uncommitted_failure_files_sha256=hashes))
+            continue
         assert name in targets and outcome["root"] == root
         archive = run/outcome["evidence"]["archive"]
         prefix = archive.name.removesuffix(".tar.gz")
@@ -288,7 +305,7 @@ def verify(run, replay=None):
     attempted = {o["target_id"] for o in outcomes}
     blocked = {b["target_id"] for b in summary["blocked"]}
     assert len(attempted) == len(outcomes) and not attempted & blocked
-    if not fixture:assert attempted | blocked == targets
+    if not fixture and not stopped:assert attempted | blocked == targets
     # A box left under a failed carton must remain an actual support, not a
     # made-up failure count or a box silently removed to expose its successors.
     import sys
@@ -309,7 +326,8 @@ def verify(run, replay=None):
     if replay:
         save(replay/"seed-71070/result.json", dict(summary, cycles=cycles, attempts=replay_attempts,
                                                  lower_layer_preserved=True))
-    verification = dict(status="PASS_SAVED_NATIVE_LINEAGE_POPULATION_AND_FAILURE_RETENTION",
+    verification = dict(status=("PASS_SAVED_NATIVE_PREFIX_INTEGRATION_ERROR_RETAINED" if stopped else
+                        "PASS_SAVED_NATIVE_LINEAGE_POPULATION_AND_FAILURE_RETENTION"),
                         source_commit=protocol["source_commit"], completed_count=completed,
                         target_count=len(targets), attempted_count=len(outcomes), blocked_count=len(blocked),
                         planning_wall_s=summary["planning_wall_s"], native_task_wall_s=summary.get("native_task_wall_s",sum(o['planning_wall_s'] for o in outcomes)),
@@ -318,9 +336,12 @@ def verify(run, replay=None):
                         physical_execution="NOT_RUN", execution_ready=False,
                         qualification_status="NOT_EVALUATED", continuous_swept_proof=False)
     if diagnostic:verification.update(planning_diagnostic=protocol['planning_diagnostic'],historical_completed_count=11)
-    if continuation:verification.update(historical_completed_count=20,low_definition=protocol['low_definition'],
+    if continuation:verification.update(historical_completed_count=summary['historical_completed_count'],low_definition=protocol['low_definition'],
         requested_minimum_surface_m=.25,predecessor_summary_sha256=protocol['predecessor_summary_sha256'])
-    save(run/"verification.json", verification)
+    if stopped:verification.update(unsearched_after_error=sorted(targets-attempted-blocked),
+        completed_prefix_only=True,terminal=summary['terminal'],
+        summary_sha256=hashlib.sha256((run/'summary.json').read_bytes()).hexdigest())
+    save(run/("prefix-verification.json" if stopped else "verification.json"), verification)
     return verification
 
 
@@ -328,7 +349,8 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("run", type=Path)
     p.add_argument("--prepare-replay", type=Path)
+    p.add_argument("--retained-prefix",action='store_true')
     args = p.parse_args()
-    r = verify(args.run, args.prepare_replay)
+    r = verify(args.run, args.prepare_replay,retained_prefix=args.retained_prefix)
     print(json.dumps({k: r[k] for k in ("status", "completed_count", "target_count",
                                        "attempted_count", "blocked_count", "counts")}))
