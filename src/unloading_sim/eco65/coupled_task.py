@@ -516,6 +516,15 @@ class CoupledTask(NativeTask):
             carton_goal_pose=goal.tolist(),orientation_held=True)
 
     def extract_and_release(self):
+        # Region alternatives share one absolute phase budget. Re-entering a
+        # connection for another point must not renew the entire suffix clock.
+        with self.connection():
+            key=f"suffix-{self.counter}-{self.target['id']}"
+            self.phase_budgets[key]=dict(start_elapsed_s=perf_counter()-self.started,
+                deadline_elapsed_s=self.connection_deadline-self.started)
+            return self.extract_and_release_in_budget()
+
+    def extract_and_release_in_budget(self):
         self.require_receive_height()
         attached=self.checkpoint()
         original=self.original_boxes[self.target['id']]
@@ -525,6 +534,8 @@ class CoupledTask(NativeTask):
             candidate_id=self.candidate_id,resolution_m=.002,attempted_region_points=0,
             status='SEARCHING',unsearched_region='REMAINING_INTERVAL_SUBDIVISIONS')
         self.process_search.append(search)
+        cached_prefix=None
+        cached_key=None
         for box_goal in goals:
             self.restore(attached);self.require_connection_budget()
             search['attempted_region_points']+=1
@@ -532,7 +543,17 @@ class CoupledTask(NativeTask):
                 with self.connection():
                     current=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
                     first=self.process_option['segment_directions_world'][0]
-                    if first==[0.,0.,1.]:
+                    others=[b for b in remaining if b['id']!=self.target['id']]
+                    half_x=float((np.abs(current[:3,:3])@np.asarray(self.target['size_m'])/2)[0])
+                    front=min(corners(b)[:,0].min() for b in others or [original])
+                    clear_x=front-half_x-.0034
+                    prefix_key=(float(box_goal[1,3]),float(box_goal[2,3]),
+                        max(float(box_goal[0,3]),clear_x) if first!=[0.,0.,1.] else float(current[0,3]))
+                    if cached_prefix is not None and prefix_key==cached_key:
+                        # This is an accepted parent in this same task/world,
+                        # including its original trajectory and native receipt.
+                        self.restore(cached_prefix)
+                    elif first==[0.,0.,1.]:
                         lifted=current.copy();lifted[2,3]=box_goal[2,3]
                         self.loaded_lin(lifted,first,'extraction')
                     elif first[1]!=0:
@@ -541,13 +562,12 @@ class CoupledTask(NativeTask):
                     # Split at actual stack clearance so the neighbor-contact
                     # assumption ends before free transfer. Both legs are LIN.
                     current=self.robot.named_link_frames(self.current_q)['link_6']@self.attachment
-                    others=[b for b in remaining if b['id']!=self.target['id']]
-                    half_x=float((np.abs(current[:3,:3])@np.asarray(self.target['size_m'])/2)[0])
-                    front=min(corners(b)[:,0].min() for b in others or [original])
-                    clear_x=front-half_x-.0034
                     if first!=[0.,0.,1.] and current[0,3]>clear_x+1e-7:
                         clear=current.copy();clear[0,3]=max(box_goal[0,3],clear_x)
                         self.loaded_lin(clear,[-1.,0.,0.],'extraction')
+                    if prefix_key!=cached_key:
+                        cached_key=prefix_key
+                        cached_prefix=self.checkpoint()
                     # 'place' keeps a native LIN and restores ordinary payload
                     # neighbor checks; receiver-only support rules are retained.
                     self.loaded_lin(box_goal,[-1.,0.,0.],'place')

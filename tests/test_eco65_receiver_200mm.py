@@ -46,3 +46,35 @@ def test_actual_layers_do_not_clamp_or_fall_back_to_top(bottom,heights):
     assert [o['height_m'] for o in result['options']]==pytest.approx(heights)
     assert all(o['face']=='front' for o in result['options'])
     if not heights:assert all(r['reason']=='PROCESS_RECEIVE_HEIGHT_OUT_OF_RANGE' for r in result['rejected'])
+
+
+def test_region_suffix_candidates_share_absolute_phase_budget(monkeypatch):
+    from unloading_sim.eco65 import coupled_task
+    task=object.__new__(coupled_task.CoupledTask)
+    now=[100.];monkeypatch.setattr(coupled_task,'perf_counter',lambda:now[0])
+    task.started=0.;task.deadline=900.;task.connection_seconds=80.;task.connection_deadline=None
+    task.phase_budgets={};task.counter=1;task.target={'id':'target'}
+    def candidates():
+        for stamp in (100.,150.,179.):
+            now[0]=stamp
+            with task.connection():assert task.connection_deadline==180.
+        now[0]=180.
+        task.require_connection_budget()
+    task.extract_and_release_in_budget=candidates
+    with pytest.raises(ValueError,match='CONNECTION_BUDGET_EXHAUSTED'):task.extract_and_release()
+    assert task.deadline==900. and task.connection_deadline is None
+    assert task.phase_budgets['suffix-1-target']['deadline_elapsed_s']==180.
+
+
+def test_batch_candidate_checkpoint_leaves_full_archive_to_committed_boundary(tmp_path):
+    import json
+    from unloading_sim.eco65.batch_task import BatchTask
+    task=object.__new__(BatchTask)
+    task.progress_path=tmp_path/'native_progress.jsonl';task.completed_ids=['first']
+    task.target={'id':'second'};task.current_q=np.zeros(6);task.height_m=.331
+    task.attachment=np.eye(4);task.cycle_records=[{}];task.started=0.
+    task.result=lambda:pytest.fail('Full batch serialization inside the motion phase')
+    task.save_checkpoint('FIRST_CARTON_EXTRACTED')
+    progress=json.loads((tmp_path/'batch_progress.json').read_text())
+    assert progress['completed_ids']==['first'] and progress['attached_id']=='second'
+    assert not (tmp_path/'latest_plan.json.gz').exists()

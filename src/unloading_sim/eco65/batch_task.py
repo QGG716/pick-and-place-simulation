@@ -88,17 +88,24 @@ class BatchTask(CoupledTask):
         # Full states contain CAD solids. Keep one lossless compressed current
         # prefix and small per-carton receipts instead of many GB of copies.
         folder = self.progress_path.parent
+        progress=dict(label=label,completed_ids=self.completed_ids,target_id=self.target['id'],
+            q=self.current_q.tolist(),height_m=self.height_m,
+            attached_id=self.target['id'] if self.attachment is not None else None,
+            records=len(self.cycle_records),planning_wall_s=perf_counter()-self.started,
+            physical_execution='NOT_RUN',execution_ready=False)
+        if label in ('FIRST_CARTON_ATTACHED','FIRST_CARTON_EXTRACTED'):
+            # These are candidate milestones inside the suffix deadline, not
+            # committed cartons. The lossless native request/response archive
+            # already owns their geometry. Avoid serializing the entire growing
+            # batch here and starving the checked withdrawal of its budget.
+            save_json(folder/'batch_progress.json',progress)
+            return
         result = self.result()
         temp = folder/'latest_plan.tmp.gz'
         with gzip.open(temp, 'wt', encoding='utf-8', compresslevel=3) as stream:
             stream.write(json.dumps(result, separators=(',', ':'), allow_nan=False))
         temp.replace(folder/'latest_plan.json.gz')
-        save_json(folder/'batch_progress.json', dict(label=label,
-            completed_ids=self.completed_ids, target_id=self.target['id'],
-            q=self.current_q.tolist(), height_m=self.height_m,
-            attached_id=self.target['id'] if self.attachment is not None else None,
-            records=len(self.cycle_records), planning_wall_s=result['planning_wall_s'],
-            physical_execution='NOT_RUN', execution_ready=False))
+        save_json(folder/'batch_progress.json',progress)
         if label in ('FIRST_CARTON_COMPLETE','CARTON_COMPLETE'):
             save_json(folder/f'carton_{len(self.completed_ids):02d}_complete.json',
                 dict(completed_ids=self.completed_ids, process=self.process_history[-1],
