@@ -93,10 +93,15 @@ def restore_before_world_sync_repair(run,state):
                 raise ValueError('MIN250_REPAIR_UNCOMMITTED_RESULT_CHANGED')
             continue
         archive=run/outcome['evidence']['archive']
-        if hashlib.sha256(archive.read_bytes()).hexdigest()!=outcome['evidence']['sha256']:
-            raise ValueError('MIN250_REPAIR_ARCHIVE_CHANGED')
-        with tarfile.open(archive) as tar:
-            raw=tar.extractfile(archive.name.removesuffix('.tar.gz')+'/result.json').read()
+        if archive.exists():
+            if hashlib.sha256(archive.read_bytes()).hexdigest()!=outcome['evidence']['sha256']:
+                raise ValueError('MIN250_REPAIR_ARCHIVE_CHANGED')
+            with tarfile.open(archive) as tar:
+                raw=tar.extractfile(archive.name.removesuffix('.tar.gz')+'/result.json').read()
+        else:
+            path=(run/archive.name.removesuffix('.tar.gz')/'result.json').resolve()
+            if not path.is_relative_to(run.resolve()):raise ValueError('MIN250_REPAIR_PATH_CHANGED')
+            raw=path.read_bytes()
         if hashlib.sha256(raw).hexdigest()!=outcome['evidence']['file_sha256']['result.json']:
             raise ValueError('MIN250_REPAIR_RESULT_CHANGED')
         result=json.loads(raw)
