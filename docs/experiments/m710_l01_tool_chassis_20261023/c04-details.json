@@ -1,0 +1,136 @@
+{
+  "c04_native_statuses": {
+    "('init', None, 'READY')": 1,
+    "('fk', None, 'SUCCESS')": 3,
+    "('check_start', 'pregrasp', 'SUCCESS')": 1,
+    "('ik', 'pregrasp', 'SUCCESS')": 2,
+    "('ik', 'pregrasp', 'NATIVE_IK_FAILED')": 1,
+    "('plan', 'pregrasp', 'NATIVE_PLANNING_FAILED')": 1,
+    "('plan', 'pregrasp', 'SUCCESS')": 1,
+    "('plan', 'contact', 'SUCCESS')": 1,
+    "('plan', 'extraction', 'NATIVE_PLANNING_FAILED')": 91
+  },
+  "c04_witnesses": [
+    {
+      "stage": "pregrasp",
+      "pair": "tool_rigid_0 | conveyor_transverse",
+      "occurrences": 1,
+      "sample": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "tool_rigid_0",
+          "conveyor_transverse"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.2979206874504778,
+          1.2599424730845128,
+          -0.6650194293444969,
+          -3.4717265851983465,
+          -1.9137073113796979,
+          -0.09562840867639995
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.0028466590367221545
+      },
+      "classifications": {
+        "CLEARANCE_INSUFFICIENT": 1
+      },
+      "unique_q_count": 1,
+      "positive_distance_range_m": [
+        0.0028466590367221545,
+        0.0028466590367221545
+      ]
+    },
+    {
+      "stage": "pregrasp",
+      "pair": "tool_compliant_bellows_0 | conveyor_transverse",
+      "occurrences": 7,
+      "sample": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "tool_compliant_bellows_0",
+          "conveyor_transverse"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.30124478531413157,
+          1.260881017291306,
+          -0.6465194293444969,
+          -3.4745487574658296,
+          -1.8971311556911612,
+          -0.08978711426639749
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.0008297692375175414
+      },
+      "classifications": {
+        "CLEARANCE_INSUFFICIENT": 1,
+        "INTERSECTION_OR_CONTACT": 6
+      },
+      "unique_q_count": 7,
+      "positive_distance_range_m": [
+        0.0008297692375175414,
+        0.0008297692375175414
+      ]
+    },
+    {
+      "stage": "extraction",
+      "pair": "J2_link | trailer_left_wall",
+      "occurrences": 728,
+      "sample": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "J2_link",
+          "trailer_left_wall"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.671447346455301,
+          1.1770549725777768,
+          -0.5815943184245026,
+          -3.8217018644806826,
+          -1.7175332250598598,
+          -0.11771441676653448
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004659914548636346
+      },
+      "classifications": {
+        "CLEARANCE_INSUFFICIENT": 273,
+        "INTERSECTION_OR_CONTACT": 455
+      },
+      "unique_q_count": 19,
+      "positive_distance_range_m": [
+        0.0008684470743964834,
+        0.004659914548636346
+      ]
+    }
+  ],
+  "detail_keys": [
+    "target",
+    "complete",
+    "times",
+    "failure",
+    "expected_contact",
+    "receive_sync_location",
+    "contact_fk_check",
+    "terminal_contact",
+    "contact_complete",
+    "contact_end_q_rad",
+    "attachment",
+    "receiving_region",
+    "region_attempts",
+    "previous_prefix_attempts"
+  ],
+  "runtime_costs": 126.08895169943571
+}

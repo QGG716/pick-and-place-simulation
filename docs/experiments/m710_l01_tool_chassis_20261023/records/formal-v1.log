@@ -1,0 +1,17 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c02", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 30}
+{"seed": 71070, "completed": 1, "historical_completed": 30, "terminal_q": [-0.3849103560247114, 1.2398849635633298, -0.8097705530772799, -2.7133805559097324, -2.012028644105258, 0.19251717308792393], "height": 0.24999999999999994}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c02", "completed": 1, "remaining": 9, "attempted": 1, "task_s": 9.529516205191612}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c03", "remaining": 9}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 31}
+{"seed": 71070, "completed": 1, "historical_completed": 31, "terminal_q": [0.26881237102280675, 1.251723869760162, -0.827019429344497, -3.447013509126333, -2.058860674706343, -0.1467792029693943], "height": 0.24999999999999994}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c03", "completed": 2, "remaining": 8, "attempted": 2, "task_s": 11.58276604861021}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c01", "remaining": 8}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c01", "completed": 2, "remaining": 8, "attempted": 3, "task_s": 0.40406666696071625}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c00", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c00", "process": "RIGHT_INNER_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c00", "completed": 2, "remaining": 8, "attempted": 4, "task_s": 1.456280566751957}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c04", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c04", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c04", "completed": 2, "remaining": 8, "attempted": 5, "task_s": 103.11632221192122}
+{"status": "INCOMPLETE_RETAINED", "completed": 2, "targets": 5}

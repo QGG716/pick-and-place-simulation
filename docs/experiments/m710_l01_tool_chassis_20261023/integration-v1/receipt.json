@@ -1,0 +1,8 @@
+{
+  "source": "57e0957ceaa45ab4eeaff324d317e90e69609ea5",
+  "stage": "SYNTHETIC_NATIVE_REGRESSION_BEFORE_FORMAL_PLANNING",
+  "failure": "PROCESS_ALLOWED_PAIR_INVALID",
+  "cause": "C++ JSON initializer encoded allowed_pairs as an object instead of nested arrays",
+  "repair": "e9dfef3215b55bb9905ed0671d43ca4b9716a71a",
+  "formal_planning_started": false
+}
