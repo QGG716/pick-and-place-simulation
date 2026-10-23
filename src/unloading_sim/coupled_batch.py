@@ -163,6 +163,9 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def validate_template(self,target):
         target.validate()
+        if self.option.get('selected_routes_permission') is not None:
+            from .l01_selected_routes import validate_selected_route
+            validate_selected_route(target,self.option,getattr(self,'selected_routes_permission',None),self.batch_root['height_m'])
         if target.eccentric_authority is not None:
             if target.eccentric_authority != getattr(self,'eccentric_frozen_layer',None):
                 raise MoveItUnavailable('ECCENTRIC_FROZEN_AUTHORITY_MISMATCH')

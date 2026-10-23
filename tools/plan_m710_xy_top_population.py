@@ -43,6 +43,8 @@ def main():
         help='Restore checked 30-box terminal; top only for the frozen bottom two layers at fixed 250 mm')
     p.add_argument('--continue-l01-tool-chassis-from',type=Path,
         help='Restore checked 30-box terminal; retry frozen l01 with scoped tool/chassis planning exemption')
+    p.add_argument('--continue-l01-selected-routes-from',type=Path,
+        help='Restore checked 32-box terminal; c04 top, c01/c00 +Y side, fixed original Hmax')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
@@ -53,7 +55,10 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
-    l01_tool=bool(args.continue_l01_tool_chassis_from)
+    l01_routes=bool(args.continue_l01_selected_routes_from)
+    l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
+    if l01_routes and args.continue_l01_tool_chassis_from:
+        raise ValueError('L01_CONTINUATION_PREDECESSOR_AMBIGUOUS')
     if l01_tool and (args.continue_lowprofile_top_from or args.continue_lowprofile_from
             or args.continue_min250_from or args.continue_min250_repair_from or args.continue_layer_top_from
             or args.mounting_variant!='x_minus_500_y_minus_100' or args.integration_top_fixture
@@ -93,14 +98,22 @@ def main():
     args.low_definition=BOX_TOP_LOW_DEFINITION if args.continue_min250_from or args.continue_layer_top_from or lowprofile else LEGACY_LOW_DEFINITION
     args.include_receive_before_approach=bool(args.continue_min250_from or args.continue_layer_top_from or lowprofile)
     args.layer_top_permission=None
+    args.selected_routes_permission=None
     args.layer_top_only=bool(args.continue_lowprofile_top_from)
     if l01_tool:
         from layer_top_continuation import restore_lowprofile_top_terminal
         from l01_tool_chassis import frozen_l01_scope,SCOPE as L01_TOOL_SCOPE
-        lowprofile_predecessor=restore_lowprofile_top_terminal(args.continue_l01_tool_chassis_from,state)
+        if l01_routes:
+            from layer_top_continuation import restore_l01_tool_terminal
+            from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE
+            lowprofile_predecessor=restore_l01_tool_terminal(args.continue_l01_selected_routes_from,state)
+            args.selected_routes_permission=selected_routes_permission(frozen)
+        else:
+            lowprofile_predecessor=restore_lowprofile_top_terminal(args.continue_l01_tool_chassis_from,state)
         save(args.output/'predecessor.json',lowprofile_predecessor)
         tool_permission=frozen_l01_scope(original.cartons)
-        if len(state.cartons)!=10 or state.height!=.25 or not set(tool_permission['allowed_target_ids']) <= {b.name for b in state.cartons}:
+        expected_targets=set(args.selected_routes_permission['routes'] if l01_routes else tool_permission['allowed_target_ids'])
+        if len(state.cartons)!=(8 if l01_routes else 10) or abs(state.height-.25)>1e-9 or not expected_targets <= {b.name for b in state.cartons}:
             raise ValueError('L01_TOOL_CHASSIS_ROOT_CHANGED')
     if args.continue_lowprofile_top_from:
         from layer_top_continuation import restore_lowprofile_top_terminal,LOWPROFILE_TOP_SCOPE
@@ -157,9 +170,12 @@ def main():
         state.ledger=[dict(target_id=b.name,source='SYNTHETIC_INTEGRATION_FIXTURE_REMOVAL_NOT_COMPLETION')
                       for b in original.cartons if b.name not in low_ids]
     scene=batch_scene(original,state,built.robot,layout)
-    failure=built.validate_unloaded_state(state.q,scene.all_obstacles,stage='unloaded')
+    root_check_target=args.selected_routes_permission['dispatch_order'][0] if l01_routes else None
+    built.robot_state_validator.contact_target_name=root_check_target
+    try:failure=built.validate_unloaded_state(state.q,scene.all_obstacles,stage='unloaded')
+    finally:built.robot_state_validator.contact_target_name=None
     save(args.output/'initial-state-check.json',dict(**identity,backend=type(built.robot).__name__,
-        passed=failure is None,failure=failure,root=state.root(),layout_audit=audit,
+        passed=failure is None,failure=failure,root=state.root(),layout_audit=audit,authorized_root_target=root_check_target,
         base_transform=built.robot.base_transform.tolist(),fixture=args.integration_top_fixture))
     if failure is not None:raise ValueError('NEW_WORLD_INITIAL_STATE_REJECTED')
     if args.check_only:return
@@ -168,13 +184,14 @@ def main():
     args.receive_height_range=(minimum,2.10);args.low_top_minimum_m=minimum
     initial=state.root();history=deepcopy(state.ledger);scope=[b.name for b in state.cartons]
     if l01_tool:scope=tool_permission['allowed_target_ids']
+    if l01_routes:scope=args.selected_routes_permission['dispatch_order']
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
     protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else
         MIN250_SCOPE if args.continue_min250_from else LAYER_TOP_SCOPE if args.continue_layer_top_from else
         LOWPROFILE_TOP_SCOPE if args.continue_lowprofile_top_from else
-        L01_TOOL_SCOPE if l01_tool else
+        L01_ROUTES_SCOPE if l01_routes else L01_TOOL_SCOPE if l01_tool else
         'XY_TOP_LOWPROFILE250_CONTINUATION' if args.continue_lowprofile_from else 'XY_TOP_NEW_WORLD_40',
         integration_fixture=args.integration_top_fixture,original_cartons=[box_message(b) for b in original.cartons],
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
@@ -197,6 +214,10 @@ def main():
             collision_policy=built.collision_policy.to_mapping(),
             robot_mount_allowed_pairs=[list(p) for p in sorted(built.collision_policy.robot_mount_pairs())],
             top_permission='FROZEN_BOX_TOP_STRICTLY_BELOW_250MM_ONLY',top_route=[[0.,0.,1.],[-1.,0.,0.]])
+    if l01_routes:
+        protocol.update(selected_routes_permission=args.selected_routes_permission,
+            top_permission='ONLY_EXPLICIT_SELECTED_C04',low_receiver_rule='SELECTED_ROUTES_FIXED_FROZEN_HMAX',
+            include_receive_before_approach=False)
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',
@@ -236,6 +257,7 @@ def main():
         ranked=rank_population(frozen,state.cartons,[e['target_id'] for e in state.ledger],attempted,state.q,
             built.robot,scene.receiver,longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
         ranked=[r for r in ranked if r['target_id'] in scope]
+        if l01_routes:ranked.sort(key=lambda r:scope.index(r['target_id']))
         if not ranked:break
         selected=ranked[0];name=selected['target_id'];attempted.add(name)
         if args.continue_min250_from and not outcomes and name!='carton_l03_c02':
@@ -244,7 +266,7 @@ def main():
             raise ValueError('LAYER_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         if args.continue_lowprofile_from and not outcomes and name!='carton_l02_c01':
             raise ValueError('LOWPROFILE_CONTINUATION_FIRST_TARGET_CHANGED')
-        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!='carton_l01_c02':
+        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c04' if l01_routes else 'carton_l01_c02'):
             raise ValueError('LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command

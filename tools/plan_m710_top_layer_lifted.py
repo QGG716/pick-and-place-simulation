@@ -133,6 +133,12 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                                       else [top_option,*business_options])
                 elif getattr(args,'layer_top_only',False):
                     raise ValueError('TOP_ONLY_TARGET_OUTSIDE_FROZEN_LAYER_PERMISSION')
+            routes_permission=getattr(args,'selected_routes_permission',None)
+            if routes_permission is not None:
+                from unloading_sim.l01_selected_routes import selected_route_option
+                business_options=[selected_route_option(target,scene.receiver,
+                    next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+                    frozen,state.height,routes_permission)]
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -141,7 +147,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend([option] if option['template'] in TOP_TEMPLATES else synchronization_options(option,state.height,low,
+                options.extend([option] if option['template'] in TOP_TEMPLATES or routes_permission is not None else synchronization_options(option,state.height,low,
                     include_receive_before_approach=getattr(args,'include_receive_before_approach',False)))
             eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
@@ -190,6 +196,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.layer_top_permission=layer_permission
+                    c.selected_routes_permission=routes_permission
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first

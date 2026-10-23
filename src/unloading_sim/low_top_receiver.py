@@ -14,11 +14,12 @@ from .lifted_reception import StartHeight, directional_contact, receiving_region
 from .junction_reception import reception_classification
 from .moveit2_backend import box_message, digest, MoveItUnavailable
 from .stage_motion_policy import MotionPurpose
+from .l01_selected_routes import TOP_TEMPLATE as SELECTED_TOP_TEMPLATE
 
 
 TEMPLATE = 'TOP_FIXED_MINIMUM_RECEIVER'
 LAYER_TEMPLATE = 'TOP_FIXED_CURRENT_RECEIVER'
-TOP_TEMPLATES = (TEMPLATE, LAYER_TEMPLATE)
+TOP_TEMPLATES = (TEMPLATE, LAYER_TEMPLATE, SELECTED_TOP_TEMPLATE)
 LEGACY_LOW_DEFINITION = 'FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM'
 BOX_TOP_LOW_DEFINITION = 'FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
 
@@ -114,7 +115,11 @@ class LowTopReceiverConnector(CoupledCycleConnector):
         super().validate_template(target)
         h=StartHeight.capture(target.box)
         layer=self.option['template']==LAYER_TEMPLATE
-        if layer:
+        if self.option['template']==SELECTED_TOP_TEMPLATE:
+            from .l01_selected_routes import validate_selected_route
+            validate_selected_route(target,self.option,getattr(self,'selected_routes_permission',None),self.batch_root['height_m'])
+            scope_valid=True
+        elif layer:
             permission=getattr(self,'layer_top_permission',None)
             scope_valid=(permission is not None and self.option.get('layer_top_permission')==permission
                 and target.target_id in permission['allowed_target_ids']

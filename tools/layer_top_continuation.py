@@ -18,6 +18,15 @@ LOWPROFILE_RECORDS={
     'protocol.json':'7cdeab4bfdd3122e2283f71deaf4d39781160256d3a66ec206423aec9d1ab78c',
     'verification.json':'17bc81fb8818186c348b0f0e2695b1c8249417c4ad079b747b05810f71bf3652',
 }
+L01_TOOL_RECORDS={
+    'summary.json':'235718f12be39fe7490acebc2b90a083b9a0e1961440187f462124b73c7f98ab',
+    'protocol.json':'dbf902f9b56e31e7c4c51e6c4851759aa7ee5e773e3acfd0e64a17e1a52a45bc',
+    'verification.json':'21f2dd959a1c21ff9770d0daf011b45af1ef561731e2d3ef691b7d7424982a38',
+}
+
+
+def restore_l01_tool_terminal(run,state):
+    return _restore_terminal(run,state,lowprofile_top=True,l01_tool=True)
 
 
 def restore_layer_top_terminal(run,state):
@@ -29,17 +38,17 @@ def restore_lowprofile_top_terminal(run,state):
     return _restore_terminal(run,state,lowprofile_top=True)
 
 
-def _restore_terminal(run,state,*,lowprofile_top):
-    records=LOWPROFILE_RECORDS if lowprofile_top else RECORDS
+def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False):
+    records=L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
     completed=2 if lowprofile_top else 5
-    history=28 if lowprofile_top else 23
+    history=30 if l01_tool else 28 if lowprofile_top else 23
     for name,sha in records.items():
         if hashlib.sha256((run/name).read_bytes()).hexdigest()!=sha:
             raise ValueError('LAYER_TOP_PREDECESSOR_RECORD_CHANGED')
     read=lambda n:json.loads((run/n).read_text(encoding='utf-8'))
     summary,protocol,verification=(read(n) for n in records)
-    if (summary['source_commit']!=('f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
-            or protocol['scope']!=('XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
+    if (summary['source_commit']!=('e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
+            or protocol['scope']!=('XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
             or protocol['mounting_variant']!='x_minus_500_y_minus_100'
             or verification['completed_count']!=completed or not verification['status'].startswith('PASS_')
             or summary['historical_completed_count']!=history or summary['completed_count']!=completed
@@ -77,5 +86,5 @@ def _restore_terminal(run,state,*,lowprofile_top):
     prior=deepcopy(state.root());state.cycles=[]
     return dict(source_commit=summary['source_commit'],records_sha256=records,outcomes=receipts,
         archived_root=prior,new_native_root=state.root(),historical_completed_count=history+completed,
-        first_target_id='carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
-        search_operation='NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')
+        first_target_id='carton_l01_c04' if l01_tool else 'carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
+        search_operation='NEW_NATIVE_ROOT_WITH_SELECTED_SIDE_TOP_ROUTES' if l01_tool else 'NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')

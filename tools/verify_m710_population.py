@@ -30,7 +30,7 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
-    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'):
+    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     if protocol['active_layout_file'] != expected:
@@ -45,7 +45,8 @@ def verify(run, replay=None, *, retained_prefix=False):
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
     bottom_two_top=protocol['scope']=='XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP'
-    l01_tool=protocol['scope']=='XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'
+    selected_routes=protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
+    l01_tool=selected_routes or protocol['scope']=='XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'
     layer_top=bottom_two_top or protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
     lowprofile=l01_tool or bottom_two_top or protocol['scope']=='XY_TOP_LOWPROFILE250_CONTINUATION'
     repair=continuation and protocol.get('integration_repair_restart',False)
@@ -62,8 +63,8 @@ def verify(run, replay=None, *, retained_prefix=False):
     initial_ids={b['id'] for b in initial['world_cartons']}
     assert targets <= initial_ids
     assert initial_ids-targets == (set(protocol['out_of_scope_target_ids']) if l01_tool else set())
-    assert len(targets) == summary["target_count"] == (5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
     if lowprofile:
         from unloading_sim.collision_policy import SimulationCollisionPolicy
         predecessor=json.loads((run/'predecessor.json').read_text())
@@ -73,7 +74,7 @@ def verify(run, replay=None, *, retained_prefix=False):
         assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
         assert protocol['scissor_profile']=='low_profile_250_v1'
         if not bottom_two_top:assert 'layer_top_permission' not in protocol
-        assert summary['outcomes'][0]['target_id']==('carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
+        assert summary['outcomes'][0]['target_id']==('carton_l01_c04' if selected_routes else 'carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
         policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
         assert policy.robot_mount_contact_exemption
         assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]
@@ -81,8 +82,18 @@ def verify(run, replay=None, *, retained_prefix=False):
             from l01_tool_chassis import frozen_l01_scope
             from unloading_sim.coupled_batch import message_box
             assert protocol['tool_chassis_permission']==frozen_l01_scope(tuple(message_box(b) for b in protocol['original_cartons']))
-            assert set(policy.tool_chassis_contact_target_ids)==targets
-            assert len(initial_ids)==10 and len(initial_ids-targets)==5
+            assert set(policy.tool_chassis_contact_target_ids)==set(protocol['tool_chassis_permission']['allowed_target_ids'])
+            assert targets <= set(policy.tool_chassis_contact_target_ids)
+            assert len(initial_ids)==(8 if selected_routes else 10) and len(initial_ids-targets)==5
+        if selected_routes:
+            from unloading_sim.l01_selected_routes import selected_routes_permission
+            from unloading_sim.carton_population import FrozenCartonPopulation
+            routes_permission=selected_routes_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])))
+            assert routes_permission==protocol['selected_routes_permission']
+            assert set(routes_permission['routes'])==targets
+            assert [o['target_id'] for o in summary['outcomes']]==routes_permission['dispatch_order']
+            assert all(a['option']['template']==routes_permission['routes'][o['target_id']]['template']
+                for o in summary['outcomes'] for a in o['attempts'] if 'option' in a)
     if layer_top:
         predecessor=json.loads((run/'predecessor.json').read_text())
         assert initial==protocol['initial_root']==predecessor['new_native_root']
@@ -280,8 +291,16 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert name in permission['allowed_target_ids']
                         assert cycle['option']['layer_top_permission']==permission
                         assert cycle['option']['segment_directions_world']==[[0.,0.,1.],[-1.,0.,0.]]
+                if selected_routes:
+                    route=routes_permission['routes'][name]
+                    assert cycle['option']['selected_routes_permission']==routes_permission
+                    assert cycle['option']['template']==route['template']
+                    assert cycle['option']['segment_directions_world']==route['segment_directions_world']
+                    assert cycle['height_m']==root['height_m']==route['height_m']
+                    assert cycle['target']['geometric_face_id']==route['geometric_face_id']
+                    low_top=route['template']=='SELECTED_TOP_HMAX';top_height=route['height_m']
                 if low_top:
-                    assert cycle['option']['template'] == ('TOP_FIXED_CURRENT_RECEIVER' if layer_top else 'TOP_FIXED_MINIMUM_RECEIVER')
+                    assert cycle['option']['template'] == ('SELECTED_TOP_HMAX' if selected_routes else 'TOP_FIXED_CURRENT_RECEIVER' if layer_top else 'TOP_FIXED_MINIMUM_RECEIVER')
                     assert cycle['target']['face_role'] == 'TOP'
                     assert cycle['stationary_low_receiver']['height_m'] == top_height
                     assert cycle['stationary_low_receiver']['throughout_contact_lift_transfer_release']
@@ -303,7 +322,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert axis["maximum_height_step_m"] <= .010000001 and not axis["continuous_swept_proof"]
                         height = axis["to_height_m"]
                         if low_top:assert height == top_height and stage['stage'] == 'pregrasp'
-                        if layer_top and low_top:assert axis['from_height_m']==axis['to_height_m']
+                        if (layer_top and low_top) or selected_routes:assert axis['from_height_m']==axis['to_height_m']
                         counts["checked_lift_samples"] += len(axis["checks"])
                     elif stage["generation_source"] == "SEMANTIC_EVENT":
                         drop = resp["nominal_release"]
