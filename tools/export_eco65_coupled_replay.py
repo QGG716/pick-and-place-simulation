@@ -346,6 +346,16 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
                 if elapsed <= 0:
                     raise ValueError('EXTERNAL_AXIS_DISPLAY_DURATION_REQUIRED')
                 totals['mechanism_display_s'] += elapsed
+                # A roundoff-height transition can last < 1e-15 s and cannot
+                # be selected on a cumulative seconds timeline. Preserve its
+                # native receipt and source duration; add a labelled inspection
+                # pause, charged to display events rather than mechanism time.
+                row['source_duration_s'] = elapsed
+                if elapsed < 1e-9:
+                    row['display_hold_assumption'] = 'SUB_RESOLUTION_EXTERNAL_AXIS_INSPECTION_ONLY'
+                    row['display_hold_s'] = .35-elapsed
+                    totals['event_display_s'] += row['display_hold_s']
+                    elapsed = .35
                 # Evaluate every displayed frame with the *same Python function*.
                 # Nearest-frame selection preserves rigid body poses and length.
                 h0, h1 = row['state_before']['height_m'], row['state_after']['height_m']

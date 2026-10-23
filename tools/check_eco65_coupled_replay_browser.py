@@ -160,6 +160,11 @@ const expected=(segment.kind==='event'&&segment.event_type!=='NOMINAL_RECEIVE')?
 check('RECORD_RENDERED_OWNERSHIP_'+segment.record_id,same(objectIds(state.world),objectIds(expected.world))&&state.attachment?.id===expected.attachment?.id&&state.target_id===expected.target_id&&same(state.completed_ids,expected.completed_ids));
 if(segment.kind==='external_axis')check('EXTERNAL_AXIS_HOLDS_Q_'+segment.record_id,close(currentQ,segment.state_before.q,1e-12));
 if(segment.kind==='robot_motion')check('ROBOT_HOLDS_HEIGHT_'+segment.record_id,state.height_m===segment.state_before.height_m);
+if(segment.retreat_geometry?.strategy==='EMPTY_TOOL_UP'){
+check('EMPTY_UP_RETREAT_RETAINS_RECEIVED_BOX_'+segment.record_id,!state.attachment&&state.world.some(b=>b.id===state.target_id));
+check('EMPTY_UP_RETREAT_LABEL_'+segment.record_id,document.getElementById('hud').textContent.includes('空载工具沿 +Z'));
+}
+if(segment.event_type==='ATTACH'&&['left','right'].includes(state.target_face))check('SIDE_CONTACT_EDGE_DISPLAY_'+segment.record_id,document.getElementById('edgeInfo').textContent.includes('边方向 PASS'));
 if(state.attachment){check('NO_DUPLICATE_ATTACHMENT_'+segment.record_id,!state.world.some(b=>b.id===state.attachment.id));const actual=window.replay.payload.matrix.elements,expected=fk(currentQ)[model.flange_link].clone().multiply(matrix(state.attachment.pose)).elements;check('LOCAL_ATTACHMENT_'+segment.record_id,close(actual,expected,1e-12));}
 }
 setTime(DATA.duration_s);check('TERMINAL_Q',close(currentQ,DATA.terminal_state.q,1e-12));
@@ -260,6 +265,9 @@ const untouched=DATA.plan_summary.inventory_ids.find(id=>!DATA.attempts.some(a=>
 if(untouched&&DATA.segments.length){selectInspectionTarget(untouched);
 check('UNSEARCHED_TARGET_HAS_NO_INVENTED_REQUEST',document.getElementById('targetEvidence').options.length===0);
 check('UNSEARCHED_TARGET_USES_TERMINAL_WORLD',same(state.completed_ids,DATA.terminal_state.completed_ids)&&close(currentQ,DATA.terminal_state.q,1e-12));}
+const heightRejected=(DATA.plan_summary.continuation_search||[]).flatMap(s=>s.targets).find(t=>t.candidate_count===0&&t.process_options.rejected.some(r=>r.reason==='PROCESS_RECEIVE_HEIGHT_OUT_OF_RANGE'));
+if(heightRejected){selectInspectionTarget(heightRejected.target_id,false);const text=document.getElementById('targetSummary').textContent;
+check('HEIGHT_REJECTION_SEPARATES_FROZEN_BOTTOM_AND_HARDWARE_RANGE',text.includes('冻结箱底')&&DATA.receiver_hardware_range_m.every(h=>text.includes((h*1000).toFixed(0))));}
 }
 result.status='PASS';
 }catch(error){result.status='FAIL';result.error=error.stack;}
