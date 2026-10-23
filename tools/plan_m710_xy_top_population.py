@@ -56,6 +56,7 @@ def main():
     state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),nominal)
     from unloading_sim.low_top_receiver import BOX_TOP_LOW_DEFINITION,LEGACY_LOW_DEFINITION
     args.low_definition=BOX_TOP_LOW_DEFINITION if args.continue_min250_from else LEGACY_LOW_DEFINITION
+    args.include_receive_before_approach=bool(args.continue_min250_from)
     if args.continue_min250_from:
         from min250_continuation import restore_population_terminal,SCOPE as MIN250_SCOPE
         predecessor=restore_population_terminal(args.continue_min250_from,state,args.mounting_variant)
@@ -117,6 +118,7 @@ def main():
     if args.continue_min250_from:
         protocol.update(search_operation=predecessor['search_operation'],tree_retained=False,
             predecessor_summary_sha256=predecessor['summary_sha256'],
+            include_receive_before_approach=True,
             requested_minimum_geometry_unqualified=True,all_joint_rate_limits_retained=True)
     save(args.output/'protocol.json',protocol)
     outcomes=[];attempted=set();started=perf_counter()

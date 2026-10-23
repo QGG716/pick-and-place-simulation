@@ -128,7 +128,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend([option] if low_top else synchronization_options(option,state.height,low))
+                options.extend([option] if low_top else synchronization_options(option,state.height,low,
+                    include_receive_before_approach=getattr(args,'include_receive_before_approach',False)))
             eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
             if eccentric:

@@ -102,7 +102,7 @@ def temporary_heights(receive, minimum, *, resolution=.01):
         pending.extend(((middle,high),(low,middle)))
 
 
-def synchronization_options(option, current, minimum):
+def synchronization_options(option, current, minimum, *, include_receive_before_approach=False):
     reject_late_sync(option)
     receive=float(option["height_m"])
     if (option.get("reception") or {}).get("junction"):
@@ -113,5 +113,11 @@ def synchronization_options(option, current, minimum):
                     height_resolution_m=.01, third_sync_disabled=True)
     else:
         yield option
+        if (include_receive_before_approach and current>receive+.005 and receive>minimum+.005):
+            # A lower stroke bound need not be the only unloaded lowering
+            # destination. Reuse this unchanged business candidate's receive
+            # height before approach; the complete native sweep still runs.
+            yield dict(option, synchronization="ALREADY_AT_RECEIVE",pre_approach_height_m=receive,
+                approach_height_source="EXISTING_BUSINESS_RECEIVE_HEIGHT")
         if current > minimum+.005:
             yield dict(option, synchronization="PREGRASP_OR_CONTACT",pre_approach_height_m=minimum)

@@ -93,3 +93,17 @@ def test_saved_mount_binding_for_continuation():
     assert expected_population_mount(protocol)==[-1.825,.25,.6]
     protocol['active_layout_file']=f'configs/workcells/{NAME}.yaml'
     with pytest.raises(ValueError,match='LAYOUT_VARIANT_MISMATCH'):expected_population_mount(protocol)
+
+
+@pytest.mark.parametrize('receive',[.55,.85])
+def test_lower_receive_height_is_an_actual_pre_approach_candidate(receive):
+    from unloading_sim.junction_reception import synchronization_options
+    option=dict(template='FRONT_DIRECT_HMIN' if receive==.55 else 'FRONT_DIRECT_HMAX',
+        height_m=receive,reception=dict(junction=False),face=dict(geometric_face_id='x-'))
+    legacy=list(synchronization_options(option,1.15,.25))
+    routes=list(synchronization_options(option,1.15,.25,include_receive_before_approach=True))
+    assert [r.get('pre_approach_height_m') for r in routes]==[None,receive,.25]
+    assert routes[0]==legacy[0] and routes[-1]==legacy[-1]
+    assert routes[1]['synchronization']=='ALREADY_AT_RECEIVE'
+    assert all(r['face']==option['face'] and r['height_m']==receive for r in routes)
+    assert len(list(synchronization_options(option,receive,.25,include_receive_before_approach=True)))==2
