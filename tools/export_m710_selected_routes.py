@@ -89,6 +89,10 @@ def main():
     if finite:
         data.update(label='c01 短侧移',inspection_title='c01 短侧移 · 几何与本次 IK 记录',
             inspection_subtitle='c01 单箱 · 本轮 0/1<br>Hmax 固定 250 mm · 物理执行 NOT_RUN')
+        if protocol.get('tool_connector_extension_m'):
+            data.update(tool_connector_extension=protocol['tool_connector_extension'],
+                inspection_title='c01 连接件加长100 mm · 本次实测',
+                inspection_subtitle='c01 单箱 · 本轮 0/1 · 连接板140→240 mm<br>Hmax 固定250 mm · 物理执行 NOT_RUN')
     if args.geometry_preview:
         preview=read(args.geometry_preview)
         assert finite and preview['source_commit']==summary['source_commit']

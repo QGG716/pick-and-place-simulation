@@ -1,0 +1,208 @@
+{
+  "source_commit": "2f6e1ea069fea3f04578116f32d2d9388869c528",
+  "backend": "PinocchioHppFclBackend",
+  "scope": "STATIC_FIXED_TOOL_POSE_ENVELOPE_NOT_ROBOT_PATH",
+  "target": "carton_l01_c01",
+  "neighbor": "carton_l01_c04",
+  "target_center_m": [
+    0.3,
+    -0.42,
+    0.44999999999999996
+  ],
+  "target_size_m": [
+    0.6,
+    0.4,
+    0.3
+  ],
+  "inlet_y_range_m": [
+    -1.0999999999999999,
+    -0.49999999999999994
+  ],
+  "first_nonjunction_turn_y_m": -0.29979999999999996,
+  "positive_y_distance_m": 0.12020000000000003,
+  "minimum_ideal_positive_y_m": 0.12000000000000005,
+  "tool_body_count": 202,
+  "tool_depth_from_physical_plane_m": 0.3175000030000004,
+  "pregrasp_standoff_m": 0.1,
+  "side_exposure_depth_with_gap_m": 0.42270000300000043,
+  "target_to_c04_initial_face_gap_m": 0.8599999999999999,
+  "tool_sweeps": [
+    {
+      "stage": "pregrasp_to_contact",
+      "minimum_conservative_tool_c04_gap_m": 0.4424999969999996,
+      "body": "tool_rigid_13",
+      "delta_world_m": [
+        0.0,
+        0.1,
+        0.0
+      ]
+    },
+    {
+      "stage": "positive_y",
+      "minimum_conservative_tool_c04_gap_m": 0.4222999969999995,
+      "body": "tool_rigid_13",
+      "delta_world_m": [
+        0.0,
+        0.12020000000000003,
+        0.0
+      ]
+    },
+    {
+      "stage": "negative_x",
+      "minimum_conservative_tool_c04_gap_m": 0.4222999969999996,
+      "body": "tool_rigid_13",
+      "delta_world_m": [
+        -0.8500000000000001,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "target_to_c04_turn_gap_m": 0.7397999999999998,
+  "physical_execution": "NOT_RUN",
+  "continuous_swept_proof": false,
+  "preview_contact_tool_envelope": {
+    "id": "tool_preview_envelope",
+    "size": [
+      0.576000004,
+      0.3175000050000002,
+      0.28800000400000014
+    ],
+    "pose": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.2999999999999998
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -0.06124999949999967
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.45000000000000007
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "category": "tool",
+    "geometry_source": "frozen_layout_or_audited_tool_OBB"
+  },
+  "preview_turn_tool_envelope": {
+    "id": "tool_preview_envelope",
+    "size": [
+      0.576000004,
+      0.3175000050000002,
+      0.28800000400000014
+    ],
+    "pose": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.2999999999999998
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.058950000500000356
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.45000000000000007
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "category": "tool",
+    "geometry_source": "frozen_layout_or_audited_tool_OBB"
+  },
+  "preview_turn_box": {
+    "id": "carton_l01_c01",
+    "size": [
+      0.6,
+      0.4,
+      0.3
+    ],
+    "pose": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.3
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -0.29979999999999996
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.44999999999999996
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "category": "carton",
+    "geometry_source": "frozen_layout_or_audited_tool_OBB"
+  },
+  "preview_release_box": {
+    "id": "carton_l01_c01",
+    "size": [
+      0.6,
+      0.4,
+      0.3
+    ],
+    "pose": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -0.55
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -0.29979999999999996
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.44999999999999996
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "category": "carton",
+    "geometry_source": "frozen_layout_or_audited_tool_OBB"
+  }
+}

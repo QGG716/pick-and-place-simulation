@@ -1,0 +1,4 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c01", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c01", "process": "SELECTED_SIDE_POS_Y_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c01", "completed": 0, "remaining": 8, "attempted": 1, "task_s": 90.74192401766777}
+{"status": "INCOMPLETE_RETAINED", "completed": 0, "targets": 1}

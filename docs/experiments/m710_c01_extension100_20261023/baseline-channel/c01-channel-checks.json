@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "source_commit": "819a0ae66833824c6ba365832e1075dd7f10fcc8",
+  "cases": 1,
+  "all_source_hashes_verified": true,
+  "exporter_sha256": "38f7e5d611327bc5ce4481047769d9e8ebadcdba0a2f186d512a30dec2d3b2b3",
+  "overlay_sha256": "486b58d66e0aa384b94ca1e5325b0653c0c78dfe303fc32de4cd534c11c28f5a",
+  "ik_calls": 438,
+  "native_solver_s": 43.91397074199998,
+  "ik_success": 0,
+  "generated_robot_motion_points": 0,
+  "collision_witnesses": 0,
+  "backend": "PinocchioHppFclBackend",
+  "solver_calls_added": 0,
+  "physical_execution": "NOT_RUN"
+}
