@@ -1095,7 +1095,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                               initial_proximity=None,stage,goal_pose=None):
         world=[box_message(b) for b in obstacles]
         if len({b["id"] for b in world})!=len(world): raise ValueError("DUPLICATE_OBJECT")
-        pairs=[["base_link", self.robot_state_validator.base_support_obstacle_name]]
+        pairs=[list(p) for p in sorted(self.collision_policy.robot_mount_pairs(self.robot_state_validator.base_support_obstacle_name))]
         target_name=attachment.rigid.name if attachment is not None else (target_contact.name if target_contact is not None else self.robot_state_validator.contact_target_name)
         if self.collision_policy.compliant_cup_neighbor_contact_mode=="ignore" and target_name:
             for b in obstacles:
@@ -1716,7 +1716,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if target.name not in {b["id"] for b in world}: world.append(box_message(target))
         composition=self.native.request(dict(op="compose",identity=self.native_identity,
             planning_mode=getattr(self,"planning_mode","cold_from_scratch"),q_start=path[0].tolist(),
-            world=world,scene_fingerprint=digest(world),allowed_pairs=[["base_link",self.robot_state_validator.base_support_obstacle_name]],
+            world=world,scene_fingerprint=digest(world),allowed_pairs=[list(p) for p in sorted(self.collision_policy.robot_mount_pairs(self.robot_state_validator.base_support_obstacle_name))],
             attachment=None,start_velocity=[0.]*6,path_constraints={},stages=specs))
         if composition["status"]!="SUCCESS":
             return {"reason":"MTC_COMPOSITION_REJECTED","stage":"final_validation","detail":composition}

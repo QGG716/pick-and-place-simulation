@@ -12,6 +12,7 @@ from .geometry import OBB
 from .pair_clearance import obb_pair_failure, obb_surface_distance
 from .validation_physics import contact_separated
 
+OFFICIAL_ROBOT_MOUNT_LINKS = ("base_link", "J1_link", "J2_link", "J3_link", "J4_link", "J5_link", "J6_link")
 
 @dataclass(frozen=True)
 class SimulationCollisionPolicy:
@@ -33,8 +34,11 @@ class SimulationCollisionPolicy:
     required_pair_clearance_m: float | None = None
     self_collision_clearance_m: float = 0.0
     boundary_mode: str = "legacy_infinite_side_planes"
+    robot_mount_contact_exemption: bool = False
 
     def __post_init__(self):
+        if type(self.robot_mount_contact_exemption) is not bool:
+            raise ValueError("robot mount exemption must be an explicit boolean")
         if self.schema not in {"m710_simulation_collision_policy_v3", "m710_poc_pair_collision_policy_v4"}:
             raise ValueError("unsupported collision policy")
         if self.poc_pair_clearance:
@@ -91,6 +95,8 @@ class SimulationCollisionPolicy:
 
     def _data(self):
         data = asdict(self)
+        if not self.robot_mount_contact_exemption:
+            data.pop("robot_mount_contact_exemption")  # Preserve historical identities.
         if not self.poc_pair_clearance:
             for key in ("required_pair_clearance_m", "self_collision_clearance_m", "boundary_mode"):
                 data.pop(key)
@@ -103,6 +109,16 @@ class SimulationCollisionPolicy:
 
     def wrist_tool_pairs(self, owned_tool_names: Sequence[str]):
         return {(link, name) for link in self.wrist_tool_exempt_links for name in owned_tool_names}
+
+    def robot_mount_pairs(self, support="chassis"):
+        if self.robot_mount_contact_exemption and support != "chassis":
+            raise ValueError("ROBOT_MOUNT_OWNERSHIP_CHANGED")
+        links=OFFICIAL_ROBOT_MOUNT_LINKS if self.robot_mount_contact_exemption else ("base_link",)
+        return {(link,support) for link in links}
+
+    def allows_robot_mount_contact(self, link, obstacle):
+        return (self.robot_mount_contact_exemption and obstacle=="chassis"
+                and link in OFFICIAL_ROBOT_MOUNT_LINKS)
 
     def allows_stack_planning_contact(self, stage: str):
         return self.stack_contact_mode == "planner_relaxed_physics_checked" and stage in self.stack_contact_stages

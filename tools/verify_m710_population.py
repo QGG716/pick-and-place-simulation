@@ -30,6 +30,9 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
+    if protocol.get('scope')=='XY_TOP_LOWPROFILE250_CONTINUATION':
+        if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
+        expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     if protocol['active_layout_file'] != expected:
         raise ValueError('POPULATION_LAYOUT_VARIANT_MISMATCH')
     return mounts[variant]
@@ -42,8 +45,9 @@ def verify(run, replay=None, *, retained_prefix=False):
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
     layer_top=protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
+    lowprofile=protocol['scope']=='XY_TOP_LOWPROFILE250_CONTINUATION'
     repair=continuation and protocol.get('integration_repair_restart',False)
-    xy_top = layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    xy_top = lowprofile or layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     stopped=retained_prefix and continuation and summary['status']=='INTEGRATION_ERROR_RETAINED'
@@ -54,8 +58,20 @@ def verify(run, replay=None, *, retained_prefix=False):
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (12 if layer_top else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (28 if layer_top else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    if lowprofile:
+        from unloading_sim.collision_policy import SimulationCollisionPolicy
+        predecessor=json.loads((run/'predecessor.json').read_text())
+        assert initial==protocol['initial_root']==predecessor['new_native_root']
+        assert initial==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert protocol['low_definition']=='FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
+        assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
+        assert protocol['scissor_profile']=='low_profile_250_v1' and 'layer_top_permission' not in protocol
+        assert summary['outcomes'][0]['target_id']=='carton_l02_c01'
+        policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
+        assert policy.robot_mount_contact_exemption
+        assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]
     if layer_top:
         predecessor=json.loads((run/'predecessor.json').read_text())
         assert initial==protocol['initial_root']==predecessor['new_native_root']
@@ -165,6 +181,12 @@ def verify(run, replay=None, *, retained_prefix=False):
                 connections = read(folder+"/connection-attempts.json")
                 detail = read(folder+"/attempt.json") if folder+"/attempt.json" in outcome["evidence"]["file_sha256"] else {}
                 trace = read(folder+"/search-trace.json")
+                if lowprofile:
+                    for item in trace['attempts']:
+                        req=item['request']
+                        if 'clearance_policy' not in req:continue
+                        assert req['clearance_policy']['source_policy']==protocol['collision_policy']
+                        assert set(map(tuple,protocol['robot_mount_allowed_pairs'])) <= set(map(tuple,req['allowed_pairs']))
                 if diagnostic:
                     marker='M710_DIAGNOSTIC_JOINT_RATE_IGNORED' if all_rates else 'M710_DIAGNOSTIC_J4_VELOCITY_IGNORED'
                     markers=raw(folder+'/worker.log').decode(errors='replace').count(marker)
@@ -226,7 +248,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                     assert cycle["target"].get("eccentric_authorization") is None
                 height_record=protocol['frozen']['heights'][name]
                 low_top = xy_top and (height_record['z_b_m']+height_record['h_m'] < protocol['low_top_minimum_m']
-                    if continuation else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
+                    if continuation or lowprofile else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
                 top_height=protocol['low_top_minimum_m']
                 if layer_top:
                     low_top=cycle['option']['template']=='TOP_FIXED_CURRENT_RECEIVER'

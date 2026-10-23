@@ -26,11 +26,12 @@ class ScissorSpec:
     arm_length_m: float
     arm_depth_m: float = .035
     arm_thickness_m: float = .02
+    rail_depth_m: float = .03
 
     def validate(self):
         if (type(self.stages) is not int or not 1 <= self.stages <= 8 or
-                not np.isfinite([self.arm_length_m, self.arm_depth_m, self.arm_thickness_m]).all() or
-                min(self.arm_length_m, self.arm_depth_m, self.arm_thickness_m) <= 0 or
+                not np.isfinite([self.arm_length_m, self.arm_depth_m, self.arm_thickness_m, self.rail_depth_m]).all() or
+                min(self.arm_length_m, self.arm_depth_m, self.arm_thickness_m, self.rail_depth_m) <= 0 or
                 self.arm_depth_m >= self.arm_length_m):
             raise ValueError("INVALID_SCISSOR_SPEC")
 
@@ -86,8 +87,8 @@ def scissor_stack(name, anchor, direction, top_z, spec, *, floor_z=0.):
         center = anchor+direction*spec.arm_length_m/2
         center[2] = z + (-1 if end == "base" else 1)*spec.arm_depth_m
         boxes.append(_box(f"{name}_{end}_rail", center,
-                          [spec.arm_length_m+.08, .08, .03], pin_rotation))
-    foot_height=anchor[2]-spec.arm_depth_m-.015-floor_z
+                          [spec.arm_length_m+.08, .08, spec.rail_depth_m], pin_rotation))
+    foot_height=anchor[2]-spec.arm_depth_m-spec.rail_depth_m/2-floor_z
     if foot_height <= 0:
         raise ValueError("SCISSOR_BASE_BELOW_FLOOR")
     for side in (0,1):
@@ -249,6 +250,15 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     floor=float(layout.data["world"]["floor_z_m"]);base_z=floor+.10
     parts=[];stacks=[];mates=[]
     coupling=layout.data["conveyors"]["coupling"]
+    low_profile=coupling.get("scissor_profile")=="low_profile_250_v1"
+    # User-approved concept revision: preserve arm lengths, stages, lanes,
+    # support spacing and the complete conveyor solids. Lower the floor pins
+    # and shorten the transverse rail/arm vertical section and head standoff.
+    transverse_spec=ScissorSpec(2,1.25,.020,.020,.020) if low_profile else ScissorSpec(2,1.25)
+    transverse_base=floor+.040 if low_profile else base_z
+    longitudinal_base=floor+.040 if low_profile else base_z
+    longitudinal_spec=ScissorSpec(4,.60,.020,.018,.020) if low_profile else ScissorSpec(4,.60,.025,.018)
+    transverse_head_offset=.036 if low_profile else .070
     support_spacing=float(coupling.get("transverse_support_spacing_m",
                                      2*(transverse.half_extents[0]-.12)))
     if not np.isfinite(support_spacing) or not .105 <= support_spacing <= 2*transverse.half_extents[0]-.10:
@@ -256,8 +266,8 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     for side in (-1,1):
         x=transverse.center[0]+side*support_spacing/2
         items,info=scissor_stack(f"lift_transverse_{'left' if side<0 else 'right'}",
-            [x,transverse.center[1]-.625,base_z],[0,1,0],
-            height-2*transverse.half_extents[2]-.07,ScissorSpec(2,1.25),floor_z=floor)
+            [x,transverse.center[1]-.625,transverse_base],[0,1,0],
+            height-2*transverse.half_extents[2]-transverse_head_offset,transverse_spec,floor_z=floor)
         parts.extend(items);stacks.append(info)
         parts.append(_box(f"{info['id']}_mount",[x,transverse.center[1],height-.13],[.08,1.25,.02]))
     # Fixed floor stations; heads swivel and slide against the inclined frame.
@@ -267,7 +277,7 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         if not lower[0]<x<upper[0]:raise ValueError("LONGITUDINAL_SUPPORT_OUTSIDE_FRAME")
         underside=low+(x-lower[0])*s/c-thickness/c
         items,info=scissor_stack(f"lift_longitudinal_{'rear' if side<0 else 'near'}",
-            [x,lower[1]-(.32+(width-.70)/2),base_z],[0,1,0],underside-.09,ScissorSpec(4,.60,.025,.018),floor_z=floor)
+            [x,lower[1]-(.32+(width-.70)/2),longitudinal_base],[0,1,0],underside-.09,longitudinal_spec,floor_z=floor)
         parts.extend(items);stacks.append(info)
         parts.append(_box(f"{info['id']}_swivel_head",np.array([x,lower[1],underside])-rotation[:,2]*.01,
             [.08,.60,.02],rotation))
@@ -279,7 +289,7 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     rail_min=low_x-.25
     floor_min=float(layout.data["trailer"]["opening_x_m"])
     rail_max=max(low_x+travel+.18,floor_min+.30)
-    rail_z=low-.20
+    rail_z=low-(.26 if low_profile else .20)
     if rail_min>=rail_max or rail_z-.02<=floor:raise ValueError("INVALID_SLIDER_RAIL")
     for side in (-1,1):
         y=lower[1]+side*(width/2-.08);key=f"lift_lower_rail_{side+1}"
@@ -289,7 +299,8 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
             parts.append(_box(foot,[x,y,floor+h/2],[.08,.08,h]))
             mates.extend([(foot,key,"FIXED_RAIL_STAND"),(foot,"trailer_floor","FOOT_ON_EXISTING_FLOOR")])
         carriage=f"lift_lower_carriage_{side+1}"
-        parts.append(_box(carriage,[lower[0]-.14,y,low-.14],[.16,.10,.08]))
+        parts.append(_box(carriage,[lower[0]-.14,y,low-(.175 if low_profile else .14)],
+            [.16,.10,.15 if low_profile else .08]))
         mates.extend([(carriage,key,"HORIZONTAL_X_SLIDER"),(carriage,"lift_lower_bearing","SLIDER_BEARING")])
     parts.append(_box("lift_lower_bearing",lower+[-.04,0,-.05],[.20,width-.04,.10]))
     mates.append(("lift_lower_bearing","conveyor_longitudinal","LOWER_REVOLUTE_BEARING"))
@@ -325,5 +336,13 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     if "minimum_surface_height_world_m" in coupling:
         info["requested_minimum_surface_height_world_m"]=minimum
         info["fixed_longitudinal_rear_surface_world_m"]=low
+    if low_profile:
+        info["scissor_profile"]="low_profile_250_v1"
+        info["low_profile_dimensions_m"]=dict(transverse_lower_pin=.040,
+            transverse_arm_depth=.020,transverse_rail_depth=.020,
+            transverse_head_offset=.036,longitudinal_lower_pin=.040,
+            longitudinal_arm_depth=.020,longitudinal_rail_depth=.020,
+            lower_slider_rail_drop=.260,lower_carriage_height=.150)
+        info["design_basis"]["transverse_support"]="USER_APPROVED_250MM_LOW_PROFILE_SCISSOR_CONCEPT"
     identity=canonical_digest(dict(layout=layout.layout_fingerprint,mechanism=info,geometry=[_obb_record(b) for b in boxes]))
     return CoupledConveyorState(boxes,info,identity)

@@ -773,7 +773,7 @@ class ExactM710LayoutStateValidator:
                       getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
         if static_key not in self._static_cache:
             result = self._profile_call("robot_fixed_including_self", self.mesh_robot.collision_result, q, fixed, **self._mesh_pair_options(stage),
-                ignored_geometry_obstacle_pairs={("base_link", self.base_support_obstacle_name)}, check_self=True)
+                ignored_geometry_obstacle_pairs=self.collision_policy.robot_mount_pairs(self.base_support_obstacle_name), check_self=True)
             failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
             if failure is None:
                 result = self._profile_call("robot_tool", self.mesh_robot.collision_result, q, tool_boxes, **self._mesh_pair_options(stage, proxy=True),

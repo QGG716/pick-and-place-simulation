@@ -71,6 +71,13 @@ void checkWorldShapePoses() {
     "ATTACHED_TO_WORLD_POSE_PRESERVED");
 }
 int main(int argc,char** argv) {
+  const J mount={{"robot_mount_contact_exemption",true}};
+  require(m710::authorizedRobotMountPair(mount,"J2_link","chassis"),"EXPLICIT_ROBOT_MOUNT_ALLOWED");
+  require(m710::authorizedRobotMountPair(mount,"chassis","J6_link"),"MOUNT_PAIR_SYMMETRIC");
+  require(!m710::authorizedRobotMountPair(J::object(),"J2_link","chassis"),"LEGACY_MOUNT_POLICY_UNCHANGED");
+  for(const auto& pair:std::vector<std::pair<std::string,std::string>>{{"cup","chassis"},{"flange","chassis"},
+      {"J2_link","conveyor_transverse"},{"J2_link","trailer_floor"},{"J2_link","other_chassis"},{"J2_link","J3_link"}})
+    require(!m710::authorizedRobotMountPair(mount,pair.first,pair.second),"MOUNT_PERMISSION_NARROW");
   optimized=argc>1&&std::string(argv[1])=="optimized";rclcpp::init(argc,argv);checkWorldShapePoses();auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
   require(p.check(s->getCurrentState()),"INITIAL_STACK_CONTACT_ALLOWED");
   auto q=s->getCurrentState();q.setJointGroupPositions("manipulator",std::vector<double>{.011});q.update();

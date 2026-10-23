@@ -4,6 +4,11 @@
 #include "side_transfer.h"
 
 namespace m710 {
+inline bool authorizedRobotMountPair(const Json& source,const std::string& a,const std::string& b) {
+  const std::set<std::string> links={"base_link","J1_link","J2_link","J3_link","J4_link","J5_link","J6_link"};
+  return source.value("robot_mount_contact_exemption",false) &&
+    ((b=="chassis" && links.count(a)) || (a=="chassis" && links.count(b)));
+}
 // Candidate-local process permissions. ACM exempts only the named pairs whose
 // geometry is checked here; the ordered verifier restores free-space rules.
 class ProcessPolicy {
@@ -110,7 +115,8 @@ public:
     for(const auto& pair:request.at("allowed_pairs")) {
       if(pair.size()!=2) throw std::runtime_error("PROCESS_ALLOWED_PAIR_INVALID");
       const std::string a=pair.at(0),b=pair.at(1);
-      const bool assembly=(a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis");
+      const bool assembly=(a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis") ||
+        authorizedRobotMountPair(source_,a,b);
       const bool neighbor=source_.at("compliant_cup_neighbor_contact_mode")=="ignore" &&
         ((compliant_.count(a)&&stack_.count(b)&&b!=target_id_) || (compliant_.count(b)&&stack_.count(a)&&a!=target_id_));
       const bool contact_stage=attached_ || stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact" || stage_=="withdrawal";

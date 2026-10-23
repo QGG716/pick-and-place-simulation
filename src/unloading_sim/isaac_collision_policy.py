@@ -4,6 +4,13 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 import xml.etree.ElementTree as ET
 
+def classify_robot_mount_contact(collider0,collider1,*,robot_link_by_collider,world_object_by_collider,policy):
+    """Acceptance only, with physical response retained and exact ownership."""
+    for robot,world in ((collider0,collider1),(collider1,collider0)):
+        if policy.allows_robot_mount_contact(robot_link_by_collider.get(robot),world_object_by_collider.get(world)):
+            return "USER_APPROVED_ROBOT_MOUNT_CONTACT_PHYSICAL_RESPONSE_RETAINED"
+    return None
+
 
 class ActiveContactPairIndex:
     """Exact event index; no contact scope, counters or physical rules change.

@@ -421,7 +421,10 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
         spacing_key = "transverse_support_spacing_m"
         _keys(coupling, {"geometry_revision", "maximum_surface_height_world_m"} |
               ({"minimum_surface_height_world_m"} if "minimum_surface_height_world_m" in coupling else set()) |
-              ({spacing_key} if spacing_key in coupling else set()), "conveyors.coupling")
+              ({spacing_key} if spacing_key in coupling else set()) |
+              ({"scissor_profile"} if "scissor_profile" in coupling else set()), "conveyors.coupling")
+        if "scissor_profile" in coupling and coupling["scissor_profile"]!="low_profile_250_v1":
+            raise ValueError("UNKNOWN_SCISSOR_PROFILE")
         if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
             raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
         _positive(coupling["maximum_surface_height_world_m"], "coupling.maximum_surface_height_world_m")
@@ -701,6 +704,8 @@ def _audit_initial_state_prepared(
             for obstacle in obstacles:
                 query = obb_pair_failure(link, obstacle, effective, margin, stage="initial_state", proxy=True, reason="ROBOT_COLLISION")
                 if query is None:
+                    continue
+                if effective.allows_robot_mount_contact(link.name,obstacle.name):
                     continue
                 if link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
                     continue

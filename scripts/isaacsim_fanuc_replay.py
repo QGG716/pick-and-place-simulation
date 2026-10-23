@@ -1331,6 +1331,7 @@ try:
     dynamic_scene_prim_paths: list[str] = []
     dynamic_scene_records: list[dict[str, object]] = []
     static_scene_records: list[dict[str, object]] = []
+    world_object_by_collider = {}
     conveyor_visual_markers: dict[str, list[dict[str, object]]] = {}
     conveyor_visual_rollers: dict[str, list[dict[str, object]]] = {}
     if conveyor_enabled:
@@ -1362,6 +1363,7 @@ try:
     for primitive in scene_primitives:
         prim_path = f"/Validation/Scene/{_safe_prim_name(str(primitive['name']))}"
         cube = UsdGeom.Cube.Define(stage, prim_path)
+        world_object_by_collider[prim_path] = str(primitive['name'])
         cube.CreateSizeAttr(1.0)
         cube.CreateDisplayColorAttr(
             [category_colors.get(str(primitive.get("category")), Gf.Vec3f(0.5, 0.5, 0.5))]
@@ -2245,6 +2247,11 @@ try:
             physical_compression_m=effective_collision_policy.maximum_compliant_cup_additional_compression_m,
             **contact_runtime_context,
         )
+        if reason is None:
+            from unloading_sim.isaac_collision_policy import classify_robot_mount_contact
+            reason=classify_robot_mount_contact(collider0,collider1,
+                robot_link_by_collider=robot_link_by_collider,world_object_by_collider=world_object_by_collider,
+                policy=effective_collision_policy)
         if reason is None and args.demonstration_target_cup_contact_exemption:
             cup_collider = (
                 collider0

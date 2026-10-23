@@ -930,8 +930,11 @@ def _state_failure(
     contact_tolerance = float(validity["contact_tolerance_m"])
     links = world_link_boxes(robot, q, shapes)
     chassis = next(box for box in scene.fixed_components if box.name == "chassis")
+    pair_policy=SimulationCollisionPolicy.from_mapping(scene.policy.layout_validation.data.get("collision_policy"))
     for link in links:
         for obstacle in scene.all_obstacles:
+            if pair_policy.allows_robot_mount_contact(link.name,obstacle.name):
+                continue
             if not link.intersects_obb(obstacle, margin=collision_margin):
                 continue
             if (
