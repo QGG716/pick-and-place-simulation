@@ -48,6 +48,7 @@ def side_fixture():
         for value in path:assert history.state_failure(kw['attachment'].box_at(value),obstacles,kw['support_names']) is None
         record=dict(stage='extraction',stage_id=stage,parent_stage_id=start.native_receipt['stage_id'],task_id='task',
             status='SUCCESS',request_id=len(calls),points=[dict(q=np.asarray(v).tolist(),t=float(i)) for i,v in enumerate(path)],
+            submitted_request=dict(ownership_transition='ATTACH' if start.native_receipt['stage_id']=='contact' else None),
             process_policy=dict(terminal_proximity=history.evidence()))
         records[stage]=record
         return path,None,dict(attempts=[record])

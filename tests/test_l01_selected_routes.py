@@ -52,3 +52,39 @@ def test_restore_32_terminal_without_old_native_tree(tmp_path):
     assert set(ORDER)<={b.name for b in state.cartons}
     (tmp_path/'summary.json').write_text('{}')
     with pytest.raises(ValueError,match='RECORD_CHANGED'):restore_l01_tool_terminal(tmp_path,state)
+
+
+def test_c01_finite_side_channel_keeps_c04_and_rejects_near_neighbors():
+    from unloading_sim.contact_target import simulation_contact_targets
+    from unloading_sim.support import SupportRelationGraph
+    boxes,frozen,world,height=setup();target=boxes['carton_l01_c01']
+    remaining=[b for n,b in boxes.items() if n.startswith('carton_l00_') or n in ORDER]
+    scene=SimpleNamespace(support_graph=SupportRelationGraph(remaining,[]),snapshot={'scene_fingerprint':'test'},
+        policy=SimpleNamespace(data={'task_population':{'face_modes':['front','top','side']}}))
+    faces,_=simulation_contact_targets(scene,target,[-1.825,.25,.6],.1)
+    assert not any(f.geometric_face_id=='y+' for f in faces)
+    faces,screen=simulation_contact_targets(scene,target,[-1.825,.25,.6],.1,side_exposure_depth_m=.322700003)
+    assert any(f.geometric_face_id=='y+' for f in faces)
+    assert next(f for f in screen if f['geometric_face_id']=='y+')['blockers']==[]
+    faces,screen=simulation_contact_targets(scene,boxes['carton_l01_c00'],[-1.825,.25,.6],.1,side_exposure_depth_m=.322700003)
+    assert not any(f.geometric_face_id=='y+' for f in faces)
+    assert 'carton_l01_c01' in next(f for f in screen if f['geometric_face_id']=='y+')['blockers']
+    permission=selected_routes_permission(frozen,finite_c01_channel=True)
+    assert permission['dispatch_order']==['carton_l01_c01'] and set(permission['routes'])=={'carton_l01_c01'}
+    option=selected_route_option(target,world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,permission)
+    assert option['finite_side_channel'] and option['original_role']=='MIDDLE'
+    for name in ('carton_l01_c00','carton_l01_c04'):
+        with pytest.raises(ValueError,match='TARGET_OUTSIDE'):
+            selected_route_option(boxes[name],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,permission)
+
+
+def test_c01_turn_uses_full_projection_not_center_and_needs_only_120mm():
+    from unloading_sim.l01_selected_routes import nonjunction_side_turn
+    from unloading_sim.lifted_reception import translated
+    boxes,_,world,_=setup();target=boxes['carton_l01_c01']
+    check=nonjunction_side_turn(target,world.values())
+    assert check['minimum_center_y_world_m']==pytest.approx(-.3)
+    assert check['minimum_center_y_world_m']-target.center[1]==pytest.approx(.12)
+    assert not check['passed']
+    assert not nonjunction_side_turn(translated(target,[0,.12,0]),world.values())['passed']
+    assert nonjunction_side_turn(translated(target,[0,.1202,0]),world.values())['passed']

@@ -45,6 +45,8 @@ def main():
         help='Restore checked 30-box terminal; retry frozen l01 with scoped tool/chassis planning exemption')
     p.add_argument('--continue-l01-selected-routes-from',type=Path,
         help='Restore checked 32-box terminal; c04 top, c01/c00 +Y side, fixed original Hmax')
+    p.add_argument('--c01-finite-side-channel',action='store_true',
+        help='Only c01: finite owned-tool exposure, shortest +Y turn outside the inlet corridor, then -X')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
@@ -56,6 +58,8 @@ def main():
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
     l01_routes=bool(args.continue_l01_selected_routes_from)
+    if args.c01_finite_side_channel and not l01_routes:
+        raise ValueError('C01_CHANNEL_REQUIRES_VERIFIED_SELECTED_ROUTES_ROOT')
     l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
     if l01_routes and args.continue_l01_tool_chassis_from:
         raise ValueError('L01_CONTINUATION_PREDECESSOR_AMBIGUOUS')
@@ -105,9 +109,10 @@ def main():
         from l01_tool_chassis import frozen_l01_scope,SCOPE as L01_TOOL_SCOPE
         if l01_routes:
             from layer_top_continuation import restore_l01_tool_terminal
-            from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE
+            from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE,C01_CHANNEL_SCOPE
             lowprofile_predecessor=restore_l01_tool_terminal(args.continue_l01_selected_routes_from,state)
-            args.selected_routes_permission=selected_routes_permission(frozen)
+            args.selected_routes_permission=selected_routes_permission(frozen,finite_c01_channel=args.c01_finite_side_channel)
+            if args.c01_finite_side_channel:L01_ROUTES_SCOPE=C01_CHANNEL_SCOPE
         else:
             lowprofile_predecessor=restore_lowprofile_top_terminal(args.continue_l01_tool_chassis_from,state)
         save(args.output/'predecessor.json',lowprofile_predecessor)
@@ -218,6 +223,9 @@ def main():
         protocol.update(selected_routes_permission=args.selected_routes_permission,
             top_permission='ONLY_EXPLICIT_SELECTED_C04',low_receiver_rule='SELECTED_ROUTES_FIXED_FROZEN_HMAX',
             include_receive_before_approach=False)
+        if args.c01_finite_side_channel:
+            protocol.update(top_permission='NONE_C01_SIDE_ONLY',finite_c01_side_channel=True,
+                side_turn_rule='FULL_PAYLOAD_PROJECTION_OUTSIDE_JUNCTION_SHORTEST_POSITIVE_Y_FIRST')
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',

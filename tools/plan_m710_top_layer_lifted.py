@@ -201,14 +201,20 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
-                    c.height_visit_deadline=(shared_stages['prefix'] if low_top else
+                    c.height_visit_deadline=(shared_stages['prefix'] if low_top or option.get('finite_side_channel') else
                         min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.)))
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
                     c.start_planning_request(task_started);c._native_task_started=task_started
                     c._request_deadline_monotonic=deadline;c._deadline_monotonic=deadline;c._final_export_reserve_s=0.;c.boundary_costs={}
-                    faces,screen=simulation_contact_targets(scene,target,c.robot.base_transform[:3,3],c.budget.pregrasp_standoff_m)
+                    side_depth=None
+                    if option.get('finite_side_channel'):
+                        from unloading_sim.l01_selected_routes import finite_side_exposure
+                        row['finite_side_exposure']=finite_side_exposure(c,state.q)
+                        side_depth=row['finite_side_exposure']['depth_m']
+                    faces,screen=simulation_contact_targets(scene,target,c.robot.base_transform[:3,3],c.budget.pregrasp_standoff_m,
+                        side_exposure_depth_m=side_depth)
                     selected=[f for f in faces if f.geometric_face_id==option['face']['geometric_face_id']]
                     row['screening']=screen
                     if not selected:

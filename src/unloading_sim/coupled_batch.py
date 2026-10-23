@@ -258,10 +258,28 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         return req
 
     def region_candidates(self,*args):
+        if self.option.get('finite_side_channel'):
+            from .l01_selected_routes import nonjunction_side_turn
+            region,payload,world,attachment,start,row=args
+            proof=nonjunction_side_turn(payload,world)
+            region=deepcopy(region)
+            region['projection_center_limits_before_occupancy'][2]=max(
+                region['projection_center_limits_before_occupancy'][2],
+                proof['minimum_center_y_world_m']-self.high_belt.center[1])
+            row['nonjunction_turn_domain']=proof
+            args=(region,payload,world,attachment,start,row)
         return (SingleRightReceiverConnector if self.planar else SingleLiftedReceiverConnector).region_candidates(self,*args)
 
     def region_motion(self,*args):
-        return (SingleRightReceiverConnector if self.planar else SingleLiftedReceiverConnector).region_motion(self,*args)
+        result=(SingleRightReceiverConnector if self.planar else SingleLiftedReceiverConnector).region_motion(self,*args)
+        if self.option.get('finite_side_channel') and result[1] is None:
+            from .l01_selected_routes import nonjunction_side_turn
+            attachment,world,entry=args[3],args[4],args[-1]
+            check=nonjunction_side_turn(attachment.box_at(result[4]['path'][-1]),world)
+            entry['actual_turn_nonjunction']=check
+            if not check['passed']:
+                return [],dict(reason='INVALID_GOAL_PROCESS',detail=check),*result[2:]
+        return result
 
     def complete_extraction_plan(self,plan,row,end,target,obstacles,attachment,seed):
         reject_late_sync(self.option)
@@ -277,6 +295,12 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
                 scope='COMPLETE_CYCLE_CANDIDATE',blocking_stage=reason,detail=detail))
             return None,row
         actual_height=require_receive_height(obstacles,self.option['height_m'])
+        if self.option.get('finite_side_channel'):
+            from .l01_selected_routes import nonjunction_side_turn
+            plan['side_turn_policy_check']=deepcopy(row['region_attempts'][-1]['actual_turn_nonjunction'])
+            check['nonjunction_side_route']=nonjunction_side_turn(box,obstacles)
+            if not check['nonjunction_side_route']['passed']:
+                return reject('SIDE_RELEASE_STILL_IN_JUNCTION',check)
         if not self.planar:
             reception=validate_junction_release(box,target.box,obstacles,
                 self.option['face']['working_axis_into_box'],self.option['height_m'])
