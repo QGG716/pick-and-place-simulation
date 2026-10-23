@@ -4418,7 +4418,7 @@ def build_m710_layout_trajectory_connector(
                 lightweight_robot, np.asarray(q, dtype=float), shapes
             ),
             collision_policy=collision_policy,
-            nominal_cup_compression_m=0.2275 - float(flange_from_physical[0, 3]),
+            nominal_cup_compression_m=0.2275 + extension - float(flange_from_physical[0, 3]),
         )
     except (AttributeError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         return unavailable("EXACT_STATE_VALIDATOR_CONSTRUCTION_FAILED", str(exc))
