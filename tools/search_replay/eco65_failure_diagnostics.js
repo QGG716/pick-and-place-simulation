@@ -196,10 +196,27 @@ function selectInspectionTarget(id,open=true){
   $('targetEvidence').replaceChildren(...targetEvidenceRows().map(({a,index})=>new Option(`#${index+1} · ${a.request.stage_id||a.request.op} · ${statusLabel(a)}`,index)));
   const budget=(DATA.plan_summary?.failures||[]).filter(f=>f.target_id===id&&String(f.error).includes('BUDGET'));
   $('targetBudget').textContent=budget.length?`${budget.length} 条调度预算耗尽记录（不是 ${budget.length} 个独立原生失败姿态）。\n`+JSON.stringify(budget,null,2):'已接受前缀中没有该箱的调度预算耗尽记录。';
+  const dispatch=(DATA.plan_summary?.continuation_search||[]).flatMap(s=>s.targets.filter(t=>t.target_id===id).map(t=>({...t,after_completed:s.completed_ids.length,attempts:s.attempts.filter(a=>a.target_id===id)})));
+  const last=dispatch.at(-1);
+  if(last){
+    const reasons={PROCESS_RECEIVE_HEIGHT_OUT_OF_RANGE:'接收高度超出机构范围',LATERAL_CHANNEL_BLOCKED:'侧移通道被邻箱挡住',FACE_NOT_EXPOSED:'抓面未暴露',NO_INWARD_LATERAL_SPACE:'内侧移空间不足'};
+    const rejected=last.process_options.rejected.map(r=>`${r.template||'工艺'}：${reasons[r.reason]||r.reason}${Number.isFinite(r.height_m)?'（候选 '+(r.height_m*1000).toFixed(1)+' mm）':''}${r.blocker_ids?.length?'；阻挡 '+r.blocker_ids.join(', '):''}`);
+    $('targetSummary').textContent+=`\n完成 ${last.after_completed} 箱后的调度：${last.candidate_count} 个几何候选；本轮尝试 ${last.attempts.length} 次。\n`+rejected.join('\n');
+    $('targetBudget').textContent+='\n'+JSON.stringify(dispatch,null,2);
+  }
+  if(!rows.length){
+    $('targetSummary').textContent+='\n未发起该箱原生请求；这不是 IK 不可达的证明。';
+    if(open){
+      $('mode').value='cycle';modeChanged();setTime(DATA.duration_s);
+      const box=new T.Box3();worldObjects.filter(o=>o.userData.id===id&&o.userData.layer==='visual').forEach(o=>{o.material.color.set(0xffc857);box.union(new T.Box3().setFromObject(o));});
+      if(!box.isEmpty()){const helper=new T.Box3Helper(box,0xffc857);helper.userData.disposable=true;diagnosticGroup.add(helper);}
+      summaryState('终态箱体 · 未完成 '+id);
+    }
+  }
   if(open){const first=rows.find(({a})=>a.request.stage==='transit'&&hasPair(a))||rows.find(({a})=>hasPair(a))||rows.find(({a})=>a.response.status!=='SUCCESS');if(first)openTargetEvidence(first.index);}
 }
 function initTargetInspection(){
-  const ids=[...new Set(DATA.attempts.map(targetOf).filter(Boolean))];if(!ids.length)return;
+  const ids=[...new Set([...(DATA.plan_summary?.inventory_ids||[]),...DATA.attempts.map(targetOf).filter(Boolean)])];if(!ids.length)return;
   $('targetInspection').hidden=false;$('diagnosticTarget').replaceChildren(...ids.map(id=>new Option(id,id)));
   $('diagnosticTarget').onchange=()=>selectInspectionTarget($('diagnosticTarget').value);
   $('targetEvidence').onchange=()=>openTargetEvidence(Number($('targetEvidence').value));

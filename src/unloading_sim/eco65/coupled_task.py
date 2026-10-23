@@ -30,6 +30,7 @@ class CoupledTask(NativeTask):
         self.process_option=None
         self.sync_location='BEFORE_APPROACH'
         self.process_search=[]
+        self.continuation_search=[]
         if initial_mode not in ('new_simulation','inherited_state'):
             raise ValueError('INITIAL_STATE_MODE_INVALID')
         if snapshot['native_model']['init']['process_geometry'].get('edge_alignment')!=EDGE_ALIGNMENT:
@@ -709,11 +710,18 @@ class CoupledTask(NativeTask):
                    and x['pose'][2]>b['pose'][2]+1e-8 for x in self.scene['boxes'])]
         boxes.sort(key=lambda b:(-b['pose'][2],abs(b['pose'][1]),b['pose'][1]))
         pools=[]
+        search=dict(completed_ids=list(self.completed_ids),height_m=self.height_m,
+                    parent_stage_id=self.parent,targets=[],attempts=[])
+        self.continuation_search.append(search)
         current_tcp=self.robot.fk(self.current_q)
         for target in boxes:
             self.restore(drained)
             self.target=deepcopy(target);self.target_pose=self.carton_poses[target['id']].copy()
-            candidates=self.geometry_candidates()['candidates']
+            geometry=self.geometry_candidates()
+            candidates=geometry['candidates']
+            search['targets'].append(dict(target_id=target['id'],
+                candidate_count=len(candidates),bounded_candidate_count=min(len(candidates),self.max_grasps,8),
+                process_options=geometry['process_options']))
             # Keep a front attempt, then prefer the actual outgoing tool
             # orientation/cup family. The old first-eight slice could omit that
             # family and spend the entire return budget on one carton.
@@ -740,6 +748,9 @@ class CoupledTask(NativeTask):
                     self.restore(drained)
                     raise ValueError('NEXT_CARTON_ABSOLUTE_BUDGET_EXHAUSTED')
                 self.restore(drained)
+                attempt=dict(target_id=target['id'],candidate_id=grasp['candidate_id'],
+                    option_id=grasp['process_option']['option_id'],sync_location=sync,status='STARTED')
+                search['attempts'].append(attempt)
                 try:
                     self.select_next(target,grasp)
                     self.sync_location=sync
@@ -747,12 +758,15 @@ class CoupledTask(NativeTask):
                     self.attach(next_target=not complete_carton)
                     if complete_carton:
                         self.extract_and_release()
+                        attempt['status']='COMPLETE_CARTON'
                         return
+                    attempt['status']='NEXT_CONTACT_ATTACHED'
                     result=self.result(complete=True)
                     result['validation']=validate_cycle(result,self.snapshot)
                     result.pop('fingerprint');result['fingerprint']=digest(result)
                     return result
                 except ValueError as error:
+                    attempt.update(status='REJECTED',error=str(error))
                     self.cycle_failures.append(dict(stage='next_contact',target_id=target['id'],
                         candidate_id=grasp['candidate_id'],error=str(error)))
         self.restore(drained)
@@ -774,6 +788,7 @@ class CoupledTask(NativeTask):
             j1_reverse_used_rad=self.reverse_used)
         result['transverse_process_policy']=deepcopy(POLICY)
         result['process_search']=deepcopy(self.process_search)
+        result['continuation_search']=deepcopy(self.continuation_search)
         result['grasp_search']=deepcopy(self.grasp_search)
         result['adopted_process']=getattr(self,'adopted_process',None)
         result['phase_budgets']=deepcopy(self.phase_budgets)

@@ -80,7 +80,8 @@ const p=new T.Vector3().setFromMatrixPosition(fk(currentQ).base_link);
 check('TRANSLATED_BASE_RENDERED_AT_DECLARED_POSITION',close(p.toArray(),model.base_translation.new_base_position_m,1e-12));
 }
 check('REAL_HEIGHT_PREVIEWS',DATA.previews.length>=3);
-if(DATA.transverse_process_policy)check('100MM_AND450MM_PREVIEWS',DATA.previews.some(p=>Math.abs(p.height_m-.100)<1e-9)&&DATA.previews.some(p=>Math.abs(p.height_m-.450)<1e-9));
+if(DATA.receiver_hardware_range_m)check('HARDWARE_BOUNDARY_PREVIEWS',DATA.receiver_hardware_range_m.every(h=>DATA.previews.some(p=>Math.abs(p.height_m-h)<1e-9)));
+if(DATA.receiver_hardware_range_m)check('PREVIEWS_INSIDE_HARDWARE_RANGE',DATA.previews.every(p=>p.height_m>=DATA.receiver_hardware_range_m[0]-1e-12&&p.height_m<=DATA.receiver_hardware_range_m[1]+1e-12));
 for(let i=0;i<DATA.previews.length;i++){
 preview(i);const expected=DATA.previews[i].state;
 check('PREVIEW_HEIGHT_'+i,state.height_m===expected.height_m);
@@ -252,6 +253,13 @@ check('CONTACT_IK_BUTTON_SHOWS_CHECKED_CANDIDATE',active===checkedContact&&close
 check('CONTACT_IK_DOES_NOT_INVENT_ATTACHMENT',state.attachment===checkedContact.request.attachment);
 targetQuick('approach');
 if(active.request.stage==='pregrasp'&&hasPair(active))check('APPROACH_COLLISION_BUTTON_OWNS_WORLD',state.world===active.request.world&&window.replay.highlightedIds.length===2);
+}
+if(DATA.plan_summary?.inventory_ids){
+check('ALL_INVENTORY_TARGETS_VISIBLE',DATA.plan_summary.inventory_ids.every(id=>[...document.getElementById('diagnosticTarget').options].some(o=>o.value===id)));
+const untouched=DATA.plan_summary.inventory_ids.find(id=>!DATA.attempts.some(a=>targetOf(a)===id));
+if(untouched&&DATA.segments.length){selectInspectionTarget(untouched);
+check('UNSEARCHED_TARGET_HAS_NO_INVENTED_REQUEST',document.getElementById('targetEvidence').options.length===0);
+check('UNSEARCHED_TARGET_USES_TERMINAL_WORLD',same(state.completed_ids,DATA.terminal_state.completed_ids)&&close(currentQ,DATA.terminal_state.q,1e-12));}
 }
 result.status='PASS';
 }catch(error){result.status='FAIL';result.error=error.stack;}

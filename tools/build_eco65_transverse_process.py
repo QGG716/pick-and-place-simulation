@@ -1,5 +1,6 @@
-"""Incrementally bind the 100 mm transverse process to the current snapshot."""
+"""Bind transverse process and explicit receiver travel to a new cold snapshot."""
 import argparse
+import yaml
 from copy import deepcopy
 from pathlib import Path
 from unloading_sim.eco65.model import ROOT, load_json, save_json
@@ -16,7 +17,9 @@ def build(args):
     source=verify_snapshot(load_json(args.snapshot))
     home=verify_candidate(load_json(args.home_candidate),source['tool'],source['scene'])
     output=args.output.resolve();output.relative_to(ROOT/'outputs');output.mkdir(parents=True,exist_ok=False)
-    scene=build_coupled_scene(source['scene'])
+    config_path=args.config.resolve()
+    config=yaml.safe_load(config_path.read_text(encoding='utf-8'))
+    scene=build_coupled_scene(source['scene'],config,initial_height_m=args.initial_height)
     scene['transverse_process_policy']=deepcopy(POLICY)
     scene['native_task']['allowed_faces']=['top','front','left','right']
     # The former C02 diagnostic target may need the middle channel opened
@@ -41,10 +44,13 @@ def build(args):
             target_id=target['id'],inventory_scope='UNCHANGED_TWELVE_CARTONS',source='TRANSVERSE_PROCESS_DISPATCH')
     scene['initial_process_dispatch']=dispatch
     scene['process_migration']=dict(source_snapshot_fingerprint=source['fingerprint'],
-        inherited_height_m=source['scene']['coupled_state']['height_m'],
+        source_snapshot_height_m=source['scene']['coupled_state']['height_m'],
+        initial_height_m=scene['coupled_state']['height_m'],
+        initialization=('INHERITED_SNAPSHOT_HEIGHT' if args.initial_height is None else
+                        'EXPLICIT_NEW_COLD_WORLD_HEIGHT_NOT_A_MOTION_OR_CONTINUATION'),
         camera_robot_cartons_unchanged=True,calibration_reused=True,
-        geometry_change='TRANSVERSE_FIXED_BASE_PIN_26_TO_22_MM_WITH_MATCHING_FIXED_FEET; LOWER_LONGITUDINAL_ENDPOINT_REMAINS_180_MM')
-    hashes=dict(source['config_sha256']);hashes[CONFIG.relative_to(ROOT).as_posix()]=file_hash(CONFIG)
+        geometry_change='PARAMETERIZED_COUPLED_CONFIG; FIXED_LONGITUDINAL_ENDPOINT_RETAINED')
+    hashes=dict(source['config_sha256']);hashes[config_path.relative_to(ROOT).as_posix()]=file_hash(config_path)
     scene['config_sha256']=hashes
     scene['scene_fingerprint']=digest({k:v for k,v in scene.items() if k!='scene_fingerprint'})
     verify_scene(scene)
@@ -68,5 +74,8 @@ if __name__=='__main__':
     parser.add_argument('--snapshot',required=True)
     parser.add_argument('--home-candidate',required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--config',type=Path,default=CONFIG)
+    parser.add_argument('--initial-height',type=float,
+        help='Explicit new cold-world height; default inherits the source actual height, never clamps')
     parser.add_argument('--native-asset-root',default='/work-eco65-20261015')
     build(parser.parse_args())

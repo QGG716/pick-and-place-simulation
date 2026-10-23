@@ -479,12 +479,13 @@ def with_coupled_state(scene, height_m):
     return result
 
 
-def build_coupled_scene(source_scene, config=None):
+def build_coupled_scene(source_scene, config=None, *, initial_height_m=None):
     """Construct a new frozen low-state scene; does not accept any robot q."""
     result = deepcopy(source_scene)
     spec = make_coupled_spec(source_scene, config)
     result["coupled_conveyor_spec"] = spec
-    initial = source_scene.get("coupled_state", {}).get("height_m", spec["config"]["initial_height_m"])
+    initial = (source_scene.get("coupled_state", {}).get("height_m", spec["config"]["initial_height_m"])
+               if initial_height_m is None else float(initial_height_m))
     result = with_coupled_state(result, initial)
     result["layout_id"] = spec["config"]["layout_id"]
     result["collision_policy_mode"] = spec["config"]["collision_policy_mode"]
