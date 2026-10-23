@@ -75,7 +75,7 @@
 工作目录为本仓库。Windows 使用 `.venv/Scripts/python.exe`，`PYTHONPATH=src;tools`：
 
 ```powershell
-.venv/Scripts/python.exe tools/build_eco65_transverse_process.py --snapshot outputs/rear100_rigidcarton_20261022/scene/snapshot.json --home-candidate outputs/rear100_rigidcarton_20261022/scene/home_candidate.json --output outputs/transverse_process_20261023/scene04
+.venv/Scripts/python.exe tools/build_eco65_transverse_process.py --snapshot outputs/rear100_rigidcarton_20261022/scene/snapshot.json --home-candidate outputs/rear100_rigidcarton_20261022/scene/home_candidate.json --config configs/workcells/eco65_coupled_carton_v2.yaml --output outputs/transverse_process_20261023/scene04
 .venv/Scripts/python.exe tools/check_eco65_coupled_geometry.py --snapshot outputs/transverse_process_20261023/scene04/snapshot.json --output outputs/transverse_process_20261023/mechanism_final_check.json
 .venv/Scripts/python.exe -m pytest -q tests/test_eco65_transverse_process.py tests/test_eco65_coupled_scene.py tests/test_eco65_coupled_state.py tests/test_eco65_independent_cups.py tests/test_eco65_coupled_replay_sharing.py
 ```
