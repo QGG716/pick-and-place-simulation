@@ -1,0 +1,280 @@
+{
+  "costs_are_nested_not_additive": true,
+  "runs": [
+    {
+      "run": "v1",
+      "counts": {
+        "native_requests": 417,
+        "numerical_ik_success": 27,
+        "checked_lift": 3,
+        "target_check_passed": 7,
+        "pregrasp": 4,
+        "contact": 4,
+        "extraction": 6,
+        "withdrawal": 3
+      },
+      "operations": {
+        "init:None:READY": 8,
+        "fk:None:SUCCESS": 24,
+        "check_start:pregrasp:SUCCESS": 11,
+        "ik:pregrasp:SUCCESS": 27,
+        "plan:pregrasp:INVALID_GOAL_CLEARANCE": 100,
+        "ik:pregrasp:NATIVE_IK_FAILED": 220,
+        "ik:pregrasp:NATIVE_IK_REQUEST_DEADLINE": 1,
+        "plan:pregrasp:SUCCESS": 7,
+        "plan:contact:SUCCESS": 4,
+        "plan:extraction:SUCCESS": 6,
+        "check_extraction_end:extraction:SUCCESS": 3,
+        "plan:withdrawal:SUCCESS": 3,
+        "plan:pregrasp:NATIVE_PLANNING_FAILED": 2,
+        "plan:extraction:TRANSPORT_OR_CANCELLATION_ERROR": 1
+      },
+      "initialized_candidates": 8,
+      "dispatched_candidates": 8,
+      "candidates": [
+        {
+          "file": "formal-v1/task-001/attempt-001/requests.json",
+          "requests": 87,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-001/attempt-003/requests.json",
+          "requests": 93,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-002/attempt-001/requests.json",
+          "requests": 91,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-002/attempt-003/requests.json",
+          "requests": 85,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-003/attempt-001/requests.json",
+          "requests": 16,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-004/attempt-001/requests.json",
+          "requests": 16,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-005/attempt-001/requests.json",
+          "requests": 17,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v1/task-007/attempt-001/requests.json",
+          "requests": 12,
+          "target_search_dispatched": true
+        }
+      ],
+      "task_wall_s": 188.74190390855074,
+      "tasks": [
+        {
+          "file": "formal-v1/task-001/result.json",
+          "wall_s": 52.05801658332348,
+          "complete": 0
+        },
+        {
+          "file": "formal-v1/task-002/result.json",
+          "wall_s": 52.25360834598541,
+          "complete": 0
+        },
+        {
+          "file": "formal-v1/task-003/result.json",
+          "wall_s": 28.794866919517517,
+          "complete": 1
+        },
+        {
+          "file": "formal-v1/task-004/result.json",
+          "wall_s": 17.389150105416775,
+          "complete": 1
+        },
+        {
+          "file": "formal-v1/task-005/result.json",
+          "wall_s": 26.606614351272583,
+          "complete": 1
+        },
+        {
+          "file": "formal-v1/task-006/result.json",
+          "wall_s": 0.39168980717658997,
+          "complete": 0
+        },
+        {
+          "file": "formal-v1/task-007/result.json",
+          "wall_s": 11.247957795858383,
+          "complete": 0
+        }
+      ],
+      "population_credit": 3
+    },
+    {
+      "run": "v2",
+      "counts": {
+        "native_requests": 176,
+        "numerical_ik_success": 16,
+        "target_check_passed": 10,
+        "pregrasp": 5,
+        "checked_lift": 2,
+        "contact": 5,
+        "extraction": 10,
+        "withdrawal": 5
+      },
+      "operations": {
+        "init:None:READY": 7,
+        "fk:None:SUCCESS": 21,
+        "check_start:pregrasp:SUCCESS": 11,
+        "ik:pregrasp:SUCCESS": 16,
+        "ik:pregrasp:NATIVE_IK_FAILED": 62,
+        "plan:pregrasp:SUCCESS": 7,
+        "plan:contact:SUCCESS": 5,
+        "plan:extraction:SUCCESS": 10,
+        "check_extraction_end:extraction:SUCCESS": 5,
+        "plan:withdrawal:SUCCESS": 5,
+        "plan:pregrasp:INVALID_GOAL_CLEARANCE": 25,
+        "plan:pregrasp:NATIVE_PLANNING_FAILED": 2
+      },
+      "initialized_candidates": 7,
+      "dispatched_candidates": 6,
+      "candidates": [
+        {
+          "file": "formal-v2/task-001/attempt-001/requests.json",
+          "requests": 17,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v2/task-002/attempt-001/requests.json",
+          "requests": 15,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v2/task-003/attempt-001/requests.json",
+          "requests": 93,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v2/task-003/attempt-002/requests.json",
+          "requests": 16,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v2/task-004/attempt-001/requests.json",
+          "requests": 16,
+          "target_search_dispatched": true
+        },
+        {
+          "file": "formal-v2/task-006/attempt-002/requests.json",
+          "requests": 4,
+          "target_search_dispatched": false
+        },
+        {
+          "file": "formal-v2/task-007/attempt-001/requests.json",
+          "requests": 15,
+          "target_search_dispatched": true
+        }
+      ],
+      "task_wall_s": 90.30976343899965,
+      "tasks": [
+        {
+          "file": "formal-v2/task-001/result.json",
+          "wall_s": 14.16128746420145,
+          "complete": 1
+        },
+        {
+          "file": "formal-v2/task-002/result.json",
+          "wall_s": 10.802211806178093,
+          "complete": 1
+        },
+        {
+          "file": "formal-v2/task-003/result.json",
+          "wall_s": 39.56940959393978,
+          "complete": 1
+        },
+        {
+          "file": "formal-v2/task-004/result.json",
+          "wall_s": 11.402258649468422,
+          "complete": 1
+        },
+        {
+          "file": "formal-v2/task-005/result.json",
+          "wall_s": 0.5684118866920471,
+          "complete": 0
+        },
+        {
+          "file": "formal-v2/task-006/result.json",
+          "wall_s": 1.9948667213320732,
+          "complete": 0
+        },
+        {
+          "file": "formal-v2/task-007/result.json",
+          "wall_s": 9.761645846068859,
+          "complete": 1
+        },
+        {
+          "file": "formal-v2/task-008/result.json",
+          "wall_s": 0.7828366383910179,
+          "complete": 0
+        },
+        {
+          "file": "formal-v2/task-009/result.json",
+          "wall_s": 0.7774677500128746,
+          "complete": 0
+        },
+        {
+          "file": "formal-v2/task-010/result.json",
+          "wall_s": 0.4893670827150345,
+          "complete": 0
+        }
+      ],
+      "population_credit": 5
+    },
+    {
+      "run": "sync",
+      "counts": {
+        "native_requests": 17,
+        "numerical_ik_success": 3,
+        "target_check_passed": 2,
+        "pregrasp": 1,
+        "checked_lift": 1,
+        "contact": 1,
+        "extraction": 2,
+        "withdrawal": 1
+      },
+      "operations": {
+        "init:None:READY": 1,
+        "fk:None:SUCCESS": 3,
+        "check_start:pregrasp:SUCCESS": 2,
+        "ik:pregrasp:SUCCESS": 3,
+        "plan:pregrasp:NATIVE_PLANNING_FAILED": 1,
+        "plan:pregrasp:SUCCESS": 2,
+        "plan:contact:SUCCESS": 1,
+        "plan:extraction:SUCCESS": 2,
+        "check_extraction_end:extraction:SUCCESS": 1,
+        "plan:withdrawal:SUCCESS": 1
+      },
+      "initialized_candidates": 1,
+      "dispatched_candidates": 1,
+      "candidates": [
+        {
+          "file": "sync-regression/attempt-001/requests.json",
+          "requests": 17,
+          "target_search_dispatched": true
+        }
+      ],
+      "task_wall_s": 10.549692712724209,
+      "tasks": [
+        {
+          "file": "sync-regression/result.json",
+          "wall_s": 10.549692712724209,
+          "complete": 1
+        }
+      ],
+      "population_credit": 0
+    }
+  ]
+}

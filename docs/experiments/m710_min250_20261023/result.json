@@ -1,0 +1,347 @@
+{
+  "status": "INCOMPLETE_RETAINED",
+  "new_completed": 8,
+  "new_targets": 20,
+  "new_success_rate": 0.4,
+  "prior_completed": 20,
+  "cumulative_completed": 28,
+  "cumulative_targets": 40,
+  "cumulative_success_rate": 0.7,
+  "remaining": 12,
+  "direct_failures": 5,
+  "support_blocked_unsearched": 7,
+  "accepted": [
+    {
+      "run": "v1",
+      "target": "carton_l03_c01",
+      "wall_s": 28.794866919517517,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999998,
+      "receive_height_m": 0.5499999999999998,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 0.8249538877317196,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.689127099201617,
+          0.18645037507087264,
+          1.165
+        ],
+        "elbow_world_m": [
+          -1.0936484769746908,
+          -0.09206316864148037,
+          1.772338798727291
+        ],
+        "direction_world": [
+          0.6653392427116495,
+          -0.3111883169970425,
+          0.6785908365668055
+        ],
+        "length_m": 0.8949999999999999,
+        "elevation_rad": 0.7458424390631767,
+        "elevation_deg": 42.73362394006331,
+        "q2_rad": 0.8249538877317196,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v1",
+      "target": "carton_l03_c04",
+      "wall_s": 17.389150105416775,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999998,
+      "receive_height_m": 0.8499999999999998,
+      "synchronization": "PREGRASP",
+      "q2_rad": 0.7988919458018694,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.6863032973771404,
+          0.3071246416316643,
+          1.165
+        ],
+        "elbow_world_m": [
+          -1.0932894774052007,
+          0.551367664774293,
+          1.7892635300643769
+        ],
+        "direction_world": [
+          0.6625852737116645,
+          0.2728972325615963,
+          0.6975011509099184
+        ],
+        "length_m": 0.8949999999999999,
+        "elevation_rad": 0.7719043809930275,
+        "elevation_deg": 44.2268632185588,
+        "q2_rad": 0.7988919458018694,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v1",
+      "target": "carton_l03_c00",
+      "wall_s": 26.606614351272583,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999998,
+      "receive_height_m": 0.5499999999999998,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 1.0240409348377852,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.7056278700174932,
+          0.15916886776308736,
+          1.165
+        ],
+        "elbow_world_m": [
+          -1.0972093937066167,
+          -0.30378122858915646,
+          1.6303269452449531
+        ],
+        "direction_world": [
+          0.6797971802356162,
+          -0.5172626774885406,
+          0.5199183745753666
+        ],
+        "length_m": 0.8949999999999999,
+        "elevation_rad": 0.5467553919571112,
+        "elevation_deg": 31.326776385163548,
+        "q2_rad": 1.0240409348377852,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v2",
+      "target": "carton_l03_c02",
+      "wall_s": 14.16128746420145,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999998,
+      "receive_height_m": 0.8499999999999998,
+      "synchronization": "PREGRASP",
+      "q2_rad": 0.725090454956289,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.677233403883629,
+          0.22421176484942573,
+          1.165
+        ],
+        "elbow_world_m": [
+          -1.0925044182557562,
+          0.12216482746952545,
+          1.834853294339874
+        ],
+        "direction_world": [
+          0.6533284755618689,
+          -0.11401892444681594,
+          0.7484394350166189
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.8457058718386077,
+        "elevation_deg": 48.45537716578392,
+        "q2_rad": 0.725090454956289,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v2",
+      "target": "carton_l03_c03",
+      "wall_s": 10.802211806178093,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.8499999999999998,
+      "receive_height_m": 0.8499999999999998,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 0.7163664978829839,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.676045229731903,
+          0.26767700241495923,
+          1.165
+        ],
+        "elbow_world_m": [
+          -1.0924399128946667,
+          0.33693556040908657,
+          1.840005989828152
+        ],
+        "direction_world": [
+          0.6520729797064093,
+          0.0773838636805892,
+          0.7541966366794994
+        ],
+        "length_m": 0.895,
+        "elevation_rad": 0.8544298289119128,
+        "elevation_deg": 48.955223086737604,
+        "q2_rad": 0.7163664978829839,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v2",
+      "target": "carton_l02_c02",
+      "wall_s": 39.56940959393978,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999999,
+      "receive_height_m": 0.5499999999999999,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 0.9947861086019716,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.67723340246235,
+          0.2242117729933561,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.9378241035316568,
+          0.09517006012052837,
+          1.652490640929308
+        ],
+        "direction_world": [
+          0.8261556412633443,
+          -0.14418068477410917,
+          0.5446822803679419
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.576010218192925,
+        "elevation_deg": 33.00295445886427,
+        "q2_rad": 0.9947861086019716,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v2",
+      "target": "carton_l02_c03",
+      "wall_s": 11.402258649468422,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999999,
+      "receive_height_m": 0.5499999999999999,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 0.9880566716279086,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.676045229813069,
+          0.26767700309890236,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.9339649638604566,
+          0.3557423610892271,
+          1.6575305793610546
+        ],
+        "direction_world": [
+          0.829139961958226,
+          0.09839704803388236,
+          0.5503134964927984
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.582739655166988,
+        "elevation_deg": 33.388522795977366,
+        "q2_rad": 0.9880566716279086,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    },
+    {
+      "run": "v2",
+      "target": "carton_l02_c04",
+      "wall_s": 9.761645846068859,
+      "delta_m": 0.0,
+      "temporary_height_m": 0.5499999999999999,
+      "receive_height_m": 0.5499999999999999,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "q2_rad": 1.053836567329295,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.686303289199039,
+          0.30712462177550587,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.9668866008690238,
+          0.6034287372985858,
+          1.6073443225320734
+        ],
+        "direction_world": [
+          0.8038175288603522,
+          0.3310660508637765,
+          0.49423946651628303
+        ],
+        "length_m": 0.895,
+        "elevation_rad": 0.5169597594656012,
+        "elevation_deg": 29.619612395477162,
+        "q2_rad": 1.053836567329295,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "cups": {
+        "actual_contact_mask": 48,
+        "commanded_active_mask": 48,
+        "geometrically_eligible_mask": 48
+      },
+      "face": "FRONT"
+    }
+  ],
+  "measured_source_v1": "a300d234633e122c6d8328dddb259f3c9c38ad91",
+  "measured_source_v2": "3f449e89da518ac89b3c112b4a83eb9a83000b11",
+  "requested_minimum_height_m": 0.25,
+  "actual_terminal_height_m": 0.5499999999999999,
+  "top_suction_rule": "FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM",
+  "top_suction_count": 0,
+  "geometry_limit": "REQUESTED_250_MM_SCISSOR_NOT_CONSTRUCTIBLE",
+  "holding_assumption": "ideal_independent_cups; no minimum load-bearing cup count",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "formal_loop_wall_s": 297.3235406129956,
+  "formal_task_wall_s": 279.051667348,
+  "formal_native_requests": 593,
+  "actual_target_search_candidates": 14,
+  "worker_initialized_candidates": 15,
+  "numerical_ik_success": 43,
+  "explicit_target_check_passed": 17,
+  "approach_passed": 9,
+  "contact_passed": 9,
+  "complete_cycles": 8,
+  "isolated_sync_regression": {
+    "complete": 1,
+    "population_credit": 0,
+    "native_requests": 17,
+    "wall_s": 10.549692712724209
+  }
+}

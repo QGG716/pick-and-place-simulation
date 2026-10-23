@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "source_commit": "3f449e89da518ac89b3c112b4a83eb9a83000b11",
+  "source_archive_sha256": "cbb7d51723e55ddf7ea49d499cf5b0785642f7111ba0ba1db5d56684664facea",
+  "accepted_replay_sha256": "c5dce81f2cceb3fa149042a95da152d2f6607fdca721e6ce366beacccdd74bcf",
+  "verified_raw_files": 109,
+  "cases": 12,
+  "direct_failures": 5,
+  "support_blocked": 7,
+  "solver_calls_added": 0,
+  "generated_robot_motion_points": 0,
+  "collision_witnesses": 0,
+  "physical_execution": "NOT_RUN"
+}

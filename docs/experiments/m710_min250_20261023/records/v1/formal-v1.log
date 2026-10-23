@@ -1,0 +1,67 @@
+{"event": "CARTON_TASK_START", "target": "carton_l03_c02", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 2, "target": "carton_l03_c02", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 3, "target": "carton_l03_c02", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 4, "target": "carton_l03_c02", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c02", "completed": 0, "remaining": 20, "attempted": 1, "task_s": 52.05801658332348}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c03", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 2, "target": "carton_l03_c03", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 3, "target": "carton_l03_c03", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "attempt": 4, "target": "carton_l03_c03", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 20}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c03", "completed": 0, "remaining": 20, "attempted": 2, "task_s": 52.25360834598541}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c01", "remaining": 20}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c01", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 20}
+{"seed": 71070, "completed": 1, "historical_completed": 20, "terminal_q": [-0.8264718716419277, 0.34897971857290966, -0.9390138542443842, -2.2949614842036783, -1.3806038932955602, -0.21057514931375274], "height": 0.5499999999999998}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c01", "completed": 1, "remaining": 19, "attempted": 3, "task_s": 28.794866919517517}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c04", "remaining": 19}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c04", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 21}
+{"seed": 71070, "completed": 1, "historical_completed": 21, "terminal_q": [0.7629480837176955, 0.31028128307325636, -1.00303523336592, -3.921293696274019, -1.385683896599712, 0.18000301261603824], "height": 0.8499999999999998}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c04", "completed": 2, "remaining": 18, "attempted": 4, "task_s": 17.389150105416775}
+{"event": "CARTON_TASK_START", "target": "carton_l03_c00", "remaining": 18}
+{"seed": 71070, "attempt": 1, "target": "carton_l03_c00", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 22}
+{"seed": 71070, "completed": 1, "historical_completed": 22, "terminal_q": [-1.0556381302884337, 0.5797641531260188, -0.5356657067763447, -2.0411892443276276, -1.3523911329839284, -0.40283300687804907], "height": 0.5499999999999998}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l03_c00", "completed": 3, "remaining": 17, "attempted": 5, "task_s": 26.606614351272583}
+{"event": "CARTON_TASK_START", "target": "carton_l02_c01", "remaining": 17}
+{"seed": 71070, "attempt": 1, "target": "carton_l02_c01", "process": "FRONT_DIRECT_HMIN", "completed": 0, "historical_completed": 23}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l02_c01", "completed": 3, "remaining": 17, "attempted": 6, "task_s": 0.39168980717658997}
+{"event": "CARTON_TASK_START", "target": "carton_l02_c04", "remaining": 17}
+{"seed": 71070, "attempt": 1, "target": "carton_l02_c04", "process": "FRONT_DIRECT_HMAX", "completed": 0, "historical_completed": 23}
+Traceback (most recent call last):
+  File "/work-min250-a300d23/tools/plan_m710_xy_top_population.py", line 178, in <module>
+    if __name__=='__main__':main()
+  File "/work-min250-a300d23/tools/plan_m710_xy_top_population.py", line 154, in main
+    result=run_seed(args,original,built,frozen,71070,folder,initial_state=state,target_ids=[name])
+  File "/work-min250-a300d23/tools/plan_m710_top_layer_lifted.py", line 201, in run_seed
+    plan,detail=c.plan_target(chosen,state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
+  File "/work-min250-a300d23/src/unloading_sim/single_lifted_receiver.py", line 99, in plan_target
+    plan,row=super().plan_target(target,start,obstacles,suction,seed)
+  File "/work-min250-a300d23/src/unloading_sim/single_contact.py", line 479, in plan_target
+    return self.complete_contact_plan(plan,row,contact[-1],target,obstacles,suction,seed)
+  File "/work-min250-a300d23/src/unloading_sim/coupled_batch.py", line 234, in complete_contact_plan
+    return super().complete_contact_plan(plan,row,end,target,obstacles,suction,seed)
+  File "/work-min250-a300d23/src/unloading_sim/single_lifted_receiver.py", line 212, in complete_contact_plan
+    return super().complete_contact_plan(plan,row,contact_end,target,obstacles,suction,seed)
+  File "/work-min250-a300d23/src/unloading_sim/single_extraction.py", line 151, in complete_contact_plan
+    return self._attached_suffix(plan, row, contact_end, target, obstacles, seed, began)
+  File "/work-min250-a300d23/src/unloading_sim/coupled_batch.py", line 214, in _attached_suffix
+    return super()._attached_suffix(*args,**kwargs)
+  File "/work-min250-a300d23/src/unloading_sim/single_extraction.py", line 213, in _attached_suffix
+    return self._plan_extraction_suffix(plan, row, start, target, obstacles,
+  File "/work-min250-a300d23/src/unloading_sim/single_lifted_receiver.py", line 320, in _plan_extraction_suffix
+    path,failure,evidence,geometry,checked_prefix,branch_tracker=self.region_motion(
+  File "/work-min250-a300d23/src/unloading_sim/coupled_batch.py", line 259, in region_motion
+    return (SingleRightReceiverConnector if self.planar else SingleLiftedReceiverConnector).region_motion(self,*args)
+  File "/work-min250-a300d23/src/unloading_sim/single_lifted_receiver.py", line 264, in region_motion
+    path,failure,evidence=self._native_plan(start,None,payload_world,seed=seed,
+  File "/work-min250-a300d23/src/unloading_sim/planning_only.py", line 83, in _native_plan
+    return super()._native_plan(*args, **kwargs)
+  File "/work-min250-a300d23/src/unloading_sim/moveit2_backend.py", line 1313, in _native_plan
+    raw=self.native.request(submitted,timeout=timeout,
+  File "/work-min250-a300d23/src/unloading_sim/coupled_batch.py", line 145, in request
+    return super().request(request,**kwargs)
+  File "/work-min250-a300d23/src/unloading_sim/single_contact.py", line 154, in request
+    response = self.client.request(request, **kwargs)
+  File "/work-min250-a300d23/src/unloading_sim/moveit2_backend.py", line 374, in request
+    raise MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
+unloading_sim.moveit2_backend.MoveItUnavailable: RECEIVE_MECHANISM_WORLD_CHANGED

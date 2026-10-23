@@ -1,0 +1,35 @@
+...............F...............                                          [100%]
+=================================== FAILURES ===================================
+____ test_paired_inputs_rebuild_only_initial_world_without_native_receipts _____
+
+    def test_paired_inputs_rebuild_only_initial_world_without_native_receipts():
+        from types import SimpleNamespace
+>       data = load_cases(ROOT/"docs/experiments/m710_mount_comparison_20261021/paired-inputs.json")
+
+tests/test_mount_comparison.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/plan_m710_mount_comparison.py:39: in load_cases
+    data = json.loads(path.read_text(encoding="utf-8"))
+/usr/lib/python3.10/pathlib.py:1134: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/work-min250-a300d23/docs/experiments/m710_mount_comparison_20261021/paired-inputs.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return self._accessor.open(self, mode, buffering, encoding, errors,
+                                   newline)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/work-min250-a300d23/docs/experiments/m710_mount_comparison_20261021/paired-inputs.json'
+
+/usr/lib/python3.10/pathlib.py:1119: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_mount_comparison.py::test_paired_inputs_rebuild_only_initial_world_without_native_receipts
+1 failed, 30 passed, 9 deselected in 2.97s

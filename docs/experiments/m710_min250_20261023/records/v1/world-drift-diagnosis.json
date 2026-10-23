@@ -1,0 +1,258 @@
+{
+  "reason": "RECEIVE_MECHANISM_WORLD_CHANGED",
+  "binding_start_height": 0.5499999999999998,
+  "binding_end_height": 0.5499999999999999,
+  "same_names": true,
+  "differences": [
+    {
+      "id": "conveyor_longitudinal",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "conveyor_transverse",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_0_0",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_0_1",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_1_0",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_1_1",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_2_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_2_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_3_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_arm_3_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_1_0",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_1_1",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_2_0",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_2_1",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_3_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_3_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_4_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_end_pin_4_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_head_rail",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_neck",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_pin_0",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_pin_1",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_pin_2",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_pin_3",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_near_swivel_head",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_longitudinal_rear_swivel_head",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_arm_0_0",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_arm_0_1",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_arm_1_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_arm_1_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_end_pin_1_0",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_end_pin_1_1",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_end_pin_2_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_end_pin_2_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_head_rail",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_mount",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_pin_0",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_left_pin_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_arm_0_0",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_arm_0_1",
+      "max_pose_delta": 4.163336342344337e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_arm_1_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_arm_1_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_end_pin_1_0",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_end_pin_1_1",
+      "max_pose_delta": 5.551115123125783e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_end_pin_2_0",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_end_pin_2_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_head_rail",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_mount",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_pin_0",
+      "max_pose_delta": 2.7755575615628914e-17,
+      "same_nonpose": true
+    },
+    {
+      "id": "lift_transverse_right_pin_1",
+      "max_pose_delta": 1.1102230246251565e-16,
+      "same_nonpose": true
+    }
+  ]
+}

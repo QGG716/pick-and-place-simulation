@@ -1,0 +1,147 @@
+{
+  "total_dispatch_and_archive_wall_s": 99.36532988399267,
+  "native_task_wall_s": 90.30976343899965,
+  "candidate_visit_wall_s": 78.69411461055279,
+  "costs_are_nested_not_additive": true,
+  "dispatched_candidates": 7,
+  "accepted_candidates": 5,
+  "failed_candidates": 2,
+  "native_requests": 176,
+  "request_counts": {
+    "native_requests": 176,
+    "accepted_native_stages": 27,
+    "checked_lift_samples": 62,
+    "nominal_drop_samples": 130,
+    "numerical_ik_success": 16,
+    "target_check_passed": 10,
+    "pregrasp": 5,
+    "checked_lift": 2,
+    "contact": 5,
+    "extraction": 10,
+    "withdrawal": 5
+  },
+  "historical_completed_count": 23,
+  "new_completed_count": 5,
+  "pre_native_geometry_rejections": 13,
+  "tasks": [
+    {
+      "target_id": "carton_l03_c02",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 14.16128746420145,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l03_c03",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 10.802211806178093,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l02_c02",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 39.56940959393978,
+      "dispatched_candidates": 2,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l02_c03",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 11.402258649468422,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l02_c01",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 0.5684118866920471,
+      "dispatched_candidates": 0,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l02_c00",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 1.9948667213320732,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l02_c04",
+      "status": "COMPLETE_PLANNING_ONLY",
+      "wall_s": 9.761645846068859,
+      "dispatched_candidates": 1,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l01_c02",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 0.7828366383910179,
+      "dispatched_candidates": 0,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l01_c03",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 0.7774677500128746,
+      "dispatched_candidates": 0,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l01_c04",
+      "status": "INCOMPLETE_RETAINED",
+      "wall_s": 0.4893670827150345,
+      "dispatched_candidates": 0,
+      "unsearched_options": 0
+    },
+    {
+      "target_id": "carton_l00_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c02",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c03",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l00_c04",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    },
+    {
+      "target_id": "carton_l01_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "wall_s": null,
+      "dispatched_candidates": 0,
+      "unsearched_options": null
+    }
+  ]
+}

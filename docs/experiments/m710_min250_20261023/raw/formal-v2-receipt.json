@@ -1,0 +1,9 @@
+{
+  "file": "min250-v2-formal-raw.tar.xz",
+  "sha256": "cbb7d51723e55ddf7ea49d499cf5b0785642f7111ba0ba1db5d56684664facea",
+  "bytes": 644688,
+  "files": 109,
+  "wall_s": 3.7682862728834152,
+  "preservation": "All original evidence file bytes preserved; gzip storage containers expanded",
+  "original_task_archive_receipts_preserved": true
+}

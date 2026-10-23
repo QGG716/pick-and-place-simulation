@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "source_commit": "3f449e89da518ac89b3c112b4a83eb9a83000b11",
+  "source_files": 325,
+  "assets": 67,
+  "native_binaries": {
+    "/mount-build/m710_moveit_worker": "0bab47de68ae112583afa76a285b74dccd16ff29518d8e11e6d1ac6bfb77756a",
+    "/mount-install/lib/libm710_search_trace.so": "1e612f9e38df55bf55ecaee3a7efd0151235e53db553360a1a4d9b00fee95892"
+  },
+  "ros_versions": {
+    "ros-humble-moveit-core": "2.5.10-1jammy.20260908.071525",
+    "ros-humble-moveit-kinematics": "2.5.10-1jammy.20260908.083918",
+    "ros-humble-moveit-planners-ompl": "2.5.10-1jammy.20260908.084213",
+    "ros-humble-moveit-ros-planning": "2.5.10-1jammy.20260908.081349",
+    "ros-humble-moveit-task-constructor-core": "0.1.3-1jammy.20260908.101449",
+    "ros-humble-ompl": "1.7.0-4jammy.20260226.011457",
+    "ros-humble-pilz-industrial-motion-planner": "2.5.10-1jammy.20260908.093641"
+  },
+  "pinocchio": "4.1.0",
+  "hppfcl": "3.0.3",
+  "numpy": "2.2.6",
+  "motion_limit_exception": false
+}
