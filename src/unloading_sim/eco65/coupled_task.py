@@ -639,21 +639,22 @@ class CoupledTask(NativeTask):
             mesh=trimesh.load(ROOT/row['mesh'],force='mesh',process=False)
             points.append(np.asarray(mesh.vertices)@cad[:3,:3].T+cad[:3,3])
         if not points:raise ValueError('TOOL_RETREAT_SOLID_GEOMETRY_MISSING')
-        tool_min=min(float((v@direction).min()) for v in points)
-        box_max=float((corners(self.target,receive)@direction).max())
-        distance=max(.002,.010+box_max-tool_min+.002)
-        offsets=[direction*distance,direction*(distance+.01)]
-        for offset in offsets:
+        from .withdrawal import retreat_candidates
+        candidates=retreat_candidates(np.concatenate(points),corners(self.target,receive),direction)
+        for candidate in candidates:
             self.restore(received)
+            if self.attachment is not None:
+                raise ValueError('EMPTY_TOOL_WITHDRAWAL_STILL_ATTACHED')
             retreat=self.robot.fk(self.current_q).copy()
-            retreat[:3,3]+=offset
+            retreat[:3,3]+=candidate['offset_m']
             try:
                 self.move('withdrawal',pose=retreat)
+                self.cycle_records[-1]['retreat_geometry']=deepcopy(candidate)
                 self.transition('IDEAL_RECEIVER_DRAIN',drain)
                 break
             except ValueError as error:
                 self.cycle_failures.append(dict(stage='withdrawal',target_id=target,
-                    offset_m=offset.tolist(),error=str(error)))
+                    offset_m=candidate['offset_m'],retreat_geometry=deepcopy(candidate),error=str(error)))
         else:
             self.restore(received)
             raise ValueError('NATIVE_WITHDRAWAL_CANDIDATES_EXHAUSTED')
