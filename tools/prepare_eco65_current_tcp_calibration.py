@@ -14,6 +14,19 @@ from eco65_touch_geometry import StaticGeometry
 from eco65_j1_visualization import face_angle
 
 
+def board_capture_projection(T_D_camera,K,resolution,T_D_board,size_m,margin_px=12.):
+    """Acquisition-only FOV gate; nominal camera pose is not solver evidence."""
+    C=np.asarray(T_D_camera);P=np.asarray(T_D_board);w,h=size_m
+    local=np.array([[0.,0.,0.],[w,0.,0.],[w,h,0.],[0.,h,0.]])
+    optical=(local@P[:3,:3].T+P[:3,3]-C[:3,3])@C[:3,:3]
+    if np.min(optical[:,2])<=0:return dict(accepted=False,reason='BOARD_BEHIND_CAMERA')
+    projected=optical@np.asarray(K).T;uv=projected[:,:2]/projected[:,2,None]
+    lower=uv.min(axis=0);upper=uv.max(axis=0)
+    return dict(accepted=bool(np.all(lower>=margin_px) and np.all(upper<=np.asarray(resolution)-1-margin_px)),
+        bounds_px=[lower.tolist(),upper.tolist()],minimum_depth_m=float(optical[:,2].min()),
+        source='NOMINAL_CAMERA_FOR_ACQUISITION_ONLY')
+
+
 def prepare(a):
     import cv2
     started=perf_counter();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
@@ -48,7 +61,8 @@ def prepare(a):
         rng=np.random.default_rng(652101)
         # Board to the robot's left/front-free side; both independent placements
         # are selected from this bounded jig set, without moving approved layout.
-        centers=[[-.72,.26,.52],[-.72,.32,.55],[-.66,.35,.54],[-.73,-.28,.53],[-.65,-.34,.54]]
+        centers=[[-.72,.26,.52],[-.72,.32,.55],[-.66,.35,.54],[-.73,-.28,.53],[-.65,-.34,.54],
+                 [-.78,.42,.56],[-.72,.48,.56],[-.75,.45,.63],[-.83,.46,.63],[-.72,.45,.68]]
         for pid,split,ids in [('train_01','train',range(6)),('heldout_01','validation',[0,3,5])]:
             accepted_group=False
             candidates=centers if split=='train' else [(np.array(c['placements'][0]['center_D_m'])+[.015,.025,0]).tolist()]
@@ -58,6 +72,18 @@ def prepare(a):
                 normal=np.r_[heading*np.cos(np.pi/6),-.5]
                 right=np.r_[[-heading[1],heading[0]],0.];down=np.cross(normal,right)
                 R=np.column_stack((right,down,normal));P=transform(np.array(center)-R@np.array([.075,.0625,0]),R)
+                face,_,_=face_angle(robot,np.array(q0),np.array(camera['T_link1_optical']),center,robot.joint_limits[0],require_away=False)
+                views=[]
+                for offset in np.radians([-8,0,8]):
+                    q=np.array(q0);q[0]=face+offset
+                    projection=board_capture_projection(robot.named_link_frames(q)['link_1']@camera['T_link1_optical'],
+                        camera['K'],camera['resolution'],P,board['pattern_size_m'])
+                    if not robot.joint_limits[0,0]<=q[0]<=robot.joint_limits[0,1] or not projection['accepted']:break
+                    views.append((q,projection))
+                if len(views)!=3:
+                    attempts.append(dict(placement=pid,center=center,accepted=False,
+                        failures=['CALIBRATION_BOARD_OUTSIDE_CAPTURE_FOV'],projection=projection))
+                    continue
                 proposed=[];qseed=np.array(q0)
                 for index in ids:
                     point=board['touch_points'][index];goal=points(P,point['p_P_m']);accepted=None
@@ -83,11 +109,12 @@ def prepare(a):
                     if accepted is None:break
                     proposed.append(accepted);print('TCP_DATUM',pid,index,flush=True)
                 if len(proposed)!=len(list(ids)):continue
-                photos=[];face,_,_=face_angle(robot,np.array(q0),np.array(camera['T_link1_optical']),center,robot.joint_limits[0],require_away=False)
-                for i,offset in enumerate(np.radians([-8,0,8])):
-                    q=np.array(q0);q[0]=face+offset;g=geometry.check(q,P,None)
+                photos=[]
+                for i,(q,projection) in enumerate(views):
+                    g=geometry.check(q,P,None)
                     if not g['accepted']:break
-                    photos.append(dict(sample_id=pid+'_photo_'+str(i),board_placement_id=pid,split=split,q_rad=q.tolist(),static_check=g))
+                    photos.append(dict(sample_id=pid+'_photo_'+str(i),board_placement_id=pid,split=split,q_rad=q.tolist(),static_check=g,
+                        acquisition_projection=projection))
                 if len(photos)!=3:continue
                 c['placements'].append(dict(board_placement_id=pid,split=split,T_D_P=P.tolist(),center_D_m=center))
                 c['photos'].extend(photos);c['touches'].extend(proposed);accepted_group=True;save_json(out/'configuration.json',c);break
