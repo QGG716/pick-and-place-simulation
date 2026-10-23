@@ -156,6 +156,23 @@ def interval_samples(low,high,resolution=.002):
         mid=(a+b)/2;yield float(mid);queue.extend(((a,mid),(mid,b)))
 
 
+def fair_process_candidates(ranked, limit):
+    """Preserve ranking within each legal option, then interleave options.
+
+    A finite cup/IK pool must not consume its entire budget on high reception
+    while an already legal low-reception template has never been attempted.
+    This changes search order only; it neither invents nor removes options.
+    """
+    groups={}
+    for candidate in ranked:
+        groups.setdefault(candidate['process_option']['option_id'],deque()).append(candidate)
+    result=[]
+    while len(result)<limit and any(groups.values()):
+        for group in groups.values():
+            if group and len(result)<limit:result.append(group.popleft())
+    return result
+
+
 def release_poses(box,option,remaining,*,resolution=.002):
     p=pose_of(box);lo,hi=np.asarray(option['center_limits_xy_m'])
     ys=[float(p[1,3])]

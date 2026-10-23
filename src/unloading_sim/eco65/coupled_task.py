@@ -17,7 +17,7 @@ from .evaluation import CHAIN, INTERPOLATION
 from . import posture_preference
 from .coupled_state import (MODE, J1_POLICY, J1_FREE_POLICY, business_direction, INTERVALS, sign_state,
     check_business_direction, receiving_geometry, validate_cycle)
-from .transverse_process import POLICY, process_options, release_poses, corners, pose_of
+from .transverse_process import POLICY, process_options, release_poses, corners, pose_of, fair_process_candidates
 
 
 class CoupledTask(NativeTask):
@@ -732,7 +732,8 @@ class CoupledTask(NativeTask):
         boxes.sort(key=lambda b:(-b['pose'][2],abs(b['pose'][1]),b['pose'][1]))
         pools=[]
         search=dict(completed_ids=list(self.completed_ids),height_m=self.height_m,
-                    parent_stage_id=self.parent,targets=[],attempts=[])
+                    parent_stage_id=self.parent,targets=[],attempts=[],
+                    candidate_pool_policy='ROUND_ROBIN_LEGAL_PROCESS_OPTIONS_V1')
         self.continuation_search.append(search)
         current_tcp=self.robot.fk(self.current_q)
         for target in boxes:
@@ -758,7 +759,11 @@ class CoupledTask(NativeTask):
                 # Keep both; a failed suffix is not evidence against the other.
                 key=lambda g:(g['candidate_id'],g['process_option']['option_id'])
                 candidates=[front]+[g for g in candidates if key(g)!=key(front)]
-            pools.append((target,candidates[:min(self.max_grasps,8)]))
+            selected=fair_process_candidates(candidates,min(self.max_grasps,8))
+            search['targets'][-1]['candidate_order']=[dict(candidate_id=g['candidate_id'],
+                option_id=g['process_option']['option_id'],template=g['process_option']['template'],
+                face=g['target_face'],active_ids=g['active_ids'],tcp_pose_D=g['tcp_pose_D']) for g in selected]
+            pools.append((target,selected))
             self.restore(drained)
         locations=('BEFORE_APPROACH','PREGRASP','CONTACT')
         # Round-robin targets before lowering or revisiting a grasp family;
