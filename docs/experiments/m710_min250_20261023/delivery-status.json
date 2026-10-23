@@ -1,0 +1,39 @@
+{
+  "status": "WAITING_FOR_AVAILABLE_GPU_NOT_NATIVE_RUN",
+  "prepared_source_commit": "a300d234633e122c6d8328dddb259f3c9c38ad91",
+  "checked_at_utc": "2026-10-23T02:54:42.048486+00:00",
+  "historical_completed_count": 20,
+  "new_completed_count": null,
+  "continuation_target_count": 20,
+  "native_requests": 0,
+  "attempted_target_ids": [],
+  "new_success_rate": null,
+  "production_backend_check": "NOT_RUN_GPU_CONNECTION_REFUSED",
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false,
+  "focused_tests": {
+    "passed": 31,
+    "deselected": 9,
+    "wall_s": 3.75,
+    "command": "python -m pytest tests/test_min250_continuation.py tests/test_low_top_receiver.py tests/test_mount_comparison.py tests/test_seam_coupling.py -k 'not full_discrete_stroke' -q"
+  },
+  "earlier_tests": {
+    "passed": 22,
+    "wall_s": 6.08
+  },
+  "stopped_extra_check": {
+    "command": "Same modules without -k filter",
+    "reason": "Cancelled expensive historical full-stroke sweeps; outside requested focused scope",
+    "counted_as_pass": false
+  },
+  "packaging_check_retry": {
+    "reason": "Local PYTHONPATH was not set; no native call",
+    "corrected": true
+  },
+  "source_package_manifest_verified": true,
+  "terminal_restore_rechecked": true,
+  "new_replay_generated": false,
+  "pushed": false
+}

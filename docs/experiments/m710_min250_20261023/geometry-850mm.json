@@ -1,0 +1,1047 @@
+{
+  "status": "PASS_DISCRETE_GEOMETRY",
+  "passed": true,
+  "height_m": 0.85,
+  "scene_fingerprint": "7ae5313a07078aba7d20d3885f53f856e8b7c9f684fc2a0b89aab2dc47a3c71e",
+  "world_sha256": "81efc35a0c303e0a8ee659f5aee9285e55782cf3793926a15667f6276ad8322b",
+  "object_count": 127,
+  "carton_ids": [
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04"
+  ],
+  "failures": [],
+  "allowed_assembly_pairs": [
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "conveyor_transverse"
+      ],
+      "rule": "DECLARED_NONPENETRATING_EFFECTIVE_TOP_SEAM"
+    },
+    {
+      "pair": [
+        "conveyor_transverse",
+        "lift_transverse_left_mount"
+      ],
+      "rule": "DECLARED_TRANSVERSE_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_transverse",
+        "lift_transverse_right_mount"
+      ],
+      "rule": "DECLARED_TRANSVERSE_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_longitudinal_rear_swivel_head"
+      ],
+      "rule": "DECLARED_SWIVEL_CONVEYOR_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_longitudinal_near_swivel_head"
+      ],
+      "rule": "DECLARED_SWIVEL_CONVEYOR_MOUNT"
+    },
+    {
+      "pair": [
+        "conveyor_longitudinal",
+        "lift_lower_bearing"
+      ],
+      "rule": "LOWER_REVOLUTE_BEARING"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_foot_0",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_foot_1",
+        "trailer_floor"
+      ],
+      "rule": "DECLARED_FOOT_ON_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_0_stand_0",
+        "trailer_floor"
+      ],
+      "rule": "FOOT_ON_EXISTING_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_0_stand_1",
+        "trailer_floor"
+      ],
+      "rule": "FOOT_ON_EXISTING_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_2_stand_0",
+        "trailer_floor"
+      ],
+      "rule": "FOOT_ON_EXISTING_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_2_stand_1",
+        "trailer_floor"
+      ],
+      "rule": "FOOT_ON_EXISTING_FLOOR"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_0",
+        "lift_transverse_left_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_0_1",
+        "lift_transverse_left_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_0",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_arm_1_1",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_end_pin_2_0",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_end_pin_2_1",
+        "lift_transverse_left_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_base_rail",
+        "lift_transverse_left_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_left_head_rail",
+        "lift_transverse_left_mount"
+      ],
+      "rule": "DECLARED_HEAD_MOUNT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_0",
+        "lift_transverse_right_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_0_1",
+        "lift_transverse_right_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_0",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_arm_1_1",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_end_pin_2_0",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_end_pin_2_1",
+        "lift_transverse_right_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_base_rail",
+        "lift_transverse_right_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_transverse_right_head_rail",
+        "lift_transverse_right_mount"
+      ],
+      "rule": "DECLARED_HEAD_MOUNT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_0",
+        "lift_longitudinal_rear_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_0_1",
+        "lift_longitudinal_rear_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_0",
+        "lift_longitudinal_rear_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_1_1",
+        "lift_longitudinal_rear_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_0",
+        "lift_longitudinal_rear_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_2_1",
+        "lift_longitudinal_rear_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_end_pin_4_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_0",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_end_pin_4_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_arm_3_1",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_end_pin_4_0",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_end_pin_4_1",
+        "lift_longitudinal_rear_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_base_rail",
+        "lift_longitudinal_rear_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_head_rail",
+        "lift_longitudinal_rear_neck"
+      ],
+      "rule": "DECLARED_HEAD_NECK"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_rear_neck",
+        "lift_longitudinal_rear_swivel_head"
+      ],
+      "rule": "DECLARED_NECK_SWIVEL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_end_pin_0_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_0",
+        "lift_longitudinal_near_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_pin_0"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_end_pin_0_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_0_1",
+        "lift_longitudinal_near_base_rail"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_end_pin_1_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_0",
+        "lift_longitudinal_near_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_pin_1"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_end_pin_1_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_1_1",
+        "lift_longitudinal_near_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_end_pin_2_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_0",
+        "lift_longitudinal_near_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_pin_2"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_end_pin_2_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_2_1",
+        "lift_longitudinal_near_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_end_pin_3_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_end_pin_4_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_0",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_pin_3"
+      ],
+      "rule": "DECLARED_CROSSING_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_end_pin_3_1"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_end_pin_4_0"
+      ],
+      "rule": "DECLARED_END_PIN"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_arm_3_1",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_end_pin_0_0"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_end_pin_0_1"
+      ],
+      "rule": "DECLARED_BASE_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_end_pin_4_0",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_end_pin_4_1",
+        "lift_longitudinal_near_head_rail"
+      ],
+      "rule": "DECLARED_HEAD_PIN_SLIDER_RAIL"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_foot_0"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_base_rail",
+        "lift_longitudinal_near_foot_1"
+      ],
+      "rule": "DECLARED_FIXED_RAIL_SUPPORT"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_head_rail",
+        "lift_longitudinal_near_neck"
+      ],
+      "rule": "DECLARED_HEAD_NECK"
+    },
+    {
+      "pair": [
+        "lift_longitudinal_near_neck",
+        "lift_longitudinal_near_swivel_head"
+      ],
+      "rule": "DECLARED_NECK_SWIVEL"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_0",
+        "lift_lower_rail_0_stand_0"
+      ],
+      "rule": "FIXED_RAIL_STAND"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_0",
+        "lift_lower_rail_0_stand_1"
+      ],
+      "rule": "FIXED_RAIL_STAND"
+    },
+    {
+      "pair": [
+        "lift_lower_carriage_0",
+        "lift_lower_rail_0"
+      ],
+      "rule": "HORIZONTAL_X_SLIDER"
+    },
+    {
+      "pair": [
+        "lift_lower_bearing",
+        "lift_lower_carriage_0"
+      ],
+      "rule": "SLIDER_BEARING"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_2",
+        "lift_lower_rail_2_stand_0"
+      ],
+      "rule": "FIXED_RAIL_STAND"
+    },
+    {
+      "pair": [
+        "lift_lower_rail_2",
+        "lift_lower_rail_2_stand_1"
+      ],
+      "rule": "FIXED_RAIL_STAND"
+    },
+    {
+      "pair": [
+        "lift_lower_carriage_2",
+        "lift_lower_rail_2"
+      ],
+      "rule": "HORIZONTAL_X_SLIDER"
+    },
+    {
+      "pair": [
+        "lift_lower_bearing",
+        "lift_lower_carriage_2"
+      ],
+      "rule": "SLIDER_BEARING"
+    }
+  ],
+  "refined_pairs": 220,
+  "robot_mesh_check": "SEPARATE_GATE",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "execution_ready": false
+}

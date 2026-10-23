@@ -1,0 +1,8 @@
+{
+  "checked_at_utc": "2026-10-23T02:52:40.444183+00:00",
+  "host": "connect.weste.seetacloud.com",
+  "port": 37642,
+  "operation": "TCP_CONNECT_ONLY_NO_AUTHENTICATION",
+  "status": "UNAVAILABLE",
+  "error": "[WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002"
+}
