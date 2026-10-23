@@ -420,10 +420,16 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
         coupling = conveyors["coupling"]
         spacing_key = "transverse_support_spacing_m"
         _keys(coupling, {"geometry_revision", "maximum_surface_height_world_m"} |
+              ({"minimum_surface_height_world_m"} if "minimum_surface_height_world_m" in coupling else set()) |
               ({spacing_key} if spacing_key in coupling else set()), "conveyors.coupling")
         if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
             raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
         _positive(coupling["maximum_surface_height_world_m"], "coupling.maximum_surface_height_world_m")
+        if "minimum_surface_height_world_m" in coupling:
+            minimum=_positive(coupling["minimum_surface_height_world_m"], "coupling.minimum_surface_height_world_m")
+            nominal=float(data["assembly"]["world_xyz_m"][2])+float(conveyors["surface_z_a_m"])
+            if not minimum<=nominal<coupling["maximum_surface_height_world_m"]:
+                raise ValueError("INVALID_COUPLED_HEIGHT_INTERVAL")
     _positive(conveyors["body_thickness_m"], "conveyors.body_thickness_m")
     _positive(conveyors["surface_z_a_m"], "conveyors.surface_z_a_m", allow_zero=True)
     for name in ("transverse", "longitudinal"):
@@ -574,6 +580,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "user_20261021_mount_x_minus_300_y_minus_100": [-1.625, .25, .6],
         "user_20261021_mount_x_minus_400_y_minus_100": [-1.725, .25, .6],
         "user_20261022_mount_x_minus_500_y_minus_100": [-1.825, .25, .6],
+        "user_20261023_minimum_250_mount_x_minus_500_y_minus_100": [-1.825, .25, .6],
     }
     approval = layout.data["evidence"]["approval_basis"]
     narrow = approval in {
@@ -635,6 +642,9 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "user_20261020_transverse_scissor_spacing_030_longitudinal_060": .30,
         "user_20261020_transverse_scissor_spacing_026_longitudinal_060": .26}
     support_variants.update({name: .26 for name in mounting_trials})
+    if approval == "user_20261023_minimum_250_mount_x_minus_500_y_minus_100":
+        checks["requested_minimum_transverse_surface"] = scalar(
+            layout.data["conveyors"]["coupling"].get("minimum_surface_height_world_m", -1.), .25)
     if layout.data["evidence"]["approval_basis"] in support_variants:
         checks["transverse_support_spacing"] = scalar(
             layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.),

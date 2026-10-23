@@ -20,6 +20,7 @@ from unloading_sim.contact_target import simulation_contact_targets
 from unloading_sim.moveit2_backend import ResidentMoveItClient,box_message
 from unloading_sim.moveit2_backend import MoveItUnavailable
 from unloading_sim.junction_reception import synchronization_options
+from unloading_sim.conveyor_lift import ScissorGeometryRangeError
 
 
 def save(path,data):
@@ -103,14 +104,16 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
             task_started=perf_counter();deadline=task_started+args.task_budget_s
             shared_stages={'prefix':min(deadline,task_started+args.stage_budget_s)}
             options=[]
-            low=float(original.receiver.center[2]+original.receiver.half_extents[2])
+            low=float(getattr(args,'low_top_minimum_m',None) or
+                (original.receiver.center[2]+original.receiver.half_extents[2]))
             business_options=ranked_target['options']
             low_top=False
             if getattr(args,'low_top_minimum_m',None) is not None:
                 from unloading_sim.low_top_receiver import low_top_option
                 option=low_top_option(target,scene.receiver,
                     next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
-                    frozen,args.low_top_minimum_m)
+                    frozen,args.low_top_minimum_m,
+                    definition=getattr(args,'low_definition','FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM'))
                 if option is not None:
                     business_options=[option];low_top=True
             if getattr(args,'junction_only',False):
@@ -208,6 +211,14 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         break
                     row['failure']=detail.get('failure');row['classification']='SEARCH_INCOMPLETE_NOT_GLOBAL_UNREACHABILITY'
                 except Exception as exc:
+                    if isinstance(exc,ScissorGeometryRangeError) and client is None:
+                        # A fully specified physical mechanism cannot exist at
+                        # this height. No native candidate was dispatched.
+                        row.update(failure=str(exc),classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
+                            geometry_evidence=exc.evidence,requested_receive_height_m=option['height_m'],
+                            requested_temporary_height_m=option.get('pre_approach_height_m'),
+                            evidence_folder=row.pop('folder'),native_dispatch_count=0)
+                        continue
                     row.update(failure=f'{type(exc).__name__}: {exc}',classification='REQUEST_FAILURE_RETAINED')
                     import traceback
                     (folder/'exception.txt').write_text(traceback.format_exc())

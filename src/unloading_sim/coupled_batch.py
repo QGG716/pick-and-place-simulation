@@ -8,7 +8,7 @@ from dataclasses import dataclass, field, replace
 import math
 from time import perf_counter
 import numpy as np
-from .conveyor_lift import coupled_conveyor_state
+from .conveyor_lift import coupled_conveyor_state, ScissorGeometryRangeError
 from .coupled_lift_checks import assembly_mates, check_coupled_state
 from .geometry import OBB
 from .lifted_reception import bounds, translated, StartHeight
@@ -36,7 +36,12 @@ def coupled_binding(layout, cartons, start_height, end_height, target_id, contac
         raise ValueError('COUPLED_SAMPLE_RESOLUTION')
     n=max(1,math.ceil(abs(end_height-start_height)/step)) if start_height!=end_height else 0
     if n>=4096:raise ValueError('COUPLED_SAMPLE_RESOURCE_LIMIT')
-    states=[coupled_conveyor_state(layout,float(h),cartons) for h in np.linspace(start_height,end_height,n+1)]
+    states=[]
+    for h in np.linspace(start_height,end_height,n+1):
+        try:states.append(coupled_conveyor_state(layout,float(h),cartons))
+        except ScissorGeometryRangeError as exc:
+            exc.evidence['checked_surface_height_world_m']=float(h)
+            raise
     # Match FrozenLayoutMotionInput's ordering, including every mechanism body.
     world=lambda s:[box_message(b) for b in s.boxes if b.category!='carton']+[box_message(b) for b in s.boxes if b.category=='carton']
     return dict(schema='m710_coupled_receiver_v3' if states[0].mechanism['geometry_revision']=='upper_seam_lower_slider_v3' else 'm710_coupled_receiver_v2',target_id=target_id,

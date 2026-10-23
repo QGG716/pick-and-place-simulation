@@ -27,6 +27,9 @@ def expected_population_mount(protocol):
     if variant not in mounts:
         raise ValueError('UNKNOWN_POPULATION_MOUNT')
     expected = 'configs/workcells/m710id70_unloading_layout_v1_mount_'+variant+'.yaml'
+    if protocol.get('scope')=='XY_TOP_MIN250_CONTINUATION':
+        if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
+        expected=expected.removesuffix('.yaml')+'_min250.yaml'
     if protocol['active_layout_file'] != expected:
         raise ValueError('POPULATION_LAYOUT_VARIANT_MISMATCH')
     return mounts[variant]
@@ -37,7 +40,8 @@ def verify(run, replay=None):
     summary = json.loads((run/"summary.json").read_text())
     all_rates = protocol['scope']=='XY_TOP_L05_ALL_JOINT_RATES_RESTART'
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
-    xy_top = diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
+    xy_top = continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     assert summary["status"] in (("INTEGRATION_FIXTURE_FINISHED",) if fixture else
@@ -47,8 +51,18 @@ def verify(run, replay=None):
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    if continuation:
+        predecessor=json.loads((run/'predecessor.json').read_text())
+        assert initial==predecessor['new_native_root']
+        assert initial==protocol['initial_root']
+        assert initial==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert len(predecessor['outcomes'])==25 and sum(o['completed_count'] for o in predecessor['outcomes'])==20
+        assert protocol['predecessor_summary_sha256']==predecessor['summary_sha256']
+        assert protocol['low_definition']=='FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
+        assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
+        assert summary['outcomes'][0]['target_id']=='carton_l03_c02'
     if diagnostic:
         policy=protocol['planning_diagnostic']
         assert policy==summary['planning_diagnostic']
@@ -180,11 +194,13 @@ def verify(run, replay=None):
                 if not eccentric:
                     assert cycle["target"].get("world_y_offset_m", 0.) == 0
                     assert cycle["target"].get("eccentric_authorization") is None
-                low_top = xy_top and protocol['frozen']['heights'][name]['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9
+                height_record=protocol['frozen']['heights'][name]
+                low_top = xy_top and (height_record['z_b_m']+height_record['h_m'] < protocol['low_top_minimum_m']
+                    if continuation else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
                 if low_top:
                     assert cycle['option']['template'] == 'TOP_FIXED_MINIMUM_RECEIVER'
                     assert cycle['target']['face_role'] == 'TOP'
-                    assert cycle['stationary_low_receiver']['height_m'] == .6
+                    assert cycle['stationary_low_receiver']['height_m'] == protocol['low_top_minimum_m']
                     assert cycle['stationary_low_receiver']['throughout_contact_lift_transfer_release']
                 requests = {t["request"]["stage_id"]: t["request"] for t in trace["attempts"]}
                 responses = {c["stage_id"]: c["response"] for c in successful if c["op"] == "plan"}
@@ -203,7 +219,7 @@ def verify(run, replay=None):
                         assert all(c["passed"] for c in axis["checks"])
                         assert axis["maximum_height_step_m"] <= .010000001 and not axis["continuous_swept_proof"]
                         height = axis["to_height_m"]
-                        if low_top:assert height == .6 and stage['stage'] == 'pregrasp'
+                        if low_top:assert height == protocol['low_top_minimum_m'] and stage['stage'] == 'pregrasp'
                         counts["checked_lift_samples"] += len(axis["checks"])
                     elif stage["generation_source"] == "SEMANTIC_EVENT":
                         drop = resp["nominal_release"]
@@ -216,7 +232,7 @@ def verify(run, replay=None):
                             extraction_started = True
                             assert abs(height-cycle["actual_extraction_height_m"]) < 1e-8
                             if low_top:
-                                assert height == .6
+                                assert height == protocol['low_top_minimum_m']
                                 if extraction_count == 1:
                                     assert req['ownership_transition'] == 'ATTACH'
                                 else:
@@ -245,7 +261,7 @@ def verify(run, replay=None):
                     assert lift['terminal_check']['free_space_rules_restored']
                     assert lift['geometry']['direction_world'] == [0.,0.,1.]
                     assert cycle['extraction_geometry']['direction_world'] == [-1.,0.,0.]
-                    assert height == .6
+                    assert height == protocol['low_top_minimum_m']
                 required = ["RELEASE", "NOMINAL_FIRST_CONTACT", "SAFE_TOOL_SEPARATION", "IDEAL_RECEIVER_DRAIN"]
                 assert all(events.count(e) == 1 for e in required)
                 assert [events.index(e) for e in required] == sorted(events.index(e) for e in required)
@@ -302,6 +318,8 @@ def verify(run, replay=None):
                         physical_execution="NOT_RUN", execution_ready=False,
                         qualification_status="NOT_EVALUATED", continuous_swept_proof=False)
     if diagnostic:verification.update(planning_diagnostic=protocol['planning_diagnostic'],historical_completed_count=11)
+    if continuation:verification.update(historical_completed_count=20,low_definition=protocol['low_definition'],
+        requested_minimum_surface_m=.25,predecessor_summary_sha256=protocol['predecessor_summary_sha256'])
     save(run/"verification.json", verification)
     return verification
 

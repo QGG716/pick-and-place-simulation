@@ -31,6 +31,8 @@ def main():
     p.add_argument('--source-manifest',type=Path)
     p.add_argument('--development',action='store_true')
     p.add_argument('--check-only',action='store_true')
+    p.add_argument('--continue-min250-from',type=Path,
+        help='Verified x500 terminal, 250 mm requested minimum and strict box-top suction rule')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
         help='Separate synthetic exposed low-row fixture, never part of formal 40-box counts')
@@ -40,13 +42,24 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
+    if args.continue_min250_from and (args.mounting_variant!='x_minus_500_y_minus_100'
+            or args.integration_top_fixture or args.l05_j4_velocity_restart):
+        raise ValueError('MIN250_CONTINUATION_SCOPE_CHANGED')
     args.output.mkdir(parents=True,exist_ok=False)
     layout_path=Path(__file__).resolve().parents[1]/'configs/workcells'/POPULATION_LAYOUTS[args.mounting_variant]
+    if args.continue_min250_from:layout_path=layout_path.with_stem(layout_path.stem+'_min250')
     original,built,audit=make_context(args.mounting_variant,layout_path=layout_path)
     layout=original.policy.layout_validation.layout
     frozen=FrozenCartonPopulation.capture(original.cartons)
-    minimum=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
-    state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),minimum)
+    nominal=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
+    minimum=float(layout.data['conveyors'].get('coupling',{}).get('minimum_surface_height_world_m',nominal))
+    state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),nominal)
+    from unloading_sim.low_top_receiver import BOX_TOP_LOW_DEFINITION,LEGACY_LOW_DEFINITION
+    args.low_definition=BOX_TOP_LOW_DEFINITION if args.continue_min250_from else LEGACY_LOW_DEFINITION
+    if args.continue_min250_from:
+        from min250_continuation import restore_population_terminal,SCOPE as MIN250_SCOPE
+        predecessor=restore_population_terminal(args.continue_min250_from,state,args.mounting_variant)
+        save(args.output/'predecessor.json',predecessor)
     diagnostic=None
     normal_worker_command=args.worker_command
     if args.l05_j4_velocity_restart:
@@ -88,18 +101,23 @@ def main():
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
-    protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else 'XY_TOP_NEW_WORLD_40',
+    protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else
+        MIN250_SCOPE if args.continue_min250_from else 'XY_TOP_NEW_WORLD_40',
         integration_fixture=args.integration_top_fixture,original_cartons=[box_message(b) for b in original.cartons],
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
         configured_initial_q=state.q.tolist(),historical_completed_count=len(history),
         active_layout_file=str(layout.config_path.relative_to(Path(__file__).resolve().parents[1])).replace('\\','/'),
         mounting_variant=args.mounting_variant,worker_sha256=worker_sha,task_budget_s=300.,stage_budget_s=90.,
-        low_top_minimum_m=minimum,low_definition='FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM',
+        low_top_minimum_m=minimum,low_definition=args.low_definition,
         low_receiver_rule='LOW_TOP_ONLY_FIXED_AT_MINIMUM_AFTER_CHECKED_UNLOADED_LOWERING',
         upper_receiver_rule='EXISTING_FRONT_SIDE_HMIN_HMAX_SYNCHRONIZATION',
         eccentric_authorized_ids=sorted(eccentric_ids),third_sync_disabled=True,
         no_historical_solution_hints=True,attempted_target_restarts=False)
     if diagnostic:protocol.update(planning_diagnostic=diagnostic,search_operation='NEW_NATIVE_TASK_FROM_VERIFIED_PREFIX',tree_retained=False)
+    if args.continue_min250_from:
+        protocol.update(search_operation=predecessor['search_operation'],tree_retained=False,
+            predecessor_summary_sha256=predecessor['summary_sha256'],
+            requested_minimum_geometry_unqualified=True,all_joint_rate_limits_retained=True)
     save(args.output/'protocol.json',protocol)
     outcomes=[];attempted=set();started=perf_counter()
     def checkpoint(status):
@@ -120,6 +138,8 @@ def main():
             built.robot,scene.receiver,longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
         if not ranked:break
         selected=ranked[0];name=selected['target_id'];attempted.add(name)
+        if args.continue_min250_from and not outcomes and name!='carton_l03_c02':
+            raise ValueError('MIN250_CONTINUATION_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
         if diagnostic and not outcomes and name!=diagnostic['target_id']:

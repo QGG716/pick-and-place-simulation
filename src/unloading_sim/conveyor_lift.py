@@ -10,6 +10,16 @@ from .geometry import OBB
 from .workcell_layout import canonical_digest, _obb_record
 
 
+class ScissorGeometryRangeError(ValueError):
+    """A requested height cannot be constructed with the retained solid bars."""
+    def __init__(self, name, anchor, top_z, spec, rise):
+        super().__init__('SCISSOR_GEOMETRIC_RANGE_EXCEEDED')
+        self.evidence = dict(mechanism_id=name, lower_pin_world_z_m=float(anchor[2]),
+            upper_pin_world_z_m=float(top_z), stages=spec.stages, stage_rise_m=float(rise),
+            required_stage_rise_open_interval_m=[spec.arm_depth_m,spec.arm_length_m-spec.arm_depth_m],
+            collision_check_performed=False, native_search_performed=False)
+
+
 @dataclass(frozen=True)
 class ScissorSpec:
     stages: int
@@ -44,7 +54,7 @@ def scissor_stack(name, anchor, direction, top_z, spec, *, floor_z=0.):
         raise ValueError("INVALID_SCISSOR_FRAME")
     rise = (top_z-anchor[2])/spec.stages
     if not spec.arm_depth_m < rise < spec.arm_length_m-spec.arm_depth_m:
-        raise ValueError("SCISSOR_GEOMETRIC_RANGE_EXCEEDED")
+        raise ScissorGeometryRangeError(name, anchor, top_z, spec, rise)
     span = float(np.sqrt(spec.arm_length_m**2-rise**2))
     axis = np.cross([0., 0., 1.], direction)
     lane = spec.arm_thickness_m*.65
@@ -214,8 +224,10 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     length,width,thickness=2*longitudinal.half_extents
     low=float(layout.data["assembly"]["world_xyz_m"][2]+layout.data["conveyors"]["surface_z_a_m"])
     limit=float(layout.data["conveyors"]["coupling"]["maximum_surface_height_world_m"])
+    minimum=float(layout.data["conveyors"]["coupling"].get("minimum_surface_height_world_m",low))
     rise=height-low
-    if (not np.isfinite([height,limit,rise]).all() or rise<0 or height>limit or
+    if (not np.isfinite([height,minimum,limit,rise]).all() or height<minimum-1e-12 or height>limit or
+            not minimum<=low or
             not low<limit<low+length or length*length-rise*rise<=0):
         raise ValueError("LONGITUDINAL_FIXED_LENGTH_RANGE_EXCEEDED")
     dx=float(np.sqrt(length*length-rise*rise))
@@ -310,5 +322,8 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         info["transverse_support_outer_width_m"]=support_spacing+.10
         info["design_basis"]["transverse_support"]=(
             "USER_CONFIGURED_SYMMETRIC_X_SPACING; UNCHANGED_1.25M_BARS_CROSS_SECTIONS_AND_MOUNTS")
+    if "minimum_surface_height_world_m" in coupling:
+        info["requested_minimum_surface_height_world_m"]=minimum
+        info["fixed_longitudinal_rear_surface_world_m"]=low
     identity=canonical_digest(dict(layout=layout.layout_fingerprint,mechanism=info,geometry=[_obb_record(b) for b in boxes]))
     return CoupledConveyorState(boxes,info,identity)

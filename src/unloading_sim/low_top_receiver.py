@@ -17,14 +17,25 @@ from .stage_motion_policy import MotionPurpose
 
 
 TEMPLATE = 'TOP_FIXED_MINIMUM_RECEIVER'
+LEGACY_LOW_DEFINITION = 'FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM'
+BOX_TOP_LOW_DEFINITION = 'FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
 
 
-def low_top_option(target, belt, longitudinal, frozen, minimum):
+def uses_low_top(height, minimum, definition=LEGACY_LOW_DEFINITION):
+    """Explicit policy version; historical Hmin experiments remain reproducible."""
+    if definition == LEGACY_LOW_DEFINITION:
+        return height.hmin < minimum-1e-9
+    if definition == BOX_TOP_LOW_DEFINITION:
+        return height.z_b+height.h < minimum
+    raise ValueError('UNKNOWN_LOW_TOP_DEFINITION')
+
+
+def low_top_option(target, belt, longitudinal, frozen, minimum, *, definition=LEGACY_LOW_DEFINITION):
     capture = frozen.evidence()['heights'][target.name]
     height = StartHeight.capture(target)
     if height.box_identity != capture['start_box_identity']:
         raise ValueError('LOW_TOP_FROZEN_TARGET_CHANGED')
-    if capture['Hmin_world_m'] >= minimum-1e-9:
+    if not uses_low_top(height, minimum, definition):
         return None
     if not np.allclose(target.rotation, np.eye(3), atol=1e-12, rtol=0):
         raise ValueError('LOW_TOP_REQUIRES_FROZEN_WORLD_ALIGNED_BOX')
@@ -42,7 +53,9 @@ def low_top_option(target, belt, longitudinal, frozen, minimum):
         segment_directions_world=[[0.,0.,1.],[-1.,0.,0.]],
         region=region,reception=reception_classification(projected,belt,longitudinal),
         requires_open_channel=False,original_role=frozen.evidence()['roles'][target.name]['role'],
-        target_id=target.name,height_source='FROZEN_HMIN_BELOW_MECHANISM_MINIMUM',
+        target_id=target.name,height_source=('FROZEN_HMIN_BELOW_MECHANISM_MINIMUM'
+            if definition==LEGACY_LOW_DEFINITION else BOX_TOP_LOW_DEFINITION),
+        low_definition=definition,box_top_world_m=height.z_b+height.h,
         low_layer_threshold_m=float(minimum),endpoint='REGION_NOT_FIXED_POINT',
         acceptance='NOT_PLANNED',spatial_orientation='UPSTREAM_TOP_FACE_POSE_HELD',
         fixed_wrist_joint_values=False,third_sync_disabled=True)
@@ -72,7 +85,8 @@ class LowTopReceiverConnector(CoupledCycleConnector):
                 or not np.allclose(target.outward_normal,[0.,0.,1.],atol=1e-12,rtol=0)
                 or target.world_y_offset_m!=0 or target.eccentric_authority is not None
                 or self.option['height_m']!=self.option['low_layer_threshold_m']
-                or h.hmin>=self.option['height_m']-1e-9
+                or not uses_low_top(h,self.option['height_m'],
+                    self.option.get('low_definition',LEGACY_LOW_DEFINITION))
                 or abs(self.option['release_bottom_world_m']-max(h.z_b+h.d,self.option['height_m']+h.d))>1e-9):
             raise MoveItUnavailable('LOW_TOP_PROCESS_SCOPE_CHANGED')
         self._top_lift_in_progress=False
