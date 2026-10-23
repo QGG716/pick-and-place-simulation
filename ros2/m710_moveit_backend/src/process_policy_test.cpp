@@ -79,6 +79,27 @@ int main(int argc,char** argv) {
       {"J2_link","conveyor_transverse"},{"J2_link","trailer_floor"},{"J2_link","other_chassis"},{"J2_link","J3_link"}})
     require(!m710::authorizedRobotMountPair(mount,pair.first,pair.second),"MOUNT_PERMISSION_NARROW");
   optimized=argc>1&&std::string(argv[1])=="optimized";rclcpp::init(argc,argv);checkWorldShapePoses();auto s=scene();auto req=request();m710::ProcessPolicy p(s,req);
+  auto tool_req=request();
+  tool_req["planning_only"]=true;tool_req["planning_mode"]="cold_from_scratch";
+  tool_req["clearance_policy"]["tool_links"]={"cup"};
+  tool_req["clearance_policy"]["source_policy"]["tool_chassis_contact_target_ids"]={"target"};
+  tool_req["process_policy"]["collision_policy"]=tool_req["clearance_policy"]["source_policy"];
+  tool_req["allowed_pairs"]={{"cup","chassis"}};
+  {m710::ProcessPolicy permitted(scene(),tool_req);}
+  for(int invalid=0;invalid<5;++invalid) {
+    auto r=tool_req;
+    if(invalid==0)r["planning_only"]=false;
+    if(invalid==1)r["allowed_pairs"]={{"cup","trailer_left_wall"}};
+    if(invalid==2)r["allowed_pairs"]={{"target","chassis"}};
+    if(invalid==3)r["allowed_pairs"]={{"flange","chassis"}};
+    if(invalid==4) {
+      r["clearance_policy"]["source_policy"]["tool_chassis_contact_target_ids"]={"other_layer"};
+      r["process_policy"]["collision_policy"]=r["clearance_policy"]["source_policy"];
+    }
+    bool denied=false;try {m710::ProcessPolicy forbidden(scene(),r);}
+    catch(const std::exception& e) {denied=std::string(e.what())=="PROCESS_UNSCOPED_ACM_PERMISSION";}
+    require(denied,"TOOL_CHASSIS_SCOPE_MUST_FAIL_CLOSED");
+  }
   require(p.check(s->getCurrentState()),"INITIAL_STACK_CONTACT_ALLOWED");
   auto q=s->getCurrentState();q.setJointGroupPositions("manipulator",std::vector<double>{.011});q.update();
   require(!p.check(q) && p.last_failure.at("reason")=="GROSS_PLANNED_STACK_PENETRATION","GROSS_STACK_REJECTED");
@@ -123,5 +144,5 @@ int main(int argc,char** argv) {
     m710::ProcessPolicy check_empty(empty,r);require(check_empty.check(empty->getCurrentState(),false),"UNLOADED_CHECK");
     require(check_empty.evidence().at("seal_geometry_evaluations")==0,"HELD_SEAL_USED_WITHOUT_ATTACHMENT");
   }
-  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_and_scene_frames_only"},{"cases",18}}).dump()<<std::endl;rclcpp::shutdown();
+  std::cout<<J({{"status","PASS"},{"scope","synthetic_native_process_policy_and_scene_frames_only"},{"cases",24}}).dump()<<std::endl;rclcpp::shutdown();
 }

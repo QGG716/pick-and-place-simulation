@@ -1097,6 +1097,11 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         if len({b["id"] for b in world})!=len(world): raise ValueError("DUPLICATE_OBJECT")
         pairs=[list(p) for p in sorted(self.collision_policy.robot_mount_pairs(self.robot_state_validator.base_support_obstacle_name))]
         target_name=attachment.rigid.name if attachment is not None else (target_contact.name if target_contact is not None else self.robot_state_validator.contact_target_name)
+        tool_mount_pairs=self.collision_policy.tool_chassis_pairs(target_name,self.native_tools)
+        if tool_mount_pairs:
+            if not self.planning_only or not getattr(self,"native_cold",False):
+                raise ValueError("TOOL_CHASSIS_EXEMPTION_REQUIRES_COLD_PLANNING_ONLY")
+            pairs.extend([list(p) for p in sorted(tool_mount_pairs)])
         if self.collision_policy.compliant_cup_neighbor_contact_mode=="ignore" and target_name:
             for b in obstacles:
                 if b.name!=target_name and b.name in (self.stack_carton_names or []):

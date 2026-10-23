@@ -35,8 +35,13 @@ class SimulationCollisionPolicy:
     self_collision_clearance_m: float = 0.0
     boundary_mode: str = "legacy_infinite_side_planes"
     robot_mount_contact_exemption: bool = False
+    tool_chassis_contact_target_ids: tuple[str, ...] = ()
 
     def __post_init__(self):
+        if (not isinstance(self.tool_chassis_contact_target_ids, tuple)
+                or any(not isinstance(n, str) or not n for n in self.tool_chassis_contact_target_ids)
+                or len(set(self.tool_chassis_contact_target_ids)) != len(self.tool_chassis_contact_target_ids)):
+            raise ValueError("tool/chassis exemption requires unique explicit target identities")
         if type(self.robot_mount_contact_exemption) is not bool:
             raise ValueError("robot mount exemption must be an explicit boolean")
         if self.schema not in {"m710_simulation_collision_policy_v3", "m710_poc_pair_collision_policy_v4"}:
@@ -72,7 +77,7 @@ class SimulationCollisionPolicy:
         recorded = data.pop("fingerprint", None)
         data.pop("wrist_tool_exemption_status", None)
         data.pop("box_box_physics_enabled", None)
-        for name in ("wrist_tool_exempt_links", "stack_contact_stages"):
+        for name in ("wrist_tool_exempt_links", "stack_contact_stages", "tool_chassis_contact_target_ids"):
             if name in data:
                 data[name] = tuple(data[name])
         result = cls(**data)
@@ -95,6 +100,8 @@ class SimulationCollisionPolicy:
 
     def _data(self):
         data = asdict(self)
+        if not self.tool_chassis_contact_target_ids:
+            data.pop("tool_chassis_contact_target_ids")
         if not self.robot_mount_contact_exemption:
             data.pop("robot_mount_contact_exemption")  # Preserve historical identities.
         if not self.poc_pair_clearance:
@@ -119,6 +126,12 @@ class SimulationCollisionPolicy:
     def allows_robot_mount_contact(self, link, obstacle):
         return (self.robot_mount_contact_exemption and obstacle=="chassis"
                 and link in OFFICIAL_ROBOT_MOUNT_LINKS)
+
+    def tool_chassis_pairs(self, target_id, owned_tool_names):
+        """Planning diagnostic only; caller binds the frozen authorized layer."""
+        if target_id not in self.tool_chassis_contact_target_ids:
+            return set()
+        return {(name, "chassis") for name in owned_tool_names}
 
     def allows_stack_planning_contact(self, stage: str):
         return self.stack_contact_mode == "planner_relaxed_physics_checked" and stage in self.stack_contact_stages

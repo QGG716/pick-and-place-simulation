@@ -51,7 +51,8 @@ def load_cases(path):
     return data
 
 
-def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption=False):
+def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption=False,
+                 l01_tool_chassis_exemption=False):
     policy = load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
     layout = load_workcell_layout(layout_path if layout_path is not None else
                                  ROOT/"configs/workcells"/LAYOUTS[layout_name])
@@ -59,9 +60,12 @@ def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption
     if audit["overall_status"] != "PASS":
         raise ValueError("MOUNT_LAYOUT_AUDIT_REJECTED:"+layout_name)
     policy = replace(policy, layout_validation=replace(policy.layout_validation, layout=layout))
-    if robot_mount_contact_exemption:
+    if robot_mount_contact_exemption or l01_tool_chassis_exemption:
         data=deepcopy(policy.layout_validation.data)
-        data['collision_policy']['robot_mount_contact_exemption']=True
+        data['collision_policy']['robot_mount_contact_exemption']=robot_mount_contact_exemption
+        if l01_tool_chassis_exemption:
+            from l01_tool_chassis import frozen_l01_scope
+            data['collision_policy']['tool_chassis_contact_target_ids']=frozen_l01_scope(layout.cartons())['allowed_target_ids']
         policy=replace(policy,layout_validation=replace(policy.layout_validation,data=data))
     original = build_verified_motion_input(policy, ROOT)
     built = _build_automatic_trajectory_connector(original, layout.robot())

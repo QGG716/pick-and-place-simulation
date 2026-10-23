@@ -41,6 +41,8 @@ def main():
         help='Restore checked 28-box terminal; 250 mm scissor, explicit robot/mount contacts, strict top threshold')
     p.add_argument('--continue-lowprofile-top-from',type=Path,
         help='Restore checked 30-box terminal; top only for the frozen bottom two layers at fixed 250 mm')
+    p.add_argument('--continue-l01-tool-chassis-from',type=Path,
+        help='Restore checked 30-box terminal; retry frozen l01 with scoped tool/chassis planning exemption')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
@@ -51,12 +53,18 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
+    l01_tool=bool(args.continue_l01_tool_chassis_from)
+    if l01_tool and (args.continue_lowprofile_top_from or args.continue_lowprofile_from
+            or args.continue_min250_from or args.continue_min250_repair_from or args.continue_layer_top_from
+            or args.mounting_variant!='x_minus_500_y_minus_100' or args.integration_top_fixture
+            or args.l05_j4_velocity_restart):
+        raise ValueError('L01_TOOL_CHASSIS_CONTINUATION_SCOPE_CHANGED')
     if args.continue_lowprofile_top_from and (args.continue_lowprofile_from or args.continue_min250_from
             or args.continue_min250_repair_from or args.continue_layer_top_from
             or args.mounting_variant!='x_minus_500_y_minus_100' or args.integration_top_fixture
             or args.l05_j4_velocity_restart):
         raise ValueError('LOWPROFILE_TOP_CONTINUATION_SCOPE_CHANGED')
-    lowprofile=bool(args.continue_lowprofile_from or args.continue_lowprofile_top_from)
+    lowprofile=bool(args.continue_lowprofile_from or args.continue_lowprofile_top_from or l01_tool)
     if args.continue_lowprofile_from and (args.continue_min250_from or args.continue_min250_repair_from
             or args.continue_layer_top_from or args.mounting_variant!='x_minus_500_y_minus_100'
             or args.integration_top_fixture or args.l05_j4_velocity_restart):
@@ -75,7 +83,7 @@ def main():
     if args.continue_min250_from or args.continue_layer_top_from:layout_path=layout_path.with_stem(layout_path.stem+'_min250')
     if lowprofile:layout_path=layout_path.with_stem(layout_path.stem+'_min250_lowprofile')
     original,built,audit=make_context(args.mounting_variant,layout_path=layout_path,
-        robot_mount_contact_exemption=lowprofile)
+        robot_mount_contact_exemption=lowprofile,l01_tool_chassis_exemption=l01_tool)
     layout=original.policy.layout_validation.layout
     frozen=FrozenCartonPopulation.capture(original.cartons)
     nominal=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
@@ -86,6 +94,14 @@ def main():
     args.include_receive_before_approach=bool(args.continue_min250_from or args.continue_layer_top_from or lowprofile)
     args.layer_top_permission=None
     args.layer_top_only=bool(args.continue_lowprofile_top_from)
+    if l01_tool:
+        from layer_top_continuation import restore_lowprofile_top_terminal
+        from l01_tool_chassis import frozen_l01_scope,SCOPE as L01_TOOL_SCOPE
+        lowprofile_predecessor=restore_lowprofile_top_terminal(args.continue_l01_tool_chassis_from,state)
+        save(args.output/'predecessor.json',lowprofile_predecessor)
+        tool_permission=frozen_l01_scope(original.cartons)
+        if len(state.cartons)!=10 or state.height!=.25 or not set(tool_permission['allowed_target_ids']) <= {b.name for b in state.cartons}:
+            raise ValueError('L01_TOOL_CHASSIS_ROOT_CHANGED')
     if args.continue_lowprofile_top_from:
         from layer_top_continuation import restore_lowprofile_top_terminal,LOWPROFILE_TOP_SCOPE
         from unloading_sim.low_top_receiver import selected_layer_top_permission
@@ -151,12 +167,14 @@ def main():
     args.direct_first,args.upper_arm_preference=True,True
     args.receive_height_range=(minimum,2.10);args.low_top_minimum_m=minimum
     initial=state.root();history=deepcopy(state.ledger);scope=[b.name for b in state.cartons]
+    if l01_tool:scope=tool_permission['allowed_target_ids']
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
     protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else
         MIN250_SCOPE if args.continue_min250_from else LAYER_TOP_SCOPE if args.continue_layer_top_from else
         LOWPROFILE_TOP_SCOPE if args.continue_lowprofile_top_from else
+        L01_TOOL_SCOPE if l01_tool else
         'XY_TOP_LOWPROFILE250_CONTINUATION' if args.continue_lowprofile_from else 'XY_TOP_NEW_WORLD_40',
         integration_fixture=args.integration_top_fixture,original_cartons=[box_message(b) for b in original.cartons],
         scoped_target_ids=scope,frozen=frozen.evidence(),initial_root=initial,
@@ -169,6 +187,9 @@ def main():
         eccentric_authorized_ids=sorted(eccentric_ids),third_sync_disabled=True,
         no_historical_solution_hints=True,attempted_target_restarts=False)
     if diagnostic:protocol.update(planning_diagnostic=diagnostic,search_operation='NEW_NATIVE_TASK_FROM_VERIFIED_PREFIX',tree_retained=False)
+    if l01_tool:
+        protocol.update(tool_chassis_permission=tool_permission,
+            out_of_scope_target_ids=sorted(b.name for b in state.cartons if b.name not in scope))
     if lowprofile:
         protocol.update(search_operation=lowprofile_predecessor['search_operation'],tree_retained=False,
             all_joint_rate_limits_retained=True,include_receive_before_approach=True,
@@ -204,7 +225,7 @@ def main():
             target_count=len(scope),completed_count=n,success_rate=n/len(scope),
             integration_fixture=args.integration_top_fixture,historical_completed_count=len(history),
             historical_ledger=history,ledger=state.ledger,outcomes=outcomes,
-            blocked=blocked_population(state.cartons,attempted),attempted_target_ids=sorted(attempted),
+            blocked=[b for b in blocked_population(state.cartons,attempted) if b['target_id'] in scope],attempted_target_ids=sorted(attempted),
             remaining_target_ids=[b.name for b in state.cartons],planning_wall_s=perf_counter()-started,
             native_task_wall_s=sum(o.get('planning_wall_s',0.) for o in outcomes),
             release_count=n,nominal_first_contact_count=n,separation_count=n,ideal_drain_count=n)
@@ -214,6 +235,7 @@ def main():
         scene=batch_scene(original,state,built.robot,layout)
         ranked=rank_population(frozen,state.cartons,[e['target_id'] for e in state.ledger],attempted,state.q,
             built.robot,scene.receiver,longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
+        ranked=[r for r in ranked if r['target_id'] in scope]
         if not ranked:break
         selected=ranked[0];name=selected['target_id'];attempted.add(name)
         if args.continue_min250_from and not outcomes and name!='carton_l03_c02':
@@ -222,7 +244,7 @@ def main():
             raise ValueError('LAYER_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         if args.continue_lowprofile_from and not outcomes and name!='carton_l02_c01':
             raise ValueError('LOWPROFILE_CONTINUATION_FIRST_TARGET_CHANGED')
-        if args.continue_lowprofile_top_from and not outcomes and name!='carton_l01_c02':
+        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!='carton_l01_c02':
             raise ValueError('LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
@@ -253,7 +275,7 @@ def main():
             remaining=len(state.cartons),attempted=len(attempted),task_s=result['planning_wall_s'])),flush=True)
         if args.integration_top_fixture:break
     final=checkpoint('INTEGRATION_FIXTURE_FINISHED' if args.integration_top_fixture else
-        ('COMPLETE_PLANNING_ONLY' if not state.cartons else 'INCOMPLETE_RETAINED'))
+        ('COMPLETE_PLANNING_ONLY' if not any(b.name in scope for b in state.cartons) else 'INCOMPLETE_RETAINED'))
     if not args.integration_top_fixture and len(outcomes)+len(final['blocked'])!=len(scope):
         raise ValueError('POPULATION_ACCOUNTING_GAP')
     print(json.dumps(dict(status=final['status'],completed=final['completed_count'],targets=len(scope))),flush=True)

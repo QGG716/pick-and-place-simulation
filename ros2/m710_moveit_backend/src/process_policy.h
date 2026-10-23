@@ -4,6 +4,11 @@
 #include "side_transfer.h"
 
 namespace m710 {
+inline bool authorizedToolChassisPair(const Json& source,const std::string& target,
+    const std::set<std::string>& tools,const std::string& a,const std::string& b) {
+  const auto targets=source.value("tool_chassis_contact_target_ids",std::set<std::string>{});
+  return targets.count(target) && ((b=="chassis" && tools.count(a)) || (a=="chassis" && tools.count(b)));
+}
 inline bool authorizedRobotMountPair(const Json& source,const std::string& a,const std::string& b) {
   const std::set<std::string> links={"base_link","J1_link","J2_link","J3_link","J4_link","J5_link","J6_link"};
   return source.value("robot_mount_contact_exemption",false) &&
@@ -117,11 +122,14 @@ public:
       const std::string a=pair.at(0),b=pair.at(1);
       const bool assembly=(a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis") ||
         authorizedRobotMountPair(source_,a,b);
+      const bool tool_mount=request.value("planning_only",false) && request.value("planning_mode","")=="cold_from_scratch" &&
+        authorizedToolChassisPair(source_,target_id_,
+          request.at("clearance_policy").value("tool_links",std::set<std::string>{}),a,b);
       const bool neighbor=source_.at("compliant_cup_neighbor_contact_mode")=="ignore" &&
         ((compliant_.count(a)&&stack_.count(b)&&b!=target_id_) || (compliant_.count(b)&&stack_.count(a)&&a!=target_id_));
       const bool contact_stage=attached_ || stage_=="contact" || stage_=="contact_endpoint" || stage_=="next_contact" || stage_=="withdrawal";
       const bool target_cup=contact_stage && ((compliant_.count(a)&&b==target_id_) || (compliant_.count(b)&&a==target_id_));
-      if(!assembly&&!neighbor&&!target_cup) throw std::runtime_error("PROCESS_UNSCOPED_ACM_PERMISSION");
+      if(!assembly&&!tool_mount&&!neighbor&&!target_cup) throw std::runtime_error("PROCESS_UNSCOPED_ACM_PERMISSION");
     }
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     // Explicit stage-local named neighbor permissions retain the persistent

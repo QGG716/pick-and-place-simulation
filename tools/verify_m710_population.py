@@ -30,7 +30,7 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
-    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP'):
+    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     if protocol['active_layout_file'] != expected:
@@ -45,8 +45,9 @@ def verify(run, replay=None, *, retained_prefix=False):
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
     bottom_two_top=protocol['scope']=='XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP'
+    l01_tool=protocol['scope']=='XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'
     layer_top=bottom_two_top or protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
-    lowprofile=bottom_two_top or protocol['scope']=='XY_TOP_LOWPROFILE250_CONTINUATION'
+    lowprofile=l01_tool or bottom_two_top or protocol['scope']=='XY_TOP_LOWPROFILE250_CONTINUATION'
     repair=continuation and protocol.get('integration_repair_restart',False)
     xy_top = lowprofile or layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
@@ -58,9 +59,11 @@ def verify(run, replay=None, *, retained_prefix=False):
     original = {b["id"]: b for b in protocol["original_cartons"]}
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
-    assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (30 if bottom_two_top else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    initial_ids={b['id'] for b in initial['world_cartons']}
+    assert targets <= initial_ids
+    assert initial_ids-targets == (set(protocol['out_of_scope_target_ids']) if l01_tool else set())
+    assert len(targets) == summary["target_count"] == (5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
     if lowprofile:
         from unloading_sim.collision_policy import SimulationCollisionPolicy
         predecessor=json.loads((run/'predecessor.json').read_text())
@@ -70,10 +73,16 @@ def verify(run, replay=None, *, retained_prefix=False):
         assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
         assert protocol['scissor_profile']=='low_profile_250_v1'
         if not bottom_two_top:assert 'layer_top_permission' not in protocol
-        assert summary['outcomes'][0]['target_id']==('carton_l01_c02' if bottom_two_top else 'carton_l02_c01')
+        assert summary['outcomes'][0]['target_id']==('carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
         policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
         assert policy.robot_mount_contact_exemption
         assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]
+        if l01_tool:
+            from l01_tool_chassis import frozen_l01_scope
+            from unloading_sim.coupled_batch import message_box
+            assert protocol['tool_chassis_permission']==frozen_l01_scope(tuple(message_box(b) for b in protocol['original_cartons']))
+            assert set(policy.tool_chassis_contact_target_ids)==targets
+            assert len(initial_ids)==10 and len(initial_ids-targets)==5
     if layer_top:
         predecessor=json.loads((run/'predecessor.json').read_text())
         assert initial==protocol['initial_root']==predecessor['new_native_root']
@@ -195,6 +204,12 @@ def verify(run, replay=None, *, retained_prefix=False):
                         if 'clearance_policy' not in req:continue
                         assert req['clearance_policy']['source_policy']==protocol['collision_policy']
                         assert set(map(tuple,protocol['robot_mount_allowed_pairs'])) <= set(map(tuple,req['allowed_pairs']))
+                        if l01_tool:
+                            cp=req['clearance_policy']
+                            assert req['planning_only'] and req['planning_mode']=='cold_from_scratch'
+                            assert cp['target_id']==name
+                            expected=policy.tool_chassis_pairs(name,cp['tool_links'])|policy.robot_mount_pairs()
+                            assert {tuple(p) for p in req['allowed_pairs'] if 'chassis' in p}==expected
                 if diagnostic:
                     marker='M710_DIAGNOSTIC_JOINT_RATE_IGNORED' if all_rates else 'M710_DIAGNOSTIC_J4_VELOCITY_IGNORED'
                     markers=raw(folder+'/worker.log').decode(errors='replace').count(marker)
@@ -370,7 +385,7 @@ def verify(run, replay=None, *, retained_prefix=False):
         assert row["supported_cartons"] and not row["native_search_performed"]
     completed = sum(o["complete"] for o in outcomes)
     assert completed == summary["completed_count"]
-    assert len(root["world_cartons"]) == len(targets)-completed
+    assert len(root["world_cartons"]) == len(initial_ids)-completed
     assert all(summary[k] == completed for k in (
         "release_count", "nominal_first_contact_count", "separation_count", "ideal_drain_count"))
     assert summary["physical_execution"] == "NOT_RUN" and not summary["execution_ready"]

@@ -768,7 +768,9 @@ class ExactM710LayoutStateValidator:
             }
         fixed = [box for box in environment if box.category not in {"carton", "payload"}]
         dynamic = [box for box in environment if box.category in {"carton", "payload"}]
-        static_key = (q_key, repr(self.collision_policy), self.collision_margin_m,
+        target_id = payload.name if payload is not None else (target_contact.name if target_contact is not None else self.contact_target_name)
+        tool_mount_pairs = self.collision_policy.tool_chassis_pairs(target_id, self.required_tool_names)
+        static_key = (q_key, repr(self.collision_policy), frozenset(tool_mount_pairs), self.collision_margin_m,
                       self.floor_z_m, self.right_wall_y_m, self.left_wall_y_m,
                       getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
         if static_key not in self._static_cache:
@@ -782,6 +784,8 @@ class ExactM710LayoutStateValidator:
                 failure = self._collision_failure(result, "ROBOT_RIGID_TOOL_COLLISION")
             if failure is None:
                 for i, j in self._profile_call("tool_fixed_broadphase", possible_inflated_obb_pairs, tool_boxes, fixed, self.collision_margin_m):
+                    if (tool_boxes[i].name, fixed[j].name) in tool_mount_pairs:
+                        continue
                     if ('obb',tool_boxes[i].name,fixed[j].name) in getattr(self,'_interval_pairs',()):
                         continue
                     failure = obb_pair_failure(tool_boxes[i], fixed[j], self.collision_policy,
