@@ -74,7 +74,7 @@ if __name__=='__main__':
     parser.add_argument('--snapshot',required=True)
     parser.add_argument('--home-candidate',required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--config',type=Path,default=ROOT/'configs/workcells/eco65_coupled_carton_v4.yaml')
+    parser.add_argument('--config',type=Path,default=ROOT/'configs/workcells/eco65_coupled_carton_v5.yaml')
     parser.add_argument('--initial-height',type=float,
         help='Explicit new cold-world height; default inherits the source actual height, never clamps')
     parser.add_argument('--native-asset-root',default='/work-eco65-20261015')

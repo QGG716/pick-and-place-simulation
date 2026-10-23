@@ -1,0 +1,49 @@
+schema: eco65_coupled_carton_config_v1
+geometry_revision: upper_seam_lower_slider_v3
+layout_id: eco65_small_carton_coupled_v1
+collision_policy_mode: robot_body_vision_mast_exempt_v2
+# 2026-10-20 user-authorized kinematic assumption. This affects only the
+# attached current carton against remaining original cartons in extraction.
+extraction_carton_contact_mode: attached_target_remaining_original_cartons_during_extraction
+# Explicit user permission: all twelve physical cup lips, including disabled
+# cups, may contact remaining non-target cartons. Rigid tool regions stay checked.
+cup_neighbor_contact_mode: named_terminal_bands_remaining_original_cartons
+target_id: carton_r00_l03_c01
+box_size_m: [0.150, 0.100, 0.100]
+usable_belt_width_m: 0.200
+low_height_m: 0.100
+# 2026-10-23 updated user permission: travel is 100..450 mm. Retain the
+# existing rigid mechanism and the fixed 180 mm longitudinal endpoint.
+longitudinal_lower_height_m: 0.180
+high_height_m: 0.450
+initial_height_m: 0.3311827942858692
+desired_drop_m: 0.050
+receiving_margin_m: 0.010
+# Keep measured belt dimensions and transverse X; move Y to clear the
+# unchanged 140 mm robot mounting platform with the new ymin alignment.
+transverse_ymin_m: -0.300
+frame_depth_m: 0.032
+floor_z_m: 0.000
+scissor_base_pin_z_m: 0.026
+# Retained v2 support geometry; changing the limit moves no fixed feet.
+transverse_base_pin_z_m: 0.022
+transverse_support_x_offset_m: 0.065
+longitudinal_support_fraction: 0.420
+longitudinal_support_x_offset_m: 0.035
+lower_rail_y_offset_m: 0.115
+lower_rail_end_margin_m: 0.035
+lower_rail_below_frame_m: 0.028
+lower_carriage_below_frame_m: 0.014
+transverse_scissor:
+  stages: 2
+  arm_length_m: 0.205
+  arm_depth_m: 0.012
+  arm_thickness_m: 0.006
+longitudinal_scissor:
+  stages: 3
+  arm_length_m: 0.170
+  arm_depth_m: 0.010
+  arm_thickness_m: 0.006
+lift_display_speed_m_s: 0.080
+lift_sample_step_m: 0.010
+enable_hardware: false
