@@ -1,2 +1,2 @@
 # Preserve measured evidence bytes and hashes on Windows checkouts.
-* -text
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
