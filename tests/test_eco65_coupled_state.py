@@ -113,9 +113,10 @@ def test_request_construction_crossing_connection_deadline_keeps_global_scope(
     assert task.deadline==100.
 
 
-def test_new_initial_candidates_use_separate_native_tasks_without_resetting_budget():
+def test_new_initial_candidates_use_separate_native_tasks_without_resetting_budget(monkeypatch):
     from types import SimpleNamespace
     from unloading_sim.eco65.coupled_task import CoupledTask
+    monkeypatch.setattr('unloading_sim.eco65.coupled_task.perf_counter',lambda:0.)
     starts=[np.array([1.,0,0,0,0,0]),np.array([2.,0,0,0,0,0])]
     attempted=[]
     task=SimpleNamespace(progress_path=None,task_id='run-root',max_grasps=1,
