@@ -49,6 +49,8 @@ def main():
         help='Only c01: finite owned-tool exposure, shortest +Y turn outside the inlet corridor, then -X')
     p.add_argument('--c01-front-suction',action='store_true',
         help='Only c01: centered front suction with the same finite +Y then -X route at Hmax')
+    p.add_argument('--c01-front-direct-x',action='store_true',
+        help='Only c01: centered front suction then -X only; retain original junction Hmin and mechanism limits')
     p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1),default=0.,
         help='Explicit 100 mm Wantai connector extension for the c01 finite-channel retry')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
@@ -64,9 +66,11 @@ def main():
     l01_routes=bool(args.continue_l01_selected_routes_from)
     if args.c01_finite_side_channel and not l01_routes:
         raise ValueError('C01_CHANNEL_REQUIRES_VERIFIED_SELECTED_ROUTES_ROOT')
-    if args.c01_front_suction and not args.c01_finite_side_channel:
+    if args.c01_front_direct_x and (not l01_routes or args.c01_finite_side_channel or not args.c01_front_suction):
+        raise ValueError('C01_DIRECT_FRONT_REQUIRES_SELECTED_ROOT_AND_FRONT_ONLY')
+    if args.c01_front_suction and not (args.c01_finite_side_channel or args.c01_front_direct_x):
         raise ValueError('C01_FRONT_REQUIRES_FINITE_NONJUNCTION_CHANNEL')
-    if args.tool_connector_extension_m and not args.c01_finite_side_channel:
+    if args.tool_connector_extension_m and not (args.c01_finite_side_channel or args.c01_front_direct_x):
         raise ValueError('TOOL_EXTENSION_REQUIRES_C01_FINITE_CHANNEL')
     l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
     if l01_routes and args.continue_l01_tool_chassis_from:
@@ -118,11 +122,12 @@ def main():
         from l01_tool_chassis import frozen_l01_scope,SCOPE as L01_TOOL_SCOPE
         if l01_routes:
             from layer_top_continuation import restore_l01_tool_terminal
-            from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE,C01_CHANNEL_SCOPE,C01_FRONT_SCOPE
+            from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE,C01_CHANNEL_SCOPE,C01_FRONT_SCOPE,C01_DIRECT_SCOPE
             lowprofile_predecessor=restore_l01_tool_terminal(args.continue_l01_selected_routes_from,state)
-            args.selected_routes_permission=selected_routes_permission(frozen,finite_c01_channel=args.c01_finite_side_channel,front_c01=args.c01_front_suction)
+            args.selected_routes_permission=selected_routes_permission(frozen,finite_c01_channel=args.c01_finite_side_channel,front_c01=args.c01_front_suction,direct_front_c01=args.c01_front_direct_x)
             if args.c01_finite_side_channel:L01_ROUTES_SCOPE=C01_CHANNEL_SCOPE
             if args.c01_front_suction:L01_ROUTES_SCOPE=C01_FRONT_SCOPE
+            if args.c01_front_direct_x:L01_ROUTES_SCOPE=C01_DIRECT_SCOPE
         else:
             lowprofile_predecessor=restore_lowprofile_top_terminal(args.continue_l01_tool_chassis_from,state)
         save(args.output/'predecessor.json',lowprofile_predecessor)
@@ -241,6 +246,12 @@ def main():
                 tool_connector_extension=connector_extension_evidence(args.tool_connector_extension_m))
             if args.c01_front_suction:
                 protocol.update(front_c01_suction=True,top_permission='NONE_C01_FRONT_ONLY')
+        if args.c01_front_direct_x:
+            from unloading_sim.tool_connector_extension import connector_extension_evidence
+            protocol.update(front_c01_suction=True,front_c01_direct_x=True,top_permission='NONE_C01_FRONT_ONLY',
+                finite_c01_side_channel=False,low_receiver_rule='ORIGINAL_JUNCTION_FRONT_HMIN',
+                tool_connector_extension_m=args.tool_connector_extension_m,
+                tool_connector_extension=connector_extension_evidence(args.tool_connector_extension_m))
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',

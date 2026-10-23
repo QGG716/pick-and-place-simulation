@@ -107,3 +107,18 @@ def test_c01_front_only_changes_face_keeps_short_y_x_route_and_hmax():
     with pytest.raises(ValueError):selected_routes_permission(frozen,front_c01=True)
     for name in ('carton_l01_c00','carton_l01_c04'):
         with pytest.raises(ValueError):selected_route_option(boxes[name],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,front)
+
+
+def test_c01_direct_front_keeps_junction_hmin_and_rejects_hmax_substitution():
+    boxes,frozen,world,height=setup()
+    permission=selected_routes_permission(frozen,front_c01=True,direct_front_c01=True)
+    option=selected_route_option(boxes['carton_l01_c01'],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,permission)
+    assert permission['dispatch_order']==['carton_l01_c01']
+    assert option['template']=='FRONT_DIRECT_HMIN' and option['reception']['junction']
+    assert option['segment_directions_world']==[[-1.,0.,0.]] and not option.get('finite_side_channel')
+    assert option['height_m']==pytest.approx(-.05) and option['height_m']<.25
+    target=SimpleNamespace(target_id='carton_l01_c01',box=boxes['carton_l01_c01'],geometric_face_id='x-',world_y_offset_m=0.,eccentric_authority=None)
+    validate_selected_route(target,option,permission,height)
+    changed=deepcopy(option);changed['height_m']=.25
+    with pytest.raises(ValueError):validate_selected_route(target,changed,permission,height)
+    with pytest.raises(ValueError):selected_routes_permission(frozen,front_c01=True,direct_front_c01=True,finite_c01_channel=True)

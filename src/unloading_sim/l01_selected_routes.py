@@ -10,17 +10,20 @@ ORDER = ('carton_l01_c01', 'carton_l01_c00', 'carton_l01_c04')
 TOP_TARGET = 'carton_l01_c04'
 C01_CHANNEL_SCOPE = 'XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
 C01_FRONT_SCOPE = 'XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX'
+C01_DIRECT_SCOPE = 'XY_TOP_L01_C01_FRONT_DIRECT_X'
 FRONT_TEMPLATE = 'SELECTED_FRONT_POS_Y_HMAX'
 C01 = 'carton_l01_c01'
 
 
-def selected_routes_permission(frozen, *, finite_c01_channel=False, front_c01=False):
-    if front_c01 and not finite_c01_channel:
+def selected_routes_permission(frozen, *, finite_c01_channel=False, front_c01=False, direct_front_c01=False):
+    if direct_front_c01 and (finite_c01_channel or not front_c01):
+        raise ValueError('C01_DIRECT_FRONT_ROUTE_FLAGS_CHANGED')
+    if front_c01 and not (finite_c01_channel or direct_front_c01):
         raise ValueError('C01_FRONT_REQUIRES_FINITE_NONJUNCTION_CHANNEL')
     evidence=frozen.evidence();routes={}
     if evidence['original_carton_count']!=40:
         raise ValueError('SELECTED_ROUTES_ORIGINAL_POPULATION_CHANGED')
-    order=(C01,) if finite_c01_channel else ORDER
+    order=(C01,) if finite_c01_channel or direct_front_c01 else ORDER
     for name in order:
         h=evidence['heights'][name]
         if abs(h['z_b_m']-.3)>1e-9 or abs(h['h_m']-.3)>1e-9 or abs(h['Hmax_world_m']-.25)>1e-9:
@@ -32,22 +35,36 @@ def selected_routes_permission(frozen, *, finite_c01_channel=False, front_c01=Fa
             segment_directions_world=[[0.,0.,1.] if top else [0.,1.,0.],[-1.,0.,0.]],
             original_role=evidence['roles'][name]['role'])
         if finite_c01_channel:routes[name]['finite_side_channel']=True
+        if direct_front_c01:
+            routes[name].update(template='FRONT_DIRECT_HMIN',height_m=h['Hmin_world_m'],
+                initial_height_m=h['Hmax_world_m'],segment_directions_world=[[-1.,0.,0.]],front_direct_x=True)
     return dict(original_cartons_sha256=evidence['original_cartons_sha256'],routes=routes,
-        dispatch_order=list(order),height_source='FROZEN_INITIAL_HMAX',stationary_receiver=True,
+        dispatch_order=list(order),height_source='FROZEN_INITIAL_HMIN' if direct_front_c01 else 'FROZEN_INITIAL_HMAX',stationary_receiver=not direct_front_c01,
         authorization='USER_SELECTED_THREE_CARTONS_ONLY',planning_only=True)
 
 
 def selected_route_option(target,belt,longitudinal,frozen,current_height,permission):
     finite=permission.get('routes',{}).get(C01,{}).get('finite_side_channel',False)
-    front=permission.get('routes',{}).get(C01,{}).get('template')==FRONT_TEMPLATE
-    if permission!=selected_routes_permission(frozen,finite_c01_channel=finite,front_c01=front):
+    direct=permission.get('routes',{}).get(C01,{}).get('front_direct_x',False)
+    front=direct or permission.get('routes',{}).get(C01,{}).get('template')==FRONT_TEMPLATE
+    if permission!=selected_routes_permission(frozen,finite_c01_channel=finite,front_c01=front,direct_front_c01=direct):
         raise ValueError('SELECTED_ROUTES_PERMISSION_CHANGED')
     route=permission['routes'].get(target.name)
     if route is None:raise ValueError('TARGET_OUTSIDE_SELECTED_ROUTES')
     h=StartHeight.capture(target)
-    if h.box_identity!=route['start_box_identity'] or current_height!=route['height_m']:
+    if h.box_identity!=route['start_box_identity'] or current_height!=route.get('initial_height_m',route['height_m']):
         raise ValueError('SELECTED_ROUTE_TARGET_OR_FIXED_HMAX_CHANGED')
-    if route['template']==TOP_TEMPLATE:
+    if direct:
+        from .top_layer_lifted import process_options
+        # Reuse the original full-projection Hmin rule, before the existing
+        # mechanism-domain rejection. No Hmax waiver for this straight route.
+        options=process_options(target,belt,frozen,(target,),longitudinal=longitudinal)
+        option=next(o for o in options if o['template']=='FRONT_DIRECT_HMIN')
+        if not option['reception']['junction'] or option['segment_directions_world']!=[[-1.,0.,0.]]:
+            raise ValueError('C01_DIRECT_JUNCTION_GEOMETRY_CHANGED')
+        option.update(pre_approach_height_m=current_height,synchronization='PREGRASP',
+            stationary_receiver_during_target=False,front_direct_x=True)
+    elif route['template']==TOP_TEMPLATE:
         from .low_top_receiver import _fixed_top_option
         option=_fixed_top_option(target,belt,longitudinal,frozen,current_height,h,'USER_SELECTED_TOP_HMAX')
     else:
@@ -58,7 +75,7 @@ def selected_route_option(target,belt,longitudinal,frozen,current_height,permiss
             acceptance='NOT_PLANNED',spatial_orientation='UPSTREAM_FACE_POSE_HELD',fixed_wrist_joint_values=False)
     option.update(template=route['template'],target_id=target.name,original_role=route['original_role'],
         segment_directions_world=deepcopy(route['segment_directions_world']),
-        height_source='FROZEN_INITIAL_HMAX',selected_routes_permission=deepcopy(permission))
+        height_source=permission['height_source'],selected_routes_permission=deepcopy(permission))
     if finite:option['finite_side_channel']=True
     return option
 
@@ -72,12 +89,14 @@ def validate_selected_route(target,option,permission,root_height):
             or target.geometric_face_id!=route['geometric_face_id'] or target.world_y_offset_m!=0
             or target.eccentric_authority is not None or option['template']!=route['template']
             or option['segment_directions_world']!=route['segment_directions_world']
-            or root_height!=route['height_m'] or option['height_m']!=h.hmax
+            or root_height!=route.get('initial_height_m',route['height_m']) or option['height_m']!=(h.hmin if route.get('front_direct_x') else h.hmax)
             or option.get('pre_approach_height_m')!=root_height
-            or option.get('stationary_receiver_during_target') is not True):
+            or option.get('stationary_receiver_during_target') is not (not route.get('front_direct_x',False))):
         raise ValueError('SELECTED_ROUTE_GEOMETRY_OR_PROCESS_CHANGED')
     if option.get('finite_side_channel',False)!=route.get('finite_side_channel',False):
         raise ValueError('SELECTED_ROUTE_CHANNEL_PERMISSION_CHANGED')
+    if option.get('front_direct_x',False)!=route.get('front_direct_x',False):
+        raise ValueError('SELECTED_ROUTE_DIRECT_PERMISSION_CHANGED')
 
 
 def finite_side_exposure(connector,q):
