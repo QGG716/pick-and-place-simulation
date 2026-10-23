@@ -1,0 +1,1043 @@
+{
+  "source_commit": "4337f9115d193645bfaf6122c1ca5673ebf3e7ac",
+  "backend": "PinocchioHppFclBackend",
+  "new_completed": 0,
+  "new_targets": 10,
+  "historical_completed": 30,
+  "cumulative_completed": 30,
+  "remaining": 10,
+  "rows": [
+    {
+      "target_id": "carton_l01_c02",
+      "complete": false,
+      "wall_s": 90.74313255399466,
+      "attempts": [
+        {
+          "template": "TOP_FIXED_CURRENT_RECEIVER",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100437973,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100437973,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.20716469396535553,
+                  -0.6395398088145776,
+                  0.10117325918638387,
+                  -3.2917877825649553,
+                  0.7133166885776743,
+                  -1.020824401681704
+                ],
+                "numerical_seed_index": 414,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "420",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11979830265045166
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 416,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c03",
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 90.02722071111202,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 421,
+            "ik_requests": 416
+          },
+          "collision_witnesses": [],
+          "folder": "task-001/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100437973,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100437973,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.20716469396535553,
+                  -0.6395398088145776,
+                  0.10117325918638387,
+                  -3.2917877825649553,
+                  0.7133166885776743,
+                  -1.020824401681704
+                ],
+                "numerical_seed_index": 414,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "420",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11979830265045166
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 416,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c01",
+      "complete": false,
+      "wall_s": 90.86003317683935,
+      "attempts": [
+        {
+          "template": "TOP_FIXED_CURRENT_RECEIVER",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100317573,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100317573,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.20716469396535553,
+                  -0.6395398088145776,
+                  0.10117325918638387,
+                  -3.2917877825649553,
+                  0.7133166885776743,
+                  -1.020824401681704
+                ],
+                "numerical_seed_index": 414,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "420",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12060143053531647
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 415,
+            "retained_legal_configurations": 0,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c02",
+                "carton_l01_c03",
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 90.04095885902643,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 420,
+            "ik_requests": 415
+          },
+          "collision_witnesses": [],
+          "folder": "task-002/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100317573,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100317573,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  0.20716469396535553,
+                  -0.6395398088145776,
+                  0.10117325918638387,
+                  -3.2917877825649553,
+                  0.7133166885776743,
+                  -1.020824401681704
+                ],
+                "numerical_seed_index": 414,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "420",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 415,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12060143053531647
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 415,
+            "retained_legal_configurations": 0,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c03",
+      "complete": false,
+      "wall_s": 90.8333750590682,
+      "attempts": [
+        {
+          "template": "TOP_FIXED_CURRENT_RECEIVER",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100816985,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100816985,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  1.2720636824532052,
+                  1.8344546626780651,
+                  -0.6181237941110735,
+                  -2.3126510891630296,
+                  0.25023821843036886,
+                  -2.1551791798628024
+                ],
+                "numerical_seed_index": 415,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "421",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 416,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12414025515317917
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 417,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01",
+                "carton_l01_c02"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 90.02325332164764,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 422,
+            "ik_requests": 417
+          },
+          "collision_witnesses": [],
+          "folder": "task-003/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100816985,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100816985,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  1.2720636824532052,
+                  1.8344546626780651,
+                  -0.6181237941110735,
+                  -2.3126510891630296,
+                  0.25023821843036886,
+                  -2.1551791798628024
+                ],
+                "numerical_seed_index": 415,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "421",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 416,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12414025515317917
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 417,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c00",
+      "complete": false,
+      "wall_s": 90.84782116860151,
+      "attempts": [
+        {
+          "template": "TOP_FIXED_CURRENT_RECEIVER",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100307718,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100307718,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -0.39395284816465415,
+                  1.326921771264843,
+                  2.394213388171977,
+                  6.9810181858474865,
+                  -0.4571619395479283,
+                  2.1169038553881334
+                ],
+                "numerical_seed_index": 417,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "423",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 418,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12117642164230347
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 419,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c01",
+                "carton_l01_c02",
+                "carton_l01_c03",
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 90.02336846292019,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 424,
+            "ik_requests": 419
+          },
+          "collision_witnesses": [],
+          "folder": "task-004/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100307718,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100307718,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -0.39395284816465415,
+                  1.326921771264843,
+                  2.394213388171977,
+                  6.9810181858474865,
+                  -0.4571619395479283,
+                  2.1169038553881334
+                ],
+                "numerical_seed_index": 417,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "423",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 418,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.12117642164230347
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 419,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "wall_s": 90.81716333329678,
+      "attempts": [
+        {
+          "template": "TOP_FIXED_CURRENT_RECEIVER",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.101030093,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.101030093,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -0.39395284816465415,
+                  1.326921771264843,
+                  2.394213388171977,
+                  6.9810181858474865,
+                  -0.4571619395479283,
+                  2.1169038553881334
+                ],
+                "numerical_seed_index": 417,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "423",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 418,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11977507174015045
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 419,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01",
+                "carton_l01_c02",
+                "carton_l01_c03"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 90.02293917536736,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 424,
+            "ik_requests": 419
+          },
+          "collision_witnesses": [],
+          "folder": "task-005/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.101030093,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.101030093,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -0.39395284816465415,
+                  1.326921771264843,
+                  2.394213388171977,
+                  6.9810181858474865,
+                  -0.4571619395479283,
+                  2.1169038553881334
+                ],
+                "numerical_seed_index": 417,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.0556381484185202,
+                  0.891050376919693,
+                  -0.4469515308987374,
+                  -2.074314858511779,
+                  -1.4568922990087736,
+                  -0.20346693997183032
+                ],
+                "request_id": "423",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 418,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11977507174015045
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 419,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l00_c00",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "supported_cartons": [
+        "carton_l01_c00"
+      ],
+      "native_search_performed": false,
+      "complete": false
+    },
+    {
+      "target_id": "carton_l00_c01",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "supported_cartons": [
+        "carton_l01_c01"
+      ],
+      "native_search_performed": false,
+      "complete": false
+    },
+    {
+      "target_id": "carton_l00_c02",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "supported_cartons": [
+        "carton_l01_c02"
+      ],
+      "native_search_performed": false,
+      "complete": false
+    },
+    {
+      "target_id": "carton_l00_c03",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "supported_cartons": [
+        "carton_l01_c03"
+      ],
+      "native_search_performed": false,
+      "complete": false
+    },
+    {
+      "target_id": "carton_l00_c04",
+      "status": "BLOCKED_BY_RETAINED_SUPPORT_DEPENDENTS",
+      "supported_cartons": [
+        "carton_l01_c04"
+      ],
+      "native_search_performed": false,
+      "complete": false
+    }
+  ],
+  "counts": {
+    "native_requests": 2111,
+    "ik_requests": 2086
+  },
+  "operations": {
+    "init:None:READY": 5,
+    "fk:None:SUCCESS": 15,
+    "check_start:pregrasp:SUCCESS": 5,
+    "ik:pregrasp:NATIVE_IK_FAILED": 2082,
+    "ik:pregrasp:NATIVE_IK_REQUEST_DEADLINE": 4
+  },
+  "task_wall_s": 454.1015252918005,
+  "loop_wall_s": 455.0575926080346,
+  "costs_are_nested_not_additive": true,
+  "candidates": [
+    {
+      "target": "carton_l01_c02",
+      "folder": "task-001/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 421
+    },
+    {
+      "target": "carton_l01_c01",
+      "folder": "task-002/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 420
+    },
+    {
+      "target": "carton_l01_c03",
+      "folder": "task-003/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 422
+    },
+    {
+      "target": "carton_l01_c00",
+      "folder": "task-004/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 424
+    },
+    {
+      "target": "carton_l01_c04",
+      "folder": "task-005/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 424
+    }
+  ],
+  "actual_target_search_candidates": 5,
+  "worker_initialized_candidates": 5,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

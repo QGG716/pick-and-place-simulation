@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "source_commit": "4337f9115d193645bfaf6122c1ca5673ebf3e7ac",
+  "cases": 5,
+  "all_source_hashes_verified": true,
+  "exporter_sha256": "fc7c7391b1fc6224cdef18b51c226994c49a63605f318ec4b51beadb69efdbec",
+  "ik_calls": 2086,
+  "ik_success": 0,
+  "generated_robot_motion_points": 0,
+  "collision_witnesses": 0,
+  "backend": "PinocchioHppFclBackend",
+  "solver_calls_added": 0,
+  "physical_execution": "NOT_RUN"
+}

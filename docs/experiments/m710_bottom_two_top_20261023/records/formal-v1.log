@@ -1,0 +1,16 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c02", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c02", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 30}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c02", "completed": 0, "remaining": 10, "attempted": 1, "task_s": 90.74313255399466}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c01", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c01", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 30}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c01", "completed": 0, "remaining": 10, "attempted": 2, "task_s": 90.86003317683935}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c03", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c03", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 30}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c03", "completed": 0, "remaining": 10, "attempted": 3, "task_s": 90.8333750590682}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c00", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c00", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 30}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c00", "completed": 0, "remaining": 10, "attempted": 4, "task_s": 90.84782116860151}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c04", "remaining": 10}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c04", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 30}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c04", "completed": 0, "remaining": 10, "attempted": 5, "task_s": 90.81716333329678}
+{"status": "INCOMPLETE_RETAINED", "completed": 0, "targets": 10}

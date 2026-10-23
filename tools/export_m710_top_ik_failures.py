@@ -18,7 +18,8 @@ def main():
     from unloading_sim.moveit2_backend import box_message
     read=lambda f:json.loads(f.read_text())
     summary=read(args.run/'summary.json');protocol=read(args.run/'protocol.json')
-    context,built,audit=make_context(protocol['mounting_variant'],layout_path=work/protocol['active_layout_file'])
+    context,built,audit=make_context(protocol['mounting_variant'],layout_path=work/protocol['active_layout_file'],
+        robot_mount_contact_exemption=protocol.get('robot_mount_contact_exemption',False))
     layout=context.policy.layout_validation.layout
     assert type(built.robot).__name__=='PinocchioHppFclBackend'
     cases=[];attempts=[];model=None
@@ -60,8 +61,8 @@ def main():
     assert cases
     data=dict(label='本轮顶吸IK失败',model=model,inspection_cases=cases,
         inspection_title=f'{len(cases)}箱顶吸接近IK失败 · 本轮记录',
-        inspection_subtitle='先+Z再−X路线尚未到达<br>横带保持550 mm · 物理执行NOT_RUN',
-        inspection_summary=f"本轮新完成{summary['completed_count']}/{summary['target_count']}，历史28箱单列。每箱显示实际派发时的世界与原生起点；未搜索的支撑阻挡箱见结果报告。",
+        inspection_subtitle=f"先+Z再−X路线尚未到达<br>横带保持{summary['initial']['height_m']*1000:.0f} mm · 物理执行NOT_RUN",
+        inspection_summary=f"本轮新完成{summary['completed_count']}/{summary['target_count']}，历史{summary['historical_completed_count']}箱单列。每箱显示实际派发时的世界与原生起点；未搜索的支撑阻挡箱见结果报告。",
         raw=dict(source_commit=summary['source_commit'],attempts=attempts),result=dict(complete=False,target_id='顶吸失败箱'),request_log=[],
         qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
     template=(work/'tools/search_replay/viewer.html').read_text(encoding='utf-8');vendor=work/'tools/search_replay/vendor'
@@ -70,6 +71,7 @@ def main():
     template=template.replace('</html>','<script>\n'+(work/'tools/search_replay/five_failures.js').read_text(encoding='utf-8')+'\n</script></html>')
     args.output.parent.mkdir(exist_ok=True,parents=True);args.output.write_text(template,encoding='utf-8')
     checks=dict(status='PASS',source_commit=summary['source_commit'],cases=len(cases),all_source_hashes_verified=True,
+        exporter_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         ik_calls=sum(c['ik_calls'] for c in cases),ik_success=0,generated_robot_motion_points=0,collision_witnesses=0,
         backend=type(built.robot).__name__,solver_calls_added=0,physical_execution='NOT_RUN')
     args.output.with_name(args.output.stem+'-checks.json').write_text(json.dumps(checks,indent=2)+'\n')
