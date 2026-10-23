@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "source_commit": "f17d636ed547a86389150f268445d44bae6f58c4",
+  "source_archive_sha256": "88638eb2ebf8e8f3cac7067f2a1b8a72af9d755af778680f4b6e57d7793b9d20",
+  "verified_raw_files": 84,
+  "accepted_model_replay_sha256": "e46aef1133333e45f7f524ff2c8e632a3b457ead1a92ad54210caede0a8e7318",
+  "exporter_sha256": "ca570167c45bbb662a1a6f78632caf6e6c7647a481c72c1eae53248f584a3111",
+  "overlay_sha256": "f69cc635d44d962b72d60fd9ae450713d6122fd55118ccf65ddbdd1b0e331c1a",
+  "cases": 5,
+  "snapshots": 84,
+  "recorded_witness_occurrences": 1856,
+  "unique_recorded_witnesses": 79,
+  "all_display_states_production_fk_checked": true,
+  "solver_calls_added": 0,
+  "generated_robot_motion_points": 0,
+  "physical_execution": "NOT_RUN"
+}

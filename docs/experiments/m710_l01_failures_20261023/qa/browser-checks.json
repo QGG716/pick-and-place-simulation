@@ -1,0 +1,224 @@
+{
+  "status": "PASS",
+  "cases": 5,
+  "snapshots": 84,
+  "all_snapshots_production_fk_match": true,
+  "checks": [
+    {
+      "target": "carton_l01_c00",
+      "mode": null,
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "指定 +Y 内侧面未暴露遮挡箱：l01_c01、l01_c02、l01_c03、l01_c04。属于面暴露筛选失败，没有目标IK或碰撞见证。"
+    },
+    {
+      "target": "carton_l01_c00",
+      "mode": "face",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "指定 +Y 内侧面未暴露遮挡箱：l01_c01、l01_c02、l01_c03、l01_c04。属于面暴露筛选失败，没有目标IK或碰撞见证。"
+    },
+    {
+      "target": "carton_l01_c00",
+      "mode": "height",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "Hmin −50 mm < 最低250 mm差300 mm，在派发IK前拒绝。青色仅为请求带面示意；实际剪叉和带面保持250 mm。"
+    },
+    {
+      "target": "carton_l01_c01",
+      "mode": null,
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "Hmin −50 mm < 最低250 mm差300 mm，在派发IK前拒绝。青色仅为请求带面示意；实际剪叉和带面保持250 mm。"
+    },
+    {
+      "target": "carton_l01_c01",
+      "mode": "height",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "Hmin −50 mm < 最低250 mm差300 mm，在派发IK前拒绝。青色仅为请求带面示意；实际剪叉和带面保持250 mm。"
+    },
+    {
+      "target": "carton_l01_c02",
+      "mode": null,
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c02",
+      "mode": "contact",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "contact末态已通过48杯实际几何有效；此处尚未开始抽离。点击上方对象对查看随后被拒绝的LIN搜索构型。"
+    },
+    {
+      "target": "carton_l01_c02",
+      "mode": "tool_rigid_13 / chassis",
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c02",
+      "mode": "tool_rigid_11 / chassis",
+      "pair": [
+        "tool_rigid_11",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c03",
+      "mode": null,
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c03",
+      "mode": "contact",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "contact末态已通过48杯实际几何有效；此处尚未开始抽离。点击上方对象对查看随后被拒绝的LIN搜索构型。"
+    },
+    {
+      "target": "carton_l01_c03",
+      "mode": "tool_rigid_13 / chassis",
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c03",
+      "mode": "tool_rigid_11 / chassis",
+      "pair": [
+        "tool_rigid_11",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c04",
+      "mode": null,
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c04",
+      "mode": "contact",
+      "pair": [],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "contact末态已通过48杯实际几何有效；此处尚未开始抽离。点击上方对象对查看随后被拒绝的LIN搜索构型。"
+    },
+    {
+      "target": "carton_l01_c04",
+      "mode": "tool_rigid_13 / chassis",
+      "pair": [
+        "tool_rigid_13",
+        "chassis"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    },
+    {
+      "target": "carton_l01_c04",
+      "mode": "J2_link / trailer_left_wall",
+      "pair": [
+        "J2_link",
+        "trailer_left_wall"
+      ],
+      "native_q_preserved": true,
+      "production_fk_matches": true,
+      "world_matches": true,
+      "attachment_matches": true,
+      "carton_count": 10,
+      "gap_label": "相交 / 接触原生碰撞检查拒绝未记录穿透深度和接触点。原始负距离标记不表示穿透了相应长度。"
+    }
+  ],
+  "errors": [],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+}
