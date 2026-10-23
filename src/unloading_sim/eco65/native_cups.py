@@ -23,7 +23,9 @@ def grasp_candidates(geometry, target, size, flange_from_tcp, base_position,
     for face in faces:
         axis, sign = FACE_AXES[face]; others = [i for i in range(3) if i != axis]
         # Both bases are proper rotations and aim TCP +Z into the selected face.
-        R = np.diag([1., -1., -1.]) if face == 'top' else np.array([[0.,0.,1.],[1.,0.,0.],[0.,1.,0.]])
+        inward = -sign*np.eye(3)[axis]
+        tangent = np.eye(3)[others[0]]
+        R = np.column_stack([tangent, np.cross(inward, tangent), inward])
         for roll in (0., np.pi/2, np.pi, 3*np.pi/2):
             co, si = np.cos(roll), np.sin(roll)
             rotation = R@np.array([[co,-si,0.],[si,co,0.],[0.,0.,1.]])
@@ -35,7 +37,7 @@ def grasp_candidates(geometry, target, size, flange_from_tcp, base_position,
                 center = (lo+hi)/2; low = np.minimum(lo+.0002,center); high=np.maximum(hi-.0002,center)
                 placements=[('group_center',center),('nearest_base',np.clip(base_local[others],low,high)),
                             ('face_center',np.clip(np.zeros(2),low,high))]
-                if face=='front':
+                if face!='top':
                     # A corner cup near the exposed upper edge can leave the
                     # other physical cups above the stack. Axis-aligned,
                     # face-centred groups were actually rejected on neighbors.

@@ -11,6 +11,7 @@ from .transfer_policy import endpoint_fk
 MODE = 'eco65_coupled_cycle_v1'
 J1_POLICY = 'RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2'
 J1_CAPTURE_POLICY = 'RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3'
+J1_FREE_POLICY = 'RAW_FINITE_JOINTS_BIDIRECTIONAL_NO_J1_MONOTONICITY_V4'
 J1_REVERSE_LIMIT = 1e-6
 INTERVALS = {'FIRST_APPROACH': -1, 'OUTBOUND': -1, 'RETURN': 1}
 EVENTS = ('ATTACH', 'RELEASE', 'NOMINAL_RECEIVE', 'IDEAL_RECEIVER_DRAIN', 'NEXT_TARGET')
@@ -24,13 +25,17 @@ def reverse_travel(q, direction):
 
 
 def business_direction(interval, policy=J1_POLICY):
-    if policy not in (J1_POLICY,J1_CAPTURE_POLICY):raise ValueError('BUSINESS_DIRECTION_POLICY_REQUIRED')
+    if policy not in (J1_POLICY,J1_CAPTURE_POLICY,J1_FREE_POLICY):raise ValueError('BUSINESS_DIRECTION_POLICY_REQUIRED')
     if interval not in INTERVALS:
         raise ValueError('BUSINESS_INTERVAL_REQUIRED')
+    if policy==J1_FREE_POLICY:return 0
     return 1 if interval=='FIRST_APPROACH' and policy==J1_CAPTURE_POLICY else INTERVALS[interval]
 
 
 def check_business_direction(q, interval, already_used=0., policy=J1_POLICY):
+    if policy==J1_FREE_POLICY:
+        # Validate raw finite samples; zero means no directional constraint.
+        return reverse_travel(q,business_direction(interval,policy))
     used = already_used+reverse_travel(q, business_direction(interval,policy))
     if not np.isfinite(used) or used > J1_REVERSE_LIMIT:
         raise ValueError('BUSINESS_J1_TOTAL_REVERSE_EXCEEDED')
@@ -115,7 +120,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         raise ValueError('CYCLE_PLAN_IDENTITY_INVALID')
     if (plan['snapshot_fingerprint'] != snapshot['fingerprint']
             or plan['identity'] != snapshot['native_model']['init']['identity']
-            or plan['j1_direction_policy'] not in (J1_POLICY,J1_CAPTURE_POLICY)
+            or plan['j1_direction_policy'] not in (J1_POLICY,J1_CAPTURE_POLICY,J1_FREE_POLICY)
             or plan['evaluation_profile'] != CHAIN
             or plan['replay_interpolation'] != INTERPOLATION
             or plan['physical_execution'] != 'NOT_RUN' or plan['execution_ready'] is not False):
@@ -128,6 +133,12 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         raise ValueError('BATCH_INVENTORY_CHANGED')
     sizes = {x['id']: x['size_m'] for x in snapshot['scene']['boxes']}
     robot = robot_for(snapshot['tool'], snapshot['scene'])
+    free=plan['j1_direction_policy']==J1_FREE_POLICY
+    if free:
+        from .transverse_process import POLICY, corners, pose_of
+        if (plan.get('transverse_process_policy')!=POLICY or
+                snapshot['scene'].get('transverse_process_policy')!=POLICY):
+            raise ValueError('CYCLE_TRANSVERSE_POLICY_IDENTITY_CHANGED')
     from .coupled_scene import coupled_conveyor_state, with_coupled_state
     from .native_scene import world_objects
     mechanism_cache={}
@@ -154,6 +165,25 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
     events = []
     for record in plan['records']:
         before, after = record['state_before'], record['state_after']
+        if free:
+            option=before.get('process_option')
+            if not option or record['native_request'].get('process_option')!=option:
+                raise ValueError('CYCLE_PROCESS_OPTION_MISSING')
+            if before['attachment'] and abs(before['height_m']-option['height_m'])>1e-8:
+                raise ValueError('EXTRACTION_BEFORE_REQUIRED_RECEIVE_HEIGHT')
+            if record['kind']=='external_axis' and before['attachment']:
+                raise ValueError('RECEIVER_SYNC_AFTER_ATTACHMENT_DISABLED')
+            if record.get('event_type')=='ATTACH' and abs(before['height_m']-option['height_m'])>1e-8:
+                raise ValueError('ATTACH_BEFORE_REQUIRED_RECEIVE_HEIGHT')
+            if record.get('event_type')=='RELEASE':
+                actual=box_pose(before,before['target_id'],robot)
+                original=next(b for b in snapshot['scene']['boxes'] if b['id']==before['target_id'])
+                region=receiving_geometry(actual,original['size_m'],before['mechanism']['receiving']['bounds_D_m'],
+                    desired_drop=option['expected_drop_m'],margin=before['mechanism']['receiving']['margin_m'])
+                if (not region['passed'] or
+                        abs(region['actual_box_bottom_m']-option['release_bottom_world_m'])>1e-6 or
+                        np.max(np.abs(actual[:3,:3]-pose_of(original)[:3,:3]))>1e-6):
+                    raise ValueError('CYCLE_TEMPLATE_RELEASE_CHANGED')
         check_state(before, ids)
         check_state(after, ids)
         check_mechanism(before)

@@ -21,6 +21,14 @@ int main() {
     require(m710::directedJ1(1.,.8,m710::ecoCycleDirection(req)),"FIRST_APPROACH_CLOCKWISE_ACCEPT");
     require(!m710::directedJ1(.8,1.,m710::ecoCycleDirection(req)),"FIRST_APPROACH_COUNTERCLOCKWISE_REJECT");
     auto old=req;old["j1_direction"]=0;rejects([&]{m710::ecoCycleDirection(old);});
+    auto free=req;free["j1_direction_policy"]=m710::kEcoFreeJ1Policy;
+    free["j1_direction"]=0;free["j1_reverse_limit_rad"]=0.;
+    for(const auto* interval:{"FIRST_APPROACH","OUTBOUND","RETURN"}) {
+      free["business_interval"]=interval;
+      require(m710::ecoCycleDirection(free)==0,"UNRESTRICTED_EVERY_BUSINESS_INTERVAL");
+      require(m710::directedJ1(-2.,2.,0)&&m710::directedJ1(2.,-2.,0),"BOTH_RAW_J1_DIRECTIONS");
+      require(m710::j1ReverseTravel(-2.,2.,0)+m710::j1ReverseTravel(2.,-1.,0)==0.,"LEGAL_REVERSAL_NO_BUDGET");
+    }
     auto capture=req;capture["j1_direction_policy"]=m710::kEcoCaptureJ1Policy;capture["j1_direction"]=1;
     require(m710::ecoCycleDirection(capture)==1,"CAPTURE_TO_FIRST_CONTACT_CCW");
     capture["business_interval"]="OUTBOUND";rejects([&]{m710::ecoCycleDirection(capture);});
@@ -95,7 +103,8 @@ int main() {
     bad=req;bad["world"].push_back({{"id","unknown"},{"size",{1,1,1}},{"pose",pose()}});
     rejects([&]{contract.checkRequest(bad);});
     std::cout<<J({{"status","PASS"},{"scope","SYNTHETIC_DIRECTION_AND_SCENE_PROTOCOL_ONLY"},
-      {"cases",25},{"accumulated_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
+      {"legacy_cases",25},{"bidirectional_business_intervals",3},
+      {"accumulated_legacy_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
     return 0;
   } catch(const std::exception& error) {std::cerr<<error.what()<<std::endl;return 1;}
 }

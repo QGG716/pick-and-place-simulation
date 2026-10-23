@@ -12,7 +12,7 @@ from .model import check_transform
 TYPE = 'cad_seal_contours_v1'
 TASK_TYPE = 'eco65_single_carton_task_v1'
 INDEPENDENT = 'SIMULATED_INDEPENDENT_CUPS'
-FACE_AXES = {'top': (2, 1.), 'front': (0, -1.)}
+FACE_AXES = {'top': (2, 1.), 'front': (0, -1.), 'left': (1, 1.), 'right': (1, -1.)}
 EDGE_ALIGNMENT = dict(schema='rigid_tool_face_edge_alignment_v1',
     axes_contact_frame=[[1.,0.,0.],[0.,0.,1.]], tolerance_rad=float(np.radians(1.)),
     source='RIGID_PLATE_CAD_X_Z_EQUIVALENT_TO_FIXED_TCP_X_Y',
@@ -71,7 +71,7 @@ def validate_task_contract(scene):
     if contract.get('schema') != TASK_TYPE or contract.get('target_face') not in FACE_AXES:
         raise ValueError('NATIVE_TASK_CONTRACT_OR_FACE_INVALID')
     if contract.get('cup_selection_mode') == INDEPENDENT:
-        if contract.get('allowed_faces') != ['top', 'front']:
+        if contract.get('allowed_faces') not in (['top', 'front'], ['top', 'front', 'left', 'right']):
             raise ValueError('NATIVE_TASK_ALLOWED_FACES_INVALID')
     elif contract.get('target_face') != 'top':
         raise ValueError('NATIVE_TASK_LEGACY_TOP_FACE_REQUIRED')
@@ -100,7 +100,8 @@ def validate_task_contract(scene):
         if (coverage is not None or explicit.get('schema')!='eco65_explicit_exposed_target_v1'
                 or explicit.get('target_id')!=contract['target_id']
                 or explicit.get('inventory_scope')!='UNCHANGED_TWELVE_CARTONS'
-                or explicit.get('source')!='USER_REQUEST'
+                or (explicit.get('source')!='USER_REQUEST' and not
+                    (explicit.get('source')=='TRANSVERSE_PROCESS_DISPATCH' and scene.get('transverse_process_policy')))
                 or contract['target_id'] not in {boxes[int(i)]['id'] for i in highest}):
             raise ValueError('NATIVE_TASK_EXPLICIT_TARGET_NOT_EXPOSED')
     target = boxes[int(selected[0])] if coverage is None and explicit is None else by_id[contract['target_id']]

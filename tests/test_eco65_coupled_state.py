@@ -119,7 +119,8 @@ def test_new_initial_candidates_use_separate_native_tasks_without_resetting_budg
     starts=[np.array([1.,0,0,0,0,0]),np.array([2.,0,0,0,0,0])]
     attempted=[]
     task=SimpleNamespace(progress_path=None,task_id='run-root',max_grasps=1,
-                         deadline=100.,cycle_failures=[])
+                         deadline=100.,cycle_failures=[],initial_mode='new_simulation',
+                         completed_ids=[],first_target_id='target')
     task.geometry_candidates=lambda:dict(candidates=[dict(candidate_id='g',tcp_pose_D=np.eye(4).tolist())])
     task.select_grasp=lambda g:None
     task.select_home=lambda pose:(np.zeros(6),{})
@@ -140,25 +141,10 @@ def test_new_initial_candidates_use_separate_native_tasks_without_resetting_budg
     assert all(np.array_equal(row[1],q) for row,q in zip(attempted,starts))
 
 
-def test_diagonal_extraction_uses_actual_attached_pose_and_remaining_stack():
-    from types import SimpleNamespace
+def test_diagonal_and_yaw_recovery_are_absent_from_new_process():
     from unloading_sim.eco65.coupled_task import CoupledTask
-    # Identity flange/attachment frames isolate the geometry of this measured
-    # 150 x 100 x 100 mm scene. No joint solution is supplied by this fixture.
-    actual=np.eye(4);actual[:3,3]=[.205,0.,.53]
-    target=dict(id='current',pose=[.205,0.,.53],size_m=[.15,.1,.1])
-    neighbor=dict(id='remaining',pose=[.205,-.11,.53],size_m=[.15,.1,.1])
-    removed=dict(id='completed',pose=[.205,.11,1.53],size_m=[.15,.1,.1])
-    task=SimpleNamespace(robot=SimpleNamespace(named_link_frames=lambda q:{'link_6':actual}),
-        current_q=np.zeros(6),attachment=np.eye(4),target=target,
-        scene=dict(boxes=[target,neighbor,removed]),completed_ids=['completed'],
-        identity=dict(flange_from_task_tcp=np.eye(4)))
-    above=CoupledTask.clear_stack_pose(task,recovery='diagonal_above')
-    halfway=CoupledTask.clear_stack_pose(task,recovery='clear_half_rise')
-    assert above[:3,3]==pytest.approx([.130,-.050,.635])
-    assert halfway[:3,3]==pytest.approx([.03486121811340027,-.100,.5825])
-    assert actual[:3,3]==pytest.approx([.205,0.,.53])
-    assert np.array_equal(task.current_q,np.zeros(6))
+    assert not hasattr(CoupledTask,'clear_stack_pose')
+    assert not hasattr(CoupledTask,'release_candidates')
 
 
 def test_return_search_reaches_other_carton_and_retains_matching_tool_family(monkeypatch):
@@ -175,8 +161,9 @@ def test_return_search_reaches_other_carton_and_retains_matching_tool_family(mon
     task.restore=lambda cp:None
     # The compatible family lies beyond the old first-eight truncation.
     front=[dict(candidate_id='front'+str(i),target_face='front',active_ids=['other'],
-                tcp_pose_D=np.eye(4).tolist()) for i in range(10)]
-    compatible=dict(candidate_id='compatible',target_face='top',active_ids=['known_cup'],tcp_pose_D=np.eye(4).tolist())
+                process_option={'option_id':'high'},tcp_pose_D=np.eye(4).tolist()) for i in range(10)]
+    compatible=dict(candidate_id='compatible',target_face='top',active_ids=['known_cup'],
+                    process_option={'option_id':'low'},tcp_pose_D=np.eye(4).tolist())
     task.geometry_candidates=lambda:dict(candidates=front+[compatible])
     attempts=[]
     task.select_next=lambda target,g:attempts.append((target['id'],g['candidate_id'],task.deadline))
@@ -187,6 +174,6 @@ def test_return_search_reaches_other_carton_and_retains_matching_tool_family(mon
     task.result=lambda **kw:dict(complete=True,fingerprint='old')
     monkeypatch.setattr(coupled_task,'validate_cycle',lambda *args:dict(status='PASS'))
     assert task.return_next()['complete']
-    assert {row[0] for row in attempts[:2]}=={'left','right'}
+    assert {row[0] for row in attempts[:6]}=={'left','right'}
     assert attempts[-1][1]=='compatible'
     assert all(row[2]==123. for row in attempts)

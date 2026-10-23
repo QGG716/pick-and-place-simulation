@@ -128,7 +128,8 @@ public:
        target_id_!=req.at("clearance_policy").at("target_id") || target_.id!=target_id_ ||
        spec_.at("collision_policy")!=req.at("clearance_policy").at("source_policy") ||
        spec_.at("maximum_penetration_m")!=.0004 || spec_.at("suction_edge_margin_m")!=.003 ||
-       (spec_.at("target_face")!="top" && spec_.at("target_face")!="front") || bands_.size()!=12)
+       (spec_.at("target_face")!="top" && spec_.at("target_face")!="front" &&
+        spec_.at("target_face")!="left" && spec_.at("target_face")!="right") || bands_.size()!=12)
       throw std::runtime_error("ECO65_PROCESS_CONTEXT_MISMATCH");
     if(stage_!="pregrasp" && stage_!="contact" && stage_!="extraction" && stage_!="transit" &&
        stage_!="place" && stage_!="withdrawal" && stage_!="residence") throw std::runtime_error("ECO65_PROCESS_STAGE_INVALID");
@@ -146,8 +147,11 @@ public:
         throw std::runtime_error("ECO65_TASK_CONTRACT_MISMATCH");
       if(independent) {
         if(spec_.value("cup_selection_mode",std::string())!="SIMULATED_INDEPENDENT_CUPS" ||
-           task.at("allowed_faces")!=Json::array({"top","front"}) || !spec_.contains("active_ids") ||
+           (task.at("allowed_faces")!=Json::array({"top","front"}) &&
+            task.at("allowed_faces")!=Json::array({"top","front","left","right"})) || !spec_.contains("active_ids") ||
            !spec_.contains("selection_binding"))throw std::runtime_error("ECO65_CUP_SELECTION_REQUIRED");
+        if(std::find(task.at("allowed_faces").begin(),task.at("allowed_faces").end(),spec_.at("target_face"))==task.at("allowed_faces").end())
+          throw std::runtime_error("ECO65_FACE_NOT_IN_BOUND_TASK");
         const auto& binding=spec_.at("selection_binding");
         if(binding.at("active_ids")!=spec_.at("active_ids") || binding.at("target_id")!=target_id_ ||
            binding.at("target_face")!=spec_.at("target_face") || binding.at("task_id")!=req.at("task_id") ||

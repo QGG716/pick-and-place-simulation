@@ -71,8 +71,9 @@ inline nlohmann::json checkSealContours(const nlohmann::json& geometry,
     if(!std::isfinite(x)||x<0)throw std::runtime_error("CONTACT_TOLERANCE_INVALID");
   if(angle>=std::acos(-1.)/2)throw std::runtime_error("CONTACT_TOLERANCE_INVALID");
   const std::string face=geometry.value("target_face",std::string("top"));
-  if(face!="top" && face!="front")throw std::runtime_error("CONTACT_TARGET_FACE_INVALID");
-  const int axis=face=="top"?2:0;const double sign=face=="top"?1.:-1.;
+  if(face!="top" && face!="front" && face!="left" && face!="right")throw std::runtime_error("CONTACT_TARGET_FACE_INVALID");
+  const int axis=face=="top"?2:face=="front"?0:1;
+  const double sign=(face=="top"||face=="left")?1.:-1.;
   const auto active=geometry.contains("active_ids")?geometry.at("active_ids"):geometry.at("expected_contour_ids");
   std::set<std::string> enabled;const auto expected=geometry.at("expected_contour_ids").get<std::set<std::string>>();
   if(!active.is_array() || active.empty())throw std::runtime_error("CONTACT_ACTIVE_SELECTION_INVALID");

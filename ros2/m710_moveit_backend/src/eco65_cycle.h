@@ -17,6 +17,7 @@ using CycleJson=nlohmann::json;
 inline constexpr const char* kEcoCycleMode="eco65_coupled_cycle_v1";
 inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2";
 inline constexpr const char* kEcoCaptureJ1Policy="RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3";
+inline constexpr const char* kEcoFreeJ1Policy="RAW_FINITE_JOINTS_BIDIRECTIONAL_NO_J1_MONOTONICITY_V4";
 inline constexpr double kEcoCycleReverseLimit=1e-6;
 inline std::string ecoCycleNextInterval(const CycleJson& req,const std::string& event) {
   const std::string goal=req.value("completion_goal",std::string());
@@ -27,6 +28,14 @@ inline std::string ecoCycleNextInterval(const CycleJson& req,const std::string& 
   return event=="RELEASE"?"RETURN":interval;
 }
 inline int ecoCycleDirection(const CycleJson& req) {
+  if(req.value("continuous_task_mode",std::string())==kEcoCycleMode &&
+      req.value("j1_direction_policy",std::string())==kEcoFreeJ1Policy) {
+    const auto interval=req.value("business_interval",std::string());
+    if((interval!="FIRST_APPROACH"&&interval!="OUTBOUND"&&interval!="RETURN") ||
+        req.value("j1_direction",2)!=0 || req.value("j1_reverse_used_rad",-1.)!=0. ||
+        req.value("j1_reverse_limit_rad",-1.)!=0.)throw std::runtime_error("ECO65_FREE_JOINT_POLICY_INVALID");
+    return 0;
+  }
   if(req.value("continuous_task_mode",std::string())!=kEcoCycleMode ||
       (req.value("j1_direction_policy",std::string())!=kEcoCycleJ1Policy &&
        req.value("j1_direction_policy",std::string())!=kEcoCaptureJ1Policy) ||
@@ -83,9 +92,47 @@ public:
     for(const auto& id:fixed)if(!initial_world.count(id))
       throw std::runtime_error("ECO65_CYCLE_FIXED_INVENTORY_INVALID");
   }
+  void checkOption(const CycleJson& req) const {
+    if(req.at("transverse_process_policy")!=binding.at("transverse_process_policy"))
+      throw std::runtime_error("ECO65_TRANSVERSE_POLICY_CHANGED");
+    const auto& option=req.at("process_option");
+    const std::string target=req.at("process_policy").at("target_id");
+    if(option.is_null() || option.at("target_id")!=target || !cartons.count(target) ||
+        option.at("face")!=req.at("process_policy").at("target_face"))
+      throw std::runtime_error("ECO65_TRANSVERSE_OPTION_REQUIRED");
+    const auto& frozen=cartons.at(target);const auto& spec=binding.at("mechanism_spec");
+    const double bottom=frozen.at("pose").at(2).get<double>()-frozen.at("size_m").at(2).get<double>()/2;
+    const double size=frozen.at("size_m").at(2),floor=spec.at("config").at("floor_z_m");
+    const std::string name=option.at("template"),face=option.at("face"),level=option.at("level");
+    const std::map<std::string,std::pair<std::string,std::string>> types={
+      {"FRONT_DIRECT_HIGH",{"front","HIGH"}}, {"FRONT_DIRECT_LOW",{"front","LOW"}},
+      {"FRONT_JUNCTION_LOW",{"front","LOW"}}, {"FRONT_LATERAL_LOW",{"front","LOW"}},
+      {"LEFT_INNER_LOW",{"right","LOW"}}, {"RIGHT_INNER_HIGH",{"left","HIGH"}},
+      {"TOP_FIXED_MINIMUM_RECEIVER",{"top","MINIMUM"}}};
+    if(!types.count(name)||types.at(name)!=std::make_pair(face,level)||
+        (face=="top" && !(bottom-floor<.100)))throw std::runtime_error("ECO65_TRANSVERSE_TEMPLATE_OR_TOP_THRESHOLD");
+    const double minimum=spec.at("low_height_m");
+    const double height=level=="MINIMUM"?minimum:bottom-.05-(level=="LOW"?size:0.);
+    const double release=face=="top"?std::max(bottom+.05,minimum+.05):bottom;
+    if(std::abs(option.at("height_m").get<double>()-height)>1e-9 ||
+        std::abs(option.at("release_bottom_world_m").get<double>()-release)>1e-9 ||
+        std::abs(option.at("expected_drop_m").get<double>()-(release-height))>1e-9 ||
+        height<minimum-1e-12 || height>spec.at("high_height_m").get<double>()+1e-12)
+      throw std::runtime_error("ECO65_TRANSVERSE_FROZEN_HEIGHT_INVALID");
+    const bool attached=!req.at("attachment").is_null();
+    const std::string event=req.contains("transition")?req.at("transition").value("event_type",std::string()):"";
+    if((attached||event=="ATTACH") &&
+        std::abs(req.at("mechanism_state").at("height_m").get<double>()-height)>1e-8)
+      throw std::runtime_error("EXTRACTION_BEFORE_REQUIRED_RECEIVE_HEIGHT");
+    if(attached && event=="COUPLED_LIFT")throw std::runtime_error("RECEIVER_SYNC_AFTER_ATTACHMENT_DISABLED");
+  }
   void checkRequest(const CycleJson& req) const {
     ecoCycleDirection(req);
+    const bool process=binding.contains("transverse_process_policy");
+    if(process != (req.at("j1_direction_policy")==kEcoFreeJ1Policy))
+      throw std::runtime_error("ECO65_CYCLE_STRATEGY_IDENTITY_CHANGED");
     if(!req.contains("process_policy"))return; // IK has no world authority.
+    if(process)checkOption(req);
     const auto& p=req.at("process_policy");const auto& task=p.at("task_contract");
     const std::string target=p.at("target_id");
     if(!cartons.count(target) || task.at("target_id")!=target ||
@@ -147,7 +194,7 @@ public:
     // Belts are rigid about their effective top-surface endpoints. The
     // scissor solids come from the same generator; shape/fixed-foot checks
     // above forbid resizing or moving anchored geometry.
-    const double length=spec.at("longitudinal_length_m"),rise=h-spec.at("low_height_m").get<double>();
+    const double length=spec.at("longitudinal_length_m"),rise=h-spec.value("longitudinal_lower_height_m",spec.at("low_height_m").get<double>());
     const double dx=std::sqrt(length*length-rise*rise),co=dx/length,si=rise/length;
     Eigen::Isometry3d transverse=Eigen::Isometry3d::Identity(),longitudinal=Eigen::Isometry3d::Identity();
     transverse.translation()<<spec.at("transverse_center_xy_m").at(0).get<double>(),

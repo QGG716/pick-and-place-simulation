@@ -79,7 +79,8 @@ if(model.base_translation){
 const p=new T.Vector3().setFromMatrixPosition(fk(currentQ).base_link);
 check('TRANSLATED_BASE_RENDERED_AT_DECLARED_POSITION',close(p.toArray(),model.base_translation.new_base_position_m,1e-12));
 }
-check('THREE_REAL_HEIGHT_PREVIEWS',DATA.previews.length===3);
+check('REAL_HEIGHT_PREVIEWS',DATA.previews.length>=3);
+if(DATA.transverse_process_policy)check('100MM_AND450MM_PREVIEWS',DATA.previews.some(p=>Math.abs(p.height_m-.100)<1e-9)&&DATA.previews.some(p=>Math.abs(p.height_m-.450)<1e-9));
 for(let i=0;i<DATA.previews.length;i++){
 preview(i);const expected=DATA.previews[i].state;
 check('PREVIEW_HEIGHT_'+i,state.height_m===expected.height_m);

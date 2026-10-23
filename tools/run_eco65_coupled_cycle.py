@@ -25,7 +25,7 @@ def main():
     p.add_argument('--carton-seconds',type=float,default=900.)
     p.add_argument('--search-trace',action='store_true')
     p.add_argument('--initial-mode',choices=('new_simulation','inherited_state'),default='new_simulation')
-    p.add_argument('--first-approach-direction',choices=('clockwise','counterclockwise'),default='clockwise')
+    p.add_argument('--first-approach-direction',choices=('unrestricted',),default='unrestricted')
     a=p.parse_args()
     output=a.output.resolve()
     output.relative_to(ROOT/'outputs')

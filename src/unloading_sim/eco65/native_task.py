@@ -134,7 +134,8 @@ class NativeTask:
             if continuous_task_mode != 'eco65_coupled_cycle_v1' or not self.scene.get('coupled_conveyor_spec'):
                 raise ValueError('CONTINUOUS_TASK_SCOPE_INVALID')
             self.init['continuous_task_mode'] = continuous_task_mode
-        self.directed_j1=self.evaluation_profile==CHAIN
+        self.directed_j1=(self.evaluation_profile==CHAIN and
+                         self.scene.get('transverse_process_policy') is None)
         self.init['directed_j1_enabled']=self.directed_j1
         self.init['search_trace_enabled']=bool(search_trace)
         self.trace_stages=tuple(trace_stages);self.trace_requests=tuple(trace_requests)

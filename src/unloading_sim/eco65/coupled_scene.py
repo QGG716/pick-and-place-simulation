@@ -15,7 +15,7 @@ import yaml
 from .model import ROOT, transform
 from ..moveit2_backend import digest
 
-CONFIG = ROOT / "configs/workcells/eco65_coupled_carton_v1.yaml"
+CONFIG = ROOT / "configs/workcells/eco65_coupled_carton_v2.yaml"
 REVISION = "upper_seam_lower_slider_v3"
 OWNERS = {"conveyor_transverse", "conveyor_longitudinal"}
 
@@ -126,17 +126,18 @@ def make_coupled_spec(source_scene, config=None):
     width = float(tb[1, 0]-tb[0, 0])
     transverse_length = float(tb[1, 1]-tb[0, 1])
     low, high = float(c["low_height_m"]), float(c["high_height_m"])
+    lower = float(c.get("longitudinal_lower_height_m", low))
     if (not np.allclose([width, lb[1, 1]-lb[0, 1]], [.2, .2], atol=1e-9, rtol=0)
-            or abs(low-.18) > 1e-12 or not low < high < low+length
+            or not 0 < low < high or max(abs(low-lower), abs(high-lower)) >= length
             or np.any(tb[1] <= tb[0]) or np.any(lb[1] <= lb[0])
-            or not np.allclose([tb[1, 2], lb[1, 2]], low, atol=1e-9, rtol=0)):
+            or not np.allclose([tb[1, 2], lb[1, 2]], lower, atol=1e-9, rtol=0)):
         raise ValueError("ECO65_MEASURED_BELT_GEOMETRY_INVALID")
     ymin = float(c["transverse_ymin_m"])
     centers = dict(conveyor_transverse=[float(np.mean(tb[:, 0])), ymin+transverse_length/2, low],
                    conveyor_longitudinal=[float(tb[0, 0])-length/2, ymin+width/2, low])
-    slope = (high-low)/np.sqrt(length**2-(high-low)**2)
-    original_centers = {"conveyor_transverse": [*np.mean(tb[:, :2], axis=0), low],
-                        "conveyor_longitudinal": [*np.mean(lb[:, :2], axis=0), low]}
+    slope = (high-lower)/np.sqrt(length**2-(high-lower)**2)
+    original_centers = {"conveyor_transverse": [*np.mean(tb[:, :2], axis=0), tb[1,2]],
+                        "conveyor_longitudinal": [*np.mean(lb[:, :2], axis=0), lb[1,2]]}
     templates = []
     source_objects = [o for o in source_scene["native_world_objects"] if o.get("owner") in OWNERS]
     previous = source_scene.get('coupled_conveyor_spec')
@@ -180,11 +181,13 @@ def make_coupled_spec(source_scene, config=None):
                 belt_geometry_revision="surface_centred_local_rebuild_v2",
                 source_scene_fingerprint=source_scene["scene_fingerprint"],
                 low_height_m=low, high_height_m=high, config=c, longitudinal_length_m=length,
+                longitudinal_lower_height_m=lower,
+                support_geometry_revision="eco65_100mm_transverse_pin22_fixed_lower180_v3",
                 transverse_width_m=width, transverse_length_m=transverse_length,
                 transverse_center_xy_m=centers["conveyor_transverse"][:2],
                 longitudinal_center_y_m=centers["conveyor_longitudinal"][1],
                 transverse_xmin_m=float(tb[0, 0]), seam_relief_slope=float(slope),
-                belt_depth_m=float(max(low-tb[0, 2], low-lb[0, 2])),
+                belt_depth_m=float(max(tb[1,2]-tb[0, 2], lb[1,2]-lb[0, 2])),
                 belt_templates=templates,
                 replaced_object_ids=[o["id"] for o in source_objects],
                 replaced_obstacle_ids=["junction_transition_plate"],
@@ -194,7 +197,7 @@ def make_coupled_spec(source_scene, config=None):
                     belts="ORIGINAL_CONVEX_BELT_CONTOURS; TRANSVERSE_UNDERSIDE_SEAM_RELIEF_ADDED",
                     supports="ALL_OLD_STATIC_CONVEYOR_STRUCTURES_REPLACED_BY_FIXED_LENGTH_SCISSORS_AND_RAILS",
                     frame="NEW_32MM_FRAME_WITH_FIXED_MAXIMUM_ANGLE_SEAM_RELIEF",
-                    low_height_design="26MM_LOWER_PINS; SHORT_RAILS_AND_FEET_DESIGNED_FOR_180MM_SURFACE",
+                    low_height_design="TRANSVERSE_PIN_22MM_AND_6MM_FEET; LONGITUDINAL_PINS_26MM_AND_FIXED_180MM_ENDPOINT; RODS_UNCHANGED",
                     qualification="PROJECT_GEOMETRY_NOT_MANUFACTURING_OR_LOAD_RATING"))
     spec["fingerprint"] = digest(spec)
     # Fail on an invalid configured endpoint before writing a scene.
@@ -269,6 +272,13 @@ def _scissor(name, anchor, top_z, config, floor_z=0.):
             level = 0 if end == "base" else stages
             mates.extend([[key, f"{name}_{end}_rail", "FIXED_BEARING" if side == 0 else "Y_SLIDER"],
                           [key, f"{name}_end_pin_{level}_{side}", "END_BEARING"]])
+            # The box bearing/rail proxies cover the journal pockets. These
+            # exact assembly pairs do not exempt any robot or carton contact.
+            bar=f"{name}_arm_{0 if end=='base' else stages-1}_{side if end=='base' else 1-side}"
+            mates.append([key,bar,"JOURNAL_POCKET_PROXY"])
+            if end=='head':
+                mates.extend([[f"{name}_head_rail",bar,"TOP_JOURNAL_POCKET_PROXY"],
+                    [f"{name}_head_rail",f"{name}_end_pin_{level}_{side}","TOP_JOURNAL_POCKET_PROXY"]])
     fixed = [f"{name}_base_rail", f"{name}_foot_0", f"{name}_foot_1", f"{name}_base_slider_0"]
     return rows, dict(id=name, stages=stages, span_m=span, stage_rise_m=rise,
                       arm_length_m=length, bars=bars, joints=joints, fixed_object_ids=fixed,
@@ -287,7 +297,8 @@ def coupled_conveyor_state(spec, height_m):
     if not np.isfinite(H) or not low-1e-12 <= H <= high+1e-12:
         raise ValueError("ECO65_COUPLED_HEIGHT_OUT_OF_RANGE")
     length = spec["longitudinal_length_m"]
-    rise = H-low
+    lower_height = float(spec.get("longitudinal_lower_height_m", low))
+    rise = H-lower_height
     dx = float(np.sqrt(length**2-rise**2))
     theta = float(np.arctan2(rise, dx))
     co, si = dx/length, rise/length
@@ -318,7 +329,8 @@ def coupled_conveyor_state(spec, height_m):
     trans_spec = c["transverse_scissor"]
     for side in (-1, 1):
         x = transverse[0]+side*c["transverse_support_x_offset_m"]
-        anchor = [x, transverse[1]-trans_spec["arm_length_m"]/2, c["scissor_base_pin_z_m"]]
+        anchor = [x, transverse[1]-trans_spec["arm_length_m"]/2,
+                  c.get("transverse_base_pin_z_m", c["scissor_base_pin_z_m"])]
         key = "eco65_lift_transverse_" + ("left" if side < 0 else "right")
         rows, info = _scissor(key, anchor, H-depth-.020, trans_spec, c["floor_z_m"])
         world.extend(rows); stacks.append(info); fixed.extend(info["fixed_object_ids"])
@@ -344,14 +356,16 @@ def coupled_conveyor_state(spec, height_m):
         info["swivel_angle_rad"] = theta
         mates.extend(info["additional_mates"])
         mates.append([key+"_swivel_head", "eco65_longitudinal_rigid_frame", "ROTATING_SLIDING_SUPPORT"])
+        mates.extend([[key+"_head_rail",key+"_neck","HEAD_FIXED_JOURNAL_PROXY"],
+                      [key+"_neck",key+"_swivel_head","SWIVEL_JOURNAL_PROXY"]])
     low_x = upper[0]-length
-    travel = length-np.sqrt(length**2-(high-low)**2)
+    travel = length-np.sqrt(length**2-max(abs(high-lower_height),abs(low-lower_height))**2)
     rail_min = low_x-c["lower_rail_end_margin_m"]
     rail_max = low_x+travel+c["lower_rail_end_margin_m"]
     # The 180 mm low surface requires short feet, not the reference 200 mm
     # rail offset. Both rails and all four feet remain fixed in D.
-    rail_z = low-depth-c["lower_rail_below_frame_m"]
-    carriage_z = low-depth-c["lower_carriage_below_frame_m"]
+    rail_z = lower_height-depth-c["lower_rail_below_frame_m"]
+    carriage_z = lower_height-depth-c["lower_carriage_below_frame_m"]
     lower_hinges = []
     for side in (-1, 1):
         y = lower[1]+side*c["lower_rail_y_offset_m"]
@@ -373,12 +387,12 @@ def coupled_conveyor_state(spec, height_m):
         # heights; an underside-normal-offset bearing would disconnect as the
         # conveyor tilts and is deliberately not used.
         bearing = key+"_bearing_housing"
-        bearing_bottom = low-.010
+        bearing_bottom = lower_height-.010
         post_bottom = carriage_z+.008
         post = key+"_bearing_post"
         world.append(_box(post, [lower[0], y, (post_bottom+bearing_bottom)/2],
                           [.020, .018, bearing_bottom-post_bottom]))
-        world.append(_box(bearing, [lower[0], y, low], [.024, .020, .020], role="lift_hinge"))
+        world.append(_box(bearing, [lower[0], y, lower_height], [.024, .020, .020], role="lift_hinge"))
         bracket = key+"_rotating_end_bracket"
         local = np.array([-.008, side*(width/2+.002), -.014])
         world.append(_box(bracket, lower+R@local, [.028, .004, .028],
@@ -429,6 +443,21 @@ def coupled_conveyor_state(spec, height_m):
     return result
 
 
+def _state_native_objects(scene, state):
+    replaced=set(scene['coupled_conveyor_spec']['replaced_object_ids'])
+    return [o for o in scene['native_world_objects'] if o['id'] not in replaced
+            and o.get('owner') not in OWNERS and o.get('owner')!='coupled_receiver']+state['world_objects']
+
+
+def native_coupled_world(scene, height_m):
+    """Same solids without copying calibration images/asset manifests per query."""
+    from .native_scene import world_objects
+    state=coupled_conveyor_state(scene['coupled_conveyor_spec'],height_m)
+    replaced=scene['coupled_conveyor_spec']['replaced_obstacle_ids']
+    return world_objects(dict(obstacles=[o for o in scene['obstacles'] if o['id'] not in replaced],
+                              native_world_objects=_state_native_objects(scene,state)))
+
+
 def with_coupled_state(scene, height_m):
     """Materialize one robot-motion world while preserving the static identity.
 
@@ -439,10 +468,7 @@ def with_coupled_state(scene, height_m):
     result = deepcopy(scene)
     state = coupled_conveyor_state(scene["coupled_conveyor_spec"], height_m)
     spec = scene["coupled_conveyor_spec"]
-    replaced = set(spec["replaced_object_ids"])
-    result["native_world_objects"] = [o for o in result["native_world_objects"]
-                                      if o["id"] not in replaced and o.get("owner") not in OWNERS
-                                      and o.get("owner") != "coupled_receiver"] + state["world_objects"]
+    result["native_world_objects"] = _state_native_objects(result, state)
     result["obstacles"] = [o for o in result["obstacles"] if o["id"] not in spec["replaced_obstacle_ids"]]
     result["mesh_obstacles"] = [o for o in result.get("mesh_obstacles", [])
                                 if o["id"] not in spec["replaced_visual_ids"]]
@@ -458,7 +484,8 @@ def build_coupled_scene(source_scene, config=None):
     result = deepcopy(source_scene)
     spec = make_coupled_spec(source_scene, config)
     result["coupled_conveyor_spec"] = spec
-    result = with_coupled_state(result, spec["config"]["initial_height_m"])
+    initial = source_scene.get("coupled_state", {}).get("height_m", spec["config"]["initial_height_m"])
+    result = with_coupled_state(result, initial)
     result["layout_id"] = spec["config"]["layout_id"]
     result["collision_policy_mode"] = spec["config"]["collision_policy_mode"]
     if "extraction_carton_contact_mode" in spec["config"]:
@@ -473,12 +500,14 @@ def build_coupled_scene(source_scene, config=None):
 
 def receiving_height_candidates(spec, initial_box):
     """Freeze both process heights from the initial target, never carried pose."""
-    bottom = float(initial_box["pose"][2]-initial_box["size_m"][2]/2)
+    from .transverse_process import corners
+    z = corners(initial_box)[:, 2]
+    bottom, height = float(z.min()), float(z.max()-z.min())
     drop = spec["config"]["desired_drop_m"]
     return [dict(name=name, height_m=float(height), initial_box_bottom_m=bottom,
                  desired_drop_m=drop, in_hardware_range=bool(spec["low_height_m"] <= height <= spec["high_height_m"]))
             for name, height in (("receive_high", bottom-drop),
-                                 ("receive_low", bottom-initial_box["size_m"][2]-drop))]
+                                 ("receive_low", bottom-height-drop))]
 
 
 def export_state_usd(state, output):

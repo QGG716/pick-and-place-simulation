@@ -271,10 +271,13 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
             mechanism_spec=scene['coupled_conveyor_spec'],
             initial_world=world_objects(scene),
             mechanism_initial_state=coupled_conveyor_state(scene['coupled_conveyor_spec'],
-                scene['coupled_conveyor_spec']['low_height_m']),
+                scene['coupled_state']['height_m']),
             original_cartons=[{k: box[k] for k in ('id', 'pose', 'size_m', 'supported_by')}
                               for box in scene['boxes']],
             initial_target_id=scene['target_box_id'])
+        if scene.get('transverse_process_policy'):
+            init['coupled_cycle_binding']['transverse_process_policy']=scene['transverse_process_policy']
+            identity['transverse_process_policy_fingerprint']=digest(scene['transverse_process_policy'])
         identity['coupled_cycle_binding_fingerprint'] = digest(init['coupled_cycle_binding'])
     return dict(init=init, tool=tool, asset_audit=audit, convex_bindings=bindings,
                 official_limits=official_limits, simulation_limits=limits,

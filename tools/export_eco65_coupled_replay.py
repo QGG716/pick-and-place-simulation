@@ -147,7 +147,8 @@ def transition_failures(request, result):
         state = dict(q=req['q_start'],world=req['world'],attachment=req.get('attachment'),
             active_ids=process.get('active_ids', []),target_id=process.get('target_id'),
             target_face=process.get('target_face'),height_m=req.get('mechanism_state',{}).get('height_m'),
-            business_interval=req.get('business_interval'),completed_ids=req.get('completed_ids',[]))
+            business_interval=req.get('business_interval'),process_option=req.get('process_option'),
+            j1_direction_policy=req.get('j1_direction_policy'),completed_ids=req.get('completed_ids',[]))
         failures.append(dict(q=req['q_start'],witness=witness,state=state,
             source='SAME_NATIVE_TRANSITION_'+label))
     return failures
@@ -282,7 +283,8 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
     # Working candidates are frozen from the actual initial carton; bounds below
     # are only used to retain candidates, not to infer mechanical stroke.
     working = [r for r in receiving_height_candidates(spec,first) if r['in_hardware_range']]
-    heights = [('LOW_INITIAL', initial_height)] + [(r['name'], r['height_m']) for r in working]
+    heights = [('ACTUAL_INITIAL', initial_height),('HARDWARE_MINIMUM',spec['low_height_m']),
+               ('HARDWARE_MAXIMUM',spec['high_height_m'])] + [(r['name'], r['height_m']) for r in working]
     previews = []
     # Full static world/cartons come from the authoritative initialized model.
     from unloading_sim.eco65.native_scene import world_objects
@@ -319,7 +321,7 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
     if plan:
         from unloading_sim.eco65.coupled_state import validate_cycle
         validation = (validate_cycle(plan, snapshot, require_complete=bool(plan['complete']))
-                      if check_cycle else dict(status='NOT_RUN_USER_REQUEST',
+                      if check_cycle else dict(status='NOT_RUN_EXPORT_OPTION',
                                                complete=bool(plan['complete'])))
         for original in records:
             row = deepcopy(original)
@@ -437,6 +439,8 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             for k, v in robot.named_link_frames(q).items()}))
     return share_worlds(dict(schema='eco65_coupled_replay_v1', model=model,
         perception_binding=snapshot['scene'].get('perception_binding'),
+        transverse_process_policy=snapshot['scene'].get('transverse_process_policy'),
+        initial_process_dispatch=snapshot['scene'].get('initial_process_dispatch'),
         snapshot_fingerprint=snapshot['fingerprint'],
         collision_policy=snapshot['native_model']['init']['collision_policy'],
         preview_display_policy=policy_display(
@@ -450,7 +454,8 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
             displayed_chain_scope='COMPLETE_PLAN' if plan and plan['complete'] else 'SINGLE_TRIAL_SUCCESSFUL_PREFIX_ONLY'),
         plan_summary=None if plan is None else {k:plan.get(k) for k in (
             'schema','complete','status','completion_goal','inventory_ids','process_history','ik_posture_preference','first_target_id','next_target_id','planning_wall_s',
-            'physical_execution','execution_ready','j1_direction_policy','failures')},
+            'physical_execution','execution_ready','j1_direction_policy','failures',
+            'transverse_process_policy','process_search','grasp_search','adopted_process')},
         initial_state=plan['initial_state'] if plan else previews[0]['state'],
         terminal_state=plan['terminal_state'] if plan else None,
         validation=validation, duration_s=duration, times=totals, fk_fixtures=fixtures,

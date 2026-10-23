@@ -12,7 +12,7 @@ def geometry():
     return dict(geometry_type='cad_seal_contours_v1',expected_contour_ids=[r['id'] for r in rows],contours=rows,flange_from_contact_frame=np.eye(4).tolist())
 
 
-@pytest.mark.parametrize('face',['top','front'])
+@pytest.mark.parametrize('face',['top','front','left','right'])
 def test_real_polygon_subset_placements_use_face_normal(face):
     g=geometry();size=[.15,.10,.10]
     result=grasp_candidates(g,np.eye(4),size,np.eye(4),[-.3,0,0],target_id='target',faces=[face])
@@ -22,7 +22,8 @@ def test_real_polygon_subset_placements_use_face_normal(face):
     report=check_contours(g,c['tcp_pose_D'],np.eye(4),size,gap=.0004,penetration=.0004,face=face,active_ids=c['active_ids'])
     assert report['status']=='PASS' and report['checked_count']==12
     assert check_contours(g,c['tcp_pose_D'],np.eye(4),size,gap=.0004,penetration=.0004,face=face)['status']=='FAIL'
-    moved=np.array(c['tcp_pose_D']);moved[2 if face=='top' else 0,3]+=.03
+    from unloading_sim.eco65.native_contact import FACE_AXES
+    moved=np.array(c['tcp_pose_D']);moved[FACE_AXES[face][0],3]+=.03
     assert check_contours(g,moved,np.eye(4),size,gap=.0004,penetration=.0004,face=face,active_ids=c['active_ids'])['status']=='FAIL'
 
 

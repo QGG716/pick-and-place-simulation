@@ -511,8 +511,14 @@ class Worker {
         const Eigen::Vector3d extent=pose.linear().cwiseAbs()*half;
         const auto& receiver=req.at("process_policy").at("task_contract").at("receiving");
         const double gap=pose.translation().z()-extent.z()-receiver.at("bounds_D_m").at(1).at(2).get<double>();
-        if(!m710::ecoCycleLevelBox(pose) ||
-            std::abs(gap-cycle_binding->binding.at("mechanism_spec").at("config").at("desired_drop_m").get<double>())>1e-6)
+        const bool templates=cycle_binding->binding.contains("transverse_process_policy");
+        const double expected_drop=templates?req.at("process_option").at("expected_drop_m").get<double>():
+            cycle_binding->binding.at("mechanism_spec").at("config").at("desired_drop_m").get<double>();
+        if(templates && (std::abs(pose.translation().z()-extent.z()-
+            req.at("process_option").at("release_bottom_world_m").get<double>())>1e-6 ||
+            (pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-6))
+          throw std::runtime_error("ECO65_TEMPLATE_RELEASE_HEIGHT_OR_ORIENTATION_CHANGED");
+        if(!m710::ecoCycleLevelBox(pose) || std::abs(gap-expected_drop)>1e-6)
           throw std::runtime_error("ECO65_CYCLE_RELEASE_DROP_INVALID");
         for(int k=0;k<2;++k)
           if(pose.translation()[k]-extent[k]<receiver.at("bounds_D_m").at(0).at(k).get<double>()+receiver.at("margin_m").get<double>()-1e-6 ||
@@ -1075,7 +1081,8 @@ public:
       else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
       std::vector<rclcpp::Parameter> params;
       for(auto it=req.at("parameters").begin(); it!=req.at("parameters").end(); ++it) {
-        if((req.value("search_trace_enabled",false)||directed_j1) && it.key()=="ompl.planning_plugin") {
+        if((req.value("search_trace_enabled",false)||directed_j1||
+            !req.value("continuous_task_mode",std::string()).empty()) && it.key()=="ompl.planning_plugin") {
           if(!planning_only || planning_mode!="cold_from_scratch")throw std::runtime_error("SEARCH_TRACE_SCOPE_INVALID");
           params.emplace_back(it.key(),std::string("m710/RecordedOMPLPlanner"));continue;
         }
@@ -1122,7 +1129,8 @@ public:
       m710::validateEco65RigidCartonPolicy(bound_policy,model,bound_process_geometry,bound_tools,bound_compliant);
       const auto continuous_mode=req.value("continuous_task_mode",std::string());
       if(!continuous_mode.empty()) {
-        if(continuous_mode!=m710::kEcoCycleMode || !directed_j1 || !planning_only ||
+        const bool free_joints=req.at("coupled_cycle_binding").contains("transverse_process_policy");
+        if(continuous_mode!=m710::kEcoCycleMode || directed_j1==free_joints || !planning_only ||
             evaluation_profile!="chain_integration_v1" || planning_mode!="cold_from_scratch" ||
             req.at("identity").value("robot_variant",std::string())!="ECO65-B")
           throw std::runtime_error("ECO65_CONTINUOUS_MODE_SCOPE_INVALID");
