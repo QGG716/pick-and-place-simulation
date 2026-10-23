@@ -4236,16 +4236,18 @@ def build_m710_layout_trajectory_connector(
     )
     expected_virtual = np.eye(4)
     expected_virtual[:3, :3] = planner_rotation
-    expected_virtual[0, 3] = 0.2500
+    from .tool_connector_extension import connector_extension_m
+    extension=connector_extension_m({'connector_extension_m':getattr(lightweight_robot,'tool_connector_extension_m',0.)})
+    expected_virtual[0, 3] = 0.2500 + extension
     expected_physical = np.eye(4)
     expected_physical[:3, :3] = planner_rotation
     expected_physical[0, 3] = flange_from_physical[0, 3]
     if not np.allclose(flange_from_virtual, expected_virtual, atol=1e-12, rtol=0.0):
         return unavailable(
             "VIRTUAL_TASK_TCP_IDENTITY_MISMATCH",
-            "the fixed virtual task TCP must remain 0.250 m along the resolved planner axis",
+            "the virtual task TCP must match the explicit layout connector length along the resolved planner axis",
         )
-    if not np.allclose(flange_from_physical, expected_physical, atol=1e-12, rtol=0.0) or not 0.2125 <= flange_from_physical[0, 3] <= 0.2275:
+    if not np.allclose(flange_from_physical, expected_physical, atol=1e-12, rtol=0.0) or not 0.2125 + extension <= flange_from_physical[0, 3] <= 0.2275 + extension:
         return unavailable(
             "PHYSICAL_CONTACT_FRAME_IDENTITY_MISMATCH",
             "the physical plane must remain within the source-defined 0-15 mm cup compression range on the resolved axis",

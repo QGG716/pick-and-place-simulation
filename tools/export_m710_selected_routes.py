@@ -15,6 +15,7 @@ def main():
     p.add_argument('run',type=Path);p.add_argument('output',type=Path)
     p.add_argument('--source-root',type=Path,default=ROOT)
     p.add_argument('--overlay',type=Path,default=ROOT/'tools/search_replay/selected_routes.js')
+    p.add_argument('--geometry-preview',type=Path,help='Saved same-source static c01 envelope, never a robot path')
     args=p.parse_args();work=args.source_root
     sys.path[:0]=[str(work/'src'),str(work/'tools')]
     from plan_m710_mount_comparison import make_context
@@ -24,9 +25,10 @@ def main():
     from unloading_sim.upper_arm_preference import upper_arm
     read=lambda f:json.loads(f.read_text())
     summary=read(args.run/'summary.json');protocol=read(args.run/'protocol.json')
-    assert protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
+    finite=protocol['scope']=='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
+    assert finite or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
     assert summary['completed_count']==0 and summary['historical_completed_count']==32
-    assert [o['target_id'] for o in summary['outcomes']]==['carton_l01_c01','carton_l01_c00','carton_l01_c04']
+    assert [o['target_id'] for o in summary['outcomes']]==(['carton_l01_c01'] if finite else ['carton_l01_c01','carton_l01_c00','carton_l01_c04'])
     context,built,_=make_context(protocol['mounting_variant'],layout_path=work/protocol['active_layout_file'],
         robot_mount_contact_exemption=True,l01_tool_chassis_exemption=True)
     assert type(built.robot).__name__=='PinocchioHppFclBackend'
@@ -62,12 +64,15 @@ def main():
                 source_files=receipt['file_sha256'],original_archive_sha256=receipt['sha256'])
             if ik:
                 detail=get(folder+'/attempt.json');goal=ik[0]['goal_pose']
-                assert name=='carton_l01_c04' and not detail.get('contact_complete')
+                assert name==('carton_l01_c01' if finite else 'carton_l01_c04') and not detail.get('contact_complete')
                 assert all(c['status']=='NATIVE_IK_FAILED' and c['q_start']==q and c['q_goal'] is None and c['goal_pose']==goal for c in ik)
                 case.update(kind='ik',goal_pose=goal,commanded_cups=sum(detail['expected_contact']['commanded_active_mask']),
                     predicted_cups=sum(detail['expected_contact']['geometrically_eligible_mask']),
-                    title='顶吸接近 IK 未求解',
-                    detail=f'90 秒共享前缀预算内实际派发 {len(ik)} 次 IK，均未求解。尚未检查目标碰撞、接近轨迹、contact 或 +Z → −X 抽离。没有本次碰撞见证，也不是全局不可达证明。')
+                    title=('侧吸' if finite else '顶吸')+'接近 IK 未求解',
+                    detail=f'90 秒共享前缀预算内实际派发 {len(ik)} 次 IK，均未求解。尚未检查目标碰撞、接近轨迹、contact 或两段抽离。没有本次碰撞见证，也不是全局不可达证明。')
+                if finite:
+                    case['finite_side_exposure']=row['finite_side_exposure']
+                    assert next(f for f in row['screening'] if f['geometric_face_id']=='y+')['available']
             else:
                 assert row['failure']=='BUSINESS_FACE_NOT_CURRENTLY_EXPOSED'
                 face=next(f for f in row['screening'] if f['geometric_face_id']=='y+')
@@ -81,6 +86,15 @@ def main():
     data=dict(label='l01 指定三箱本轮记录',model=model,inspection_cases=cases,
         raw=dict(source_commit=summary['source_commit'],attempts=displays),result=dict(complete=False,target_id='l01 指定三箱'),request_log=[],
         qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
+    if finite:
+        data.update(label='c01 短侧移',inspection_title='c01 短侧移 · 几何与本次 IK 记录',
+            inspection_subtitle='c01 单箱 · 本轮 0/1<br>Hmax 固定 250 mm · 物理执行 NOT_RUN')
+    if args.geometry_preview:
+        preview=read(args.geometry_preview)
+        assert finite and preview['source_commit']==summary['source_commit']
+        assert preview['scope']=='STATIC_FIXED_TOOL_POSE_ENVELOPE_NOT_ROBOT_PATH'
+        assert preview['target']==cases[0]['target_id'] and preview['tool_body_count']==cases[0]['finite_side_exposure']['tool_bodies']
+        data['geometry_preview']=preview
     template=(work/'tools/search_replay/viewer.html').read_text(encoding='utf-8');vendor=work/'tools/search_replay/vendor'
     template=template.replace('/*__VENDOR__*/','\n'.join((vendor/n).read_text(encoding='utf-8') for n in ('three.min.js','OrbitControls.js')))
     template=template.replace('/*__DATA__*/',json.dumps(data,ensure_ascii=False,separators=(',',':'),allow_nan=False).replace('</','<\\/'))

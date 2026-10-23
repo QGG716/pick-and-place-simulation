@@ -314,6 +314,9 @@ class WorkcellLayout:
         tool = load_tool_config(_resolve(self.config_path, str(tool_data["load_config"])))
         geometry = load_tool_config(_resolve(self.config_path, str(tool_data["geometry_config"])))
         rigid_tool_boxes = _rigid_tool_compound_boxes(geometry.data, self.config_path.parents[2])
+        from .tool_connector_extension import connector_extension_m,extended_connector_boxes
+        extension=connector_extension_m(tool_data)
+        rigid_tool_boxes=extended_connector_boxes(rigid_tool_boxes,extension)
         compliant_tool_boxes = _compliant_tool_compound_boxes(
             geometry.data, self.config_path.parents[2]
         )
@@ -322,12 +325,14 @@ class WorkcellLayout:
             urdf_path=_resolve(self.config_path, str(robot_data["urdf_path"])),
             base_position=base[:3, 3],
             base_rpy=self.data["assembly"]["world_rpy_rad"],
-            tool_length=float(tool.tcp_translation_xyz_m[0]),
+            tool_length=float(tool.tcp_translation_xyz_m[0])+extension,
             tool_collision_size=None,
             tool_collision_center_offset=None,
             tool_collision_local_boxes=rigid_tool_boxes,
         )
-        mechanical_tcp = make_transform(tool.tcp_rotation_matrix, tool.tcp_translation_xyz_m)
+        tcp_translation=np.array(tool.tcp_translation_xyz_m,copy=True)
+        tcp_translation[0]+=extension
+        mechanical_tcp = make_transform(tool.tcp_rotation_matrix, tcp_translation)
         task_axes = make_transform(rotation_matrix_from_rpy(0.0, np.pi / 2.0, 0.0))
         frames = robot.named_link_frames(np.zeros(6))
         flange_from_tip = np.linalg.inv(frames["flange"]) @ frames["tool0"]
@@ -337,6 +342,7 @@ class WorkcellLayout:
         # the post-release swept-path certificate so all 202 physical tool
         # entities, including inactive compliant cups, clear the moving box.
         robot.tool_compliant_collision_local_boxes = compliant_tool_boxes
+        robot.tool_connector_extension_m=extension
         return robot
 
 
@@ -456,7 +462,11 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     if np.any(base_max <= base_min) or abs(float(base_min[2])) > 1e-12:
         raise ValueError("official base support bounds must be ordered and start at mounting Z=0")
     tool = _mapping(data["tool"], "tool")
-    _keys(tool, {"load_config", "geometry_config", "geometry_status", "physical_step_length_m", "planning_tcp_status"}, "tool")
+    tool_keys={"load_config", "geometry_config", "geometry_status", "physical_step_length_m", "planning_tcp_status"}
+    if 'connector_extension_m' in tool:tool_keys.add('connector_extension_m')
+    _keys(tool,tool_keys,"tool")
+    from .tool_connector_extension import connector_extension_m
+    connector_extension_m(tool)
     _positive(tool["physical_step_length_m"], "tool.physical_step_length_m")
     trailer = _mapping(data["trailer"], "trailer")
     _keys(trailer, {"inner_width_m", "right_wall_y_m", "left_wall_y_m",
@@ -878,6 +888,14 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
             "legacy_104_task_population": "NOT_REINTERPRETED_WITH_LAYOUT_V1",
         },
     }
+    from .tool_connector_extension import connector_extension_m,connector_extension_evidence
+    extension=connector_extension_m(layout.data['tool'])
+    if extension:
+        snapshot['tool']['connector_extension']=connector_extension_evidence(extension)
+        snapshot['tool']['tcp_transform']=dict(tool_load.tcp_transform)
+        translation=list(snapshot['tool']['tcp_transform']['translation_xyz_m'])
+        translation[0]+=extension
+        snapshot['tool']['tcp_transform']['translation_xyz_m']=translation
     snapshot["scene_fingerprint"] = canonical_digest(snapshot)
     return snapshot
 

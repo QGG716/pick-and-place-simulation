@@ -33,6 +33,11 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
+    extension=protocol.get('tool_connector_extension_m',0.)
+    if extension:
+        if extension!=.1 or protocol['scope']!='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX':
+            raise ValueError('UNAPPROVED_POPULATION_TOOL_EXTENSION')
+        expected=expected.removesuffix('.yaml')+'_tool_extension100.yaml'
     if protocol['active_layout_file'] != expected:
         raise ValueError('POPULATION_LAYOUT_VARIANT_MISMATCH')
     return mounts[variant]

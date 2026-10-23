@@ -277,7 +277,9 @@ class ToolFrameContract:
         }
 
 
-def _load_tool_frame_contract(value: Any) -> ToolFrameContract:
+def _load_tool_frame_contract(value: Any, *, connector_extension_m: float = 0.) -> ToolFrameContract:
+    from .tool_connector_extension import connector_extension_m as validate_extension
+    extension = validate_extension({'connector_extension_m': connector_extension_m})
     frame = _mapping(value, "tool_frame_contract")
     _keys(
         frame,
@@ -309,8 +311,8 @@ def _load_tool_frame_contract(value: Any) -> ToolFrameContract:
     }:
         raise ValueError("tool frame planner axes do not match the CPU contact convention")
     expected_literals = {
-        "T_flange_virtual_task_tcp": 0.2500,
-        "T_flange_uncompressed_cup_plane": 0.2275,
+        "T_flange_virtual_task_tcp": 0.2500 + extension,
+        "T_flange_uncompressed_cup_plane": 0.2275 + extension,
         "T_flange_nominal_compressed_contact": float(np.asarray(frame["T_flange_nominal_compressed_contact"])[0, 3]),
     }
     flange_from_planner_rotation = np.asarray(
@@ -754,6 +756,8 @@ def build_verified_motion_input(
 ) -> FrozenLayoutMotionInput:
     """Build and verify the frozen scene before exposing any planning input."""
     root = policy.project_root if project_root is None else Path(project_root).resolve()
+    from .tool_connector_extension import bind_connector_frames
+    policy = bind_connector_frames(policy)
     snapshot = build_scene_snapshot(policy.layout_validation)
     verification = verify_scene_snapshot(snapshot, root)
     consistency = audit_snapshot_consistency(policy.layout_validation, snapshot)

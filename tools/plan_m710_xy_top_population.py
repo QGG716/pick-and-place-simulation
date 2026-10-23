@@ -47,6 +47,8 @@ def main():
         help='Restore checked 32-box terminal; c04 top, c01/c00 +Y side, fixed original Hmax')
     p.add_argument('--c01-finite-side-channel',action='store_true',
         help='Only c01: finite owned-tool exposure, shortest +Y turn outside the inlet corridor, then -X')
+    p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1),default=0.,
+        help='Explicit 100 mm Wantai connector extension for the c01 finite-channel retry')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
@@ -60,6 +62,8 @@ def main():
     l01_routes=bool(args.continue_l01_selected_routes_from)
     if args.c01_finite_side_channel and not l01_routes:
         raise ValueError('C01_CHANNEL_REQUIRES_VERIFIED_SELECTED_ROUTES_ROOT')
+    if args.tool_connector_extension_m and not args.c01_finite_side_channel:
+        raise ValueError('TOOL_EXTENSION_REQUIRES_C01_FINITE_CHANNEL')
     l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
     if l01_routes and args.continue_l01_tool_chassis_from:
         raise ValueError('L01_CONTINUATION_PREDECESSOR_AMBIGUOUS')
@@ -91,6 +95,7 @@ def main():
     layout_path=Path(__file__).resolve().parents[1]/'configs/workcells'/POPULATION_LAYOUTS[args.mounting_variant]
     if args.continue_min250_from or args.continue_layer_top_from:layout_path=layout_path.with_stem(layout_path.stem+'_min250')
     if lowprofile:layout_path=layout_path.with_stem(layout_path.stem+'_min250_lowprofile')
+    if args.tool_connector_extension_m:layout_path=layout_path.with_stem(layout_path.stem+'_tool_extension100')
     original,built,audit=make_context(args.mounting_variant,layout_path=layout_path,
         robot_mount_contact_exemption=lowprofile,l01_tool_chassis_exemption=l01_tool)
     layout=original.policy.layout_validation.layout
@@ -226,6 +231,9 @@ def main():
         if args.c01_finite_side_channel:
             protocol.update(top_permission='NONE_C01_SIDE_ONLY',finite_c01_side_channel=True,
                 side_turn_rule='FULL_PAYLOAD_PROJECTION_OUTSIDE_JUNCTION_SHORTEST_POSITIVE_Y_FIRST')
+            from unloading_sim.tool_connector_extension import connector_extension_evidence
+            protocol.update(tool_connector_extension_m=args.tool_connector_extension_m,
+                tool_connector_extension=connector_extension_evidence(args.tool_connector_extension_m))
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',
