@@ -1,0 +1,25 @@
+usage: plan_m710_xy_top_population.py [-h] --output OUTPUT --worker-command
+                                      WORKER_COMMAND --worker-binary
+                                      WORKER_BINARY --source-commit
+                                      SOURCE_COMMIT
+                                      [--source-manifest SOURCE_MANIFEST]
+                                      [--development] [--check-only]
+                                      [--continue-min250-from CONTINUE_MIN250_FROM]
+                                      [--continue-min250-repair-from CONTINUE_MIN250_REPAIR_FROM]
+                                      [--continue-layer-top-from CONTINUE_LAYER_TOP_FROM]
+                                      [--continue-lowprofile-from CONTINUE_LOWPROFILE_FROM]
+                                      [--continue-lowprofile-top-from CONTINUE_LOWPROFILE_TOP_FROM]
+                                      [--continue-l01-tool-chassis-from CONTINUE_L01_TOOL_CHASSIS_FROM]
+                                      [--continue-l01-selected-routes-from CONTINUE_L01_SELECTED_ROUTES_FROM]
+                                      [--c01-finite-side-channel]
+                                      [--c01-front-suction]
+                                      [--c01-front-direct-x]
+                                      [--tool-connector-extension-m {0.0,0.1}]
+                                      [--top-layer-anchor TOP_LAYER_ANCHOR]
+                                      [--mounting-variant {xy_minus_100,x_minus_300_y_minus_100,x_minus_400_y_minus_100,x_minus_500_y_minus_100}]
+                                      [--integration-top-fixture]
+                                      [--l05-limit-restart L05_J4_VELOCITY_RESTART]
+                                      [--l05-limit-worker-command L05_J4_VELOCITY_WORKER_COMMAND]
+                                      [--l05-limit-library L05_J4_VELOCITY_LIBRARY]
+                                      [--l05-motion-limit-policy {j4_velocity_only,all_joint_rates}]
+plan_m710_xy_top_population.py: error: unrecognized arguments: --c01-direct-suction

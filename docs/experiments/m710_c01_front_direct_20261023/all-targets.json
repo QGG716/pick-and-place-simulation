@@ -1,0 +1,42 @@
+{
+  "source_commit": "75f98fce8e68bd807c84590097782c638eb36629",
+  "backend": "PinocchioHppFclBackend",
+  "new_completed": 0,
+  "new_targets": 1,
+  "historical_completed": 32,
+  "cumulative_completed": 32,
+  "remaining": 8,
+  "rows": [
+    {
+      "target_id": "carton_l01_c01",
+      "complete": false,
+      "wall_s": 0.23911498486995697,
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": 0.24999999999999994,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        }
+      ]
+    }
+  ],
+  "counts": {},
+  "operations": {},
+  "task_wall_s": 0.23911498486995697,
+  "loop_wall_s": 0.3160449117422104,
+  "costs_are_nested_not_additive": true,
+  "candidates": [],
+  "actual_target_search_candidates": 0,
+  "worker_initialized_candidates": 0,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

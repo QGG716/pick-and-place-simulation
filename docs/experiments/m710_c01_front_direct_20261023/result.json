@@ -1,0 +1,133 @@
+{
+  "source_commit": "75f98fce8e68bd807c84590097782c638eb36629",
+  "target": "carton_l01_c01",
+  "requested_route": "FRONT_THEN_NEGATIVE_X_ONLY",
+  "complete": false,
+  "completed_count": 0,
+  "target_count": 1,
+  "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+  "failure_class": "PROCESS_HEIGHT_DOMAIN",
+  "required_receive_height_m": -0.05000000000000006,
+  "current_height_m": 0.24999999999999994,
+  "minimum_height_m": 0.25,
+  "junction": {
+    "region_class": "LONGITUDINAL_INLET_JUNCTION",
+    "junction": true,
+    "outfeed_direction_world": [
+      -1.0,
+      0.0,
+      0.0
+    ],
+    "inlet_edge_world": [
+      [
+        -0.9,
+        -1.0999999999999999,
+        0.24999999999999994
+      ],
+      [
+        -0.9,
+        -0.49999999999999994,
+        0.24999999999999994
+      ]
+    ],
+    "influence_polygon_world_xy_m": [
+      [
+        -0.9,
+        -1.0999999999999999
+      ],
+      [
+        -0.20000000000000007,
+        -1.0999999999999999
+      ],
+      [
+        -0.20000000000000007,
+        -0.49999999999999994
+      ],
+      [
+        -0.9,
+        -0.49999999999999994
+      ]
+    ],
+    "box_projection_world_xy_m": [
+      [
+        -0.8500000000000001,
+        -0.62
+      ],
+      [
+        -0.8500000000000001,
+        -0.62
+      ],
+      [
+        -0.8500000000000001,
+        -0.21999999999999997
+      ],
+      [
+        -0.8500000000000001,
+        -0.21999999999999997
+      ],
+      [
+        -0.25000000000000006,
+        -0.62
+      ],
+      [
+        -0.25000000000000006,
+        -0.62
+      ],
+      [
+        -0.25000000000000006,
+        -0.21999999999999997
+      ],
+      [
+        -0.25000000000000006,
+        -0.21999999999999997
+      ]
+    ],
+    "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+    "physical_transport": "NOT_RUN"
+  },
+  "root_unchanged": true,
+  "native_search_candidates": 0,
+  "numerical_ik_calls": 0,
+  "numerical_ik_success": 0,
+  "target_collision_checks": 0,
+  "approach_passed": 0,
+  "contact_passed": 0,
+  "full_cycle_accepted": 0,
+  "actual_contact_cups": null,
+  "commanded_cups": null,
+  "delta_m": 0.0,
+  "tool_connector_extension_m": 0.1,
+  "task_wall_s": 0.23911498486995697,
+  "loop_wall_s": 0.3160449117422104,
+  "historical_completed_count": 32,
+  "remaining_cartons": 8,
+  "superseded_route": {
+    "source_commit": "94e249a3cd58930727a41e5d9556039427c23653",
+    "route": "FRONT_POSITIVE_Y_THEN_NEGATIVE_X",
+    "complete": true,
+    "not_the_requested_direct_route": true,
+    "root_independent": true,
+    "positive_y_m": 0.1201989422669697,
+    "height_m": 0.25,
+    "cups": {
+      "actual_contact_mask": 48,
+      "commanded_active_mask": 48,
+      "geometrically_eligible_mask": 48
+    },
+    "task_wall_s": 12.314407870173454,
+    "counts": {
+      "native_requests": 17,
+      "ik_requests": 3,
+      "numerical_ik_success": 2,
+      "explicit_target_check_passed": 2,
+      "pregrasp": 1,
+      "contact": 1,
+      "extraction": 3,
+      "withdrawal": 1
+    }
+  },
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}

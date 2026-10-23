@@ -1,0 +1,3 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c01", "remaining": 8}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c01", "completed": 0, "remaining": 8, "attempted": 1, "task_s": 0.23911498486995697}
+{"status": "INCOMPLETE_RETAINED", "completed": 0, "targets": 1}
