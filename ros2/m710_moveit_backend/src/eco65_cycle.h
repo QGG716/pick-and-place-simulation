@@ -18,6 +18,18 @@ inline constexpr const char* kEcoCycleMode="eco65_coupled_cycle_v1";
 inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_FIRST_CW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V2";
 inline constexpr const char* kEcoCaptureJ1Policy="RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3";
 inline constexpr const char* kEcoFreeJ1Policy="RAW_FINITE_JOINTS_BIDIRECTIONAL_NO_J1_MONOTONICITY_V4";
+
+inline bool ecoCycleContactPreservingLift(const CycleJson& prior,const CycleJson& attach) {
+  if(prior.value("op",std::string())!="eco65_transition" || !prior.contains("transition"))return false;
+  const auto& event=prior.at("transition");
+  if(event.value("event_type",std::string())!="COUPLED_LIFT" || !event.contains("after_request"))return false;
+  const auto& after=event.at("after_request");
+  for(const auto* state:{&prior,&after}) {
+    if(state->at("q_start")!=attach.at("q_start") || !state->at("attachment").is_null() ||
+       state->at("process_policy").at("selection_binding")!=attach.at("process_policy").at("selection_binding"))return false;
+  }
+  return true;
+}
 inline constexpr double kEcoCycleReverseLimit=1e-6;
 inline std::string ecoCycleNextInterval(const CycleJson& req,const std::string& event) {
   const std::string goal=req.value("completion_goal",std::string());

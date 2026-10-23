@@ -29,6 +29,19 @@ int main() {
       require(m710::directedJ1(-2.,2.,0)&&m710::directedJ1(2.,-2.,0),"BOTH_RAW_J1_DIRECTIONS");
       require(m710::j1ReverseTravel(-2.,2.,0)+m710::j1ReverseTravel(2.,-1.,0)==0.,"LEGAL_REVERSAL_NO_BUDGET");
     }
+    J attach={{"q_start",{0.,1.,2.,3.,4.,5.}},{"attachment",nullptr},
+      {"process_policy",{{"selection_binding",{{"target_id","box"},{"active_ids",{"cup_a"}}}}}}};
+    auto lift=attach;lift["op"]="eco65_transition";
+    lift["transition"]={{"event_type","COUPLED_LIFT"},{"after_request",attach}};
+    require(m710::ecoCycleContactPreservingLift(lift,attach),"CONTACT_STOPPED_LIFT_PRESERVES_CONTACT");
+    auto altered=lift;altered["transition"]["event_type"]="NEXT_TARGET";
+    require(!m710::ecoCycleContactPreservingLift(altered,attach),"NEXT_TARGET_NOT_CONTACT_PRESERVING");
+    altered=lift;altered["q_start"][0]=.1;
+    require(!m710::ecoCycleContactPreservingLift(altered,attach),"LIFT_START_Q_CHANGED");
+    altered=lift;altered["transition"]["after_request"]["q_start"][0]=.1;
+    require(!m710::ecoCycleContactPreservingLift(altered,attach),"LIFT_END_Q_CHANGED");
+    altered=lift;altered["process_policy"]["selection_binding"]["active_ids"]={"cup_b"};
+    require(!m710::ecoCycleContactPreservingLift(altered,attach),"LIFT_CUP_GROUP_CHANGED");
     auto capture=req;capture["j1_direction_policy"]=m710::kEcoCaptureJ1Policy;capture["j1_direction"]=1;
     require(m710::ecoCycleDirection(capture)==1,"CAPTURE_TO_FIRST_CONTACT_CCW");
     capture["business_interval"]="OUTBOUND";rejects([&]{m710::ecoCycleDirection(capture);});
@@ -103,7 +116,7 @@ int main() {
     bad=req;bad["world"].push_back({{"id","unknown"},{"size",{1,1,1}},{"pose",pose()}});
     rejects([&]{contract.checkRequest(bad);});
     std::cout<<J({{"status","PASS"},{"scope","SYNTHETIC_DIRECTION_AND_SCENE_PROTOCOL_ONLY"},
-      {"legacy_cases",25},{"bidirectional_business_intervals",3},
+      {"legacy_cases",25},{"bidirectional_business_intervals",3},{"contact_lift_cases",5},
       {"accumulated_legacy_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
     return 0;
   } catch(const std::exception& error) {std::cerr<<error.what()<<std::endl;return 1;}

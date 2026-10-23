@@ -485,8 +485,24 @@ class Worker {
         if((moving&&!m710::ecoCycleSameShape(item.second,b.at(item.first))) ||
             (!moving&&item.second!=b.at(item.first)))throw std::runtime_error("ECO65_CYCLE_EVENT_UNRELATED_OBJECT_CHANGED");
       }
-      if(event=="ATTACH" && (r.parent.empty() || tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent)->request.at("stage")!="contact"))
-        throw std::runtime_error("ECO65_CYCLE_ATTACH_WITHOUT_NATIVE_CONTACT");
+      if(event=="ATTACH") {
+        bool native_contact=false;std::string cursor=r.parent;
+        const auto& records=tasks.at(req.at("task_id").get<std::string>())->records;
+        while(!cursor.empty()) {
+          const auto& prior=*records.at(cursor);
+          std::vector<double> end_q;
+          prior.end->getCurrentState().copyJointGroupPositions(m710::nativeFrames().planning_group,end_q);
+          if(!prior.ready || prior.result.at("status")!="SUCCESS" ||
+              end_q!=req.at("q_start").get<std::vector<double>>())break;
+          if(prior.request.at("op")=="plan" && prior.request.at("stage")=="contact" && prior.trajectory) {
+            native_contact=true;r.result["native_contact_ancestor_stage_id"]=cursor;break;
+          }
+          if(!cycle_binding->binding.contains("transverse_process_policy") ||
+              !m710::ecoCycleContactPreservingLift(prior.request,req))break;
+          cursor=prior.parent;
+        }
+        if(!native_contact)throw std::runtime_error("ECO65_CYCLE_ATTACH_WITHOUT_NATIVE_CONTACT");
+      }
       r.clearance->phase="initial";
       if(!r.clearance->check(r.start->getCurrentState()) || !r.process->check(r.start->getCurrentState(),event=="ATTACH")) {
         r.result["failure"]={{"reason","ECO65_CYCLE_BEFORE_STATE_REJECTED"},
