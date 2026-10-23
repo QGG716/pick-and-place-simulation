@@ -1,5 +1,6 @@
 """Versioned stopped-axis cycle state and evidence checks; no motion generator."""
 from copy import deepcopy
+from numbers import Real, Integral
 import numpy as np
 
 from ..moveit2_backend import digest, validate_native_result, native_generation_evidence
@@ -47,6 +48,23 @@ def sign_state(state):
     state.pop('fingerprint', None)
     state['fingerprint'] = digest(state)
     return state
+
+
+def same_generated_geometry(a,b):
+    """Permit only sub-picometre/radian platform roundoff in generated floats.
+
+    IDs, integer topology and inventory stay exact. Stored record fingerprints
+    are checked independently; this never rewrites recorded geometry or q.
+    """
+    if isinstance(a,dict) and isinstance(b,dict):
+        return a.keys()==b.keys() and all(same_generated_geometry(a[k],b[k]) for k in a)
+    if isinstance(a,list) and isinstance(b,list):
+        return len(a)==len(b) and all(same_generated_geometry(x,y) for x,y in zip(a,b))
+    if isinstance(a,Real) and isinstance(b,Real) and not isinstance(a,(bool,np.bool_)) and not isinstance(b,(bool,np.bool_)):
+        if isinstance(a,Integral) and isinstance(b,Integral):return a==b
+        return bool(np.isfinite([a,b]).all() and abs(a-b)<=1e-12)
+    if type(a) is not type(b):return False
+    return a==b
 
 
 def check_state(state, original_ids):
@@ -139,8 +157,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         if (plan.get('transverse_process_policy')!=POLICY or
                 snapshot['scene'].get('transverse_process_policy')!=POLICY):
             raise ValueError('CYCLE_TRANSVERSE_POLICY_IDENTITY_CHANGED')
-    from .coupled_scene import coupled_conveyor_state, with_coupled_state
-    from .native_scene import world_objects
+    from .coupled_scene import coupled_conveyor_state, native_coupled_world
     mechanism_cache={}
     def check_mechanism(state):
         if (state['collision_policy'] != snapshot['native_model']['init']['collision_policy']
@@ -150,10 +167,12 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         if height not in mechanism_cache:
             mechanism_cache[height]=(coupled_conveyor_state(
                 snapshot['scene']['coupled_conveyor_spec'],height),
-                world_objects(with_coupled_state(snapshot['scene'],height)))
+                native_coupled_world(snapshot['scene'],height))
         mechanism,world=mechanism_cache[height]
-        if (state['mechanism']!=mechanism or
-                [x for x in state['world'] if x['id'] not in sizes]!=world):
+        recorded=dict(state['mechanism']);recorded_hash=recorded.pop('scene_fingerprint')
+        expected={k:v for k,v in mechanism.items() if k!='scene_fingerprint'}
+        if (digest(recorded)!=recorded_hash or not same_generated_geometry(recorded,expected) or
+                not same_generated_geometry([x for x in state['world'] if x['id'] not in sizes],world)):
             raise ValueError('CYCLE_MECHANISM_NOT_UNIFIED_STATE')
     previous = plan['initial_state']
     check_state(previous, ids)

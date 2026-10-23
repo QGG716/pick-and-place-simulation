@@ -144,3 +144,14 @@ def test_lift_preparation_timeout_does_not_commit_a_sample_height():
     task.state=state
     with pytest.raises(ValueError,match='preparation timeout'):task.lift(.23)
     assert task.height_m==.18
+
+
+def test_cross_platform_geometry_tail_bits_do_not_relax_identity_or_topology():
+    from unloading_sim.eco65.coupled_state import same_generated_geometry
+    a={'id':'bar','point':[-.00020276908520590632,-.031999999999999966],'triangles':[[0,1,2]]}
+    b=deepcopy(a);b['point']=[-.00020276908520590635,-.03199999999999997]
+    assert same_generated_geometry(a,b)
+    b['point'][1]=np.float64(b['point'][1]);assert same_generated_geometry(a,b)
+    b['point'][0]+=1e-9;assert not same_generated_geometry(a,b)
+    b=deepcopy(a);b['id']='another_bar';assert not same_generated_geometry(a,b)
+    b=deepcopy(a);b['triangles'][0][0]=1;assert not same_generated_geometry(a,b)
