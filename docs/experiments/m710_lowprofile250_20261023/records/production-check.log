@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/work-lowprofile-ab491d2/tools/plan_m710_xy_top_population.py", line 236, in <module>
+    if __name__=='__main__':main()
+  File "/work-lowprofile-ab491d2/tools/plan_m710_xy_top_population.py", line 69, in main
+    original,built,audit=make_context(args.mounting_variant,layout_path=layout_path,
+  File "/work-lowprofile-ab491d2/tools/plan_m710_mount_comparison.py", line 60, in make_context
+    raise ValueError("MOUNT_LAYOUT_AUDIT_REJECTED:"+layout_name)
+ValueError: MOUNT_LAYOUT_AUDIT_REJECTED:x_minus_500_y_minus_100

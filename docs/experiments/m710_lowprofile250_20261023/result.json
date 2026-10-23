@@ -1,0 +1,2714 @@
+{
+  "source_commit": "f17d636ed547a86389150f268445d44bae6f58c4",
+  "new_completed": 2,
+  "new_target_count": 12,
+  "historical_completed": 28,
+  "cumulative_completed": 30,
+  "total_original": 40,
+  "remaining": 10,
+  "rows": [
+    {
+      "target_id": "carton_l02_c01",
+      "complete": true,
+      "wall_s": 20.475954957306385,
+      "counts": {
+        "native_requests": 17,
+        "checked_lift": 1,
+        "ik_requests": 3,
+        "numerical_ik_success": 3,
+        "explicit_target_check_passed": 2,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 2,
+        "withdrawal": 1
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": null,
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l02_c00"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 18.491305604577065,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 17,
+            "checked_lift": 1,
+            "ik_requests": 3,
+            "numerical_ik_success": 3,
+            "explicit_target_check_passed": 2,
+            "pregrasp": 1,
+            "contact": 1,
+            "extraction": 2,
+            "withdrawal": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.723696793405324,
+                0.7805917271587498,
+                -0.8607039123172516,
+                -3.8659172822277736,
+                -1.6195101692843668,
+                -0.0643388147883612
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004657128439126501
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.7144897114585796,
+                0.7824222975359578,
+                -0.8550871254900103,
+                -3.856417282227774,
+                -1.6162559919615915,
+                -0.06536795359803778
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0034180389539158608
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.7043134629911253,
+                0.7844455595318194,
+                -0.8488790979441119,
+                -3.845917282227774,
+                -1.6126592696574718,
+                -0.06650542280873294
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0021027171800748912
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.693168048002961,
+                0.7866615131463345,
+                -0.8420798296795565,
+                -3.834417282227774,
+                -1.6087200023720072,
+                -0.06775122242044669
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0007249833889596887
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6810534664940867,
+                0.7890701583795029,
+                -0.8346893206963442,
+                -3.821917282227774,
+                -1.6044381901051978,
+                -0.06910535243317902
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0005074617761903757
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.723696793405324,
+                0.7805917271587498,
+                -0.8607039123172516,
+                -3.8659172822277736,
+                -1.6195101692843668,
+                -0.0643388147883612
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004657128439126501
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.7144897114585796,
+                0.7824222975359578,
+                -0.8550871254900103,
+                -3.856417282227774,
+                -1.6162559919615915,
+                -0.06536795359803778
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0034180389539158608
+            },
+            {
+              "request_id": "10",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_25",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.7043134629911253,
+                0.7844455595318194,
+                -0.8488790979441119,
+                -3.845917282227774,
+                -1.6126592696574718,
+                -0.06650542280873294
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0021027171800748912
+            }
+          ],
+          "folder": "task-001/attempt-001",
+          "collision_witness_count": 8,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_rigid_25 | chassis": 8
+          },
+          "detail_failure": null,
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "ALREADY_AT_RECEIVE",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              -0.437486625247392,
+              1.0755291508230136,
+              -0.0026731434142731837,
+              -2.653591260264166,
+              -1.1281040539195457,
+              -0.22358925897577042
+            ],
+            "q2_rad": 1.0755291508230136,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.6891270975134933,
+                0.1864503786801821,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.9758320628839886,
+                -0.14716749883967897,
+                1.5903637330239107
+              ],
+              "direction_world": [
+                0.7969776923234689,
+                -0.37275740505012406,
+                0.4752667408088387
+              ],
+              "length_m": 0.895,
+              "elevation_rad": 0.4952671759718829,
+              "elevation_deg": 28.376718914551947,
+              "q2_rad": 1.0755291508230136,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ],
+      "accepted": {
+        "face": "FRONT",
+        "option": {
+          "template": "FRONT_DIRECT_HMIN",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 0.25,
+          "segment_directions_world": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.8900000000000001,
+            0.8900000000000001
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.8900000000000001,
+                  0.5499999999999999
+                ],
+                [
+                  -0.51,
+                  -0.8900000000000001,
+                  0.5499999999999999
+                ],
+                [
+                  -0.51,
+                  0.8900000000000001,
+                  0.5499999999999999
+                ],
+                [
+                  -0.5900000000000001,
+                  0.8900000000000001,
+                  0.5499999999999999
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "reception": {
+            "region_class": "LONGITUDINAL_INLET_JUNCTION",
+            "junction": true,
+            "outfeed_direction_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "inlet_edge_world": [
+              [
+                -0.8999999999999999,
+                -1.0999999999999999,
+                0.5499999999999999
+              ],
+              [
+                -0.8999999999999999,
+                -0.49999999999999994,
+                0.5499999999999999
+              ]
+            ],
+            "influence_polygon_world_xy_m": [
+              [
+                -0.9,
+                -1.0999999999999999
+              ],
+              [
+                -0.20000000000000007,
+                -1.0999999999999999
+              ],
+              [
+                -0.20000000000000007,
+                -0.49999999999999994
+              ],
+              [
+                -0.9,
+                -0.49999999999999994
+              ]
+            ],
+            "box_projection_world_xy_m": [
+              [
+                -0.8500000000000001,
+                -0.62
+              ],
+              [
+                -0.8500000000000001,
+                -0.62
+              ],
+              [
+                -0.8500000000000001,
+                -0.21999999999999997
+              ],
+              [
+                -0.8500000000000001,
+                -0.21999999999999997
+              ],
+              [
+                -0.25000000000000006,
+                -0.62
+              ],
+              [
+                -0.25000000000000006,
+                -0.62
+              ],
+              [
+                -0.25000000000000006,
+                -0.21999999999999997
+              ],
+              [
+                -0.25000000000000006,
+                -0.21999999999999997
+              ]
+            ],
+            "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+            "physical_transport": "NOT_RUN"
+          },
+          "requires_open_channel": false,
+          "original_role": "MIDDLE",
+          "target_id": "carton_l02_c01",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false,
+          "H_current_m": 0.5499999999999999,
+          "H_receive_m": 0.25,
+          "H_temporary_m": 0.25,
+          "pre_approach_height_m": 0.25,
+          "synchronization": "ALREADY_AT_RECEIVE",
+          "height_resolution_m": 0.01,
+          "third_sync_disabled": true
+        },
+        "delta_m": 0.0,
+        "height_m": 0.25,
+        "receive_sync_location": "ALREADY_AT_RECEIVE",
+        "q2_rad": 1.0755291508230136,
+        "actual_contact_q_rad": [
+          -0.437486625247392,
+          1.0755291508230136,
+          -0.0026731434142731837,
+          -2.653591260264166,
+          -1.1281040539195457,
+          -0.22358925897577042
+        ],
+        "upper_arm": {
+          "shoulder_world_m": [
+            -1.6891270975134933,
+            0.1864503786801821,
+            1.165
+          ],
+          "elbow_world_m": [
+            -0.9758320628839886,
+            -0.14716749883967897,
+            1.5903637330239107
+          ],
+          "direction_world": [
+            0.7969776923234689,
+            -0.37275740505012406,
+            0.4752667408088387
+          ],
+          "length_m": 0.895,
+          "elevation_rad": 0.4952671759718829,
+          "elevation_deg": 28.376718914551947,
+          "q2_rad": 1.0755291508230136,
+          "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+        },
+        "cups": {
+          "actual_contact_mask": 48,
+          "commanded_active_mask": 48,
+          "geometrically_eligible_mask": 48
+        },
+        "top_lift_geometry": null,
+        "extraction_geometry": {
+          "direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "distance_m": 0.8102000000000001,
+          "start_physical_pose": [
+            [
+              -1.207692239964708e-07,
+              -1.212400101988079e-07,
+              0.9999999999999857,
+              -4.1170168191273504e-08
+            ],
+            [
+              -2.110795296605961e-07,
+              -0.9999999999999702,
+              -1.2124003581637227e-07,
+              -0.41999993909069816
+            ],
+            [
+              0.9999999999999706,
+              -2.1107954431554e-07,
+              1.207691985305459e-07,
+              0.7500000270687818
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "goal_physical_pose": [
+            [
+              -1.207692239964708e-07,
+              -1.212400101988079e-07,
+              0.9999999999999857,
+              -0.8102000411701683
+            ],
+            [
+              -2.110795296605961e-07,
+              -0.9999999999999702,
+              -1.2124003581637227e-07,
+              -0.41999993909069816
+            ],
+            [
+              0.9999999999999706,
+              -2.1107954431554e-07,
+              1.207691985305459e-07,
+              0.7500000270687818
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "required_terminal_clearance_m": 0.008199999999999999,
+          "support_names": [
+            "carton_l01_c01"
+          ],
+          "constraint_ids": [
+            "chassis",
+            "conveyor_transverse",
+            "conveyor_longitudinal",
+            "trailer_floor",
+            "trailer_left_wall",
+            "trailer_right_wall",
+            "trailer_ceiling",
+            "trailer_closed_end_wall",
+            "lift_transverse_left_arm_0_0",
+            "lift_transverse_left_arm_0_1",
+            "lift_transverse_left_pin_0",
+            "lift_transverse_left_arm_1_0",
+            "lift_transverse_left_arm_1_1",
+            "lift_transverse_left_pin_1",
+            "lift_transverse_left_end_pin_0_0",
+            "lift_transverse_left_end_pin_0_1",
+            "lift_transverse_left_end_pin_1_0",
+            "lift_transverse_left_end_pin_1_1",
+            "lift_transverse_left_end_pin_2_0",
+            "lift_transverse_left_end_pin_2_1",
+            "lift_transverse_left_base_rail",
+            "lift_transverse_left_head_rail",
+            "lift_transverse_left_foot_0",
+            "lift_transverse_left_foot_1",
+            "lift_transverse_left_mount",
+            "lift_transverse_right_arm_0_0",
+            "lift_transverse_right_arm_0_1",
+            "lift_transverse_right_pin_0",
+            "lift_transverse_right_arm_1_0",
+            "lift_transverse_right_arm_1_1",
+            "lift_transverse_right_pin_1",
+            "lift_transverse_right_end_pin_0_0",
+            "lift_transverse_right_end_pin_0_1",
+            "lift_transverse_right_end_pin_1_0",
+            "lift_transverse_right_end_pin_1_1",
+            "lift_transverse_right_end_pin_2_0",
+            "lift_transverse_right_end_pin_2_1",
+            "lift_transverse_right_base_rail",
+            "lift_transverse_right_head_rail",
+            "lift_transverse_right_foot_0",
+            "lift_transverse_right_foot_1",
+            "lift_transverse_right_mount",
+            "lift_longitudinal_rear_arm_0_0",
+            "lift_longitudinal_rear_arm_0_1",
+            "lift_longitudinal_rear_pin_0",
+            "lift_longitudinal_rear_arm_1_0",
+            "lift_longitudinal_rear_arm_1_1",
+            "lift_longitudinal_rear_pin_1",
+            "lift_longitudinal_rear_arm_2_0",
+            "lift_longitudinal_rear_arm_2_1",
+            "lift_longitudinal_rear_pin_2",
+            "lift_longitudinal_rear_arm_3_0",
+            "lift_longitudinal_rear_arm_3_1",
+            "lift_longitudinal_rear_pin_3",
+            "lift_longitudinal_rear_end_pin_0_0",
+            "lift_longitudinal_rear_end_pin_0_1",
+            "lift_longitudinal_rear_end_pin_1_0",
+            "lift_longitudinal_rear_end_pin_1_1",
+            "lift_longitudinal_rear_end_pin_2_0",
+            "lift_longitudinal_rear_end_pin_2_1",
+            "lift_longitudinal_rear_end_pin_3_0",
+            "lift_longitudinal_rear_end_pin_3_1",
+            "lift_longitudinal_rear_end_pin_4_0",
+            "lift_longitudinal_rear_end_pin_4_1",
+            "lift_longitudinal_rear_base_rail",
+            "lift_longitudinal_rear_head_rail",
+            "lift_longitudinal_rear_foot_0",
+            "lift_longitudinal_rear_foot_1",
+            "lift_longitudinal_rear_swivel_head",
+            "lift_longitudinal_rear_neck",
+            "lift_longitudinal_near_arm_0_0",
+            "lift_longitudinal_near_arm_0_1",
+            "lift_longitudinal_near_pin_0",
+            "lift_longitudinal_near_arm_1_0",
+            "lift_longitudinal_near_arm_1_1",
+            "lift_longitudinal_near_pin_1",
+            "lift_longitudinal_near_arm_2_0",
+            "lift_longitudinal_near_arm_2_1",
+            "lift_longitudinal_near_pin_2",
+            "lift_longitudinal_near_arm_3_0",
+            "lift_longitudinal_near_arm_3_1",
+            "lift_longitudinal_near_pin_3",
+            "lift_longitudinal_near_end_pin_0_0",
+            "lift_longitudinal_near_end_pin_0_1",
+            "lift_longitudinal_near_end_pin_1_0",
+            "lift_longitudinal_near_end_pin_1_1",
+            "lift_longitudinal_near_end_pin_2_0",
+            "lift_longitudinal_near_end_pin_2_1",
+            "lift_longitudinal_near_end_pin_3_0",
+            "lift_longitudinal_near_end_pin_3_1",
+            "lift_longitudinal_near_end_pin_4_0",
+            "lift_longitudinal_near_end_pin_4_1",
+            "lift_longitudinal_near_base_rail",
+            "lift_longitudinal_near_head_rail",
+            "lift_longitudinal_near_foot_0",
+            "lift_longitudinal_near_foot_1",
+            "lift_longitudinal_near_swivel_head",
+            "lift_longitudinal_near_neck",
+            "lift_lower_rail_0",
+            "lift_lower_rail_0_stand_0",
+            "lift_lower_rail_0_stand_1",
+            "lift_lower_carriage_0",
+            "lift_lower_rail_2",
+            "lift_lower_rail_2_stand_0",
+            "lift_lower_rail_2_stand_1",
+            "lift_lower_carriage_2",
+            "lift_lower_bearing",
+            "carton_l00_c00",
+            "carton_l00_c01",
+            "carton_l00_c02",
+            "carton_l00_c03",
+            "carton_l00_c04",
+            "carton_l01_c00",
+            "carton_l01_c01",
+            "carton_l01_c02",
+            "carton_l01_c03",
+            "carton_l01_c04",
+            "carton_l02_c00"
+          ],
+          "method": "CURRENT_FULL_BOTTOM_REGION_NORMAL_LIN",
+          "maximum_distance_m": null,
+          "old_maximum_extraction_m": 0.8,
+          "old_bound_scope": "OLD_EXPERIMENT_SEARCH_BOUND_NOT_MECHANICAL_LIMIT"
+        },
+        "nominal_drop_m": 0.34999995228693936,
+        "stages": [
+          {
+            "stage": "pregrasp",
+            "source": "NATIVE_EXTERNAL_AXIS"
+          },
+          {
+            "stage": "pregrasp",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "contact",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "extraction",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "extraction",
+            "source": "SEMANTIC_EVENT"
+          },
+          {
+            "stage": "withdrawal",
+            "source": "NATIVE_GENERATED"
+          }
+        ]
+      }
+    },
+    {
+      "target_id": "carton_l02_c00",
+      "complete": true,
+      "wall_s": 17.112213298678398,
+      "counts": {
+        "native_requests": 15,
+        "ik_requests": 3,
+        "numerical_ik_success": 3,
+        "explicit_target_check_passed": 2,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 2,
+        "withdrawal": 1
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": 0.25,
+          "temporary_height_m": 0.25,
+          "failure": null,
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 14.908093005418777,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 15,
+            "ik_requests": 3,
+            "numerical_ik_success": 3,
+            "explicit_target_check_passed": 2,
+            "pregrasp": 1,
+            "contact": 1,
+            "extraction": 2,
+            "withdrawal": 1
+          },
+          "collision_witnesses": [],
+          "folder": "task-002/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": null,
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "ALREADY_AT_RECEIVE",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              -0.6504452915317865,
+              1.2538650967476692,
+              0.37784615802985994,
+              -2.3609620349194174,
+              -1.0362020128280613,
+              -0.46736614801403237
+            ],
+            "q2_rad": 1.2538650967476692,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.7056278647123833,
+                0.15916887473517166,
+                1.165
+              ],
+              "elbow_world_m": [
+                -1.0288470104966214,
+                -0.35579859567152017,
+                1.4439286284874977
+              ],
+              "direction_world": [
+                0.7561797253807395,
+                -0.575382648499097,
+                0.31165209886871253
+              ],
+              "length_m": 0.8949999999999999,
+              "elevation_rad": 0.31693123004722734,
+              "elevation_deg": 18.15882187759591,
+              "q2_rad": 1.2538650967476692,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ],
+      "accepted": {
+        "face": "FRONT",
+        "option": {
+          "template": "FRONT_DIRECT_HMIN",
+          "face": {
+            "geometric_face_id": "x-",
+            "axis": 0,
+            "sign": -1,
+            "outward_normal": [
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.84
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                0.75
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "wrist_rule": "KEEP_SPATIAL_ORIENTATION_NOT_FIXED_JOINT_VALUES"
+          },
+          "height_m": 0.25,
+          "segment_directions_world": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "turn_center_y_interval_world_m": [
+            -0.89,
+            0.89
+          ],
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.89,
+                0.89
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -0.5900000000000001,
+                  -0.89,
+                  0.25
+                ],
+                [
+                  -0.51,
+                  -0.89,
+                  0.25
+                ],
+                [
+                  -0.51,
+                  0.89,
+                  0.25
+                ],
+                [
+                  -0.5900000000000001,
+                  0.89,
+                  0.25
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.89,
+              0.89
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "reception": {
+            "region_class": "LONGITUDINAL_INLET_JUNCTION",
+            "junction": true,
+            "outfeed_direction_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "inlet_edge_world": [
+              [
+                -0.9,
+                -1.0999999999999999,
+                0.25
+              ],
+              [
+                -0.9,
+                -0.49999999999999994,
+                0.25
+              ]
+            ],
+            "influence_polygon_world_xy_m": [
+              [
+                -0.9,
+                -1.0999999999999999
+              ],
+              [
+                -0.20000000000000007,
+                -1.0999999999999999
+              ],
+              [
+                -0.20000000000000007,
+                -0.49999999999999994
+              ],
+              [
+                -0.9,
+                -0.49999999999999994
+              ]
+            ],
+            "box_projection_world_xy_m": [
+              [
+                -0.8500000000000001,
+                -1.04
+              ],
+              [
+                -0.8500000000000001,
+                -1.04
+              ],
+              [
+                -0.8500000000000001,
+                -0.6399999999999999
+              ],
+              [
+                -0.8500000000000001,
+                -0.6399999999999999
+              ],
+              [
+                -0.25000000000000006,
+                -1.04
+              ],
+              [
+                -0.25000000000000006,
+                -1.04
+              ],
+              [
+                -0.25000000000000006,
+                -0.6399999999999999
+              ],
+              [
+                -0.25000000000000006,
+                -0.6399999999999999
+              ]
+            ],
+            "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+            "physical_transport": "NOT_RUN"
+          },
+          "requires_open_channel": false,
+          "original_role": "RIGHT_END",
+          "target_id": "carton_l02_c00",
+          "height_source": "FROZEN_INITIAL_TARGET",
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "acceptance": "NOT_PLANNED",
+          "spatial_orientation": "UPSTREAM_FACE_POSE_HELD",
+          "fixed_wrist_joint_values": false,
+          "H_current_m": 0.25,
+          "H_receive_m": 0.25,
+          "H_temporary_m": 0.25,
+          "pre_approach_height_m": 0.25,
+          "synchronization": "ALREADY_AT_RECEIVE",
+          "height_resolution_m": 0.01,
+          "third_sync_disabled": true
+        },
+        "delta_m": 0.0,
+        "height_m": 0.25,
+        "receive_sync_location": "ALREADY_AT_RECEIVE",
+        "q2_rad": 1.2538650967476692,
+        "actual_contact_q_rad": [
+          -0.6504452915317865,
+          1.2538650967476692,
+          0.37784615802985994,
+          -2.3609620349194174,
+          -1.0362020128280613,
+          -0.46736614801403237
+        ],
+        "upper_arm": {
+          "shoulder_world_m": [
+            -1.7056278647123833,
+            0.15916887473517166,
+            1.165
+          ],
+          "elbow_world_m": [
+            -1.0288470104966214,
+            -0.35579859567152017,
+            1.4439286284874977
+          ],
+          "direction_world": [
+            0.7561797253807395,
+            -0.575382648499097,
+            0.31165209886871253
+          ],
+          "length_m": 0.8949999999999999,
+          "elevation_rad": 0.31693123004722734,
+          "elevation_deg": 18.15882187759591,
+          "q2_rad": 1.2538650967476692,
+          "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+        },
+        "cups": {
+          "actual_contact_mask": 48,
+          "commanded_active_mask": 48,
+          "geometrically_eligible_mask": 48
+        },
+        "top_lift_geometry": null,
+        "extraction_geometry": {
+          "direction_world": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "distance_m": 0.8102,
+          "start_physical_pose": [
+            [
+              -5.4448757185781806e-08,
+              -6.985191549165635e-07,
+              0.9999999999997546,
+              -5.574318684420376e-08
+            ],
+            [
+              1.2733300130962617e-07,
+              -0.999999999999748,
+              -6.985191479680353e-07,
+              -0.8399998922970402
+            ],
+            [
+              0.9999999999999905,
+              1.2733296317346543e-07,
+              5.4448846042998156e-08,
+              0.7500000346339182
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "goal_physical_pose": [
+            [
+              -5.4448757185781806e-08,
+              -6.985191549165635e-07,
+              0.9999999999997546,
+              -0.8102000557431869
+            ],
+            [
+              1.2733300130962617e-07,
+              -0.999999999999748,
+              -6.985191479680353e-07,
+              -0.8399998922970402
+            ],
+            [
+              0.9999999999999905,
+              1.2733296317346543e-07,
+              5.4448846042998156e-08,
+              0.7500000346339182
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "required_terminal_clearance_m": 0.008199999999999999,
+          "support_names": [
+            "carton_l01_c00"
+          ],
+          "constraint_ids": [
+            "chassis",
+            "conveyor_transverse",
+            "conveyor_longitudinal",
+            "trailer_floor",
+            "trailer_left_wall",
+            "trailer_right_wall",
+            "trailer_ceiling",
+            "trailer_closed_end_wall",
+            "lift_transverse_left_arm_0_0",
+            "lift_transverse_left_arm_0_1",
+            "lift_transverse_left_pin_0",
+            "lift_transverse_left_arm_1_0",
+            "lift_transverse_left_arm_1_1",
+            "lift_transverse_left_pin_1",
+            "lift_transverse_left_end_pin_0_0",
+            "lift_transverse_left_end_pin_0_1",
+            "lift_transverse_left_end_pin_1_0",
+            "lift_transverse_left_end_pin_1_1",
+            "lift_transverse_left_end_pin_2_0",
+            "lift_transverse_left_end_pin_2_1",
+            "lift_transverse_left_base_rail",
+            "lift_transverse_left_head_rail",
+            "lift_transverse_left_foot_0",
+            "lift_transverse_left_foot_1",
+            "lift_transverse_left_mount",
+            "lift_transverse_right_arm_0_0",
+            "lift_transverse_right_arm_0_1",
+            "lift_transverse_right_pin_0",
+            "lift_transverse_right_arm_1_0",
+            "lift_transverse_right_arm_1_1",
+            "lift_transverse_right_pin_1",
+            "lift_transverse_right_end_pin_0_0",
+            "lift_transverse_right_end_pin_0_1",
+            "lift_transverse_right_end_pin_1_0",
+            "lift_transverse_right_end_pin_1_1",
+            "lift_transverse_right_end_pin_2_0",
+            "lift_transverse_right_end_pin_2_1",
+            "lift_transverse_right_base_rail",
+            "lift_transverse_right_head_rail",
+            "lift_transverse_right_foot_0",
+            "lift_transverse_right_foot_1",
+            "lift_transverse_right_mount",
+            "lift_longitudinal_rear_arm_0_0",
+            "lift_longitudinal_rear_arm_0_1",
+            "lift_longitudinal_rear_pin_0",
+            "lift_longitudinal_rear_arm_1_0",
+            "lift_longitudinal_rear_arm_1_1",
+            "lift_longitudinal_rear_pin_1",
+            "lift_longitudinal_rear_arm_2_0",
+            "lift_longitudinal_rear_arm_2_1",
+            "lift_longitudinal_rear_pin_2",
+            "lift_longitudinal_rear_arm_3_0",
+            "lift_longitudinal_rear_arm_3_1",
+            "lift_longitudinal_rear_pin_3",
+            "lift_longitudinal_rear_end_pin_0_0",
+            "lift_longitudinal_rear_end_pin_0_1",
+            "lift_longitudinal_rear_end_pin_1_0",
+            "lift_longitudinal_rear_end_pin_1_1",
+            "lift_longitudinal_rear_end_pin_2_0",
+            "lift_longitudinal_rear_end_pin_2_1",
+            "lift_longitudinal_rear_end_pin_3_0",
+            "lift_longitudinal_rear_end_pin_3_1",
+            "lift_longitudinal_rear_end_pin_4_0",
+            "lift_longitudinal_rear_end_pin_4_1",
+            "lift_longitudinal_rear_base_rail",
+            "lift_longitudinal_rear_head_rail",
+            "lift_longitudinal_rear_foot_0",
+            "lift_longitudinal_rear_foot_1",
+            "lift_longitudinal_rear_swivel_head",
+            "lift_longitudinal_rear_neck",
+            "lift_longitudinal_near_arm_0_0",
+            "lift_longitudinal_near_arm_0_1",
+            "lift_longitudinal_near_pin_0",
+            "lift_longitudinal_near_arm_1_0",
+            "lift_longitudinal_near_arm_1_1",
+            "lift_longitudinal_near_pin_1",
+            "lift_longitudinal_near_arm_2_0",
+            "lift_longitudinal_near_arm_2_1",
+            "lift_longitudinal_near_pin_2",
+            "lift_longitudinal_near_arm_3_0",
+            "lift_longitudinal_near_arm_3_1",
+            "lift_longitudinal_near_pin_3",
+            "lift_longitudinal_near_end_pin_0_0",
+            "lift_longitudinal_near_end_pin_0_1",
+            "lift_longitudinal_near_end_pin_1_0",
+            "lift_longitudinal_near_end_pin_1_1",
+            "lift_longitudinal_near_end_pin_2_0",
+            "lift_longitudinal_near_end_pin_2_1",
+            "lift_longitudinal_near_end_pin_3_0",
+            "lift_longitudinal_near_end_pin_3_1",
+            "lift_longitudinal_near_end_pin_4_0",
+            "lift_longitudinal_near_end_pin_4_1",
+            "lift_longitudinal_near_base_rail",
+            "lift_longitudinal_near_head_rail",
+            "lift_longitudinal_near_foot_0",
+            "lift_longitudinal_near_foot_1",
+            "lift_longitudinal_near_swivel_head",
+            "lift_longitudinal_near_neck",
+            "lift_lower_rail_0",
+            "lift_lower_rail_0_stand_0",
+            "lift_lower_rail_0_stand_1",
+            "lift_lower_carriage_0",
+            "lift_lower_rail_2",
+            "lift_lower_rail_2_stand_0",
+            "lift_lower_rail_2_stand_1",
+            "lift_lower_carriage_2",
+            "lift_lower_bearing",
+            "carton_l00_c00",
+            "carton_l00_c01",
+            "carton_l00_c02",
+            "carton_l00_c03",
+            "carton_l00_c04",
+            "carton_l01_c00",
+            "carton_l01_c01",
+            "carton_l01_c02",
+            "carton_l01_c03",
+            "carton_l01_c04"
+          ],
+          "method": "CURRENT_FULL_BOTTOM_REGION_NORMAL_LIN",
+          "maximum_distance_m": null,
+          "old_maximum_extraction_m": 0.8,
+          "old_bound_scope": "OLD_EXPERIMENT_SEARCH_BOUND_NOT_MECHANICAL_LIMIT"
+        },
+        "nominal_drop_m": 0.34999997302421637,
+        "stages": [
+          {
+            "stage": "pregrasp",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "contact",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "extraction",
+            "source": "NATIVE_GENERATED"
+          },
+          {
+            "stage": "extraction",
+            "source": "SEMANTIC_EVENT"
+          },
+          {
+            "stage": "withdrawal",
+            "source": "NATIVE_GENERATED"
+          }
+        ]
+      }
+    },
+    {
+      "target_id": "carton_l01_c02",
+      "complete": false,
+      "wall_s": 100.11602146178484,
+      "counts": {
+        "native_requests": 75,
+        "ik_requests": 3,
+        "numerical_ik_success": 2,
+        "explicit_target_check_passed": 1,
+        "pregrasp": 1,
+        "checked_lift": 1,
+        "contact": 1
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        },
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": null,
+          "failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 64,
+            "global_unreachable": false
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c03",
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 96.00770309567451,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 75,
+            "ik_requests": 3,
+            "numerical_ik_success": 2,
+            "explicit_target_check_passed": 1,
+            "pregrasp": 1,
+            "checked_lift": 1,
+            "contact": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.31995254067813544,
+                1.196943056798953,
+                -0.7139628635043928,
+                -2.803614123345594,
+                -1.89300633835381,
+                0.11083203618327744
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004501429937046571
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.32154288557398253,
+                1.1978399790307572,
+                -0.7169919145024581,
+                -2.801508594690743,
+                -1.8965314688303527,
+                0.11273997659207045
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0005014544439854258
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.3231485623159001,
+                1.1987574068403475,
+                -0.7200071377367916,
+                -2.799376806288014,
+                -1.9000553456030704,
+                0.11467146134629394
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.3247697852873002,
+                1.199695408688437,
+                -0.7230084880260613,
+                -2.797218355112772,
+                -1.9035778086699795,
+                0.11662686757662792
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0025024815605927974
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.3264067727161458,
+                1.2006540524048932,
+                -0.725995919506504,
+                -2.7950328312556687,
+                -1.907098691963799,
+                0.11860657853201315
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.32806781738004415,
+                1.2016437801949036,
+                -0.7289623731216891,
+                -2.792805946913262,
+                -1.9106168726909023,
+                0.12062346232902851
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.32973711870902045,
+                1.2026439412903758,
+                -0.7319218027702538,
+                -2.790564805786226,
+                -1.9141339813762708,
+                0.12265315729754121
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.3314228651571764,
+                1.2036649431166513,
+                -0.7348671716625785,
+                -2.788295316355443,
+                -1.9176489705999302,
+                0.12470834740699961
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.31995254067813533,
+                1.1969430567989527,
+                -0.7139628635043928,
+                -2.8036141233455942,
+                -1.8930063383538098,
+                0.11083203618327733
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004501429937046835
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                -0.3215428855739827,
+                1.1978399790307577,
+                -0.7169919145024581,
+                -2.8015085946907425,
+                -1.896531468830353,
+                0.1127399765920706
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0005014544439850516
+            }
+          ],
+          "folder": "task-003/attempt-001",
+          "collision_witness_count": 512,
+          "witness_display_truncated": true,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_rigid_13 | chassis": 192,
+            "tool_rigid_11 | chassis": 320
+          },
+          "detail_failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 64,
+            "global_unreachable": false
+          },
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "PREGRASP",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              -0.17277986669753867,
+              1.2920300296296965,
+              -0.007594412193434006,
+              -2.9623967620420912,
+              -1.3037616930702765,
+              -0.047761701025974254
+            ],
+            "q2_rad": 1.2920300296296965,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.6772334017487505,
+                0.22421177708228296,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.829595820715294,
+                0.07628208829051727,
+                1.411276954654149
+              ],
+              "direction_world": [
+                0.947081096126767,
+                -0.16528456848241976,
+                0.2751697817364794
+              ],
+              "length_m": 0.8949999999999999,
+              "elevation_rad": 0.27876629716519985,
+              "elevation_deg": 15.972132298055676,
+              "q2_rad": 1.2920300296296965,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c01",
+      "complete": false,
+      "wall_s": 0.2752353549003601,
+      "counts": {},
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c03",
+      "complete": false,
+      "wall_s": 101.11427067965269,
+      "counts": {
+        "native_requests": 77,
+        "ik_requests": 3,
+        "numerical_ik_success": 2,
+        "explicit_target_check_passed": 1,
+        "pregrasp": 1,
+        "checked_lift": 1,
+        "contact": 1
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        },
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": null,
+          "failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 66,
+            "global_unreachable": false
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01",
+                "carton_l01_c02"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 96.96803540736437,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 77,
+            "ik_requests": 3,
+            "numerical_ik_success": 2,
+            "explicit_target_check_passed": 1,
+            "pregrasp": 1,
+            "checked_lift": 1,
+            "contact": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.2216083398124925,
+                1.202281433486785,
+                -0.7308983213835172,
+                -3.3780392267292574,
+                -1.9239258251768239,
+                -0.08313291290976149
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004501223242039955
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22275081856514464,
+                1.2033269279336085,
+                -0.733940029115359,
+                -3.3796095133944197,
+                -1.9278028881700475,
+                -0.08457939123832166
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0005012436510139018
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22390493947223156,
+                1.2043949897993655,
+                -0.7369677754300247,
+                -3.3812011603443373,
+                -1.931684140207863,
+                -0.08604556260218948
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22507087827465508,
+                1.2054857185603063,
+                -0.7399815088336686,
+                -3.3828145450366374,
+                -1.9355695185813222,
+                -0.08753178965653982
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0025012848872758057
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22624881420225545,
+                1.2065992135024226,
+                -0.7429811770463602,
+                -3.384450053014235,
+                -1.9394589564015046,
+                -0.08903844266325443
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22743893005906296,
+                1.207735573683622,
+                -0.7459667270070948,
+                -3.386108078092229,
+                -1.943352382461869,
+                -0.09056589966414304
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22864141231100316,
+                1.2088948978948453,
+                -0.7489381048790036,
+                -3.3877890225489566,
+                -1.9472497210959638,
+                -0.09211454665783853
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_11",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22985645117613868,
+                1.2100772846201124,
+                -0.751895256054777,
+                -3.3894932973212715,
+                -1.951150892030354,
+                -0.09368477778041155
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.2216083398124925,
+                1.202281433486785,
+                -0.7308983213835172,
+                -3.3780392267292574,
+                -1.9239258251768239,
+                -0.08313291290976149
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004501223242039955
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.22275081856514464,
+                1.2033269279336085,
+                -0.733940029115359,
+                -3.3796095133944197,
+                -1.9278028881700475,
+                -0.08457939123832166
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0005012436510139018
+            }
+          ],
+          "folder": "task-005/attempt-001",
+          "collision_witness_count": 528,
+          "witness_display_truncated": true,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_rigid_13 | chassis": 198,
+            "tool_rigid_11 | chassis": 330
+          },
+          "detail_failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 66,
+            "global_unreachable": false
+          },
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "PREGRASP",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              0.11812120299660989,
+              1.286603710899169,
+              -0.023658060404586997,
+              -3.263799165975914,
+              -1.3121188781701143,
+              0.03140704114221351
+            ],
+            "q2_rad": 1.286603710899169,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.6760452302382578,
+                0.26767700668174255,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.8229315466797167,
+                0.3689191240618846,
+                1.4159423770381618
+              ],
+              "direction_world": [
+                0.9531996464341241,
+                0.1131196842236224,
+                0.2803825441767171
+              ],
+              "length_m": 0.895,
+              "elevation_rad": 0.2841926158957276,
+              "elevation_deg": 16.2830374596077,
+              "q2_rad": 1.286603710899169,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c00",
+      "complete": false,
+      "wall_s": 1.4021182507276535,
+      "counts": {
+        "native_requests": 4
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        },
+        {
+          "template": "RIGHT_INNER_HMAX",
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": null,
+          "failure": "BUSINESS_FACE_NOT_CURRENTLY_EXPOSED",
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c01",
+                "carton_l01_c02",
+                "carton_l01_c03",
+                "carton_l01_c04"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 0.8319966122508049,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 4
+          },
+          "collision_witnesses": [],
+          "folder": "task-006/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": false,
+          "collision_pairs": {}
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "wall_s": 102.78437397629023,
+      "counts": {
+        "native_requests": 113,
+        "ik_requests": 3,
+        "numerical_ik_success": 2,
+        "explicit_target_check_passed": 1,
+        "pregrasp": 1,
+        "checked_lift": 1,
+        "contact": 1
+      },
+      "attempts": [
+        {
+          "template": "FRONT_DIRECT_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        },
+        {
+          "template": "LEFT_INNER_HMIN",
+          "height_m": -0.05000000000000006,
+          "temporary_height_m": null,
+          "failure": "RECEIVE_HEIGHT_OUTSIDE_EXISTING_MECHANISM_RANGE",
+          "geometry_evidence": null,
+          "screening": null,
+          "wall_s": 0.0,
+          "unsearched_option_count": 0,
+          "counts": {},
+          "collision_witnesses": []
+        },
+        {
+          "template": "FRONT_DIRECT_HMAX",
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": null,
+          "failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 102,
+            "global_unreachable": false
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": false,
+              "reason": "FACE_OCCLUDED",
+              "blockers": [
+                "carton_l01_c00",
+                "carton_l01_c01",
+                "carton_l01_c02",
+                "carton_l01_c03"
+              ],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 97.16066936403513,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 113,
+            "ik_requests": 3,
+            "numerical_ik_success": 2,
+            "explicit_target_check_passed": 1,
+            "pregrasp": 1,
+            "checked_lift": 1,
+            "contact": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6636528627529517,
+                1.1768006692589936,
+                -0.5728625799994504,
+                -3.813064355635043,
+                -1.711411211082207,
+                -0.11091466811549894
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004499929675116366
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6662339192457916,
+                1.1768740060772502,
+                -0.5757867604732878,
+                -3.8159215819992434,
+                -1.713466743845294,
+                -0.11316753541979897
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0004999296745222704
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.668832035931457,
+                1.1769587831855757,
+                -0.5786973454676756,
+                -3.8188007125166274,
+                -1.7155074861617052,
+                -0.11543410009977277
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6714473470911212,
+                1.1770549722766332,
+                -0.5815943181757225,
+                -3.8217018668223464,
+                -1.717533223800653,
+                -0.11771441479678654
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004659914160505707
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6740799878482885,
+                1.1771625440590165,
+                -0.5844776613524792,
+                -3.8246251636872257,
+                -1.71954373942388,
+                -0.12000852992453671
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.002768522067336132
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.676730094162199,
+                1.1772814682332997,
+                -0.5873473573223562,
+                -3.827570720954982,
+                -1.7215388125760847,
+                -0.12231649358717224
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.000868446689478386
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.679397802820704,
+                1.177411713467922,
+                -0.5902033879865761,
+                -3.8305386554780347,
+                -1.7235182196764411,
+                -0.12463835149567187
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6820832514326032,
+                1.1775532473749135,
+                -0.5930457348306694,
+                -3.833529083051912,
+                -1.7254817340112625,
+                -0.12697414688247635
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6636528627529517,
+                1.1768006692589938,
+                -0.5728625799994504,
+                -3.813064355635043,
+                -1.711411211082207,
+                -0.11091466811549894
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004499929675116144
+            },
+            {
+              "request_id": "13",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_rigid_13",
+                "chassis"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6662339192457915,
+                1.1768740060772502,
+                -0.5757867604732878,
+                -3.8159215819992434,
+                -1.713466743845294,
+                -0.11316753541979895
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.0004999296745222704
+            }
+          ],
+          "folder": "task-007/attempt-001",
+          "collision_witness_count": 816,
+          "witness_display_truncated": true,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_rigid_13 | chassis": 306,
+            "J2_link | trailer_left_wall": 510
+          },
+          "detail_failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 102,
+            "global_unreachable": false
+          },
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "PREGRASP",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              0.3906947560749721,
+              1.3420602783518685,
+              0.1316190857245304,
+              -3.556213720148866,
+              -1.23868922521769,
+              0.14252744803598022
+            ],
+            "q2_rad": 1.3420602783518685,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.6863032952329198,
+                0.3071246364255684,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.8803010304453294,
+                0.6390906078702202,
+                1.367938273768365
+              ],
+              "direction_world": [
+                0.9005611897068048,
+                0.37091169993815837,
+                0.22674667460152503
+              ],
+              "length_m": 0.8950000000000001,
+              "elevation_rad": 0.22873604844302803,
+              "elevation_deg": 13.10561019828545,
+              "q2_rad": 1.3420602783518685,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "carton_l00_c00",
+      "complete": false,
+      "stage": "SUPPORT_BLOCKED_NOT_SEARCHED",
+      "supported_cartons": [
+        "carton_l01_c00"
+      ],
+      "wall_s": 0.0
+    },
+    {
+      "target_id": "carton_l00_c01",
+      "complete": false,
+      "stage": "SUPPORT_BLOCKED_NOT_SEARCHED",
+      "supported_cartons": [
+        "carton_l01_c01"
+      ],
+      "wall_s": 0.0
+    },
+    {
+      "target_id": "carton_l00_c02",
+      "complete": false,
+      "stage": "SUPPORT_BLOCKED_NOT_SEARCHED",
+      "supported_cartons": [
+        "carton_l01_c02"
+      ],
+      "wall_s": 0.0
+    },
+    {
+      "target_id": "carton_l00_c03",
+      "complete": false,
+      "stage": "SUPPORT_BLOCKED_NOT_SEARCHED",
+      "supported_cartons": [
+        "carton_l01_c03"
+      ],
+      "wall_s": 0.0
+    },
+    {
+      "target_id": "carton_l00_c04",
+      "complete": false,
+      "stage": "SUPPORT_BLOCKED_NOT_SEARCHED",
+      "supported_cartons": [
+        "carton_l01_c04"
+      ],
+      "wall_s": 0.0
+    }
+  ],
+  "counts": {
+    "native_requests": 301,
+    "checked_lift": 4,
+    "ik_requests": 15,
+    "numerical_ik_success": 12,
+    "explicit_target_check_passed": 7,
+    "pregrasp": 5,
+    "contact": 5,
+    "extraction": 4,
+    "withdrawal": 2
+  },
+  "loop_wall_s": 349.7033211365342,
+  "task_wall_s": 343.28018797934055,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}
