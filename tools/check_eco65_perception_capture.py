@@ -22,6 +22,13 @@ def main():
                        task_seconds=180., stage_seconds=5., rpc_seconds=100.,
                        progress_path=out/'native_progress.jsonl')
     try:
+        # The transverse worker requires a bound process option even for an
+        # unattached stopped-state check. Selecting this context does not claim
+        # contact or attachment at the independent camera capture q.
+        geometry=task.geometry_candidates()
+        if not geometry['candidates']:
+            raise ValueError('CAPTURE_CHECK_NO_LEGAL_TRANSVERSE_PROCESS_CONTEXT')
+        task.select_grasp(geometry['candidates'][0])
         check = task.call(task.request(np.asarray(q), 'pregrasp'))
         fk = task.check_fk(np.asarray(q)) if check['status'] == 'SUCCESS' else None
         save_json(out/'report.json', dict(status=check['status'], q_rad=q, native_check=check,

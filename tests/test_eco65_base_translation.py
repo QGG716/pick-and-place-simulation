@@ -42,3 +42,16 @@ def test_translation_does_not_guess_mount_ownership():
     scene=fixture_scene();scene['obstacles'][0]['owner']='other'
     with pytest.raises(ValueError,match='MOUNT_IDENTITY'):
         translate_installation(scene,[-.1,0,0],'carton_r00_l03_c02')
+
+
+def test_second_100mm_remount_is_incremental_and_invalidates_calibration():
+    first=translate_installation(fixture_scene(),[-.1,0,0],'carton_r00_l03_c02')
+    second=translate_installation(first,[-.1,0,0],'carton_r00_l03_c00')
+    verify_scene(second)
+    assert second['base_position_m']==pytest.approx([-.54,0,.24])
+    assert second['obstacles'][0]['position_m']==pytest.approx([-.54,0,.12])
+    assert second['base_translation']['old_base_position_m']==first['base_position_m']
+    assert second['target_box_id']=='carton_r00_l03_c00'
+    assert second['camera_extrinsics']['prior_calibration_valid'] is False
+    for key in ('boxes','native_world_objects','moving_attachments','mast','conveyors'):
+        assert second[key]==first[key]

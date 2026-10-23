@@ -180,11 +180,18 @@ def main():
                     if row['owner'] != owner: continue
                     prim = stage.GetPrimAtPath('/World/Workstation/CoupledReceiver/'+row['id'])
                     if not prim or not prim.IsA(UsdGeom.Mesh): raise ValueError('COUPLED_BELT_PRIM_MISSING')
-                    r = bbox.ComputeWorldBound(prim).ComputeAlignedRange()
-                    actual_bounds.append([np.array(r.GetMin()), np.array(r.GetMax())])
+                    # BBoxCache rotates the local extent box, which overestimates
+                    # a tilted belt with a bevel/seam relief. Read the actual
+                    # composed vertices so display and collision compare solids.
+                    local = np.asarray(UsdGeom.Mesh(prim).GetPointsAttr().Get())
+                    world = np.asarray(UsdGeom.Xformable(prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())).T
+                    actual_points = local@world[:3,:3].T+world[:3,3]
+                    actual_bounds.append([actual_points.min(axis=0), actual_points.max(axis=0)])
                     record = next(c for c in data['collision_records']
                                   if c['path']=='/Workstation/NativeWorldCollision/'+row['id'])
                     T = np.asarray(record['T_D']); points = np.asarray(record['points'])@T[:3,:3].T+T[:3,3]+translation
+                    if actual_points.shape != points.shape or not np.allclose(actual_points,points,atol=2e-6,rtol=0):
+                        raise ValueError('COUPLED_BELT_DISPLAY_COLLISION_VERTICES_MISMATCH:'+row['id'])
                     expected_bounds.append([points.min(axis=0), points.max(axis=0)])
                 if not actual_bounds: raise ValueError('COUPLED_BELT_EMPTY')
                 actual = np.array([np.min(np.array(actual_bounds)[:,0],axis=0),np.max(np.array(actual_bounds)[:,1],axis=0)])

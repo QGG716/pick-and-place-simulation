@@ -78,3 +78,17 @@ def test_batch_candidate_checkpoint_leaves_full_archive_to_committed_boundary(tm
     progress=json.loads((tmp_path/'batch_progress.json').read_text())
     assert progress['completed_ids']==['first'] and progress['attached_id']=='second'
     assert not (tmp_path/'latest_plan.json.gz').exists()
+
+
+def test_single_cycle_also_avoids_full_serialization_before_withdrawal(tmp_path):
+    import json
+    from unloading_sim.eco65.coupled_task import CoupledTask
+    task=object.__new__(CoupledTask)
+    task.progress_path=tmp_path/'native_progress.jsonl';task.completed_ids=[]
+    task.target={'id':'first'};task.current_q=np.zeros(6);task.height_m=.331
+    task.cycle_records=[{}];task.started=0.;task.parent='native-extraction-1'
+    task.result=lambda:pytest.fail('Full candidate serialization before withdrawal')
+    task.save_checkpoint('FIRST_CARTON_EXTRACTED')
+    progress=json.loads((tmp_path/'candidate_progress.json').read_text())
+    assert progress['parent_stage_id']=='native-extraction-1' and progress['completed_ids']==[]
+    assert not (tmp_path/'first_carton_extracted.json').exists()

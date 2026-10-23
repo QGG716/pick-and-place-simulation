@@ -821,5 +821,15 @@ class CoupledTask(NativeTask):
 
     def save_checkpoint(self,label):
         if self.progress_path:
+            if label=='FIRST_CARTON_EXTRACTED':
+                # This candidate is still inside the release/withdrawal budget.
+                # Full native receipts remain in the lossless call archive;
+                # serialize the complete plan at completion or on final failure.
+                save_json(self.progress_path.with_name('candidate_progress.json'),dict(
+                    label=label,target_id=self.target['id'],q=self.current_q.tolist(),
+                    height_m=self.height_m,completed_ids=list(self.completed_ids),
+                    parent_stage_id=self.parent,records=len(self.cycle_records),
+                    planning_wall_s=perf_counter()-self.started))
+                return
             result=self.result()
             save_json(self.progress_path.with_name(label.lower()+'.json'),result)
