@@ -86,5 +86,5 @@ def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False):
     prior=deepcopy(state.root());state.cycles=[]
     return dict(source_commit=summary['source_commit'],records_sha256=records,outcomes=receipts,
         archived_root=prior,new_native_root=state.root(),historical_completed_count=history+completed,
-        first_target_id='carton_l01_c04' if l01_tool else 'carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
+        first_target_id='carton_l01_c01' if l01_tool else 'carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
         search_operation='NEW_NATIVE_ROOT_WITH_SELECTED_SIDE_TOP_ROUTES' if l01_tool else 'NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')

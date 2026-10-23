@@ -7,7 +7,7 @@ import pytest
 from unloading_sim.carton_population import FrozenCartonPopulation
 from unloading_sim.coupled_batch import BatchState
 from unloading_sim.workcell_layout import load_workcell_layout
-from unloading_sim.l01_selected_routes import selected_routes_permission,selected_route_option,validate_selected_route,ORDER
+from unloading_sim.l01_selected_routes import selected_routes_permission,selected_route_option,validate_selected_route,ORDER,TOP_TARGET
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -24,7 +24,7 @@ def test_exact_three_routes_fixed_hmax_and_original_roles():
     assert height==pytest.approx(.25) and permission['dispatch_order']==list(ORDER)
     for name in ORDER:
         option=selected_route_option(boxes[name],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,permission)
-        top=name==ORDER[0]
+        top=name==TOP_TARGET
         assert option['face']['geometric_face_id']==('z+' if top else 'y+')
         assert option['segment_directions_world']==([[0.,0.,1.],[-1.,0.,0.]] if top else [[0.,1.,0.],[-1.,0.,0.]])
         assert option['height_m']==option['pre_approach_height_m']==height

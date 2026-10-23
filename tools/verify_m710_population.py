@@ -74,7 +74,7 @@ def verify(run, replay=None, *, retained_prefix=False):
         assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
         assert protocol['scissor_profile']=='low_profile_250_v1'
         if not bottom_two_top:assert 'layer_top_permission' not in protocol
-        assert summary['outcomes'][0]['target_id']==('carton_l01_c04' if selected_routes else 'carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
+        assert summary['outcomes'][0]['target_id']==('carton_l01_c01' if selected_routes else 'carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
         policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
         assert policy.robot_mount_contact_exemption
         assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]

@@ -5,7 +5,8 @@ from .lifted_reception import StartHeight, directional_contact, receiving_region
 SCOPE = 'XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
 SIDE_TEMPLATE = 'SELECTED_SIDE_POS_Y_HMAX'
 TOP_TEMPLATE = 'SELECTED_TOP_HMAX'
-ORDER = ('carton_l01_c04', 'carton_l01_c01', 'carton_l01_c00')
+ORDER = ('carton_l01_c01', 'carton_l01_c00', 'carton_l01_c04')
+TOP_TARGET = 'carton_l01_c04'
 
 
 def selected_routes_permission(frozen):
@@ -16,7 +17,7 @@ def selected_routes_permission(frozen):
         h=evidence['heights'][name]
         if abs(h['z_b_m']-.3)>1e-9 or abs(h['h_m']-.3)>1e-9 or abs(h['Hmax_world_m']-.25)>1e-9:
             raise ValueError('SELECTED_ROUTES_ORIGINAL_LAYER_CHANGED')
-        top=name==ORDER[0]
+        top=name==TOP_TARGET
         routes[name]=dict(start_box_identity=h['start_box_identity'],height_m=h['Hmax_world_m'],
             template=TOP_TEMPLATE if top else SIDE_TEMPLATE,geometric_face_id='z+' if top else 'y+',
             segment_directions_world=[[0.,0.,1.] if top else [0.,1.,0.],[-1.,0.,0.]],
