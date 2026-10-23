@@ -1,6 +1,8 @@
 """Literal geometry, strict top permission and exact mounting-pair scope."""
 from pathlib import Path
 from types import SimpleNamespace
+from dataclasses import replace
+from copy import deepcopy
 import numpy as np
 import pytest
 from unloading_sim.conveyor_lift import coupled_conveyor_state,ScissorGeometryRangeError
@@ -9,13 +11,16 @@ from unloading_sim.collision_policy import SimulationCollisionPolicy
 from unloading_sim.isaac_collision_policy import classify_robot_mount_contact
 from unloading_sim.low_top_receiver import uses_low_top,BOX_TOP_LOW_DEFINITION
 from unloading_sim.carton_population import FrozenCartonPopulation
-from unloading_sim.workcell_layout import load_workcell_layout
+from unloading_sim.workcell_layout import load_workcell_layout,audit_layout_constraints
 
 ROOT=Path(__file__).resolve().parents[1]
 PATH=ROOT/'configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_500_y_minus_100_min250_lowprofile.yaml'
 
 def test_literal_minimum_geometry_and_historical_profile_retained():
     layout=load_workcell_layout(PATH)
+    assert audit_layout_constraints(layout)['overall_status']=='PASS'
+    altered=deepcopy(layout.data);altered['robot']['base_origin_xy_a_m'][0]+=.01
+    assert audit_layout_constraints(replace(layout,data=altered))['checks']['robot_base_origin_world']['status']=='FAIL'
     old=load_workcell_layout(PATH.with_name(PATH.name.replace('_lowprofile','')))
     new=coupled_conveyor_state(layout,.25)
     b={b.name:b for b in new.boxes}
