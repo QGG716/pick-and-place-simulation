@@ -168,7 +168,11 @@ class NativeTask:
         self.grasp_search = dict(status='NOT_STARTED', candidate_count=0,
                                  attempted_indices=[], unsearched_indices=[])
         self.cancelled = cancelled or (lambda: False)
-        self.stage_seconds = stage_seconds; self.rpc_seconds=rpc_seconds; self.deadline = perf_counter()+task_seconds
+        self.stage_seconds = stage_seconds; self.rpc_seconds=rpc_seconds
+        # Continuous tasks count model/snapshot preparation and worker startup
+        # in the same absolute task clock, as well as every later IPC/check.
+        clock_start=getattr(self,'started',perf_counter()) if continuous_task_mode else perf_counter()
+        self.deadline = clock_start+task_seconds
         self.task_id = 'eco65-'+uuid.uuid4().hex
         self.counter = 10000*attempt; self.parent = ''; self.attachment = None
         self.target = deepcopy(self.scene['box']); self.target_pose = transform(self.target['pose'])

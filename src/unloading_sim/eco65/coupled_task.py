@@ -346,11 +346,14 @@ class CoupledTask(NativeTask):
         checkpoint=self.checkpoint()
         samples=[]
         count=max(1,int(np.ceil(abs(height-self.height_m)/.01)))
-        for h in np.linspace(self.height_m,height,count+1):
-            self.height_m=float(h)
-            samples.append(dict(height_m=float(h),state=self.state(),
-                request=self.request(self.current_q,self.attached_check_stage() if self.attachment is not None else 'pregrasp')))
-        self.restore(checkpoint)
+        try:
+            for h in np.linspace(self.height_m,height,count+1):
+                self.require_connection_budget()
+                self.height_m=float(h)
+                samples.append(dict(height_m=float(h),state=self.state(),
+                    request=self.request(self.current_q,'pregrasp')))
+        finally:
+            self.restore(checkpoint)
         self.transition('COUPLED_LIFT',lambda:setattr(self,'height_m',float(height)),
             kind='external_axis',samples=samples,duration_s=abs(height-self.height_m)/.06)
 
@@ -660,6 +663,8 @@ class CoupledTask(NativeTask):
             attempted_indices=[],unsearched_indices=list(range(len(trials))),
             excluded_by_resource_bound=max(0,len(geometry['candidates'])-self.max_grasps))
         for index,(grasp,sync) in enumerate(trials):
+            if perf_counter()>=self.deadline:
+                raise ValueError('FIRST_CARTON_ABSOLUTE_BUDGET_EXHAUSTED')
             self.grasp_search['attempted_indices'].append(index)
             self.grasp_search['unsearched_indices'].remove(index)
             self.restore(initial)

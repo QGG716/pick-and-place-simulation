@@ -130,3 +130,17 @@ def test_native_world_avoids_unrelated_scene_copy_without_changing_solids():
         assert native==world_objects(with_coupled_state(scene,height))
         native[0]['pose'][0][3]+=99.
         assert scene==original
+
+
+def test_lift_preparation_timeout_does_not_commit_a_sample_height():
+    task=object.__new__(CoupledTask);task.height_m=.18;task.attachment=None;task.current_q=np.zeros(6)
+    task.checkpoint=lambda:{'height_m':task.height_m}
+    task.restore=lambda cp:setattr(task,'height_m',cp['height_m'])
+    task.require_connection_budget=lambda:None
+    task.request=lambda *a:{}
+    def state():
+        if task.height_m>.18:raise ValueError('simulated preparation timeout')
+        return {}
+    task.state=state
+    with pytest.raises(ValueError,match='preparation timeout'):task.lift(.23)
+    assert task.height_m==.18
