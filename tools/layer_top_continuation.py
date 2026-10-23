@@ -12,19 +12,37 @@ RECORDS={
     'protocol.json':'4e6fb5f87942cffdea803d3fb90a653c9ab23a29f1522fbd71f4992eb235a6f7',
     'verification.json':'122b40e44ea34448d1b7b51f9f57d25c545db1d4373faad29b19f123025a0f82',
 }
+LOWPROFILE_TOP_SCOPE='XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP'
+LOWPROFILE_RECORDS={
+    'summary.json':'21dc616dd94d31365d963e383822af7737cd3293b322d3feba6b701ace2fa6c3',
+    'protocol.json':'7cdeab4bfdd3122e2283f71deaf4d39781160256d3a66ec206423aec9d1ab78c',
+    'verification.json':'17bc81fb8818186c348b0f0e2695b1c8249417c4ad079b747b05810f71bf3652',
+}
 
 
 def restore_layer_top_terminal(run,state):
-    for name,sha in RECORDS.items():
+    return _restore_terminal(run,state,lowprofile_top=False)
+
+
+def restore_lowprofile_top_terminal(run,state):
+    """Use the actual 30-box terminal, never an old top-grasp solution hint."""
+    return _restore_terminal(run,state,lowprofile_top=True)
+
+
+def _restore_terminal(run,state,*,lowprofile_top):
+    records=LOWPROFILE_RECORDS if lowprofile_top else RECORDS
+    completed=2 if lowprofile_top else 5
+    history=28 if lowprofile_top else 23
+    for name,sha in records.items():
         if hashlib.sha256((run/name).read_bytes()).hexdigest()!=sha:
             raise ValueError('LAYER_TOP_PREDECESSOR_RECORD_CHANGED')
     read=lambda n:json.loads((run/n).read_text(encoding='utf-8'))
-    summary,protocol,verification=(read(n) for n in RECORDS)
-    if (summary['source_commit']!='3f449e89da518ac89b3c112b4a83eb9a83000b11'
-            or protocol['scope']!='XY_TOP_MIN250_CONTINUATION'
+    summary,protocol,verification=(read(n) for n in records)
+    if (summary['source_commit']!=('f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
+            or protocol['scope']!=('XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
             or protocol['mounting_variant']!='x_minus_500_y_minus_100'
-            or verification['completed_count']!=5 or not verification['status'].startswith('PASS_')
-            or summary['historical_completed_count']!=23 or summary['completed_count']!=5
+            or verification['completed_count']!=completed or not verification['status'].startswith('PASS_')
+            or summary['historical_completed_count']!=history or summary['completed_count']!=completed
             or protocol['original_cartons']!=[box_message(b) for b in state.cartons]):
         raise ValueError('LAYER_TOP_PREDECESSOR_SCOPE_CHANGED')
     original={b.name:b for b in state.cartons};initial=summary['initial']
@@ -54,10 +72,10 @@ def restore_layer_top_terminal(run,state):
         receipts.append(dict(target_id=outcome['target_id'],completed_count=result['completed_count'],
             result_sha256=receipt['file_sha256']['result.json']))
         state.cycles=state.cycles[-1:]
-    if state.root()!=summary['terminal'] or state.ledger!=summary['ledger'] or len(state.cartons)!=12:
+    if state.root()!=summary['terminal'] or state.ledger!=summary['ledger'] or len(state.cartons)!=40-history-completed:
         raise ValueError('LAYER_TOP_PREDECESSOR_FINAL_CHANGED')
     prior=deepcopy(state.root());state.cycles=[]
-    return dict(source_commit=summary['source_commit'],records_sha256=RECORDS,outcomes=receipts,
-        archived_root=prior,new_native_root=state.root(),historical_completed_count=28,
-        first_target_id='carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
+    return dict(source_commit=summary['source_commit'],records_sha256=records,outcomes=receipts,
+        archived_root=prior,new_native_root=state.root(),historical_completed_count=history+completed,
+        first_target_id='carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
         search_operation='NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')

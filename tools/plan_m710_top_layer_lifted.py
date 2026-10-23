@@ -129,7 +129,10 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 if top_option is not None:
                     # One new business face. Keep the existing front/side options
                     # and the same task/prefix deadlines; give top the first visit.
-                    business_options=[top_option,*business_options]
+                    business_options=([top_option] if getattr(args,'layer_top_only',False)
+                                      else [top_option,*business_options])
+                elif getattr(args,'layer_top_only',False):
+                    raise ValueError('TOP_ONLY_TARGET_OUTSIDE_FROZEN_LAYER_PERMISSION')
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
