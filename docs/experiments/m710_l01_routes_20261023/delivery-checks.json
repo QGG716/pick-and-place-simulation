@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "raw_files_verified": 40,
+  "raw_sha256": "0494566245fcadcdd71935edb0b62c31098c8c399f05ae43e7370d31174f6a8b",
+  "offline_zip_sha256": "5146a72d943ca40f6086890b9abcebaa22c8a459b17efcae3750c86c0897b70d",
+  "source_commit": "6558d70c2c068ad7e5223b13555efcc97e34e1cf"
+}

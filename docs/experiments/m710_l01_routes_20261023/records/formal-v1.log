@@ -1,0 +1,10 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c01", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c01", "process": "SELECTED_SIDE_POS_Y_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c01", "completed": 0, "remaining": 8, "attempted": 1, "task_s": 1.3766668736934662}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c00", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c00", "process": "SELECTED_SIDE_POS_Y_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c00", "completed": 0, "remaining": 8, "attempted": 2, "task_s": 1.6656829491257668}
+{"event": "CARTON_TASK_START", "target": "carton_l01_c04", "remaining": 8}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c04", "process": "SELECTED_TOP_HMAX", "completed": 0, "historical_completed": 32}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c04", "completed": 0, "remaining": 8, "attempted": 3, "task_s": 90.81837922334671}
+{"status": "INCOMPLETE_RETAINED", "completed": 0, "targets": 3}

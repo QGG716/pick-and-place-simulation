@@ -1,0 +1,244 @@
+{
+  "source_commit": "6558d70c2c068ad7e5223b13555efcc97e34e1cf",
+  "new_completed": 0,
+  "new_targets": 3,
+  "dispatch_order": [
+    "carton_l01_c01",
+    "carton_l01_c00",
+    "carton_l01_c04"
+  ],
+  "historical_completed": 32,
+  "cumulative_historical_completed": 32,
+  "remaining": 8,
+  "rows": [
+    {
+      "target_id": "carton_l01_c01",
+      "complete": false,
+      "reason": "+Y侧吸面被l01_c04遮挡，面可见性筛选拒绝；没有派发IK或轨迹规划。",
+      "task_wall_s": 1.3766668736934662,
+      "template": "SELECTED_SIDE_POS_Y_HMAX",
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "actual_height_changed": false,
+      "synchronization": "NOT_REACHED_ALREADY_AT_HMAX",
+      "ik_requests": 0,
+      "numerical_ik_success": 0,
+      "target_check_passed": 0,
+      "approach_passed": 0,
+      "contact_passed": 0,
+      "complete_pick_place": 0,
+      "predicted_cups": null,
+      "commanded_cups": null,
+      "actual_contact_cups": null,
+      "actual_start_q_rad": [
+        0.26881237102280675,
+        1.251723869760162,
+        -0.827019429344497,
+        -3.447013509126333,
+        -2.058860674706343,
+        -0.1467792029693943
+      ],
+      "start_q2_rad": 1.251723869760162,
+      "start_upper_arm": {
+        "shoulder_world_m": [
+          -1.680386950810983,
+          0.28983799699100005,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.8610803020529755,
+          0.51554055973322,
+          1.4457489420683851
+        ],
+        "direction_world": [
+          0.9154264231933044,
+          0.25218163434884905,
+          0.3136859687914917
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.31907245703473464,
+        "elevation_deg": 18.28150514695959,
+        "q2_rad": 1.251723869760162,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "selected_goal_q": null,
+      "blocking_cartons": [
+        "carton_l01_c04"
+      ],
+      "collision_witnesses": []
+    },
+    {
+      "target_id": "carton_l01_c00",
+      "complete": false,
+      "reason": "+Y侧吸面被l01_c01、l01_c04遮挡，面可见性筛选拒绝；没有派发IK或轨迹规划。",
+      "task_wall_s": 1.6656829491257668,
+      "template": "SELECTED_SIDE_POS_Y_HMAX",
+      "directions": [
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "actual_height_changed": false,
+      "synchronization": "NOT_REACHED_ALREADY_AT_HMAX",
+      "ik_requests": 0,
+      "numerical_ik_success": 0,
+      "target_check_passed": 0,
+      "approach_passed": 0,
+      "contact_passed": 0,
+      "complete_pick_place": 0,
+      "predicted_cups": null,
+      "commanded_cups": null,
+      "actual_contact_cups": null,
+      "actual_start_q_rad": [
+        0.26881237102280675,
+        1.251723869760162,
+        -0.827019429344497,
+        -3.447013509126333,
+        -2.058860674706343,
+        -0.1467792029693943
+      ],
+      "start_q2_rad": 1.251723869760162,
+      "start_upper_arm": {
+        "shoulder_world_m": [
+          -1.680386950810983,
+          0.28983799699100005,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.8610803020529755,
+          0.51554055973322,
+          1.4457489420683851
+        ],
+        "direction_world": [
+          0.9154264231933044,
+          0.25218163434884905,
+          0.3136859687914917
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.31907245703473464,
+        "elevation_deg": 18.28150514695959,
+        "q2_rad": 1.251723869760162,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "selected_goal_q": null,
+      "blocking_cartons": [
+        "carton_l01_c01",
+        "carton_l01_c04"
+      ],
+      "collision_witnesses": []
+    },
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "reason": "顶吸接近阶段421次原生IK均未求解，90秒共享前缀预算耗尽；未到目标碰撞检查、接近轨迹、contact或+Z→−X抽离。",
+      "task_wall_s": 90.81837922334671,
+      "template": "SELECTED_TOP_HMAX",
+      "directions": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "actual_height_changed": false,
+      "synchronization": "NOT_REACHED_ALREADY_AT_HMAX",
+      "ik_requests": 421,
+      "numerical_ik_success": 0,
+      "target_check_passed": 0,
+      "approach_passed": 0,
+      "contact_passed": 0,
+      "complete_pick_place": 0,
+      "predicted_cups": 48,
+      "commanded_cups": 48,
+      "actual_contact_cups": null,
+      "actual_start_q_rad": [
+        0.26881237102280675,
+        1.251723869760162,
+        -0.827019429344497,
+        -3.447013509126333,
+        -2.058860674706343,
+        -0.1467792029693943
+      ],
+      "start_q2_rad": 1.251723869760162,
+      "start_upper_arm": {
+        "shoulder_world_m": [
+          -1.680386950810983,
+          0.28983799699100005,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.8610803020529755,
+          0.51554055973322,
+          1.4457489420683851
+        ],
+        "direction_world": [
+          0.9154264231933044,
+          0.25218163434884905,
+          0.3136859687914917
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 0.31907245703473464,
+        "elevation_deg": 18.28150514695959,
+        "q2_rad": 1.251723869760162,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "selected_goal_q": null,
+      "blocking_cartons": [],
+      "collision_witnesses": []
+    }
+  ],
+  "shared_prefix_budget_s": 90,
+  "task_budget_s": 300,
+  "seed": 71070,
+  "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+  "counts": {
+    "native_requests": 434,
+    "ik_requests": 421,
+    "numerical_ik_success": 0,
+    "target_check_passed": 0,
+    "approach_passed": 0,
+    "contact_passed": 0,
+    "complete_pick_place": 0
+  },
+  "loop_wall_s": 94.36796075105667,
+  "nested_task_wall_s": 93.86072904616594,
+  "native_ik_solver_s": 42.49723141299999,
+  "business_targets_dispatched": 3,
+  "actual_ik_or_motion_search_candidates": 1,
+  "no_new_robot_motion": true,
+  "collision_witnesses": 0,
+  "holding_assumption": "ideal_independent_cups",
+  "reception_or_drain_executed": false,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}
