@@ -27,7 +27,7 @@ def expected_population_mount(protocol):
     if variant not in mounts:
         raise ValueError('UNKNOWN_POPULATION_MOUNT')
     expected = 'configs/workcells/m710id70_unloading_layout_v1_mount_'+variant+'.yaml'
-    if protocol.get('scope')=='XY_TOP_MIN250_CONTINUATION':
+    if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
     if protocol['active_layout_file'] != expected:
@@ -41,8 +41,9 @@ def verify(run, replay=None, *, retained_prefix=False):
     all_rates = protocol['scope']=='XY_TOP_L05_ALL_JOINT_RATES_RESTART'
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
+    layer_top=protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
     repair=continuation and protocol.get('integration_repair_restart',False)
-    xy_top = continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    xy_top = layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     stopped=retained_prefix and continuation and summary['status']=='INTEGRATION_ERROR_RETAINED'
@@ -53,8 +54,20 @@ def verify(run, replay=None, *, retained_prefix=False):
     initial, root = summary["initial"], summary["initial"]
     targets = set(protocol["scoped_target_ids"])
     assert targets == {b["id"] for b in initial["world_cartons"]}
-    assert len(targets) == summary["target_count"] == (17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (12 if layer_top else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (28 if layer_top else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    if layer_top:
+        predecessor=json.loads((run/'predecessor.json').read_text())
+        assert initial==protocol['initial_root']==predecessor['new_native_root']
+        assert initial==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert protocol['all_joint_rate_limits_retained'] and protocol['low_top_minimum_m']==.25
+        assert summary['outcomes'][0]['target_id']=='carton_l02_c01'
+        permission=protocol['layer_top_permission']
+        anchor=protocol['frozen']['heights'][permission['anchor_id']]
+        assert permission['anchor_box_identity']==anchor['start_box_identity']
+        assert permission['ceiling_world_m']==anchor['z_b_m']+anchor['h_m']
+        assert permission['allowed_target_ids']==sorted(n for n,h in protocol['frozen']['heights'].items()
+            if h['z_b_m']+h['h_m']<=permission['ceiling_world_m']+1e-9)
     if continuation:
         predecessor=json.loads((run/'predecessor.json').read_text())
         retained=json.loads((run/'restart-predecessor.json').read_text()) if repair else predecessor
@@ -214,10 +227,18 @@ def verify(run, replay=None, *, retained_prefix=False):
                 height_record=protocol['frozen']['heights'][name]
                 low_top = xy_top and (height_record['z_b_m']+height_record['h_m'] < protocol['low_top_minimum_m']
                     if continuation else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
+                top_height=protocol['low_top_minimum_m']
+                if layer_top:
+                    low_top=cycle['option']['template']=='TOP_FIXED_CURRENT_RECEIVER'
+                    top_height=root['height_m']
+                    if low_top:
+                        assert name in permission['allowed_target_ids']
+                        assert cycle['option']['layer_top_permission']==permission
+                        assert cycle['option']['segment_directions_world']==[[0.,0.,1.],[-1.,0.,0.]]
                 if low_top:
-                    assert cycle['option']['template'] == 'TOP_FIXED_MINIMUM_RECEIVER'
+                    assert cycle['option']['template'] == ('TOP_FIXED_CURRENT_RECEIVER' if layer_top else 'TOP_FIXED_MINIMUM_RECEIVER')
                     assert cycle['target']['face_role'] == 'TOP'
-                    assert cycle['stationary_low_receiver']['height_m'] == protocol['low_top_minimum_m']
+                    assert cycle['stationary_low_receiver']['height_m'] == top_height
                     assert cycle['stationary_low_receiver']['throughout_contact_lift_transfer_release']
                 requests = {t["request"]["stage_id"]: t["request"] for t in trace["attempts"]}
                 responses = {c["stage_id"]: c["response"] for c in successful if c["op"] == "plan"}
@@ -236,7 +257,8 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert all(c["passed"] for c in axis["checks"])
                         assert axis["maximum_height_step_m"] <= .010000001 and not axis["continuous_swept_proof"]
                         height = axis["to_height_m"]
-                        if low_top:assert height == protocol['low_top_minimum_m'] and stage['stage'] == 'pregrasp'
+                        if low_top:assert height == top_height and stage['stage'] == 'pregrasp'
+                        if layer_top and low_top:assert axis['from_height_m']==axis['to_height_m']
                         counts["checked_lift_samples"] += len(axis["checks"])
                     elif stage["generation_source"] == "SEMANTIC_EVENT":
                         drop = resp["nominal_release"]
@@ -249,7 +271,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                             extraction_started = True
                             assert abs(height-cycle["actual_extraction_height_m"]) < 1e-8
                             if low_top:
-                                assert height == protocol['low_top_minimum_m']
+                                assert height == top_height
                                 if extraction_count == 1:
                                     assert req['ownership_transition'] == 'ATTACH'
                                 else:
@@ -278,7 +300,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                     assert lift['terminal_check']['free_space_rules_restored']
                     assert lift['geometry']['direction_world'] == [0.,0.,1.]
                     assert cycle['extraction_geometry']['direction_world'] == [-1.,0.,0.]
-                    assert height == protocol['low_top_minimum_m']
+                    assert height == top_height
                 required = ["RELEASE", "NOMINAL_FIRST_CONTACT", "SAFE_TOOL_SEPARATION", "IDEAL_RECEIVER_DRAIN"]
                 assert all(events.count(e) == 1 for e in required)
                 assert [events.index(e) for e in required] == sorted(events.index(e) for e in required)

@@ -120,6 +120,16 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 business_options=business_options[:1]
                 if not business_options or business_options[0]['template']!='FRONT_DIRECT_HMIN' or not business_options[0]['reception']['junction']:
                     raise ValueError('REQUESTED_JUNCTION_FRONT_HMIN_NOT_APPLICABLE')
+            from unloading_sim.low_top_receiver import layer_top_option,TOP_TEMPLATES
+            layer_permission=getattr(args,'layer_top_permission',None)
+            if layer_permission is not None:
+                top_option=layer_top_option(target,scene.receiver,
+                    next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+                    frozen,state.height,layer_permission)
+                if top_option is not None:
+                    # One new business face. Keep the existing front/side options
+                    # and the same task/prefix deadlines; give top the first visit.
+                    business_options=[top_option,*business_options]
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -128,7 +138,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend([option] if low_top else synchronization_options(option,state.height,low,
+                options.extend([option] if option['template'] in TOP_TEMPLATES else synchronization_options(option,state.height,low,
                     include_receive_before_approach=getattr(args,'include_receive_before_approach',False)))
             eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
@@ -143,6 +153,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 visits=candidate_visits(options,intervals)
                 total_visits=len(options)*sum(1 for _ in candidate_deltas(intervals))
             for option_index,option in enumerate(visits):
+                low_top=option['template'] in TOP_TEMPLATES
                 if perf_counter()>=min(deadline,shared_stages['prefix']):
                     attempts.append(dict(target_id=target.name,complete=False,
                         failure='SHARED_TASK_BUDGET_EXHAUSTED' if perf_counter()>=deadline else 'SHARED_PREFIX_BUDGET_EXHAUSTED',
@@ -175,6 +186,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c=connector_type.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
+                    c.layer_top_permission=layer_permission
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first

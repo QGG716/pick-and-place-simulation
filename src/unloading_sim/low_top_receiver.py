@@ -17,6 +17,8 @@ from .stage_motion_policy import MotionPurpose
 
 
 TEMPLATE = 'TOP_FIXED_MINIMUM_RECEIVER'
+LAYER_TEMPLATE = 'TOP_FIXED_CURRENT_RECEIVER'
+TOP_TEMPLATES = (TEMPLATE, LAYER_TEMPLATE)
 LEGACY_LOW_DEFINITION = 'FROZEN_ORIGINAL_HMIN_BELOW_MINIMUM'
 BOX_TOP_LOW_DEFINITION = 'FROZEN_BOX_TOP_STRICTLY_BELOW_MINIMUM'
 
@@ -37,6 +39,36 @@ def low_top_option(target, belt, longitudinal, frozen, minimum, *, definition=LE
         raise ValueError('LOW_TOP_FROZEN_TARGET_CHANGED')
     if not uses_low_top(height, minimum, definition):
         return None
+    return _fixed_top_option(target,belt,longitudinal,frozen,minimum,height,definition)
+
+
+def selected_layer_top_permission(frozen, anchor_id):
+    """Bind the user-selected layer to original geometry, never parse carton IDs."""
+    evidence=frozen.evidence()
+    anchor=evidence['heights'][anchor_id]
+    ceiling=anchor['z_b_m']+anchor['h_m']
+    return dict(anchor_id=anchor_id,anchor_box_identity=anchor['start_box_identity'],
+        ceiling_world_m=ceiling,original_cartons_sha256=evidence['original_cartons_sha256'],
+        allowed_target_ids=sorted(n for n,h in evidence['heights'].items()
+            if h['z_b_m']+h['h_m']<=ceiling+1e-9),
+        definition='FROZEN_BOX_TOP_AT_OR_BELOW_SELECTED_LAYER')
+
+
+def layer_top_option(target,belt,longitudinal,frozen,current_height,permission):
+    if permission!=selected_layer_top_permission(frozen,permission['anchor_id']):
+        raise ValueError('TOP_LAYER_PERMISSION_CHANGED')
+    height=StartHeight.capture(target)
+    if height.box_identity!=frozen.evidence()['heights'][target.name]['start_box_identity']:
+        raise ValueError('LOW_TOP_FROZEN_TARGET_CHANGED')
+    if target.name not in permission['allowed_target_ids']:return None
+    option=_fixed_top_option(target,belt,longitudinal,frozen,current_height,height,permission['definition'])
+    option.update(template=LAYER_TEMPLATE,layer_top_permission=deepcopy(permission),
+        height_source=permission['definition'],low_layer_threshold_m=permission['ceiling_world_m'],
+        receiver_height_source='CURRENT_COMMITTED_HEIGHT_FIXED_DURING_TOP_CYCLE')
+    return option
+
+
+def _fixed_top_option(target,belt,longitudinal,frozen,minimum,height,definition):
     if not np.allclose(target.rotation, np.eye(3), atol=1e-12, rtol=0):
         raise ValueError('LOW_TOP_REQUIRES_FROZEN_WORLD_ALIGNED_BOX')
     region = receiving_region(target, belt)
@@ -81,12 +113,21 @@ class LowTopReceiverConnector(CoupledCycleConnector):
     def validate_template(self,target):
         super().validate_template(target)
         h=StartHeight.capture(target.box)
-        if (self.option['template']!=TEMPLATE or target.face_role!='TOP'
+        layer=self.option['template']==LAYER_TEMPLATE
+        if layer:
+            permission=getattr(self,'layer_top_permission',None)
+            scope_valid=(permission is not None and self.option.get('layer_top_permission')==permission
+                and target.target_id in permission['allowed_target_ids']
+                and h.z_b+h.h<=permission['ceiling_world_m']+1e-9
+                and self.option['height_m']==self.batch_root['height_m'])
+        else:
+            scope_valid=(self.option['height_m']==self.option['low_layer_threshold_m']
+                and uses_low_top(h,self.option['height_m'],self.option.get('low_definition',LEGACY_LOW_DEFINITION)))
+        if (self.option['template'] not in TOP_TEMPLATES or target.face_role!='TOP'
                 or not np.allclose(target.outward_normal,[0.,0.,1.],atol=1e-12,rtol=0)
                 or target.world_y_offset_m!=0 or target.eccentric_authority is not None
-                or self.option['height_m']!=self.option['low_layer_threshold_m']
-                or not uses_low_top(h,self.option['height_m'],
-                    self.option.get('low_definition',LEGACY_LOW_DEFINITION))
+                or not scope_valid
+                or self.option['segment_directions_world']!=[[0.,0.,1.],[-1.,0.,0.]]
                 or abs(self.option['release_bottom_world_m']-max(h.z_b+h.d,self.option['height_m']+h.d))>1e-9):
             raise MoveItUnavailable('LOW_TOP_PROCESS_SCOPE_CHANGED')
         self._top_lift_in_progress=False

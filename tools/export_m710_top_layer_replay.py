@@ -145,7 +145,7 @@ def export(run,seed,output,attempt=None):
                 points=stage['points'];assert points[0]['q']==q
                 duration=points[-1]['t'];assert duration>0
                 phase=stage['stage']
-                if phase=='extraction' and cycle['option']['template']=='TOP_FIXED_MINIMUM_RECEIVER':
+                if phase=='extraction' and cycle['option']['template'] in ('TOP_FIXED_MINIMUM_RECEIVER','TOP_FIXED_CURRENT_RECEIVER'):
                     extraction_leg+=1
                     phase='top_lift' if extraction_leg==1 else 'top_transfer'
                 add(dict(base,kind='motion',phase=phase,points=points,world=mechanism(height),
@@ -168,7 +168,7 @@ def export(run,seed,output,attempt=None):
         lower_count=len(protocol['original_cartons'])-len(protocol['frozen']['target_ids']),
         initial_carton_count=len(root['world_cartons']),historical_completed_count=result.get('historical_completed_count',0),
         single_junction=protocol.get('scope')=='ONE_NEW_JUNCTION_C00',
-        all_remaining=protocol.get('scope') in ('ALL_REMAINING_FROM_ACCEPTED_C00','XY_TOP_NEW_WORLD_40','XY_TOP_MIN250_CONTINUATION',
+        all_remaining=protocol.get('scope') in ('ALL_REMAINING_FROM_ACCEPTED_C00','XY_TOP_NEW_WORLD_40','XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION',
             'XY_TOP_L05_J4_VELOCITY_RESTART','XY_TOP_L05_ALL_JOINT_RATES_RESTART'),
         planning_diagnostic=protocol.get('planning_diagnostic'),
         mount_comparison=protocol.get('scope')=='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON',
