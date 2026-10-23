@@ -8,7 +8,7 @@ from unloading_sim.eco65.native_io import verify_snapshot, file_hash
 from unloading_sim.eco65.native_scene import verify_scene
 from unloading_sim.eco65.native_model import build_native_model
 from unloading_sim.eco65.home_candidate import make_candidate, verify_candidate
-from unloading_sim.eco65.coupled_scene import build_coupled_scene, CONFIG
+from unloading_sim.eco65.coupled_scene import build_coupled_scene
 from unloading_sim.eco65.transverse_process import POLICY, process_options, corners
 from unloading_sim.moveit2_backend import digest
 
@@ -74,7 +74,7 @@ if __name__=='__main__':
     parser.add_argument('--snapshot',required=True)
     parser.add_argument('--home-candidate',required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--config',type=Path,default=CONFIG)
+    parser.add_argument('--config',type=Path,default=ROOT/'configs/workcells/eco65_coupled_carton_v4.yaml')
     parser.add_argument('--initial-height',type=float,
         help='Explicit new cold-world height; default inherits the source actual height, never clamps')
     parser.add_argument('--native-asset-root',default='/work-eco65-20261015')
