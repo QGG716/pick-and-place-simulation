@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "source_commit": "8770a4ad99bf35f9346ac321b940c880089c097c",
+  "cases": 5,
+  "all_source_hashes_verified": true,
+  "ik_calls": 2081,
+  "ik_success": 0,
+  "generated_robot_motion_points": 0,
+  "collision_witnesses": 0,
+  "backend": "PinocchioHppFclBackend",
+  "solver_calls_added": 0,
+  "physical_execution": "NOT_RUN"
+}

@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "target": "carton_l02_c01",
+      "cartons": 12,
+      "source_q_preserved": true,
+      "production_fk_matches": true,
+      "robot_motion_points": 0
+    },
+    {
+      "target": "carton_l02_c00",
+      "cartons": 12,
+      "source_q_preserved": true,
+      "production_fk_matches": true,
+      "robot_motion_points": 0
+    },
+    {
+      "target": "carton_l01_c02",
+      "cartons": 12,
+      "source_q_preserved": true,
+      "production_fk_matches": true,
+      "robot_motion_points": 0
+    },
+    {
+      "target": "carton_l01_c03",
+      "cartons": 12,
+      "source_q_preserved": true,
+      "production_fk_matches": true,
+      "robot_motion_points": 0
+    },
+    {
+      "target": "carton_l01_c04",
+      "cartons": 12,
+      "source_q_preserved": true,
+      "production_fk_matches": true,
+      "robot_motion_points": 0
+    }
+  ],
+  "errors": [],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+}

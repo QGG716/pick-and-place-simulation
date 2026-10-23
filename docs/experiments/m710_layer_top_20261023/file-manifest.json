@@ -1,0 +1,122 @@
+{
+  ".gitattributes": {
+    "bytes": 20,
+    "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+  },
+  "all-targets.json": {
+    "bytes": 39611,
+    "sha256": "3700f6ee40519507f5dcf707738264a1cf84a4c79f7e55155020356fbaa4485b"
+  },
+  "failures-checks.json": {
+    "bytes": 344,
+    "sha256": "bdfea6a3959ac88ec2e52bb43d1ab724a122786f8cfb8cb4354a4705676b71aa"
+  },
+  "failures.html": {
+    "bytes": 1815339,
+    "sha256": "1cd5ab823dde816655e3d4c192fa2f65412651eb6c2de58a37d321f8317259d3"
+  },
+  "formal-v1-raw.tar.xz": {
+    "bytes": 257168,
+    "sha256": "cfe077da74c5a5577c7c6de61e91244d0d46a0876ec5fabcfff7ff9f47d83e93"
+  },
+  "index.html": {
+    "bytes": 3179,
+    "sha256": "65613c2e879c2f7e2fada4a30af3a8b3a64ecc29ae59e70e4e61599e3050bce5"
+  },
+  "offline-replay.zip": {
+    "bytes": 1278587,
+    "sha256": "145322954a46fc8c1335090db547e206cec7901ede64574eb1b1f1b3ef86e3e6"
+  },
+  "README.txt": {
+    "bytes": 4779,
+    "sha256": "160122f0dd0a039f15b9f802b2dc87c57060839269e1ada27132fc1b5559e9be"
+  },
+  "result.json": {
+    "bytes": 3329,
+    "sha256": "390dd0836114cda1493d21c74b73ebdd2060aece7aeec3398414198a0e0b5366"
+  },
+  "source-check.json": {
+    "bytes": 282,
+    "sha256": "df38ce45276d3d428e1111b0fd6035f6c0471826d000c147c3edd46503f6645b"
+  },
+  "source-manifest.json": {
+    "bytes": 38241,
+    "sha256": "22b91786a801184541df96ff293fee6de95ea0d8d1541c4ad05d548180388ec6"
+  },
+  "source-receipt.json": {
+    "bytes": 9965,
+    "sha256": "c668f6ff7f86fd5ca57b408b82ae6d9a411e610aa51f656ee1c4ec3bd8a17417"
+  },
+  "qa/browser-checks.json": {
+    "bytes": 1016,
+    "sha256": "07c5df7b6fc787c67127f69b1f9a77c5e12c3ac704049ed1ee3acb524981512a"
+  },
+  "qa/l01_c04.png": {
+    "bytes": 266434,
+    "sha256": "0b09dcf600769dc36703a8d7a36007ebd31978604b876985c6f16520a7f34b4b"
+  },
+  "qa/l02_c01.png": {
+    "bytes": 265800,
+    "sha256": "76fca21dd0b0cef19cd8b0199584245f30317dc20f900033036ee59e19203487"
+  },
+  "records/focused-tests.log": {
+    "bytes": 99,
+    "sha256": "78190b40c06a15e52442061f539c4e3ebfe706e59619d8d389ccadb9b4c53c74"
+  },
+  "records/formal-v1.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "records/formal-v1.log": {
+    "bytes": 1858,
+    "sha256": "ed9258b53fd5e8107e64212ce05d34032ab422074578443a922c1fba8af7f1c0"
+  },
+  "records/initial-state-check.json": {
+    "bytes": 6698,
+    "sha256": "8e5fe95fa79763ace89e39479bbdfbe466b1e1af21719f8d13d0d4e70f70b758"
+  },
+  "records/predecessor.json": {
+    "bytes": 42133,
+    "sha256": "3e085051efe9deec3c0f1dee2f5813ddb4108d1d0378aa9cb896aca9dfc51df3"
+  },
+  "records/production-check.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "records/protocol.json": {
+    "bytes": 46869,
+    "sha256": "4a0e5a085e1f12c75e422f80c187de18af6c4630372cf89dedebbf2e726c610a"
+  },
+  "records/raw-receipt.json": {
+    "bytes": 151,
+    "sha256": "424dac5a65493be542d8c78c123e0a010133dd61d09153338b64accffe3393be"
+  },
+  "records/summary.json": {
+    "bytes": 154738,
+    "sha256": "7ccb6b7e2facb9af8f1600a8f3ff34d7c79ea35c0a7fe2520883124991c064b7"
+  },
+  "records/verification.json": {
+    "bytes": 339683,
+    "sha256": "190cc558659fe0728660f14ed1f29dcd5fb19d41ff31ea9163ba2bfd4b43c0b7"
+  },
+  "reproduce/analyze.py": {
+    "bytes": 6886,
+    "sha256": "d838c3f56cff6a89461a7e522c19124b1ac12f04595c0a55db008ab43e530faf"
+  },
+  "reproduce/analyze.sh": {
+    "bytes": 1326,
+    "sha256": "551976f2f4c401fe7205a2859802febbbb24bc7367e08098641551ed735bafc8"
+  },
+  "reproduce/deploy-and-run.sh": {
+    "bytes": 2007,
+    "sha256": "35614d59a0313c7c8904055f4d45c4ce71b83d972d70bf3f19cebd1081d29eb4"
+  },
+  "reproduce/formal-v1.sh": {
+    "bytes": 798,
+    "sha256": "bc8049156a3ca1ba7038e795ecaab64669a9bd7081ebef6f0c81030415ed760d"
+  },
+  "reproduce/prepare-source.py": {
+    "bytes": 5077,
+    "sha256": "3e36839b28bf882d5adb47332b95315be00de08f242ca9b40968296ea591082e"
+  }
+}
