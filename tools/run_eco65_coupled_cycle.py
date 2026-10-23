@@ -4,6 +4,7 @@ from pathlib import Path
 import traceback
 import gzip
 import json
+from time import perf_counter
 from unloading_sim.eco65.model import ROOT,load_json,save_json
 from unloading_sim.eco65.native_io import verify_snapshot
 from unloading_sim.eco65.coupled_task import CoupledTask
@@ -67,7 +68,7 @@ def main():
         report=dict(status='INCOMPLETE',complete=False,error=str(error),traceback=traceback.format_exc(),
                     plan_file='latest_plan.json.gz' if a.all_cartons else 'partial_plan.json',
                     completed_ids=task.completed_ids if task else [],
-                    planning_wall_s=None if task is None else task.result()['planning_wall_s'],
+                    planning_wall_s=None if task is None else perf_counter()-task.started,
                     physical_execution='NOT_RUN',execution_ready=False)
         save_json(output/'run_report.json',report)
         print(report)
