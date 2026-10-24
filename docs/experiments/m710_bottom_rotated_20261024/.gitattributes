@@ -1,0 +1,6 @@
+*.json -text
+*.log -text
+*.html -text
+*.sh -text
+*.py -text
+*.exit -text

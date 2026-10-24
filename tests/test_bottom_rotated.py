@@ -12,17 +12,43 @@ from unloading_sim.contact_target import simulation_contact_targets
 from unloading_sim.support import SupportRelationGraph
 
 
-def predecessor(tmp_path):
+def predecessor(tmp_path, *, c03_prefix=False):
     from layer_top_continuation import BOTTOM_CURRENT_RECORDS
-    source=Path(__file__).resolve().parents[1]/'docs/experiments/m710_l00_top_xplus200_20261024'
+    from layer_top_continuation import BOTTOM_ROTATED_RECORDS
+    source=Path(__file__).resolve().parents[1]/('docs/experiments/m710_bottom_rotated_20261024' if c03_prefix else 'docs/experiments/m710_l00_top_xplus200_20261024')
     prior=tmp_path/'prior';prior.mkdir()
-    for name in BOTTOM_CURRENT_RECORDS:(prior/name).write_bytes((source/'formal-v1'/name).read_bytes())
+    for name in (BOTTOM_ROTATED_RECORDS if c03_prefix else BOTTOM_CURRENT_RECORDS):(prior/name).write_bytes((source/'formal-v1'/name).read_bytes())
     with tarfile.open(source/'formal-v1-raw.tar.xz') as archive:
         for m in archive:
-            if m.isfile() and m.name.startswith('formal-v1/task-') and m.name.endswith('/result.json'):
+            if m.isfile() and m.name.startswith('formal-v1/task-001/' if c03_prefix else 'formal-v1/task-') and m.name.endswith('/result.json'):
                 p=prior/Path(m.name).relative_to('formal-v1');p.parent.mkdir(parents=True,exist_ok=True)
                 p.write_bytes(archive.extractfile(m).read())
     return prior
+
+
+def test_c04_comparison_reads_only_c03_prefix(tmp_path):
+    from layer_top_continuation import restore_c03_prefix
+    from unloading_sim.coupled_batch import BatchState
+    boxes,frozen,_,_=setup();state=BatchState(frozen,tuple(boxes.values()),np.zeros(6),2.05)
+    receipt=restore_c03_prefix(predecessor(tmp_path,c03_prefix=True),state)
+    assert len(state.ledger)==37 and {b.name for b in state.cartons}=={'carton_l00_c00','carton_l00_c04','carton_l01_c04'}
+    assert [o['target_id'] for o in receipt['outcomes']]==['carton_l00_c03']
+    assert not state.cycles and state.root()['predecessor_final_state_receipt'] is None
+    assert state.q==pytest.approx([.15132789535960595,.3439046338845537,-.6957085627841832,1.8593827995008968e-12,-.5311831301192554,-1.7221242221541695])
+
+
+@pytest.mark.parametrize('face',['side','front'])
+def test_current_c04_comparison_permission_and_mount(face):
+    from unloading_sim.l01_hmax import c04_face_permission,layer_permission,options,validate_option
+    from verify_m710_population import expected_population_mount
+    boxes,frozen,world,height=setup();mode='INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT'
+    grant=c04_face_permission(frozen,face,comparison_mode=mode);hmax=layer_permission(frozen)
+    option,=options(boxes['carton_l01_c04'],world['conveyor_transverse'],world['conveyor_longitudinal'],frozen,height,hmax,c04_face=grant)
+    target=SimpleNamespace(target_id='carton_l01_c04',box=boxes['carton_l01_c04'],geometric_face_id=grant['geometric_face_id'],world_y_offset_m=0,eccentric_authority=None)
+    validate_option(target,option,hmax,height,c04_face=grant)
+    protocol=dict(scope=grant['scope'],comparison_mode=mode,mounting_variant='x_minus_300_y_minus_100',tool_connector_extension_m=.2,
+        active_layout_file='configs/workcells/m710id70_unloading_layout_v1_mount_x_minus_300_y_minus_100_min250_lowprofile_tool_extension200.yaml')
+    assert expected_population_mount(protocol)==[-1.625,.25,.6]
 
 
 def test_checked_36_root_and_support_blocking(tmp_path):

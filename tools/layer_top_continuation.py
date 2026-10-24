@@ -33,6 +33,16 @@ BOTTOM_CURRENT_RECORDS={
     'protocol.json':'4eb15000c07ccf00231833a9fd6a473cde6c80550f9fa776a20c07b8859b2eeb',
     'verification.json':'7a1177c3ac3e1a25f651292ecfa9fbab46e56effb769f5cbf5eb6ebb00c233a9',
 }
+BOTTOM_ROTATED_RECORDS={
+    'summary.json':'26efbf6ee825b6c0033781d51a0b4fbe012f8b1157e2ad6e581243722ba86a7b',
+    'protocol.json':'fa4b0dbd1b9a1d35ab5f573fa2e08cbba2277217d73b4d0c946b08a273ab0084',
+    'verification.json':'3e8f3b80cc19dc06c24985970a9e89ec506521e27738c9b42f8e9820b4070903',
+}
+
+
+def restore_c03_prefix(run,state):
+    """Same checked 37-box root for c04 face comparisons; read only c03 result."""
+    return _restore_terminal(run,state,lowprofile_top=True,bottom_prefix=True)
 
 
 def restore_bottom_current_terminal(run,state):
@@ -58,20 +68,21 @@ def restore_lowprofile_top_terminal(run,state):
     return _restore_terminal(run,state,lowprofile_top=True)
 
 
-def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False,bottom_current=False):
-    records=BOTTOM_CURRENT_RECORDS if bottom_current else L01_HMAX_RECORDS if l01_hmax else L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
-    completed=2 if lowprofile_top else 5
-    history=34 if bottom_current else 32 if l01_hmax else 30 if l01_tool else 28 if lowprofile_top else 23
+def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False,bottom_current=False,bottom_prefix=False):
+    records=BOTTOM_ROTATED_RECORDS if bottom_prefix else BOTTOM_CURRENT_RECORDS if bottom_current else L01_HMAX_RECORDS if l01_hmax else L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
+    completed=1 if bottom_prefix else 2 if lowprofile_top else 5
+    verified_completed=3 if bottom_prefix else completed
+    history=36 if bottom_prefix else 34 if bottom_current else 32 if l01_hmax else 30 if l01_tool else 28 if lowprofile_top else 23
     for name,sha in records.items():
         if hashlib.sha256((run/name).read_bytes()).hexdigest()!=sha:
             raise ValueError('LAYER_TOP_PREDECESSOR_RECORD_CHANGED')
     read=lambda n:json.loads((run/n).read_text(encoding='utf-8'))
     summary,protocol,verification=(read(n) for n in records)
-    if (summary['source_commit']!=('b05652ea3267863acd12a87b50b3f21e8bf20293' if bottom_current else '163eb5ec25f348263957e9e0764b43c8eb93ee5d' if l01_hmax else 'e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
-            or protocol['scope']!=('XY_TOP_L00_FOUR_TOP_EXTENSION200' if bottom_current else 'XY_TOP_L01_ALL_HMAX_THREE_TARGETS' if l01_hmax else 'XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
-            or protocol['mounting_variant']!=('x_minus_300_y_minus_100' if bottom_current else 'x_minus_500_y_minus_100')
-            or verification['completed_count']!=completed or not verification['status'].startswith('PASS_')
-            or summary['historical_completed_count']!=history or summary['completed_count']!=completed
+    if (summary['source_commit']!=('a4552c363c0e2cce56be4d4b28958dd44ebbe3e8' if bottom_prefix else 'b05652ea3267863acd12a87b50b3f21e8bf20293' if bottom_current else '163eb5ec25f348263957e9e0764b43c8eb93ee5d' if l01_hmax else 'e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
+            or protocol['scope']!=('XY_TOP_CURRENT_BOTTOM_ROTATED_C03_C04' if bottom_prefix else 'XY_TOP_L00_FOUR_TOP_EXTENSION200' if bottom_current else 'XY_TOP_L01_ALL_HMAX_THREE_TARGETS' if l01_hmax else 'XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
+            or protocol['mounting_variant']!=('x_minus_300_y_minus_100' if bottom_current or bottom_prefix else 'x_minus_500_y_minus_100')
+            or verification['completed_count']!=verified_completed or not verification['status'].startswith('PASS_')
+            or summary['historical_completed_count']!=history or summary['completed_count']!=verified_completed
             or protocol['original_cartons']!=[box_message(b) for b in state.cartons]):
         raise ValueError('LAYER_TOP_PREDECESSOR_SCOPE_CHANGED')
     original={b.name:b for b in state.cartons};initial=summary['initial']
@@ -80,7 +91,10 @@ def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False,b
     state.ledger=deepcopy(summary['historical_ledger']);state.cycles=[]
     if state.root()!=initial:raise ValueError('LAYER_TOP_PREDECESSOR_INITIAL_CHANGED')
     receipts=[]
-    for outcome in summary['outcomes']:
+    outcomes=summary['outcomes'][:1] if bottom_prefix else summary['outcomes']
+    if bottom_prefix and (outcomes[0]['target_id']!='carton_l00_c03' or outcomes[0]['completed_count']!=1):
+        raise ValueError('C03_COMPARISON_PREFIX_CHANGED')
+    for outcome in outcomes:
         receipt=outcome['evidence'];archive=run/receipt['archive'];prefix=archive.name.removesuffix('.tar.gz')
         if archive.exists():
             if hashlib.sha256(archive.read_bytes()).hexdigest()!=receipt['sha256']:
@@ -101,7 +115,8 @@ def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False,b
         receipts.append(dict(target_id=outcome['target_id'],completed_count=result['completed_count'],
             result_sha256=receipt['file_sha256']['result.json']))
         state.cycles=state.cycles[-1:]
-    if state.root()!=summary['terminal'] or state.ledger!=summary['ledger'] or len(state.cartons)!=40-history-completed:
+    terminal=outcomes[-1]['terminal'] if bottom_prefix else summary['terminal']
+    if state.root()!=terminal or state.ledger!=summary['ledger'][:history+completed] or len(state.cartons)!=40-history-completed:
         raise ValueError('LAYER_TOP_PREDECESSOR_FINAL_CHANGED')
     prior=deepcopy(state.root());state.cycles=[]
     return dict(source_commit=summary['source_commit'],records_sha256=records,outcomes=receipts,

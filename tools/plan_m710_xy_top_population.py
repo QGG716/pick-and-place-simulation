@@ -62,6 +62,8 @@ def main():
     p.add_argument('--continue-bottom-rotated-from',type=Path,
         help='Verified x300 36-box terminal: c03 quarter-turn top, l01 c04 top/side/front, exposed l00 c04 top')
     p.add_argument('--c04-face',choices=('top','side','front'))
+    p.add_argument('--c04-current-prefix',action='store_true',
+        help='Independent c04 face comparison at the checked 37-box root after rotated c03')
     p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1,.2),default=0.,
         help='Total Wantai connector extension; 200 mm is scoped to c04 face trials or the four l00 top trials')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
@@ -82,6 +84,8 @@ def main():
     l00_top=bool(args.continue_l00_top_from or current_bottom)
     c04_side=bool(args.continue_l01_c04_side_from)
     c04_face=bool(args.continue_l01_c04_face_from)
+    if args.c04_current_prefix and (not c04_face or args.mounting_variant!='x_minus_300_y_minus_100'):
+        raise ValueError('C04_CURRENT_PREFIX_REQUIRES_FACE_AND_X300')
     c04_trial=c04_side or c04_face
     if c04_face != bool(args.c04_face) or (c04_face and (c04_side or args.tool_connector_extension_m!=.2)):
         raise ValueError('C04_FACE_REQUIRES_VERIFIED_ROOT_FACE_AND_200MM_EXTENSION')
@@ -114,7 +118,7 @@ def main():
         raise ValueError('L01_CONTINUATION_PREDECESSOR_AMBIGUOUS')
     if l01_tool and (args.continue_lowprofile_top_from or args.continue_lowprofile_from
             or args.continue_min250_from or args.continue_min250_repair_from or args.continue_layer_top_from
-            or args.mounting_variant!='x_minus_500_y_minus_100' or args.integration_top_fixture
+            or (args.mounting_variant!='x_minus_500_y_minus_100' and not args.c04_current_prefix) or args.integration_top_fixture
             or args.l05_j4_velocity_restart):
         raise ValueError('L01_TOOL_CHASSIS_CONTINUATION_SCOPE_CHANGED')
     if args.continue_lowprofile_top_from and (args.continue_lowprofile_from or args.continue_min250_from
@@ -186,7 +190,11 @@ def main():
             from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE,C01_CHANNEL_SCOPE,C01_FRONT_SCOPE,C01_DIRECT_SCOPE
             if c04_trial:
                 from layer_top_continuation import restore_l01_hmax_terminal
-                lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l01_c04_side_from or args.continue_l01_c04_face_from,state)
+                if args.c04_current_prefix:
+                    from layer_top_continuation import restore_c03_prefix
+                    lowprofile_predecessor=restore_c03_prefix(args.continue_l01_c04_face_from,state)
+                else:
+                    lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l01_c04_side_from or args.continue_l01_c04_face_from,state)
                 if c04_face:
                     lowprofile_predecessor['search_operation']='NEW_NATIVE_ROOT_C04_FACE_EXTENSION200_HMAX'
             else:
@@ -203,7 +211,8 @@ def main():
                     L01_ROUTES_SCOPE=C04_SIDE_SCOPE
                 if c04_face:
                     from unloading_sim.l01_hmax import c04_face_permission,C04_FACE_SCOPE
-                    args.c04_face_permission=c04_face_permission(frozen,args.c04_face)
+                    args.c04_face_permission=c04_face_permission(frozen,args.c04_face,
+                        comparison_mode='INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT' if args.c04_current_prefix else 'INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT')
                     dispatch_permission=args.c04_face_permission
                     L01_ROUTES_SCOPE=C04_FACE_SCOPE
             else:
@@ -335,7 +344,7 @@ def main():
                 protocol.update(c04_side_permission=args.c04_side_permission,top_permission='NONE_C04_SIDE_ONLY')
             if c04_face:
                 protocol.update(c04_face_permission=args.c04_face_permission,
-                    comparison_mode='INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT',
+                    comparison_mode=args.c04_face_permission['comparison_mode'],
                     top_permission='C04_TOP_ONLY' if args.c04_face=='top' else 'NONE_C04_'+args.c04_face.upper()+'_ONLY')
         if args.c01_finite_side_channel:
             protocol.update(top_permission='NONE_C01_SIDE_ONLY',finite_c01_side_channel=True,

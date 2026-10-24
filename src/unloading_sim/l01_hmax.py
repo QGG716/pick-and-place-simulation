@@ -17,13 +17,15 @@ C04_FACE_SCOPE = 'XY_TOP_L01_C04_FACE_EXTENSION200_HMAX'
 C04_FACE_IDS = {'top':'z+', 'side':'y-', 'front':'x-'}
 
 
-def c04_face_permission(frozen, face):
+def c04_face_permission(frozen, face, *, comparison_mode='INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT'):
     if face not in C04_FACE_IDS:
         raise ValueError('C04_FACE_NOT_REQUESTED')
+    if comparison_mode not in ('INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT','INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT'):
+        raise ValueError('C04_FACE_COMPARISON_ROOT_CHANGED')
     permission=c04_side_permission(frozen)
     permission.update(scope=C04_FACE_SCOPE, requested_face=face,
         geometric_face_id=C04_FACE_IDS[face], tool_connector_extension_m=.2,
-        comparison_mode='INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT',
+        comparison_mode=comparison_mode,
         segment_directions_world=([[0.,0.,1.],[-1.,0.,0.]] if face=='top' else
                                   [[0.,-1.,0.],[-1.,0.,0.]] if face=='side' else [[-1.,0.,0.]]))
     return permission
@@ -82,7 +84,7 @@ def options(target, belt, longitudinal, frozen, current_height, permission, *, c
         raise ValueError('L01_HMAX_TARGET_OUTSIDE_REQUESTED_TRIALS')
     if c04_side is not None and (c04_side!=c04_side_permission(frozen) or target.name!=c04_side['target_id']):
         raise ValueError('C04_SIDE_PERMISSION_CHANGED')
-    if c04_face is not None and (c04_side is not None or c04_face!=c04_face_permission(frozen,c04_face.get('requested_face'))
+    if c04_face is not None and (c04_side is not None or c04_face!=c04_face_permission(frozen,c04_face.get('requested_face'),comparison_mode=c04_face.get('comparison_mode'))
                                 or target.name!=c04_face['target_id']):
         raise ValueError('C04_FACE_PERMISSION_CHANGED')
     from .top_layer_lifted import process_options
@@ -124,7 +126,7 @@ def validate_option(target, option, permission, root_height, *, c04_side=None, c
     if c04_face is not None:
         from .carton_population import FrozenCartonPopulation
         frozen=FrozenCartonPopulation.capture(tuple(message_box(b) for b in permission['original_cartons']))
-        if (c04_side is not None or c04_face!=c04_face_permission(frozen,c04_face.get('requested_face'))
+        if (c04_side is not None or c04_face!=c04_face_permission(frozen,c04_face.get('requested_face'),comparison_mode=c04_face.get('comparison_mode'))
                 or option.get('c04_face_permission')!=c04_face or target.target_id!=c04_face['target_id']):
             raise ValueError('C04_FACE_PERMISSION_CHANGED')
     elif option.get('c04_face_permission') is not None:

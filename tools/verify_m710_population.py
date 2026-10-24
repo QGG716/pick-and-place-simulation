@@ -31,7 +31,8 @@ def expected_population_mount(protocol):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
     if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX','XY_TOP_L01_C04_FACE_EXTENSION200_HMAX','XY_TOP_L00_FOUR_TOP_EXTENSION200','XY_TOP_CURRENT_BOTTOM_ROTATED_C03_C04'):
-        if variant!='x_minus_500_y_minus_100' and not (protocol['scope'] in ('XY_TOP_L00_FOUR_TOP_EXTENSION200','XY_TOP_CURRENT_BOTTOM_ROTATED_C03_C04') and variant=='x_minus_300_y_minus_100'):
+        current_c04=(protocol['scope']=='XY_TOP_L01_C04_FACE_EXTENSION200_HMAX' and protocol.get('comparison_mode')=='INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT')
+        if variant!='x_minus_500_y_minus_100' and not ((protocol['scope'] in ('XY_TOP_L00_FOUR_TOP_EXTENSION200','XY_TOP_CURRENT_BOTTOM_ROTATED_C03_C04') or current_c04) and variant=='x_minus_300_y_minus_100'):
             raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     extension=protocol.get('tool_connector_extension_m',0.)
@@ -62,6 +63,7 @@ def verify(run, replay=None, *, retained_prefix=False):
     assert bool(protocol.get('front_c01_suction',False))==front_c01
     c04_side=protocol['scope']=='XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'
     c04_face=protocol['scope']=='XY_TOP_L01_C04_FACE_EXTENSION200_HMAX'
+    current_c04=c04_face and protocol.get('comparison_mode')=='INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT'
     c04_trial=c04_side or c04_face
     l01_hmax=c04_trial or protocol['scope']=='XY_TOP_L01_ALL_HMAX_THREE_TARGETS'
     selected_routes=l01_hmax or single_c01 or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
@@ -83,7 +85,7 @@ def verify(run, replay=None, *, retained_prefix=False):
     assert targets <= initial_ids
     assert initial_ids-targets == (set(protocol['out_of_scope_target_ids']) if l01_tool or l00_top or current_bottom else set())
     assert len(targets) == summary["target_count"] == (3 if current_bottom else 4 if l00_top else 1 if single_c01 or c04_trial else 3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (36 if current_bottom else 34 if c04_trial or l00_top else 32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (37 if current_c04 else 36 if current_bottom else 34 if c04_trial or l00_top else 32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
     if lowprofile:
         from unloading_sim.collision_policy import SimulationCollisionPolicy
         predecessor=json.loads((run/'predecessor.json').read_text())
@@ -103,7 +105,7 @@ def verify(run, replay=None, *, retained_prefix=False):
             assert protocol['tool_chassis_permission']==frozen_l01_scope(tuple(message_box(b) for b in protocol['original_cartons']))
             assert set(policy.tool_chassis_contact_target_ids)==set(protocol['tool_chassis_permission']['allowed_target_ids'])
             assert targets <= set(policy.tool_chassis_contact_target_ids)
-            assert len(initial_ids)==(6 if c04_trial else 8 if selected_routes else 10) and len(initial_ids-targets)==(7 if single_c01 else 5)
+            assert len(initial_ids)==(3 if current_c04 else 6 if c04_trial else 8 if selected_routes else 10) and len(initial_ids-targets)==(2 if current_c04 else 7 if single_c01 else 5)
         if current_bottom:
             from unloading_sim.bottom_rotated import ORDER,RETAINED,rotation_permission,rotated_option
             from unloading_sim.carton_population import FrozenCartonPopulation
@@ -172,9 +174,9 @@ def verify(run, replay=None, *, retained_prefix=False):
                 assert side_permission==protocol['c04_side_permission']
             if c04_face:
                 from unloading_sim.l01_hmax import c04_face_permission
-                face_permission=c04_face_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])),protocol['c04_face_permission']['requested_face'])
+                face_permission=c04_face_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])),protocol['c04_face_permission']['requested_face'],comparison_mode=protocol['comparison_mode'])
                 assert face_permission==protocol['c04_face_permission'] and protocol['tool_connector_extension_m']==.2
-                assert protocol['comparison_mode']=='INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT'
+                assert protocol['comparison_mode']==('INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT' if current_c04 else 'INDEPENDENT_SAME_ACCEPTED_34_BOX_ROOT')
             dispatch_permission=face_permission or side_permission or hmax_permission
             assert [o['target_id'] for o in summary['outcomes']]==dispatch_permission['dispatch_order']
             assert set(dispatch_permission['dispatch_order'])==targets
