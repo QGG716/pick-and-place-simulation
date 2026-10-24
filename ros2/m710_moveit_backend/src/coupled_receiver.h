@@ -58,6 +58,47 @@ inline ProcessJson coupledTransitionWorld(const ProcessJson& req,const ProcessJs
     throw std::runtime_error("COUPLED_TRANSITION_SCOPE_OR_WORLD_INVALID");
   return req.at("receiver_end_world");
 }
+inline void validateL01Hmax(const ProcessJson& req,const ProcessJson& binding) {
+  const auto& contract=binding.at("receive_contract");
+  const auto& p=contract.at("l01_hmax_permission");
+  const auto target=processBox(contract.at("initial_target"));
+  if(p.at("schema")!="frozen_l01_hmax_v1" || p.at("planning_only")!=true ||
+      p.at("stationary_receiver")!=true || p.at("height_source")!="FROZEN_INITIAL_HMAX" ||
+      !req.value("planning_only",false) || req.value("planning_mode","")!="cold_from_scratch" ||
+      binding.at("target_id")!=target.id || req.at("process_policy").at("target_id")!=target.id ||
+      p.at("original_cartons").size()!=40)
+    throw std::runtime_error("L01_HMAX_SCOPE_CHANGED");
+  std::map<std::string,ProcessJson> original;
+  for(const auto& b:p.at("original_cartons")) {
+    const auto parsed=processBox(b);
+    if(b.at("category")!="carton" || !original.emplace(parsed.id,b).second)
+      throw std::runtime_error("L01_HMAX_ORIGINAL_POPULATION_CHANGED");
+  }
+  const auto anchor=processBox(original.at(p.at("anchor_id").get<std::string>()));
+  auto height=[](const ProcessBox& b){return 2*b.pose.linear().row(2).cwiseAbs().dot(b.half);};
+  const double ah=height(anchor),az=anchor.pose.translation().z()-ah/2;
+  std::set<std::string> allowed;
+  for(const auto& item:original) {
+    const auto b=processBox(item.second);const double h=height(b),z=b.pose.translation().z()-h/2;
+    if(std::abs(h-ah)<1e-9 && std::abs(z-az)<1e-9)allowed.insert(b.id);
+  }
+  if(std::abs(ah-.3)>1e-9 || std::abs(az-.3)>1e-9 || allowed.size()!=5 ||
+      allowed!=p.at("allowed_target_ids").get<std::set<std::string>>() || !allowed.count(target.id) ||
+      original.at(target.id)!=contract.at("initial_target") ||
+      std::abs(contract.at("height_m").get<double>()-(target.pose.translation().z()-height(target)/2-.05))>1e-8)
+    throw std::runtime_error("L01_HMAX_TARGET_OR_HEIGHT_CHANGED");
+  // Frozen permission cannot hide a changed root carton or moving receiver.
+  for(const auto& sample:binding.at("samples")) {
+    bool found=false;
+    if(std::abs(sample.at("height_m").get<double>()-contract.at("height_m").get<double>())>1e-8)
+      throw std::runtime_error("L01_HMAX_RECEIVER_NOT_STATIONARY");
+    for(const auto& b:sample.at("world"))if(b.at("id")==target.id) {
+      if(b!=original.at(target.id))throw std::runtime_error("L01_HMAX_INITIAL_TARGET_CHANGED");
+      found=true;
+    }
+    if(!found)throw std::runtime_error("L01_HMAX_INITIAL_TARGET_MISSING");
+  }
+}
 inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& binding) {
   if(!binding.contains("receive_contract") || req.at("stage")!="extraction")return;
   const auto& contract=binding.at("receive_contract");
@@ -75,11 +116,13 @@ inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& bind
   for(const auto& b:req.at("world"))if(b.value("category","")!="carton")fixed.push_back(b);
   for(const auto& b:binding.at("samples").back().at("world"))if(b.value("category","")!="carton")required.push_back(b);
   if(fixed!=required)throw std::runtime_error("RECEIVE_MECHANISM_WORLD_CHANGED");
+  const bool l01_hmax=contract.contains("l01_hmax_permission");
+  if(l01_hmax)validateL01Hmax(req,binding);
   if(contract.value("junction_front",false)) {
     const auto target=processBox(contract.at("initial_target"));
     const double h=2*target.pose.linear().row(2).cwiseAbs().dot(target.half);
     const double hmin=target.pose.translation().z()-h/2-h-.05;
-    if(std::abs(expected-hmin)>1e-8)throw std::runtime_error("JUNCTION_FRONT_REQUIRES_HMIN");
+    if(!l01_hmax && std::abs(expected-hmin)>1e-8)throw std::runtime_error("JUNCTION_FRONT_REQUIRES_HMIN");
     const auto current=processBox(req.at("process_policy").at("target"));
     if(std::abs(current.pose.translation().y()-target.pose.translation().y())>1e-5 ||
         (current.pose.linear()-target.pose.linear()).cwiseAbs().maxCoeff()>2e-4)

@@ -6,6 +6,31 @@ using J=nlohmann::json;
 template<class F> void rejects(F f){bool failed=false;try{f();}catch(const std::exception&){failed=true;}assert(failed);}
 int main(int argc,char**argv){
   assert(argc==2);std::ifstream input(argv[1]);J data;input>>data;
+  if(data.contains("l01_hmax")) {
+    assert(data.at("l01_hmax").size()==5);
+    for(const auto& item:data.at("l01_hmax")) {
+      const auto& b=item.at("binding");const auto& req=item.at("request");
+      m710::validateCoupledBinding(b);m710::validateReceiveHeight(req,b);
+      auto bad=b;bad["receive_contract"].erase("l01_hmax_permission");
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+      bad=b;bad["receive_contract"]["l01_hmax_permission"]["allowed_target_ids"].push_back("carton_l00_c01");
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+      bad=b;bad["receive_contract"]["l01_hmax_permission"]["original_cartons"].erase(0);
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+      bad=b;bad["receive_contract"]["initial_target"]["pose"][1][3]=9.;
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+      auto changed=req;changed["planning_only"]=false;
+      rejects([&]{m710::validateReceiveHeight(changed,b);});
+      changed=req;changed["process_policy"]["target"]["pose"][1][3]=9.;
+      rejects([&]{m710::validateReceiveHeight(changed,b);});
+      bad=b;bad["receive_contract"]["height_m"]=.3;
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+      bad=b;bad["samples"][0]["height_m"]=.3;
+      rejects([&]{m710::validateReceiveHeight(req,bad);});
+    }
+    std::cout<<"PASS frozen five-carton Hmax scope; legacy Hmin, geometry, Y, height, stationary and planning-only guards\n";
+    return 0;
+  }
   size_t checked=0;
   for(const auto& b:data.at("bindings")){
     m710::validateCoupledBinding(b);

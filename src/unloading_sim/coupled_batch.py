@@ -163,6 +163,9 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def validate_template(self,target):
         target.validate()
+        if self.option.get('l01_hmax_permission') is not None:
+            from .l01_hmax import validate_option
+            validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'])
         if self.option.get('selected_routes_permission') is not None:
             from .l01_selected_routes import validate_selected_route
             validate_selected_route(target,self.option,getattr(self,'selected_routes_permission',None),self.batch_root['height_m'])
@@ -303,7 +306,8 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
                 return reject('SIDE_RELEASE_STILL_IN_JUNCTION',check)
         if not self.planar:
             reception=validate_junction_release(box,target.box,obstacles,
-                self.option['face']['working_axis_into_box'],self.option['height_m'])
+                self.option['face']['working_axis_into_box'],self.option['height_m'],
+                l01_hmax_permission=self.option.get('l01_hmax_permission'))
             if (self.option.get('reception') or {}).get('junction') and not reception['junction']:
                 return reject('JUNCTION_REGION_CHANGED',reception)
             check['reception']=reception

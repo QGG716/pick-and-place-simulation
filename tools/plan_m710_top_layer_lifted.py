@@ -139,6 +139,12 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 business_options=[selected_route_option(target,scene.receiver,
                     next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
                     frozen,state.height,routes_permission)]
+            hmax_permission=getattr(args,'l01_hmax_permission',None)
+            if hmax_permission is not None:
+                from unloading_sim.l01_hmax import options as hmax_options
+                business_options=hmax_options(target,scene.receiver,
+                    next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+                    frozen,state.height,hmax_permission)
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -147,7 +153,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend([option] if option['template'] in TOP_TEMPLATES or routes_permission is not None else synchronization_options(option,state.height,low,
+                options.extend([option] if option['template'] in TOP_TEMPLATES or routes_permission is not None or hmax_permission is not None else synchronization_options(option,state.height,low,
                     include_receive_before_approach=getattr(args,'include_receive_before_approach',False)))
             eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
@@ -185,6 +191,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     binding['receive_contract']=dict(height_m=option['height_m'],initial_target=box_message(target),
                         junction_front=bool((option.get('reception') or {}).get('junction') and
                                             option['face']['geometric_face_id']=='x-'),third_sync_disabled=True)
+                    if hmax_permission is not None:
+                        binding['receive_contract']['l01_hmax_permission']=deepcopy(hmax_permission)
                     os.environ['M710_MOVEIT_SEED']=str(seed)
                     client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),
                         binding=binding,expected_model_identity=getattr(args,'expected_model_identity',None))
@@ -197,19 +205,22 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.layer_top_permission=layer_permission
                     c.selected_routes_permission=routes_permission
+                    c.l01_hmax_permission=hmax_permission
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
                     c.height_visit_deadline=(shared_stages['prefix'] if low_top or option.get('finite_side_channel') else
                         min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.)))
+                    if hmax_permission is not None and option_index==len(options)-1:
+                        c.height_visit_deadline=shared_stages['prefix']
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
                     c.start_planning_request(task_started);c._native_task_started=task_started
                     c._request_deadline_monotonic=deadline;c._deadline_monotonic=deadline;c._final_export_reserve_s=0.;c.boundary_costs={}
                     side_depth=None
-                    if option.get('finite_side_channel'):
+                    if option.get('finite_side_channel') or (hmax_permission is not None and option['face']['geometric_face_id']=='y+'):
                         from unloading_sim.l01_selected_routes import finite_side_exposure
                         row['finite_side_exposure']=finite_side_exposure(c,state.q)
                         side_depth=row['finite_side_exposure']['depth_m']

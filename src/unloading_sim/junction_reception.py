@@ -60,7 +60,7 @@ def require_receive_height(world, expected, *, tolerance=1e-8):
     return actual
 
 
-def validate_junction_release(box, original, world, working_axis, receive_height):
+def validate_junction_release(box, original, world, working_axis, receive_height, *, l01_hmax_permission=None):
     axis=np.asarray(working_axis,dtype=float)
     if axis.shape!=(3,) or not np.isfinite(axis).all() or abs(np.linalg.norm(axis)-1)>1e-8:
         raise ValueError("JUNCTION_INVALID_WORKING_AXIS")
@@ -69,12 +69,17 @@ def validate_junction_release(box, original, world, working_axis, receive_height
     facing_outfeed = float(axis@np.asarray(region["outfeed_direction_world"])) < -1+1e-8
     capture = StartHeight.capture(original)
     actual = require_receive_height(world, receive_height)
-    if region["junction"] and facing_outfeed and abs(actual-capture.hmin) > 1e-8:
+    if l01_hmax_permission is not None:
+        from .l01_hmax import validate_height_permission
+        validate_height_permission(original, l01_hmax_permission, actual)
+    required = capture.hmax if l01_hmax_permission is not None else capture.hmin
+    if region["junction"] and facing_outfeed and abs(actual-required) > 1e-8:
         raise ValueError("JUNCTION_FRONT_REQUIRES_HMIN")
     if abs(box.center[1]-original.center[1]) > 1e-5 or np.max(np.abs(box.rotation-original.rotation)) > 2e-4:
         raise ValueError("JUNCTION_FRONT_Y_OR_ORIENTATION_CHANGED")
     return dict(**region, actual_receive_height_m=actual, frozen_height=capture.evidence(),
-                working_axis_world=list(working_axis), passed=True)
+                working_axis_world=list(working_axis), passed=True,
+                receive_rule='USER_FROZEN_L01_HMAX' if l01_hmax_permission is not None else 'ORIGINAL_JUNCTION_HMIN')
 
 
 def temporary_heights(receive, minimum, *, resolution=.01):
