@@ -1,4 +1,4 @@
-"""User-selected 100 mm axial extension of the two Wantai connector plates.
+"""User-selected axial extension of the two Wantai connector plates.
 
 The audited flange plate stays fixed. The two existing axial side plates grow,
 and the rest of the original tool translates with its virtual/contact frames.
@@ -30,7 +30,7 @@ def bind_connector_frames(policy):
 
 def connector_extension_m(tool):
     length=float(tool.get('connector_extension_m',0.))
-    if not np.isfinite(length) or length not in (0.,.1):
+    if not np.isfinite(length) or length not in (0.,.1,.2):
         raise ValueError('UNAPPROVED_WANTAI_CONNECTOR_EXTENSION')
     return length
 
@@ -38,7 +38,7 @@ def connector_extension_m(tool):
 def extended_connector_boxes(rows,extension):
     boxes=np.asarray(rows,dtype=float).copy()
     if extension==0:return boxes
-    if extension!=.1:raise ValueError('UNAPPROVED_WANTAI_CONNECTOR_EXTENSION')
+    connector_extension_m({'connector_extension_m':extension})
     # Stable owned rigid IDs from the hash-verified source solid order. Validate
     # their literal dimensions before applying the user engineering change.
     expected=np.array([[0.,-.105,-.17,.2,.01,.14],
@@ -47,7 +47,7 @@ def extended_connector_boxes(rows,extension):
     if boxes.shape!=(130,6) or not np.allclose(boxes[[11,12,13]],expected,atol=1e-7,rtol=0):
         raise ValueError('WANTAI_CONNECTOR_SOURCE_BINDING_CHANGED')
     # Rows use virtual-TCP axes (+Z along flange +X). The new TCP itself moves
-    # +100 mm, so these local changes keep the rear anchors at their old flange.
+    # by the extension, so these changes keep the rear anchors at their flange.
     boxes[[11,12],2]-=extension/2
     boxes[[11,12],5]+=extension
     boxes[13,2]-=extension
@@ -56,10 +56,10 @@ def extended_connector_boxes(rows,extension):
 
 def connector_extension_evidence(extension):
     if extension==0:return None
-    if extension!=.1:raise ValueError('UNAPPROVED_WANTAI_CONNECTOR_EXTENSION')
+    connector_extension_m({'connector_extension_m':extension})
     return dict(extension_m=extension,axis_in_flange=[1.,0.,0.],
         stretched_owned_bodies=['tool_rigid_11','tool_rigid_12'],fixed_owned_bodies=['tool_rigid_13'],
-        old_plate_axial_length_m=.14,new_plate_axial_length_m=.24,
+        old_plate_axial_length_m=.14,new_plate_axial_length_m={.1:.24,.2:.34}[extension],
         original_tool_body_count=202,tool_bodies_removed=0,
         original_cad_bounds_hash_verified=True,representation='USER_ENGINEERING_AXIAL_EXTRUSION_WITH_SOURCE_CROSS_SECTIONS',
         source_cad_modified=False,mass_model='EXISTING_20KG_ENGINEERING_INPUT_NOT_REQUALIFIED',physical_execution='NOT_RUN')

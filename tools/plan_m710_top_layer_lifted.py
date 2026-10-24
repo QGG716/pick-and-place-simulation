@@ -144,7 +144,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 from unloading_sim.l01_hmax import options as hmax_options
                 business_options=hmax_options(target,scene.receiver,
                     next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
-                    frozen,state.height,hmax_permission,c04_side=getattr(args,'c04_side_permission',None))
+                    frozen,state.height,hmax_permission,c04_side=getattr(args,'c04_side_permission',None),
+                    c04_face=getattr(args,'c04_face_permission',None))
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -207,6 +208,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.selected_routes_permission=routes_permission
                     c.l01_hmax_permission=hmax_permission
                     c.c04_side_permission=getattr(args,'c04_side_permission',None)
+                    c.c04_face_permission=getattr(args,'c04_face_permission',None)
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
