@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/work-l00-top-xplus200-b05652e/tools/verify_m710_population.py", line 513, in <module>
+    r = verify(args.run, args.prepare_replay,retained_prefix=args.retained_prefix)
+  File "/work-l00-top-xplus200-b05652e/tools/verify_m710_population.py", line 286, in verify
+    expected=policy.tool_chassis_pairs(name,cp['tool_links'])|policy.robot_mount_pairs()
+AttributeError: 'dict' object has no attribute 'tool_chassis_pairs'

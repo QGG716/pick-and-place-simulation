@@ -1,0 +1,14 @@
+{
+  "status": "PASS_BROWSER_VISUAL_AND_SAVED_DATA_CHECKS",
+  "source_commit": "b05652ea3267863acd12a87b50b3f21e8bf20293",
+  "observations": [
+    "c03 rejected target with tool_rigid_0 and l01_c04 highlighted",
+    "c00 labelled unsolved IK without generated motion",
+    "accepted replay at 23 s: attached c01, 48 of 72 cups, top lift, fixed 250 mm",
+    "accepted replay terminal: new 2/4, historical 34, 4 remaining, nominal reception 2, ideal drain 2, measured reception 0"
+  ],
+  "presentation_patch_preserves_all_replay_data": true,
+  "solver_calls_added": 0,
+  "browser_runtime_fk_comparison": "NOT_PERFORMED",
+  "physical_execution": "NOT_RUN"
+}

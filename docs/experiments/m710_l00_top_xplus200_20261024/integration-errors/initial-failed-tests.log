@@ -1,0 +1,62 @@
+...F..........................................                           [100%]
+=================================== FAILURES ===================================
+_ test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant[x_minus_300_y_minus_100--1.625] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-18/test_formal_l00_dispatch_uses_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8fcf681f00>
+mount = 'x_minus_300_y_minus_100', x = -1.625
+
+    @pytest.mark.parametrize('mount,x',[('x_minus_500_y_minus_100',-1.825),('x_minus_300_y_minus_100',-1.625)])
+    def test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant(tmp_path,monkeypatch,mount,x):
+        pytest.importorskip('pinocchio')
+        import sys
+        import plan_m710_xy_top_population as entry
+        output=tmp_path/'run';prior=predecessor(tmp_path)
+        def dispatch(args,original,built,frozen,seed,folder,*,initial_state,target_ids):
+            assert type(built.robot).__name__=='PinocchioHppFclBackend'
+            assert np.allclose(built.robot.base_transform[:3,3],[x,.25,.6],atol=1e-12,rtol=0)
+            assert seed==71070 and target_ids==[ORDER[0]]
+            assert args.layer_top_only and args.tool_connector_extension_m==.2
+            assert args.l01_hmax_permission is None and args.c04_face_permission is None
+            assert set(ORDER).isdisjoint(built.collision_policy.tool_chassis_contact_target_ids)
+            assert all(not built.collision_policy.tool_chassis_pairs(n,('tool_rigid_11',)) for n in ORDER)
+            from unloading_sim.coupled_batch import batch_scene
+            from unloading_sim.low_top_receiver import LowTopReceiverConnector
+            from unloading_sim.contact_target import simulation_contact_targets
+            scene=batch_scene(original,initial_state,built.robot,original.policy.layout_validation.layout)
+            target=next(b for b in initial_state.cartons if b.name==ORDER[0])
+            option=layer_top_option(target,scene.receiver,next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),frozen,initial_state.height,args.layer_top_permission)
+            chosen=next(t for t in simulation_contact_targets(scene,target,built.robot.base_transform[:3,3],built.budget.pregrasp_standoff_m)[0] if t.geometric_face_id=='z+')
+            connector=object.__new__(LowTopReceiverConnector);connector.option=option;connector.batch_root=initial_state.root()
+            connector.layer_top_permission=args.layer_top_permission
+            connector.validate_template(chosen)
+            raise RuntimeError('TEST_PRODUCTION_DISPATCH_REACHED')
+        monkeypatch.setattr(entry,'run_seed',dispatch)
+        monkeypatch.setattr(sys,'argv',['plan','--output',str(output),'--worker-command','UNUSED_TEST_DISPATCH',
+            '--worker-binary',str(Path(entry.__file__)),'--source-commit','INTEGRATION_TEST','--development',
+            '--mounting-variant',mount,'--continue-l00-top-from',str(prior),
+            '--tool-connector-extension-m','0.2'])
+>       with pytest.raises(RuntimeError,match='TEST_PRODUCTION_DISPATCH_REACHED'):entry.main()
+
+tests/test_l00_top_continuation.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/plan_m710_xy_top_population.py:137: in main
+    original,built,audit=make_context(args.mounting_variant,layout_path=layout_path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+layout_name = 'x_minus_300_y_minus_100'
+
+    def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption=False,
+                     l01_tool_chassis_exemption=False):
+        policy = load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
+        layout = load_workcell_layout(layout_path if layout_path is not None else
+                                     ROOT/"configs/workcells"/LAYOUTS[layout_name])
+        audit = audit_layout_constraints(layout)
+        if audit["overall_status"] != "PASS":
+>           raise ValueError("MOUNT_LAYOUT_AUDIT_REJECTED:"+layout_name)
+E           ValueError: MOUNT_LAYOUT_AUDIT_REJECTED:x_minus_300_y_minus_100
+
+tools/plan_m710_mount_comparison.py:61: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_l00_top_continuation.py::test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant[x_minus_300_y_minus_100--1.625]
+1 failed, 45 passed in 7.09s

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "source_commit": "b05652ea3267863acd12a87b50b3f21e8bf20293",
+  "source_files": 347,
+  "worker_sha256": "83a9bd74aaf7334e5f8cf8548c5fd4832545774f2beb4f799d1fe12c84139b75",
+  "trace_sha256": "e9d33ea958255aaec9b0aed76d1bd5628ce1feb5f63e2c8785dc24558faf1812"
+}

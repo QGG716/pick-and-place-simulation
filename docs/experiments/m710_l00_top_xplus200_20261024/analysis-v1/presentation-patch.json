@@ -1,0 +1,6 @@
+{
+  "change": "Remove fixed 4-second lift text; this run has zero lift motion",
+  "before_sha256": "5a9c1d8a846a11dc3a09ebfd7e1254ecbe5aad7db4fb444670a4b93a28cebeae",
+  "after_sha256": "ba3f2f9215ed204e60ad23f3638eb4aea30787fb72daa99d1eb313f004f0e628",
+  "data_changed": false
+}
