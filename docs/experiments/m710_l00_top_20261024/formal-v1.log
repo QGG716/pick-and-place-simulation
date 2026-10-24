@@ -1,0 +1,13 @@
+{"event": "CARTON_TASK_START", "target": "carton_l00_c00", "remaining": 6}
+{"seed": 71070, "attempt": 1, "target": "carton_l00_c00", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 34}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l00_c00", "completed": 0, "remaining": 6, "attempted": 1, "task_s": 90.51998790726066}
+{"event": "CARTON_TASK_START", "target": "carton_l00_c01", "remaining": 6}
+{"seed": 71070, "attempt": 1, "target": "carton_l00_c01", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 34}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l00_c01", "completed": 0, "remaining": 6, "attempted": 2, "task_s": 90.62838825210929}
+{"event": "CARTON_TASK_START", "target": "carton_l00_c02", "remaining": 6}
+{"seed": 71070, "attempt": 1, "target": "carton_l00_c02", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 34}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l00_c02", "completed": 0, "remaining": 6, "attempted": 3, "task_s": 90.64091867953539}
+{"event": "CARTON_TASK_START", "target": "carton_l00_c03", "remaining": 6}
+{"seed": 71070, "attempt": 1, "target": "carton_l00_c03", "process": "TOP_FIXED_CURRENT_RECEIVER", "completed": 0, "historical_completed": 34}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l00_c03", "completed": 0, "remaining": 6, "attempted": 4, "task_s": 90.60298809409142}
+{"status": "INCOMPLETE_RETAINED", "completed": 0, "targets": 4}
