@@ -81,6 +81,6 @@ carton_stack:
   center_y_m: [-0.840, -0.420, 0.0, 0.420, 0.840]
   no_pallet: true
 evidence:
-  approval_basis: user_20261023_low_profile_250_robot_mount_contact
+  approval_basis: user_20261024_l00_mount_xplus200_from_x500
   development_scene_assumptions: [trailer_length_6p4m, trailer_height_2p7m, trailer_opening_x_minus_3p2m]
   unconfirmed: [trailer_length, trailer_height, real_robot_mounting_plate_cad, conveyor_manufacturing_details]

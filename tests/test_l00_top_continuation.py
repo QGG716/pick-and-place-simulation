@@ -11,7 +11,7 @@ from unloading_sim.low_top_receiver import layer_top_option
 
 def test_xplus200_moves_only_robot_and_owned_tool():
     from copy import deepcopy
-    from unloading_sim.workcell_layout import load_workcell_layout
+    from unloading_sim.workcell_layout import load_workcell_layout, audit_layout_constraints
     from unloading_sim.conveyor_lift import coupled_conveyor_state
     root=Path(__file__).resolve().parents[1]/'configs/workcells'
     name='m710id70_unloading_layout_v1_mount_x_minus_500_y_minus_100_min250_lowprofile_tool_extension200.yaml'
@@ -22,7 +22,13 @@ def test_xplus200_moves_only_robot_and_owned_tool():
     assert changed['robot']['base_front_edge_x_world_m']==-1.4
     changed['robot']['base_origin_xy_a_m']=old.data['robot']['base_origin_xy_a_m']
     changed['robot']['base_front_edge_x_world_m']=old.data['robot']['base_front_edge_x_world_m']
+    assert changed['evidence']['approval_basis']=='user_20261024_l00_mount_xplus200_from_x500'
+    changed['evidence']['approval_basis']=old.data['evidence']['approval_basis']
     assert changed==old.data
+    audit=audit_layout_constraints(new)
+    assert audit['overall_status']=='PASS'
+    assert audit['checks']['robot_base_origin_world']['expected']==[-1.625,.25,.6]
+    assert audit['checks']['requested_minimum_transverse_surface']['actual']==.25
     a,b=old.robot(),new.robot();q=np.array([-1.12,1.20,-.31,-2.01,-1.55,-.04])
     for key,frame in a.named_link_frames(q).items():
         other=b.named_link_frames(q)[key]
