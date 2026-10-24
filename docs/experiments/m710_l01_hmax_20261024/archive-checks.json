@@ -1,0 +1,14 @@
+[
+  {
+    "archive": "formal-v1-raw.tar.xz",
+    "sha256": "0d44da9ae02ec6835a9efc49b4f1c13b5e5e05745f2cb40a83307103bc5691c1",
+    "files": 55,
+    "status": "PASS"
+  },
+  {
+    "archive": "history-v1\\formal-v1-raw.tar.xz",
+    "sha256": "fe611a200e5d4bf2d36aec8e6c9e3dcb974f882fed16a94b6258c02e4ba00fe0",
+    "files": 49,
+    "status": "PASS"
+  }
+]

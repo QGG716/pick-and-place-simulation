@@ -1,0 +1,79 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>l01 Hmax 三箱验证：2/3</title><style>body{font:16px/1.8 system-ui;max-width:1080px;margin:32px auto;padding:0 24px;background:#111e2c;color:#e4edf7}h1{color:#77dfb2}a{color:#77d9ee}td,th{border:1px solid #486078;padding:12px}table{border-collapse:collapse;width:100%}pre{white-space:pre-wrap;font:14px/1.9 system-ui}img{width:100%;max-width:960px}.lead{background:#24384b;padding:20px}</style><h1>l01 改为 Hmax：本轮完整抓放 2/3</h1><p class="lead">横带全程 250 mm · 偏移 delta=0 · c01/c00 实际有效杯均 48。<br>理想独立吸杯承载；名义接收、理想清空；物理执行 NOT_RUN。现场 8→6 箱，历史 32 箱单列。</p><table><tr><th>箱体</th><th>结果</th><th>路线 / 原因</th></tr><tr><td>l01_c01</td><td>完整成功</td><td>正吸→直接 −X</td></tr><tr><td>l01_c00</td><td>完整成功</td><td>正吸→直接 −X；侧吸无需派发</td></tr><tr><td>l01_c04</td><td>未完成</td><td>正吸抽离：J2/左壁，22 候选；顶吸：319 次 IK 未找到解</td></tr></table><p><a href="accepted-cycles.html">本次两箱真实原生运动回放</a> · <a href="all-targets.json">各候选原始指标</a> · <a href="formal-v1-raw.tar.xz">全部原始记录</a> · <a href="offline-evidence.zip">离线包</a></p><p>c04 顶吸确实已尝试；没有用正吸碰撞原因解释顶吸，也没有把预算内未找到解当作全局不可行。首轮备选调度问题及其成本保存在 <a href="history-v1/all-targets.json">history-v1</a>。</p><img src="viewer-qa/final.png" alt="本次已接受两箱回放结束，剩余六箱"><pre>l01 Hmax 接收：本轮完整抓放 2/3（66.7%），现场 8→6 箱。
+c01、c00：正面吸取后直接 −X，完整成功；c04：正面和顶面均已实际搜索，未完成。
+横带全程 Hmax=250 mm；delta=0；无需临时降带，实际接收同步状态 ALREADY_AT_RECEIVE。
+c01/c00 预测有效杯、命令杯、实际 contact 几何杯均为 48/48/48。
+沿用 ideal_independent_cups：有效命令杯吸力足够的理想假设，不增加承载杯数门槛。所有 202 个工具实体、72 个杯均保留。
+
+当前实测结果
+箱体        路线                      完成   任务耗时
+l01_c01     正吸→−X                  是     9.091413 s
+l01_c00     正吸→−X                  是     8.065197 s
+l01_c04     正吸→−X；顶吸→+Z→−X      否     90.638859 s
+c00 正面已经完整成功，因此没有再派发侧吸；这不属于漏搜失败。
+
+c04 正吸的具体失败
+接近、contact、实际末态杯检查和 attachment 捕获已经通过，48/48/48 杯。
+抽离区域内实际派发 22 个 LIN 候选，均未通过；本次记录有 176 条 J2_link / trailer_left_wall 净空或接触碰撞见证。
+首个抽离请求记录的间隙依次含 4.659962、2.768570、0.868495 mm（要求 5 mm），随后出现 INTERSECTION_OR_CONTACT。
+距离 -1 是该后端碰撞返回标记，不是 1 m 穿透深度。
+另有 4 条工具柔性杯/目标箱接近失败见证，但后续接近已经成功，不能把它们当作抽离失败原因。
+该候选访问用时 21.345956 s，停止原因为 STAGE_BUDGET_EXHAUSTED；没有完整抽离、释放或清空。
+报告为本预算内未完成，不宣称整个接收区域或其他接触构型全局不可行。
+
+c04 顶吸的具体失败
+实际派发 319 个有界原生 IK 请求，数值 IK 成功 0；候选访问用时 67.586520 s。
+预测有效/命令杯 48/48，实际 contact 未到达。目标碰撞检查、接近、接触及 +Z 抽离均未通过到达。
+本次顶吸没有碰撞见证；不能将正吸的 J2/左壁原因套用到顶吸。
+本结果为共享 90 s 前缀预算内未找到解，仍有未探索的数值初值/构型，不是全局无解证明。
+全部尝试继续固定 seed=71070，任务预算 300 s、共享前缀预算 90 s，没有固定 IK/规划尝试次数上限。
+
+完整成功的验收范围
+c01、c00 均通过接近→contact→实际末态附着→−X 抽离→完整接收区域→同位姿解除附着→名义下落→首次触带→工具分离→IDEAL_RECEIVER_DRAIN。
+约 50 mm 名义下落期间工具保持释放末态 q；名义接收与理想清空均非物理执行或物理观测。
+实际机器人回放只使用本次接受的原生 q、父链和附着变换；两箱完整回放 100.303667 s，其中机器人轨迹约 96.30 s。
+失败 c04 的构型没有拼入已接受运动回放，完整失败记录见 raw 与 all-targets.json。
+当前剩余：l01_c04，以及 l00_c00/c01/c02/c03/c04。l00 未纳入本轮搜索。
+历史 32 箱单列；当前累计规划完成 34 箱。本轮不是 34/40 新试验，也不将两次重复成功合并计数。
+
+授权和模型范围
+Hmax 权限由完整冻结原始 40 箱几何推导到 l01 五箱，原箱底 300 mm、高 300 mm，Hmax=250 mm。
+仅本轮指定 c01→c00→c04 进行搜索；其他层仍保留原规则。c01/c00 的交汇区判定仍为真，原生后端明确检查 scoped Hmax 权限。
+机械臂保持累计 −X500/−Y100 mm；纵带 0.60 m；横带剪叉中心距 0.26 m；低型剪叉最低 250 mm。
+连接件加长 100 mm；实体侧板 140→240 mm，法兰板固定；工具质量仍沿用 20 kg 工程输入，未重新做动力学鉴定。
+保留已授权机器人/底座、仅 l01 工具/chassis 仿真假设，其他碰撞与关节位置/速度/加速度/减速度检查保留。
+使用生产 PinocchioHppFclBackend、正式 MoveIt 原生入口；没有替换模型或导入旧成功 q/轨迹/附着。
+
+两次运行、真实修复与成本
+首轮源码 48dcea934c7eb909673561ba7a3a2fc62e471261，独立从相同历史 32 箱/8 箱根状态运行。
+首轮 c01/c00 成功；c04 正吸 129 个抽离候选未通过，任务 103.332580 s，顶吸被共享前缀截止时间挡住，实际未搜索。
+缺陷：非末位抓面的现有 20 s 访问窗口只限制前缀，接触成功后的后缀搜索可占满时间，令备选面无机会。
+修复仅使非末位抓面的整个候选遵守同一现有访问截止时间。保留原 task/shared-prefix/shared-suffix 截止时间，不重置预算，不增加尝试次数上限。
+修复版重新从同一历史 32 箱/8 箱状态生成三箱方案；c04 顶吸已经实际派发。两次 c01/c00 的接受末态一致。
+首轮任务耗时 120.461132988 s，循环耗时 122.551280491 s，172 原生请求、9 IK 请求、3 个实际抓面候选。
+修复版任务耗时 107.795468703 s，循环耗时 109.131673809 s，389 原生请求、328 IK 请求、4 个实际抓面候选。
+两次任务成本合计 228.256601691 s；两次循环合计 231.682954300 s。任务/候选/循环计时嵌套，不能互相相加。
+修复版数值 IK 成功 6，显式目标检查通过计数 5，接近通过 3，contact 通过 3，完整抓放接受 2。
+native extraction 成功计数 4 含两次名义释放语义事件，不表示四条抽离运动。
+原始记录保留全部失败初值、实际 contact q2/上臂仰角、请求父链、杯掩码、碰撞见证、时间和费用；未派发预览不计入规划候选。
+
+验证、源码与复现
+修复版实测源码：163eb5ec25f348263957e9e0764b43c8eb93ee5d
+原生 worker 编译源码：48dcea934c7eb909673561ba7a3a2fc62e471261；修复前后全部 ros2 源文件哈希相同，复用该新编译二进制。
+GPU 定向测试：首轮 36 passed / 4.92 s；修复版 37 passed / 4.56 s。
+原生五箱 Hmax 权限、旧 Hmin 拒绝、几何/高度/Y 保持与仿真范围回归通过；原碰撞策略两种路径各 24 项通过。
+正式入口生产根检查、完整父链/失败保留验证、源码哈希、原始文件哈希及离线浏览器回放检查全部 PASS。
+GPU 隔离根目录 /root/autodl-tmp/m710-l05-x500-20261022/rootfs。
+修复版源码 /work-l01-hmax-163eb5e，记录 /l01-hmax-v2-20261024/formal-v1。
+复现（使用新的不存在的输出目录）：
+chroot /root/autodl-tmp/m710-l05-x500-20261022/rootfs /bin/bash /l01-hmax-v2-20261024/formal-v1.sh /l01-hmax-v2-20261024/reproduction-new
+正式入口关键参数：--mounting-variant x_minus_500_y_minus_100 --continue-l01-selected-routes-from /l01-tool-chassis-v2-20261023/formal-v1 --l01-all-hmax --tool-connector-extension-m 0.1
+完整命令见 reproduce/formal-v1.sh；源码和资产哈希见 source-manifest.json、source-receipt.json，二进制哈希见 records/native-binary-sha256.txt。
+原服务器旧端口拒绝连接后使用用户新提供的 35434 端口，认证采用现有 SSH 密钥；交付不含密码。
+history-v1 保留首轮真实记录；没有覆盖旧 AttributeError 或旧 Hmin 试验，也没有将旧对象对当成本轮原因。
+最终提交 SHA 和推送状态在交付回复中给出。
+
+qualification_status=NOT_EVALUATED
+continuous_swept_proof=false
+physical_execution=NOT_RUN
+execution_ready=false
+</pre></html>
