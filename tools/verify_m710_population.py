@@ -413,8 +413,8 @@ def verify(run, replay=None, *, retained_prefix=False):
                                     assert req['ownership_transition'] == 'ATTACH'
                                 else:
                                     assert req.get('ownership_transition') is None
-                                    policy = req['process_policy']
-                                    assert not policy.get('initial_proximity') and not policy.get('support_names')
+                                    process_policy = req['process_policy']
+                                    assert not process_policy.get('initial_proximity') and not process_policy.get('support_names')
                         assert stage["points"][0]["q"] == q and stage["points"][-1]["t"] > 0
                         assert max(abs(v) for v in stage["points"][-1]["v"]) <= 1e-8
                         q = stage["points"][-1]["q"]
