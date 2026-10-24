@@ -1,0 +1,233 @@
+{
+  "source_commit": "c88b5eb3e4f6132fff97d2dd604d472c5abe785d",
+  "backend": "PinocchioHppFclBackend",
+  "new_completed": 0,
+  "new_targets": 1,
+  "historical_completed": 34,
+  "cumulative_completed": 34,
+  "remaining": 6,
+  "rows": [
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "wall_s": 90.52710192650557,
+      "attempts": [
+        {
+          "template": "L01_HMAX_TOP",
+          "face": "z+",
+          "delta_m": 0.0,
+          "route": [
+            [
+              0.0,
+              0.0,
+              1.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": 0.24999999999999994,
+          "failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100049929,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100049929,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -2.291956946367306,
+                  -1.2728848572314861,
+                  -0.5155575183640441,
+                  -4.337577174553784,
+                  2.1731619906454753,
+                  -6.031647664983726
+                ],
+                "numerical_seed_index": 435,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.1278317036018644,
+                  1.2046092883498862,
+                  -0.31738242737668854,
+                  -2.0133002553942263,
+                  -1.549885462084515,
+                  -0.04410126159327743
+                ],
+                "request_id": "441",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 436,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11312910914421082
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 437,
+            "scope": "FACE_ATTEMPT"
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 89.97880344837904,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 441,
+            "ik_requests": 436
+          },
+          "collision_witnesses": [],
+          "folder": "task-001/attempt-001",
+          "collision_witness_count": 0,
+          "witness_display_truncated": false,
+          "target_search_dispatched": true,
+          "collision_pairs": {},
+          "detail_failure": {
+            "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+            "last_failure": {
+              "reason": "NATIVE_IK_FAILED",
+              "scope": "FACE_ATTEMPT",
+              "native": {
+                "actual_ik_s": 0.100049929,
+                "bounded_search": true,
+                "effective_solver_budget_s": 0.1,
+                "error_code": -6,
+                "excluded_local_ik_count": 0,
+                "ik_collision_checked": false,
+                "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+                "ik_mode": "bounded_target",
+                "ik_request_count": 1,
+                "ik_s": 0.100049929,
+                "internal_attempts": null,
+                "internal_attempts_observability": "NOT_OBSERVABLE",
+                "native_ik_calls": 1,
+                "numerical_ik_seed": [
+                  -2.291956946367306,
+                  -1.2728848572314861,
+                  -0.5155575183640441,
+                  -4.337577174553784,
+                  2.1731619906454753,
+                  -6.031647664983726
+                ],
+                "numerical_seed_index": 435,
+                "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+                "random_restarts": null,
+                "real_start_q_unchanged": [
+                  -1.1278317036018644,
+                  1.2046092883498862,
+                  -0.31738242737668854,
+                  -2.0133002553942263,
+                  -1.549885462084515,
+                  -0.04410126159327743
+                ],
+                "request_id": "441",
+                "requested_solver_budget_s": 0.1,
+                "resident_native_ik_calls": 436,
+                "seed": 71070,
+                "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+                "solver": "MoveIt_KDL_searchPositionIK",
+                "solver_api": "searchPositionIK",
+                "solver_api_calls": 1,
+                "status": "NATIVE_IK_FAILED",
+                "transport_and_worker_s": 0.11312910914421082
+              }
+            },
+            "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+            "attempts": 437,
+            "scope": "FACE_ATTEMPT"
+          },
+          "contact_complete": false,
+          "top_lift": null,
+          "receive_sync_location": "NOT_REACHED",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "native_requests": 441,
+    "ik_requests": 436
+  },
+  "operations": {
+    "init:None:READY": 1,
+    "fk:None:SUCCESS": 3,
+    "check_start:pregrasp:SUCCESS": 1,
+    "ik:pregrasp:NATIVE_IK_FAILED": 436
+  },
+  "task_wall_s": 90.52710192650557,
+  "loop_wall_s": 90.69253239408135,
+  "costs_are_nested_not_additive": true,
+  "candidates": [
+    {
+      "target": "carton_l01_c04",
+      "folder": "task-001/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 441
+    }
+  ],
+  "actual_target_search_candidates": 1,
+  "worker_initialized_candidates": 1,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

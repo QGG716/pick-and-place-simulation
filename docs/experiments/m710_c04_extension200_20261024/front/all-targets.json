@@ -1,0 +1,419 @@
+{
+  "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+  "backend": "PinocchioHppFclBackend",
+  "new_completed": 0,
+  "new_targets": 1,
+  "historical_completed": 34,
+  "cumulative_completed": 34,
+  "remaining": 6,
+  "rows": [
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "wall_s": 103.90814649313688,
+      "attempts": [
+        {
+          "template": "L01_HMAX_FRONT_DIRECT",
+          "face": "x-",
+          "delta_m": 0.0,
+          "route": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": 0.24999999999999994,
+          "failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 150,
+            "global_unreachable": false
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 98.72327746450901,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 161,
+            "ik_requests": 3,
+            "numerical_ik_success": 2,
+            "explicit_target_check_passed": 1,
+            "pregrasp": 1,
+            "contact": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.08121100826983335,
+                1.2188738943645225,
+                -0.2558632973700421,
+                -3.2246171851647825,
+                -1.4911899996138271,
+                0.027969393873051713
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004879899418991187
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.10893687685722736,
+                1.2192010115026761,
+                -0.2544525355355536,
+                -3.2523952063072383,
+                -1.4898439903594318,
+                0.029622124171862566
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.13566462292015485,
+                1.219516352527028,
+                -0.25309256068215535,
+                -3.2791732274496943,
+                -1.488546437013666,
+                0.031215356701183826
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.16139424645861572,
+                1.2198199174375786,
+                -0.2517833728098475,
+                -3.30495124859215,
+                -1.4872973395765303,
+                0.0327490914610155
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.18612574747261013,
+                1.2201117062343276,
+                -0.25052497191862994,
+                -3.3297292697346057,
+                -1.4860966980480244,
+                0.03422332845135757
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.20985912596213785,
+                1.220391718917275,
+                -0.24931735800850274,
+                -3.3535072908770616,
+                -1.4849445124281482,
+                0.035638067672210054
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.23259438192719895,
+                1.220659955486421,
+                -0.24816053107946584,
+                -3.3762853120195175,
+                -1.4838407827169016,
+                0.03699330912357295
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "9",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_0",
+                "carton_l01_c04"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.2543315153677935,
+                1.2209164159417658,
+                -0.24705449113151925,
+                -3.398063333161973,
+                -1.482785508914285,
+                0.03828905280544625
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004169016266574253
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6714472842109952,
+                1.177054980508594,
+                -0.5815943239931343,
+                -3.82170176471373,
+                -1.717533220575321,
+                -0.11771444376385663
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004659957116966984
+            },
+            {
+              "request_id": "12",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.674079924793892,
+                1.1771625523508,
+                -0.5844776672782998,
+                -3.824625061379011,
+                -1.7195437365587598,
+                -0.12000855879290613
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.002768564982738475
+            }
+          ],
+          "folder": "task-001/attempt-001",
+          "collision_witness_count": 1208,
+          "witness_display_truncated": true,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_compliant_bellows_0 | carton_l01_c04": 8,
+            "J2_link | trailer_left_wall": 1200
+          },
+          "detail_failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 150,
+            "global_unreachable": false
+          },
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "ALREADY_AT_RECEIVE",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              0.4464642477907539,
+              1.2543586833488372,
+              -0.12485013505308953,
+              -3.595290041486714,
+              -1.3981878210152823,
+              0.08355588600740116
+            ],
+            "q2_rad": 1.2543586833488372,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.6897030898480632,
+                0.31476685960689105,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.9225125664465755,
+                0.6820222600819044,
+                1.443508835811162
+              ],
+              "direction_world": [
+                0.8571961155323886,
+                0.41034122958102054,
+                0.31118305677224817
+              ],
+              "length_m": 0.8949999999999998,
+              "elevation_rad": 0.31643764344605935,
+              "elevation_deg": 18.130541448524777,
+              "q2_rad": 1.2543586833488372,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "native_requests": 161,
+    "ik_requests": 3,
+    "numerical_ik_success": 2,
+    "explicit_target_check_passed": 1,
+    "pregrasp": 1,
+    "contact": 1
+  },
+  "operations": {
+    "init:None:READY": 1,
+    "fk:None:SUCCESS": 3,
+    "check_start:pregrasp:SUCCESS": 1,
+    "ik:pregrasp:SUCCESS": 2,
+    "ik:pregrasp:NATIVE_IK_FAILED": 1,
+    "plan:pregrasp:NATIVE_PLANNING_FAILED": 1,
+    "plan:pregrasp:SUCCESS": 1,
+    "plan:contact:SUCCESS": 1,
+    "plan:extraction:NATIVE_PLANNING_FAILED": 150
+  },
+  "task_wall_s": 103.90814649313688,
+  "loop_wall_s": 105.23668733611703,
+  "costs_are_nested_not_additive": true,
+  "candidates": [
+    {
+      "target": "carton_l01_c04",
+      "folder": "task-001/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 161
+    }
+  ],
+  "actual_target_search_candidates": 1,
+  "worker_initialized_candidates": 1,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

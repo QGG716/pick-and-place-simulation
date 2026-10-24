@@ -10,7 +10,7 @@ routePanel.innerHTML=`${DATA.inspection_cases.map((c,i)=>`<button data-case="${i
 <h2 id="routeTitle"></h2><p id="routeDetail"></p><p id="routeMetrics"></p>
 <p>橙色：目标箱<br>紫色：${DATA.geometry_preview?'c04参照箱，无碰撞见证':'本次面可见性筛选的遮挡箱'}<br>青色：指定方向或请求虚拟TCP位置<br>机器人保持本次真实起点 q；没有轨迹可播放。</p>
 ${DATA.geometry_preview?`<p>几何静态预览：+Y ${(DATA.geometry_preview.positive_y_distance_m*1000).toFixed(1)} mm 后转−X，完整箱体投影离开交汇区。工具与c04保守包络间隙约${(Math.min(...DATA.geometry_preview.tool_sweeps.map(s=>s.minimum_conservative_tool_c04_gap_m))*1000).toFixed(1)} mm。<br>青色线框：工具包络；绿色线框/虚线：箱体转向和抽离示意。均未生成机器人轨迹。</p><label><input type="checkbox" id="channelPreview" checked> 显示静态短侧移包络</label>`:''}
-${DATA.tool_connector_extension?'<p>本次连接件加长100 mm：两块连接板140→240 mm；法兰板固定，吸盘及前部实体前移100 mm。所有202个工具实体保留。</p>':''}
+${DATA.tool_connector_extension?`<p>连接件总加长${Math.round(DATA.tool_connector_extension.extension_m*1000)} mm：两块连接板140→${Math.round(DATA.tool_connector_extension.new_plate_axial_length_m*1000)} mm；法兰板固定。所有202个工具实体保留。</p>`:''}
 <button id="routeFocus">聚焦目标</button><button id="routeWhole">全局视角</button>
 <label><input type="checkbox" id="routeGhosts" checked> 显示方向 / 请求位置</label>
 <details><summary>本次原始记录</summary><pre id="routeEvidence"></pre></details>

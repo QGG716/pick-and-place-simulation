@@ -1,0 +1,389 @@
+{
+  "target": "carton_l01_c04",
+  "new_completed": 0,
+  "new_targets": 1,
+  "successful_face_trials": 0,
+  "face_trials": 3,
+  "comparison": "THREE_INDEPENDENT_RESTARTS_FROM_IDENTICAL_ACCEPTED_34_BOX_ROOT",
+  "historical_completed": 34,
+  "remaining": 6,
+  "cumulative_connector_extension_m": 0.2,
+  "plate_length_m": 0.34,
+  "delta_m": 0.0,
+  "fixed_receive_height_m": 0.25,
+  "unchanged_mount_world_m": [
+    -1.825,
+    0.25,
+    0.6
+  ],
+  "tool_body_count": 202,
+  "physical_cup_count": 72,
+  "holding_assumption": "ideal_independent_cups",
+  "rows": [
+    {
+      "face": "top",
+      "source_commit": "c88b5eb3e4f6132fff97d2dd604d472c5abe785d",
+      "new_completed": 0,
+      "target_count": 1,
+      "task_wall_s": 90.52710192650557,
+      "loop_wall_s": 90.69253239408135,
+      "candidate_visit_s": 89.97880344837904,
+      "native_solver_s": 43.866785852,
+      "numerical_ik_status_counts": {
+        "NATIVE_IK_FAILED": 436
+      },
+      "native_request_counts": {
+        "native_requests": 441,
+        "ik_requests": 436
+      },
+      "operations": {
+        "init:None:READY": 1,
+        "fk:None:SUCCESS": 3,
+        "check_start:pregrasp:SUCCESS": 1,
+        "ik:pregrasp:NATIVE_IK_FAILED": 436
+      },
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "route": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "receive_sync_location": "NOT_REACHED",
+      "cup_geometry": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": null
+        }
+      },
+      "contact_configuration": null,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100049929,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 0,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100049929,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "numerical_ik_seed": [
+              -2.291956946367306,
+              -1.2728848572314861,
+              -0.5155575183640441,
+              -4.337577174553784,
+              2.1731619906454753,
+              -6.031647664983726
+            ],
+            "numerical_seed_index": 435,
+            "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+            "random_restarts": null,
+            "real_start_q_unchanged": [
+              -1.1278317036018644,
+              1.2046092883498862,
+              -0.31738242737668854,
+              -2.0133002553942263,
+              -1.549885462084515,
+              -0.04410126159327743
+            ],
+            "request_id": "441",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 436,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.11312910914421082
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 437,
+        "scope": "FACE_ATTEMPT"
+      },
+      "collision_pairs": {},
+      "collision_witness_count": 0,
+      "last_stage": "PREGRASP_IK_UNSOLVED",
+      "unsearched": "Target collision, approach/contact trajectories and the entire attached/release suffix were not reached."
+    },
+    {
+      "face": "side",
+      "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+      "new_completed": 0,
+      "target_count": 1,
+      "task_wall_s": 90.51170873641968,
+      "loop_wall_s": 90.66359907388687,
+      "candidate_visit_s": 89.97246595472097,
+      "native_solver_s": 44.239542817,
+      "numerical_ik_status_counts": {
+        "NATIVE_IK_FAILED": 440,
+        "NATIVE_IK_REQUEST_DEADLINE": 1
+      },
+      "native_request_counts": {
+        "native_requests": 446,
+        "ik_requests": 441
+      },
+      "operations": {
+        "init:None:READY": 1,
+        "fk:None:SUCCESS": 3,
+        "check_start:pregrasp:SUCCESS": 1,
+        "ik:pregrasp:NATIVE_IK_FAILED": 440,
+        "ik:pregrasp:NATIVE_IK_REQUEST_DEADLINE": 1
+      },
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "route": [
+        [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "receive_sync_location": "NOT_REACHED",
+      "cup_geometry": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 72,
+          "commanded_active_mask": 72,
+          "actual_contact_mask": null
+        }
+      },
+      "contact_configuration": null,
+      "failure": {
+        "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+        "last_failure": {
+          "reason": "NATIVE_IK_FAILED",
+          "scope": "FACE_ATTEMPT",
+          "native": {
+            "actual_ik_s": 0.100082878,
+            "bounded_search": true,
+            "effective_solver_budget_s": 0.1,
+            "error_code": -6,
+            "excluded_local_ik_count": 0,
+            "ik_collision_checked": false,
+            "ik_exclusion_scope": "THIS_FIXED_TARGET_CONNECTION_ONLY",
+            "ik_mode": "bounded_target",
+            "ik_request_count": 1,
+            "ik_s": 0.100082878,
+            "internal_attempts": null,
+            "internal_attempts_observability": "NOT_OBSERVABLE",
+            "native_ik_calls": 1,
+            "numerical_ik_seed": [
+              -2.4212757073622564,
+              0.9300740985308662,
+              3.0145835404355883,
+              -5.4886349218684565,
+              0.28376330960752183,
+              1.7909997136938953
+            ],
+            "numerical_seed_index": 439,
+            "numerical_seed_policy": "SOFT_UPPER_ARM_WITH_GENERAL_SEEDS_V1",
+            "random_restarts": null,
+            "real_start_q_unchanged": [
+              -1.1278317036018644,
+              1.2046092883498862,
+              -0.31738242737668854,
+              -2.0133002553942263,
+              -1.549885462084515,
+              -0.04410126159327743
+            ],
+            "request_id": "445",
+            "requested_solver_budget_s": 0.1,
+            "resident_native_ik_calls": 440,
+            "seed": 71070,
+            "seed_scope": "OMPL_ONLY_KDL_INTERNAL_RNG_NOT_CONTROLLED",
+            "solver": "MoveIt_KDL_searchPositionIK",
+            "solver_api": "searchPositionIK",
+            "solver_api_calls": 1,
+            "status": "NATIVE_IK_FAILED",
+            "transport_and_worker_s": 0.11292935162782669
+          }
+        },
+        "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+        "attempts": 441,
+        "scope": "FACE_ATTEMPT"
+      },
+      "collision_pairs": {},
+      "collision_witness_count": 0,
+      "last_stage": "PREGRASP_IK_UNSOLVED",
+      "unsearched": "Target collision, approach/contact trajectories and the entire attached/release suffix were not reached."
+    },
+    {
+      "face": "front",
+      "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+      "new_completed": 0,
+      "target_count": 1,
+      "task_wall_s": 103.90814649313688,
+      "loop_wall_s": 105.23668733611703,
+      "candidate_visit_s": 98.72327746450901,
+      "native_solver_s": 0.114441504,
+      "numerical_ik_status_counts": {
+        "SUCCESS": 2,
+        "NATIVE_IK_FAILED": 1
+      },
+      "native_request_counts": {
+        "native_requests": 161,
+        "ik_requests": 3,
+        "numerical_ik_success": 2,
+        "explicit_target_check_passed": 1,
+        "pregrasp": 1,
+        "contact": 1
+      },
+      "operations": {
+        "init:None:READY": 1,
+        "fk:None:SUCCESS": 3,
+        "check_start:pregrasp:SUCCESS": 1,
+        "ik:pregrasp:SUCCESS": 2,
+        "ik:pregrasp:NATIVE_IK_FAILED": 1,
+        "plan:pregrasp:NATIVE_PLANNING_FAILED": 1,
+        "plan:pregrasp:SUCCESS": 1,
+        "plan:contact:SUCCESS": 1,
+        "plan:extraction:NATIVE_PLANNING_FAILED": 150
+      },
+      "delta_m": 0.0,
+      "height_m": 0.24999999999999994,
+      "route": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "receive_sync_location": "ALREADY_AT_RECEIVE",
+      "cup_geometry": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": 48
+        }
+      },
+      "contact_configuration": {
+        "q_rad": [
+          0.4464642477907539,
+          1.2543586833488372,
+          -0.12485013505308953,
+          -3.595290041486714,
+          -1.3981878210152823,
+          0.08355588600740116
+        ],
+        "q2_rad": 1.2543586833488372,
+        "upper_arm": {
+          "shoulder_world_m": [
+            -1.6897030898480632,
+            0.31476685960689105,
+            1.165
+          ],
+          "elbow_world_m": [
+            -0.9225125664465755,
+            0.6820222600819044,
+            1.443508835811162
+          ],
+          "direction_world": [
+            0.8571961155323886,
+            0.41034122958102054,
+            0.31118305677224817
+          ],
+          "length_m": 0.8949999999999998,
+          "elevation_rad": 0.31643764344605935,
+          "elevation_deg": 18.130541448524777,
+          "q2_rad": 1.2543586833488372,
+          "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+        }
+      },
+      "failure": {
+        "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+        "scope": "FRONT_TEMPLATE_ONLY",
+        "termination": "STAGE_BUDGET_EXHAUSTED",
+        "samples_attempted": 150,
+        "global_unreachable": false
+      },
+      "collision_pairs": {
+        "tool_compliant_bellows_0 | carton_l01_c04": 8,
+        "J2_link | trailer_left_wall": 1200
+      },
+      "collision_witness_count": 1208,
+      "attempted_receiver_centers_m": {
+        "min": [
+          -0.5898000000000001,
+          0.84,
+          0.44999999999999996
+        ],
+        "max": [
+          -0.5102000000000001,
+          0.84,
+          0.44999999999999996
+        ],
+        "count": 150
+      },
+      "last_stage": "CONTACT_ACCEPTED_EXTRACTION_LIN_REJECTED",
+      "unsearched": "No complete extraction, reception, detach, nominal drop, separation or drain; not all alternate IK configurations exhausted."
+    }
+  ],
+  "integration_errors": [
+    {
+      "version": "v1",
+      "source_commit": "581c6eff6de037c16f4ad8626d697836e5778851",
+      "affected_faces": [
+        "top",
+        "side",
+        "front"
+      ],
+      "reason": "LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED",
+      "phase": "BEFORE_NATIVE_TASK_DISPATCH",
+      "task_wall_s": null,
+      "cost_note": "Formal entry exited before its task timer; wall cost was not recorded, not zero.",
+      "ik_requests": 0,
+      "repaired_by": "20b3ca78b2a70e151b25d165c55b511c13667598"
+    },
+    {
+      "version": "v2-top",
+      "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+      "affected_faces": [
+        "top"
+      ],
+      "reason": "C04_FACE_PERMISSION_MISSING",
+      "phase": "TOP_TEMPLATE_VALIDATION_BEFORE_IK",
+      "task_wall_s": 1.2861783020198345,
+      "native_operations": {
+        "init": 1,
+        "fk": 3
+      },
+      "ik_requests": 0,
+      "repaired_by": "c88b5eb3e4f6132fff97d2dd604d472c5abe785d"
+    }
+  ],
+  "measured_task_wall_s": 284.9469571560621,
+  "measured_task_wall_s_including_timed_integration_error": 286.23313545808196,
+  "cost_note": "Per-face nested timings are not additive; untimed v1 entry errors and test/export time excluded.",
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false,
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false
+}

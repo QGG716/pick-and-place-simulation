@@ -1,0 +1,33 @@
+[
+  {
+    "version": "v1",
+    "source_commit": "581c6eff6de037c16f4ad8626d697836e5778851",
+    "affected_faces": [
+      "top",
+      "side",
+      "front"
+    ],
+    "reason": "LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED",
+    "phase": "BEFORE_NATIVE_TASK_DISPATCH",
+    "task_wall_s": null,
+    "cost_note": "Formal entry exited before its task timer; wall cost was not recorded, not zero.",
+    "ik_requests": 0,
+    "repaired_by": "20b3ca78b2a70e151b25d165c55b511c13667598"
+  },
+  {
+    "version": "v2-top",
+    "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+    "affected_faces": [
+      "top"
+    ],
+    "reason": "C04_FACE_PERMISSION_MISSING",
+    "phase": "TOP_TEMPLATE_VALIDATION_BEFORE_IK",
+    "task_wall_s": 1.2861783020198345,
+    "native_operations": {
+      "init": 1,
+      "fk": 3
+    },
+    "ik_requests": 0,
+    "repaired_by": "c88b5eb3e4f6132fff97d2dd604d472c5abe785d"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "source_commit": "20b3ca78b2a70e151b25d165c55b511c13667598",
+  "backend": "PinocchioHppFclBackend",
+  "verified_raw_files": 25,
+  "snapshots": 9,
+  "witness_occurrences": 1200,
+  "unique_witnesses": 8,
+  "solver_calls_added": 0,
+  "generated_robot_motion_points": 0,
+  "exporter_sha256": "f14e3b1bc07f3e0b4fd0b82fca1c5cb826650d0240502a4f5b47a2a22b8e80e8",
+  "overlay_sha256": "250fe9b885b7c334c5b159257a2918fcfd4879c2ac05d572b2bcaffba2ab690e"
+}

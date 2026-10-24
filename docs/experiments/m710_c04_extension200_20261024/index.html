@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>c04加长200 mm：0/1</title><style>body{max-width:1100px;margin:40px auto;font:16px/1.7 system-ui;background:#101b2a;color:#edf3ff}a{color:#78dbe9}pre{white-space:pre-wrap}td,th{padding:12px;text-align:left;border-bottom:1px solid #456}</style><h1>c04：0/1，三种抓法均未完成</h1><p>连接件总加长200 mm · Hmax 250 mm · 三种方式从同一根状态独立试验 · 历史34箱，仍剩6箱</p><table><tr><th>抓法</th><th>路线</th><th>结果</th><th>三维记录</th></tr><tr><td>顶吸</td><td>+Z → −X</td><td>436次IK无解</td><td><a href="top/top-ik.html">打开</a></td></tr><tr><td>侧吸</td><td>−Y → −X</td><td>441次IK未求解</td><td><a href="side/side-ik.html">打开</a></td></tr><tr><td>正吸</td><td>直接−X</td><td>contact 48杯通过；150次抽离LIN失败，J2/左壁</td><td><a href="front/front-clearance.html">打开</a></td></tr></table><p><a href="offline-inspection.zip">下载离线查看及原始记录</a> · <a href="result.json">结构化结果及成本</a></p><pre>c04：完整抓放0/1；三种独立抓法均未完成（0/3抓法，不是3个箱体）。
+连接件在上次100 mm基础上再加长100 mm，总加长200 mm；两块连接板140→340 mm，法兰板固定，202个工具实体/72个物理杯保留。底座世界位置[-1.825,0.25,0.6] m（累计-X500/Y-100 mm）、纵带0.60 m、横带剪叉中心距0.26 m、低型剪叉和原碰撞权限不变。横带始终Hmax=250 mm，delta=0。
+
+顶吸（先+Z再-X）：436次原生IK请求，数值成功0。90.527秒后前缀预算耗尽；预测/命令48杯，实际contact未到达。没有本次碰撞见证。
+侧吸（y-面，先-Y再-X）：441次原生IK请求，440次NATIVE_IK_FAILED、最后1次NATIVE_IK_REQUEST_DEADLINE，数值成功0。90.512秒后前缀预算耗尽；预测/命令72杯，实际contact未到达。面可见性通过，没有本次碰撞见证。
+正吸（直接-X）：接近、contact通过，预测/命令/实际contact均为48杯；同步状态ALREADY_AT_RECEIVE，始终250 mm。随后150次接收区域抽离LIN请求全部失败，103.908秒内未完成。J2_link / trailer_left_wall是本次抽离的拒绝对象对：4.659957、2.768565、0.868490 mm等正间隙小于要求5 mm，随后记录INTERSECTION_OR_CONTACT。原始-1标志不是1 m穿透深度。8种不同见证q在150次请求中共出现1200条记录，不能当1200个独立规划候选。接近早期另有柔性杯/目标箱5 mm净空拒绝，随后接近已成功，它不是最终抽离失败原因。
+正吸实际contact：q2=1.254358683 rad，上臂仰角18.130541449°（由官方J2/J3结构点计算）。保持ideal_independent_cups吸力足够假设，无新增承载杯数门槛。
+
+本轮每种抓法一个上游业务目标，seed=71070，任务300秒/共享前缀90秒；三种方式均从已接受34箱历史末态独立重建原生根状态，未沿用失败q、旧c04轨迹或树。三次根状态逐项相同。KDL内部随机重启不受OMPL seed控制；IK内部迭代数不可观测，不将请求数冒充迭代数或业务目标数。
+正常三次任务计时合计284.946957156秒；含已计时的顶吸集成错误共286.233135458秒。候选访问、求解及任务时间相互嵌套，详见result.json，不可相加。初版3个入口错误发生在任务计时前，无实测墙钟成本；不能写成0秒。回归和导出时间另列于原始日志。
+未探索范围：顶吸/侧吸未到目标碰撞或任何机器人运动；正吸未产生完整抽离，接收验收、解除附着、名义下落、工具分离、IDEAL_RECEIVER_DRAIN均未到达。有限预算内未完成不等于证明全局不可达。无箱体完成提交，历史34箱和现场6箱不变，l00五箱未搜索。
+
+实测源码：顶吸c88b5eb3e4f6132fff97d2dd604d472c5abe785d；侧吸/正吸20b3ca78b2a70e151b25d165c55b511c13667598。后者到前者只修复顶吸连接器的权限传递并增加回归，未重复侧吸/正吸正常搜索。
+保留的实现错误：581c6eff...首箱入口仅识别旧侧吸开关，三种方式均在IK前退出；20b3ca78...顶吸专用校验未透传权限，4次原生请求（init1/FK3）后退出，未派发IK，用时1.286178302秒。均已最小修复，并对修复后的顶吸实际运行完整任务；原始异常包和源码清单分开保留在integration-errors和reproduce中。
+生产PinocchioHppFclBackend、200 mm实体/帧、正式首箱派发和三种连接器校验均有覆盖。最终GPU针对性49项通过（10.22秒）；侧吸/正吸版本49项通过（9.62秒）。原生Hmax和两种模式的过程策略测试通过。复用48dcea934c7eb909673561ba7a3a2fc62e471261构建的未变化原生worker，ros2散列逐项相同。源文件及所有原始记录散列通过；三次保存的父链/失败保留验证通过。仿真规划未被写成物理执行。
+
+三维：top/top-ik.html、side/side-ik.html显示真实起点与请求TCP；front/front-clearance.html显示真实contact末态和8种被拒绝搜索构型。模型由各自实测版本导出，原生q驱动，静态构型没有连成虚假运动。浏览器检查同源FK、世界、真实附着与无运动补帧通过。每页可离线打开；offline-inspection.zip保留全部相对路径。
+原始请求/回复/世界/轨迹/杯掩码/失败/测试/验证存于各抓法formal-v1-raw.tar.xz，包含通过的正吸接近/contact轨迹，但不称为完整抓放。所有名义下落、理想清空和物理执行本次均未发生。
+
+在原GPU保留环境复现，输出目录必须不存在：
+chroot /root/autodl-tmp/m710-l05-x500-20261022/rootfs /bin/bash /c04-extension200-v3-20261024/formal-v1.sh top /c04-extension200-v3-20261024/top/reproduction-new
+chroot /root/autodl-tmp/m710-l05-x500-20261022/rootfs /bin/bash /c04-extension200-v2-20261024/formal-v1.sh side /c04-extension200-v2-20261024/side/reproduction-new
+chroot /root/autodl-tmp/m710-l05-x500-20261022/rootfs /bin/bash /c04-extension200-v2-20261024/formal-v1.sh front /c04-extension200-v2-20261024/front/reproduction-new
+均读取/l01-hmax-v2-20261024/formal-v1的固定接受末态。完整CLI在reproduce/v2和v3/formal-v1.sh中。源码/资产包在GPU根目录和本地artifacts/m710_c04_extension200_20261024/v2、v3/measured-source.tar.gz；散列在各source-receipt.json中。
+最终交付提交：git log -1 --format=%H -- docs/experiments/m710_c04_extension200_20261024。它不冒充上述实测源码；推送状态在最终答复中给出。
+qualification_status=NOT_EVALUATED
+continuous_swept_proof=false
+physical_execution=NOT_RUN
+execution_ready=false
+</pre>

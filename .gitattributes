@@ -108,3 +108,8 @@ docs/experiments/m710_l05_j4_velocity_20261021/** -text -whitespace
 docs/m710_l05_j4_velocity_20261021.md text eol=lf
 docs/experiments/m710_l05_all_rates_20261021/** -text -whitespace
 docs/m710_l05_all_rates_20261021.md text eol=lf
+
+# Preserve these measured trials and their offline SHA-256 manifests.
+docs/experiments/m710_c04_side_20261024/** -text -whitespace
+docs/experiments/m710_c04_extension200_20261024/** -text -whitespace
+tools/search_replay/selected_routes.js text eol=lf
