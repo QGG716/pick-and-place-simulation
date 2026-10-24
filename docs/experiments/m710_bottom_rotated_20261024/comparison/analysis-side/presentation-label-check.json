@@ -1,0 +1,6 @@
+{
+  "status": "PASS_DATA_UNCHANGED",
+  "before_sha256": "45f7ed0eda3605205e85d36ae44309bfc4741899e404307c74592ede9c48144b",
+  "after_sha256": "53c5aa201c9faa2c2ecb468f6240f4e9080eb281f29d830b0b6a70295c2f17eb",
+  "change": "Independent comparison title only; native q, source and result unchanged"
+}

@@ -4,3 +4,4 @@
 *.sh -text
 *.py -text
 *.exit -text
+*.txt -text

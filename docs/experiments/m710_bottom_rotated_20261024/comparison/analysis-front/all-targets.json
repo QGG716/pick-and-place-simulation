@@ -1,0 +1,453 @@
+{
+  "source_commit": "c3b815d498684ce75e22717389bf9507205b90dd",
+  "backend": "PinocchioHppFclBackend",
+  "new_completed": 0,
+  "new_targets": 1,
+  "historical_completed": 37,
+  "cumulative_completed": 37,
+  "remaining": 3,
+  "rows": [
+    {
+      "target_id": "carton_l01_c04",
+      "complete": false,
+      "wall_s": 101.45150595158339,
+      "attempts": [
+        {
+          "world_z_rotation_degrees": 0,
+          "template": "L01_HMAX_FRONT_DIRECT",
+          "face": "x-",
+          "delta_m": 0.0,
+          "route": [
+            [
+              -1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "height_m": 0.24999999999999994,
+          "temporary_height_m": 0.24999999999999994,
+          "failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 156,
+            "global_unreachable": false
+          },
+          "geometry_evidence": null,
+          "screening": [
+            {
+              "face_role": "FRONT",
+              "geometric_face_id": "x-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "TOP",
+              "geometric_face_id": "z+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y-",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            },
+            {
+              "face_role": "SIDE",
+              "geometric_face_id": "y+",
+              "available": true,
+              "reason": null,
+              "blockers": [],
+              "supported_cartons": [],
+              "exposure_depth_m": null
+            }
+          ],
+          "wall_s": 97.52663123235106,
+          "unsearched_option_count": 0,
+          "counts": {
+            "native_requests": 169,
+            "ik_requests": 5,
+            "numerical_ik_success": 4,
+            "explicit_target_check_passed": 1,
+            "pregrasp": 1,
+            "contact": 1
+          },
+          "collision_witnesses": [
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.35963612982897314,
+                0.7685572052106303,
+                -0.5611918383166987,
+                1.3004445461593601,
+                -1.0744633332860731,
+                -0.8649064316942576
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004248601783979622
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.3676498958606662,
+                0.7848938918521009,
+                -0.5560168841917302,
+                1.35047357336822,
+                -1.0953637093509945,
+                -0.8319286532187702
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.000982180728855253
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.37550347956464314,
+                0.8009040343340527,
+                -0.5509453690983337,
+                1.39950260057708,
+                -1.11584632042565,
+                -0.7996100476338093
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.3831968809409038,
+                0.8165876326564853,
+                -0.545977293036509,
+                1.44753162778594,
+                -1.1359111665100396,
+                -0.7679506149393747
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.3907300999894483,
+                0.8319446868193989,
+                -0.5411126560062562,
+                1.4945606549948,
+                -1.1555582476041633,
+                -0.7369503551354664
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.3981031367102766,
+                0.8469751968227937,
+                -0.5363514580075753,
+                1.54058968220366,
+                -1.174787563708021,
+                -0.7066092682220846
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.4053159911033886,
+                0.8616791626666693,
+                -0.5316936990404663,
+                1.58561870941252,
+                -1.193599114821613,
+                -0.6769273541992291
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "11",
+              "stage": "pregrasp",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "tool_compliant_bellows_66",
+                "conveyor_transverse"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.41236866316878446,
+                0.876056584351026,
+                -0.5271393791049293,
+                1.6296477366213802,
+                -1.2119929009449388,
+                -0.6479046130669
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": -1.0
+            },
+            {
+              "request_id": "14",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.671447256531598,
+                1.1770551049674363,
+                -0.5815942370840317,
+                -3.8217017374887057,
+                -1.7175334258751498,
+                -0.1177142463755749
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004659950390626166
+            },
+            {
+              "request_id": "14",
+              "stage": "extraction",
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "J2_link",
+                "trailer_left_wall"
+              ],
+              "phase": "search",
+              "q_rad": [
+                0.6740798970146455,
+                1.1771626769518253,
+                -0.5844775803311447,
+                -3.8246250345243045,
+                -1.7195439419514,
+                -0.12000836154767595
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.002768558153040779
+            }
+          ],
+          "folder": "task-001/attempt-001",
+          "collision_witness_count": 1256,
+          "witness_display_truncated": true,
+          "target_search_dispatched": true,
+          "collision_pairs": {
+            "tool_compliant_bellows_66 | conveyor_transverse": 8,
+            "J2_link | trailer_left_wall": 1248
+          },
+          "detail_failure": {
+            "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+            "scope": "FRONT_TEMPLATE_ONLY",
+            "termination": "STAGE_BUDGET_EXHAUSTED",
+            "samples_attempted": 156,
+            "global_unreachable": false
+          },
+          "contact_complete": true,
+          "top_lift": null,
+          "receive_sync_location": "ALREADY_AT_RECEIVE",
+          "cup_geometry": {
+            "expected_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": null
+            },
+            "terminal_contact": {
+              "geometrically_eligible_mask": 48,
+              "commanded_active_mask": 48,
+              "actual_contact_mask": 48
+            }
+          },
+          "contact_configuration": {
+            "q_rad": [
+              0.5191459722739408,
+              1.200679965465423,
+              -0.3367299165088872,
+              -3.660978555505815,
+              -1.5418103598176371,
+              0.016569375796177798
+            ],
+            "q2_rad": 1.200679965465423,
+            "upper_arm": {
+              "shoulder_world_m": [
+                -1.4947635181156136,
+                0.32442082226351615,
+                1.165
+              ],
+              "elbow_world_m": [
+                -0.7703054546459959,
+                0.7383967220939858,
+                1.4887429051475944
+              ],
+              "direction_world": [
+                0.8094503502453829,
+                0.4625429048385135,
+                0.36172391636602724
+              ],
+              "length_m": 0.895,
+              "elevation_rad": 0.37011636132947345,
+              "elevation_deg": 21.20610543291782,
+              "q2_rad": 1.200679965465423,
+              "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+            }
+          }
+        }
+      ],
+      "root_configuration": {
+        "q_rad": [
+          0.15132789535960595,
+          0.3439046338845537,
+          -0.6957085627841832,
+          1.8593827995008968e-12,
+          -0.5311831301192554,
+          -1.7221242221541695
+        ],
+        "q2_rad": 0.3439046338845537,
+        "upper_arm": {
+          "shoulder_world_m": [
+            -1.4767142347941802,
+            0.27261264772919086,
+            1.165
+          ],
+          "elbow_world_m": [
+            -1.1783995964141618,
+            0.31810375620332765,
+            2.0075935767485964
+          ],
+          "direction_world": [
+            0.33331244511733904,
+            0.0508280541610467,
+            0.9414453371492699
+          ],
+          "length_m": 0.8949999999999998,
+          "elevation_rad": 1.2268916929103428,
+          "elevation_deg": 70.29571592342332,
+          "q2_rad": 0.3439046338845537,
+          "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "native_requests": 169,
+    "ik_requests": 5,
+    "numerical_ik_success": 4,
+    "explicit_target_check_passed": 1,
+    "pregrasp": 1,
+    "contact": 1
+  },
+  "operations": {
+    "init:None:READY": 1,
+    "fk:None:SUCCESS": 3,
+    "check_start:pregrasp:SUCCESS": 1,
+    "ik:pregrasp:SUCCESS": 4,
+    "ik:pregrasp:NATIVE_IK_FAILED": 1,
+    "plan:pregrasp:NATIVE_PLANNING_FAILED": 1,
+    "plan:pregrasp:SUCCESS": 1,
+    "plan:contact:SUCCESS": 1,
+    "plan:extraction:NATIVE_PLANNING_FAILED": 156
+  },
+  "task_wall_s": 101.45150595158339,
+  "loop_wall_s": 102.70596601814032,
+  "costs_are_nested_not_additive": true,
+  "candidates": [
+    {
+      "target": "carton_l01_c04",
+      "folder": "task-001/attempt-001",
+      "target_search_dispatched": true,
+      "requests": 169
+    }
+  ],
+  "actual_target_search_candidates": 1,
+  "worker_initialized_candidates": 1,
+  "physical_execution": "NOT_RUN",
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "execution_ready": false
+}

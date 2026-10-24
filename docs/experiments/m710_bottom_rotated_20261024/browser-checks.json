@@ -1,0 +1,40 @@
+{
+  "status": "PASS_VISIBLE_UI_AND_SOURCE_CHECKS",
+  "main": {
+    "initial_history": 36,
+    "initial_remaining": 4,
+    "at_15_s": {
+      "target": "carton_l00_c03",
+      "phase": "top_lift",
+      "attached": true,
+      "commanded_cups": 72
+    },
+    "final": {
+      "completed": 3,
+      "remaining": 1,
+      "nominal_reception": 3,
+      "ideal_drain": 3,
+      "measured_reception": 0
+    }
+  },
+  "front": {
+    "visible_numeric_ik": true,
+    "visible_approach": true,
+    "visible_contact": true,
+    "extraction_passed": false,
+    "actual_cups": 48,
+    "displayed_witnesses": [
+      "4.660 mm J2/left wall gap",
+      "intersection/contact"
+    ],
+    "static_rejected_search_configuration": true
+  },
+  "side": {
+    "initial_history": 37,
+    "initial_remaining": 3,
+    "independent": true
+  },
+  "browser_runtime_fk_assertion": false,
+  "structural_exporter_native_q_checks": true,
+  "physical_execution": "NOT_RUN"
+}

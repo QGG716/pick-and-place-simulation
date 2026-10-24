@@ -1,0 +1,1 @@
+{"status": "PASS_SAVED_NATIVE_LINEAGE_POPULATION_AND_FAILURE_RETENTION", "completed_count": 1, "target_count": 1, "attempted_count": 1, "blocked_count": 0, "counts": {"native_requests": 24, "accepted_native_stages": 6, "nominal_drop_samples": 26, "numerical_ik_success": 4, "target_check_passed": 3, "pregrasp": 1, "contact": 1, "extraction": 3, "withdrawal": 1}}

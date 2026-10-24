@@ -1,0 +1,5 @@
+{"event": "CARTON_TASK_START", "target": "carton_l01_c04", "remaining": 3}
+{"seed": 71070, "attempt": 1, "target": "carton_l01_c04", "process": "L01_HMAX_SIDE", "completed": 0, "historical_completed": 37}
+{"seed": 71070, "completed": 1, "historical_completed": 37, "terminal_q": [-0.18436971620267836, 1.1900346642688893, -0.39689658917150344, -1.3864498260271678, -1.567838466792799, 0.01586144803901575], "height": 0.24999999999999994}
+{"event": "CARTON_TASK_RECORDED", "target": "carton_l01_c04", "completed": 1, "remaining": 2, "attempted": 1, "task_s": 19.314251869916916}
+{"status": "COMPLETE_PLANNING_ONLY", "completed": 1, "targets": 1}

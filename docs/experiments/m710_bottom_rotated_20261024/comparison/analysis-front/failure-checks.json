@@ -1,0 +1,13 @@
+{
+  "status": "PASS_SAVED_REQUEST_WITNESSES_ONLY",
+  "source_commit": "c3b815d498684ce75e22717389bf9507205b90dd",
+  "verified_files": 9,
+  "archive_sha256": "1714f3d01091b8ec0546f11ceb99a3808483e4d6f2818a46aec7c3d589c899f9",
+  "extraction_requests": 156,
+  "search_witnesses": 1248,
+  "displayed_witnesses": 2,
+  "native_accepted_extraction_paths": 0,
+  "solver_calls_added": 0,
+  "generated_robot_motion_points": 0,
+  "physical_execution": "NOT_RUN"
+}

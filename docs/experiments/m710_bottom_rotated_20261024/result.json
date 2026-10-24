@@ -1,0 +1,382 @@
+{
+  "new_completed_unique": 3,
+  "new_target_unique_count": 3,
+  "cumulative_accepted": 39,
+  "remaining": [
+    "carton_l00_c00"
+  ],
+  "main_source_commit": "a4552c363c0e2cce56be4d4b28958dd44ebbe3e8",
+  "comparison_source_commit": "c3b815d498684ce75e22717389bf9507205b90dd",
+  "rows": [
+    {
+      "trial": "连续",
+      "target": "carton_l00_c03",
+      "complete": true,
+      "independent": false,
+      "world_z_rotation_degrees": 90,
+      "face": "z+",
+      "route": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "height_m": 0.24999999999999994,
+      "delta_m": 0.0,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "cups": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 72,
+          "commanded_active_mask": 72,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 72,
+          "commanded_active_mask": 72,
+          "actual_contact_mask": 72
+        }
+      },
+      "wall_s": 7.132200092077255,
+      "counts": {
+        "native_requests": 18,
+        "ik_requests": 4,
+        "numerical_ik_success": 4,
+        "explicit_target_check_passed": 2,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 3,
+        "withdrawal": 1
+      },
+      "q2_rad": 1.2908195134085316,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.4755815223244824,
+          0.2631953980285119,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.6187658145438073,
+          0.33886223975473884,
+          1.4123183615574852
+        ],
+        "direction_world": [
+          0.9573359863471229,
+          0.08454395723600777,
+          0.27633336486869853
+        ],
+        "length_m": 0.895,
+        "elevation_rad": 0.27997681338636476,
+        "elevation_deg": 16.041489768560552,
+        "q2_rad": 1.2908195134085316,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "failure": null
+    },
+    {
+      "trial": "连续",
+      "target": "carton_l01_c04",
+      "complete": true,
+      "independent": false,
+      "world_z_rotation_degrees": 0,
+      "face": "z+",
+      "route": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "height_m": 0.24999999999999994,
+      "delta_m": 0.0,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "cups": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": 48
+        }
+      },
+      "wall_s": 7.5747675113379955,
+      "counts": {
+        "native_requests": 18,
+        "ik_requests": 4,
+        "numerical_ik_success": 4,
+        "explicit_target_check_passed": 2,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 3,
+        "withdrawal": 1
+      },
+      "q2_rad": 1.223489547019765,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.4815849095217555,
+          0.2939557939652666,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.6769669165627309,
+          0.5405659840178845,
+          1.4696281332523355
+        ],
+        "direction_world": [
+          0.8990145172726532,
+          0.27554211179063454,
+          0.3403666293322185
+        ],
+        "length_m": 0.8949999999999999,
+        "elevation_rad": 0.3473067797751316,
+        "elevation_deg": 19.899212677394576,
+        "q2_rad": 1.223489547019765,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "failure": null
+    },
+    {
+      "trial": "连续",
+      "target": "carton_l00_c04",
+      "complete": true,
+      "independent": false,
+      "world_z_rotation_degrees": 0,
+      "face": "z+",
+      "route": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "height_m": 0.24999999999999994,
+      "delta_m": 0.0,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "cups": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": 48
+        }
+      },
+      "wall_s": 7.491225209087133,
+      "counts": {
+        "native_requests": 20,
+        "ik_requests": 5,
+        "numerical_ik_success": 4,
+        "explicit_target_check_passed": 2,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 3,
+        "withdrawal": 1
+      },
+      "q2_rad": 1.422277682550073,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.481584909521755,
+          0.29395579396526517,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.6352950700134888,
+          0.5533381343889571,
+          1.2974360563494736
+        ],
+        "direction_world": [
+          0.9455752396740406,
+          0.2898126708644603,
+          0.14797324731784753
+        ],
+        "length_m": 0.8949999999999999,
+        "elevation_rad": 0.1485186442448236,
+        "elevation_deg": 8.509491494233327,
+        "q2_rad": 1.422277682550073,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "failure": null
+    },
+    {
+      "trial": "侧吸对比",
+      "target": "carton_l01_c04",
+      "complete": true,
+      "independent": true,
+      "world_z_rotation_degrees": 0,
+      "face": "y-",
+      "route": [
+        [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "height_m": 0.24999999999999994,
+      "delta_m": 0.0,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "cups": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 72,
+          "commanded_active_mask": 72,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 72,
+          "commanded_active_mask": 72,
+          "actual_contact_mask": 72
+        }
+      },
+      "wall_s": 19.314251869916916,
+      "counts": {
+        "native_requests": 24,
+        "ik_requests": 5,
+        "numerical_ik_success": 4,
+        "explicit_target_check_passed": 3,
+        "pregrasp": 1,
+        "contact": 1,
+        "extraction": 3,
+        "withdrawal": 1
+      },
+      "q2_rad": 1.7597502339216542,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.4758231209024324,
+          0.23430736661010285,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.6015768649865132,
+          0.1423411981959896,
+          0.9968907858437733
+        ],
+        "direction_world": [
+          0.9768114591239321,
+          -0.10275549543476342,
+          -0.18783152419690136
+        ],
+        "length_m": 0.895,
+        "elevation_rad": -0.18895390712675766,
+        "elevation_deg": -10.826261400870141,
+        "q2_rad": 1.7597502339216542,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "failure": null
+    },
+    {
+      "trial": "正吸对比",
+      "target": "carton_l01_c04",
+      "complete": false,
+      "independent": true,
+      "world_z_rotation_degrees": 0,
+      "face": "x-",
+      "route": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "height_m": 0.24999999999999994,
+      "delta_m": 0.0,
+      "synchronization": "ALREADY_AT_RECEIVE",
+      "cups": {
+        "expected_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": null
+        },
+        "terminal_contact": {
+          "geometrically_eligible_mask": 48,
+          "commanded_active_mask": 48,
+          "actual_contact_mask": 48
+        }
+      },
+      "wall_s": 101.45150595158339,
+      "counts": {
+        "native_requests": 169,
+        "ik_requests": 5,
+        "numerical_ik_success": 4,
+        "explicit_target_check_passed": 1,
+        "pregrasp": 1,
+        "contact": 1
+      },
+      "q2_rad": 1.200679965465423,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -1.4947635181156136,
+          0.32442082226351615,
+          1.165
+        ],
+        "elbow_world_m": [
+          -0.7703054546459959,
+          0.7383967220939858,
+          1.4887429051475944
+        ],
+        "direction_world": [
+          0.8094503502453829,
+          0.4625429048385135,
+          0.36172391636602724
+        ],
+        "length_m": 0.895,
+        "elevation_rad": 0.37011636132947345,
+        "elevation_deg": 21.20610543291782,
+        "q2_rad": 1.200679965465423,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "failure": {
+        "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+        "scope": "FRONT_TEMPLATE_ONLY",
+        "termination": "STAGE_BUDGET_EXHAUSTED",
+        "samples_attempted": 156,
+        "global_unreachable": false
+      }
+    }
+  ],
+  "independent_comparison_results_not_added_to_main_ledger": true,
+  "main_task_wall_s": 22.198192812502384,
+  "total_actual_task_wall_s": 142.96395063400269,
+  "total_native_requests": 249,
+  "total_numeric_ik_requests": 23,
+  "total_numeric_ik_success": 20,
+  "preflight_integration_error": {
+    "source_commit": "dea9b2bce8b5fc770efc48db703b8d0cf6ba0a3e",
+    "error": "L01_TOOL_CHASSIS_ROOT_CHANGED",
+    "cause": "Old six-remaining-box guard at a verified three-remaining-box root",
+    "native_planning_dispatched": false,
+    "repair_source": "c3b815d498684ce75e22717389bf9507205b90dd"
+  },
+  "not_searched": [
+    "c03 -90 degrees: +90 completed first",
+    "l00_c00: outside current request"
+  ],
+  "qualification_status": "NOT_EVALUATED",
+  "continuous_swept_proof": false,
+  "physical_execution": "NOT_RUN",
+  "execution_ready": false
+}
