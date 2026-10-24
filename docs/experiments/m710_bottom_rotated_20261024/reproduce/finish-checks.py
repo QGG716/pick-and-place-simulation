@@ -26,7 +26,7 @@ for path in (out/'index.html',out/'analysis-v1/accepted-cycles.html',side,out/'c
   displayed_witnesses=['4.660 mm J2/left wall gap','intersection/contact'],static_rejected_search_configuration=True),
  side=dict(initial_history=37,initial_remaining=3,independent=True),
  browser_runtime_fk_assertion=False,structural_exporter_native_q_checks=True,physical_execution='NOT_RUN'),indent=2)+'\n')
-(out/'.gitattributes').write_text('*.json -text\n*.log -text\n*.html -text\n*.sh -text\n*.py -text\n*.exit -text\n*.txt -text\n')
+(out/'.gitattributes').write_text('*.json -text\n*.log -text\n*.html -text\n*.sh -text\n*.py -text\n*.exit -text\n*.txt -text\n',newline='\n')
 shutil.copyfile(Path(__file__),out/'reproduce/finish-checks.py')
 files={str(p.relative_to(out)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file() and p.name not in ('delivery-files.json','offline-replay.zip')}
 (out/'delivery-files.json').write_text(json.dumps(files,indent=2)+'\n')
