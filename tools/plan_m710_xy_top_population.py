@@ -86,7 +86,7 @@ def main():
             or args.continue_min250_repair_from or args.l01_all_hmax or args.c01_finite_side_channel
             or args.c01_front_suction or args.c01_front_direct_x or args.integration_top_fixture
             or args.l05_j4_velocity_restart or args.tool_connector_extension_m!=.2
-            or args.mounting_variant!='x_minus_500_y_minus_100'):
+            or args.mounting_variant not in ('x_minus_500_y_minus_100','x_minus_300_y_minus_100')):
         raise ValueError('L00_FOUR_TOP_CONTINUATION_SCOPE_CHANGED')
     hmax_mode=args.l01_all_hmax or c04_trial
     if c04_trial and (args.continue_l01_selected_routes_from or args.l01_all_hmax):
@@ -338,7 +338,9 @@ def main():
             top_permission='REQUESTED_FOUR_FROZEN_L00_TOP_ONLY',
             top_receiver_rule='CURRENT_COMMITTED_HEIGHT_FIXED_DURING_TOP_CYCLE',
             low_receiver_rule='TOP_ONLY_FIXED_250MM',
-            tool_connector_extension_m=.2,tool_connector_extension=connector_extension_evidence(.2))
+            tool_connector_extension_m=.2,tool_connector_extension=connector_extension_evidence(.2),
+            mount_reference_variant='x_minus_500_y_minus_100',
+            robot_mount_delta_from_reference_m=([.2,0.,0.] if args.mounting_variant=='x_minus_300_y_minus_100' else [0.,0.,0.]))
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',

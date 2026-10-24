@@ -31,7 +31,8 @@ def expected_population_mount(protocol):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
     if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX','XY_TOP_L01_C04_FACE_EXTENSION200_HMAX','XY_TOP_L00_FOUR_TOP_EXTENSION200'):
-        if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
+        if variant!='x_minus_500_y_minus_100' and not (protocol['scope']=='XY_TOP_L00_FOUR_TOP_EXTENSION200' and variant=='x_minus_300_y_minus_100'):
+            raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     extension=protocol.get('tool_connector_extension_m',0.)
     if extension:
@@ -115,6 +116,9 @@ def verify(run, replay=None, *, retained_prefix=False):
             assert targets==set(ORDER) and initial_ids-targets==set(RETAINED)
             assert [o['target_id'] for o in summary['outcomes']]==list(ORDER)
             assert protocol['tool_connector_extension_m']==.2
+            if protocol['mounting_variant']=='x_minus_300_y_minus_100':
+                assert protocol['mount_reference_variant']=='x_minus_500_y_minus_100'
+                assert protocol['robot_mount_delta_from_reference_m']==[.2,0.,0.]
             assert protocol['tool_chassis_permission']==frozen_l01_scope(boxes)
             assert set(policy.tool_chassis_contact_target_ids)==set(protocol['tool_chassis_permission']['allowed_target_ids'])
             assert targets.isdisjoint(policy.tool_chassis_contact_target_ids)

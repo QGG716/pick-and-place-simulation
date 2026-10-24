@@ -9,6 +9,34 @@ from l00_top_continuation import ORDER, RETAINED, bind_scope, SCOPE
 from unloading_sim.low_top_receiver import layer_top_option
 
 
+def test_xplus200_moves_only_robot_and_owned_tool():
+    from copy import deepcopy
+    from unloading_sim.workcell_layout import load_workcell_layout
+    from unloading_sim.conveyor_lift import coupled_conveyor_state
+    root=Path(__file__).resolve().parents[1]/'configs/workcells'
+    name='m710id70_unloading_layout_v1_mount_x_minus_500_y_minus_100_min250_lowprofile_tool_extension200.yaml'
+    old=load_workcell_layout(root/name)
+    new=load_workcell_layout(root/name.replace('x_minus_500','x_minus_300'))
+    changed=deepcopy(new.data)
+    assert changed['robot']['base_origin_xy_a_m']==[.325,-.1]
+    assert changed['robot']['base_front_edge_x_world_m']==-1.4
+    changed['robot']['base_origin_xy_a_m']=old.data['robot']['base_origin_xy_a_m']
+    changed['robot']['base_front_edge_x_world_m']=old.data['robot']['base_front_edge_x_world_m']
+    assert changed==old.data
+    a,b=old.robot(),new.robot();q=np.array([-1.12,1.20,-.31,-2.01,-1.55,-.04])
+    for key,frame in a.named_link_frames(q).items():
+        other=b.named_link_frames(q)[key]
+        assert np.allclose(other[:3,3]-frame[:3,3],[.2,0.,0.],atol=1e-12,rtol=0)
+        assert np.allclose(other[:3,:3],frame[:3,:3],atol=1e-12,rtol=0)
+    before={v.name:v for v in a.tool_all_physical_obbs(q)}
+    after={v.name:v for v in b.tool_all_physical_obbs(q)}
+    assert len(after)==len(before)==202
+    for key,box in before.items():
+        assert np.allclose(after[key].corners()-box.corners(),[.2,0.,0.],atol=1e-12,rtol=0)
+    for left,right in zip(coupled_conveyor_state(old,.25).boxes,coupled_conveyor_state(new,.25).boxes):
+        assert left.name==right.name and np.array_equal(left.corners(),right.corners())
+
+
 def predecessor(tmp_path):
     from layer_top_continuation import L01_HMAX_RECORDS
     source=Path(__file__).resolve().parents[1]/'docs/experiments/m710_l01_hmax_20261024'
@@ -43,13 +71,15 @@ def test_four_bottom_top_options_preserve_accepted_world_and_fixed_height(tmp_pa
     with pytest.raises(ValueError,match='ROOT_CHANGED'):bind_scope(frozen,state)
 
 
-def test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant(tmp_path,monkeypatch):
+@pytest.mark.parametrize('mount,x',[('x_minus_500_y_minus_100',-1.825),('x_minus_300_y_minus_100',-1.625)])
+def test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant(tmp_path,monkeypatch,mount,x):
     pytest.importorskip('pinocchio')
     import sys
     import plan_m710_xy_top_population as entry
     output=tmp_path/'run';prior=predecessor(tmp_path)
     def dispatch(args,original,built,frozen,seed,folder,*,initial_state,target_ids):
         assert type(built.robot).__name__=='PinocchioHppFclBackend'
+        assert np.allclose(built.robot.base_transform[:3,3],[x,.25,.6],atol=1e-12,rtol=0)
         assert seed==71070 and target_ids==[ORDER[0]]
         assert args.layer_top_only and args.tool_connector_extension_m==.2
         assert args.l01_hmax_permission is None and args.c04_face_permission is None
@@ -69,7 +99,7 @@ def test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant(t
     monkeypatch.setattr(entry,'run_seed',dispatch)
     monkeypatch.setattr(sys,'argv',['plan','--output',str(output),'--worker-command','UNUSED_TEST_DISPATCH',
         '--worker-binary',str(Path(entry.__file__)),'--source-commit','INTEGRATION_TEST','--development',
-        '--mounting-variant','x_minus_500_y_minus_100','--continue-l00-top-from',str(prior),
+        '--mounting-variant',mount,'--continue-l00-top-from',str(prior),
         '--tool-connector-extension-m','0.2'])
     with pytest.raises(RuntimeError,match='TEST_PRODUCTION_DISPATCH_REACHED'):entry.main()
     check=json.loads((output/'initial-state-check.json').read_text())
@@ -77,4 +107,4 @@ def test_formal_l00_dispatch_uses_production_backend_and_no_tool_chassis_grant(t
     p=json.loads((output/'protocol.json').read_text())
     assert p['scope']==SCOPE and p['scoped_target_ids']==list(ORDER)
     from verify_m710_population import expected_population_mount
-    assert expected_population_mount(p)==[-1.825,.25,.6]
+    assert expected_population_mount(p)==[x,.25,.6]
