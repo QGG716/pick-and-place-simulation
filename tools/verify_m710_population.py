@@ -30,12 +30,12 @@ def expected_population_mount(protocol):
     if protocol.get('scope') in ('XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('MIN250_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250.yaml'
-    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS'):
+    if protocol.get('scope') in ('XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'):
         if variant!='x_minus_500_y_minus_100':raise ValueError('LOWPROFILE_MOUNT_CHANGED')
         expected=expected.removesuffix('.yaml')+'_min250_lowprofile.yaml'
     extension=protocol.get('tool_connector_extension_m',0.)
     if extension:
-        if extension!=.1 or protocol['scope'] not in ('XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS'):
+        if extension!=.1 or protocol['scope'] not in ('XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_DIRECT_X','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'):
             raise ValueError('UNAPPROVED_POPULATION_TOOL_EXTENSION')
         expected=expected.removesuffix('.yaml')+'_tool_extension100.yaml'
     if protocol['active_layout_file'] != expected:
@@ -56,7 +56,8 @@ def verify(run, replay=None, *, retained_prefix=False):
     single_c01=finite_c01 or direct_c01
     assert bool(protocol.get('front_c01_direct_x',False))==direct_c01
     assert bool(protocol.get('front_c01_suction',False))==front_c01
-    l01_hmax=protocol['scope']=='XY_TOP_L01_ALL_HMAX_THREE_TARGETS'
+    c04_side=protocol['scope']=='XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'
+    l01_hmax=c04_side or protocol['scope']=='XY_TOP_L01_ALL_HMAX_THREE_TARGETS'
     selected_routes=l01_hmax or single_c01 or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
     l01_tool=selected_routes or protocol['scope']=='XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS'
     layer_top=bottom_two_top or protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
@@ -75,8 +76,8 @@ def verify(run, replay=None, *, retained_prefix=False):
     initial_ids={b['id'] for b in initial['world_cartons']}
     assert targets <= initial_ids
     assert initial_ids-targets == (set(protocol['out_of_scope_target_ids']) if l01_tool else set())
-    assert len(targets) == summary["target_count"] == (1 if single_c01 else 3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (1 if single_c01 or c04_side else 3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (34 if c04_side else 32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
     if lowprofile:
         from unloading_sim.collision_policy import SimulationCollisionPolicy
         predecessor=json.loads((run/'predecessor.json').read_text())
@@ -86,7 +87,7 @@ def verify(run, replay=None, *, retained_prefix=False):
         assert protocol['low_top_minimum_m']==.25 and protocol['all_joint_rate_limits_retained']
         assert protocol['scissor_profile']=='low_profile_250_v1'
         if not bottom_two_top:assert 'layer_top_permission' not in protocol
-        assert summary['outcomes'][0]['target_id']==('carton_l01_c01' if selected_routes else 'carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
+        assert summary['outcomes'][0]['target_id']==('carton_l01_c04' if c04_side else 'carton_l01_c01' if selected_routes else 'carton_l01_c02' if bottom_two_top or l01_tool else 'carton_l02_c01')
         policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
         assert policy.robot_mount_contact_exemption
         assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]
@@ -96,22 +97,28 @@ def verify(run, replay=None, *, retained_prefix=False):
             assert protocol['tool_chassis_permission']==frozen_l01_scope(tuple(message_box(b) for b in protocol['original_cartons']))
             assert set(policy.tool_chassis_contact_target_ids)==set(protocol['tool_chassis_permission']['allowed_target_ids'])
             assert targets <= set(policy.tool_chassis_contact_target_ids)
-            assert len(initial_ids)==(8 if selected_routes else 10) and len(initial_ids-targets)==(7 if single_c01 else 5)
+            assert len(initial_ids)==(6 if c04_side else 8 if selected_routes else 10) and len(initial_ids-targets)==(7 if single_c01 else 5)
         if l01_hmax:
             from unloading_sim.l01_hmax import layer_permission,validate_option
             from unloading_sim.carton_population import FrozenCartonPopulation
             from types import SimpleNamespace
             hmax_permission=layer_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])))
             assert hmax_permission==protocol['l01_hmax_permission']
-            assert [o['target_id'] for o in summary['outcomes']]==hmax_permission['dispatch_order']
-            assert set(hmax_permission['dispatch_order'])==targets
+            side_permission=None
+            if c04_side:
+                from unloading_sim.l01_hmax import c04_side_permission
+                side_permission=c04_side_permission(FrozenCartonPopulation.capture(tuple(message_box(b) for b in protocol['original_cartons'])))
+                assert side_permission==protocol['c04_side_permission']
+            dispatch_permission=side_permission or hmax_permission
+            assert [o['target_id'] for o in summary['outcomes']]==dispatch_permission['dispatch_order']
+            assert set(dispatch_permission['dispatch_order'])==targets
             for outcome in summary['outcomes']:
                 for attempt in outcome['attempts']:
                     if 'option' not in attempt:continue
                     option=attempt['option'];name=outcome['target_id']
                     target=SimpleNamespace(target_id=name,box=message_box(original[name]),
                         geometric_face_id=option['face']['geometric_face_id'],world_y_offset_m=0.,eccentric_authority=None)
-                    validate_option(target,option,hmax_permission,initial['height_m'])
+                    validate_option(target,option,hmax_permission,initial['height_m'],c04_side=side_permission)
         elif selected_routes:
             from unloading_sim.l01_selected_routes import selected_routes_permission
             from unloading_sim.carton_population import FrozenCartonPopulation
@@ -321,7 +328,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                 if l01_hmax:
                     target=SimpleNamespace(target_id=name,box=message_box(original[name]),
                         geometric_face_id=cycle['target']['geometric_face_id'],world_y_offset_m=0.,eccentric_authority=None)
-                    validate_option(target,cycle['option'],hmax_permission,root['height_m'])
+                    validate_option(target,cycle['option'],hmax_permission,root['height_m'],c04_side=side_permission)
                     assert cycle['height_m']==root['height_m'] and abs(cycle['height_m']-.25)<1e-9
                     low_top=cycle['option']['template']=='L01_HMAX_TOP';top_height=cycle['height_m']
                 elif selected_routes:

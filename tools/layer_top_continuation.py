@@ -23,6 +23,16 @@ L01_TOOL_RECORDS={
     'protocol.json':'dbf902f9b56e31e7c4c51e6c4851759aa7ee5e773e3acfd0e64a17e1a52a45bc',
     'verification.json':'21f2dd959a1c21ff9770d0daf011b45af1ef561731e2d3ef691b7d7424982a38',
 }
+L01_HMAX_RECORDS={
+    'summary.json':'84af5576e3cd1beef022026372ef45431dcc2d58e66fc2c9ed8f134c5480a3e4',
+    'protocol.json':'8cac21080c964f887dd02f66411d783a6c00dc8319627e032b27a9f1c0296b9f',
+    'verification.json':'59a2985e348a76cdc11fe89386bf29da01033993ee89d306ec3280c6122ed73a',
+}
+
+
+def restore_l01_hmax_terminal(run,state):
+    """Retain c01/c00 completions; no failed c04 q, path or native tree."""
+    return _restore_terminal(run,state,lowprofile_top=True,l01_hmax=True)
 
 
 def restore_l01_tool_terminal(run,state):
@@ -38,17 +48,17 @@ def restore_lowprofile_top_terminal(run,state):
     return _restore_terminal(run,state,lowprofile_top=True)
 
 
-def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False):
-    records=L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
+def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False):
+    records=L01_HMAX_RECORDS if l01_hmax else L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
     completed=2 if lowprofile_top else 5
-    history=30 if l01_tool else 28 if lowprofile_top else 23
+    history=32 if l01_hmax else 30 if l01_tool else 28 if lowprofile_top else 23
     for name,sha in records.items():
         if hashlib.sha256((run/name).read_bytes()).hexdigest()!=sha:
             raise ValueError('LAYER_TOP_PREDECESSOR_RECORD_CHANGED')
     read=lambda n:json.loads((run/n).read_text(encoding='utf-8'))
     summary,protocol,verification=(read(n) for n in records)
-    if (summary['source_commit']!=('e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
-            or protocol['scope']!=('XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
+    if (summary['source_commit']!=('163eb5ec25f348263957e9e0764b43c8eb93ee5d' if l01_hmax else 'e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
+            or protocol['scope']!=('XY_TOP_L01_ALL_HMAX_THREE_TARGETS' if l01_hmax else 'XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
             or protocol['mounting_variant']!='x_minus_500_y_minus_100'
             or verification['completed_count']!=completed or not verification['status'].startswith('PASS_')
             or summary['historical_completed_count']!=history or summary['completed_count']!=completed
@@ -86,5 +96,5 @@ def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False):
     prior=deepcopy(state.root());state.cycles=[]
     return dict(source_commit=summary['source_commit'],records_sha256=records,outcomes=receipts,
         archived_root=prior,new_native_root=state.root(),historical_completed_count=history+completed,
-        first_target_id='carton_l01_c01' if l01_tool else 'carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
-        search_operation='NEW_NATIVE_ROOT_WITH_SELECTED_SIDE_TOP_ROUTES' if l01_tool else 'NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')
+        first_target_id='carton_l01_c04' if l01_hmax else 'carton_l01_c01' if l01_tool else 'carton_l01_c02' if lowprofile_top else 'carton_l02_c01',tree_retained=False,no_historical_solution_hints=True,
+        search_operation='NEW_NATIVE_ROOT_C04_SIDE_NEG_Y_HMAX' if l01_hmax else 'NEW_NATIVE_ROOT_WITH_SELECTED_SIDE_TOP_ROUTES' if l01_tool else 'NEW_NATIVE_ROOT_WITH_SELECTED_LAYER_TOP_PERMISSION')

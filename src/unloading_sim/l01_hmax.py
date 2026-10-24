@@ -12,6 +12,19 @@ TOP_TEMPLATE = 'L01_HMAX_TOP'
 ORDER = ('carton_l01_c01', 'carton_l01_c00', 'carton_l01_c04')
 FACES = {ORDER[0]: ['x-'], ORDER[1]: ['x-', 'y+'], ORDER[2]: ['x-', 'z+']}
 SCHEMA = 'frozen_l01_hmax_v1'
+C04_SIDE_SCOPE = 'XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'
+
+
+def c04_side_permission(frozen):
+    height = layer_permission(frozen)
+    evidence = frozen.evidence();name = ORDER[2]
+    if evidence['roles'][name]['role']!='LEFT_END':
+        raise ValueError('C04_SIDE_ORIGINAL_ROLE_CHANGED')
+    return dict(scope=C04_SIDE_SCOPE, target_id=name, dispatch_order=[name],
+        original_cartons_sha256=height['original_cartons_sha256'],
+        start_box_identity=evidence['heights'][name]['start_box_identity'],
+        original_role='LEFT_END', geometric_face_id='y-',
+        segment_directions_world=[[0.,-1.,0.],[-1.,0.,0.]], planning_only=True)
 
 
 def layer_permission(frozen):
@@ -47,17 +60,19 @@ def validate_height_permission(original, permission, height):
         raise ValueError('L01_HMAX_TARGET_OR_HEIGHT_CHANGED')
 
 
-def options(target, belt, longitudinal, frozen, current_height, permission):
+def options(target, belt, longitudinal, frozen, current_height, permission, *, c04_side=None):
     if permission!=layer_permission(frozen):
         raise ValueError('L01_HMAX_PERMISSION_CHANGED')
     validate_height_permission(target, permission, current_height)
     if target.name not in FACES:
         raise ValueError('L01_HMAX_TARGET_OUTSIDE_REQUESTED_TRIALS')
+    if c04_side is not None and (c04_side!=c04_side_permission(frozen) or target.name!=c04_side['target_id']):
+        raise ValueError('C04_SIDE_PERMISSION_CHANGED')
     from .top_layer_lifted import process_options
     from .low_top_receiver import _fixed_top_option
     standard = process_options(target, belt, frozen, (target,), longitudinal=longitudinal)
     result = []
-    for face in FACES[target.name]:
+    for face in (['y-'] if c04_side is not None else FACES[target.name]):
         if face=='z+':
             option = _fixed_top_option(target, belt, longitudinal, frozen, current_height,
                                        StartHeight.capture(target), SCHEMA)
@@ -70,24 +85,34 @@ def options(target, belt, longitudinal, frozen, current_height, permission):
             synchronization='ALREADY_AT_RECEIVE', stationary_receiver_during_target=True,
             height_source='FROZEN_INITIAL_HMAX', third_sync_disabled=True,
             l01_hmax_permission=deepcopy(permission))
+        if c04_side is not None:option['c04_side_permission']=deepcopy(c04_side)
         if target.name==ORDER[0] and option['segment_directions_world']!=[[-1.,0.,0.]]:
             raise ValueError('L01_C01_DIRECT_X_GEOMETRY_CHANGED')
         result.append(option)
     return result
 
 
-def validate_option(target, option, permission, root_height):
+def validate_option(target, option, permission, root_height, *, c04_side=None):
     validate_height_permission(target.box, permission, root_height)
     face = target.geometric_face_id
+    if c04_side is not None:
+        from .carton_population import FrozenCartonPopulation
+        frozen=FrozenCartonPopulation.capture(tuple(message_box(b) for b in permission['original_cartons']))
+        if (c04_side!=c04_side_permission(frozen) or option.get('c04_side_permission')!=c04_side
+                or target.target_id!=c04_side['target_id']):
+            raise ValueError('C04_SIDE_PERMISSION_CHANGED')
+    elif option.get('c04_side_permission') is not None:
+        raise ValueError('C04_SIDE_PERMISSION_MISSING')
     if (option.get('l01_hmax_permission')!=permission or target.target_id not in FACES
-            or face not in FACES[target.target_id] or option['face']['geometric_face_id']!=face
+            or face not in (['y-'] if c04_side is not None else FACES[target.target_id]) or option['face']['geometric_face_id']!=face
             or target.world_y_offset_m!=0 or target.eccentric_authority is not None
             or option['height_m']!=root_height or option.get('pre_approach_height_m')!=root_height
             or option.get('stationary_receiver_during_target') is not True
             or option.get('synchronization')!='ALREADY_AT_RECEIVE'):
         raise ValueError('L01_HMAX_ROUTE_CHANGED')
     legs=option['segment_directions_world']
-    expected=([[0.,0.,1.],[-1.,0.,0.]] if face=='z+' else
+    expected=([[0.,-1.,0.],[-1.,0.,0.]] if c04_side is not None else
+              [[0.,0.,1.],[-1.,0.,0.]] if face=='z+' else
               [[0.,1.,0.],[-1.,0.,0.]] if face=='y+' else [[-1.,0.,0.]])
     if legs!=expected:
         raise ValueError('L01_HMAX_ROUTE_CHANGED')

@@ -144,7 +144,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                 from unloading_sim.l01_hmax import options as hmax_options
                 business_options=hmax_options(target,scene.receiver,
                     next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
-                    frozen,state.height,hmax_permission)
+                    frozen,state.height,hmax_permission,c04_side=getattr(args,'c04_side_permission',None))
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -206,6 +206,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.layer_top_permission=layer_permission
                     c.selected_routes_permission=routes_permission
                     c.l01_hmax_permission=hmax_permission
+                    c.c04_side_permission=getattr(args,'c04_side_permission',None)
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
@@ -222,7 +223,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.start_planning_request(task_started);c._native_task_started=task_started
                     c._request_deadline_monotonic=deadline;c._deadline_monotonic=deadline;c._final_export_reserve_s=0.;c.boundary_costs={}
                     side_depth=None
-                    if option.get('finite_side_channel') or (hmax_permission is not None and option['face']['geometric_face_id']=='y+'):
+                    if option.get('finite_side_channel') or (hmax_permission is not None and option['face']['geometric_face_id'] in ('y+','y-')):
                         from unloading_sim.l01_selected_routes import finite_side_exposure
                         row['finite_side_exposure']=finite_side_exposure(c,state.q)
                         side_depth=row['finite_side_exposure']['depth_m']

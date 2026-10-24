@@ -173,7 +173,8 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         target.validate()
         if self.option.get('l01_hmax_permission') is not None:
             from .l01_hmax import validate_option
-            validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'])
+            validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'],
+                c04_side=getattr(self,'c04_side_permission',None))
         if self.option.get('selected_routes_permission') is not None:
             from .l01_selected_routes import validate_selected_route
             validate_selected_route(target,self.option,getattr(self,'selected_routes_permission',None),self.batch_root['height_m'])

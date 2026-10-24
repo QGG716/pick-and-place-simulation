@@ -53,6 +53,8 @@ def main():
         help='Only c01: centered front suction then -X only; retain original junction Hmin and mechanism limits')
     p.add_argument('--l01-all-hmax',action='store_true',
         help='Frozen l01 Hmax: c01 front -X; c00 front/side; c04 front/top, in that order')
+    p.add_argument('--continue-l01-c04-side-from',type=Path,
+        help='Verified 34-box Hmax terminal: c04 y- face, -Y then -X only, fixed Hmax')
     p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1),default=0.,
         help='Explicit 100 mm Wantai connector extension for the c01 finite-channel retry')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
@@ -65,8 +67,12 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
-    l01_routes=bool(args.continue_l01_selected_routes_from)
-    if args.l01_all_hmax and (not l01_routes or args.c01_front_direct_x or args.c01_front_suction or args.c01_finite_side_channel):
+    c04_side=bool(args.continue_l01_c04_side_from)
+    hmax_mode=args.l01_all_hmax or c04_side
+    if c04_side and (args.continue_l01_selected_routes_from or args.l01_all_hmax):
+        raise ValueError('C04_SIDE_CONTINUATION_PREDECESSOR_AMBIGUOUS')
+    l01_routes=bool(args.continue_l01_selected_routes_from or c04_side)
+    if hmax_mode and (not l01_routes or args.c01_front_direct_x or args.c01_front_suction or args.c01_finite_side_channel):
         raise ValueError('L01_HMAX_REQUIRES_VERIFIED_ROOT_AND_EXPLICIT_THREE_FACE_TRIALS')
     if args.c01_finite_side_channel and not l01_routes:
         raise ValueError('C01_CHANNEL_REQUIRES_VERIFIED_SELECTED_ROUTES_ROOT')
@@ -74,7 +80,7 @@ def main():
         raise ValueError('C01_DIRECT_FRONT_REQUIRES_SELECTED_ROOT_AND_FRONT_ONLY')
     if args.c01_front_suction and not (args.c01_finite_side_channel or args.c01_front_direct_x):
         raise ValueError('C01_FRONT_REQUIRES_FINITE_NONJUNCTION_CHANNEL')
-    if args.tool_connector_extension_m and not (args.c01_finite_side_channel or args.c01_front_direct_x or args.l01_all_hmax):
+    if args.tool_connector_extension_m and not (args.c01_finite_side_channel or args.c01_front_direct_x or hmax_mode):
         raise ValueError('TOOL_EXTENSION_REQUIRES_C01_FINITE_CHANNEL')
     l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
     if l01_routes and args.continue_l01_tool_chassis_from:
@@ -121,6 +127,7 @@ def main():
     args.layer_top_permission=None
     args.selected_routes_permission=None
     args.l01_hmax_permission=None
+    args.c04_side_permission=None
     args.layer_top_only=bool(args.continue_lowprofile_top_from)
     if l01_tool:
         from layer_top_continuation import restore_lowprofile_top_terminal
@@ -128,12 +135,21 @@ def main():
         if l01_routes:
             from layer_top_continuation import restore_l01_tool_terminal
             from unloading_sim.l01_selected_routes import selected_routes_permission,SCOPE as L01_ROUTES_SCOPE,C01_CHANNEL_SCOPE,C01_FRONT_SCOPE,C01_DIRECT_SCOPE
-            lowprofile_predecessor=restore_l01_tool_terminal(args.continue_l01_selected_routes_from,state)
-            if args.l01_all_hmax:
+            if c04_side:
+                from layer_top_continuation import restore_l01_hmax_terminal
+                lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l01_c04_side_from,state)
+            else:
+                lowprofile_predecessor=restore_l01_tool_terminal(args.continue_l01_selected_routes_from,state)
+            if hmax_mode:
                 from unloading_sim.l01_hmax import layer_permission,SCOPE as HMAX_SCOPE
                 args.l01_hmax_permission=layer_permission(frozen)
                 dispatch_permission=args.l01_hmax_permission
                 L01_ROUTES_SCOPE=HMAX_SCOPE
+                if c04_side:
+                    from unloading_sim.l01_hmax import c04_side_permission,C04_SIDE_SCOPE
+                    args.c04_side_permission=c04_side_permission(frozen)
+                    dispatch_permission=args.c04_side_permission
+                    L01_ROUTES_SCOPE=C04_SIDE_SCOPE
             else:
                 args.selected_routes_permission=selected_routes_permission(frozen,finite_c01_channel=args.c01_finite_side_channel,front_c01=args.c01_front_suction,direct_front_c01=args.c01_front_direct_x)
                 dispatch_permission=args.selected_routes_permission
@@ -145,7 +161,7 @@ def main():
         save(args.output/'predecessor.json',lowprofile_predecessor)
         tool_permission=frozen_l01_scope(original.cartons)
         expected_targets=set(dispatch_permission['dispatch_order'] if l01_routes else tool_permission['allowed_target_ids'])
-        if len(state.cartons)!=(8 if l01_routes else 10) or abs(state.height-.25)>1e-9 or not expected_targets <= {b.name for b in state.cartons}:
+        if len(state.cartons)!=(6 if c04_side else 8 if l01_routes else 10) or abs(state.height-.25)>1e-9 or not expected_targets <= {b.name for b in state.cartons}:
             raise ValueError('L01_TOOL_CHASSIS_ROOT_CHANGED')
     if args.continue_lowprofile_top_from:
         from layer_top_continuation import restore_lowprofile_top_terminal,LOWPROFILE_TOP_SCOPE
@@ -250,7 +266,7 @@ def main():
         protocol.update(selected_routes_permission=args.selected_routes_permission,
             top_permission='ONLY_EXPLICIT_SELECTED_C04',low_receiver_rule='SELECTED_ROUTES_FIXED_FROZEN_HMAX',
             include_receive_before_approach=False)
-        if args.l01_all_hmax:
+        if hmax_mode:
             from unloading_sim.tool_connector_extension import connector_extension_evidence
             protocol.update(l01_hmax_permission=args.l01_hmax_permission,
                 upper_receiver_rule='USER_FROZEN_L01_HMAX_INCLUDING_JUNCTION',
@@ -258,6 +274,8 @@ def main():
                 top_permission='C04_TOP_ALTERNATIVE_ONLY',
                 tool_connector_extension_m=args.tool_connector_extension_m,
                 tool_connector_extension=connector_extension_evidence(args.tool_connector_extension_m))
+            if c04_side:
+                protocol.update(c04_side_permission=args.c04_side_permission,top_permission='NONE_C04_SIDE_ONLY')
         if args.c01_finite_side_channel:
             protocol.update(top_permission='NONE_C01_SIDE_ONLY',finite_c01_side_channel=True,
                 side_turn_rule='FULL_PAYLOAD_PROJECTION_OUTSIDE_JUNCTION_SHORTEST_POSITIVE_Y_FIRST')
@@ -320,7 +338,7 @@ def main():
             raise ValueError('LAYER_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         if args.continue_lowprofile_from and not outcomes and name!='carton_l02_c01':
             raise ValueError('LOWPROFILE_CONTINUATION_FIRST_TARGET_CHANGED')
-        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c01' if l01_routes else 'carton_l01_c02'):
+        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c04' if c04_side else 'carton_l01_c01' if l01_routes else 'carton_l01_c02'):
             raise ValueError('LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
