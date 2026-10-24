@@ -51,6 +51,31 @@ def test_current_c04_comparison_permission_and_mount(face):
     assert expected_population_mount(protocol)==[-1.625,.25,.6]
 
 
+@pytest.mark.parametrize('face',['side','front'])
+def test_formal_c04_comparison_uses_same_checked_root(tmp_path,monkeypatch,face):
+    pytest.importorskip('pinocchio')
+    import sys
+    import plan_m710_xy_top_population as entry
+    prior=predecessor(tmp_path,c03_prefix=True);output=tmp_path/'run'
+    def dispatch(args,original,built,frozen,seed,folder,*,initial_state,target_ids):
+        assert type(built.robot).__name__=='PinocchioHppFclBackend'
+        assert built.robot.base_transform[:3,3]==pytest.approx([-1.625,.25,.6])
+        assert len(initial_state.ledger)==37 and len(initial_state.cartons)==3
+        assert target_ids==['carton_l01_c04'] and seed==71070
+        assert not args.current_bottom_rotated and args.rotation_permission is None
+        assert args.c04_face_permission['requested_face']==face
+        assert args.c04_face_permission['comparison_mode']=='INDEPENDENT_SAME_ACCEPTED_37_BOX_ROOT'
+        assert initial_state.root()['predecessor_final_state_receipt'] is None
+        raise RuntimeError('TEST_COMPARISON_DISPATCH_REACHED')
+    monkeypatch.setattr(entry,'run_seed',dispatch)
+    monkeypatch.setattr(sys,'argv',['plan','--output',str(output),'--worker-command','UNUSED',
+        '--worker-binary',str(Path(entry.__file__)),'--source-commit','TEST','--development',
+        '--mounting-variant','x_minus_300_y_minus_100','--continue-l01-c04-face-from',str(prior),
+        '--c04-current-prefix','--c04-face',face,'--tool-connector-extension-m','0.2'])
+    with pytest.raises(RuntimeError,match='TEST_COMPARISON_DISPATCH_REACHED'):entry.main()
+    assert json.loads((output/'initial-state-check.json').read_text())['passed']
+
+
 def test_checked_36_root_and_support_blocking(tmp_path):
     from layer_top_continuation import restore_bottom_current_terminal
     from unloading_sim.coupled_batch import BatchState

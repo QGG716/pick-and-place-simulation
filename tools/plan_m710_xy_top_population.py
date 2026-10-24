@@ -226,7 +226,7 @@ def main():
         save(args.output/'predecessor.json',lowprofile_predecessor)
         tool_permission=frozen_l01_scope(original.cartons)
         expected_targets=set(dispatch_permission['dispatch_order'] if l01_routes else tool_permission['allowed_target_ids'])
-        if len(state.cartons)!=(6 if c04_trial else 8 if l01_routes else 10) or abs(state.height-.25)>1e-9 or not expected_targets <= {b.name for b in state.cartons}:
+        if len(state.cartons)!=(3 if args.c04_current_prefix else 6 if c04_trial else 8 if l01_routes else 10) or abs(state.height-.25)>1e-9 or not expected_targets <= {b.name for b in state.cartons}:
             raise ValueError('L01_TOOL_CHASSIS_ROOT_CHANGED')
     if args.continue_lowprofile_top_from:
         from layer_top_continuation import restore_lowprofile_top_terminal,LOWPROFILE_TOP_SCOPE
