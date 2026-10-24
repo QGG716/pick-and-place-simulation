@@ -57,9 +57,11 @@ def main():
         help='Verified 34-box Hmax terminal: c04 y- face, -Y then -X only, fixed Hmax')
     p.add_argument('--continue-l01-c04-face-from',type=Path,
         help='Verified 34-box terminal; independent c04 face trial with total 200 mm connector extension')
+    p.add_argument('--continue-l00-top-from',type=Path,
+        help='Verified 34-box terminal; c00/c01/c02/c03 top, fixed 250 mm, total 200 mm extension')
     p.add_argument('--c04-face',choices=('top','side','front'))
     p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1,.2),default=0.,
-        help='Total Wantai connector extension; 200 mm is scoped to the c04 face comparison')
+        help='Total Wantai connector extension; 200 mm is scoped to c04 face trials or the four l00 top trials')
     p.add_argument('--top-layer-anchor',default='carton_l02_c01')
     p.add_argument('--mounting-variant',choices=tuple(POPULATION_LAYOUTS),default='xy_minus_100')
     p.add_argument('--integration-top-fixture',action='store_true',
@@ -70,13 +72,22 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
+    l00_top=bool(args.continue_l00_top_from)
     c04_side=bool(args.continue_l01_c04_side_from)
     c04_face=bool(args.continue_l01_c04_face_from)
     c04_trial=c04_side or c04_face
     if c04_face != bool(args.c04_face) or (c04_face and (c04_side or args.tool_connector_extension_m!=.2)):
         raise ValueError('C04_FACE_REQUIRES_VERIFIED_ROOT_FACE_AND_200MM_EXTENSION')
-    if args.tool_connector_extension_m==.2 and not c04_face:
-        raise ValueError('200MM_EXTENSION_REQUIRES_C04_FACE_COMPARISON')
+    if args.tool_connector_extension_m==.2 and not (c04_face or l00_top):
+        raise ValueError('200MM_EXTENSION_REQUIRES_SCOPED_CONTINUATION')
+    if l00_top and (c04_side or c04_face or args.continue_l01_selected_routes_from
+            or args.continue_l01_tool_chassis_from or args.continue_lowprofile_top_from
+            or args.continue_lowprofile_from or args.continue_layer_top_from or args.continue_min250_from
+            or args.continue_min250_repair_from or args.l01_all_hmax or args.c01_finite_side_channel
+            or args.c01_front_suction or args.c01_front_direct_x or args.integration_top_fixture
+            or args.l05_j4_velocity_restart or args.tool_connector_extension_m!=.2
+            or args.mounting_variant!='x_minus_500_y_minus_100'):
+        raise ValueError('L00_FOUR_TOP_CONTINUATION_SCOPE_CHANGED')
     hmax_mode=args.l01_all_hmax or c04_trial
     if c04_trial and (args.continue_l01_selected_routes_from or args.l01_all_hmax):
         raise ValueError('C04_SIDE_CONTINUATION_PREDECESSOR_AMBIGUOUS')
@@ -89,7 +100,7 @@ def main():
         raise ValueError('C01_DIRECT_FRONT_REQUIRES_SELECTED_ROOT_AND_FRONT_ONLY')
     if args.c01_front_suction and not (args.c01_finite_side_channel or args.c01_front_direct_x):
         raise ValueError('C01_FRONT_REQUIRES_FINITE_NONJUNCTION_CHANNEL')
-    if args.tool_connector_extension_m and not (args.c01_finite_side_channel or args.c01_front_direct_x or hmax_mode):
+    if args.tool_connector_extension_m and not (args.c01_finite_side_channel or args.c01_front_direct_x or hmax_mode or l00_top):
         raise ValueError('TOOL_EXTENSION_REQUIRES_C01_FINITE_CHANNEL')
     l01_tool=bool(args.continue_l01_tool_chassis_from or l01_routes)
     if l01_routes and args.continue_l01_tool_chassis_from:
@@ -104,7 +115,7 @@ def main():
             or args.mounting_variant!='x_minus_500_y_minus_100' or args.integration_top_fixture
             or args.l05_j4_velocity_restart):
         raise ValueError('LOWPROFILE_TOP_CONTINUATION_SCOPE_CHANGED')
-    lowprofile=bool(args.continue_lowprofile_from or args.continue_lowprofile_top_from or l01_tool)
+    lowprofile=bool(args.continue_lowprofile_from or args.continue_lowprofile_top_from or l01_tool or l00_top)
     if args.continue_lowprofile_from and (args.continue_min250_from or args.continue_min250_repair_from
             or args.continue_layer_top_from or args.mounting_variant!='x_minus_500_y_minus_100'
             or args.integration_top_fixture or args.l05_j4_velocity_restart):
@@ -124,7 +135,7 @@ def main():
     if lowprofile:layout_path=layout_path.with_stem(layout_path.stem+'_min250_lowprofile')
     if args.tool_connector_extension_m:layout_path=layout_path.with_stem(layout_path.stem+f'_tool_extension{round(args.tool_connector_extension_m*1000)}')
     original,built,audit=make_context(args.mounting_variant,layout_path=layout_path,
-        robot_mount_contact_exemption=lowprofile,l01_tool_chassis_exemption=l01_tool)
+        robot_mount_contact_exemption=lowprofile,l01_tool_chassis_exemption=l01_tool or l00_top)
     layout=original.policy.layout_validation.layout
     frozen=FrozenCartonPopulation.capture(original.cartons)
     nominal=float(layout.data['assembly']['world_xyz_m'][2]+layout.data['conveyors']['surface_z_a_m'])
@@ -138,7 +149,16 @@ def main():
     args.l01_hmax_permission=None
     args.c04_side_permission=None
     args.c04_face_permission=None
-    args.layer_top_only=bool(args.continue_lowprofile_top_from)
+    args.layer_top_only=bool(args.continue_lowprofile_top_from or l00_top)
+    if l00_top:
+        from layer_top_continuation import restore_l01_hmax_terminal
+        from l00_top_continuation import SCOPE as L00_TOP_SCOPE, ORDER as L00_TOP_ORDER, bind_scope
+        from l01_tool_chassis import frozen_l01_scope
+        lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l00_top_from,state)
+        lowprofile_predecessor.update(search_operation='NEW_NATIVE_ROOT_FOUR_L00_TOP_EXTENSION200',first_target_id=L00_TOP_ORDER[0])
+        args.layer_top_permission=bind_scope(frozen,state)
+        tool_permission=frozen_l01_scope(original.cartons)
+        save(args.output/'predecessor.json',lowprofile_predecessor)
     if l01_tool:
         from layer_top_continuation import restore_lowprofile_top_terminal
         from l01_tool_chassis import frozen_l01_scope,SCOPE as L01_TOOL_SCOPE
@@ -235,7 +255,7 @@ def main():
         state.ledger=[dict(target_id=b.name,source='SYNTHETIC_INTEGRATION_FIXTURE_REMOVAL_NOT_COMPLETION')
                       for b in original.cartons if b.name not in low_ids]
     scene=batch_scene(original,state,built.robot,layout)
-    root_check_target=dispatch_permission['dispatch_order'][0] if l01_routes else None
+    root_check_target=L00_TOP_ORDER[0] if l00_top else dispatch_permission['dispatch_order'][0] if l01_routes else None
     built.robot_state_validator.contact_target_name=root_check_target
     try:failure=built.validate_unloaded_state(state.q,scene.all_obstacles,stage='unloaded')
     finally:built.robot_state_validator.contact_target_name=None
@@ -250,11 +270,12 @@ def main():
     initial=state.root();history=deepcopy(state.ledger);scope=[b.name for b in state.cartons]
     if l01_tool:scope=tool_permission['allowed_target_ids']
     if l01_routes:scope=dispatch_permission['dispatch_order']
+    if l00_top:scope=list(L00_TOP_ORDER)
     top=FrozenTopLayer.capture(original.cartons)
     eccentric_ids={n for n,r in top.evidence()['roles'].items() if r['role']=='RIGHT_END'}
     worker_sha=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest()
     protocol=dict(**identity,**FLAGS,seeds=[71070],scope=(RATES_SCOPE if all_rates else SCOPE) if diagnostic else
-        MIN250_SCOPE if args.continue_min250_from else LAYER_TOP_SCOPE if args.continue_layer_top_from else
+        L00_TOP_SCOPE if l00_top else MIN250_SCOPE if args.continue_min250_from else LAYER_TOP_SCOPE if args.continue_layer_top_from else
         LOWPROFILE_TOP_SCOPE if args.continue_lowprofile_top_from else
         L01_ROUTES_SCOPE if l01_routes else L01_TOOL_SCOPE if l01_tool else
         'XY_TOP_LOWPROFILE250_CONTINUATION' if args.continue_lowprofile_from else 'XY_TOP_NEW_WORLD_40',
@@ -269,7 +290,7 @@ def main():
         eccentric_authorized_ids=sorted(eccentric_ids),third_sync_disabled=True,
         no_historical_solution_hints=True,attempted_target_restarts=False)
     if diagnostic:protocol.update(planning_diagnostic=diagnostic,search_operation='NEW_NATIVE_TASK_FROM_VERIFIED_PREFIX',tree_retained=False)
-    if l01_tool:
+    if l01_tool or l00_top:
         protocol.update(tool_chassis_permission=tool_permission,
             out_of_scope_target_ids=sorted(b.name for b in state.cartons if b.name not in scope))
     if lowprofile:
@@ -311,6 +332,13 @@ def main():
                 finite_c01_side_channel=False,low_receiver_rule='ORIGINAL_JUNCTION_FRONT_HMIN',
                 tool_connector_extension_m=args.tool_connector_extension_m,
                 tool_connector_extension=connector_extension_evidence(args.tool_connector_extension_m))
+    if l00_top:
+        from unloading_sim.tool_connector_extension import connector_extension_evidence
+        protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
+            top_permission='REQUESTED_FOUR_FROZEN_L00_TOP_ONLY',
+            top_receiver_rule='CURRENT_COMMITTED_HEIGHT_FIXED_DURING_TOP_CYCLE',
+            low_receiver_rule='TOP_ONLY_FIXED_250MM',
+            tool_connector_extension_m=.2,tool_connector_extension=connector_extension_evidence(.2))
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',
@@ -350,7 +378,7 @@ def main():
         ranked=rank_population(frozen,state.cartons,[e['target_id'] for e in state.ledger],attempted,state.q,
             built.robot,scene.receiver,longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
         ranked=[r for r in ranked if r['target_id'] in scope]
-        if l01_routes:ranked.sort(key=lambda r:scope.index(r['target_id']))
+        if l01_routes or l00_top:ranked.sort(key=lambda r:scope.index(r['target_id']))
         if not ranked:break
         selected=ranked[0];name=selected['target_id'];attempted.add(name)
         if args.continue_min250_from and not outcomes and name!='carton_l03_c02':
@@ -361,6 +389,8 @@ def main():
             raise ValueError('LOWPROFILE_CONTINUATION_FIRST_TARGET_CHANGED')
         if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c04' if c04_trial else 'carton_l01_c01' if l01_routes else 'carton_l01_c02'):
             raise ValueError('LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
+        if l00_top and not outcomes and name!=L00_TOP_ORDER[0]:
+            raise ValueError('L00_FOUR_TOP_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
         if diagnostic and not outcomes and name!=diagnostic['target_id']:

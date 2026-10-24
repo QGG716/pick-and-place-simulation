@@ -169,7 +169,7 @@ def export(run,seed,output,attempt=None):
         initial_carton_count=len(root['world_cartons']),historical_completed_count=result.get('historical_completed_count',0),
         single_junction=protocol.get('scope')=='ONE_NEW_JUNCTION_C00',
         all_remaining=protocol.get('scope') in ('ALL_REMAINING_FROM_ACCEPTED_C00','XY_TOP_NEW_WORLD_40','XY_TOP_MIN250_CONTINUATION','XY_TOP_SELECTED_LAYER_CONTINUATION','XY_TOP_LOWPROFILE250_CONTINUATION','XY_TOP_LOWPROFILE250_BOTTOM_TWO_TOP','XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS','XY_TOP_L01_SELECTED_SIDE_TOP_HMAX','XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX','XY_TOP_L01_C01_FRONT_FINITE_CHANNEL_HMAX',
-            'XY_TOP_L05_J4_VELOCITY_RESTART','XY_TOP_L05_ALL_JOINT_RATES_RESTART','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX','XY_TOP_L01_C04_FACE_EXTENSION200_HMAX'),
+            'XY_TOP_L05_J4_VELOCITY_RESTART','XY_TOP_L05_ALL_JOINT_RATES_RESTART','XY_TOP_L01_ALL_HMAX_THREE_TARGETS','XY_TOP_L01_C04_SIDE_NEG_Y_HMAX','XY_TOP_L01_C04_FACE_EXTENSION200_HMAX','XY_TOP_L00_FOUR_TOP_EXTENSION200'),
         planning_diagnostic=protocol.get('planning_diagnostic'),
         mount_comparison=protocol.get('scope')=='PAIRED_MOUNT_INDEPENDENT_SINGLE_CARTON',
         mounting_variant=protocol.get('variant'),
