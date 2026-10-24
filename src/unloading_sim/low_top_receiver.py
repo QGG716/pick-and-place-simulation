@@ -118,7 +118,8 @@ class LowTopReceiverConnector(CoupledCycleConnector):
         layer=self.option['template']==LAYER_TEMPLATE
         if self.option['template']==L01_HMAX_TOP_TEMPLATE:
             from .l01_hmax import validate_option
-            validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'])
+            validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'],
+                c04_side=getattr(self,'c04_side_permission',None),c04_face=getattr(self,'c04_face_permission',None))
             scope_valid=True
         elif self.option['template']==SELECTED_TOP_TEMPLATE:
             from .l01_selected_routes import validate_selected_route

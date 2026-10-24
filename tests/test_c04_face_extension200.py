@@ -57,6 +57,19 @@ def test_formal_entry_reaches_c04_dispatch_with_production_model(tmp_path,monkey
         assert len(initial_state.ledger)==34 and len(initial_state.cartons)==6 and not initial_state.cycles
         assert args.c04_face_permission['requested_face']==face
         assert args.tool_connector_extension_m==.2
+        from unloading_sim.coupled_batch import batch_scene,CoupledCycleConnector
+        from unloading_sim.low_top_receiver import LowTopReceiverConnector
+        from unloading_sim.contact_target import simulation_contact_targets
+        scene=batch_scene(original,initial_state,built.robot,original.policy.layout_validation.layout)
+        target=next(b for b in initial_state.cartons if b.name=='carton_l01_c04')
+        option=options(target,scene.receiver,next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+            frozen,initial_state.height,args.l01_hmax_permission,c04_face=args.c04_face_permission)[0]
+        chosen=next(t for t in simulation_contact_targets(scene,target,built.robot.base_transform[:3,3],built.budget.pregrasp_standoff_m)[0]
+            if t.geometric_face_id==option['face']['geometric_face_id'])
+        cls=LowTopReceiverConnector if face=='top' else CoupledCycleConnector
+        connector=object.__new__(cls);connector.option=option;connector.batch_root=initial_state.root()
+        connector.l01_hmax_permission=args.l01_hmax_permission;connector.c04_face_permission=args.c04_face_permission
+        connector.validate_template(chosen)
         raise RuntimeError('TEST_DISPATCH_REACHED_BEFORE_NATIVE_WORKER')
     monkeypatch.setattr(entry,'run_seed',dispatch)
     monkeypatch.setattr(sys,'argv',['plan','--output',str(output),'--worker-command','UNUSED_TEST_DISPATCH',
