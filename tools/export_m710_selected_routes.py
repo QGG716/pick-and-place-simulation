@@ -1,4 +1,4 @@
-"""Read-only inspection of the three retained, user-ordered l01 route attempts."""
+"""Read-only inspection of retained, user-directed l01 route attempts."""
 import argparse
 import hashlib
 import json
@@ -26,9 +26,10 @@ def main():
     read=lambda f:json.loads(f.read_text())
     summary=read(args.run/'summary.json');protocol=read(args.run/'protocol.json')
     finite=protocol['scope']=='XY_TOP_L01_C01_FINITE_SIDE_CHANNEL_HMAX'
-    assert finite or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
-    assert summary['completed_count']==0 and summary['historical_completed_count']==32
-    assert [o['target_id'] for o in summary['outcomes']]==(['carton_l01_c01'] if finite else ['carton_l01_c01','carton_l01_c00','carton_l01_c04'])
+    c04_side=protocol['scope']=='XY_TOP_L01_C04_SIDE_NEG_Y_HMAX'
+    assert c04_side or finite or protocol['scope']=='XY_TOP_L01_SELECTED_SIDE_TOP_HMAX'
+    assert summary['completed_count']==0 and summary['historical_completed_count']==(34 if c04_side else 32)
+    assert [o['target_id'] for o in summary['outcomes']]==(['carton_l01_c04'] if c04_side else ['carton_l01_c01'] if finite else ['carton_l01_c01','carton_l01_c00','carton_l01_c04'])
     context,built,_=make_context(protocol['mounting_variant'],layout_path=work/protocol['active_layout_file'],
         robot_mount_contact_exemption=True,l01_tool_chassis_exemption=True)
     assert type(built.robot).__name__=='PinocchioHppFclBackend'
@@ -68,11 +69,11 @@ def main():
                 assert all(c['status']=='NATIVE_IK_FAILED' and c['q_start']==q and c['q_goal'] is None and c['goal_pose']==goal for c in ik)
                 case.update(kind='ik',goal_pose=goal,commanded_cups=sum(detail['expected_contact']['commanded_active_mask']),
                     predicted_cups=sum(detail['expected_contact']['geometrically_eligible_mask']),
-                    title=('侧吸' if finite else '顶吸')+'接近 IK 未求解',
+                    title=('−Y侧吸' if c04_side else '侧吸' if finite else '顶吸')+'接近 IK 未求解',
                     detail=f'90 秒共享前缀预算内实际派发 {len(ik)} 次 IK，均未求解。尚未检查目标碰撞、接近轨迹、contact 或两段抽离。没有本次碰撞见证，也不是全局不可达证明。')
-                if finite:
+                if finite or c04_side:
                     case['finite_side_exposure']=row['finite_side_exposure']
-                    assert next(f for f in row['screening'] if f['geometric_face_id']=='y+')['available']
+                    assert next(f for f in row['screening'] if f['geometric_face_id']==('y-' if c04_side else 'y+'))['available']
             else:
                 assert row['failure']=='BUSINESS_FACE_NOT_CURRENTLY_EXPOSED'
                 face=next(f for f in row['screening'] if f['geometric_face_id']=='y+')
@@ -86,6 +87,12 @@ def main():
     data=dict(label='l01 指定三箱本轮记录',model=model,inspection_cases=cases,
         raw=dict(source_commit=summary['source_commit'],attempts=displays),result=dict(complete=False,target_id='l01 指定三箱'),request_log=[],
         qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
+    if c04_side:
+        data.update(label='c04 −Y侧吸',inspection_title='c04 −Y侧吸 · 本次 IK 失败记录',
+            inspection_subtitle='本轮 0/1 · 请求先−Y再−X，尚未到达抽离<br>Hmax 250 mm · 物理执行 NOT_RUN',
+            historical_completed=34,remaining_cartons=6,scope_note='仅重试 c04；l00 五箱未搜索。',
+            inspection_camera=dict(position=[3.7,-4.1,3.6],target=[-.8,.35,.6]),
+            tool_connector_extension=protocol['tool_connector_extension'])
     if finite:
         data.update(label='c01 短侧移',inspection_title='c01 短侧移 · 几何与本次 IK 记录',
             inspection_subtitle='c01 单箱 · 本轮 0/1<br>Hmax 固定 250 mm · 物理执行 NOT_RUN')

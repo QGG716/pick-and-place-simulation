@@ -14,7 +14,7 @@ ${DATA.tool_connector_extension?'<p>本次连接件加长100 mm：两块连接�
 <button id="routeFocus">聚焦目标</button><button id="routeWhole">全局视角</button>
 <label><input type="checkbox" id="routeGhosts" checked> 显示方向 / 请求位置</label>
 <details><summary>本次原始记录</summary><pre id="routeEvidence"></pre></details>
-<p>历史已完成 32 箱单列，本轮新增 0 箱，现场仍有 8 箱。${DATA.geometry_preview?'本次只重试c01。':'l00 五箱未纳入本次重试。'}</p>`;
+<p>历史已完成 ${DATA.historical_completed??32} 箱单列，本轮新增 0 箱，现场仍有 ${DATA.remaining_cartons??8} 箱。${DATA.scope_note||(DATA.geometry_preview?'本次只重试c01。':'l00 五箱未纳入本次重试。')}</p>`;
 document.querySelector('aside').prepend(routePanel);
 const routeAnnotations=new T.Group();scene.add(routeAnnotations);let routeIndex=0;
 const channelPreviewGroup=new T.Group();scene.add(channelPreviewGroup);
@@ -26,7 +26,7 @@ if(DATA.geometry_preview){
   channelPreviewGroup.add(line([new T.Vector3(...g.target_center_m),position(matrix(g.preview_turn_box.pose)),position(matrix(g.preview_release_box.pose))],0x63e4a6,.85,true));
   $('channelPreview').onchange=e=>channelPreviewGroup.visible=e.target.checked;
 }
-function routeFocus(){const b=DATA.inspection_cases[routeIndex].target_box,p=position(matrix(b.pose));camera.position.set(-2.9,p.y-3.1,2.8);controls.target.set(-.1,p.y,.65);controls.update();}
+function routeFocus(){const b=DATA.inspection_cases[routeIndex].target_box,p=position(matrix(b.pose)),v=DATA.inspection_camera;camera.position.set(...(v?.position||[-2.9,p.y-3.1,2.8]));controls.target.set(...(v?.target||[-.1,p.y,.65]));controls.update();}
 function showRoute(i,changeHash=true){
   routeIndex=i;const c=DATA.inspection_cases[i];
   attempts=DATA.raw.attempts.map(a=>({a,p:null}));$('attempt').innerHTML=attempts.map((_,j)=>`<option value="${j}">${j}</option>`).join('');$('attempt').value=i;
