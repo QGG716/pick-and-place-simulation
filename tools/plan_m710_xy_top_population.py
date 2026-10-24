@@ -59,6 +59,8 @@ def main():
         help='Verified 34-box terminal; independent c04 face trial with total 200 mm connector extension')
     p.add_argument('--continue-l00-top-from',type=Path,
         help='Verified 34-box terminal; c00/c01/c02/c03 top, fixed 250 mm, total 200 mm extension')
+    p.add_argument('--continue-bottom-rotated-from',type=Path,
+        help='Verified x300 36-box terminal: c03 quarter-turn top, l01 c04 top/side/front, exposed l00 c04 top')
     p.add_argument('--c04-face',choices=('top','side','front'))
     p.add_argument('--tool-connector-extension-m',type=float,choices=(0.,.1,.2),default=0.,
         help='Total Wantai connector extension; 200 mm is scoped to c04 face trials or the four l00 top trials')
@@ -72,7 +74,12 @@ def main():
     p.add_argument('--l05-limit-library','--l05-j4-velocity-library',dest='l05_j4_velocity_library',type=Path)
     p.add_argument('--l05-motion-limit-policy',choices=('j4_velocity_only','all_joint_rates'),default='j4_velocity_only')
     args=p.parse_args();identity=source_identity(args)
-    l00_top=bool(args.continue_l00_top_from)
+    current_bottom=bool(args.continue_bottom_rotated_from)
+    args.current_bottom_rotated=current_bottom
+    args.rotation_permission=None
+    if current_bottom and (args.continue_l00_top_from or args.mounting_variant!='x_minus_300_y_minus_100'):
+        raise ValueError('CURRENT_BOTTOM_ROOT_OR_MOUNT_AMBIGUOUS')
+    l00_top=bool(args.continue_l00_top_from or current_bottom)
     c04_side=bool(args.continue_l01_c04_side_from)
     c04_face=bool(args.continue_l01_c04_face_from)
     c04_trial=c04_side or c04_face
@@ -154,9 +161,21 @@ def main():
         from layer_top_continuation import restore_l01_hmax_terminal
         from l00_top_continuation import SCOPE as L00_TOP_SCOPE, ORDER as L00_TOP_ORDER, bind_scope
         from l01_tool_chassis import frozen_l01_scope
-        lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l00_top_from,state)
+        if current_bottom:
+            from layer_top_continuation import restore_bottom_current_terminal
+            from unloading_sim.bottom_rotated import SCOPE as L00_TOP_SCOPE, ORDER as L00_TOP_ORDER, rotation_permission
+            from unloading_sim.low_top_receiver import selected_layer_top_permission
+            lowprofile_predecessor=restore_bottom_current_terminal(args.continue_bottom_rotated_from,state)
+            args.rotation_permission=rotation_permission(frozen)
+        else:
+            lowprofile_predecessor=restore_l01_hmax_terminal(args.continue_l00_top_from,state)
         lowprofile_predecessor.update(search_operation='NEW_NATIVE_ROOT_FOUR_L00_TOP_EXTENSION200',first_target_id=L00_TOP_ORDER[0])
-        args.layer_top_permission=bind_scope(frozen,state)
+        args.layer_top_permission=(selected_layer_top_permission(frozen,'carton_l00_c03') if current_bottom else bind_scope(frozen,state))
+        if current_bottom:
+            from unloading_sim.bottom_rotated import RETAINED
+            if (len(state.ledger)!=36 or {b.name for b in state.cartons}!=set(L00_TOP_ORDER)|set(RETAINED)
+                    or abs(state.height-.25)>1e-9):raise ValueError('CURRENT_BOTTOM_ROOT_CHANGED')
+            lowprofile_predecessor['search_operation']='NEW_NATIVE_ROOT_C03_QUARTER_TURN_AND_C04_FACES'
         tool_permission=frozen_l01_scope(original.cartons)
         save(args.output/'predecessor.json',lowprofile_predecessor)
     if l01_tool:
@@ -341,6 +360,11 @@ def main():
             tool_connector_extension_m=.2,tool_connector_extension=connector_extension_evidence(.2),
             mount_reference_variant='x_minus_500_y_minus_100',
             robot_mount_delta_from_reference_m=([.2,0.,0.] if args.mounting_variant=='x_minus_300_y_minus_100' else [0.,0.,0.]))
+    if current_bottom:
+        protocol.update(rotation_permission=args.rotation_permission,
+            top_permission='C03_WORLD_Z_QUARTER_TURN_AND_EXPOSED_C04_TOP',
+            c04_face_order=['z+','y-','x-'],c04_routes=[[[0.,0.,1.],[-1.,0.,0.]],[[0.,-1.,0.],[-1.,0.,0.]],[[-1.,0.,0.]]],
+            l01_hmax_rule='FROZEN_L01_HMAX_STATIONARY',first_qualified_face_stops_task=True)
     if args.continue_lowprofile_top_from:
         protocol.update(layer_top_permission=args.layer_top_permission,layer_top_only=True,
             top_permission='FROZEN_BOTTOM_TWO_LAYERS_TOP_ONLY',
@@ -397,6 +421,10 @@ def main():
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
         if diagnostic and not outcomes and name!=diagnostic['target_id']:
             raise ValueError('L05_DIAGNOSTIC_FIRST_TARGET_CHANGED')
+        if current_bottom:
+            from unloading_sim.l01_hmax import layer_permission
+            args.l01_hmax_permission=layer_permission(frozen) if name=='carton_l01_c04' else None
+            args.layer_top_only=name!='carton_l01_c04'
         args.right_front_eccentric=name in eccentric_ids;args.junction_only=args.right_front_eccentric
         folder=args.output/f'task-{len(outcomes)+1:03d}';folder.mkdir()
         save(folder/'dispatch.json',dict(selection=selected,root=state.root(),right_front_eccentric=args.right_front_eccentric,

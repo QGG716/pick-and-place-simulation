@@ -28,6 +28,16 @@ L01_HMAX_RECORDS={
     'protocol.json':'8cac21080c964f887dd02f66411d783a6c00dc8319627e032b27a9f1c0296b9f',
     'verification.json':'59a2985e348a76cdc11fe89386bf29da01033993ee89d306ec3280c6122ed73a',
 }
+BOTTOM_CURRENT_RECORDS={
+    'summary.json':'0b4cfa27d578176f1f776a19fa91d672db0931ea72fcdfec141fd0d5c1b553cb',
+    'protocol.json':'4eb15000c07ccf00231833a9fd6a473cde6c80550f9fa776a20c07b8859b2eeb',
+    'verification.json':'7a1177c3ac3e1a25f651292ecfa9fbab46e56effb769f5cbf5eb6ebb00c233a9',
+}
+
+
+def restore_bottom_current_terminal(run,state):
+    """Restore only the checked c01/c02 commits, with a fresh native root."""
+    return _restore_terminal(run,state,lowprofile_top=True,bottom_current=True)
 
 
 def restore_l01_hmax_terminal(run,state):
@@ -48,18 +58,18 @@ def restore_lowprofile_top_terminal(run,state):
     return _restore_terminal(run,state,lowprofile_top=True)
 
 
-def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False):
-    records=L01_HMAX_RECORDS if l01_hmax else L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
+def _restore_terminal(run,state,*,lowprofile_top,l01_tool=False,l01_hmax=False,bottom_current=False):
+    records=BOTTOM_CURRENT_RECORDS if bottom_current else L01_HMAX_RECORDS if l01_hmax else L01_TOOL_RECORDS if l01_tool else LOWPROFILE_RECORDS if lowprofile_top else RECORDS
     completed=2 if lowprofile_top else 5
-    history=32 if l01_hmax else 30 if l01_tool else 28 if lowprofile_top else 23
+    history=34 if bottom_current else 32 if l01_hmax else 30 if l01_tool else 28 if lowprofile_top else 23
     for name,sha in records.items():
         if hashlib.sha256((run/name).read_bytes()).hexdigest()!=sha:
             raise ValueError('LAYER_TOP_PREDECESSOR_RECORD_CHANGED')
     read=lambda n:json.loads((run/n).read_text(encoding='utf-8'))
     summary,protocol,verification=(read(n) for n in records)
-    if (summary['source_commit']!=('163eb5ec25f348263957e9e0764b43c8eb93ee5d' if l01_hmax else 'e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
-            or protocol['scope']!=('XY_TOP_L01_ALL_HMAX_THREE_TARGETS' if l01_hmax else 'XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
-            or protocol['mounting_variant']!='x_minus_500_y_minus_100'
+    if (summary['source_commit']!=('b05652ea3267863acd12a87b50b3f21e8bf20293' if bottom_current else '163eb5ec25f348263957e9e0764b43c8eb93ee5d' if l01_hmax else 'e9dfef3215b55bb9905ed0671d43ca4b9716a71a' if l01_tool else 'f17d636ed547a86389150f268445d44bae6f58c4' if lowprofile_top else '3f449e89da518ac89b3c112b4a83eb9a83000b11')
+            or protocol['scope']!=('XY_TOP_L00_FOUR_TOP_EXTENSION200' if bottom_current else 'XY_TOP_L01_ALL_HMAX_THREE_TARGETS' if l01_hmax else 'XY_TOP_LOWPROFILE250_L01_TOOL_CHASSIS' if l01_tool else 'XY_TOP_LOWPROFILE250_CONTINUATION' if lowprofile_top else 'XY_TOP_MIN250_CONTINUATION')
+            or protocol['mounting_variant']!=('x_minus_300_y_minus_100' if bottom_current else 'x_minus_500_y_minus_100')
             or verification['completed_count']!=completed or not verification['status'].startswith('PASS_')
             or summary['historical_completed_count']!=history or summary['completed_count']!=completed
             or protocol['original_cartons']!=[box_message(b) for b in state.cartons]):

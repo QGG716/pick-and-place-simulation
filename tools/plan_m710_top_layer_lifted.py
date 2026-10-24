@@ -146,6 +146,18 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
                     frozen,state.height,hmax_permission,c04_side=getattr(args,'c04_side_permission',None),
                     c04_face=getattr(args,'c04_face_permission',None))
+                if getattr(args,'current_bottom_rotated',False):
+                    from unloading_sim.l01_hmax import c04_side_permission
+                    side=hmax_options(target,scene.receiver,
+                        next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'),
+                        frozen,state.height,hmax_permission,c04_side=c04_side_permission(frozen))
+                    business_options=[business_options[1],*side,business_options[0]]
+            rotation=getattr(args,'rotation_permission',None)
+            if rotation is not None and target.name==rotation['target_id']:
+                from unloading_sim.bottom_rotated import rotated_option
+                if len(business_options)!=1:raise ValueError('ROTATED_TOP_ONE_CENTRED_FACE_REQUIRED')
+                business_options=[rotated_option(business_options[0],target,rotation,angle)
+                                  for angle in rotation['world_z_degrees']]
             for option in business_options:
                 domain=getattr(args,'receive_height_range',None)
                 if domain is not None and not domain[0]-1e-9 <= option['height_m'] <= domain[1]+1e-9:
@@ -207,8 +219,9 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.layer_top_permission=layer_permission
                     c.selected_routes_permission=routes_permission
                     c.l01_hmax_permission=hmax_permission
-                    c.c04_side_permission=getattr(args,'c04_side_permission',None)
+                    c.c04_side_permission=option.get('c04_side_permission',getattr(args,'c04_side_permission',None))
                     c.c04_face_permission=getattr(args,'c04_face_permission',None)
+                    c.rotation_permission=rotation
                     c.eccentric_frozen_layer=frozen if eccentric else None
                     c.upper_arm_preference_enabled=eccentric or getattr(args,'upper_arm_preference',False)
                     c.empty_approach_direct_first=args.direct_first
@@ -219,6 +232,10 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         c.height_visit_deadline=shared_stages['prefix']
                     if hmax_permission is not None and option_index<len(options)-1:
                         c.face_visit_deadline=c.height_visit_deadline
+                    if getattr(args,'current_bottom_rotated',False) and option_index<len(options)-1:
+                        # Existing 20 s face visit, shared 90/300 s deadlines.
+                        c.face_visit_deadline=min(shared_stages['prefix'],perf_counter()+20.)
+                        c.height_visit_deadline=c.face_visit_deadline
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)
@@ -237,6 +254,11 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         row['failure']='BUSINESS_FACE_NOT_CURRENTLY_EXPOSED';continue
                     if len(selected)!=1:raise ValueError('ONE_UPSTREAM_POSE_PER_FACE_REQUIRED')
                     chosen=selected[0]
+                    if 'world_z_rotation_degrees' in option:
+                        from unloading_sim.bottom_rotated import rotated_target
+                        chosen=rotated_target(chosen,option,rotation)
+                        row['candidate_id']=chosen.candidate_id
+                        row['target']=chosen.evidence()
                     if eccentric:
                         from unloading_sim.right_front_eccentric import eccentric_target
                         chosen=eccentric_target(chosen,frozen,option['world_y_offset_m'],scene.policy.data['suction'])

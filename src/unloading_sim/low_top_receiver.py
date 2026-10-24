@@ -114,6 +114,9 @@ class LowTopReceiverConnector(CoupledCycleConnector):
 
     def validate_template(self,target):
         super().validate_template(target)
+        if 'world_z_rotation_degrees' in self.option:
+            from .bottom_rotated import validate_rotation
+            validate_rotation(target,self.option,getattr(self,'rotation_permission',None))
         h=StartHeight.capture(target.box)
         layer=self.option['template']==LAYER_TEMPLATE
         if self.option['template']==L01_HMAX_TOP_TEMPLATE:
