@@ -359,7 +359,7 @@ def main():
             raise ValueError('LAYER_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         if args.continue_lowprofile_from and not outcomes and name!='carton_l02_c01':
             raise ValueError('LOWPROFILE_CONTINUATION_FIRST_TARGET_CHANGED')
-        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c04' if c04_side else 'carton_l01_c01' if l01_routes else 'carton_l01_c02'):
+        if (args.continue_lowprofile_top_from or l01_tool) and not outcomes and name!=('carton_l01_c04' if c04_trial else 'carton_l01_c01' if l01_routes else 'carton_l01_c02'):
             raise ValueError('LOWPROFILE_TOP_CONTINUATION_FIRST_TARGET_CHANGED')
         diagnostic_enabled=bool(diagnostic and name==diagnostic['target_id'])
         args.worker_command=args.l05_j4_velocity_worker_command if diagnostic_enabled else normal_worker_command
