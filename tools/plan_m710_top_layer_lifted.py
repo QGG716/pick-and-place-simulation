@@ -214,6 +214,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.)))
                     if hmax_permission is not None and option_index==len(options)-1:
                         c.height_visit_deadline=shared_stages['prefix']
+                    if hmax_permission is not None and option_index<len(options)-1:
+                        c.face_visit_deadline=c.height_visit_deadline
                     c.budget=replace(c.budget,planning_wall_time_s=args.task_budget_s,candidate_wall_time_s=None,
                         stage_wall_time_s=args.stage_budget_s,postprocess_wall_time_s=args.stage_budget_s)
                     c.stack_carton_names={b.name for b in state.cartons};c.robot_state_validator.stack_carton_names=set(c.stack_carton_names)

@@ -159,6 +159,14 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
             remaining=deadline-perf_counter()
             if remaining<=0:raise MoveItUnavailable('SINGLE_TARGET_STAGE_DEADLINE')
             stage=min(stage,remaining)
+        # A non-final authorized face must yield its entire candidate visit,
+        # including a failed extraction/release suffix, to the next face.
+        # The task and shared prefix/suffix deadlines above are never reset.
+        visit=getattr(self,'face_visit_deadline',None)
+        if visit is not None:
+            remaining=visit-perf_counter()
+            if remaining<=0:raise MoveItUnavailable('SINGLE_TARGET_STAGE_DEADLINE')
+            stage=min(stage,remaining)
         return stage,watchdog
 
     def validate_template(self,target):

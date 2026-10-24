@@ -48,3 +48,21 @@ def test_junction_hmax_explicit_scope_retains_actual_y_and_mechanism_height():
     with pytest.raises(ValueError):validate_height_permission(original,bad,height)
     bad=deepcopy(p);bad['original_cartons'].pop()
     with pytest.raises(ValueError):validate_height_permission(original,bad,height)
+
+
+def test_first_face_suffix_yields_without_resetting_shared_deadlines(monkeypatch):
+    from unloading_sim.coupled_batch import CoupledCycleConnector,SingleRightReceiverConnector
+    from unloading_sim.moveit2_backend import MoveItUnavailable
+    import unloading_sim.coupled_batch as module
+    monkeypatch.setattr(SingleRightReceiverConnector,'_native_limits',lambda self:(90.,100.))
+    monkeypatch.setattr(module,'perf_counter',lambda:119.)
+    c=object.__new__(CoupledCycleConnector)
+    c.height_stage_deadlines={'prefix':190.,'suffix':195.}
+    c.height_prefix_active=False;c.face_visit_deadline=120.
+    c.budget=SimpleNamespace(stage_wall_time_s=90.)
+    assert c._native_limits()==(1.,100.)
+    monkeypatch.setattr(module,'perf_counter',lambda:120.)
+    with pytest.raises(MoveItUnavailable,match='SINGLE_TARGET_STAGE_DEADLINE'):c._native_limits()
+    assert c.height_stage_deadlines=={'prefix':190.,'suffix':195.}
+    del c.face_visit_deadline
+    assert c._native_limits()==(75.,100.)
