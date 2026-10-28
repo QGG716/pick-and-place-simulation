@@ -128,12 +128,21 @@ class LowTopReceiverConnector(CoupledCycleConnector):
             from .l01_selected_routes import validate_selected_route
             validate_selected_route(target,self.option,getattr(self,'selected_routes_permission',None),self.batch_root['height_m'])
             scope_valid=True
+        elif layer and self.option.get('l04_face_permission') is not None:
+            # The scoped face contract requires a checked raise at pregrasp,
+            # before top contact. The receiver then remains fixed throughout
+            # attachment, vertical separation, transfer and nominal reception.
+            from .l04_face_trial import validate_option
+            validate_option(target,self.option,getattr(self,'l04_face_permission',None),self.batch_root['height_m'])
+            scope_valid=self.option['synchronization']=='PREGRASP'
         elif layer:
             permission=getattr(self,'layer_top_permission',None)
+            from .current_population_recipe import fixed_cycle_height
+            fixed_height=fixed_cycle_height(self.option,self.batch_root['height_m'],target.box)
             scope_valid=(permission is not None and self.option.get('layer_top_permission')==permission
                 and target.target_id in permission['allowed_target_ids']
                 and h.z_b+h.h<=permission['ceiling_world_m']+1e-9
-                and self.option['height_m']==self.batch_root['height_m'])
+                and self.option['height_m']==fixed_height)
         else:
             scope_valid=(self.option['height_m']==self.option['low_layer_threshold_m']
                 and uses_low_top(h,self.option['height_m'],self.option.get('low_definition',LEGACY_LOW_DEFINITION)))

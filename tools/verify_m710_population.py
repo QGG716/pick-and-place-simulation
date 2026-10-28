@@ -19,6 +19,13 @@ def save(path, value):
 
 def expected_population_mount(protocol):
     """Bind saved native geometry to one explicit approved population layout."""
+    if protocol.get('scope') in ('CURRENT_RECIPES_NEW_WORLD_40','CURRENT_RECIPES_ASSUMED_L05_REMOVAL_CONTINUATION'):
+        from unloading_sim.current_population_recipe import LAYOUT
+        if (protocol.get('mounting_variant') != 'x_minus_300_y_minus_100'
+                or protocol.get('tool_connector_extension_m') != .2
+                or protocol['active_layout_file'] != 'configs/workcells/'+LAYOUT):
+            raise ValueError('CURRENT_POPULATION_LAYOUT_CHANGED')
+        return [-1.625, .25, .6]
     mounts = {'xy_minus_100': [-1.425, .25, .6],
               'x_minus_300_y_minus_100': [-1.625, .25, .6],
               'x_minus_400_y_minus_100': [-1.725, .25, .6],
@@ -49,6 +56,8 @@ def expected_population_mount(protocol):
 def verify(run, replay=None, *, retained_prefix=False):
     protocol = json.loads((run/"protocol.json").read_text())
     summary = json.loads((run/"summary.json").read_text())
+    assumed=protocol['scope']=='CURRENT_RECIPES_ASSUMED_L05_REMOVAL_CONTINUATION'
+    current_profile=assumed or protocol['scope']=='CURRENT_RECIPES_NEW_WORLD_40'
     all_rates = protocol['scope']=='XY_TOP_L05_ALL_JOINT_RATES_RESTART'
     diagnostic = all_rates or protocol["scope"] == "XY_TOP_L05_J4_VELOCITY_RESTART"
     continuation=protocol['scope']=='XY_TOP_MIN250_CONTINUATION'
@@ -71,7 +80,7 @@ def verify(run, replay=None, *, retained_prefix=False):
     layer_top=current_bottom or l00_top or bottom_two_top or protocol['scope']=='XY_TOP_SELECTED_LAYER_CONTINUATION'
     lowprofile=current_bottom or l00_top or l01_tool or bottom_two_top or protocol['scope']=='XY_TOP_LOWPROFILE250_CONTINUATION'
     repair=continuation and protocol.get('integration_repair_restart',False)
-    xy_top = lowprofile or layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
+    xy_top = current_profile or lowprofile or layer_top or continuation or diagnostic or protocol["scope"] == "XY_TOP_NEW_WORLD_40"
     expected_mount = expected_population_mount(protocol) if xy_top else None
     fixture = xy_top and protocol.get("integration_fixture", False)
     stopped=retained_prefix and continuation and summary['status']=='INTEGRATION_ERROR_RETAINED'
@@ -84,8 +93,55 @@ def verify(run, replay=None, *, retained_prefix=False):
     initial_ids={b['id'] for b in initial['world_cartons']}
     assert targets <= initial_ids
     assert initial_ids-targets == (set(protocol['out_of_scope_target_ids']) if l01_tool or l00_top or current_bottom else set())
-    assert len(targets) == summary["target_count"] == (3 if current_bottom else 4 if l00_top else 1 if single_c01 or c04_trial else 3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
-    assert len(initial["completed"]) == summary["historical_completed_count"] == (37 if current_c04 else 36 if current_bottom else 34 if c04_trial or l00_top else 32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assert len(targets) == summary["target_count"] == (15 if assumed else 3 if current_bottom else 4 if l00_top else 1 if single_c01 or c04_trial else 3 if selected_routes else 5 if l01_tool else 10 if bottom_two_top else 12 if layer_top or lowprofile else 17 if repair else 20 if continuation else 29 if diagnostic else 20 if fixture else 40 if xy_top else 36)
+    assert len(initial["completed"]) == summary["historical_completed_count"] == (24 if assumed else 37 if current_c04 else 36 if current_bottom else 34 if c04_trial or l00_top else 32 if selected_routes else 30 if bottom_two_top or l01_tool else 28 if layer_top or lowprofile else 23 if repair else 20 if continuation else 11 if diagnostic else 20 if fixture else 0 if xy_top else 4)
+    assumed_ids=set()
+    if assumed:
+        from unloading_sim.assumed_removal import validate_assumption,TARGET
+        event=json.loads((run/'assumed-removal.json').read_text())
+        predecessor=json.loads((run/'predecessor.json').read_text())
+        validate_assumption(event,original,initial,summary['historical_ledger'])
+        assert event==protocol['assumed_removal'] and event['before']==predecessor['new_native_root']
+        assert event['before']==dict(predecessor['archived_root'],predecessor_final_state_receipt=None)
+        assert protocol['predecessor_summary_sha256']==predecessor['summary_sha256']
+        assert protocol['search_operation']=='RESTART_AFTER_EXPLICIT_ASSUMED_REMOVAL'
+        assert not protocol['historical_solver_state_loaded']
+        assert protocol['assumed_removed_target_ids']==summary['assumed_removed_target_ids']==[TARGET]
+        assert summary['assumed_removed_count']==1 and summary['original_population_count']==40
+        assert summary['total_planned_completed_count']==24+summary['completed_count']
+        assumed_ids={TARGET}
+    if current_profile:
+        from unloading_sim.current_population_recipe import recipe_permission, current_options
+        from unloading_sim.carton_population import FrozenCartonPopulation
+        from unloading_sim.coupled_batch import message_box
+        from unloading_sim.collision_policy import SimulationCollisionPolicy
+        from unloading_sim.workcell_layout import load_workcell_layout
+        from unloading_sim.l01_hmax import validate_option
+        from unloading_sim.bottom_rotated import rotated_option
+        from l01_tool_chassis import frozen_l01_scope
+        from types import SimpleNamespace
+        boxes=tuple(message_box(b) for b in protocol['original_cartons'])
+        frozen_current=FrozenCartonPopulation.capture(boxes)
+        current_permission=recipe_permission(frozen_current)
+        assert current_permission==protocol['current_population_recipe']
+        assert frozen_current.evidence()==protocol['frozen']
+        assert initial==protocol['initial_root']
+        assert initial['q_rad']==protocol['configured_initial_q'] and initial['height_m']==(.25 if assumed else .6)
+        assert initial['predecessor_final_state_receipt'] is None
+        if not assumed:
+            assert initial['world_cartons']==protocol['original_cartons'] and not summary['historical_ledger']
+        assert protocol['all_joint_rate_limits_retained'] and protocol['include_receive_before_approach']
+        assert protocol['low_definition']==current_permission['low_definition']
+        assert protocol['low_top_minimum_m']==.25 and protocol['scissor_profile']=='low_profile_250_v1'
+        assert protocol['task_budget_s']==300. and protocol['stage_budget_s']==90.
+        policy=SimulationCollisionPolicy.from_mapping(protocol['collision_policy'])
+        assert policy.robot_mount_contact_exemption
+        assert protocol['robot_mount_allowed_pairs']==[list(p) for p in sorted(policy.robot_mount_pairs())]
+        assert protocol['tool_chassis_permission']==frozen_l01_scope(boxes)
+        assert set(policy.tool_chassis_contact_target_ids)==set(protocol['tool_chassis_permission']['allowed_target_ids'])
+        permission=current_permission['bottom_top_permission']
+        hmax_permission=current_permission['l01_hmax_permission']
+        current_layout=load_workcell_layout(Path(__file__).resolve().parents[1]/protocol['active_layout_file'])
     if lowprofile:
         from unloading_sim.collision_policy import SimulationCollisionPolicy
         predecessor=json.loads((run/'predecessor.json').read_text())
@@ -298,11 +354,26 @@ def verify(run, replay=None, *, retained_prefix=False):
                 dispatch=read('dispatch.json')
                 assert dispatch.get('motion_limit_diagnostic_enabled',dispatch.get('j4_velocity_diagnostic_enabled'))==enabled
             assert result["initial"] == root
+            if assumed:
+                assert result['historical_completed_count']==len(root['completed'])
+                assert result['initial']['assumed_removed']==[TARGET]
             assert result["completed_count"] in (0, 1)
             assert len(result["cycles"]) == result["completed_count"]
             task_counts = Counter()
             task_attempts = []
             for row in result["attempts"]:
+                if current_profile and 'option' in row:
+                    option=row['option']
+                    choices,_,_,rotation=current_options(current_permission,message_box(original[name]),
+                        frozen_current,current_layout,tuple(message_box(b) for b in root['world_cartons']),root['height_m'])
+                    if rotation:
+                        choices=[rotated_option(choices[0],message_box(original[name]),rotation,a)
+                                 for a in rotation['world_z_degrees']]
+                    if choices is not None:assert option in choices
+                    else:
+                        assert 'fixed_receiver_preparation' not in option
+                        assert option['template'] in ('FRONT_DIRECT_HMIN','FRONT_DIRECT_HMAX',
+                            'FRONT_LATERAL_HMIN','LEFT_INNER_HMIN','RIGHT_INNER_HMAX')
                 if "folder" not in row:
                     task_attempts.append(row)
                     continue
@@ -311,13 +382,13 @@ def verify(run, replay=None, *, retained_prefix=False):
                 connections = read(folder+"/connection-attempts.json")
                 detail = read(folder+"/attempt.json") if folder+"/attempt.json" in outcome["evidence"]["file_sha256"] else {}
                 trace = read(folder+"/search-trace.json")
-                if lowprofile:
+                if lowprofile or current_profile:
                     for item in trace['attempts']:
                         req=item['request']
                         if 'clearance_policy' not in req:continue
                         assert req['clearance_policy']['source_policy']==protocol['collision_policy']
                         assert set(map(tuple,protocol['robot_mount_allowed_pairs'])) <= set(map(tuple,req['allowed_pairs']))
-                        if l01_tool or l00_top or current_bottom:
+                        if l01_tool or l00_top or current_bottom or current_profile:
                             cp=req['clearance_policy']
                             assert req['planning_only'] and req['planning_mode']=='cold_from_scratch'
                             assert cp['target_id']==name
@@ -384,22 +455,23 @@ def verify(run, replay=None, *, retained_prefix=False):
                     assert cycle["target"].get("eccentric_authorization") is None
                 height_record=protocol['frozen']['heights'][name]
                 low_top = xy_top and (height_record['z_b_m']+height_record['h_m'] < protocol['low_top_minimum_m']
-                    if continuation or lowprofile else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
+                    if continuation or lowprofile or current_profile else height_record['Hmin_world_m'] < protocol['low_top_minimum_m']-1e-9)
                 top_height=protocol['low_top_minimum_m']
-                if layer_top:
+                current_layer_top=current_profile and cycle['option']['template']=='TOP_FIXED_CURRENT_RECEIVER'
+                if layer_top or current_layer_top:
                     low_top=cycle['option']['template']=='TOP_FIXED_CURRENT_RECEIVER'
-                    top_height=root['height_m']
+                    top_height=.25 if current_profile else root['height_m']
                     if low_top:
                         assert name in permission['allowed_target_ids']
                         assert cycle['option']['layer_top_permission']==permission
                         assert cycle['option']['segment_directions_world']==[[0.,0.,1.],[-1.,0.,0.]]
-                hmax_cycle=l01_hmax or (current_bottom and name=='carton_l01_c04')
+                hmax_cycle=l01_hmax or (current_bottom and name=='carton_l01_c04') or (current_profile and 'l01_hmax_permission' in cycle['option'])
                 if hmax_cycle:
                     target=SimpleNamespace(target_id=name,box=message_box(original[name]),
                         geometric_face_id=cycle['target']['geometric_face_id'],world_y_offset_m=0.,eccentric_authority=None)
                     validate_option(target,cycle['option'],hmax_permission,root['height_m'],
                         c04_side=cycle['option'].get('c04_side_permission'),c04_face=cycle['option'].get('c04_face_permission'))
-                    assert cycle['height_m']==root['height_m'] and abs(cycle['height_m']-.25)<1e-9
+                    assert cycle['height_m']==(.25 if current_profile else root['height_m']) and abs(cycle['height_m']-.25)<1e-9
                     low_top=cycle['option']['template']=='L01_HMAX_TOP';top_height=cycle['height_m']
                 elif selected_routes:
                     route=routes_permission['routes'][name]
@@ -413,7 +485,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert cycle['receive_policy_check']['nonjunction_side_route']['passed']
                         assert cycle['side_turn_policy_check']['passed']
                 if low_top:
-                    assert cycle['option']['template'] == ('L01_HMAX_TOP' if hmax_cycle else 'SELECTED_TOP_HMAX' if selected_routes else 'TOP_FIXED_CURRENT_RECEIVER' if layer_top else 'TOP_FIXED_MINIMUM_RECEIVER')
+                    assert cycle['option']['template'] == ('L01_HMAX_TOP' if hmax_cycle else 'SELECTED_TOP_HMAX' if selected_routes else 'TOP_FIXED_CURRENT_RECEIVER' if layer_top or current_layer_top else 'TOP_FIXED_MINIMUM_RECEIVER')
                     assert cycle['target']['face_role'] == 'TOP'
                     assert cycle['stationary_low_receiver']['height_m'] == top_height
                     assert cycle['stationary_low_receiver']['throughout_contact_lift_transfer_release']
@@ -422,6 +494,8 @@ def verify(run, replay=None, *, retained_prefix=False):
                 q, height, parent = root["q_rad"], root["height_m"], ""
                 extraction_started = False
                 extraction_count = 0
+                preparation_required=current_profile and 'fixed_receiver_preparation' in cycle['option']
+                preparation_seen=False
                 for stage in cycle["stages"]:
                     req, resp = requests[stage["stage_id"]], responses[stage["stage_id"]]
                     assert req["q_start"] == q and req["parent_stage_id"] == parent
@@ -434,6 +508,10 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert all(c["passed"] for c in axis["checks"])
                         assert axis["maximum_height_step_m"] <= .010000001 and not axis["continuous_swept_proof"]
                         height = axis["to_height_m"]
+                        if preparation_required:
+                            assert stage['stage']=='pregrasp' and req['coupled_leg']=='PRE_APPROACH'
+                            assert not preparation_seen and parent=='' and height==.25
+                            preparation_seen=True
                         if low_top:assert height == top_height and stage['stage'] == 'pregrasp'
                         if (layer_top and low_top) or selected_routes:assert axis['from_height_m']==axis['to_height_m']
                         counts["checked_lift_samples"] += len(axis["checks"])
@@ -443,6 +521,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                         assert all(c["passed"] for c in drop["checks"]) and resp["terminal_q"] == q
                         counts["nominal_drop_samples"] += len(drop["checks"])
                     else:
+                        if preparation_required:assert height==.25
                         if stage["stage"] == "extraction":
                             extraction_count += 1
                             extraction_started = True
@@ -460,6 +539,8 @@ def verify(run, replay=None, *, retained_prefix=False):
                         q = stage["points"][-1]["q"]
                     parent = stage["stage_id"]
                     counts["accepted_native_stages"] += 1
+                if preparation_required:
+                    assert preparation_seen == (root['height_m'] != .25)
                 selection = cycle["attachment"]["selection"]
                 assert all(len(selection[k]) == 72 for k in (
                     "actual_contact_mask", "commanded_active_mask", "geometrically_eligible_mask"))
@@ -486,6 +567,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                             completed=[*root["completed"], name],
                             world_cartons=[b for b in root["world_cartons"] if b["id"] != name],
                             predecessor_final_state_receipt=cycle["final_state_receipt"])
+                if assumed:root['assumed_removed']=[TARGET]
                 if replay:
                     destination = replay/"seed-71070"/(prefix+"-"+folder)
                     destination.mkdir()
@@ -495,7 +577,7 @@ def verify(run, replay=None, *, retained_prefix=False):
                     cycles.append(cycle)
             assert root == result["terminal"] == outcome["terminal"]
             assert {b["id"]: b for b in root["world_cartons"]} == {
-                n: b for n, b in original.items() if n not in root["completed"]}
+                n: b for n, b in original.items() if n not in root["completed"] and n not in assumed_ids}
             counts.update(task_counts)
             outcomes.append(dict(target_id=name, complete=bool(result["completed_count"]),
                                  planning_wall_s=result["planning_wall_s"],
@@ -534,6 +616,9 @@ def verify(run, replay=None, *, retained_prefix=False):
                         counts=dict(counts), outcomes=outcomes, blocked=summary["blocked"],
                         physical_execution="NOT_RUN", execution_ready=False,
                         qualification_status="NOT_EVALUATED", continuous_swept_proof=False)
+    if assumed:verification.update(assumed_removed_target_ids=[TARGET],assumed_removed_count=1,
+        historical_completed_count=24,total_planned_completed_count=24+completed,
+        original_population_count=40,remaining_carton_count=len(root['world_cartons']))
     if diagnostic:verification.update(planning_diagnostic=protocol['planning_diagnostic'],historical_completed_count=11)
     if continuation:verification.update(historical_completed_count=summary['historical_completed_count'],low_definition=protocol['low_definition'],
         requested_minimum_surface_m=.25,predecessor_summary_sha256=protocol['predecessor_summary_sha256'])

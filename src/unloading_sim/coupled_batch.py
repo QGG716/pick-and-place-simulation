@@ -74,11 +74,18 @@ class BatchState:
     height: float
     ledger: list=field(default_factory=list)
     cycles: list=field(default_factory=list)
+    assumed_removed: tuple=()
+
+    def accounted_ids(self):
+        """Scheduling exclusions; assumptions never enter the completion ledger."""
+        return [e['target_id'] for e in self.ledger]+list(self.assumed_removed)
 
     def root(self):
-        return dict(q_rad=self.q.tolist(),velocity_rad_s=[0.]*6,height_m=self.height,
+        result=dict(q_rad=self.q.tolist(),velocity_rad_s=[0.]*6,height_m=self.height,
             world_cartons=[box_message(b) for b in self.cartons],completed=[e['target_id'] for e in self.ledger],
             predecessor_final_state_receipt=self.cycles[-1]['final_state_receipt'] if self.cycles else None)
+        if self.assumed_removed:result['assumed_removed']=list(self.assumed_removed)
+        return result
 
     def commit(self,plan):
         if (plan.get('target',{}).get('eccentric_authorization') is not None
@@ -96,7 +103,7 @@ class BatchState:
                     not plan.get('receive_policy_check',{}).get('reception',{}).get('passed')):
                 raise ValueError('JUNCTION_COMPLETE_ACCEPTANCE_MISSING')
         if plan['batch_root']!=self.root():raise ValueError('BATCH_COMMIT_ROOT_CHANGED')
-        target=plan['target_id'];remaining=self.frozen.remaining_ids([e['target_id'] for e in self.ledger])
+        target=plan['target_id'];remaining=self.frozen.remaining_ids(self.accounted_ids())
         events=plan['events'];types=[e['event_type'] for e in events]
         required=['RELEASE','NOMINAL_FIRST_CONTACT','SAFE_TOOL_SEPARATION','IDEAL_RECEIVER_DRAIN']
         if target not in remaining or any(types.count(t)!=1 for t in required):raise ValueError('PREMATURE_OR_DUPLICATE_DRAIN')
@@ -171,6 +178,12 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def validate_template(self,target):
         target.validate()
+        if 'l04_face_permission' in self.option:
+            from .l04_face_trial import validate_option
+            validate_option(target,self.option,getattr(self,'l04_face_permission',None),self.batch_root['height_m'])
+        if 'l05_face_permission' in self.option:
+            from .l05_face_trial import validate_option
+            validate_option(target,self.option,getattr(self,'l05_face_permission',None),self.batch_root['height_m'])
         if self.option.get('l01_hmax_permission') is not None:
             from .l01_hmax import validate_option
             validate_option(target,self.option,getattr(self,'l01_hmax_permission',None),self.batch_root['height_m'],
@@ -191,6 +204,12 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
 
     def prepare_receiver_binding(self,target,obstacles):
         b=self.native.lifted_receiver_binding
+        from .current_population_recipe import validate_preparation_binding
+        validate_preparation_binding(self.option,self.batch_root,b)
+        from .l05_face_trial import validate_binding
+        validate_binding(self.option,self.batch_root,b)
+        from .l04_face_trial import validate_binding as validate_l04_binding
+        validate_l04_binding(self.option,self.batch_root,b)
         root=b.get('pre_approach_transition',b)
         if [box_message(o) for o in obstacles]!=root['samples'][0]['world']:raise MoveItUnavailable('COUPLED_ROOT_WORLD_MISMATCH')
         return b,next(message_box(x) for x in b['samples'][-1]['world'] if x['id']=='conveyor_transverse')

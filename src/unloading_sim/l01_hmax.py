@@ -113,6 +113,8 @@ def options(target, belt, longitudinal, frozen, current_height, permission, *, c
 
 
 def validate_option(target, option, permission, root_height, *, c04_side=None, c04_face=None):
+    from .current_population_recipe import fixed_cycle_height
+    root_height = fixed_cycle_height(option, root_height, target.box)
     validate_height_permission(target.box, permission, root_height)
     face = target.geometric_face_id
     if c04_side is not None:

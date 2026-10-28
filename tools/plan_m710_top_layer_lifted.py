@@ -77,7 +77,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
     initial_cycle_count=len(state.cycles)
     scope=tuple(frozen.target_ids if target_ids is None else target_ids)
     def remaining():
-        return [n for n in frozen.remaining_ids([e['target_id'] for e in state.ledger]) if n in scope]
+        return [n for n in frozen.remaining_ids(state.accounted_ids()) if n in scope]
     initial=state.root();attempts=[];began=perf_counter();attempt_no=0
     flags=dict(qualification_status='NOT_EVALUATED',continuous_swept_proof=False,physical_execution='NOT_RUN',execution_ready=False)
     def result(status):
@@ -95,7 +95,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
         save(out/f'world-{len(state.ledger)}.json',check)
         if not check['passed']:
             attempts.append(dict(failure='COMMITTED_WORLD_GEOMETRY_REJECTED',evidence=check));break
-        ranked=rank_remaining(frozen,state.cartons,[e['target_id'] for e in state.ledger],state.q,built.robot,scene.receiver,
+        ranked=rank_remaining(frozen,state.cartons,state.accounted_ids(),state.q,built.robot,scene.receiver,
             longitudinal=next(b for b in scene.fixed_components if b.name=='conveyor_longitudinal'))
         ranked=[r for r in ranked if r['target_id'] in scope]
         accepted=False
@@ -153,6 +153,29 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         frozen,state.height,hmax_permission,c04_side=c04_side_permission(frozen))
                     business_options=[business_options[1],*side,business_options[0]]
             rotation=getattr(args,'rotation_permission',None)
+            current_recipe=getattr(args,'current_population_recipe',None)
+            if current_recipe is not None:
+                from unloading_sim.current_population_recipe import current_options
+                current,layer_permission,hmax_permission,rotation=current_options(
+                    current_recipe,target,frozen,layout,state.cartons,state.height)
+                if current is not None:business_options=current
+            l05_face_permission=getattr(args,'l05_face_permission',None)
+            l04_face_permission=getattr(args,'l04_face_permission',None)
+            if l05_face_permission is not None:
+                from unloading_sim.l05_face_trial import option_for
+                from unloading_sim.conveyor_lift import coupled_conveyor_state
+                receive_world={b.name:b for b in coupled_conveyor_state(layout,l05_face_permission['height_m'],state.cartons).boxes}
+                explicit,layer_permission=option_for(target,receive_world['conveyor_transverse'],
+                    receive_world['conveyor_longitudinal'],
+                    frozen,state.height,l05_face_permission)
+                business_options=[explicit]
+            if l04_face_permission is not None:
+                from unloading_sim.l04_face_trial import option_for
+                from unloading_sim.conveyor_lift import coupled_conveyor_state
+                receive_world={b.name:b for b in coupled_conveyor_state(layout,l04_face_permission['height_m'],state.cartons).boxes}
+                explicit,layer_permission=option_for(target,receive_world['conveyor_transverse'],receive_world['conveyor_longitudinal'],
+                    frozen,state.height,l04_face_permission)
+                business_options=[explicit]
             if rotation is not None and target.name==rotation['target_id']:
                 from unloading_sim.bottom_rotated import rotated_option
                 if len(business_options)!=1:raise ValueError('ROTATED_TOP_ONE_CENTRED_FACE_REQUIRED')
@@ -166,7 +189,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         classification='PROCESS_GEOMETRY_REJECTED_BEFORE_NATIVE_SEARCH',
                         receive_height_range_m=list(domain),wall_s=0.))
                     continue
-                options.extend([option] if option['template'] in TOP_TEMPLATES or routes_permission is not None or hmax_permission is not None else synchronization_options(option,state.height,low,
+                options.extend([option] if option['template'] in TOP_TEMPLATES or routes_permission is not None or hmax_permission is not None or l05_face_permission is not None or l04_face_permission is not None else synchronization_options(option,state.height,low,
                     include_receive_before_approach=getattr(args,'include_receive_before_approach',False)))
             eccentric=getattr(args,'right_front_eccentric',False) and not low_top
             visits=options;total_visits=len(options)
@@ -217,6 +240,8 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                         native_budget=dict(task_wall_time_s=args.task_budget_s,stage_wall_time_s=args.stage_budget_s,ipc_timeout_s=args.ipc_timeout_s))
                     c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
                     c.layer_top_permission=layer_permission
+                    c.l05_face_permission=l05_face_permission
+                    c.l04_face_permission=l04_face_permission
                     c.selected_routes_permission=routes_permission
                     c.l01_hmax_permission=hmax_permission
                     c.c04_side_permission=option.get('c04_side_permission',getattr(args,'c04_side_permission',None))
@@ -228,11 +253,13 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.height_stage_deadlines=shared_stages;c.height_prefix_active=True
                     c.height_visit_deadline=(shared_stages['prefix'] if low_top or option.get('finite_side_channel') else
                         min(shared_stages['prefix'],perf_counter()+(10. if eccentric else 20.)))
+                    if l05_face_permission is not None or l04_face_permission is not None:c.height_visit_deadline=shared_stages['prefix']
                     if hmax_permission is not None and option_index==len(options)-1:
                         c.height_visit_deadline=shared_stages['prefix']
                     if hmax_permission is not None and option_index<len(options)-1:
                         c.face_visit_deadline=c.height_visit_deadline
-                    if getattr(args,'current_bottom_rotated',False) and option_index<len(options)-1:
+                    if (getattr(args,'current_bottom_rotated',False) or
+                            (current_recipe is not None and (rotation is not None or target.name=='carton_l01_c04'))) and option_index<len(options)-1:
                         # Existing 20 s face visit, shared 90/300 s deadlines.
                         c.face_visit_deadline=min(shared_stages['prefix'],perf_counter()+20.)
                         c.height_visit_deadline=c.face_visit_deadline
@@ -242,7 +269,7 @@ def run_seed(args,original,built,frozen,seed,out,*,initial_state=None,target_ids
                     c.start_planning_request(task_started);c._native_task_started=task_started
                     c._request_deadline_monotonic=deadline;c._deadline_monotonic=deadline;c._final_export_reserve_s=0.;c.boundary_costs={}
                     side_depth=None
-                    if option.get('finite_side_channel') or (hmax_permission is not None and option['face']['geometric_face_id'] in ('y+','y-')):
+                    if option.get('finite_side_channel') or ((hmax_permission is not None or l05_face_permission is not None or l04_face_permission is not None) and option['face']['geometric_face_id'] in ('y+','y-')):
                         from unloading_sim.l01_selected_routes import finite_side_exposure
                         row['finite_side_exposure']=finite_side_exposure(c,state.q)
                         side_depth=row['finite_side_exposure']['depth_m']

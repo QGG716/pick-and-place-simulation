@@ -596,6 +596,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         "user_20261023_minimum_250_mount_x_minus_500_y_minus_100": [-1.825, .25, .6],
         "user_20261023_low_profile_250_robot_mount_contact": [-1.825, .25, .6],
         "user_20261024_l00_mount_xplus200_from_x500": [-1.625, .25, .6],
+        "user_20261027_l05_l04_mount_yminus100": [-1.625, .15, .6],
     }
     approval = layout.data["evidence"]["approval_basis"]
     narrow = approval in {
@@ -659,7 +660,8 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
     support_variants.update({name: .26 for name in mounting_trials})
     if approval in {"user_20261023_minimum_250_mount_x_minus_500_y_minus_100",
                     "user_20261023_low_profile_250_robot_mount_contact",
-                    "user_20261024_l00_mount_xplus200_from_x500"}:
+                    "user_20261024_l00_mount_xplus200_from_x500",
+                    "user_20261027_l05_l04_mount_yminus100"}:
         checks["requested_minimum_transverse_surface"] = scalar(
             layout.data["conveyors"]["coupling"].get("minimum_surface_height_world_m", -1.), .25)
     if layout.data["evidence"]["approval_basis"] in support_variants:
