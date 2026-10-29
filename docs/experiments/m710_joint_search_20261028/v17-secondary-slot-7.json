@@ -1,0 +1,43 @@
+{
+  "status": "SHARED_STOP",
+  "started_epoch": 1793228029.4263346,
+  "replaces_lane": 3,
+  "new_lane": 7,
+  "shared_deadline_epoch": 1793231478.4704792,
+  "new_run": "lane-7-candidate-00-v17",
+  "candidate": [
+    0.2,
+    -0.2,
+    0.7,
+    0.2
+  ],
+  "mechanism_profile": "low_profile_200_outfeed20_v3",
+  "semantics": "EXISTING_CHILD_FINISHES_ITS_BUDGET; NEW_FRESH40; NO_SEVENTH_SEARCH",
+  "active_run": "lane-7-candidate-00-v17",
+  "adopted_pid": 77556,
+  "old_supervisor_pid": 50611,
+  "old_ledger": "lane-v16-3.json",
+  "old_best": 2,
+  "old_search_cost_s": 1808.2875728923827,
+  "pid": 86200,
+  "allocated_wall_s": 3028.3726205825806,
+  "command": [
+    "chroot",
+    "/root/autodl-tmp/m710-l05-x500-20261022/rootfs",
+    "/bin/bash",
+    "/joint-search-20261028/search-v17.sh",
+    "--output",
+    "/joint-search-20261028/lane-7-candidate-00-v17",
+    "--single-candidate",
+    "0.2",
+    "-0.2",
+    "0.7",
+    "0.2",
+    "--mechanism-profile",
+    "low_profile_200_outfeed20_v3",
+    "--max-layouts",
+    "1",
+    "--budget-hours",
+    "0.8412146168284946"
+  ]
+}

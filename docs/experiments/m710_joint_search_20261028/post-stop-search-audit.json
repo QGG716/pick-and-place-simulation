@@ -1,0 +1,9 @@
+{
+  "status": "PASS_CLOSED_LEDGER_NO_NEW_FORMAL_ATTEMPTS_AFTER_STOP",
+  "formal_attempts": 3273,
+  "unknown_start_timestamps": 0,
+  "starts_after_shared_stop": [],
+  "starts_after_nominal_deadline_before_stop_poll": [],
+  "stop_epoch": 1793231485.0169382,
+  "checked_epoch": 1793233003.2146761
+}

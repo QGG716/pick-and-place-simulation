@@ -1,0 +1,15 @@
+{
+  "status": "PASS_OFFLINE_HTML_REPORT",
+  "table_rows": [
+    29,
+    52
+  ],
+  "links": [
+    "final-best/replay.html",
+    "final-summary/search-summary.json",
+    "code-review/source-changes.zip",
+    "final-report.txt"
+  ],
+  "errors": [],
+  "report_sha256": "d9fcff7b062a23110167d49de6e94aad7fee3b2acaa8a24961e25a4f1a6abc07"
+}

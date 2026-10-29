@@ -14,6 +14,7 @@ from .motion_validation import Status, termination_metadata
 
 class MotionPurpose(str, Enum):
     FREE_APPROACH = 'FREE_APPROACH'
+    FREE_UNLOADED_REPOSITION = 'FREE_UNLOADED_REPOSITION'
     CONTACT_PROCESS = 'CONTACT_PROCESS'
     SUPPORT_RELEASE_PROCESS = 'SUPPORT_RELEASE_PROCESS'
     EXTRACTION_PROCESS = 'EXTRACTION_PROCESS'
@@ -33,7 +34,7 @@ class GenerationMethod(str, Enum):
     RRT_CONNECT = 'RRT_CONNECT'
 
 
-FREE_PURPOSES = frozenset((MotionPurpose.FREE_APPROACH, MotionPurpose.FREE_LOADED_TRANSFER))
+FREE_PURPOSES = frozenset((MotionPurpose.FREE_APPROACH, MotionPurpose.FREE_LOADED_TRANSFER,MotionPurpose.FREE_UNLOADED_REPOSITION))
 
 
 @dataclass(frozen=True)
@@ -280,7 +281,9 @@ def validate_motion_subsegments(segment):
     records = segment.get('motion_subsegments')
     if records is None:
         return  # Historical schema retains its explicit legacy boundaries.
-    expected = list(MotionPurpose)
+    # This historical seven-segment export predates the optional, separately
+    # recorded joint-search outfeed parking stage.
+    expected = [p for p in MotionPurpose if p!=MotionPurpose.FREE_UNLOADED_REPOSITION]
     if len(records) != len(expected):
         raise ValueError('motion-purpose subsegments must cover seven internal uses')
     previous = 0

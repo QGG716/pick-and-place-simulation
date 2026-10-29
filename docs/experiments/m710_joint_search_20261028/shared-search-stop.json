@@ -1,0 +1,360 @@
+{
+  "epoch": 1793231485.0169382,
+  "reason": "SHARED_8_HOUR_WALL_BUDGET",
+  "winner": null,
+  "winner_checkpoint_sha256": null,
+  "interrupted_owned_processes": [
+    {
+      "pid": 72429,
+      "args": [
+        "python3",
+        "/root/autodl-tmp/joint_search_parallel_v17_mechanism.py"
+      ],
+      "supervisor": true
+    },
+    {
+      "pid": 72564,
+      "args": [
+        "/opt/planning-venv/bin/python",
+        "/work-joint-search-20261028-v17/tools/plan_m710_joint_search.py",
+        "--output",
+        "/joint-search-20261028/formal-v17",
+        "--worker-command",
+        "/bin/bash /joint-search-worker-v13.sh",
+        "--worker-binary",
+        "/joint-search-build-v13/m710_moveit_worker",
+        "--source-manifest",
+        "/work-joint-search-20261028-v17/joint-search-manifest.json",
+        "--source-commit",
+        "d7610965304c03317ad4ace6f1cd959b30470aa5",
+        "--output",
+        "/joint-search-20261028/lane-6-candidate-00-v17",
+        "--single-candidate",
+        "0",
+        "-.2",
+        ".9",
+        ".2",
+        "--mechanism-profile",
+        "low_profile_200_outfeed20_v3",
+        "--max-layouts",
+        "1",
+        "--budget-hours",
+        "1.646195546521081"
+      ],
+      "supervisor": false
+    }
+  ],
+  "contract": {
+    "started_epoch": 1793206739.3721335,
+    "deadline_epoch": 1793231478.4704792,
+    "prior_cumulative_search_wall_s": 4060.901654224843,
+    "global_budget_wall_s": 28800,
+    "maximum_concurrent_search_workers": 6,
+    "threads_per_native_worker": 1,
+    "semantics": "OVERLAPPING_WALL_TIME_NOT_SUM_OF_WORKER_COSTS; EACH_FRESH40_BRANCH_INDEPENDENT; NEVER_SUM_COMPLETED_COUNTS",
+    "lanes": {
+      "1": [
+        [
+          0.625,
+          -0.25,
+          0.5,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.525,
+          -0.35,
+          0.4,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.8,
+          -0.1,
+          0.6,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.7,
+          0.2,
+          0.6,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.6,
+          0.4,
+          0.7,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.4,
+          0.4,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.8,
+          0.0,
+          0.4,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.2,
+          0.0,
+          0.9,
+          0.25,
+          "low_profile_250_v1"
+        ]
+      ],
+      "2": [
+        [
+          0.725,
+          -0.35,
+          0.7,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.425,
+          -0.15,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.7,
+          0.3,
+          0.5,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.8,
+          0.4,
+          0.4,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.475,
+          0.5,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.5,
+          0.475,
+          0.9,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.8,
+          -0.4,
+          0.8,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.7,
+          0.0,
+          1.0,
+          0.25,
+          "low_profile_250_v1"
+        ]
+      ],
+      "3": [
+        [
+          0.2,
+          -0.2,
+          0.7,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.1,
+          -0.2,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.0,
+          -0.2,
+          0.9,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.2,
+          -0.2,
+          0.9,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.1,
+          -0.2,
+          1.0,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.2,
+          -0.1,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.2,
+          0.7,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.2,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ]
+      ],
+      "4": [
+        [
+          0.2,
+          -0.35,
+          0.7,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.2,
+          -0.05,
+          0.7,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.1,
+          -0.35,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.1,
+          -0.05,
+          0.8,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.35,
+          0.6,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.05,
+          0.6,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.4,
+          -0.2,
+          0.5,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.4,
+          -0.2,
+          0.7,
+          0.25,
+          "low_profile_250_v1"
+        ]
+      ],
+      "5": [
+        [
+          0.325,
+          -0.2,
+          0.625,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.325,
+          -0.2,
+          0.575,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.325,
+          -0.21,
+          0.6,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.325,
+          -0.2,
+          0.59,
+          0.25,
+          "low_profile_250_v1"
+        ],
+        [
+          0.3,
+          -0.2,
+          0.5,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.2,
+          -0.2,
+          0.6,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.2,
+          -0.2,
+          0.7,
+          0.2,
+          "low_profile_200_v2"
+        ],
+        [
+          0.1,
+          -0.2,
+          0.8,
+          0.2,
+          "low_profile_200_v2"
+        ]
+      ]
+    },
+    "resource_revisions": [
+      {
+        "epoch": 1793217453.807122,
+        "previous_maximum": 3,
+        "new_maximum": 6,
+        "deadline_unchanged": true,
+        "reason": "READ_CPU_25_CORE_QUOTA_MEMORY_92_GIB_CURRENT_8P4_GIB; SAME_PER_SOLVER_LIMITS",
+        "cpu_max": "2500000 100000",
+        "memory_max_bytes": 98784247808,
+        "memory_current_bytes": 9138470912
+      }
+    ]
+  }
+}

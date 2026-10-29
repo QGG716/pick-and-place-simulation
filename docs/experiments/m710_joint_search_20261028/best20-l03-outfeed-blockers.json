@@ -1,0 +1,194 @@
+[
+  {
+    "trial": 72,
+    "target": "carton_l03_c02",
+    "pairs": [
+      {
+        "gap_m": 0.003322092857183957,
+        "pair": [
+          "carton_l03_c02",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      },
+      {
+        "gap_m": 0.0033384406656848573,
+        "pair": [
+          "carton_l03_c02",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      }
+    ],
+    "last_response_keys": [
+      "clearance",
+      "diagnostic_only",
+      "failure",
+      "generated_during_task",
+      "generation_source",
+      "mtc_attempt_index",
+      "mtc_generation",
+      "mtc_task_solution_count",
+      "native_solver_calls",
+      "outfeed",
+      "parent_stage_id",
+      "pipeline_id",
+      "planner_id",
+      "process_policy",
+      "request_check_evidence",
+      "request_id",
+      "retained_native_subsolutions",
+      "stage_id",
+      "status",
+      "task_backtracks",
+      "task_id",
+      "task_solve_calls",
+      "task_stage_ids",
+      "transport_and_worker_s"
+    ]
+  },
+  {
+    "trial": 73,
+    "target": "carton_l03_c03",
+    "pairs": [
+      {
+        "gap_m": 0.003322093199504099,
+        "pair": [
+          "carton_l03_c03",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      },
+      {
+        "gap_m": 0.0033383762718604527,
+        "pair": [
+          "carton_l03_c03",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      }
+    ],
+    "last_response_keys": [
+      "clearance",
+      "diagnostic_only",
+      "failure",
+      "generated_during_task",
+      "generation_source",
+      "mtc_attempt_index",
+      "mtc_generation",
+      "mtc_task_solution_count",
+      "native_solver_calls",
+      "outfeed",
+      "parent_stage_id",
+      "pipeline_id",
+      "planner_id",
+      "process_policy",
+      "request_check_evidence",
+      "request_id",
+      "retained_native_subsolutions",
+      "stage_id",
+      "status",
+      "task_backtracks",
+      "task_id",
+      "task_solve_calls",
+      "task_stage_ids",
+      "transport_and_worker_s"
+    ]
+  },
+  {
+    "trial": 74,
+    "target": "carton_l03_c01",
+    "pairs": [
+      {
+        "gap_m": 0.0033221335895175603,
+        "pair": [
+          "carton_l03_c01",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      },
+      {
+        "gap_m": 0.0033384290314281725,
+        "pair": [
+          "carton_l03_c01",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      },
+      {
+        "gap_m": 0.003330170889689313,
+        "pair": [
+          "carton_l03_c01",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      }
+    ],
+    "last_response_keys": [
+      "clearance",
+      "diagnostic_only",
+      "failure",
+      "generated_during_task",
+      "generation_source",
+      "mtc_attempt_index",
+      "mtc_generation",
+      "mtc_task_solution_count",
+      "native_solver_calls",
+      "outfeed",
+      "parent_stage_id",
+      "pipeline_id",
+      "planner_id",
+      "process_policy",
+      "request_check_evidence",
+      "request_id",
+      "retained_native_subsolutions",
+      "stage_id",
+      "status",
+      "task_backtracks",
+      "task_id",
+      "task_solve_calls",
+      "task_stage_ids",
+      "transport_and_worker_s"
+    ]
+  },
+  {
+    "trial": 75,
+    "target": "carton_l03_c04",
+    "pairs": [
+      {
+        "gap_m": 0.003322141352449956,
+        "pair": [
+          "carton_l03_c04",
+          "lift_lower_bearing"
+        ],
+        "reason": "OUTFEED_WORLD_CLEARANCE"
+      }
+    ],
+    "last_response_keys": [
+      "clearance",
+      "diagnostic_only",
+      "failure",
+      "generated_during_task",
+      "generation_source",
+      "mtc_attempt_index",
+      "mtc_generation",
+      "mtc_task_solution_count",
+      "native_solver_calls",
+      "outfeed",
+      "parent_stage_id",
+      "pipeline_id",
+      "planner_id",
+      "process_policy",
+      "request_check_evidence",
+      "request_id",
+      "retained_native_subsolutions",
+      "stage_id",
+      "status",
+      "task_backtracks",
+      "task_id",
+      "task_solve_calls",
+      "task_stage_ids",
+      "transport_and_worker_s"
+    ]
+  }
+]

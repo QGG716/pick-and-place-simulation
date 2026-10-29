@@ -283,6 +283,9 @@ class WorkcellLayout:
     def fixed_components(self) -> tuple[OBB, ...]:
         transform = self.world_from_assembly
         assembly = tuple(box.transformed(transform) for box in self.component_local_boxes())
+        if 'joint_search' in self.data:
+            from .joint_search_layout import mounting_geometry
+            assembly = mounting_geometry(self,assembly)
         return (*assembly, *self.trailer_boundary_boxes())
 
     def cartons(self) -> tuple[OBB, ...]:
@@ -343,6 +346,8 @@ class WorkcellLayout:
         # entities, including inactive compliant cups, clear the moving box.
         robot.tool_compliant_collision_local_boxes = compliant_tool_boxes
         robot.tool_connector_extension_m=extension
+        if 'joint_search' in self.data:
+            robot.joint_search_mount=copy.deepcopy(self.data['joint_search'])
         return robot
 
 
@@ -404,7 +409,7 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     data = _mapping(data, "layout")
     _keys(
         data,
-        {"schema", "layout_id", "units", "world", "assembly", "chassis", "conveyors", "robot", "tool", "trailer", "carton_stack", "evidence"},
+        {"schema", "layout_id", "units", "world", "assembly", "chassis", "conveyors", "robot", "tool", "trailer", "carton_stack", "evidence"} | ({'joint_search'} if 'joint_search' in data else set()),
         "layout",
     )
     if data["schema"] != LAYOUT_SCHEMA or data["layout_id"] != LAYOUT_SCHEMA:
@@ -429,7 +434,7 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
               ({"minimum_surface_height_world_m"} if "minimum_surface_height_world_m" in coupling else set()) |
               ({spacing_key} if spacing_key in coupling else set()) |
               ({"scissor_profile"} if "scissor_profile" in coupling else set()), "conveyors.coupling")
-        if "scissor_profile" in coupling and coupling["scissor_profile"]!="low_profile_250_v1":
+        if "scissor_profile" in coupling and coupling["scissor_profile"] not in (('low_profile_250_v1','low_profile_200_v1','low_profile_200_v2','low_profile_200_outfeed20_v3') if 'joint_search' in data else ('low_profile_250_v1',)):
             raise ValueError("UNKNOWN_SCISSOR_PROFILE")
         if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
             raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
@@ -497,7 +502,11 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     _positive(stack["column_gap_m"], "carton_stack.column_gap_m", allow_zero=True)
     _positive(stack["layer_gap_m"], "carton_stack.layer_gap_m", allow_zero=True)
     assets = _asset_manifest(config_path, data)
-    return WorkcellLayout(config_path, data, assets, compute_layout_fingerprint(data, assets))
+    result=WorkcellLayout(config_path, data, assets, compute_layout_fingerprint(data, assets))
+    if 'joint_search' in data:
+        from .joint_search_layout import validate_search_layout
+        validate_search_layout(result)
+    return result
 
 
 def load_layout_validation_config(path: str | Path) -> LayoutValidationConfig:
@@ -602,7 +611,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
     narrow = approval in {
         "user_20261020_longitudinal_width_060_ymin_fixed",
         "user_20261020_transverse_scissor_spacing_030_longitudinal_060",
-        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"} or approval in mounting_trials
+        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"} or approval in mounting_trials or 'joint_search' in layout.data
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
@@ -668,6 +677,13 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         checks["transverse_support_spacing"] = scalar(
             layout.data["conveyors"].get("coupling", {}).get("transverse_support_spacing_m", 0.),
             support_variants[layout.data["evidence"]["approval_basis"]])
+    if 'joint_search' in layout.data:
+        from .joint_search_layout import validate_search_layout
+        candidate=validate_search_layout(layout)
+        checks['joint_search_frozen_contract']={'status':'PASS','candidate':candidate.evidence()}
+        checks['robot_base_origin_world']=vector(base,candidate.evidence()['base_xyz_world_m'])
+        checks['robot_mount_surface']=scalar(base[2],candidate.z)
+        checks['transverse_support_spacing']=scalar(layout.data['conveyors']['coupling']['transverse_support_spacing_m'],.26)
     return {
         "schema": "m710id70_layout_numeric_audit_v1",
         "layout_id": layout.data["layout_id"],
@@ -715,6 +731,8 @@ def _audit_initial_state_prepared(
             failures.append({"reason": "SELF_COLLISION", "detail": str(self_result)})
         links = world_link_boxes(robot, q, shapes)
         obstacles = [*fixed, *cartons]
+        from .joint_search_layout import qualified_mount_pairs
+        mount_planes=qualified_mount_pairs(robot,obstacles)
         chassis = next(box for box in fixed if box.name == "chassis")
         for link in links:
             for obstacle in obstacles:
@@ -722,6 +740,8 @@ def _audit_initial_state_prepared(
                 if query is None:
                     continue
                 if effective.allows_robot_mount_contact(link.name,obstacle.name):
+                    continue
+                if (link.name,obstacle.name) in mount_planes:
                     continue
                 if link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
                     continue
@@ -900,6 +920,9 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
         translation=list(snapshot['tool']['tcp_transform']['translation_xyz_m'])
         translation[0]+=extension
         snapshot['tool']['tcp_transform']['translation_xyz_m']=translation
+    if 'joint_search' in layout.data:
+        from .joint_search_layout import retained_chassis_contacts
+        snapshot['assembly']['designed_contacts']=retained_chassis_contacts(layout,snapshot['assembly']['designed_contacts'])
     snapshot["scene_fingerprint"] = canonical_digest(snapshot)
     return snapshot
 

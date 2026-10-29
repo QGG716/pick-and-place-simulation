@@ -1,0 +1,9 @@
+{
+  "status": "PASS_FULL_ARCHIVE_CONTENT_SHA256",
+  "files_checked": 32221,
+  "archive": "/root/autodl-tmp/joint-search-delivery-20261028/full-evidence.tar.gz",
+  "bytes": 8257930737,
+  "sha256": "91e468d1e0934f282e0ea2cc887043f21b1fe447f7d12e68aee391caedf93d7a",
+  "started_epoch": 1793233003.26486,
+  "ended_epoch": 1793233422.04543
+}

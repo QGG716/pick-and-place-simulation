@@ -1,0 +1,60 @@
+{
+  "recorded_epoch": 1793220757.1772537,
+  "scope": "RECORDED_FOCUSED_CHECKS; NO_NEW_TEST_RUN; COUNTS_OVERLAP_ACROSS_REVISIONS",
+  "checks": [
+    {
+      "file": "preflight-v11.log",
+      "tail": "........................................................................ [ 63%]\n.........................................                                [100%]\n113 passed in 8.08s\n",
+      "pytest_summaries": [
+        "113 passed in 8.08s"
+      ]
+    },
+    {
+      "file": "native-tests-v11.log",
+      "tail": "211257.810235155] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.810242044] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[ERROR] [1793211257.810365560] [moveit_robot_model.robot_model]: Link 'base_link' not found in model 'test'\n[INFO] [1793211257.810675563] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.810682517] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[ERROR] [1793211257.810798611] [moveit_robot_model.robot_model]: Link 'base_link' not found in model 'test'\n[INFO] [1793211257.811096035] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.811102484] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[ERROR] [1793211257.811211686] [moveit_robot_model.robot_model]: Link 'base_link' not found in model 'test'\n[INFO] [1793211257.811517228] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.811523581] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[ERROR] [1793211257.811633239] [moveit_robot_model.robot_model]: Link 'base_link' not found in model 'test'\n[INFO] [1793211257.812694541] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.812702106] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.813437251] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.813446822] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.813756463] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.813764076] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.814041616] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.814048270] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.814743228] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.814750545] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.816023262] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.816031413] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.817157905] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.817167118] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.818338571] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.818346100] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.819142332] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.819149808] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n[INFO] [1793211257.819943835] [moveit_robot_model.robot_model]: Loading robot model 'test'...\n[INFO] [1793211257.819952655] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint\n",
+      "pytest_summaries": []
+    },
+    {
+      "file": "preflight-v13.log",
+      "tail": "............................                                             [100%]\n28 passed in 1.07s\n",
+      "pytest_summaries": [
+        "28 passed in 1.07s"
+      ]
+    },
+    {
+      "file": "native-tests-v13.log",
+      "tail": "PASS native joint-search receive bounds and full outfeed timing tamper checks\n",
+      "pytest_summaries": []
+    },
+    {
+      "file": "preflight-v15.log",
+      "tail": "............                                                             [100%]\n12 passed in 0.28s\n",
+      "pytest_summaries": [
+        "12 passed in 0.28s"
+      ]
+    },
+    {
+      "file": "preflight-v16.log",
+      "tail": "..............                                                           [100%]\n14 passed in 0.21s\n",
+      "pytest_summaries": [
+        "14 passed in 0.21s"
+      ]
+    }
+  ],
+  "real_state_candidate_coverage": "v16-real-state-coverage.json",
+  "v17_new_mechanism": {
+    "server_tests": {
+      "passed": 37,
+      "elapsed_s": 3.12,
+      "log": "v17-tests.log"
+    },
+    "geometry_gate": "v17-geometry-gates.json",
+    "stroke_samples": 191,
+    "legacy_identical_geometry_checks": 12,
+    "lower_support_route_probes": 8,
+    "fresh40_start_gate": "v17-fresh40-launch-validation.json",
+    "native_binary_revision": 13,
+    "native_binary_rebuilt": false,
+    "physical_execution": "NOT_RUN"
+  }
+}

@@ -106,6 +106,23 @@ class BatchState:
         target=plan['target_id'];remaining=self.frozen.remaining_ids(self.accounted_ids())
         events=plan['events'];types=[e['event_type'] for e in events]
         required=['RELEASE','NOMINAL_FIRST_CONTACT','SAFE_TOOL_SEPARATION','IDEAL_RECEIVER_DRAIN']
+        if plan.get('option',{}).get('joint_search_contract'):
+            from .joint_search_outfeed import WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST
+            timing=plan['option'].get('outfeed_timing',WAIT_FIRST)
+            required.insert(2 if timing==WAIT_FIRST else 3,'WAIT_OUTFEED_COMPLETE')
+            if timing==PARK_FIRST:
+                required.insert(3,'OUTFEED_PARK_COMPLETE')
+                if not plan.get('outfeed_park',{}).get('full_tool',{}).get('passed'):
+                    raise ValueError('SEARCH_PARK_FULL_TOOL_PROOF_REQUIRED')
+            wait=plan.get('wait_outfeed',{})
+            if not wait.get('passed') or not wait.get('full_tool',{}).get('passed') or not wait.get('native',{}).get('outfeed',{}).get('passed'):
+                raise ValueError('SEARCH_DRAIN_WITHOUT_FULL_OUTFEED_CHECK')
+            path=wait['path']
+            if timing not in (WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST) or path['tool_timing']!=timing:
+                raise ValueError('SEARCH_OUTFEED_TIMING_CHANGED')
+            last=message_box(path['samples'][-1]['box'])
+            if last.name!=target or max(last.corners()[:,0])>=-3.2:
+                raise ValueError('SEARCH_OUTFEED_FULL_ENVELOPE_REQUIRED')
         if target not in remaining or any(types.count(t)!=1 for t in required):raise ValueError('PREMATURE_OR_DUPLICATE_DRAIN')
         if [types.index(t) for t in required]!=sorted(types.index(t) for t in required):raise ValueError('DRAIN_EVENT_ORDER')
         if any(e.get('target_id')!=target for e in events if e['event_type'] in required):raise ValueError('DRAIN_TARGET_CHANGED')
@@ -115,7 +132,7 @@ class BatchState:
             raise ValueError('BATCH_INVALID_TERMINAL_NUMERIC_STATE')
         self.q=q;self.height=height
         self.cartons=tuple(b for b in self.cartons if b.name!=target)
-        self.ledger.append(dict(target_id=target,last_pose=plan['landed_box'],source='IDEAL_RECEIVER_DRAIN',
+        self.ledger.append(dict(target_id=target,last_pose=plan['wait_outfeed']['path']['samples'][-1]['box'] if plan.get('wait_outfeed') else plan['landed_box'],source='IDEAL_RECEIVER_DRAIN',
             source_stage_id=plan['release_stage_id'],physical_outfeed=False))
         self.cycles.append(plan)
 
@@ -335,7 +352,7 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         if not self.planar:
             reception=validate_junction_release(box,target.box,obstacles,
                 self.option['face']['working_axis_into_box'],self.option['height_m'],
-                l01_hmax_permission=self.option.get('l01_hmax_permission'))
+                l01_hmax_permission=self.option.get('l01_hmax_permission'),search_contract=self.option.get('joint_search_contract'))
             if (self.option.get('reception') or {}).get('junction') and not reception['junction']:
                 return reject('JUNCTION_REGION_CHANGED',reception)
             check['reception']=reception
@@ -360,8 +377,17 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         terminal=dict(req,attachment=None,world=[box_message(b) for b in released_world],stage='withdrawal',
             process_policy=dict(req['process_policy'],target=box_message(landed),attached=False,stage='withdrawal'))
         state=self._native_issue_state(end,req['stage_id'],self._native_state_context(terminal))
+        waiting=None;departure_target=landed
+        from .joint_search_outfeed import plan_wait_outfeed,WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST,withdrawal_extra,check_full_tool_park
+        timing=self.option.get('outfeed_timing',WAIT_FIRST)
+        if timing not in (WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST):raise ValueError('OUTFEED_TIMING_UNSUPPORTED')
+        if self.option.get('joint_search_contract'):
+            if timing==WAIT_FIRST:
+                transported,failure=plan_wait_outfeed(self,state,landed,released_world,seed)
+                if failure:return reject('WAIT_OUTFEED',failure)
+                state,departure_target,released_world,waiting=transported
         def separation(q):
-            request=self._build_native_request(q,q,released_world,seed=seed,stage='pregrasp',target_contact=landed)
+            request=self._build_native_request(q,q,released_world,seed=seed,stage='pregrasp',target_contact=departure_target)
             parent,_,transition=self._native_parent_for_request(q,request)
             if transition is not None:raise MoveItUnavailable('SEPARATION_OWNERSHIP_CHANGED')
             request.update(op='check_start',coupled_separation_probe=True,parent_stage_id=parent.stage_id,parent_state_receipt=parent.evidence(),ownership_transition=None)
@@ -374,20 +400,46 @@ class CoupledCycleConnector(SingleRightReceiverConnector):
         relevant=[t for t in tools if bounds(t)[0][0]<=landed_high[0] and
                   min(bounds(t)[1][1],landed_high[1])>=max(bounds(t)[0][1],landed_low[1])]
         direction=np.asarray(target.outward_normal)
-        normal_gap=min(float(np.min(t.corners()@direction)-np.max(landed.corners()@direction)) for t in tools)
-        distance=max(.005-normal_gap,0.)+2*float(self.ik['position_tolerance_m'])
+        departure_tools=list(self.tool_collision_obbs_provider(state)) if timing!=WAIT_FIRST else tools
+        normal_gap=min(float(np.min(t.corners()@direction)-np.max(landed.corners()@direction)) for t in departure_tools)
+        distance=max(.005-normal_gap,0.)+2*float(self.ik['position_tolerance_m'])+withdrawal_extra(self.option)
         goal=self.physical_contact_pose(state).copy();goal[:3,3]+=direction*distance
-        path,failure,evidence=self._native_plan(state,None,released_world,seed=seed,stage='withdrawal',target_contact=landed,
+        path,failure,evidence=self._native_plan(state,None,released_world,seed=seed,stage='withdrawal',target_contact=departure_target,
             goal_pose=self.virtual_from_physical(goal),purpose=MotionPurpose.DEPARTURE_PROCESS,
             allow_ompl=False,max_ompl_attempts=0,try_ptp=False,try_prior=False)
         if failure:return reject('TOOL_DEPARTURE',dict(failure=failure,evidence=evidence))
         final=path[-1];separated=separation(final)
         if not separated['passed']:return reject('TOOL_SEPARATION',separated)
+        separation_q=np.asarray(final).tolist();parking=None
+        if timing==PARK_FIRST:
+            park_goal=np.asarray(self.option['park_q_rad'])
+            park_path,failure,evidence=self._native_plan(final,park_goal,released_world,seed=seed,stage='residence',
+                target_contact=landed,purpose=MotionPurpose.FREE_UNLOADED_REPOSITION,
+                allow_ompl=True,recovery_mode='shared_budget',try_ptp=True,try_prior=False)
+            if failure:return reject('OUTFEED_PARK_MOTION',dict(failure=failure,evidence=evidence))
+            full_park=check_full_tool_park(self,park_path,landed)
+            if not full_park['passed']:return reject('OUTFEED_PARK_FULL_TOOL',full_park)
+            final=park_path[-1]
+            parking=dict(path=[np.asarray(q).tolist() for q in park_path],goal_q_rad=park_goal.tolist(),
+                goal_source=self.option['park_goal_source'],full_tool=full_park,stage_id=final.native_receipt['stage_id'])
+        if self.option.get('joint_search_contract') and timing!=WAIT_FIRST:
+            transported,failure=plan_wait_outfeed(self,final,landed,released_world,seed,tool_timing=timing)
+            if failure:return reject('WAIT_OUTFEED_AFTER_WITHDRAWAL',failure)
+            final,departure_target,released_world,waiting=transported
         events=[*plan['events'],dict(event_type='RELEASE',target_id=target.target_id,stage_id=req['stage_id'],
             q_rad=np.asarray(end).tolist(),box=box_message(box),source='NATIVE_SAME_POSE_OWNERSHIP_EVENT'),
             dict(event_type='NOMINAL_FIRST_CONTACT',target_id=target.target_id,box=box_message(landed),model=drop['first_contact_model']),
-            dict(event_type='SAFE_TOOL_SEPARATION',target_id=target.target_id,q_rad=np.asarray(final).tolist()),
+            dict(event_type='SAFE_TOOL_SEPARATION',target_id=target.target_id,q_rad=separation_q),
             dict(event_type='IDEAL_RECEIVER_DRAIN',target_id=target.target_id,last_box=box_message(landed),physical_outfeed=False)]
+        if waiting:
+            if parking:
+                events.insert(-1,dict(event_type='OUTFEED_PARK_COMPLETE',target_id=target.target_id,
+                    stage_id=parking['stage_id'],q_rad=waiting['full_tool']['q_rad']))
+                plan['outfeed_park']=parking
+            events.insert(-2 if timing==WAIT_FIRST else -1,dict(event_type='WAIT_OUTFEED_COMPLETE',target_id=target.target_id,
+                stage_id=waiting['stage_id'],q_rad=waiting['full_tool']['q_rad'],box=box_message(departure_target)))
+            events[-1]['last_box']=box_message(departure_target)
+            plan['wait_outfeed']=waiting
         records=self._native_selected_records(final)
         plan.update(status='COUPLED_COMPLETE_CYCLE_PLANNED_NOT_EXECUTABLE',target_id=target.target_id,
             end_q_rad=np.asarray(final).tolist(),height_m=self.option['height_m'],option=deepcopy(self.option),

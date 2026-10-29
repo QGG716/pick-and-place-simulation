@@ -28,6 +28,7 @@
 #include "lifted_receiver.h"
 #include "coupled_receiver.h"
 #include "nominal_release.h"
+#include "ideal_outfeed.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <moveit/kinematic_constraints/utils.h>
 
@@ -329,7 +330,10 @@ class Worker {
       else m710::receiverTransitionWorld(req,receiver_binding);
     }
     else if(req.value("pipeline_id",std::string())=="semantic_event" && m710::coupledBinding(receiver_binding)) {
-      if(req.value("planner_id","")!="NOMINAL_DROP_RELEASE" || req.at("stage")!="extraction" ||
+      if(req.value("planner_id","")=="WAIT_IDEAL_OUTFEED") {
+        if(req.at("stage")!="withdrawal" || req.value("parent_stage_id","").empty())throw std::runtime_error("OUTFEED_SCOPE_INVALID");
+        m710::validateWaitOutfeed(req);
+      } else if(req.value("planner_id","")!="NOMINAL_DROP_RELEASE" || req.at("stage")!="extraction" ||
           req.at("q_start")!=req.at("q_goal") || req.at("attachment").is_null() || req.value("parent_stage_id","").empty())
         throw std::runtime_error("NOMINAL_RELEASE_SCOPE_INVALID");
     }
@@ -360,6 +364,8 @@ class Worker {
 
     if(!req.contains("parent_stage_id") || !req.at("parent_stage_id").is_string())
       throw std::runtime_error("NATIVE_TASK_EXPLICIT_PARENT_REQUIRED");
+    if(req.value("purpose","")=="FREE_UNLOADED_REPOSITION" && req.at("parent_stage_id").get<std::string>().empty())
+      throw std::runtime_error("OUTFEED_PARK_WITHDRAWAL_PARENT_REQUIRED");
     const std::string parent=req.at("parent_stage_id");
     if(task_id.empty() || stage_id.empty()) throw std::runtime_error("NATIVE_TASK_ID_REQUIRED");
     if(!diagnostic && parent.empty() && !req.at("attachment").is_null()) throw std::runtime_error("NATIVE_COLD_INITIAL_ATTACHMENT_FORBIDDEN");
@@ -390,6 +396,18 @@ class Worker {
       if(req.at("q_start")!=session.initial_q || req.at("world")!=session.initial_world) throw std::runtime_error("NATIVE_TASK_INITIAL_STATE_CHANGED");
     } else {
       const auto& previous=*session.records.at(parent);checkTransition(previous.end,scene,req,"stage_registration");
+      if(req.value("planner_id","")=="WAIT_IDEAL_OUTFEED") {
+        J grandparent=nullptr,greatgrandparent=nullptr;
+        if(!previous.parent.empty())grandparent=session.records.at(previous.parent)->request;
+        if(!previous.parent.empty() && !session.records.at(previous.parent)->parent.empty())
+          greatgrandparent=session.records.at(session.records.at(previous.parent)->parent)->request;
+        m710::validateWaitOutfeedParent(req,previous.request,grandparent,greatgrandparent);
+      }
+      if(req.value("purpose","")=="FREE_UNLOADED_REPOSITION") {
+        J drop=nullptr;
+        if(!previous.parent.empty())drop=session.records.at(previous.parent)->request;
+        m710::validateOutfeedPark(req,previous.request,drop,receiver_binding);
+      }
       if(req.value("receiver_template","")=="RIGHT_INNER_HMAX" || req.value("receiver_template","")=="COUPLED_PLANAR") {
         const auto leg=req.at("process_substage");
         if(receiver_binding.is_null() || (leg=="RIGHT_INNER_Y" && (previous.request.at("stage")!="contact" || req.at("ownership_transition")!="ATTACH")) ||
@@ -429,6 +447,37 @@ class Worker {
     while(session.active.size()>common) {session.task->stages()->remove(-1);session.active.pop_back();}
     auto generate=[this](NativeStageRecord& r) {
       const auto& req=r.request;const std::string pipeline=req.at("pipeline_id"),planner=req.at("planner_id");
+      if(pipeline=="semantic_event" && planner=="WAIT_IDEAL_OUTFEED") {
+        m710::validateWaitOutfeed(req);const auto began=Clock::now();
+        const auto& samples=req.at("outfeed").at("samples");const std::string target=req.at("process_policy").at("target_id");
+        auto next=r.start->diff();next->decoupleParent();
+        if(next->getCurrentState().hasAttachedBody(target) || !next->getWorld()->hasObject(target))throw std::runtime_error("OUTFEED_OWNERSHIP_INVALID");
+        auto& acm=next->getAllowedCollisionMatrixNonConst();
+        for(const auto* link:model->getLinkModelsWithCollisionGeometry())acm.setEntry(link->getName(),target,false);
+        J checks=J::array(),failure=nullptr;
+        r.result={{"status","OUTFEED_REJECTED"},{"task_id",req.at("task_id")},{"stage_id",req.at("stage_id")},
+          {"parent_stage_id",r.parent},{"request_id",req.at("request_id")},{"generation_source","SEMANTIC_EVENT"},
+          {"pipeline_id",pipeline},{"planner_id",planner},{"native_solver_calls",J::object()},
+          {"mtc_generation",true},{"generated_during_task",true}};
+        for(size_t i=0;i<samples.size();++i) {
+          if(seconds(began)>=req.at("allowed_planning_time_s").get<double>()){failure={{"reason","OUTFEED_CHECK_TIMEOUT"}};break;}
+          if(!next->processCollisionObjectMsg(object(samples[i].at("box"))))throw std::runtime_error("OUTFEED_IMPORT_FAILED");
+          m710::Clearance gate(next,req.at("clearance_policy"),"optimized",true,true,false);
+          if(!gate.check(next->getCurrentState()))failure=gate.last_failure;
+          if(failure.is_null())failure=m710::outfeedWorldFailure(samples[i].at("box"),req.at("world"));
+          checks.push_back({{"sample_index",i},{"t",samples[i].at("t")},{"passed",failure.is_null()},{"failure",failure}});
+          if(!failure.is_null())break;
+        }
+        r.result["outfeed"]={{"checks",checks},{"tool_q_constant",true},{"full_robot_tool_checked",true},
+          {"physical_execution","NOT_RUN"},{"continuous_swept_proof",false},{"passed",failure.is_null()}};
+        r.result["failure"]=failure;if(!failure.is_null())return;
+        r.end=next;r.trajectory=std::make_shared<robot_trajectory::RobotTrajectory>(model,"manipulator");
+        r.trajectory->addSuffixWayPoint(r.start->getCurrentState(),0.);
+        r.result.update({{"status","SUCCESS"},{"terminal_q",req.at("q_start")},{"points",J::array()},
+          {"joint_names",names},{"native_output_status","SKIPPED_PLANNING_ONLY"},
+          {"planning_only_status","PLANNING_ONLY_NOT_EXECUTABLE"},
+          {"time_parameterization","IDEAL_CONVEYOR_TIMING_ROBOT_WAITS"}});r.ready=true;return;
+      }
       if(pipeline=="semantic_event" && planner=="NOMINAL_DROP_RELEASE") {
         m710::validateNominalDrop(req,receiver_binding);
         const auto began=Clock::now();const auto& samples=req.at("nominal_release").at("samples");
@@ -1244,7 +1293,8 @@ private:
         if(req.at("process_policy").at("cups")!=bound_process_geometry.at("cups") ||
            req.at("process_policy").at("flange_from_physical_contact")!=bound_process_geometry.at("flange_from_physical_contact"))
           throw std::runtime_error("PROCESS_CUP_GEOMETRY_BINDING_MISMATCH");
-        process=std::make_shared<m710::ProcessPolicy>(scene,req);
+        const auto search_mount=m710::coupledBinding(receiver_binding)?receiver_binding.value("joint_search_layout",J(nullptr)):J(nullptr);
+        process=std::make_shared<m710::ProcessPolicy>(scene,req,search_mount);
       }
       if(req.at("clearance_policy").at("schema")=="m710_native_process_clearance_v1" && !process && op!="build_static_prior")
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");

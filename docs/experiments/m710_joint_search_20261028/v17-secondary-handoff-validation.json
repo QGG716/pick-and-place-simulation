@@ -1,0 +1,55 @@
+{
+  "status": "PASS_SUPERVISORS_REPLACED_CURRENT_NATIVE_JOBS_UNINTERRUPTED",
+  "epoch": 1793228037.1834075,
+  "active_planners": [
+    72564,
+    77461,
+    77505,
+    77556,
+    78873,
+    83671
+  ],
+  "maximum_search_workers": 6,
+  "slots": [
+    {
+      "status": "WAITING_CURRENT_FIXED_BUDGET",
+      "started_epoch": 1793228029.4263346,
+      "replaces_lane": 3,
+      "new_lane": 7,
+      "shared_deadline_epoch": 1793231478.4704792,
+      "new_run": "lane-7-candidate-00-v17",
+      "candidate": [
+        0.2,
+        -0.2,
+        0.7,
+        0.2
+      ],
+      "mechanism_profile": "low_profile_200_outfeed20_v3",
+      "semantics": "EXISTING_CHILD_FINISHES_ITS_BUDGET; NEW_FRESH40; NO_SEVENTH_SEARCH",
+      "active_run": "lane-3-candidate-03-v16",
+      "adopted_pid": 77556,
+      "old_supervisor_pid": 50611,
+      "old_ledger": "lane-v16-3.json"
+    },
+    {
+      "status": "WAITING_CURRENT_FIXED_BUDGET",
+      "started_epoch": 1793228029.444952,
+      "replaces_lane": 4,
+      "new_lane": 8,
+      "shared_deadline_epoch": 1793231478.4704792,
+      "new_run": "lane-8-candidate-00-v17",
+      "candidate": [
+        0.2,
+        -0.35,
+        0.7,
+        0.2
+      ],
+      "mechanism_profile": "low_profile_200_outfeed20_v3",
+      "semantics": "EXISTING_CHILD_FINISHES_ITS_BUDGET; NEW_FRESH40; NO_SEVENTH_SEARCH",
+      "active_run": "lane-4-candidate-03-v16",
+      "adopted_pid": 77505,
+      "old_supervisor_pid": 50613,
+      "old_ledger": "lane-v16-4.json"
+    }
+  ]
+}

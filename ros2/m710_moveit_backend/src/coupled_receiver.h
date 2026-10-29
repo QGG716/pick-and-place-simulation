@@ -118,11 +118,38 @@ inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& bind
   if(fixed!=required)throw std::runtime_error("RECEIVE_MECHANISM_WORLD_CHANGED");
   const bool l01_hmax=contract.contains("l01_hmax_permission");
   if(l01_hmax)validateL01Hmax(req,binding);
+  const bool search=contract.contains("joint_search_contract");
+  if(search) {
+    const auto& policy=contract.at("joint_search_contract");const auto target=processBox(contract.at("initial_target"));
+    const double h=2*target.pose.linear().row(2).cwiseAbs().dot(target.half),bottom=target.pose.translation().z()-h/2;
+    const std::string mode=policy.at("mode");const double minimum=policy.at("minimum_m"),maximum=policy.at("maximum_m");
+    double height=0.;
+    if(mode=="Hmax")height=bottom-.05;
+    else if(mode=="Hmin")height=bottom-h-.05;
+    else if(mode=="LIFTED_TOP_FIXED" && policy.at("face")=="z+")height=minimum;
+    else if(mode=="LIFTED_TOP_EXPLICIT" && policy.at("face")=="z+" && policy.contains("explicit_receive_height_m")) {
+      height=policy.at("explicit_receive_height_m");
+      if((height!=.65 && height!=.85) || !(height>bottom-.05+1e-9))
+        throw std::runtime_error("SEARCH_EXPLICIT_TOP_HEIGHT_SCOPE");
+    }
+    else throw std::runtime_error("SEARCH_RECEIVE_MODE");
+    const double release=policy.at("face")=="z+"?std::max(bottom+.05,height+.05):bottom;
+    const auto& layout=binding.at("joint_search_layout");
+    if(layout.at("schema")!="fixed40_joint_search_20261028_v1" ||
+        minimum!=layout.at("minimum_surface_height_m").get<double>() ||
+        maximum!=layout.at("maximum_surface_height_m").get<double>())
+      throw std::runtime_error("SEARCH_RECEIVE_LAYOUT_LIMITS_CHANGED");
+    if(policy.at("schema")!="fixed40_joint_search_20261028_v1" || policy.at("target_id")!=target.id ||
+        policy.at("d_m")!=.05 || expected<minimum-1e-9 || expected>maximum+1e-9 ||
+        std::abs(height-expected)>1e-8 || std::abs(policy.at("height_m").get<double>()-expected)>1e-8 ||
+        std::abs(policy.at("release_bottom_m").get<double>()-release)>1e-8)
+      throw std::runtime_error("SEARCH_RECEIVE_FORMULA_OR_RANGE_CHANGED");
+  }
   if(contract.value("junction_front",false)) {
     const auto target=processBox(contract.at("initial_target"));
     const double h=2*target.pose.linear().row(2).cwiseAbs().dot(target.half);
     const double hmin=target.pose.translation().z()-h/2-h-.05;
-    if(!l01_hmax && std::abs(expected-hmin)>1e-8)throw std::runtime_error("JUNCTION_FRONT_REQUIRES_HMIN");
+    if(!l01_hmax && !search && std::abs(expected-hmin)>1e-8)throw std::runtime_error("JUNCTION_FRONT_REQUIRES_HMIN");
     const auto current=processBox(req.at("process_policy").at("target"));
     if(std::abs(current.pose.translation().y()-target.pose.translation().y())>1e-5 ||
         (current.pose.linear()-target.pose.linear()).cwiseAbs().maxCoeff()>2e-4)

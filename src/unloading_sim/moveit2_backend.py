@@ -1096,6 +1096,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         world=[box_message(b) for b in obstacles]
         if len({b["id"] for b in world})!=len(world): raise ValueError("DUPLICATE_OBJECT")
         pairs=[list(p) for p in sorted(self.collision_policy.robot_mount_pairs(self.robot_state_validator.base_support_obstacle_name))]
+        from .joint_search_layout import qualified_mount_pairs
+        pairs.extend([list(p) for p in sorted(qualified_mount_pairs(self.robot,obstacles))])
         target_name=attachment.rigid.name if attachment is not None else (target_contact.name if target_contact is not None else self.robot_state_validator.contact_target_name)
         tool_mount_pairs=self.collision_policy.tool_chassis_pairs(target_name,self.native_tools)
         if tool_mount_pairs:
@@ -1214,6 +1216,17 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         strict = getattr(self, "require_native_motion", False)
         constrained = bool(support_names or target_contact is not None or initial_proximity is not None or
             stage in {"contact", "support-release", "extraction", "place", "withdrawal"})
+        if purpose==MotionPurpose.FREE_UNLOADED_REPOSITION:
+            binding=getattr(self.native,'lifted_receiver_binding',{}) or {}
+            if (stage!='residence' or attachment is not None or support_names or initial_proximity is not None
+                    or target_contact is None or goal_pose is not None or goal is None
+                    or not self.planning_only or not getattr(self,'native_cold',False)
+                    or binding.get('joint_search_layout',{}).get('schema')!='fixed40_joint_search_20261028_v1'
+                    or np.asarray(goal).tolist()!=binding.get('outfeed_park_q_rad')):
+                raise MoveItUnavailable('OUTFEED_PARK_SCOPE_CHANGED')
+            # Only the detached, already separated object uses ordinary free
+            # repositioning. This changes no process or collision permissions.
+            constrained=False
         capabilities = getattr(self, "native_startup", {}).get("capabilities", {})
         if strict and not capabilities.get("native_task_session", False):
             return [],dict(reason="NATIVE_TASK_GENERATION_UNAVAILABLE",stage=stage),dict(backend="moveit2",attempts=[])

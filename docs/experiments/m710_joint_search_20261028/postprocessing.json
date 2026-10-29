@@ -1,0 +1,751 @@
+{
+  "started_epoch": 1793231492.6469285,
+  "stop": {
+    "epoch": 1793231485.0169382,
+    "reason": "SHARED_8_HOUR_WALL_BUDGET",
+    "winner": null,
+    "winner_checkpoint_sha256": null,
+    "interrupted_owned_processes": [
+      {
+        "pid": 72429,
+        "args": [
+          "python3",
+          "/root/autodl-tmp/joint_search_parallel_v17_mechanism.py"
+        ],
+        "supervisor": true
+      },
+      {
+        "pid": 72564,
+        "args": [
+          "/opt/planning-venv/bin/python",
+          "/work-joint-search-20261028-v17/tools/plan_m710_joint_search.py",
+          "--output",
+          "/joint-search-20261028/formal-v17",
+          "--worker-command",
+          "/bin/bash /joint-search-worker-v13.sh",
+          "--worker-binary",
+          "/joint-search-build-v13/m710_moveit_worker",
+          "--source-manifest",
+          "/work-joint-search-20261028-v17/joint-search-manifest.json",
+          "--source-commit",
+          "d7610965304c03317ad4ace6f1cd959b30470aa5",
+          "--output",
+          "/joint-search-20261028/lane-6-candidate-00-v17",
+          "--single-candidate",
+          "0",
+          "-.2",
+          ".9",
+          ".2",
+          "--mechanism-profile",
+          "low_profile_200_outfeed20_v3",
+          "--max-layouts",
+          "1",
+          "--budget-hours",
+          "1.646195546521081"
+        ],
+        "supervisor": false
+      }
+    ],
+    "contract": {
+      "started_epoch": 1793206739.3721335,
+      "deadline_epoch": 1793231478.4704792,
+      "prior_cumulative_search_wall_s": 4060.901654224843,
+      "global_budget_wall_s": 28800,
+      "maximum_concurrent_search_workers": 6,
+      "threads_per_native_worker": 1,
+      "semantics": "OVERLAPPING_WALL_TIME_NOT_SUM_OF_WORKER_COSTS; EACH_FRESH40_BRANCH_INDEPENDENT; NEVER_SUM_COMPLETED_COUNTS",
+      "lanes": {
+        "1": [
+          [
+            0.625,
+            -0.25,
+            0.5,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.525,
+            -0.35,
+            0.4,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.8,
+            -0.1,
+            0.6,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.7,
+            0.2,
+            0.6,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.6,
+            0.4,
+            0.7,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.4,
+            0.4,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.8,
+            0.0,
+            0.4,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.2,
+            0.0,
+            0.9,
+            0.25,
+            "low_profile_250_v1"
+          ]
+        ],
+        "2": [
+          [
+            0.725,
+            -0.35,
+            0.7,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.425,
+            -0.15,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.7,
+            0.3,
+            0.5,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.8,
+            0.4,
+            0.4,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.475,
+            0.5,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.5,
+            0.475,
+            0.9,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.8,
+            -0.4,
+            0.8,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.7,
+            0.0,
+            1.0,
+            0.25,
+            "low_profile_250_v1"
+          ]
+        ],
+        "3": [
+          [
+            0.2,
+            -0.2,
+            0.7,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.1,
+            -0.2,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.0,
+            -0.2,
+            0.9,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.2,
+            -0.2,
+            0.9,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.1,
+            -0.2,
+            1.0,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.2,
+            -0.1,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.2,
+            0.7,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.2,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ]
+        ],
+        "4": [
+          [
+            0.2,
+            -0.35,
+            0.7,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.2,
+            -0.05,
+            0.7,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.1,
+            -0.35,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.1,
+            -0.05,
+            0.8,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.35,
+            0.6,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.05,
+            0.6,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.4,
+            -0.2,
+            0.5,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.4,
+            -0.2,
+            0.7,
+            0.25,
+            "low_profile_250_v1"
+          ]
+        ],
+        "5": [
+          [
+            0.325,
+            -0.2,
+            0.625,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.325,
+            -0.2,
+            0.575,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.325,
+            -0.21,
+            0.6,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.325,
+            -0.2,
+            0.59,
+            0.25,
+            "low_profile_250_v1"
+          ],
+          [
+            0.3,
+            -0.2,
+            0.5,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.2,
+            -0.2,
+            0.6,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.2,
+            -0.2,
+            0.7,
+            0.2,
+            "low_profile_200_v2"
+          ],
+          [
+            0.1,
+            -0.2,
+            0.8,
+            0.2,
+            "low_profile_200_v2"
+          ]
+        ]
+      },
+      "resource_revisions": [
+        {
+          "epoch": 1793217453.807122,
+          "previous_maximum": 3,
+          "new_maximum": 6,
+          "deadline_unchanged": true,
+          "reason": "READ_CPU_25_CORE_QUOTA_MEMORY_92_GIB_CURRENT_8P4_GIB; SAME_PER_SOLVER_LIMITS",
+          "cpu_max": "2500000 100000",
+          "memory_max_bytes": 98784247808,
+          "memory_current_bytes": 9138470912
+        }
+      ]
+    }
+  },
+  "runs": [
+    {
+      "run": "formal-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-00-v9",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v9",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v9/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-00-v11",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v11",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v11/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-01-v10",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v10",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v9/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-02-v12",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v12",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v11/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-03-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-04-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-01-v11",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v11",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v11/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-02-v13",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v13",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-03-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-04-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-05-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-4-candidate-00-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-00-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-3-candidate-00-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-05-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-06-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-01-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-06-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-07-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-02-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-4-candidate-01-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-3-candidate-01-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-07-v15",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v15",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-08-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-03-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-3-candidate-02-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-10-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-08-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-09-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-04-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-4-candidate-02-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-09-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-6-candidate-00-v17",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v17",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-4-candidate-03-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-3-candidate-03-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-10-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-2-candidate-11-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-8-candidate-00-v17",
+      "status_before": "RUNNING",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v17",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "close_command": [
+        "chroot",
+        "/root/autodl-tmp/m710-l05-x500-20261022/rootfs",
+        "/usr/bin/env",
+        "PYTHONPATH=/work-joint-search-20261028-v17/src:/work-joint-search-20261028-v17/tools",
+        "M710_MOVEIT_ASSET_ROOT=/work-joint-search-20261028-v17",
+        "OMP_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "PYTHONUNBUFFERED=1",
+        "/opt/planning-venv/bin/python",
+        "/work-joint-search-20261028-v17/tools/plan_m710_joint_search.py",
+        "--output",
+        "/joint-search-20261028/lane-8-candidate-00-v17",
+        "--worker-command",
+        "/bin/bash /joint-search-worker-v13.sh",
+        "--worker-binary",
+        "/joint-search-build-v13/m710_moveit_worker",
+        "--source-manifest",
+        "/work-joint-search-20261028-v17/joint-search-manifest.json",
+        "--source-commit",
+        "d7610965304c03317ad4ace6f1cd959b30470aa5",
+        "--resume",
+        "--budget-hours",
+        "0.8387679879320785"
+      ],
+      "close_exit": 0,
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-5-candidate-05-v16",
+      "status_before": "RUNNING",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "close_command": [
+        "chroot",
+        "/root/autodl-tmp/m710-l05-x500-20261022/rootfs",
+        "/usr/bin/env",
+        "PYTHONPATH=/work-joint-search-20261028-v16/src:/work-joint-search-20261028-v16/tools",
+        "M710_MOVEIT_ASSET_ROOT=/work-joint-search-20261028-v16",
+        "OMP_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "PYTHONUNBUFFERED=1",
+        "/opt/planning-venv/bin/python",
+        "/work-joint-search-20261028-v16/tools/plan_m710_joint_search.py",
+        "--output",
+        "/joint-search-20261028/lane-5-candidate-05-v16",
+        "--worker-command",
+        "/bin/bash /joint-search-worker-v13.sh",
+        "--worker-binary",
+        "/joint-search-build-v13/m710_moveit_worker",
+        "--source-manifest",
+        "/work-joint-search-20261028-v16/joint-search-manifest.json",
+        "--source-commit",
+        "d7610965304c03317ad4ace6f1cd959b30470aa5",
+        "--resume",
+        "--budget-hours",
+        "0.8307096234677981"
+      ],
+      "close_exit": 0,
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-7-candidate-00-v17",
+      "status_before": "RUNNING",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v17",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "close_command": [
+        "chroot",
+        "/root/autodl-tmp/m710-l05-x500-20261022/rootfs",
+        "/usr/bin/env",
+        "PYTHONPATH=/work-joint-search-20261028-v17/src:/work-joint-search-20261028-v17/tools",
+        "M710_MOVEIT_ASSET_ROOT=/work-joint-search-20261028-v17",
+        "OMP_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "PYTHONUNBUFFERED=1",
+        "/opt/planning-venv/bin/python",
+        "/work-joint-search-20261028-v17/tools/plan_m710_joint_search.py",
+        "--output",
+        "/joint-search-20261028/lane-7-candidate-00-v17",
+        "--worker-command",
+        "/bin/bash /joint-search-worker-v13.sh",
+        "--worker-binary",
+        "/joint-search-build-v13/m710_moveit_worker",
+        "--source-manifest",
+        "/work-joint-search-20261028-v17/joint-search-manifest.json",
+        "--source-commit",
+        "d7610965304c03317ad4ace6f1cd959b30470aa5",
+        "--resume",
+        "--budget-hours",
+        "0.8306980916976722"
+      ],
+      "close_exit": 0,
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    },
+    {
+      "run": "lane-1-candidate-11-v16",
+      "status_before": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY",
+      "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v16",
+      "worker": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-build-v13/m710_moveit_worker",
+      "status_after": "BUDGET_OR_FINITE_ADMISSION_LIMIT_REACHED_NOT_GLOBAL_INFEASIBILITY"
+    }
+  ],
+  "export_exit": 0,
+  "audit_exit": 0,
+  "ended_epoch": 1793231661.89619,
+  "status": "PASS_VERIFIED_BEST_BRANCH_AND_EXPORT",
+  "completed": 29,
+  "remaining": 11,
+  "physical_execution": "NOT_RUN",
+  "best": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-20261028/final-best",
+  "browser_validation": "PASS_HEADLESS_REPLAY",
+  "browser_checks_sha256": "5f0dcab9c06aab162c7dfe1b1bb73a5aea312bbe6018bf38d1c232e4feb7cdb5",
+  "report_browser_validation": "PASS_OFFLINE_HTML_REPORT",
+  "report_sha256": "d9fcff7b062a23110167d49de6e94aad7fee3b2acaa8a24961e25a4f1a6abc07",
+  "visual_review": "FINAL_REPORT_AND_REPLAY_INITIAL_FINAL_OUTFEED_IMAGES_INSPECTED",
+  "browser_validation_epoch": 1793233003.215296
+}

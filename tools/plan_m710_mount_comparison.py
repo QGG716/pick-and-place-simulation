@@ -52,7 +52,7 @@ def load_cases(path):
 
 
 def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption=False,
-                 l01_tool_chassis_exemption=False):
+                 l01_tool_chassis_exemption=False,initial_q=None,initial_seed=None,initial_draws=64):
     policy = load_layout_motion_policy(ROOT/"configs/validation/m710id70_proof_of_concept.yaml")
     layout = load_workcell_layout(layout_path if layout_path is not None else
                                  ROOT/"configs/workcells"/LAYOUTS[layout_name])
@@ -67,6 +67,32 @@ def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption
             from l01_tool_chassis import frozen_l01_scope
             data['collision_policy']['tool_chassis_contact_target_ids']=frozen_l01_scope(layout.cartons())['allowed_target_ids']
         policy=replace(policy,layout_validation=replace(policy.layout_validation,data=data))
+    if initial_q is not None or initial_seed is not None:
+        if 'joint_search' not in layout.data:raise ValueError('INITIAL_WITNESS_REQUIRES_JOINT_SEARCH_CONTRACT')
+        from unloading_sim.workcell_layout import audit_initial_state,_audit_initial_state_prepared,urdf_collision_shapes
+        data=deepcopy(policy.layout_validation.data)
+        if initial_q is not None:data['initial_state']['q_rad']=np.asarray(initial_q,float).tolist()
+        if initial_seed is not None:data['initial_state']['seed']=int(initial_seed)
+        validation=replace(policy.layout_validation,data=data)
+        checked=audit_initial_state(validation)
+        if checked['status']!='PASS' and initial_seed is not None:
+            robot=layout.robot();shapes=urdf_collision_shapes(robot)
+            fixed=list(layout.fixed_components());cartons=layout.cartons()
+            margin=float(data['collision']['joint_margin_rad'])
+            lower=robot.joint_limits[:,0]+margin;upper=robot.joint_limits[:,1]-margin
+            rng=np.random.default_rng(initial_seed)
+            proposals=[np.zeros(6),(lower+upper)/2,*rng.uniform(lower,upper,size=(initial_draws,6))]
+            witness=dict(status='FAIL',seed=initial_seed,maximum_random_draws=initial_draws,
+                historical_solver_state_loaded=False,attempts=[])
+            for index,q in enumerate(proposals):
+                tested=_audit_initial_state_prepared(validation,robot,shapes,fixed,cartons,q)
+                witness['attempts'].append(dict(index=index,q_rad=q.tolist(),status=tested['status'],failures=tested['failures']))
+                if tested['status']=='PASS':
+                    witness.update(status='PASS',q_rad=q.tolist(),draw=index);break
+            audit['joint_search_initial_witness']=dict(configured_state=checked,finite_search=witness)
+            if witness['status']!='PASS':raise ValueError('NO_INITIAL_WITNESS_IN_FINITE_FIXED_WORLD_DRAWS')
+            data['initial_state']['q_rad']=witness['q_rad']
+        policy=replace(policy,layout_validation=replace(validation,data=data))
     original = build_verified_motion_input(policy, ROOT)
     built = _build_automatic_trajectory_connector(original, layout.robot())
     if built.connector is None:

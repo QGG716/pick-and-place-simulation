@@ -1,0 +1,28 @@
+{
+  "status": "MAIN_RESUMED",
+  "started_epoch": 1793223045.0431952,
+  "shared_deadline_epoch": 1793231478.4704792,
+  "reason": "RETAINED_BEST19_HAS_UNSEARCHED_IN_PLANE_OFFSETS_AFTER_ONLY_SHORT_V16_SLICE",
+  "focused_run": "lane-4-candidate-00-v16",
+  "main_run": "formal-v16",
+  "additional_focused_budget_s": 1800,
+  "active_run": "formal-v16",
+  "main_elapsed_before": 20230.56116147712,
+  "pid": 69644,
+  "command": [
+    "chroot",
+    "/root/autodl-tmp/m710-l05-x500-20261022/rootfs",
+    "/bin/bash",
+    "/joint-search-20261028/search-v16.sh",
+    "--output",
+    "/joint-search-20261028/formal-v16",
+    "--resume",
+    "--budget-hours",
+    "8.0"
+  ],
+  "main_elapsed_after_close": 20243.97692991048,
+  "focused_elapsed_before": 3609.0012677013874,
+  "focused_best_before": 19,
+  "focused_elapsed_after": 5418.181573370472,
+  "focused_best_after": 19
+}

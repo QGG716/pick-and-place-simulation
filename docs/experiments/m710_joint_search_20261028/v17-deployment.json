@@ -1,0 +1,14 @@
+{
+  "source": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v17",
+  "archive_sha256": "445c5c2b8406228347bcb83a158a4ab21ea5bc57eb5d22021267ebb121b1fae4",
+  "changed": [
+    "src/unloading_sim/conveyor_lift.py",
+    "src/unloading_sim/joint_search_layout.py",
+    "src/unloading_sim/workcell_layout.py",
+    "tools/plan_m710_joint_search.py"
+  ],
+  "source_files": 369,
+  "native_binary_unchanged": "v13",
+  "prepare_elapsed_s": 0.3728184700012207,
+  "test_pid": 71405
+}

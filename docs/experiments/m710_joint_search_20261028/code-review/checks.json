@@ -1,0 +1,10 @@
+{
+  "status": "PASS_CURRENT_WORKSPACE_MATCHES_CODE_BUNDLE",
+  "files_checked": 30,
+  "base_commit": "d7610965304c03317ad4ace6f1cd959b30470aa5",
+  "patch_sha256": "bd3154314d680bcef17a348e6ec271f1b95949658157342e2ec5acabeba20041",
+  "zip_sha256": "6096869df583cab47c7404e5056ebf1c07a70c1ed3fc4269032641af9f75af34",
+  "committed": false,
+  "pushed": false,
+  "worktree_changed_files_match_manifest": true
+}

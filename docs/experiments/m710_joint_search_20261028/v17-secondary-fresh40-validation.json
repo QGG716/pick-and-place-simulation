@@ -1,0 +1,89 @@
+{
+  "status": "PASS_TWO_NEW_MECHANISM_FRESH40_STARTS",
+  "epoch": 1793228511.1870687,
+  "active_search_pids": [
+    72564,
+    78873,
+    83671,
+    86116,
+    86185,
+    86200
+  ],
+  "maximum_search_workers": 6,
+  "runs": [
+    {
+      "run": "lane-7-candidate-00-v17",
+      "source_hash": "777d64122180e4f05cf71531f4ed046207e57bcd96845e220253efb516d83d3d",
+      "worker_hash": "84418b69c84fa91e4cbb16b44495663f555dd636d5b4504ba872942c0f1caf5c",
+      "candidate": {
+        "schema": "fixed40_joint_search_20261028_v1",
+        "base_xyz_a_m": [
+          0.2,
+          -0.2,
+          0.7
+        ],
+        "base_xyz_world_m": [
+          -1.75,
+          0.14999999999999997,
+          0.7
+        ],
+        "mount_rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mount_design": "SOLID_PLINTH",
+        "minimum_surface_height_m": 0.2,
+        "maximum_surface_height_m": 2.1,
+        "mechanism_profile": "low_profile_200_outfeed20_v3",
+        "tool_extension_m": 0.2,
+        "structural_strength": "NOT_VERIFIED",
+        "actuator_rating": "NOT_VERIFIED",
+        "manufacturing_rating": "NOT_VERIFIED"
+      },
+      "fresh40": true,
+      "historical_completed_count": 0,
+      "assumed_removed": [],
+      "assumed_removed_evidence": "ALL_40_UNIQUE_ORIGINAL_IDENTITIES_PRESENT_AND_EMPTY_INITIAL_LEDGER",
+      "original_population_sha256": "387807b5b7a3bf3f64d4cd99103867a2f06c986d7aa8e952daad5e2827eb7ac1",
+      "original_population_comparison": "ALL_IDENTITIES_POSES_SIZES_EXACT_MATCH; READ_ONLY_VALIDATION_NO_SOLVER_INPUT"
+    },
+    {
+      "run": "lane-8-candidate-00-v17",
+      "source_hash": "777d64122180e4f05cf71531f4ed046207e57bcd96845e220253efb516d83d3d",
+      "worker_hash": "84418b69c84fa91e4cbb16b44495663f555dd636d5b4504ba872942c0f1caf5c",
+      "candidate": {
+        "schema": "fixed40_joint_search_20261028_v1",
+        "base_xyz_a_m": [
+          0.2,
+          -0.35,
+          0.7
+        ],
+        "base_xyz_world_m": [
+          -1.75,
+          0.0,
+          0.7
+        ],
+        "mount_rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mount_design": "SOLID_PLINTH",
+        "minimum_surface_height_m": 0.2,
+        "maximum_surface_height_m": 2.1,
+        "mechanism_profile": "low_profile_200_outfeed20_v3",
+        "tool_extension_m": 0.2,
+        "structural_strength": "NOT_VERIFIED",
+        "actuator_rating": "NOT_VERIFIED",
+        "manufacturing_rating": "NOT_VERIFIED"
+      },
+      "fresh40": true,
+      "historical_completed_count": 0,
+      "assumed_removed": [],
+      "assumed_removed_evidence": "ALL_40_UNIQUE_ORIGINAL_IDENTITIES_PRESENT_AND_EMPTY_INITIAL_LEDGER",
+      "original_population_sha256": "387807b5b7a3bf3f64d4cd99103867a2f06c986d7aa8e952daad5e2827eb7ac1",
+      "original_population_comparison": "ALL_IDENTITIES_POSES_SIZES_EXACT_MATCH; READ_ONLY_VALIDATION_NO_SOLVER_INPUT"
+    }
+  ]
+}

@@ -107,6 +107,22 @@ class SingleContactClient:
                 getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
                 and request.get('pipeline_id')=='pilz_industrial_motion_planner' and request.get('planner_id')=='LIN'
                 and request.get('attachment') is None and bool(request.get('parent_stage_id')))
+            allowed |= (getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
+                and request.get('planning_mode')=='cold_from_scratch' and request.get('planning_only') is True
+                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema')=='fixed40_joint_search_20261028_v1'
+                and request.get('pipeline_id')=='semantic_event' and request.get('planner_id')=='WAIT_IDEAL_OUTFEED'
+                and request.get('outfeed',{}).get('schema')=='fixed40_wait_outfeed_v1'
+                and request.get('attachment') is None and bool(request.get('parent_stage_id'))
+                and request.get('q_start')==request.get('q_goal'))
+            allowed |= (getattr(self,'coupled_enabled',False) and request.get('stage')=='residence'
+                and request.get('purpose')=='FREE_UNLOADED_REPOSITION' and request.get('planning_only') is True
+                and request.get('planning_mode')=='cold_from_scratch' and request.get('attachment') is None
+                and bool(request.get('parent_stage_id')) and request.get('ownership_transition') is None
+                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema')=='fixed40_joint_search_20261028_v1'
+                and isinstance(request.get('q_goal'),list) and len(request['q_goal'])==6
+                and request.get('q_goal')==(self.lifted_receiver_binding or {}).get('outfeed_park_q_rad')
+                and (request.get('pipeline_id'),request.get('planner_id')) in {
+                    ('pilz_industrial_motion_planner','PTP'),('ompl','RRTConnectkConfigDefault')})
         if not allowed or any(k in request for k in ("prior_context", "database", "history", "path", "ik_seeds")):
             self.forbidden_attempts += 1
             raise MoveItUnavailable("SINGLE_CONTACT_FORBIDDEN_REQUEST:"+str(op))

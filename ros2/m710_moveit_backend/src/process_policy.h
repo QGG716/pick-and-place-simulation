@@ -14,6 +14,28 @@ inline bool authorizedRobotMountPair(const Json& source,const std::string& a,con
   return source.value("robot_mount_contact_exemption",false) &&
     ((b=="chassis" && links.count(a)) || (a=="chassis" && links.count(b)));
 }
+inline bool qualifiedSearchPlinthPair(const Json& request,const Json& mount,
+    const Eigen::Isometry3d& actual_base,const std::string& a,const std::string& b) {
+  if(!((a=="base_link"&&b=="mount_plinth")||(b=="base_link"&&a=="mount_plinth")) ||
+     !request.value("planning_only",false) || request.value("planning_mode","")!="cold_from_scratch" ||
+     !mount.is_object() || mount.value("schema","")!="fixed40_joint_search_20261028_v1" ||
+     mount.value("mount_design","")!="SOLID_PLINTH")return false;
+  const auto xyz=mount.at("base_xyz_world_m").get<std::vector<double>>();
+  if(xyz.size()!=3 || !actual_base.matrix().allFinite() ||
+     (actual_base.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-12)return false;
+  const Eigen::Vector3d base(xyz[0],xyz[1],xyz[2]);
+  if(!base.allFinite() || base.z()<=.6 || (base-actual_base.translation()).cwiseAbs().maxCoeff()>1e-12)return false;
+  const Json* solid=nullptr;
+  for(const auto& box:request.at("world"))if(box.at("id")=="mount_plinth") {
+    if(solid)return false;solid=&box;
+  }
+  if(!solid || solid->value("category","")!="mount_structure" || solid->contains("solid"))return false;
+  const auto box=processBox(*solid);
+  if((box.pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-12)return false;
+  const Eigen::Vector3d lo(base.x()-.3385,base.y()-.275,.6),hi(base.x()+.225,base.y()+.275,base.z());
+  return (box.pose.translation()-box.half-lo).cwiseAbs().maxCoeff()<=1e-12 &&
+         (box.pose.translation()+box.half-hi).cwiseAbs().maxCoeff()<=1e-12;
+}
 // Candidate-local process permissions. ACM exempts only the named pairs whose
 // geometry is checked here; the ordered verifier restores free-space rules.
 class ProcessPolicy {
@@ -64,7 +86,7 @@ class ProcessPolicy {
   }
 public:
   Json last_failure=nullptr,last_seal=nullptr;
-  ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request)
+  ProcessPolicy(const planning_scene::PlanningScenePtr& scene,const Json& request,const Json& search_mount=nullptr)
     :spec_(request.at("process_policy")),source_(request.at("clearance_policy").at("source_policy")),
      initial_(spec_.at("initial_proximity")),stage_(request.at("stage")),target_id_(spec_.at("target_id")),
      compliant_(request.at("clearance_policy").at("compliant_tool_links").get<std::set<std::string>>()),
@@ -121,7 +143,9 @@ public:
       if(pair.size()!=2) throw std::runtime_error("PROCESS_ALLOWED_PAIR_INVALID");
       const std::string a=pair.at(0),b=pair.at(1);
       const bool assembly=(a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis") ||
-        authorizedRobotMountPair(source_,a,b);
+        authorizedRobotMountPair(source_,a,b) ||
+        (scene->getRobotModel()->getLinkModel("base_link") && qualifiedSearchPlinthPair(request,search_mount,
+          state.getGlobalLinkTransform("base_link"),a,b));
       const bool tool_mount=request.value("planning_only",false) && request.value("planning_mode","")=="cold_from_scratch" &&
         authorizedToolChassisPair(source_,target_id_,
           request.at("clearance_policy").value("tool_links",std::set<std::string>{}),a,b);

@@ -250,7 +250,11 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     floor=float(layout.data["world"]["floor_z_m"]);base_z=floor+.10
     parts=[];stacks=[];mates=[]
     coupling=layout.data["conveyors"]["coupling"]
-    low_profile=coupling.get("scissor_profile")=="low_profile_250_v1"
+    dropped_support=coupling.get('scissor_profile')=='low_profile_200_outfeed20_v3'
+    lower_support_drop=.020 if dropped_support else 0.
+    compact=coupling.get('scissor_profile') in ('low_profile_200_v1','low_profile_200_v2','low_profile_200_outfeed20_v3')
+    compact_v2=coupling.get('scissor_profile') in ('low_profile_200_v2','low_profile_200_outfeed20_v3')
+    low_profile=coupling.get("scissor_profile") in ("low_profile_250_v1","low_profile_200_v1","low_profile_200_v2","low_profile_200_outfeed20_v3")
     # User-approved concept revision: preserve arm lengths, stages, lanes,
     # support spacing and the complete conveyor solids. Lower the floor pins
     # and shorten the transverse rail/arm vertical section and head standoff.
@@ -259,6 +263,14 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     longitudinal_base=floor+.040 if low_profile else base_z
     longitudinal_spec=ScissorSpec(4,.60,.020,.018,.020) if low_profile else ScissorSpec(4,.60,.025,.018)
     transverse_head_offset=.036 if low_profile else .070
+    if compact:
+        transverse_spec=ScissorSpec(2,1.25,.012,.020,.012)
+        transverse_base=floor+.025
+        transverse_head_offset=.021
+    if compact_v2:
+        transverse_spec=ScissorSpec(2,1.25,.008,.020,.008)
+        transverse_head_offset=.025
+        longitudinal_spec=ScissorSpec(4,.60,.014,.018,.020)
     support_spacing=float(coupling.get("transverse_support_spacing_m",
                                      2*(transverse.half_extents[0]-.12)))
     if not np.isfinite(support_spacing) or not .105 <= support_spacing <= 2*transverse.half_extents[0]-.10:
@@ -269,7 +281,9 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
             [x,transverse.center[1]-.625,transverse_base],[0,1,0],
             height-2*transverse.half_extents[2]-transverse_head_offset,transverse_spec,floor_z=floor)
         parts.extend(items);stacks.append(info)
-        parts.append(_box(f"{info['id']}_mount",[x,transverse.center[1],height-.13],[.08,1.25,.02]))
+        mount_thickness=.016 if compact_v2 else .006 if compact else .02
+        parts.append(_box(f"{info['id']}_mount",[x,transverse.center[1],height-.128 if compact_v2 else height-.123 if compact else height-.13],
+            [.08,1.25,mount_thickness]))
     # Fixed floor stations; heads swivel and slide against the inclined frame.
     station=upper[0]-length*.40
     for side in (-1,1):
@@ -281,7 +295,8 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         parts.extend(items);stacks.append(info)
         parts.append(_box(f"{info['id']}_swivel_head",np.array([x,lower[1],underside])-rotation[:,2]*.01,
             [.08,.60,.02],rotation))
-        parts.append(_box(f"{info['id']}_neck",[x,lower[1]-.02,underside-.04],[.02,.50,.05]))
+        parts.append(_box(f"{info['id']}_neck",[x,lower[1]-.02,underside-.044 if compact_v2 else underside-.04],
+            [.02,.50,.058 if compact_v2 else .05]))
     # The rear floor is finite. A fixed cantilever rail reaches outside the
     # opening; both support stations stand on the existing floor inside it.
     low_x=upper[0]-length
@@ -289,7 +304,10 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     rail_min=low_x-.25
     floor_min=float(layout.data["trailer"]["opening_x_m"])
     rail_max=max(low_x+travel+.18,floor_min+.30)
-    rail_z=low-(.26 if low_profile else .20)
+    # Explicit physical mounting revision: the complete lower support assembly
+    # moves down together. Bearing, carriage and rail solids keep their sizes;
+    # the two rail stands still extend from the existing floor to the rail.
+    rail_z=low-(.26 if low_profile else .20)-lower_support_drop
     if rail_min>=rail_max or rail_z-.02<=floor:raise ValueError("INVALID_SLIDER_RAIL")
     for side in (-1,1):
         y=lower[1]+side*(width/2-.08);key=f"lift_lower_rail_{side+1}"
@@ -299,10 +317,10 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
             parts.append(_box(foot,[x,y,floor+h/2],[.08,.08,h]))
             mates.extend([(foot,key,"FIXED_RAIL_STAND"),(foot,"trailer_floor","FOOT_ON_EXISTING_FLOOR")])
         carriage=f"lift_lower_carriage_{side+1}"
-        parts.append(_box(carriage,[lower[0]-.14,y,low-(.175 if low_profile else .14)],
+        parts.append(_box(carriage,[lower[0]-.14,y,low-(.175 if low_profile else .14)-lower_support_drop],
             [.16,.10,.15 if low_profile else .08]))
         mates.extend([(carriage,key,"HORIZONTAL_X_SLIDER"),(carriage,"lift_lower_bearing","SLIDER_BEARING")])
-    parts.append(_box("lift_lower_bearing",lower+[-.04,0,-.05],[.20,width-.04,.10]))
+    parts.append(_box("lift_lower_bearing",lower+[-.04,0,-.05-lower_support_drop],[.20,width-.04,.10]))
     mates.append(("lift_lower_bearing","conveyor_longitudinal","LOWER_REVOLUTE_BEARING"))
     boxes=tuple(trans if b.name==trans.name else long if b.name==long.name else b for b in fixed)
     boxes+=tuple(layout.cartons() if cartons is None else cartons)+tuple(parts)
@@ -344,5 +362,21 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
             longitudinal_arm_depth=.020,longitudinal_rail_depth=.020,
             lower_slider_rail_drop=.260,lower_carriage_height=.150)
         info["design_basis"]["transverse_support"]="USER_APPROVED_250MM_LOW_PROFILE_SCISSOR_CONCEPT"
+    if compact:
+        info['scissor_profile']='low_profile_200_v1'
+        info['low_profile_dimensions_m'].update(transverse_lower_pin=.025,transverse_arm_depth=.012,
+            transverse_rail_depth=.012,transverse_head_offset=.021,transverse_mount_thickness=.006)
+        info['design_basis']['transverse_support']='EXPLICIT_200MM_CONCEPT_UNRATED_12MM_ARMS_6MM_MOUNT_UNCHANGED_BELT'
+    if compact_v2:
+        info['scissor_profile']='low_profile_200_v2'
+        info['low_profile_dimensions_m'].update(transverse_arm_depth=.008,
+            transverse_rail_depth=.008,transverse_head_offset=.025,transverse_mount_thickness=.016,
+            longitudinal_arm_depth=.014,longitudinal_neck_height=.058)
+        info['design_basis']['transverse_support']='EXPLICIT_200MM_V2_UNRATED_8MM_ARMS_16MM_MOUNT_UNCHANGED_BELT'
+    if dropped_support:
+        info['scissor_profile']='low_profile_200_outfeed20_v3'
+        info['low_profile_dimensions_m'].update(lower_support_mount_drop=.020,
+            lower_slider_rail_drop=.280,lower_bearing_center_below_rear_surface=.070)
+        info['design_basis']['lower_support']='EXPLICIT_20MM_LOWERED_FULL_BEARING_CARRIAGES_RAILS_WITH_SHORTER_FLOOR_STANDS; UNRATED_CONCEPT'
     identity=canonical_digest(dict(layout=layout.layout_fingerprint,mechanism=info,geometry=[_obb_record(b) for b in boxes]))
     return CoupledConveyorState(boxes,info,identity)

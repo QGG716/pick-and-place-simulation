@@ -1,0 +1,360 @@
+{
+  "started_epoch": 1793206739.3721335,
+  "deadline_epoch": 1793231478.4704792,
+  "prior_cumulative_search_wall_s": 4060.901654224843,
+  "global_budget_wall_s": 28800,
+  "maximum_concurrent_search_workers": 6,
+  "threads_per_native_worker": 1,
+  "semantics": "OVERLAPPING_WALL_TIME_NOT_SUM_OF_WORKER_COSTS; EACH_FRESH40_BRANCH_INDEPENDENT; NEVER_SUM_COMPLETED_COUNTS",
+  "lanes": {
+    "1": [
+      [
+        0.625,
+        -0.25,
+        0.5,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.525,
+        -0.35,
+        0.4,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.8,
+        -0.1,
+        0.6,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.7,
+        0.2,
+        0.6,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.6,
+        0.4,
+        0.7,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.4,
+        0.4,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.8,
+        0.0,
+        0.4,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.2,
+        0.0,
+        0.9,
+        0.25,
+        "low_profile_250_v1"
+      ]
+    ],
+    "2": [
+      [
+        0.725,
+        -0.35,
+        0.7,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.425,
+        -0.15,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.7,
+        0.3,
+        0.5,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.8,
+        0.4,
+        0.4,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.475,
+        0.5,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.5,
+        0.475,
+        0.9,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.8,
+        -0.4,
+        0.8,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.7,
+        0.0,
+        1.0,
+        0.25,
+        "low_profile_250_v1"
+      ]
+    ],
+    "3": [
+      [
+        0.2,
+        -0.2,
+        0.7,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.1,
+        -0.2,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.0,
+        -0.2,
+        0.9,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.2,
+        -0.2,
+        0.9,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.1,
+        -0.2,
+        1.0,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.2,
+        -0.1,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.2,
+        0.7,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.2,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ]
+    ],
+    "4": [
+      [
+        0.2,
+        -0.35,
+        0.7,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.2,
+        -0.05,
+        0.7,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.1,
+        -0.35,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.1,
+        -0.05,
+        0.8,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.35,
+        0.6,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.05,
+        0.6,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.4,
+        -0.2,
+        0.5,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.4,
+        -0.2,
+        0.7,
+        0.25,
+        "low_profile_250_v1"
+      ]
+    ],
+    "5": [
+      [
+        0.325,
+        -0.2,
+        0.625,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.325,
+        -0.2,
+        0.575,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.325,
+        -0.21,
+        0.6,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.325,
+        -0.2,
+        0.59,
+        0.25,
+        "low_profile_250_v1"
+      ],
+      [
+        0.3,
+        -0.2,
+        0.5,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.2,
+        -0.2,
+        0.6,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.2,
+        -0.2,
+        0.7,
+        0.2,
+        "low_profile_200_v2"
+      ],
+      [
+        0.1,
+        -0.2,
+        0.8,
+        0.2,
+        "low_profile_200_v2"
+      ]
+    ]
+  },
+  "resource_revisions": [
+    {
+      "epoch": 1793217453.807122,
+      "previous_maximum": 3,
+      "new_maximum": 6,
+      "deadline_unchanged": true,
+      "reason": "READ_CPU_25_CORE_QUOTA_MEMORY_92_GIB_CURRENT_8P4_GIB; SAME_PER_SOLVER_LIMITS",
+      "cpu_max": "2500000 100000",
+      "memory_max_bytes": 98784247808,
+      "memory_current_bytes": 9138470912
+    }
+  ],
+  "adaptive_slice_policy": {
+    "applies_to_lanes": [
+      3,
+      4,
+      5
+    ],
+    "initial_slice_s": 1800,
+    "accepted_threshold": 18,
+    "additional_slice_s": 1800,
+    "maximum_extensions": 2,
+    "second_extension_minimum_gain": 2,
+    "scope": "SAME_CHECKPOINT_CUMULATIVE_COST_AND_SHARED_DEADLINE",
+    "supervisor": "/root/autodl-tmp/joint_search_parallel_v15_adaptive.py"
+  },
+  "scheduling_revisions": [
+    {
+      "epoch": 1793228029.406654,
+      "reason": "NEW_MECHANISM_CONTINUOUS_BRANCH_REACHED_28; EXPLORE_LOWER_PREVIOUSLY_PROMISING_MOUNTS",
+      "replacements": [
+        {
+          "replaces_lane": 3,
+          "new_lane": 7,
+          "pid": 84210,
+          "command": [
+            "python3",
+            "/root/autodl-tmp/joint_search_parallel_v17_secondary.py",
+            "3"
+          ],
+          "started_epoch": 1793228029.4053733
+        },
+        {
+          "replaces_lane": 4,
+          "new_lane": 8,
+          "pid": 84211,
+          "command": [
+            "python3",
+            "/root/autodl-tmp/joint_search_parallel_v17_secondary.py",
+            "4"
+          ],
+          "started_epoch": 1793228029.4062974
+        }
+      ],
+      "maximum_concurrent_search_workers": 6,
+      "shared_deadline_unchanged": 1793231478.4704792,
+      "current_children": "FINISH_ORIGINAL_FIXED_BUDGET_BEFORE_REPLACEMENT"
+    }
+  ]
+}

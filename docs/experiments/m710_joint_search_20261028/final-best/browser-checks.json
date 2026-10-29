@@ -1,0 +1,953 @@
+{
+  "status": "PASS_HEADLESS_REPLAY",
+  "errors": [],
+  "stages": [
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 0
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 0
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 0
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 0
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 0
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 0
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 0
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 1
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 1
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 1
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 1
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 1
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 1
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 2
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 2
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 2
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 2
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 2
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 2
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 3
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 3
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 3
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 3
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 3
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 3
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 4
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 4
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 4
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 4
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 4
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 4
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 5
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 5
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 5
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 5
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 5
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 5
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 5
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 6
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 6
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 6
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 6
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 6
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 6
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 7
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 7
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 7
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 7
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 7
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 7
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 8
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 8
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 8
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 8
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 8
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 8
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 9
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 9
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 9
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 9
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 9
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 9
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 10
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 10
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 10
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 10
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 10
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 10
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 10
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 11
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 11
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 11
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 11
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 11
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 11
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 12
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 12
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 12
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 12
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 12
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 12
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 13
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 13
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 13
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 13
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 13
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 13
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 14
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 14
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 14
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 14
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 14
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 14
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 15
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 15
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 15
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 15
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 15
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 15
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 15
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 16
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 16
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 16
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 16
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 16
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 16
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 17
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 17
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 17
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 17
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 17
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 17
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 18
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 18
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 18
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 18
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 18
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 18
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 19
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 19
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 19
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 19
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 19
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 19
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 20
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 20
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 20
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 20
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 20
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 20
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 20
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 21
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 21
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 21
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 21
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 21
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 21
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 22
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 22
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 22
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 22
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 22
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 22
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 23
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 23
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 23
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 23
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 23
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 23
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 24
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 24
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 24
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 24
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 24
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 24
+    },
+    {
+      "kind": "lift",
+      "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+      "completed": 25
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 25
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 25
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 25
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 25
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 25
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 25
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 26
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 26
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 26
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 26
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 26
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 26
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 27
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 27
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 27
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 27
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 27
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 27
+    },
+    {
+      "kind": "motion",
+      "phase": "pregrasp",
+      "completed": 28
+    },
+    {
+      "kind": "motion",
+      "phase": "contact",
+      "completed": 28
+    },
+    {
+      "kind": "motion",
+      "phase": "extraction",
+      "completed": 28
+    },
+    {
+      "kind": "drop",
+      "phase": "\u540d\u4e49\u4e0b\u843d",
+      "completed": 28
+    },
+    {
+      "kind": "outfeed",
+      "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+      "completed": 28
+    },
+    {
+      "kind": "motion",
+      "phase": "withdrawal",
+      "completed": 28
+    },
+    {
+      "kind": "final",
+      "phase": "\u5df2\u63a5\u53d7\u5206\u652f\u672b\u6001",
+      "completed": 29
+    }
+  ],
+  "final": {
+    "time": 1767.0105519933284,
+    "phase": "\u5df2\u63a5\u53d7\u5206\u652f\u672b\u6001",
+    "completed_count": 29,
+    "carton_count": 11,
+    "q_rad": [
+      -1.0698131276454221,
+      1.134291736505325,
+      -0.43877684244557497,
+      1.0698139055316205,
+      1.5718886702192525,
+      3.143584991252443
+    ],
+    "flange_matrix_column_major": [
+      0.9999999999994436,
+      -3.116481690229413e-07,
+      1.00775436225292e-06,
+      0,
+      -3.1164748402448867e-07,
+      -0.9999999999997206,
+      -6.796220680923074e-07,
+      0,
+      1.0077545740589887e-06,
+      6.796217540158515e-07,
+      -0.9999999999992614,
+      0,
+      -1.2328961989437746,
+      -0.8399996735779114,
+      0.7979996721453595,
+      1
+    ],
+    "height_m": 0.25,
+    "attached": false,
+    "nominal_count": 29,
+    "drain_count": 29,
+    "physical_count": 0,
+    "target": null,
+    "target_pose": null,
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "expected": 29
+}

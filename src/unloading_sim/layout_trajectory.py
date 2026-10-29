@@ -774,8 +774,9 @@ class ExactM710LayoutStateValidator:
                       self.floor_z_m, self.right_wall_y_m, self.left_wall_y_m,
                       getattr(self.mesh_robot, "geometry_revision", 0), tuple((box.name, box.world_from_local.tobytes(), box.half_extents.tobytes()) for box in fixed))
         if static_key not in self._static_cache:
+            from .joint_search_layout import qualified_mount_pairs
             result = self._profile_call("robot_fixed_including_self", self.mesh_robot.collision_result, q, fixed, **self._mesh_pair_options(stage),
-                ignored_geometry_obstacle_pairs=self.collision_policy.robot_mount_pairs(self.base_support_obstacle_name), check_self=True)
+                ignored_geometry_obstacle_pairs=self.collision_policy.robot_mount_pairs(self.base_support_obstacle_name)|qualified_mount_pairs(self.tool_transform_robot,fixed), check_self=True)
             failure = self._collision_failure(result, "ROBOT_MESH_COLLISION")
             if failure is None:
                 result = self._profile_call("robot_tool", self.mesh_robot.collision_result, q, tool_boxes, **self._mesh_pair_options(stage, proxy=True),
@@ -4317,6 +4318,8 @@ def build_m710_layout_trajectory_connector(
             tip_from_tcp=tip_from_tcp,
             name="fanuc_m710id_70_official_mesh",
         )
+        if getattr(lightweight_robot,'joint_search_mount',None):
+            mesh_robot.joint_search_mount=deepcopy(lightweight_robot.joint_search_mount)
     except (AttributeError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         message = str(exc)
         reason = (

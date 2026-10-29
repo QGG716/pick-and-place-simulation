@@ -1,0 +1,7 @@
+{
+  "source_run": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-20261028/lane-6-candidate-00-v17",
+  "source_snapshot": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/work-joint-search-20261028-v17",
+  "layout_key": "c6169680ac5c98d5",
+  "original_checkpoint_sha256": "ed67ecfb224d180e0cd6fea5e8cbfd7f2b81f12424ef74a48c9f80367bf648bf",
+  "selected_completed": 29
+}

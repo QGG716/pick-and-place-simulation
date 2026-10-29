@@ -1,0 +1,19 @@
+{
+  "status": "PASS_FRESH40_NEW_FROZEN_LAYOUT_AND_SEARCH_LIMIT",
+  "epoch": 1793225636.2102273,
+  "layout_key": "c6169680ac5c98d5",
+  "initial_count": 40,
+  "historical_completed_count": 0,
+  "assumed_removed": [],
+  "prior_solver_input": false,
+  "active_search_processes": [
+    67173,
+    68991,
+    69079,
+    69141,
+    70294,
+    72564
+  ],
+  "source_hash": "777d64122180e4f05cf71531f4ed046207e57bcd96845e220253efb516d83d3d",
+  "worker_hash": "84418b69c84fa91e4cbb16b44495663f555dd636d5b4504ba872942c0f1caf5c"
+}

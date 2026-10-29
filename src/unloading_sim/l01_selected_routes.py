@@ -103,7 +103,7 @@ def finite_side_exposure(connector,q):
     """Physical owned tool depth plus standoff and gap; no robot reachability claim."""
     from .moveit2_backend import native_tool_collision_boxes
     tools,ownership=native_tool_collision_boxes(connector,q)
-    local=np.linalg.inv(connector.physical_contact_pose(q))
+    local=np.linalg.inv(connector.physical_from_virtual(connector.robot.fk(q)))
     depths={b.name:-float(b.transformed(local).corners()[:,2].min()) for b in tools}
     depth=max(depths.values());standoff=connector.budget.pregrasp_standoff_m
     gap=connector.collision_policy.free_space_clearance_m

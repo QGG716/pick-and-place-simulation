@@ -1,0 +1,108 @@
+[
+  {
+    "id": 79,
+    "target": "carton_l02_c01",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 80,
+    "target": "carton_l02_c00",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 81,
+    "target": "carton_l02_c04",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 82,
+    "target": "carton_l01_c02",
+    "failure": {
+      "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+      "scope": "FACE_ATTEMPT"
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 83,
+    "target": "carton_l01_c03",
+    "failure": {
+      "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+      "scope": "FACE_ATTEMPT"
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 84,
+    "target": "carton_l02_c01",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": []
+  },
+  {
+    "id": 85,
+    "target": "carton_l02_c00",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": [
+      {
+        "pair": [
+          "tool_compliant_bellows_60",
+          "carton_l02_c00"
+        ],
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "surface_distance_m": 0.004149907552933979,
+        "required_pair_clearance_m": 0.005
+      },
+      {
+        "pair": [
+          "tool_compliant_bellows_60",
+          "carton_l02_c00"
+        ],
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "surface_distance_m": 0.00414990607911704,
+        "required_pair_clearance_m": 0.005
+      },
+      {
+        "pair": [
+          "tool_compliant_bellows_60",
+          "carton_l02_c00"
+        ],
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "surface_distance_m": 0.004149906187118291,
+        "required_pair_clearance_m": 0.005
+      }
+    ]
+  },
+  {
+    "id": 86,
+    "target": "carton_l02_c04",
+    "failure": {
+      "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+      "scope": "FRONT_TEMPLATE_ONLY",
+      "global_unreachable": false
+    },
+    "clearance_failures": []
+  }
+]

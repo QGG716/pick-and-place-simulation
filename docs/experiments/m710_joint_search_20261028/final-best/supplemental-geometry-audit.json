@@ -1,0 +1,150 @@
+{
+  "status": "PASS_ARCHIVED_FIXED_WORLDS_OFFICIAL_VELOCITIES_FK_AND_FULL_RING_GEOMETRY",
+  "cycles": [
+    {
+      "target": "carton_l07_c04",
+      "timed_points": 1246,
+      "eligible_cups": 40
+    },
+    {
+      "target": "carton_l07_c02",
+      "timed_points": 334,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l07_c01",
+      "timed_points": 311,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l07_c03",
+      "timed_points": 340,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l07_c00",
+      "timed_points": 317,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l06_c02",
+      "timed_points": 318,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l06_c01",
+      "timed_points": 315,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l06_c03",
+      "timed_points": 327,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l06_c04",
+      "timed_points": 314,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l06_c00",
+      "timed_points": 710,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l05_c02",
+      "timed_points": 316,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l05_c01",
+      "timed_points": 312,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l05_c03",
+      "timed_points": 319,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l05_c04",
+      "timed_points": 311,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l05_c00",
+      "timed_points": 710,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l04_c02",
+      "timed_points": 313,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l04_c03",
+      "timed_points": 306,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l04_c01",
+      "timed_points": 310,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l04_c00",
+      "timed_points": 312,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l04_c04",
+      "timed_points": 710,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l03_c02",
+      "timed_points": 314,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l03_c03",
+      "timed_points": 303,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l03_c01",
+      "timed_points": 310,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l03_c00",
+      "timed_points": 312,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l03_c04",
+      "timed_points": 710,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l02_c02",
+      "timed_points": 314,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l02_c03",
+      "timed_points": 461,
+      "eligible_cups": 48
+    },
+    {
+      "target": "carton_l02_c01",
+      "timed_points": 531,
+      "eligible_cups": 40
+    },
+    {
+      "target": "carton_l02_c00",
+      "timed_points": 310,
+      "eligible_cups": 40
+    }
+  ]
+}
