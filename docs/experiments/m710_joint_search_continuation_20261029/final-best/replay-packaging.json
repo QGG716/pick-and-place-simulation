@@ -1,0 +1,10 @@
+{
+  "status": "PASS_LOSSLESS_GZIP_EXACT_ORIGINAL_HTML",
+  "original_bytes": 28841340,
+  "compressed_bytes": 3837406,
+  "published_bytes": 5117130,
+  "original_html_sha256": "22e46464b0ae165e4364d47bc7b5a79075eb7549b8f5502fc7b298353c5f05dc",
+  "published_html_sha256": "dc74444b98cc08201f221d1ace12ae3869d681c9517ae9c72b457abcd713939a",
+  "decompressed_identical": true,
+  "original_server_path": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-continuation-20261029/progress-for-github-v26/final-best/replay.html"
+}

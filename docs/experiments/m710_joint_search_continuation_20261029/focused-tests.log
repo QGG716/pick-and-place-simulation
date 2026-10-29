@@ -1,0 +1,3 @@
+............................................                             [100%]
+44 passed in 1.30s
+{"status": "PASS_ALL_6804_OLD_CANDIDATES_PLUS_448_EXPLICIT_TOP_240_MM_SHORT_AXIS_POSE_COMBINATIONS", "old_candidate_count": 6804, "new_candidate_count": 7252, "old_keys_sha256": "6b7d73da407c6c34833ae6cfa34ec97f0efa472533108ed400cf4d3e1da86dd7", "new_keys_sha256": "86353e60cf86cff3e8bf86388d52133b2e6bfebf5af1b595b3966c0a79d5ea0a", "accepted_count": 29, "remaining_count": 11, "geometry_policy_changed": false, "new_upstream_contact_poses_per_top_face": 2, "native_trials_performed": 0}

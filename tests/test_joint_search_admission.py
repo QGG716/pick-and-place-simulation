@@ -55,7 +55,7 @@ def test_short_node_slice_covers_offsets_rotations_faces_and_modes_without_new_c
     assert any(o['joint_search_contract']['face']=='z+' for o in first)
     assert any(o['joint_search_contract']['mode']=='Hmax' for o in first)
     assert any(o['synchronization']=='BEFORE_APPROACH' for o in first)
-    assert any(o['outfeed_timing']=='WITHDRAW_PARK_THEN_WAIT_FULL_OUTFEED' for o in first)
+    assert any(o['outfeed_timing']=='WITHDRAW_THEN_WAIT_FULL_OUTFEED' for o in first)
     assert len(ordered)==len(items)==len({o['candidate_key'] for _,o in ordered})
     assert {id(o) for _,o in ordered}=={id(o) for _,o in items}
 

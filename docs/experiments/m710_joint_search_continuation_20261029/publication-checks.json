@@ -1,0 +1,36 @@
+{
+  "status": "PASS_VERIFIED_PROGRESS_WITH_LOSSLESS_REPLAY_PACKAGING",
+  "code_files": {
+    "tools/plan_m710_joint_search.py": "4486cd363c655a57f78dc7484ca9d0a7d9200c656109f60f9c790b147ee0b0db",
+    "src/unloading_sim/joint_search_recipes.py": "5253a0a7b63d021927ceb68a225415138971d771b823e141bfab5fd467d1b181",
+    "src/unloading_sim/joint_search_outfeed.py": "f9231434f134ce9c6a98e6ea6df2295092dd0379eefaebd611b442341902ec19",
+    "tests/test_joint_search_continuation.py": "745ef615ac8e42a9aef8f2e091bfb1228490c0debe24a181b30f002b4738dfc3",
+    "tests/test_joint_search_admission.py": "bb188ef2e6fd28f666abfe3e7c4093186a46d4c3c9af039e848a24807f632115",
+    "tests/test_joint_search_process.py": "345ce550190d77971be2ddaff6bc3ca80db0fce2c33802473845a2efa418ed0b"
+  },
+  "files": {
+    "final-report.html": "b24c26ede83356f2cfa5088e567d9f7c6a7a22c011d3154b1a8f6a82d6ff6085",
+    "final-report.txt": "b87d833bd3a7cf050fe839c36b6e5599343f827bdfebcc35a79ae8f858217f79",
+    "report-top.png": "a011f6e605be3c62f3e85f5856a594abc9b1898c549176a721c99097aa9a6ce0",
+    "report-bottom.png": "196bb8e79cdb64465f15aec3f5bb83a3f26ffb68e3844fdf331dfafe90bb1566",
+    "report-browser-checks.json": "01206597a3a0e67c495b71af92da98e77dda238f6ce76dfbd5e28e7c549881be",
+    "progress-summary.json": "95c3f3373351afd0c2fd60b8e09e513cd93f9e60064997316b110ca050b41ea4",
+    "planning-source-manifest.json": "774184ab992c731b9f1e9f79d4caf067de41e0703a0b6133def1bdfe903c3486",
+    "focused-tests.log": "d4ac4ce4b0a124f2882026a6b4b9ba4a679d9e36794375fa3905a71d3e4f5163",
+    "changed-source-sha256.json": "782edcd43c6c2a6344bd9bf2b52343acf906f1273d0c989effaf0d4f32d6a344",
+    "visual-review.json": "52edc8543d77e9f449aea70eb22d1bd8dd575905d78aefb025a3b56bc0917054",
+    "final-best/replay.html": "dc74444b98cc08201f221d1ace12ae3869d681c9517ae9c72b457abcd713939a",
+    "final-best/replay.checks.json": "0954cbead19129961197a11f3d8905e78e1a2434cf5ee8c50d4cb51006564569",
+    "final-best/supplemental-geometry-audit.json": "0ccce20ffb05f84195bacfc1d36d803f3e24effd48476d37e7a41ee4b29080d4",
+    "final-best/browser-checks.json": "65b2eb6e6e7a99b1d60bda30dbbd651052599762fe8e39ed12215b815b7b891a",
+    "final-best/initial.png": "58fec33d3fabafe7ac509fa55a4bd547b5520b85215713c321abb561aa2c2622",
+    "final-best/final.png": "75589c66be55bac1e3726fd1b7fa3eb31b6cb3dde852088072e0a257e505a99e",
+    "final-best/outfeed-wait.png": "6f225f691faa62c9bc89d3f924bfaa5c90528fda12ec44617fc2007d9ba56dc1",
+    "final-best/replay-packaging.json": "6ddd89d793bf1dca56db565e29cea03c56c97a0b5550481afe103bfb04f3153a"
+  },
+  "raw_archive_uploaded": false,
+  "raw_archive_downloaded": false,
+  "physical_execution": "NOT_RUN",
+  "search_status": "RUNNING_AT_SNAPSHOT",
+  "replay_original_sha256": "22e46464b0ae165e4364d47bc7b5a79075eb7549b8f5502fc7b298353c5f05dc"
+}

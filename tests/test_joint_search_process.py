@@ -55,8 +55,10 @@ def test_extra_withdrawal_has_finite_domain_and_requires_stationary_box_first():
     assert withdrawal_extra({})==0.
     for extra in (.10,.30,.50):
         assert withdrawal_extra(dict(outfeed_timing=WITHDRAW_FIRST,withdraw_extra_m=extra))==extra
+    assert withdrawal_extra(dict(outfeed_timing=PARK_FIRST,withdraw_extra_m=.10))==.10
     for option in ({'withdraw_extra_m':.10},{'withdraw_extra_m':-.10},
-            dict(outfeed_timing=WITHDRAW_FIRST,withdraw_extra_m=1.)):
+            dict(outfeed_timing=WITHDRAW_FIRST,withdraw_extra_m=1.),
+            dict(outfeed_timing=PARK_FIRST,withdraw_extra_m=.30)):
         with pytest.raises(ValueError,match='FINITE_WITHDRAWAL_DISTANCE'):withdrawal_extra(option)
 
 def test_parking_checks_intermediate_uncompressed_tool_not_just_endpoints():
@@ -120,6 +122,15 @@ def test_low_carton_offers_both_explicit_top_heights_and_original_minimum(layout
     faces=simulation_contact_targets(scene,box,[-1.625,.15,.6],.1)[0]
     frozen=FrozenCartonPopulation.capture(layout.cartons())
     options=[o for _,o in candidate_options(faces,scene,frozen,.6,layout,initial_q=np.zeros(6))]
+    old_parks={o['candidate_key']:o for o in options if o.get('outfeed_timing')==PARK_FIRST and not o.get('withdraw_extra_m')}
+    extended=[o for o in options if o.get('outfeed_timing')==PARK_FIRST and o.get('withdraw_extra_m')]
+    assert len(extended)==len(old_parks)>0
+    from unloading_sim.moveit2_backend import digest
+    for extra in extended:
+        assert extra['withdraw_extra_m']==.10
+        predecessor=dict(extra);predecessor.pop('candidate_key');predecessor.pop('withdraw_extra_m')
+        predecessor['visit_order']=[*predecessor['visit_order'][:4],.5]
+        assert digest(predecessor) in old_parks
     raised=[o for o in options if o['joint_search_contract']['mode']=='LIFTED_TOP_EXPLICIT']
     assert {o['height_m'] for o in raised}=={.65,.85}
     assert all(o['face']['geometric_face_id']=='z+' for o in raised)
@@ -135,6 +146,41 @@ def test_failed_target_reenters_when_support_changes_without_world_mutation(layo
     failed=first[0]['target_id'];removed=first[1]['target_id']
     next_rows=rank_population(frozen,[b for b in cartons if b.name!=removed],[removed],set(),q,robot,belt,longitudinal=longitudinal)
     assert failed in [r['target_id'] for r in next_rows] and len(cartons)==40
+
+
+def test_explicit_top_front_edge_positions_have_literal_seal_geometry(layout):
+    from unloading_sim.contact_target import simulation_contact_targets
+    from unloading_sim.support import SupportRelationGraph
+    from unloading_sim.joint_search_recipes import candidate_options,TOP_FRONT_EDGE_POSES
+    from unloading_sim.independent_cups import build_m710_independent_cup_array,evaluate_independent_cup_geometry
+    box=next(b for b in layout.cartons() if b.name=='carton_l00_c02');fixed=layout.fixed_components()
+    scene=SimpleNamespace(support_graph=SupportRelationGraph.build([box]),snapshot={'scene_fingerprint':'test-only'},
+        policy=SimpleNamespace(data={'task_population':{'face_modes':['front','top','side']}}),
+        receiver=next(b for b in fixed if b.name=='conveyor_transverse'),fixed_components=fixed)
+    faces=simulation_contact_targets(scene,box,[-1.625,.15,.6],.1)[0]
+    options=list(candidate_options(faces,scene,FrozenCartonPopulation.capture(layout.cartons()),.6,layout,initial_q=np.zeros(6)))
+    new=[(t,o) for t,o in options if o['joint_search_contract'].get('contact_pose_family') in
+        {'TOP_FRONT_EDGE_120_240_MM_QUARTER_TURN_V1','TOP_FRONT_EDGE_180_MM_QUARTER_TURN_V1'}]
+    assert {(o['joint_search_contract']['offset_face_m'][0],o['joint_search_contract']['roll_rad']) for _,o in new}=={
+        (-.12,np.pi/2),(-.12,-np.pi/2),(-.24,np.pi/2),(-.24,-np.pi/2),(-.18,np.pi/2),(-.18,-np.pi/2)}
+    assert all(t.face_role=='TOP' and o['joint_search_contract']['offset_face_m'][1]==0. for t,o in new)
+    representative={tuple(o['joint_search_contract']['offset_face_m']):t for t,o in new}
+    for offset,world_x,eligible in [(-.12,.18,54),(-.24,.06,42),(-.18,.12,48)]:
+        target=representative[(offset,0.)]
+        np.testing.assert_allclose(target.contact_pose[:3,3],[world_x,0.,.3],atol=1e-12,rtol=0)
+        geometry=evaluate_independent_cup_geometry(target.contact_pose,target.box,target.legacy_face,
+            build_m710_independent_cup_array(),max_attachment_gap_m=.002,maximum_penetration_m=.0002,
+            max_normal_misalignment_rad=np.deg2rad(5.))
+        assert sum(geometry.geometrically_eligible_mask)==eligible
+    short=[(t,o) for t,o in options if o['joint_search_contract'].get('contact_pose_family')=='TOP_FRONT_EDGE_240_MM_SHORT_AXIS_V1']
+    assert {o['joint_search_contract']['roll_rad'] for _,o in short}=={0.,np.pi}
+    for roll in (0.,np.pi):
+        target=next(t for t,o in short if o['joint_search_contract']['roll_rad']==roll)
+        np.testing.assert_allclose(target.contact_pose[:3,3],[.06,0.,.3],atol=1e-12,rtol=0)
+        geometry=evaluate_independent_cup_geometry(target.contact_pose,target.box,target.legacy_face,
+            build_m710_independent_cup_array(),max_attachment_gap_m=.002,maximum_penetration_m=.0002,
+            max_normal_misalignment_rad=np.deg2rad(5.))
+        assert sum(geometry.geometrically_eligible_mask)==32
 
 def test_joint_search_commit_requires_outfeed_before_any_mutation(layout):
     frozen=FrozenCartonPopulation.capture(layout.cartons());state=BatchState(frozen,tuple(layout.cartons()),np.zeros(6),.6)

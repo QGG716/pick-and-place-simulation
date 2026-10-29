@@ -73,6 +73,46 @@ def node_for(state,layout,parent=None,incoming=None):
     return dict(id=digest(dict(layout=layout.layout_fingerprint,root=root)),root=root,ledger=deepcopy(state.ledger),
         parent=parent,incoming=incoming,cursor=0,children=[],attempted=[],closed=False)
 
+def bind_best_continuation(db,enabled=False):
+    """Freeze the accepted prefix for a continuation of the remaining cartons."""
+    scope=db.get('continuation_scope')
+    if scope is None and enabled:
+        if db.get('pending'):raise ValueError('CONTINUATION_REQUIRES_CLOSED_PREVIOUS_ATTEMPT')
+        key=db.get('best')
+        if key not in db['layouts']:raise ValueError('CONTINUATION_REQUIRES_ACCEPTED_BEST')
+        record=db['layouts'][key];node=record['nodes'][record['best_node']];root=node['root']
+        if (not root['completed'] or root.get('assumed_removed')
+                or len(root['completed'])+len(root['world_cartons'])!=40):
+            raise ValueError('CONTINUATION_REQUIRES_UNALTERED_FRESH40_PREFIX')
+        scope=dict(layout=key,anchor_node=node['id'],anchor_root_sha256=digest(root),
+            accepted_prefix=list(root['completed']),prior_trials=len(db['trials']),
+            prior_elapsed_search_s=db['elapsed_search_s'],
+            scope='ACCEPTED_BEST_PREFIX_AND_DESCENDANTS_ONLY',
+            failed_cartons_remain_in_world=True,physical_execution='NOT_RUN')
+        db['continuation_scope']=scope
+    if scope is not None:
+        record=db['layouts'][scope['layout']];root=record['nodes'][scope['anchor_node']]['root']
+        if digest(root)!=scope['anchor_root_sha256'] or root['completed']!=scope['accepted_prefix']:
+            raise ValueError('CONTINUATION_ANCHOR_CHANGED')
+    return scope
+
+
+def continuation_active_nodes(record,anchor=None):
+    """Keep earlier and sibling worlds as evidence, without rewinding to them."""
+    def descended(node):
+        seen=set()
+        while node is not None:
+            key=node['id']
+            if key in seen:raise ValueError('CYCLIC_SEARCH_PARENT_CHAIN')
+            seen.add(key)
+            if key==anchor:return True
+            parent=node['parent']
+            node=None if parent is None else record['nodes'][parent]
+        return False
+    return [n for n in record['nodes'].values()
+        if not n['closed'] and len(n['children'])<3 and (anchor is None or descended(n))]
+
+
 def option_visit_priority(option):
     pose,sync,mode,face,*timing=option['visit_order']
     # Diagonal rounds prevent every departure/sync combination at pose zero
@@ -97,9 +137,18 @@ def coverage_order(options):
     base=dimensions(ordered[0][1]);families=[{} for _ in base]
     for item in ordered:
         for index,value in enumerate(dimensions(item[1])):
-            if value!=base[index]:families[index].setdefault(value,item)
+            if value!=base[index]:
+                previous=families[index].setdefault(value,item)
+                # The accepted low-front suffix can fail only because the cup
+                # still touches after a short drop. Exercise existing departure
+                # alternatives on that face before spending them on top IK.
+                if (index==4 and item[1]['joint_search_contract']['face']=='x-'
+                        and previous[1]['joint_search_contract']['face']!='x-'):
+                    families[index][value]=item
     queues=[list(family.values()) for family in families]
     queues[2].sort(key=lambda item:item[1]['joint_search_contract']['face']!='z+')
+    queues[4].sort(key=lambda item:(item[1].get('outfeed_timing')!='WITHDRAW_THEN_WAIT_FULL_OUTFEED',
+        item[1].get('withdraw_extra_m',0.)))
     result=[];seen=set()
     def append(item):
         key=item[1]['candidate_key']
@@ -113,6 +162,49 @@ def coverage_order(options):
     return result
 
 
+def continuation_coverage_order(options):
+    """Try one short-drop front park with extra clearance, then the whole set."""
+    ordered=coverage_order(options)
+    preferred=[]
+    for item in ordered:
+        option=item[1];c=option['joint_search_contract']
+        if (c['face']=='x-' and option.get('outfeed_timing')=='WITHDRAW_PARK_THEN_WAIT_FULL_OUTFEED'
+                and option.get('withdraw_extra_m',0.) in (0.,.10)
+                and 0.<=c.get('release_bottom_m',float('inf'))-option['height_m']<=.050000001):
+            preferred.append(item)
+    early=[]
+    if preferred:early.append(min(preferred,key=lambda item:(item[1].get('withdraw_extra_m',0.)!=.10,option_visit_priority(item[1]))))
+    for roll in (0.,np.pi):
+        short_axis=[item for item in ordered if
+            item[1]['joint_search_contract'].get('contact_pose_family')=='TOP_FRONT_EDGE_240_MM_SHORT_AXIS_V1'
+            and item[1]['joint_search_contract']['roll_rad']==roll]
+        if short_axis:early.append(min(short_axis,key=lambda item:option_visit_priority(item[1])))
+    for roll in (np.pi/2,-np.pi/2):
+        midpoint=[item for item in ordered if
+            item[1]['joint_search_contract'].get('contact_pose_family')=='TOP_FRONT_EDGE_180_MM_QUARTER_TURN_V1'
+            and item[1]['joint_search_contract']['roll_rad']==roll
+            and item[1]['joint_search_contract']['mode']=='LIFTED_TOP_EXPLICIT' and item[1]['height_m']==.65]
+        if midpoint:early.append(min(midpoint,key=lambda item:option_visit_priority(item[1])))
+    raised=[item for item in ordered if
+        item[1]['joint_search_contract'].get('contact_pose_family')=='TOP_FRONT_EDGE_120_240_MM_QUARTER_TURN_V1'
+        and item[1]['joint_search_contract']['offset_face_m']==[-.12,0.]
+        and item[1]['joint_search_contract']['roll_rad']==np.pi/2
+        and item[1]['joint_search_contract']['mode']=='LIFTED_TOP_EXPLICIT'
+        and item[1]['height_m']==.65]
+    if raised:early.append(min(raised,key=lambda item:option_visit_priority(item[1])))
+    # Four explicit upstream top poses; the existing native and geometry gates
+    # still evaluate every selected pose and its complete cycle.
+    top={}
+    for item in ordered:
+        c=item[1]['joint_search_contract']
+        if c.get('contact_pose_family') in {'TOP_FRONT_EDGE_120_240_MM_QUARTER_TURN_V1','TOP_FRONT_EDGE_180_MM_QUARTER_TURN_V1'}:
+            top.setdefault((tuple(c['offset_face_m']),c['roll_rad']),item)
+    early.extend(top[key] for key in sorted(top,key=lambda k:(k[0][0],-k[1])))
+    early=list({item[1]['candidate_key']:item for item in early}.values())
+    keys={item[1]['candidate_key'] for item in early}
+    return [*early,*[item for item in ordered if item[1]['candidate_key'] not in keys]]
+
+
 def offered(original,built,state,frozen):
     layout=original.policy.layout_validation.layout;scene=batch_scene(original,state,built.robot,layout)
     ranks=rank_population(frozen,state.cartons,state.accounted_ids(),set(),state.q,built.robot,scene.receiver,
@@ -122,7 +214,8 @@ def offered(original,built,state,frozen):
         box=next(b for b in state.cartons if b.name==row['target_id'])
         faces,screen=simulation_contact_targets(scene,box,built.robot.base_transform[:3,3],built.budget.pregrasp_standoff_m,side_exposure_depth_m=depth)
         screens[box.name]=screen
-        options=coverage_order(list(candidate_options(faces,scene,frozen,state.height,layout,initial_q=built.joint_search_initial_q)))
+        order=continuation_coverage_order if getattr(built,'joint_search_short_drop_departure_first',False) else coverage_order
+        options=order(list(candidate_options(faces,scene,frozen,state.height,layout,initial_q=built.joint_search_initial_q)))
         groups.append(options)
     # All removable boxes and each face receive visits; no permanent attempted set.
     visits=[g[i] for i in range(max(map(len,groups),default=0)) for g in groups if i<len(g)]
@@ -224,6 +317,7 @@ def prepare_layout(args,candidate):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--resume',action='store_true')
+    p.add_argument('--continue-from-best',action='store_true',help='On resume, freeze the accepted best prefix and search only its descendants; retain failed cartons and historical costs')
     p.add_argument('--budget-hours',type=float,default=8.);p.add_argument('--layout-slice-seconds',type=float,default=900.)
     p.add_argument('--trial-seconds',type=float,default=65.);p.add_argument('--prefix-seconds',type=float,default=20.)
     p.add_argument('--stage-seconds',type=float,default=40.);p.add_argument('--initial-draws',type=int,default=64)
@@ -244,9 +338,14 @@ def main():
     p.add_argument('--withdraw-distance-revision-from',type=Path,help='Checked finite additional normal withdrawals; preserve previous candidate identities and cost')
     p.add_argument('--outfeed-park-revision-from',type=Path,help='Checked native detached parking stage with full-tool path checks')
     p.add_argument('--candidate-fairness-revision-from',type=Path,help='Representative coverage of existing pose, face, receive, synchronization and departure choices; same candidate keys and checks')
+    p.add_argument('--park-clearance-revision-from',type=Path,help='Add one explicit 100 mm normal withdrawal before native parking; retain old candidates, parent chains and costs')
+    p.add_argument('--top-front-pose-revision-from',type=Path,help='Add explicit top-face offsets -120/-240 mm with rolls +/-90 degrees; retain old candidates, checks and costs')
+    p.add_argument('--top-midpoint-pose-revision-from',type=Path,help='Add explicit top-face offset -180 mm with rolls +/-90 degrees; retain old candidates, checks and costs')
+    p.add_argument('--top-short-axis-pose-revision-from',type=Path,help='Add explicit top-face offset -240 mm with rolls 0/180 degrees; retain old candidates, checks and costs')
     p.add_argument('--raised-top-revision-from',type=Path,help='Add named 650/850 mm top-lift reception candidates; preserve Hmin/Hmax and all prior cost')
     p.add_argument('--previous-worker-binary',type=Path,help='Required old-binary hash anchor for checked native revisions')
     args=p.parse_args()
+    if args.continue_from_best and not args.resume:raise ValueError('CONTINUATION_REQUIRES_RESUME')
     manifest=json.loads(args.source_manifest.read_text())
     assert manifest['source_commit']==args.source_commit
     actual={str(p.relative_to(ROOT)).replace('\\','/') for d in ('src','tools','ros2','configs') for p in (ROOT/d).rglob('*')
@@ -270,7 +369,7 @@ def main():
             for trial in db['trials']:trial.setdefault('worker_hash',db['worker_hash'])
             db['worker_hash']=worker_hash
         if db['source_hash']!=source_hash:
-            previous_path=args.raised_top_revision_from or args.candidate_fairness_revision_from or args.outfeed_park_revision_from or args.withdraw_distance_revision_from or args.outfeed_timing_revision_from or args.mount_metadata_revision_from or args.initial_witness_revision_from or args.geometry_revision_from or args.numeric_height_revision_from or args.scheduler_revision_from
+            previous_path=args.top_short_axis_pose_revision_from or args.top_midpoint_pose_revision_from or args.top_front_pose_revision_from or args.park_clearance_revision_from or args.raised_top_revision_from or args.candidate_fairness_revision_from or args.outfeed_park_revision_from or args.withdraw_distance_revision_from or args.outfeed_timing_revision_from or args.mount_metadata_revision_from or args.initial_witness_revision_from or args.geometry_revision_from or args.numeric_height_revision_from or args.scheduler_revision_from
             assert previous_path
             previous=json.loads(previous_path.read_text());assert digest(previous)==db['source_hash']
             changed={k for k in set(previous['sha256'])|set(manifest['sha256']) if previous['sha256'].get(k)!=manifest['sha256'].get(k)}
@@ -290,8 +389,11 @@ def main():
                         node.setdefault('prior_visit_cursors',[]).append(dict(source_hash=db['source_hash'],cursor=node['cursor']))
                         node['cursor']=0;node['closed']=False
                 scope='EXPLICIT_650_850_MM_TOP_LIFT_RECEPTION_AND_ACCURATE_REPLAY_LABELS_SAME_HMIN_HMAX_GEOMETRY_COLLISION_RULES_ACCEPTED_PARENT_CHAINS_AND_CUMULATIVE_COST'
-            elif args.candidate_fairness_revision_from:
-                assert changed=={'tools/plan_m710_joint_search.py'},changed
+            elif args.candidate_fairness_revision_from or args.park_clearance_revision_from or args.top_front_pose_revision_from or args.top_midpoint_pose_revision_from or args.top_short_axis_pose_revision_from:
+                expected={'tools/plan_m710_joint_search.py'}
+                if args.park_clearance_revision_from:expected|={'src/unloading_sim/joint_search_recipes.py','src/unloading_sim/joint_search_outfeed.py'}
+                if args.top_front_pose_revision_from or args.top_midpoint_pose_revision_from or args.top_short_axis_pose_revision_from:expected.add('src/unloading_sim/joint_search_recipes.py')
+                assert changed==expected,changed
                 db['timing_revision_visits']=sorted((key for key,r in db['layouts'].items() if r.get('nodes')),
                     key=lambda key:db['layouts'][key]['best_count'],reverse=True)
                 for record in db['layouts'].values():
@@ -301,6 +403,14 @@ def main():
                         node.setdefault('prior_visit_cursors',[]).append(dict(source_hash=db['source_hash'],cursor=node['cursor']))
                         node['cursor']=0;node['closed']=False
                 scope='DIAGONAL_POSE_SYNC_DEPARTURE_VISITS_SAME_CANDIDATE_KEYS_NATIVE_BINARY_MODEL_POLICY_ACCEPTED_STATES_AND_CUMULATIVE_COST'
+                if args.park_clearance_revision_from:
+                    scope='EXPLICIT_100_MM_NORMAL_WITHDRAWAL_BEFORE_NATIVE_PARK_SAME_POSES_GEOMETRY_RULES_GOAL_PARENT_CHAINS_AND_CUMULATIVE_COST'
+                if args.top_front_pose_revision_from:
+                    scope='FOUR_EXPLICIT_TOP_FRONT_EDGE_POSES_OFFSET_120_240_MM_ROLL_PLUS_MINUS_90_DEG_SAME_NATIVE_GEOMETRY_RULES_PARENT_CHAINS_AND_CUMULATIVE_COST'
+                if args.top_midpoint_pose_revision_from:
+                    scope='TWO_EXPLICIT_TOP_FRONT_MIDPOINT_POSES_OFFSET_180_MM_ROLL_PLUS_MINUS_90_DEG_SAME_NATIVE_GEOMETRY_RULES_PARENT_CHAINS_AND_CUMULATIVE_COST'
+                if args.top_short_axis_pose_revision_from:
+                    scope='TWO_EXPLICIT_TOP_FRONT_SHORT_AXIS_POSES_OFFSET_240_MM_ROLL_0_180_DEG_SAME_NATIVE_GEOMETRY_RULES_PARENT_CHAINS_AND_CUMULATIVE_COST'
             elif args.outfeed_park_revision_from:
                 assert changed=={'tools/plan_m710_joint_search.py','tools/verify_m710_joint_search.py','tools/export_m710_joint_search.py',
                     'src/unloading_sim/joint_search_recipes.py','src/unloading_sim/joint_search_outfeed.py','src/unloading_sim/coupled_batch.py',
@@ -443,6 +553,11 @@ def main():
                 retained_search_cost_s=previous['elapsed_search_s'],ledger_imported=False,reason='CORRECTED_IMPLEMENTATION_RESTART_FRESH40')]
     db.setdefault('refinement_queue',[]);db.setdefault('admissions',db['next_candidate'])
     for record in db['layouts'].values():record.setdefault('admission_kind','COARSE')
+    continuation=bind_best_continuation(db,args.continue_from_best)
+    db.setdefault('search_sessions',[]).append(dict(started_epoch=time.time(),resume=args.resume,
+        prior_elapsed_search_s=db['elapsed_search_s'],budget_hours_cumulative=args.budget_hours,
+        trial_seconds=args.trial_seconds,prefix_seconds=args.prefix_seconds,stage_seconds=args.stage_seconds,
+        seed=args.seed,source_hash=source_hash,worker_hash=worker_hash,continuation_scope=deepcopy(continuation)))
     session=time.monotonic();prior=db['elapsed_search_s'];deadline=session+max(0,args.budget_hours*3600-prior)
     def checkpoint():
         db['elapsed_search_s']=prior+time.monotonic()-session
@@ -467,9 +582,13 @@ def main():
     while time.monotonic()<deadline:
         # Admit a new combined XYZ candidate, then revisit the best retained
         # partial branches. Finite local refinements are appended explicitly.
-        resume_rows=[(k,v) for k,v in db['layouts'].items() if v.get('nodes') and not v.get('closed')]
+        resume_rows=[(k,v) for k,v in db['layouts'].items() if v.get('nodes') and not v.get('closed')
+            and (continuation is None or k==continuation['layout'])]
         choose_resume=bool(resume_rows) and db['admissions']%3==2 and new_since_resume>0
         if args.max_layouts and db['admissions']>=args.max_layouts:choose_resume=bool(resume_rows)
+        if continuation is not None:
+            if not resume_rows:break
+            choose_resume=True
         if db.get('preparation_retries'):
             key=db['preparation_retries'].pop(0);record=db['layouts'][key];e=record['candidate']
             candidate=LayoutCandidate(*e['base_xyz_a_m'],e['minimum_surface_height_m'],e['maximum_surface_height_m'],e['mechanism_profile'])
@@ -489,6 +608,7 @@ def main():
             record=dict(candidate=e,nodes={},best_count=0,cost_s=0.,visits=0,diagnostics_done=[],closed=False,
                 admission_kind=kind,refinement_parent=parent)
             db['layouts'][key]=record
+        if continuation is not None:assert key==continuation['layout'],'CONTINUATION_LAYOUT_CHANGED'
         emit(event='LAYOUT_VISIT',key=key,candidate=e,best=record['best_count']);started=time.monotonic()
         if key not in contexts:
             try:context,evidence=prepare_layout(args,candidate)
@@ -500,6 +620,7 @@ def main():
             record['geometry']=evidence['status']
             contexts[key]=context
         original,built,frozen,initial=contexts[key];layout=original.policy.layout_validation.layout
+        built.joint_search_short_drop_departure_first=continuation is not None
         if not record['nodes']:
             first=node_for(initial,layout);record['nodes'][first['id']]=first;record['initial']=first['root'];record['best_node']=first['id']
             if db['best'] is None:db['best']=key
@@ -526,7 +647,7 @@ def main():
                     db['pending']=None;charge(result)
                 record['diagnostics_done'].append(name);checkpoint()
         while time.monotonic()<until:
-            active=[n for n in record['nodes'].values() if not n['closed'] and len(n['children'])<3]
+            active=continuation_active_nodes(record,None if continuation is None else continuation['anchor_node'])
             if not active:record['closed']=True;break
             # After twelve unsuccessful visits, an adjacent order branch gets
             # a turn. Full-parent-chain alternatives cannot be starved by the

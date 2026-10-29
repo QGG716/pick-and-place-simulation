@@ -1,0 +1,84 @@
+固定安装位置剩余箱续搜：进度快照
+快照时间：2026-10-29 10:10:10 +08:00
+在所列模型假设下，同一固定布局、同一连续父链规划完成 31/40，本轮比29箱前缀增加 2 箱。
+搜索仍在服务器运行；这是当前已接受结果的独立核验快照，不是最终搜索报告。
+physical_execution=NOT_RUN。名义下落、理想接收与出料不构成Isaac或实体机器人验证。
+
+固定配置：相对底盘A基座 [0,-200,900] mm；世界基座 [-1950,150,900] mm。
+原600 mm底盘上的实体台座高300 mm；横带表面范围200～2100 mm；工具加长200 mm。
+机器人、机构、工具、原生二进制和碰撞规则与此前接受前缀一致。
+本轮新增：carton_l01_c03, carton_l01_c02
+剩余箱：carton_l00_c00, carton_l00_c01, carton_l00_c02, carton_l00_c03, carton_l00_c04, carton_l01_c00, carton_l01_c01, carton_l01_c04, carton_l02_c04
+
+已记录本轮正式尝试 113 次；续搜墙钟 1.483 小时。
+本次固定续搜截止：2026-10-29 12:41:10 +08:00。达到截止后保存检查点并独立核验结果。
+失败箱始终留在场景；其支撑关系仍约束后续抓取。不同分支的成功数没有合并。
+
+代码变更
+只搜索已接受29箱前缀及其后继，保留旧候选、失败记录、累计成本和父链。
+调整候选访问顺序；增加沿抓取法向额外撤离100 mm后原生停靠的显式工序。
+增加显式顶吸位姿：面内向前120/180/240 mm、法向旋转±90°；以及240 mm偏移、0°/180°旋转。
+几何密封环合格仅用于产生候选；完整周期仍须通过原生运动、实际FK接触、出料和独立验证。
+44项相关测试通过，全部6804个旧候选保留，新增448个组合，共7252个候选（29箱锚点的实际候选集）。
+
+核验
+连续链路：PASS_PARTIAL_SINGLE_BRANCH_ONLY；几何审计：PASS_ARCHIVED_FIXED_WORLDS_OFFICIAL_VELOCITIES_FK_AND_FULL_RING_GEOMETRY；浏览器回放：PASS_HEADLESS_REPLAY。
+初始40箱、历史完成数0、assumed_removed为空；每个接受周期的末态作为下一个周期起点。
+保留ideal_independent_cups、J5/J6自有工具、命名柔性吸盘/非目标箱、原底盘及l01工具/底盘例外，未增加碰撞豁免。
+普通外部间隙5 mm；出料位移采样不超过5 mm；停靠关节采样不超过0.01 rad；continuous_swept_proof=false。
+有限IK失败、规划超时和阶段预算耗尽不构成全局不可行证明；仍有未搜索的候选与顺序。
+
+逐箱接受策略
+序号 | 箱号 | 面 | 接收模式/高度mm | 面内偏移mm | 法向旋转rad | 出料工序
+1 | carton_l07_c04 | x- | Hmin/1750.0 | [-48.0, 0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+2 | carton_l07_c02 | x- | Hmin/1750.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+3 | carton_l07_c01 | x- | Hmin/1750.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+4 | carton_l07_c03 | x- | Hmin/1750.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+5 | carton_l07_c00 | x- | Hmin/1750.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+6 | carton_l06_c02 | x- | Hmin/1450.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+7 | carton_l06_c01 | x- | Hmin/1450.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+8 | carton_l06_c03 | x- | Hmin/1450.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+9 | carton_l06_c04 | x- | Hmin/1450.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+10 | carton_l06_c00 | x- | Hmin/1450.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+11 | carton_l05_c02 | x- | Hmin/1150.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+12 | carton_l05_c01 | x- | Hmin/1150.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+13 | carton_l05_c03 | x- | Hmin/1150.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+14 | carton_l05_c04 | x- | Hmin/1150.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+15 | carton_l05_c00 | x- | Hmin/1150.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+16 | carton_l04_c02 | x- | Hmin/850.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+17 | carton_l04_c03 | x- | Hmin/850.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+18 | carton_l04_c01 | x- | Hmin/850.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+19 | carton_l04_c00 | x- | Hmin/850.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+20 | carton_l04_c04 | x- | Hmin/850.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+21 | carton_l03_c02 | x- | Hmin/550.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+22 | carton_l03_c03 | x- | Hmin/550.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+23 | carton_l03_c01 | x- | Hmin/550.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+24 | carton_l03_c00 | x- | Hmin/550.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+25 | carton_l03_c04 | x- | Hmin/550.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+26 | carton_l02_c02 | x- | Hmin/250.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+27 | carton_l02_c03 | x- | Hmin/250.0 | [0.0, 0.0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+28 | carton_l02_c01 | x- | Hmin/250.0 | [48.0, 0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+29 | carton_l02_c00 | x- | Hmin/250.0 | [48.0, 0] | 0.000000 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+30 | carton_l01_c03 | x- | Hmax/250.0 | [0.0, 0.0] | 0.000000 | WITHDRAW_THEN_WAIT_FULL_OUTFEED
+31 | carton_l01_c02 | z+ | Hmax/250.0 | [-240.0, 0.0] | 1.570796 | WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW
+
+剩余箱本轮正式尝试次数
+carton_l00_c00: 0；尚未获得正式尝试，不能算失败；仍受支撑/暴露条件约束。
+carton_l00_c01: 0；尚未获得正式尝试，不能算失败；仍受支撑/暴露条件约束。
+carton_l00_c02: 6
+carton_l00_c03: 18
+carton_l00_c04: 0；尚未获得正式尝试，不能算失败；仍受支撑/暴露条件约束。
+carton_l01_c00: 20
+carton_l01_c01: 21
+carton_l01_c04: 0；尚未获得正式尝试，不能算失败；仍受支撑/暴露条件约束。
+carton_l02_c04: 25
+
+已记录失败分类（有限尝试范围）：{"SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED": 46, "RECEIVER_REGION_SEARCH_INCOMPLETE": 33, "MoveItUnavailable": 32}
+
+来源
+源代码清单哈希：301786914ade0abe31c0deecbf77c753f6b9bf272949f8b00f81956cd03e9f50
+原生二进制SHA-256：84418b69c84fa91e4cbb16b44495663f555dd636d5b4504ba872942c0f1caf5c
+快照检查点SHA-256：c8edaa5c9a76893148f431a96132ae0f3c4bf05abd871d32375ce1630d059906
+服务器活动目录：/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-continuation-20261029/run-v26
+完整原始日志、请求/响应和检查点仅保留服务器；没有下载或上传原始证据包。
+GitHub仅发布代码及此快照的报告、核验结果和浏览器回放。先前29箱报告保持原样。

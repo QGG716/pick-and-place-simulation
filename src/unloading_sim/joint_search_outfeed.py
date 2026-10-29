@@ -14,7 +14,9 @@ PARK_FIRST='WITHDRAW_PARK_THEN_WAIT_FULL_OUTFEED'
 
 def withdrawal_extra(option):
     extra=option.get('withdraw_extra_m',0.)
-    if extra not in (0.,.10,.30,.50) or (extra and option.get('outfeed_timing')!=WITHDRAW_FIRST):
+    timing=option.get('outfeed_timing',WAIT_FIRST)
+    allowed=(0.,.10) if timing==PARK_FIRST else (0.,.10,.30,.50) if timing==WITHDRAW_FIRST else (0.,)
+    if extra not in allowed:
         raise ValueError('OUTFEED_FINITE_WITHDRAWAL_DISTANCE')
     return float(extra)
 

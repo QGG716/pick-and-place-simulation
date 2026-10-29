@@ -1,0 +1,231 @@
+{
+  "status": "PASS_PARTIAL_SINGLE_BRANCH_ONLY",
+  "layout": {
+    "schema": "fixed40_joint_search_20261028_v1",
+    "base_xyz_a_m": [
+      0.0,
+      -0.2,
+      0.9
+    ],
+    "base_xyz_world_m": [
+      -1.95,
+      0.14999999999999997,
+      0.9
+    ],
+    "mount_rpy_rad": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "mount_design": "SOLID_PLINTH",
+    "minimum_surface_height_m": 0.2,
+    "maximum_surface_height_m": 2.1,
+    "mechanism_profile": "low_profile_200_outfeed20_v3",
+    "tool_extension_m": 0.2,
+    "structural_strength": "NOT_VERIFIED",
+    "actuator_rating": "NOT_VERIFIED",
+    "manufacturing_rating": "NOT_VERIFIED"
+  },
+  "layout_fingerprint": "72432f0cef4a765a7b89c68acc02e0bfb628d50067070785764fd5c50577f610",
+  "completed": 31,
+  "remaining": 9,
+  "historical_completed_count": 0,
+  "assumed_removed": [],
+  "cycles": [
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 1018
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 834
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 742
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 926
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 658
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 797
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 709
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 886
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 974
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 629
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 776
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 690
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 861
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 947
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 612
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 763
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 847
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 679
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 602
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 932
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 761
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 845
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 677
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 600
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 929
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 766
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 850
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 681
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 604
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 850
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 766
+    }
+  ],
+  "physical_execution": "NOT_RUN",
+  "continuous_swept_proof": false,
+  "collision_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "robot_mount_contact_exemption": true,
+    "tool_chassis_contact_target_ids": [
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04"
+    ],
+    "fingerprint": "77c0c24dc49b02878e93f6f0b21811b924ee0c6e9c30c2eb3b72a498159fb349",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "search_cost_s": 10869.141560250893
+}

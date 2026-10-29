@@ -13,6 +13,9 @@ from .lifted_reception import translated
 from .joint_search_outfeed import WITHDRAW_FIRST,PARK_FIRST,withdrawal_extra
 
 RAISED_TOP_HEIGHTS_M=(.65,.85)
+TOP_FRONT_EDGE_POSES=tuple((shift,roll) for shift in (-.12,-.24) for roll in (math.pi/2,-math.pi/2))
+TOP_FRONT_EDGE_MIDPOINT_POSES=tuple((-.18,roll) for roll in (math.pi/2,-math.pi/2))
+TOP_FRONT_EDGE_SHORT_AXIS_POSES=tuple((-.24,roll) for roll in (0.,math.pi))
 
 def pose_target(target,offset,roll):
     pose=target.contact_pose.copy();old=pose[:3,:3].copy()
@@ -45,8 +48,13 @@ def candidate_options(faces,scene,frozen,root_height,layout,*,initial_q):
     limits=layout.data['conveyors']['coupling'];minimum=limits['minimum_surface_height_world_m'];maximum=limits['maximum_surface_height_world_m']
     variants=[([0.,0.],0.),*([ [0.,0.],a] for a in (math.pi/2,-math.pi/2,math.pi)),
         *([list(offset),a] for offset,a in product(((.048,0),(-.048,0),(0,.096),(0,-.096)),(0.,math.pi/2)))]
+    original_variants=len(variants)
+    variants.extend(([shift,0.],roll) for shift,roll in TOP_FRONT_EDGE_POSES)
+    variants.extend(([shift,0.],roll) for shift,roll in TOP_FRONT_EDGE_MIDPOINT_POSES)
+    variants.extend(([shift,0.],roll) for shift,roll in TOP_FRONT_EDGE_SHORT_AXIS_POSES)
     for pose_index,(offset,roll) in enumerate(variants):
         for face_index,face in enumerate(faces):
+            if pose_index>=original_variants and face.face_role!='TOP':continue
             h=StartHeight.capture(face.box)
             modes=[('Hmin',h.hmin),('Hmax',h.hmax)] if face.face_role!='TOP' else [('Hmax',h.hmax),('Hmin',h.hmin)]
             if face.face_role=='TOP' and h.hmax<minimum:modes=[('LIFTED_TOP_FIXED',minimum)]
@@ -64,6 +72,12 @@ def candidate_options(faces,scene,frozen,root_height,layout,*,initial_q):
                         face=target.geometric_face_id,offset_face_m=offset,roll_rad=roll,
                         contact_pose=target.contact_pose.tolist(),release_bottom_m=max(h.z_b+.05,height+.05) if target.face_role=='TOP' else h.z_b)
                     if mode=='LIFTED_TOP_EXPLICIT':contract['explicit_receive_height_m']=height
+                    if pose_index>=original_variants:
+                        contract['contact_pose_family']=('TOP_FRONT_EDGE_240_MM_SHORT_AXIS_V1'
+                            if pose_index>=original_variants+len(TOP_FRONT_EDGE_POSES)+len(TOP_FRONT_EDGE_MIDPOINT_POSES)
+                            else 'TOP_FRONT_EDGE_180_MM_QUARTER_TURN_V1'
+                            if pose_index>=original_variants+len(TOP_FRONT_EDGE_POSES)
+                            else 'TOP_FRONT_EDGE_120_240_MM_QUARTER_TURN_V1')
                     validate_receive_contract(contract,target.box,height)
                     region=receiving_region(target.box,scene.receiver)
                     limits_x=region['projection_center_limits_before_occupancy'][:2]
@@ -87,6 +101,11 @@ def candidate_options(faces,scene,frozen,root_height,layout,*,initial_q):
                         park_goal_source='FRESH40_FROZEN_INITIAL_LEGAL_STATE')
                     park.pop('candidate_key');park['candidate_key']=digest(park)
                     yield target,park
+                    # One explicit extra-clearance departure before the same
+                    # native park goal; the released carton remains stationary.
+                    clear_park=dict(park,withdraw_extra_m=.10,visit_order=[*option['visit_order'],5])
+                    clear_park.pop('candidate_key');clear_park['candidate_key']=digest(clear_park)
+                    yield target,clear_park
                     # One additional finite process ordering, with the same
                     # business pose, receiving height and numerical budgets.
                     alternative=dict(option,outfeed_timing=WITHDRAW_FIRST,
