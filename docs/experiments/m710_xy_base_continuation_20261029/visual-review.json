@@ -1,0 +1,19 @@
+{
+  "status": "PASS_INSPECTED_VIDEO_REPLAY_AND_REPORT",
+  "files": {
+    "encoded-frame-01.png": "b64333d58c4ba10ea484a66a0a12700c350232a7b95ae18059f75f0e242e9e00",
+    "encoded-frame-02.png": "24c37a6d0c756437d0ff4dd8aae7cd367b48d66f78ebcb4fbe9c510b2a8b1bf8",
+    "encoded-frame-03.png": "0604be4c3947aaa7e2da436ab08d20f547bc53d2701d8226ca7840120892e72a",
+    "encoded-frame-04.png": "73de2b690baf1944abe7a76a262d4af562fb3a0e3b3c1993fc954bf6a6438a36",
+    "encoded-frame-05.png": "b861f4e65fc18e43c8426da6b2e8cd84beae4ab1651895fa4f93385088b07171",
+    "index-top.png": "adc4c438c04bc3784096e7bbec81169116c990aee10a3e466547f91cf165926e",
+    "report-bottom.png": "470cfb3550db4f93ddacb54df9a3d84d072bec714aac00ea28bf0de5dfc96a1e"
+  },
+  "observations": [
+    "Encoded initial frame shows all 40 initial cartons; last frame shows no cartons and 40 nominal receptions / ideal outfeeds.",
+    "Both accepted base-relocation midpoint frames show empty tool, unchanged equipment and cumulative counts 31 and 38.",
+    "Minimal Chinese status panel is legible at bottom left; 4x and planning replay remain visible.",
+    "Offline video page and report render with no clipped report text."
+  ],
+  "physical_execution": "NOT_RUN"
+}

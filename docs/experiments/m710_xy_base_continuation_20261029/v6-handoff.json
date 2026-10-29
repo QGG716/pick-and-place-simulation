@@ -1,0 +1,10 @@
+{
+  "previous_checkpoint_sha256": "b39dbb571625b3a39bcd5edc974ad54a8315ef94d338472458c8e3e76d023883",
+  "accepted_count": 39,
+  "prior_trials": 180,
+  "handoff_epoch": 1793253933.4180565,
+  "change": "RELEASE_FORMULA_BOUND_TO_DECLARED_HEIGHT_AFTER_EXISTING_MEASURED_HEIGHT_TOLERANCE",
+  "collision_policy_changed": false,
+  "release_contract_changed": false,
+  "prior_failed_attempts_and_costs_retained": true
+}

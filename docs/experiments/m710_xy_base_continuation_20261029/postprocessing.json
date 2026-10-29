@@ -1,0 +1,42 @@
+{
+  "status": "PASS_VERIFIED_40_OF_40_MOVING_BASE_CHAIN_AND_EXPORT",
+  "started_epoch": 1793253987.9830399,
+  "source_run": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/xy-base-continuation-20261029/run-v6",
+  "source_checkpoint_sha256": "17900cc671a271707f0ccd2dd4c940f46f8589517adb3eb3eb7a9197e2cdae9c",
+  "export_source": "/work-xy-export-20261029-v3",
+  "export_manifest_sha256": "8ef3c851b5ce03be66f99b3292fa3ee63679455f12eca772fe4a41f40a94d7f2",
+  "raw_evidence_downloaded": false,
+  "export_exit": 0,
+  "post_steps": [
+    {
+      "command": [
+        "python3",
+        "/root/autodl-tmp/compress_xy_replay.py",
+        "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/xy-base-continuation-20261029/final-best/replay.html"
+      ],
+      "exit": 0,
+      "stdout": "{\"status\": \"PASS_LOSSLESS_REPLAY_PACKAGING\", \"source_bytes\": 37125234, \"source_sha256\": \"25c0e7860be37b30b80d45b33425b2308075edfd15be6fc4defe82efd2595e2c\", \"wrapper_bytes\": 6434963, \"wrapper_sha256\": \"f795622e3e4299841af5d5e1987d7bee8bd29618ee907f8ef695de143ddbd578\", \"decompressed_identical\": true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "/root/autodl-tmp/summarize_xy_run.py",
+        "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/xy-base-continuation-20261029/final-best"
+      ],
+      "exit": 0,
+      "stdout": "{\"completed\": 40, \"additional\": 9, \"report\": \"/root/autodl-tmp/m710-l05-x500-20261022/rootfs/xy-base-continuation-20261029/final-best/report.html\"}\n",
+      "stderr": ""
+    }
+  ],
+  "completed": 40,
+  "remaining": 0,
+  "additional_completed": 9,
+  "accepted_base_moves": 2,
+  "ended_epoch": 1793254045.5091832,
+  "physical_execution": "NOT_RUN",
+  "browser_validation": "PASS_XY_BASE_REPLAY",
+  "video_validation": "PASS_COMPLETE_40_CARTON_VIDEO",
+  "video_speed": 4,
+  "report_validation": "PASS_OFFLINE_REPORT_AND_MP4_PLAYER"
+}

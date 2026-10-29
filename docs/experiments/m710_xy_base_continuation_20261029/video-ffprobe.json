@@ -1,0 +1,25 @@
+{
+  "status": "PASS_H264_640X360_5FPS",
+  "video_sha256": "2efa4ac9ba1823ddd77cc896d23c21c6ba2446b31c1ea6c9cd3b0a76cfd520c5",
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 640,
+        "height": 360,
+        "r_frame_rate": "5/1",
+        "avg_frame_rate": "5/1",
+        "duration": "611.400000",
+        "nb_frames": "3057",
+        "side_data_list": [
+          {}
+        ]
+      }
+    ],
+    "format": {
+      "duration": "611.400000",
+      "size": "2981548"
+    }
+  }
+}

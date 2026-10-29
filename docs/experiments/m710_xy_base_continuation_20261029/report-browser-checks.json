@@ -1,0 +1,14 @@
+{
+  "status": "PASS_OFFLINE_REPORT_AND_MP4_PLAYER",
+  "completed": 40,
+  "errors": [],
+  "video_metadata": {
+    "width": 640,
+    "height": 360,
+    "duration": 611.4
+  },
+  "files": {
+    "report.html": "352accc89f895992492ba40f72993c4ccb3b0bb77dd62bda162e503e70fcc12a",
+    "index.html": "02f1661abbd0d45d0daf65e65b8db042078e37877ab77acc516b12b3245fe71a"
+  }
+}

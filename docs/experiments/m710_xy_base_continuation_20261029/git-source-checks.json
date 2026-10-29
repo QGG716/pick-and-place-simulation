@@ -1,0 +1,184 @@
+{
+  "status": "PASS_ALL_CHANGED_CODE_BYTE_EXACT_AND_HISTORICAL_TEXT_EQUIVALENT",
+  "changed_files_byte_exact": [
+    "src/unloading_sim/joint_search_recipes.py",
+    "src/unloading_sim/xy_base_continuation.py",
+    "src/unloading_sim/xy_base_native.py",
+    "tests/test_joint_search_process.py",
+    "tests/test_xy_base_continuation.py",
+    "tests/test_xy_saved_evidence.py",
+    "tests/test_xy_search_order.py",
+    "tools/export_m710_xy_continuation.py",
+    "tools/lifted_reception/batch_viewer.html",
+    "tools/plan_m710_xy_continuation.py",
+    "tools/probe_m710_xy_base.py",
+    "tools/render_m710_batch_video.py",
+    "tools/verify_m710_xy_continuation.py"
+  ],
+  "exact_files": 353,
+  "historical_line_ending_normalization": [
+    {
+      "file": "tools/check_m710_five_failures.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "56af698104fc1b3a3676386ffb22aaf6c80725d2ab8eeba8122b7178e390069c",
+      "server_snapshot_sha256": "9f91c1ed7ffeeeb9fc8ba3c0378b93be3c0928d72221923e9b4e956f5cbad806"
+    },
+    {
+      "file": "tools/check_m710_j2_scissor_viewer.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "f68d0af9152087dc7c8a81cc3a557ddcf480394014f56b702b1c5e11672798dc",
+      "server_snapshot_sha256": "10f62718e2e91419f6a1c8b2a4874499a3e15acffbe4b26457db921c1e16f5f1"
+    },
+    {
+      "file": "tools/check_m710_l01_failures.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "8810e9de3389bdfc0684c98e99bb0c6214bb11a6190426e808f95a8ba0a19ef9",
+      "server_snapshot_sha256": "10086bd7862cfdce2e4f703f92ae600476c042140a6d701ae32024aa4625a332"
+    },
+    {
+      "file": "tools/check_m710_low_ik_failure.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "0d746b655bad80be3700b678768eccca005166ff6c036ebb616ff0d9f5ff0d8e",
+      "server_snapshot_sha256": "3d43287262abdd5de7d3ac468dd02faa87e07bb09d3a915a59111260b2d6583b"
+    },
+    {
+      "file": "tools/check_m710_min250_failures.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "0ca38862ad8589d9723c7899c38e28cd41eb520f2b8496881547e099c82918e9",
+      "server_snapshot_sha256": "52a9b4ff2b34a02d6709f72f2de74b252e7ecf5d831976a6cd74418c226a08f5"
+    },
+    {
+      "file": "tools/check_m710_seam_viewers.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "8e1211dc2bb9b6135ebf7631e29eb90c959bf7d84ccba9fe25888e4ebd0192f7",
+      "server_snapshot_sha256": "ddb73c93ee6e8914e18030a6a14ea875760283eea74b3974bcf31169f3f02620"
+    },
+    {
+      "file": "tools/check_m710_top_ik_failures.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "82bd496fb67c241f1a0951934909c600db50e6c79922c56d920a9995479278cf",
+      "server_snapshot_sha256": "a3b36ba4e7712eb4e7643aeff8446ff068a9908a7209f4ee1316677dc042a00e"
+    },
+    {
+      "file": "tools/record_m710_blocker_inspection.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "a16ed396b2b49e2f381471c14704cda543bad208a61ea4729e5d16f273bd9c2e",
+      "server_snapshot_sha256": "10f3a0a5c58797af425b9b9ca252508fbff116999873534e662ee6adf666c97c"
+    },
+    {
+      "file": "tools/record_m710_top_layer_replay.mjs",
+      "only_crlf_to_lf": true,
+      "git_sha256": "8f3d597898a916992bf5e8ec06e9afe32b80fe393318f8ef40c2199009a1740f",
+      "server_snapshot_sha256": "1d395dc56cf611dac506ec6b91df025f7fdaa39a179614b46bab9f19eb09f515"
+    },
+    {
+      "file": "tools/verify_m710_local_delivery.ps1",
+      "only_crlf_to_lf": true,
+      "git_sha256": "dbfb7d0c077542f2c3c0268976ed52496a0857e4fdb863ae40c263eda7aec658",
+      "server_snapshot_sha256": "68502989e5293e38b4bd118c50fe7b98969dd561a3530f9959f49765454c6191"
+    },
+    {
+      "file": "tools/diagnostics/pilz_l05_j4_velocity_only.cpp",
+      "only_crlf_to_lf": true,
+      "git_sha256": "6b6178d54a465e5872dfa04f98f468b624f8affe8ecdef76499e235fbc3f89da",
+      "server_snapshot_sha256": "fb292afc283dc0417e2d1fd4b5e0d4ae0297dcd837533d88a9603a9d1182730b"
+    },
+    {
+      "file": "tools/diagnostics/pilz_l05_j4_velocity_only_test.cpp",
+      "only_crlf_to_lf": true,
+      "git_sha256": "ae87bf2e2096640b1a3d96d23ce28e5dc192e459b5d9393fe6b345ad2f8a9ce9",
+      "server_snapshot_sha256": "31dab40389c04193547d93945413d12fe92290d28f4c9bc36e295d8cb60bd001"
+    },
+    {
+      "file": "tools/diagnostics/pilz_l05_joint_rates_only.cpp",
+      "only_crlf_to_lf": true,
+      "git_sha256": "c817feb45297ace1151ab1b4e9234ff4de2a92f3034828325e067d6fed24e25c",
+      "server_snapshot_sha256": "89e9bad16ffbd86f1174d9fb580ef813624227f38c46c4aee9f7c57166597cdb"
+    },
+    {
+      "file": "tools/diagnostics/pilz_l05_joint_rates_only_test.cpp",
+      "only_crlf_to_lf": true,
+      "git_sha256": "3d491356a8b0cfebef44d10d6af4d2585080b629ad1e603b4cebd9ad1332d0ad",
+      "server_snapshot_sha256": "cdba8a4c332e68d3180903dad2a7bf9aa9b1836401d4ab441fc6703f0191a683"
+    },
+    {
+      "file": "tools/lifted_reception/coupled_blockers.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "a834d99411ce455da7f25f679b408a28dac7cc7ba5340d280bb05610e04379c8",
+      "server_snapshot_sha256": "d9dbc5d5ff9a63388ed7c654931df44dfebd0504e2c86ff56d0626427ab6e9e5"
+    },
+    {
+      "file": "tools/lifted_reception/coupled_view.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "7f8057252e127ef1aff05b6204b15922a7c3d297391680c70da2df720e875547",
+      "server_snapshot_sha256": "7f643a3acd2d82cdc7c090467f7dc93659a894e88ba95950a912617f016589a8"
+    },
+    {
+      "file": "tools/search_replay/five_failures.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "1635a38346339aed9a52b3cfb016485f7be3937b7dc97bcee36aca91729f57fe",
+      "server_snapshot_sha256": "0d3f49cd2d16166070392120a099c9ffffab922cc1c044b1fd14b0df63e9de9f"
+    },
+    {
+      "file": "tools/search_replay/ik_prefix.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "d65ab493ff14adc930c287219cd832f3cfe5bfe4444025ffffe999952b5d27c5",
+      "server_snapshot_sha256": "e3ee4d1113cd18ac92c5e77889728fea30423295cd456233c414f4996aa4fb26"
+    },
+    {
+      "file": "tools/search_replay/j2_scissor_viewer.html",
+      "only_crlf_to_lf": true,
+      "git_sha256": "d73a25edb77da6e9f4e98cbbf6dbbfef123110e9871110fbaecf0385134f9d8e",
+      "server_snapshot_sha256": "be86b27ea3d2a874556504dd98b992170ec9f6ec270ba792c960780bd8ed8456"
+    },
+    {
+      "file": "tools/search_replay/l01_failures.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "f69cc635d44d962b72d60fd9ae450713d6122fd55118ccf65ddbdd1b0e331c1a",
+      "server_snapshot_sha256": "11c8f0338f7541a5564811036240309e712abf145a98b3f0c900f78f4d9969fb"
+    },
+    {
+      "file": "tools/search_replay/min250_failures.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "b052f9566016c9a862b7e6ed68c6b3351925598a8f22171b0f80ccb2b444a0f0",
+      "server_snapshot_sha256": "bd38c3e493e3a01f63088ce7dbc26db9f146566760a4f6094321de240163556c"
+    },
+    {
+      "file": "tools/search_replay/vendor/LICENSE.three",
+      "only_crlf_to_lf": true,
+      "git_sha256": "7dddf7c5b8fd10ee654db8857d75d104b5557889aa5a91fc4ca545ea7c07062f",
+      "server_snapshot_sha256": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84"
+    },
+    {
+      "file": "tools/search_replay/vendor/OrbitControls.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "02bb4ade710f3e607329e37a21f098bc3ac70eb6e33daf8a65e79f4db785e7b2",
+      "server_snapshot_sha256": "5742860df2533c1c5ed580f939228f2a0d88b14967bb167dc9954ceedb1616e8"
+    },
+    {
+      "file": "tools/search_replay/vendor/three.min.js",
+      "only_crlf_to_lf": true,
+      "git_sha256": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
+      "server_snapshot_sha256": "7ae04663bb431808bc025280122162029ea3a354efc5fcca8bd8f95d1a1933e9"
+    },
+    {
+      "file": "configs/isaac/carton_assets.json",
+      "only_crlf_to_lf": true,
+      "git_sha256": "2666d089c0330f8f8e0b949920d5757120c918c8fe5a079130b840d47b988613",
+      "server_snapshot_sha256": "1b41fda32572900592178e5307ed519e19af71517aa73b101a8900447acbb99b"
+    },
+    {
+      "file": "configs/isaac/conveyor_assets.json",
+      "only_crlf_to_lf": true,
+      "git_sha256": "b3c364551e6cb12cfe4b3c838cb7048087270fa48d1a1b82b33e33d3c4b2c693",
+      "server_snapshot_sha256": "9d508ffdd770c62f4ff009d5df23c40a4db114ca0125cb16196d2095e32c1263"
+    },
+    {
+      "file": "configs/isaac/m710_visual_assets.json",
+      "only_crlf_to_lf": true,
+      "git_sha256": "b8e355ac6afa5ed7f2c0492b2c9f1c462a4601540fccb75842a85d628690f524",
+      "server_snapshot_sha256": "3f77bac0561f8eb3d4353377956ea4d239452506e8d3ce278664252d0e3031d9"
+    }
+  ],
+  "notes": "All changed planning, verification, export and video code is byte-identical to executed source. Git normalizes CRLF to LF in these unchanged historical files. Exact historical snapshot bytes remain in the server archive; do not substitute normalized Git bytes for the frozen source hash manifest."
+}

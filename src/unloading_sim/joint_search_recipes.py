@@ -41,7 +41,10 @@ def validate_receive_contract(contract,target,height):
     else:raise ValueError('SEARCH_RECEIVE_MODE')
     if abs(expected-height)>1e-9:raise ValueError('SEARCH_HEIGHT_FORMULA_CHANGED_OR_CLAMPED')
     if mode=='LIFTED_TOP_FIXED' and contract['face']!='z+':raise ValueError('LOW_BOX_REQUIRES_EXPLICIT_TOP_LIFT')
-    if contract['release_bottom_m']!= (max(h.z_b+.05,height+.05) if contract['face']=='z+' else h.z_b):
+    # The measured surface can round to 0.6500000000000001. Its agreement with
+    # the declared height is checked above; keep the release formula bound to
+    # that exact declared height instead of recomputing it from rounded geometry.
+    if contract['release_bottom_m']!= (max(h.z_b+.05,contract['height_m']+.05) if contract['face']=='z+' else h.z_b):
         raise ValueError('SEARCH_RELEASE_HEIGHT_CHANGED')
 
 def candidate_options(faces,scene,frozen,root_height,layout,*,initial_q):

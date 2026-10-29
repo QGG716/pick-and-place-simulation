@@ -1,0 +1,8 @@
+{
+  "status": "PASS_LOSSLESS_REPLAY_PACKAGING",
+  "source_bytes": 37125234,
+  "source_sha256": "25c0e7860be37b30b80d45b33425b2308075edfd15be6fc4defe82efd2595e2c",
+  "wrapper_bytes": 6434963,
+  "wrapper_sha256": "f795622e3e4299841af5d5e1987d7bee8bd29618ee907f8ef695de143ddbd578",
+  "decompressed_identical": true
+}

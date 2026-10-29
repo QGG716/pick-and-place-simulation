@@ -19,6 +19,16 @@ from unloading_sim.moveit2_backend import box_message
 @pytest.fixture(scope='module')
 def layout():return load_workcell_layout(Path(__file__).resolve().parents[1]/'configs/workcells'/BASELINE)
 
+@pytest.mark.parametrize('height,measured',[(.65,.6500000000000001),(.85,.8500000000000001)])
+def test_raised_top_release_survives_surface_roundoff_but_not_contract_changes(layout,height,measured):
+    box=min(layout.cartons(),key=lambda b:b.center[2]);h=StartHeight.capture(box)
+    c=dict(schema=SCHEMA,target_identity=h.box_identity,d_m=.05,height_m=height,minimum_m=.2,maximum_m=2.1,
+        mode='LIFTED_TOP_EXPLICIT',explicit_receive_height_m=height,face='z+',release_bottom_m=height+.05)
+    validate_receive_contract(c,box,measured)
+    with pytest.raises(ValueError,match='SEARCH_RECEIVE_CONTRACT'):validate_receive_contract(c,box,height+.001)
+    with pytest.raises(ValueError,match='SEARCH_RELEASE_HEIGHT_CHANGED'):
+        validate_receive_contract(dict(c,release_bottom_m=c['release_bottom_m']+1e-12),box,measured)
+
 @pytest.mark.parametrize('height',[.25,.6,1.15,2.1])
 def test_outfeed_actual_full_envelope_and_wait_timing(layout,height):
     world=coupled_conveyor_state(layout,height,()).boxes

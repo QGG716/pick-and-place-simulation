@@ -1,0 +1,28 @@
+{
+  "status": "PASS_SERVER_ARCHIVE_EVERY_FILE_SHA256",
+  "archive": "/root/autodl-tmp/xy-base-delivery-20261029/xy-full-evidence.tar.gz",
+  "archive_bytes": 480047430,
+  "archive_sha256": "7f247949a081d9285c42a6796237f6faabb6c5168ba46b5f017fe2a2c532ac6a",
+  "manifest": "/root/autodl-tmp/xy-base-delivery-20261029/file-manifest.json",
+  "manifest_sha256": "d229d92f2c7eca5c4353d0632a940b69ff00b50c83fcf12d19e6f5bed0842a4e",
+  "verified_files": 8656,
+  "raw_evidence_downloaded": false,
+  "raw_evidence_uploaded_to_github": false,
+  "full40_initial_search_archive": "/root/autodl-tmp/joint-search-delivery-20261028/full-evidence.tar.gz",
+  "full40_initial_search_archive_bytes": 8257930737,
+  "full40_initial_search_archive_sha256": "91e468d1e0934f282e0ea2cc887043f21b1fe447f7d12e68aee391caedf93d7a",
+  "full40_initial_search_archive_checks": {
+    "status": "PASS_FULL_ARCHIVE_CONTENT_SHA256",
+    "files_checked": 32221,
+    "archive": "/root/autodl-tmp/joint-search-delivery-20261028/full-evidence.tar.gz",
+    "bytes": 8257930737,
+    "sha256": "91e468d1e0934f282e0ea2cc887043f21b1fe447f7d12e68aee391caedf93d7a",
+    "started_epoch": 1793233003.26486,
+    "ended_epoch": 1793233422.04543
+  },
+  "preceding31_all_failed_searches": "/root/autodl-tmp/m710-l05-x500-20261022/rootfs/joint-search-continuation-20261029",
+  "physical_execution": "NOT_RUN",
+  "completed": 40,
+  "remaining": 0,
+  "finished_epoch": 1793254871.6318047
+}

@@ -114,3 +114,4 @@ docs/experiments/m710_c04_side_20261024/** -text -whitespace
 docs/experiments/m710_c04_extension200_20261024/** -text -whitespace
 tools/search_replay/selected_routes.js text eol=lf
 docs/experiments/m710_joint_search_continuation_20261029/** -text -whitespace
+docs/experiments/m710_xy_base_continuation_20261029/** -text -whitespace

@@ -1,0 +1,21 @@
+{
+  "previous_checkpoint_sha256": "f5132df4bcd620676b48cc17b381742c84418b73849aacd0564b43d35d0ad9e0",
+  "accepted_root_sha256": "e2bae42fe1fa81e0e3d3c1070cc36fea7f05e320f01aeeb287f39c41ac345021",
+  "accepted_count": 39,
+  "prior_trials": 173,
+  "stopped_epoch": 1793253617.720148,
+  "owned_processes": [
+    {
+      "pid": 106142,
+      "command": "/bin/bash /xy-base-continuation-20261029/run-v3.sh "
+    },
+    {
+      "pid": 106143,
+      "command": "/opt/planning-venv/bin/python tools/plan_m710_xy_continuation.py --resume --source-revision-from /work-xy-continuation-20261029-v2/joint-search-manifest.json --prefix /joint-search-continuation-20261029/final-best --output /xy-base-continuation-20261029/run-v3 --worker-command /bin/bash /joint-search-worker-v13.sh "
+    }
+  ],
+  "stop": "TERM_OWNED_GROUP_AFTER_DURABLE_CANDIDATE_BOUNDARY",
+  "scope": "SAME_ACCEPTED_PREFIX_AND_COSTS",
+  "change": "PRIORITIZE_EXISTING_FRONT_EDGE_TOP_POSES_AND_DECLARE_THREE_150_MM_LATERAL_REFINEMENTS",
+  "collision_policy_changed": false
+}
