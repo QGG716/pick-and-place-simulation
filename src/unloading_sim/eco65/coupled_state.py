@@ -15,7 +15,7 @@ J1_CAPTURE_POLICY = 'RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V
 J1_FREE_POLICY = 'RAW_FINITE_JOINTS_BIDIRECTIONAL_NO_J1_MONOTONICITY_V4'
 J1_REVERSE_LIMIT = 1e-6
 INTERVALS = {'FIRST_APPROACH': -1, 'OUTBOUND': -1, 'RETURN': 1}
-EVENTS = ('ATTACH', 'RELEASE', 'NOMINAL_RECEIVE', 'IDEAL_RECEIVER_DRAIN', 'NEXT_TARGET')
+EVENTS = ('ATTACH', 'RELEASE', 'NOMINAL_RECEIVE', 'IDEAL_OUTFEED', 'IDEAL_RECEIVER_DRAIN', 'NEXT_TARGET')
 
 
 def reverse_travel(q, direction):
@@ -153,9 +153,8 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
     robot = robot_for(snapshot['tool'], snapshot['scene'])
     free=plan['j1_direction_policy']==J1_FREE_POLICY
     if free:
-        from .transverse_process import POLICY, corners, pose_of
-        if (plan.get('transverse_process_policy')!=POLICY or
-                snapshot['scene'].get('transverse_process_policy')!=POLICY):
+        from .transverse_process import policy_for, corners, pose_of
+        if plan.get('transverse_process_policy')!=policy_for(snapshot['scene']):
             raise ValueError('CYCLE_TRANSVERSE_POLICY_IDENTITY_CHANGED')
     from .coupled_scene import coupled_conveyor_state, native_coupled_world
     mechanism_cache={}
@@ -295,6 +294,23 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
                             or not np.allclose(a[:2, 3], b[:2, 3], atol=1e-12, rtol=0)
                             or b[2, 3] >= a[2, 3] or before['attachment'] or after['attachment']):
                         raise ValueError('CYCLE_NOMINAL_DROP_INVALID')
+                if event == 'IDEAL_OUTFEED':
+                    from .outfeed import outfeed_path
+                    if not snapshot['scene'].get('prototype') or before['attachment'] or after['attachment']:
+                        raise ValueError('CYCLE_OUTFEED_OWNERSHIP_INVALID')
+                    path=outfeed_path(box_pose(before,target,robot),sizes[target],
+                        snapshot['scene']['coupled_conveyor_spec'],before['mechanism'],
+                        snapshot['scene']['prototype']['configuration']['outfeed'])
+                    if (not same_generated_geometry(record.get('outfeed'),path)
+                            or req['transition'].get('outfeed')!=record['outfeed']
+                            or not np.allclose(box_pose(after,target,robot),path['samples'][-1]['pose'],atol=1e-9,rtol=0)):
+                        raise ValueError('CYCLE_OUTFEED_PATH_CHANGED')
+                    if len(record['samples'])!=len(path['samples']):raise ValueError('CYCLE_OUTFEED_SAMPLES_MISSING')
+                    for sample,position in zip(record['samples'],path['samples']):
+                        check_state(sample['state'],ids);check_mechanism(sample['state'])
+                        if (sample['state']['q']!=before['q'] or sample['state']['attachment'] is not None
+                                or not np.allclose(box_pose(sample['state'],target,robot),position['pose'],atol=1e-9,rtol=0)):
+                            raise ValueError('CYCLE_OUTFEED_SAMPLE_CHANGED')
             else:
                 raise ValueError('CYCLE_RECORD_KIND_INVALID')
         if batch:
@@ -307,12 +323,15 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
         previous, parent = after, record['record_id']
     if previous != plan['terminal_state']:
         raise ValueError('CYCLE_TERMINAL_STATE_CHANGED')
+    carton_events=['ATTACH','RELEASE','NOMINAL_RECEIVE']
+    if snapshot['scene'].get('prototype'):carton_events.append('IDEAL_OUTFEED')
+    carton_events.append('IDEAL_RECEIVER_DRAIN')
     if require_complete and batch:
         completed=previous['completed_ids']
         expected=[]
         for i,target in enumerate(completed):
             if i:expected.append(('NEXT_TARGET',completed[i-1]))
-            expected.extend((event,target) for event in ('ATTACH','RELEASE','NOMINAL_RECEIVE','IDEAL_RECEIVER_DRAIN'))
+            expected.extend((event,target) for event in carton_events)
         if (not plan['complete'] or len(completed)!=len(ids) or set(completed)!=set(ids)
                 or previous['attachment'] is not None or previous['remaining_ids']
                 or events!=expected or completed[0]!=plan['first_target_id']):
@@ -320,8 +339,7 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
     elif require_complete:
         first, second = plan['first_target_id'], plan['next_target_id']
         if (not plan['complete'] or first == second
-                or events != [('ATTACH', first), ('RELEASE', first), ('NOMINAL_RECEIVE', first),
-                              ('IDEAL_RECEIVER_DRAIN', first), ('NEXT_TARGET', first), ('ATTACH', second)]
+                or events != [(event,first) for event in carton_events]+[('NEXT_TARGET',first),('ATTACH',second)]
                 or previous['completed_ids'] != [first]
                 or previous['target_id'] != second or previous['attachment']['id'] != second):
             raise ValueError('CYCLE_INCOMPLETE')

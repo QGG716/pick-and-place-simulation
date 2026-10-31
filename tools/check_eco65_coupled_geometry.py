@@ -14,10 +14,16 @@ def vertices(row):
     t=np.asarray(row['pose']);return local@t[:3,:3].T+t[:3,3]
 
 
-def check(snapshot,heights):
+def check(snapshot,heights,include_environment=False):
     spec=snapshot['scene']['coupled_conveyor_spec'];reports=[];fixed=None
     for height in heights:
-        state=coupled_conveyor_state(spec,height);m=state['mechanism'];rows=state['world_objects']
+        state=coupled_conveyor_state(spec,height);m=state['mechanism'];rows=list(state['world_objects'])
+        environment_ids=set()
+        if include_environment:
+            from unloading_sim.eco65.coupled_scene import native_coupled_world
+            environment=native_coupled_world(snapshot['scene'],height)
+            environment=[row for row in environment if row['id'] not in {r['id'] for r in rows}]
+            environment_ids={row['id'] for row in environment};rows.extend(environment)
         named={frozenset(p[:2]) for p in m['additional_mates']}
         solids={r['id']:vertices(r) for r in rows};overlaps=[];mates=[]
         fixed_now={r['id']:r for r in rows if r['id'] in m['fixed_structure_ids']}
@@ -28,7 +34,7 @@ def check(snapshot,heights):
             for bar in stack['bars']:
                 assert abs(np.linalg.norm(np.diff(bar['endpoints_m'],axis=0))-bar['length_m'])<1e-9
         floor=spec['config'].get('floor_z_m',0.)
-        below=[name for name,v in solids.items() if v[:,2].min()<floor-1e-9]
+        below=[name for name,v in solids.items() if name not in environment_ids and v[:,2].min()<floor-1e-9]
         hulls={name:ConvexHull(v).equations for name,v in solids.items()}
         for (a,va),(b,vb) in combinations(solids.items(),2):
             if np.any(np.minimum(va.max(0),vb.max(0))-np.maximum(va.min(0),vb.min(0))<=1e-8):continue
@@ -47,6 +53,7 @@ def check(snapshot,heights):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--snapshot',required=True)
     p.add_argument('--heights',nargs='+',type=float,default=[.1,.18,.33,.43,.45]);p.add_argument('--output',required=True)
-    a=p.parse_args();result=check(load_json(a.snapshot),a.heights);save_json(a.output,result)
+    p.add_argument('--include-environment',action='store_true')
+    a=p.parse_args();result=check(load_json(a.snapshot),a.heights,a.include_environment);save_json(a.output,result)
     print(result['status'],[(r['height_m'],len(r['nonassembly_overlaps'])) for r in result['samples']])
     raise SystemExit(result['status']!='PASS')

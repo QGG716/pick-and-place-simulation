@@ -17,15 +17,14 @@ from .evaluation import CHAIN, INTERPOLATION
 from . import posture_preference
 from .coupled_state import (MODE, J1_POLICY, J1_FREE_POLICY, business_direction, INTERVALS, sign_state,
     check_business_direction, receiving_geometry, validate_cycle)
-from .transverse_process import POLICY, process_options, release_poses, corners, pose_of, fair_process_candidates
+from .transverse_process import POLICY, process_options, release_poses, corners, pose_of, fair_process_candidates, policy_for
 
 
 class CoupledTask(NativeTask):
     def __init__(self, snapshot, command, *, connection_seconds=100., ik_seeds=8,
                  max_grasps=24, initial_mode='new_simulation', first_approach_direction='unrestricted', **kwargs):
         if first_approach_direction!='unrestricted':raise ValueError('NEW_PROCESS_REQUIRES_UNRESTRICTED_J1')
-        if snapshot['scene'].get('transverse_process_policy')!=POLICY:
-            raise ValueError('REBUILD_SNAPSHOT_WITH_TRANSVERSE_PROCESS_V2')
+        self.process_policy=policy_for(snapshot['scene'])
         self.j1_policy=J1_FREE_POLICY
         self.process_option=None
         self.sync_location='BEFORE_APPROACH'
@@ -228,7 +227,7 @@ class CoupledTask(NativeTask):
                    j1_direction=self.direction_for_stage(stage),
                    j1_reverse_used_rad=self.reverse_used[self.business_interval],
                    j1_reverse_limit_rad=0.,
-                   transverse_process_policy=POLICY,process_option=deepcopy(self.process_option),
+                   transverse_process_policy=self.process_policy,process_option=deepcopy(self.process_option),
                    mechanism_state=dict(height_m=self.height_m,
                                         spec_fingerprint=self.spec['fingerprint']),
                    completed_ids=list(self.completed_ids))
@@ -303,7 +302,7 @@ class CoupledTask(NativeTask):
         return ('transit' if self.stages and self.stages[-1]['stage'] in ('transit','place')
                 else 'extraction')
 
-    def transition(self, event_type, change, *, kind='event', samples=None, duration_s=0.):
+    def transition(self, event_type, change, *, kind='event', samples=None, duration_s=0., details=None):
         """Commit a state change only after the worker accepts its native receipt."""
         checkpoint = self.checkpoint()
         before = self.state()
@@ -322,6 +321,7 @@ class CoupledTask(NativeTask):
             self.restore(checkpoint)
         req['transition']=dict(kind=kind,event_type=event_type,after_request=after_req,
                                sample_requests=[] if samples is None else [s['request'] for s in samples])
+        if details is not None:req['transition']['outfeed']=deepcopy(details)
         raw=self.call(req)
         if raw.get('status')!='SUCCESS':
             raise ValueError('NATIVE_TRANSITION_REJECTED:'+event_type+':'+str(raw.get('failure',raw.get('status'))))
@@ -405,7 +405,7 @@ class CoupledTask(NativeTask):
         for rank in range(max(map(len,pools),default=0)):
             candidates.extend(pool[rank] for pool in pools if rank<len(pool))
         return dict(candidates=candidates,rejected=rejected,process_options=options,
-                    checked_contour_count=12,policy=POLICY)
+                    checked_contour_count=12,policy=self.process_policy)
 
     def select_grasp(self,grasp):
         super().select_grasp(grasp)
@@ -650,6 +650,7 @@ class CoupledTask(NativeTask):
             try:
                 self.move('withdrawal',pose=retreat)
                 self.cycle_records[-1]['retreat_geometry']=deepcopy(candidate)
+                if self.scene.get('prototype'):self.ideal_outfeed()
                 self.transition('IDEAL_RECEIVER_DRAIN',drain)
                 break
             except ValueError as error:
@@ -658,6 +659,24 @@ class CoupledTask(NativeTask):
         else:
             self.restore(received)
             raise ValueError('NATIVE_WITHDRAWAL_CANDIDATES_EXHAUSTED')
+
+    def ideal_outfeed(self):
+        from .outfeed import outfeed_path
+        if self.attachment is not None:raise ValueError('IDEAL_OUTFEED_REQUIRES_RELEASED_WORLD_CARTON')
+        path=outfeed_path(self.target_pose,self.target['size_m'],self.spec,self.state()['mechanism'],
+            self.scene['prototype']['configuration']['outfeed'])
+        cp=self.checkpoint();samples=[];target=self.target['id']
+        try:
+            for sample in path['samples']:
+                self.require_connection_budget()
+                self.target_pose=np.asarray(sample['pose']);self.carton_poses[target]=self.target_pose.copy()
+                samples.append(dict(height_m=self.height_m,state=self.state(),request=self.request(self.current_q,'withdrawal')))
+        finally:self.restore(cp)
+        def change():
+            self.target_pose=np.asarray(path['samples'][-1]['pose']);self.carton_poses[target]=self.target_pose.copy()
+            self.receiver_history[-1]['outfeed']=deepcopy(path)
+        record=self.transition('IDEAL_OUTFEED',change,samples=samples,duration_s=path['duration_s'],details=path)
+        record['outfeed']=path
 
     def select_next(self, target, grasp):
         def change():
@@ -754,7 +773,7 @@ class CoupledTask(NativeTask):
                 float(np.linalg.norm(np.asarray(g['tcp_pose_D'])[:3,:3]-current_tcp[:3,:3])),
                 len(set(g['active_ids'])^set(drained['active_ids'])),
                 float(np.linalg.norm(np.asarray(g['tcp_pose_D'])[:3,3]-current_tcp[:3,3]))))
-            if front is not None:
+            if front is not None and not self.scene.get('prototype'):
                 # High and low process options may share the same contact pose.
                 # Keep both; a failed suffix is not evidence against the other.
                 key=lambda g:(g['candidate_id'],g['process_option']['option_id'])
@@ -812,7 +831,7 @@ class CoupledTask(NativeTask):
             event_display_s=sum(r.get('duration_s',0.) for r in self.cycle_records if r['kind']=='event'),
             failures=self.cycle_failures,native_calls_archive=self.call_archive_info(),
             j1_reverse_used_rad=self.reverse_used)
-        result['transverse_process_policy']=deepcopy(POLICY)
+        result['transverse_process_policy']=deepcopy(self.process_policy)
         result['process_search']=deepcopy(self.process_search)
         result['continuation_search']=deepcopy(self.continuation_search)
         result['grasp_search']=deepcopy(self.grasp_search)

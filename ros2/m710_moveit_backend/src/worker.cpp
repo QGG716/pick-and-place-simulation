@@ -432,7 +432,7 @@ class Worker {
     try {
       if(kind!="event" && kind!="external_axis")throw std::runtime_error("ECO65_CYCLE_TRANSITION_KIND");
       if((kind=="external_axis")!=(event=="COUPLED_LIFT"))throw std::runtime_error("ECO65_CYCLE_AXIS_KIND_MISMATCH");
-      const std::set<std::string> events={"ATTACH","RELEASE","NOMINAL_RECEIVE","IDEAL_RECEIVER_DRAIN","NEXT_TARGET","COUPLED_LIFT"};
+      const std::set<std::string> events={"ATTACH","RELEASE","NOMINAL_RECEIVE","IDEAL_OUTFEED","IDEAL_RECEIVER_DRAIN","NEXT_TARGET","COUPLED_LIFT"};
       if(!events.count(event))throw std::runtime_error("ECO65_CYCLE_EVENT_UNSUPPORTED");
       checkCycleGeometry(after_req);
       if(req.at("q_start")!=after_req.at("q_start") || req.at("task_id")!=after_req.at("task_id"))
@@ -477,7 +477,7 @@ class Worker {
           throw std::runtime_error("ECO65_CYCLE_LIFT_WITH_UNDRAINED_RECEIVER_FORBIDDEN");
       }
       auto a=before_world,b=after_world;
-      if(event=="ATTACH"||event=="RELEASE"||event=="NOMINAL_RECEIVE"||event=="IDEAL_RECEIVER_DRAIN") {a.erase(target);b.erase(target);}
+      if(event=="ATTACH"||event=="RELEASE"||event=="NOMINAL_RECEIVE"||event=="IDEAL_OUTFEED"||event=="IDEAL_RECEIVER_DRAIN") {a.erase(target);b.erase(target);}
       if(a.size()!=b.size())throw std::runtime_error("ECO65_CYCLE_EVENT_WORLD_CHANGED");
       for(const auto& item:a) {
         if(!b.count(item.first))throw std::runtime_error("ECO65_CYCLE_EVENT_WORLD_ID_CHANGED");
@@ -509,6 +509,8 @@ class Worker {
           {"clearance",r.clearance->last_failure},{"process",r.process->last_failure}};return;
       }
       const bool dropped=event=="NOMINAL_RECEIVE";
+      if(dropped||event=="IDEAL_OUTFEED")r.result["receiving_surface_check"]=
+        "ACTUAL_CONVEX_SUPPORT_PLANE_BOUND_V1_OTHER_PAIRS_FCL";
       if(dropped) {
         if(r.parent.empty())throw std::runtime_error("ECO65_CYCLE_RECEIVE_WITHOUT_RELEASE");
         const auto& prior=tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent)->request;
@@ -541,11 +543,14 @@ class Worker {
              pose.translation()[k]+extent[k]>receiver.at("bounds_D_m").at(1).at(k).get<double>()-receiver.at("margin_m").get<double>()+1e-6)
             throw std::runtime_error("ECO65_CYCLE_RELEASE_PROJECTION_OUTSIDE");
       }
+      const bool checked_outfeed=cycle_binding->binding.contains("prototype");
       if(event=="IDEAL_RECEIVER_DRAIN") {
         if(r.parent.empty())throw std::runtime_error("ECO65_CYCLE_DRAIN_WITHOUT_WITHDRAWAL");
         const auto& previous=*tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent);
-        if(previous.request.at("stage")!="withdrawal" || !previous.trajectory)
-          throw std::runtime_error("ECO65_CYCLE_DRAIN_WITHOUT_WITHDRAWAL");
+        if(previous.request.at("stage")!="withdrawal" ||
+            (checked_outfeed ? previous.request.at("op")!="eco65_transition" ||
+              previous.request.at("transition").at("event_type")!="IDEAL_OUTFEED" : !previous.trajectory))
+          throw std::runtime_error("ECO65_CYCLE_DRAIN_WITHOUT_WITHDRAWAL_OR_CHECKED_OUTFEED");
         const auto carton=r.start->getWorld()->getObject(target);
         if(!carton || carton->shapes_.size()!=1)throw std::runtime_error("ECO65_CYCLE_DRAIN_WORLD_TARGET_REQUIRED");
         double minimum=INFINITY;std::string closest;
@@ -561,11 +566,15 @@ class Worker {
         }
         r.result["tool_target_separation"]={{"minimum_m",minimum},{"tool_link",closest},{"required_m",.01}};
         if(minimum<.01-1e-9)throw std::runtime_error("ECO65_CYCLE_DRAIN_TOOL_NOT_SEPARATED");
-        const auto received=m710::ecoCycleWorldTarget(r.start,req,native_deadline);
+        const auto received=checked_outfeed?m710::ecoCycleOutfeedWorld(r.start,req,cycle_binding->binding,bound_tools,native_deadline):
+          m710::ecoCycleWorldTarget(r.start,req,native_deadline);
         if(!received.is_null()){r.result["failure"]=received;return;}
         const auto box=m710::processBox(req.at("process_policy").at("target"));
         const double bottom=box.pose.translation().z()-(box.pose.linear().cwiseAbs()*box.half).z();
-        if(std::abs(bottom-req.at("process_policy").at("task_contract").at("receiving").at("bounds_D_m").at(1).at(2).get<double>())>1e-6)
+        if(checked_outfeed) {
+          const double exit=cycle_binding->binding.at("prototype").at("configuration").at("outfeed").at("output_plane_x_m");
+          if(box.pose.translation().x()+box.half.x()>=exit)throw std::runtime_error("ECO65_DRAIN_BEFORE_FULL_ENVELOPE_EXIT");
+        } else if(std::abs(bottom-req.at("process_policy").at("task_contract").at("receiving").at("bounds_D_m").at(1).at(2).get<double>())>1e-6)
           throw std::runtime_error("ECO65_CYCLE_DRAIN_BEFORE_RECEIVING");
       }
       const auto& samples=transition.at("sample_requests");
@@ -616,6 +625,47 @@ class Worker {
           if(std::abs(bottom-after_req.at("process_policy").at("task_contract").at("receiving").at("bounds_D_m").at(1).at(2).get<double>())>1e-6)
             throw std::runtime_error("ECO65_CYCLE_RECEIVE_NOT_ON_SURFACE");
         }
+      } else if(event=="IDEAL_OUTFEED") {
+        if(!checked_outfeed||!before_attachment.is_null()||samples.size()<2||samples.size()>256||r.parent.empty())
+          throw std::runtime_error("ECO65_OUTFEED_BINDING_OR_SAMPLE_COUNT");
+        const auto& previous=*tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent);
+        if(previous.request.at("stage")!="withdrawal"||!previous.trajectory)
+          throw std::runtime_error("ECO65_OUTFEED_WITHOUT_NATIVE_WITHDRAWAL");
+        Eigen::Vector3d last;bool x_started=false;
+        for(size_t index=0;index<samples.size();++index) {
+          const auto& sample=samples.at(index);checkCycleGeometry(sample);
+          if(sample.at("q_start")!=req.at("q_start")||!sample.at("attachment").is_null()||
+              sample.at("completed_ids")!=req.at("completed_ids")||sample.at("mechanism_state")!=req.at("mechanism_state")||
+              sample.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
+            throw std::runtime_error("ECO65_OUTFEED_HELD_STATE_CHANGED");
+          auto rows=m710::ecoCycleObjects(sample.at("world"));
+          if((index==0&&rows!=before_world)||(index+1==samples.size()&&rows!=after_world)||rows.size()!=before_world.size())
+            throw std::runtime_error("ECO65_OUTFEED_SAMPLE_ENDPOINT_WORLD_CHANGED");
+          for(const auto& item:before_world)if(item.first!=target) {
+            if(!rows.count(item.first)||rows.at(item.first)!=item.second)throw std::runtime_error("ECO65_OUTFEED_UNRELATED_OBJECT_CHANGED");
+          }
+          if(!m710::ecoCycleSameShape(rows.at(target),before_world.at(target)))throw std::runtime_error("ECO65_OUTFEED_SHAPE_CHANGED");
+          const auto pose=m710::processTransform(rows.at(target).at("pose"));
+          if(index) {
+            const Eigen::Vector3d delta=pose.translation()-last;
+            if(delta.norm()>.01000001 || delta.x()>1e-9 || delta.y()>1e-9 ||
+                (std::abs(delta.x())>1e-9&&std::abs(delta.y())>1e-9) || (x_started&&std::abs(delta.y())>1e-9))
+              throw std::runtime_error("ECO65_OUTFEED_DIRECTION_OR_STEP_CHANGED");
+            if(delta.x()<-1e-9)x_started=true;
+          }
+          // q, the mechanism and every non-target object are identical above.
+          // Reuse their checked scene; update/check only the moving world box.
+          if(!after.scene->processCollisionObjectMsg(object(rows.at(target))))
+            throw std::runtime_error("ECO65_OUTFEED_TARGET_UPDATE_FAILED");
+          const auto failure=m710::ecoCycleOutfeedWorld(after.scene,sample,cycle_binding->binding,bound_tools,native_deadline);
+          r.result["sample_checks"].push_back({{"index",index},{"check",{{"status",failure.is_null()?"SUCCESS":"STATE_REJECTED"},
+            {"failure",failure},{"held_world_reused",true},{"policy_fingerprint",identity.at("policy_fingerprint")}}},{"outfeed_failure",failure}});
+          if(!failure.is_null()){r.result["failure"]=failure;return;}
+          last=pose.translation();
+        }
+        const auto box=m710::processBox(after_req.at("process_policy").at("target"));
+        if(last.x()+box.half.x()>=cycle_binding->binding.at("prototype").at("configuration").at("outfeed").at("output_plane_x_m").get<double>())
+          throw std::runtime_error("ECO65_OUTFEED_FULL_ENVELOPE_NOT_OUTSIDE");
       } else if(!samples.empty())throw std::runtime_error("ECO65_CYCLE_UNEXPECTED_EVENT_SAMPLES");
       r.end=after.scene;r.trajectory.reset();r.ready=true;r.result["status"]="SUCCESS";
       r.result["event_wall_s"]=seconds(begin);r.result["q_unchanged"]=true;

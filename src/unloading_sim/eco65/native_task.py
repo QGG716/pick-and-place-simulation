@@ -245,6 +245,7 @@ class NativeTask:
             if checked_profile(result.get('evaluation_profile', STRICT)) != profile:
                 raise ValueError('NATIVE_RESPONSE_EVALUATION_PROFILE_MISMATCH')
             progress('COMPLETED', status=result.get('status'), wall_s=perf_counter()-started,
+                failure=result.get('failure'),
                 process_failure=(result.get('process') or {}).get('last_failure'),
                 clearance_failures=(result.get('clearance') or {}).get('rejected_examples'))
             return result

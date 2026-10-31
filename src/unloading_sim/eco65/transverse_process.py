@@ -1,10 +1,9 @@
 """Geometry-first ECO65 process templates; no IK or synthetic robot paths.
 
-Adapted from the read-only v0.5 reference eb30f3e0 (reviewed from 1d9783be).
-The reference's later selected-layer top permission is deliberately excluded:
-this task requires the strict frozen-bottom 100 mm gate. All dimensions, faces,
-cup groups and native q remain ECO65 data. Height values are world-Z values;
-the suction threshold alone is measured above the common ground datum.
+Historical v2 retains its frozen-bottom gate. Prototype v3 follows the latest
+user requirement: top suction has no height gate, but still requires exposure,
+actual full seals and a native complete cycle. All equipment/cup geometry and
+native q remain ECO65 data. Process heights are distinct from hardware travel.
 """
 from collections import deque
 from copy import deepcopy
@@ -21,6 +20,17 @@ POLICY = dict(schema='eco65_transverse_templates_v2',
     cup_selection='MAXIMIZE_ACTUAL_FULL_SEALS_WITHIN_TEMPLATE_INACTIVE_CUPS_MAY_MISS',
     release='SAME_POSE_NOMINAL_DROP_CHECKED_RETREAT_IDEAL_DRAIN')
 
+PROTOTYPE_POLICY = dict(POLICY, schema='eco65_quarter_transverse_templates_v3',
+    reference_sha='4d191ecab065420e4b70c9b266c87654996bd91f',
+    top_bottom_threshold_m=None, top_permission='EXPOSURE_SEAL_NATIVE_COLLISION_COMPLETE_CYCLE',
+    desired_drop_m=.0125, release='SAME_POSE_NOMINAL_DROP_CHECKED_RETREAT_CHECKED_IDEAL_OUTFEED')
+
+
+def policy_for(scene):
+    policy=scene.get('transverse_process_policy')
+    if policy not in (POLICY,PROTOTYPE_POLICY):raise ValueError('TRANSVERSE_PROCESS_POLICY_UNKNOWN')
+    return policy
+
 
 def pose_of(box):
     value=np.asarray(box['pose'],float)
@@ -33,7 +43,7 @@ def corners(box, pose=None):
     return (xyz*np.asarray(box['size_m']))@p[:3,:3].T+p[:3,3]
 
 
-def freeze_box(box, original_boxes, floor_z=0.):
+def freeze_box(box, original_boxes, floor_z=0., policy=POLICY):
     vertices=corners(box);lo,hi=vertices.min(0),vertices.max(0)
     # Geometry identifies the original layer, never current exposed endpoints.
     peers=[b for b in original_boxes if abs(corners(b)[:,2].min()-lo[2])<min(hi[2]-lo[2],b['size_m'][2])*.25]
@@ -45,7 +55,8 @@ def freeze_box(box, original_boxes, floor_z=0.):
         original_role=role,original_layer_ids=[b['id'] for b in peers],
         original_box_digest=digest(box),floor_z_m=float(floor_z),
         z_b_m=float(lo[2]-floor_z),bottom_world_m=float(lo[2]),vertical_height_m=float(hi[2]-lo[2]),
-        top_allowed=bool(lo[2]-floor_z < POLICY['top_bottom_threshold_m']))
+        top_allowed=bool(policy['top_bottom_threshold_m'] is None or lo[2]-floor_z < policy['top_bottom_threshold_m']),
+        top_permission=policy.get('top_permission','HISTORICAL_FROZEN_BOTTOM_GATE'))
 
 
 def projection_limits(box, receiver):
@@ -57,7 +68,7 @@ def projection_limits(box, receiver):
 def junction_projection(box, pose, spec, receiver):
     """Full projected OBB versus the seam inlet corridor (reference SAT)."""
     p=check_transform(pose);projected=corners(box,p)[:,:2]
-    y=spec['longitudinal_center_y_m'];half=spec['transverse_width_m']/2
+    y=spec['longitudinal_center_y_m'];half=spec.get('longitudinal_width_m',spec['transverse_width_m'])/2
     x0=spec['transverse_xmin_m'];x1=receiver['bounds_D_m'][1][0]
     rectangle=np.array([[x0,y-half],[x1,y-half],[x1,y+half],[x0,y+half]])
     axes=[np.array([1.,0.]),np.array([0.,1.])]
@@ -97,21 +108,22 @@ def face_blockers(box, face, remaining):
 
 
 def process_options(box, original_boxes, remaining, spec, receiver):
-    frozen=freeze_box(box,original_boxes,spec['config']['floor_z_m'])
+    policy=PROTOTYPE_POLICY if spec['config'].get('process_policy_schema')==PROTOTYPE_POLICY['schema'] else POLICY
+    frozen=freeze_box(box,original_boxes,spec['config']['floor_z_m'],policy)
     p=pose_of(box);left,right=projection_limits(box,receiver)
-    rejection=[];options=[];d=POLICY['desired_drop_m'];h=frozen['vertical_height_m']
+    rejection=[];options=[];d=policy['desired_drop_m'];h=frozen['vertical_height_m']
     heights={'HIGH':frozen['bottom_world_m']-d,'LOW':frozen['bottom_world_m']-h-d}
     if np.any(left>right):
         return dict(options=[],rejected=[dict(reason='TRANSVERSE_FULL_PROJECTION_UNAVAILABLE')],frozen=frozen)
     projected=p.copy();projected[0,3]=(left[0]+right[0])/2
     reception=junction_projection(box,projected,spec,receiver)
-    def add(name,face,level,legs,*,bottom=None):
-        height=spec['low_height_m'] if level=='MINIMUM' else heights[level]
+    def add(name,face,level,legs,*,bottom=None,receiver_height=None):
+        height=receiver_height if receiver_height is not None else spec['low_height_m'] if level=='MINIMUM' else heights[level]
         value=dict(template=name,target_id=box['id'],face=face,level=level,height_m=float(height),
             frozen=deepcopy(frozen),segment_directions_world=legs,
             release_bottom_world_m=frozen['bottom_world_m'] if bottom is None else float(bottom),
             center_limits_xy_m=[left.tolist(),right.tolist()],reception=deepcopy(reception),
-            requires_open_channel=legs[0][1]!=0,spatial_orientation='HELD',policy=POLICY['schema'])
+            requires_open_channel=legs[0][1]!=0,spatial_orientation='HELD',policy=policy['schema'])
         value['expected_drop_m']=value['release_bottom_world_m']-height
         blockers=face_blockers(box,face,remaining)
         reason=('FACE_NOT_EXPOSED' if blockers else
@@ -129,8 +141,16 @@ def process_options(box, original_boxes, remaining, spec, receiver):
         if left[1]<=p[1,3]<=right[1]:
             # The +Z separation must clear the actual receiver/frame and the
             # frozen box; no after-extraction receiver motion is permitted.
-            bottom=max(frozen['bottom_world_m']+d,spec['low_height_m']+d)
-            add('TOP_FIXED_MINIMUM_RECEIVER','top','MINIMUM',[[0.,0.,1.],[-1.,0.,0.]],bottom=bottom)
+            if policy==PROTOTYPE_POLICY:
+                # A separately named lifting process. HIGH/LOW are still
+                # rejected outside travel and are never clamped into this.
+                receive=max(spec['low_height_m'],min(spec['high_height_m'],frozen['bottom_world_m']))
+                bottom=max(frozen['bottom_world_m']+d,receive+d)
+                add('TOP_LIFTED_TRANSVERSE_RECEIVER','top','LIFTED',[[0.,0.,1.],[-1.,0.,0.]],
+                    bottom=bottom,receiver_height=receive)
+            else:
+                bottom=max(frozen['bottom_world_m']+d,spec['low_height_m']+d)
+                add('TOP_FIXED_MINIMUM_RECEIVER','top','MINIMUM',[[0.,0.,1.],[-1.,0.,0.]],bottom=bottom)
         else:rejection.append(dict(reason='LOW_TOP_FIXED_Y_REGION_UNAVAILABLE',frozen=frozen))
     if left[1]<=p[1,3]<=right[1]:
         if not reception['junction']:add('FRONT_DIRECT_HIGH','front','HIGH',[[-1.,0.,0.]])

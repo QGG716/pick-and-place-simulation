@@ -95,7 +95,7 @@ def _validate_local_belts(spec):
                             for row in templates if row['owner'] == owner])
         x, y = ((spec['transverse_width_m'], spec['transverse_length_m'])
                 if owner == 'conveyor_transverse' else
-                (spec['longitudinal_length_m'], spec['transverse_width_m']))
+                (spec['longitudinal_length_m'], spec.get('longitudinal_width_m', spec['transverse_width_m'])))
         bounds = np.array([v.min(axis=0), v.max(axis=0)])
         expected = np.array([[-x/2, -y/2, -spec['belt_depth_m']], [x/2, y/2, 0.]])
         relief = spec['seam_relief_slope']*spec['belt_depth_m'] if owner == 'conveyor_transverse' else 0.
@@ -316,6 +316,7 @@ def coupled_conveyor_state(spec, height_m):
         row.update(pose=_pose(center, rotation), category="environment")
         world.append(row)
     width, trans_len, depth = spec["transverse_width_m"], spec["transverse_length_m"], c["frame_depth_m"]
+    long_width = spec.get('longitudinal_width_m', width)
     belt_depth = spec["belt_depth_m"]
     world.append(dict(id="eco65_transverse_relief_frame", pose=_pose(transverse),
                       convex_mesh=_relieved_frame(width, trans_len, belt_depth, depth, spec["seam_relief_slope"]),
@@ -323,7 +324,7 @@ def coupled_conveyor_state(spec, height_m):
                       rgba=[.29, .33, .38, 1]))
     world.append(_box("eco65_longitudinal_rigid_frame",
                       longitudinal - R[:, 2]*(depth+belt_depth)/2,
-                      [length, width, depth-belt_depth], rotation=R, role="conveyor_frame",
+                      [length, long_width, depth-belt_depth], rotation=R, role="conveyor_frame",
                       owner="conveyor_longitudinal"))
     stacks, fixed, mates = [], [], []
     trans_spec = c["transverse_scissor"]
@@ -367,19 +368,33 @@ def coupled_conveyor_state(spec, height_m):
     rail_z = lower_height-depth-c["lower_rail_below_frame_m"]
     carriage_z = lower_height-depth-c["lower_carriage_below_frame_m"]
     lower_hinges = []
+    if c.get('discharge_tray_length_m'):
+        tray_length=c['discharge_tray_length_m'];tray_depth=c['discharge_tray_depth_m']
+        tray_center=lower+[-tray_length/2,0,0]
+        # Rigid tray translates with the lower carriage, never stretches.
+        # Its right underside clears the belt at the worst negative tilt.
+        negative_slope=max(0.,(lower_height-low)/np.sqrt(length**2-(low-lower_height)**2))
+        mesh=_relieved_frame(tray_length,long_width,0.,tray_depth,negative_slope)
+        mesh['vertices']=[[-v[0],v[1],v[2]] for v in mesh['vertices']]
+        mesh['triangles']=[list(reversed(f)) for f in mesh['triangles']]
+        world.append(dict(id='eco65_discharge_tray',pose=_pose(tray_center),convex_mesh=mesh,
+            category='environment',owner='coupled_receiver',role='discharge_surface',rgba=[.28,.32,.35,1]))
     for side in (-1, 1):
         y = lower[1]+side*c["lower_rail_y_offset_m"]
         key = "eco65_lower_rail_" + ("left" if side < 0 else "right")
+        rail_width = c.get('lower_rail_width_m', .018)
+        foot_width = c.get('lower_foot_width_m', .026)
+        housing_width = c.get('lower_housing_width_m', .020)
         world.append(_box(key, [(rail_min+rail_max)/2, y, rail_z],
-                          [rail_max-rail_min, .018, .012]))
+                          [rail_max-rail_min, rail_width, .012]))
         fixed.append(key)
         for i, x in enumerate((rail_min+.012, rail_max-.012)):
             name = key+f"_foot_{i}"
             foot_h = rail_z-.006-c["floor_z_m"]
-            world.append(_box(name, [x, y, c["floor_z_m"]+foot_h/2], [.026, .026, foot_h]))
+            world.append(_box(name, [x, y, c["floor_z_m"]+foot_h/2], [.026, foot_width, foot_h]))
             fixed.append(name)
         name = key+"_carriage"
-        world.append(_box(name, [lower[0], y, carriage_z], [.030, .028, .016], role="lift_slider"))
+        world.append(_box(name, [lower[0], y, carriage_z], [.030, c.get('lower_carriage_width_m', .028), .016], role="lift_slider"))
         mates.append([key, name, "X_SLIDER"])
         # The revolute axis passes through the effective lower endpoint. Its
         # bearing housings are outside the belt, so no axle obstructs the usable
@@ -391,20 +406,34 @@ def coupled_conveyor_state(spec, height_m):
         post_bottom = carriage_z+.008
         post = key+"_bearing_post"
         world.append(_box(post, [lower[0], y, (post_bottom+bearing_bottom)/2],
-                          [.020, .018, bearing_bottom-post_bottom]))
-        world.append(_box(bearing, [lower[0], y, lower_height], [.024, .020, .020], role="lift_hinge"))
+                          [.020, rail_width, bearing_bottom-post_bottom]))
+        world.append(_box(bearing, [lower[0], y, lower_height], [.024, housing_width, .020], role="lift_hinge"))
         bracket = key+"_rotating_end_bracket"
-        local = np.array([-.008, side*(width/2+.002), -.014])
-        world.append(_box(bracket, lower+R@local, [.028, .004, .028],
+        bracket_width = c.get('lower_bracket_width_m', .004)
+        local = np.array([-.008, side*(long_width/2+bracket_width/2), -.014])
+        world.append(_box(bracket, lower+R@local, [.028, bracket_width, .028],
                           rotation=R, role="lift_hinge"))
         pin = key+"_revolute_pin"
-        pivot = lower + [0, side*(width/2+.0125), 0]
-        world.append(_box(pin, pivot, [.008, .025, .008], role="lift_hinge"))
+        pin_width = c.get('lower_pin_width_m', .025)
+        pivot = lower + [0, side*(long_width/2+pin_width/2), 0]
+        world.append(_box(pin, pivot, [.008, pin_width, .008], role="lift_hinge"))
         mates.extend([[name, post, "CARRIAGE_FIXED_POST"],
                       [post, bearing, "FIXED_BEARING_HOUSING"],
                       [pin, bearing, "LOWER_REVOLUTE_PIN"],
                       [pin, bracket, "LOWER_REVOLUTE_PIN"],
                       [bracket, "eco65_longitudinal_rigid_frame", "FRAME_FIXED_END_BRACKET"]])
+        if c.get('discharge_tray_length_m'):
+            # An outboard U support clears the rotating end bracket. Its lower
+            # arm is fixed to the carriage; the upright is behind the hinge.
+            arm=key+'_discharge_tray_arm';upright=key+'_discharge_tray_post'
+            head=key+'_discharge_tray_head'
+            arm_z=carriage_z+.004;head_z=lower_height-c['discharge_tray_depth_m']-.002
+            world.append(_box(arm,[lower[0]-.030,y,arm_z],[.068,.004,.004]))
+            world.append(_box(upright,[lower[0]-.060,y,(arm_z+head_z)/2],
+                              [.008,.004,head_z-arm_z]))
+            world.append(_box(head,[lower[0]-.060,y-side*.005,head_z],[.016,.014,.004]))
+            mates.extend([[arm,name,'TRAY_CARRIAGE_FIXED_ARM'],[arm,upright,'TRAY_FIXED_UPRIGHT'],
+                          [upright,head,'TRAY_FIXED_HEAD'],[head,'eco65_discharge_tray','TRAY_FIXED_BRACKET']])
         lower_hinges.append(dict(id=pin, type="REVOLUTE", axis=[0., 1., 0.],
                                  position_m=pivot.tolist(), angle_rad=theta,
                                  bodies=[bearing, bracket], effective_surface_endpoint=lower.tolist()))
@@ -416,7 +445,7 @@ def coupled_conveyor_state(spec, height_m):
     support_ids = [o["id"] for o in world if o.get("owner") == "conveyor_transverse" and o.get("role") == "conveyor_belt"]
     receiving = dict(region_id="conveyor_transverse", support_ids=support_ids, bounds_D_m=[lo, hi],
                      margin_m=c["receiving_margin_m"],
-                     box_pose_D=transform([transverse[0], 0., H+.05]).tolist(),
+                     box_pose_D=transform([transverse[0], 0., H+c.get('carton_height_m',.1)/2]).tolist(),
                      effective_surface_definition="MEASURED_TOP_BELT_RECTANGLE_NOT_WORLD_AABB")
     actual_ymin = {owner: float(min(
         (np.asarray(row['convex_mesh']['vertices']) @ np.asarray(row['pose'])[:3, :3].T
@@ -474,7 +503,7 @@ def with_coupled_state(scene, height_m):
                                 if o["id"] not in spec["replaced_visual_ids"]]
     result["native_task"]["receiving"] = deepcopy(state["receiving"])
     result["receiving_surfaces"] = {"conveyor_transverse": deepcopy(state["receiving"])}
-    result["support_surface_ids"] = ["cargo_pedestal", *state["receiving"]["support_ids"]]
+    result["support_surface_ids"] = [scene.get('carton_floor_id', 'cargo_pedestal'), *state["receiving"]["support_ids"]]
     result["coupled_state"] = state
     return result
 

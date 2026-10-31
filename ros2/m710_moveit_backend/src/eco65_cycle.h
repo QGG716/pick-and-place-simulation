@@ -96,7 +96,8 @@ public:
     moving=initial.at("mechanism").at("moving_object_ids").get<std::set<std::string>>();
     fixed=initial.at("mechanism").at("fixed_structure_ids").get<std::set<std::string>>();
     supports=initial.at("receiving").at("support_ids").get<std::set<std::string>>();
-    if(cartons.size()!=12 || !cartons.count(binding.at("initial_target_id").get<std::string>()) ||
+    if(cartons.size()!=binding.value("inventory_count",12u) || cartons.empty() ||
+        !cartons.count(binding.at("initial_target_id").get<std::string>()) ||
         moving.empty() || fixed.empty() || supports.empty())
       throw std::runtime_error("ECO65_CYCLE_INVENTORY_REQUIRED");
     for(const auto& id:moving)if(!initial_world.count(id)||fixed.count(id))
@@ -120,12 +121,17 @@ public:
       {"FRONT_DIRECT_HIGH",{"front","HIGH"}}, {"FRONT_DIRECT_LOW",{"front","LOW"}},
       {"FRONT_JUNCTION_LOW",{"front","LOW"}}, {"FRONT_LATERAL_LOW",{"front","LOW"}},
       {"LEFT_INNER_LOW",{"right","LOW"}}, {"RIGHT_INNER_HIGH",{"left","HIGH"}},
-      {"TOP_FIXED_MINIMUM_RECEIVER",{"top","MINIMUM"}}};
+      {"TOP_FIXED_MINIMUM_RECEIVER",{"top","MINIMUM"}},
+      {"TOP_LIFTED_TRANSVERSE_RECEIVER",{"top","LIFTED"}}};
+    const bool prototype=binding.at("transverse_process_policy").at("schema")=="eco65_quarter_transverse_templates_v3";
     if(!types.count(name)||types.at(name)!=std::make_pair(face,level)||
-        (face=="top" && !(bottom-floor<.100)))throw std::runtime_error("ECO65_TRANSVERSE_TEMPLATE_OR_TOP_THRESHOLD");
+        (face=="top" && !prototype && !(bottom-floor<.100)) ||
+        (level=="LIFTED" && !prototype))throw std::runtime_error("ECO65_TRANSVERSE_TEMPLATE_OR_TOP_THRESHOLD");
     const double minimum=spec.at("low_height_m");
-    const double height=level=="MINIMUM"?minimum:bottom-.05-(level=="LOW"?size:0.);
-    const double release=face=="top"?std::max(bottom+.05,minimum+.05):bottom;
+    const double drop=binding.at("transverse_process_policy").at("desired_drop_m");
+    const double top_height=std::max(minimum,std::min(spec.at("high_height_m").get<double>(),bottom));
+    const double height=level=="LIFTED"?top_height:level=="MINIMUM"?minimum:bottom-drop-(level=="LOW"?size:0.);
+    const double release=face=="top"?std::max(bottom+drop,height+drop):bottom;
     if(std::abs(option.at("height_m").get<double>()-height)>1e-9 ||
         std::abs(option.at("release_bottom_world_m").get<double>()-release)>1e-9 ||
         std::abs(option.at("expected_drop_m").get<double>()-(release-height))>1e-9 ||
@@ -245,6 +251,42 @@ inline double ecoCycleSolidDistance(const shapes::ShapeConstPtr& a,const Eigen::
   fcl::DistanceResultd result;const double d=fcl::distance(&oa,&ob,fcl::DistanceRequestd(true,true),result);
   if(!std::isfinite(d))throw std::runtime_error("ECO65_CYCLE_UNKNOWN_DISTANCE");return d;
 }
+// A separating plane of the actual convex solids proves the permitted contact
+// tolerance without libccd EPA. EPA aborts on nearly coplanar carton/belt faces
+// (the captured second-carton landing has a ~1e-10 rad FK rotation). This is
+// only for named receiving surfaces, never a robot/tool collision exemption.
+// A negative bound >= -t proves translation <= t separates the entire solids.
+// Failure to find such a plane is conservative rejection, not penetration proof.
+inline double ecoCycleSupportPlaneGap(const shapes::ShapeConstPtr& a,const Eigen::Isometry3d& ta,
+                                     const shapes::ShapeConstPtr& b,const Eigen::Isometry3d& tb) {
+  std::vector<Eigen::Vector3d> va,vb,axes;
+  auto collect=[&](const shapes::ShapeConstPtr& shape,const Eigen::Isometry3d& t,
+                   std::vector<Eigen::Vector3d>& vertices) {
+    if(shape->type==shapes::BOX) {
+      const auto* box=static_cast<const shapes::Box*>(shape.get());
+      for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})
+        vertices.push_back(t*Eigen::Vector3d(x*box->size[0]/2,y*box->size[1]/2,z*box->size[2]/2));
+      for(int k=0;k<3;++k)axes.push_back(t.linear().col(k));
+    } else if(shape->type==shapes::MESH) {
+      const auto* mesh=static_cast<const shapes::Mesh*>(shape.get());
+      for(size_t i=0;i<mesh->vertex_count;++i)
+        vertices.push_back(t*Eigen::Vector3d(mesh->vertices[3*i],mesh->vertices[3*i+1],mesh->vertices[3*i+2]));
+      for(size_t i=0;i<mesh->triangle_count;++i) {
+        const Eigen::Vector3d normal=(vertices[mesh->triangles[3*i+1]]-vertices[mesh->triangles[3*i]]).cross(
+          vertices[mesh->triangles[3*i+2]]-vertices[mesh->triangles[3*i]]);
+        if(normal.norm()>1e-12)axes.push_back(normal.normalized());
+      }
+    } else throw std::runtime_error("ECO65_SUPPORT_PLANE_SOLID_UNSUPPORTED");
+  };
+  collect(a,ta,va);collect(b,tb,vb);double gap=-INFINITY;
+  for(const auto& axis:axes) {
+    double amin=INFINITY,amax=-INFINITY,bmin=INFINITY,bmax=-INFINITY;
+    for(const auto& v:va){const double x=axis.dot(v);amin=std::min(amin,x);amax=std::max(amax,x);}
+    for(const auto& v:vb){const double x=axis.dot(v);bmin=std::min(bmin,x);bmax=std::max(bmax,x);}
+    gap=std::max(gap,std::max(amin-bmax,bmin-amax));
+  }
+  if(!std::isfinite(gap))throw std::runtime_error("ECO65_SUPPORT_PLANE_UNKNOWN");return gap;
+}
 // MoveIt does not query world/world pairs. A released carton therefore gets
 // these finite, actual-solid checks during nominal reception.
 inline CycleJson ecoCycleWorldTarget(const planning_scene::PlanningScenePtr& scene,const CycleJson& req,
@@ -265,11 +307,82 @@ inline CycleJson ecoCycleWorldTarget(const planning_scene::PlanningScenePtr& sce
     const auto other=scene->getWorld()->getObject(id);
     for(size_t k=0;k<other->shapes_.size();++k) {
       if(nativeExpired(deadline))return {{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
-      const double d=ecoCycleSolidDistance(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k));
-      if(nativeExpired(deadline))return {{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
       const double limit=supports.count(id)&&bottom?-.0004:.0024;
+      const bool contact=limit<0;
+      const double d=contact?ecoCycleSupportPlaneGap(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k)):
+        ecoCycleSolidDistance(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k));
+      if(nativeExpired(deadline))return {{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"}};
       if(d+1e-9<limit)return {{"reason","ECO65_CYCLE_RELEASED_TARGET_COLLISION"},{"pair",{target,id}},
+        {"distance_method",contact?"CONSERVATIVE_CONVEX_SUPPORT_PLANE_BOUND":"FCL_SIGNED_DISTANCE"},
         {"surface_distance_m",d},{"required_pair_clearance_m",limit}};
+    }
+  }
+  return nullptr;
+}
+
+inline CycleJson ecoCycleOutfeedWorld(const planning_scene::PlanningScenePtr& scene,const CycleJson& req,
+    const CycleJson& binding,const CycleJson& tools,const NativeDeadlinePtr& deadline) {
+  if(!binding.contains("prototype"))throw std::runtime_error("ECO65_OUTFEED_PROTOTYPE_BINDING_REQUIRED");
+  const auto& spec=binding.at("mechanism_spec");const auto& mechanism=req.at("mechanism_state");
+  const auto p=processBox(req.at("process_policy").at("target"));
+  if((p.pose.linear()-Eigen::Matrix3d::Identity()).cwiseAbs().maxCoeff()>1e-6)
+    throw std::runtime_error("ECO65_OUTFEED_LEVEL_ORIENTATION_REQUIRED");
+  const Eigen::Vector3d lo=p.pose.translation()-p.half,hi=p.pose.translation()+p.half;
+  const auto& receiver=req.at("process_policy").at("task_contract").at("receiving");
+  const auto& bounds=receiver.at("bounds_D_m");
+  // The request carries height/spec identity, not a second mutable mechanism.
+  // Endpoints follow the bound rigid-length relation used by Python geometry.
+  const double height=mechanism.at("height_m"),ux=spec.at("transverse_xmin_m"),
+    lz=spec.at("longitudinal_lower_height_m"),length=spec.at("longitudinal_length_m");
+  const double lx=ux-std::sqrt(length*length-(height-lz)*(height-lz));
+  double support=-INFINITY;std::set<std::string> contacts;
+  if(std::min(hi.x(),bounds.at(1).at(0).get<double>())-std::max(lo.x(),bounds.at(0).at(0).get<double>())>1e-9 &&
+      lo.y()>=bounds.at(0).at(1).get<double>()+.01-1e-9 && hi.y()<=bounds.at(1).at(1).get<double>()-.01+1e-9) {
+    support=height;contacts=receiver.at("support_ids").get<std::set<std::string>>();
+  }
+  const double y=spec.at("longitudinal_center_y_m"),half=spec.at("longitudinal_width_m").get<double>()/2;
+  if(lo.y()>=y-half+.01-1e-9 && hi.y()<=y+half-.01+1e-9) {
+    const double a=std::max(lo.x(),lx),b=std::min(hi.x(),ux);
+    if(b-a>1e-9) {
+      const double slope=(height-lz)/(ux-lx);support=std::max(support,height+((slope>=0?b:a)-ux)*slope);
+      for(const auto& row:spec.at("belt_templates"))if(row.at("owner")=="conveyor_longitudinal")contacts.insert(row.at("id").get<std::string>());
+    }
+    if(std::min(hi.x(),lx)-std::max(lo.x(),lx-spec.at("config").at("discharge_tray_length_m").get<double>())>1e-9) {
+      support=std::max(support,lz);contacts.insert("eco65_discharge_tray");
+    }
+  }
+  if(!std::isfinite(support)||std::abs(lo.z()-support)>1e-6)
+    throw std::runtime_error("ECO65_OUTFEED_ACTUAL_SUPPORT_ENVELOPE_INVALID");
+  // The carton may touch, or separate by < 2.4 mm from, the three named
+  // receiving surfaces throughout the checked conveyance. Leaving a support
+  // edge does not instantly require an engineering gap. Penetration remains
+  // checked and every frame/hinge/enclosure object keeps the normal margin.
+  for(const auto& row:spec.at("belt_templates"))contacts.insert(row.at("id").get<std::string>());
+  contacts.insert("eco65_discharge_tray");
+  const auto object=scene->getWorld()->getObject(p.id);
+  if(!object||object->shapes_.size()!=1)throw std::runtime_error("ECO65_OUTFEED_WORLD_TARGET_REQUIRED");
+  for(const auto& id:scene->getWorld()->getObjectIds())if(id!=p.id) {
+    const auto other=scene->getWorld()->getObject(id);
+    for(size_t k=0;k<other->shapes_.size();++k) {
+      deadline->require();
+      const double limit=contacts.count(id)?-.0004:.0024;
+      const double distance=contacts.count(id)?ecoCycleSupportPlaneGap(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k)):
+        ecoCycleSolidDistance(object->shapes_[0],worldShapePose(*object,0),other->shapes_[k],worldShapePose(*other,k));
+      if(distance<limit-1e-9)return {{"reason","ECO65_OUTFEED_WORLD_COLLISION"},{"pair",{p.id,id}},
+        {"distance_method",contacts.count(id)?"CONSERVATIVE_CONVEX_SUPPORT_PLANE_BOUND":"FCL_SIGNED_DISTANCE"},
+        {"surface_distance_m",distance},{"required_pair_clearance_m",limit}};
+    }
+  }
+  // Held robot/world pairs were checked once by cycleScene. Check the only
+  // moving body's full envelope against every actual robot/attachment solid;
+  // extraction-only tool/carton permissions do not apply to ideal outfeed.
+  for(const auto* link:scene->getRobotModel()->getLinkModelsWithCollisionGeometry()) {
+    for(size_t k=0;k<link->getShapes().size();++k) {
+      deadline->require();
+      const double distance=ecoCycleSolidDistance(link->getShapes()[k],scene->getCurrentState().getCollisionBodyTransform(link,k),
+          object->shapes_[0],worldShapePose(*object,0));
+      if(distance<.0024-1e-9)return {{"reason","ECO65_OUTFEED_ROBOT_OR_TOOL_COLLISION"},{"pair",{p.id,link->getName()}},
+        {"surface_distance_m",distance},{"required_pair_clearance_m",.0024}};
     }
   }
   return nullptr;

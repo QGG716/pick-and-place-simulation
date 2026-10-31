@@ -1,0 +1,74 @@
+schema: eco65_quarter_prototype_config_v1
+layout_id: eco65_quarter_reference_real_equipment_v1
+reference_sha: 4d191ecab065420e4b70c9b266c87654996bd91f
+scene_scale: 0.25
+equipment_scale: 1.0
+enable_hardware: false
+external_translation_m: [0.0, 0.0, 0.0]
+cartons:
+  size_m: [0.150, 0.100, 0.075]
+  rows: 1
+  columns: 5
+  layers: 8
+  column_gap_m: 0.005
+  layer_gap_m: 0.0
+  front_x_m: 0.0
+  bottom_z_m: 0.0
+trailer:
+  entrance_x_m: -0.800
+  closed_end_x_m: 0.800
+  inner_width_m: 0.575
+  inner_height_m: 0.675
+  panel_thickness_m: 0.0125
+chassis:
+  center_m: [-0.4875, 0.0875, 0.075]
+  size_m: [0.525, 0.375, 0.150]
+installation:
+  nominal_position_m: [-0.4875, 0.0375, 0.225]
+  position_m: [-0.4875, 0.0375, 0.225]
+  rpy_rad: [0.0, 0.0, 3.141592653589793]
+  search_xyz_bounds_m: [[-0.650, -0.020, 0.175], [-0.330, 0.190, 0.250]]
+  search_yaw_rad: [0.0, 1.5707963267948966, 3.141592653589793, -1.5707963267948966]
+  mode: FIXED_INSTALLATION
+  reserved_empty_base_x_travel_m: [0.100, 0.050]
+receiver:
+  geometry_revision: upper_seam_lower_slider_v3
+  transverse_bounds_xy_m: [[-0.225, -0.275], [-0.050, 0.275]]
+  longitudinal_length_m: 0.700
+  longitudinal_width_m: 0.150
+  longitudinal_center_y_m: -0.200
+  longitudinal_lower_height_m: 0.150
+  low_height_m: 0.100
+  high_height_m: 0.525
+  initial_height_m: 0.3311827942858692
+  desired_drop_m: 0.0125
+  receiving_margin_m: 0.010
+  belt_depth_m: 0.006
+  frame_depth_m: 0.024
+  floor_z_m: 0.0
+  scissor_base_pin_z_m: 0.026
+  transverse_base_pin_z_m: 0.022
+  transverse_support_x_offset_m: 0.060
+  longitudinal_support_fraction: 0.420
+  longitudinal_support_x_offset_m: 0.035
+  lower_rail_y_offset_m: 0.080
+  lower_rail_end_margin_m: 0.035
+  lower_rail_below_frame_m: 0.028
+  lower_carriage_below_frame_m: 0.014
+  lower_rail_width_m: 0.010
+  lower_foot_width_m: 0.010
+  lower_housing_width_m: 0.008
+  lower_carriage_width_m: 0.010
+  lower_bracket_width_m: 0.002
+  lower_pin_width_m: 0.008
+  transverse_scissor: {stages: 3, arm_length_m: 0.185, arm_depth_m: 0.006, arm_thickness_m: 0.004}
+  longitudinal_scissor: {stages: 4, arm_length_m: 0.135, arm_depth_m: 0.006, arm_thickness_m: 0.004}
+  lift_display_speed_m_s: 0.080
+  lift_sample_step_m: 0.010
+outfeed:
+  mode: CHECKED_IDEAL_KINEMATIC_CONVEYANCE
+  transverse_direction: [0.0, -1.0, 0.0]
+  longitudinal_direction: [-1.0, 0.0, 0.0]
+  sample_step_m: 0.010
+  display_speed_m_s: 0.100
+  external_catch_end_x_m: -1.200

@@ -15,6 +15,15 @@ static J pose(double x=0.,double y=0.,double z=0.) {
 }
 int main() {
   try {
+    shapes::ShapeConstPtr carton(new shapes::Box(.15,.1,.1)),belt(new shapes::Box(.175,.55,.006));
+    Eigen::Isometry3d tc=Eigen::Isometry3d::Identity(),tb=Eigen::Isometry3d::Identity();
+    tc.translation()<<-.135,-.0525,.35;tb.translation()<<-.1375,0.,.297;
+    tc.linear()=Eigen::AngleAxisd(9.2e-11,Eigen::Vector3d::UnitX()).toRotationMatrix();
+    require(std::abs(m710::ecoCycleSupportPlaneGap(carton,tc,belt,tb))<1e-10,"NEAR_COPLANAR_SUPPORT_NO_EPA");
+    tc.translation().z()-=.001;
+    require(m710::ecoCycleSupportPlaneGap(carton,tc,belt,tb)<-.0004,"REAL_SUPPORT_PENETRATION_REJECTED");
+    tc.translation().z()+=.0135;
+    require(std::abs(m710::ecoCycleSupportPlaneGap(carton,tc,belt,tb)-.0125)<1e-10,"REAL_DROP_GAP_RETAINED");
     J req={{"continuous_task_mode",m710::kEcoCycleMode},{"j1_direction_policy",m710::kEcoCycleJ1Policy},
       {"j1_reverse_used_rad",0.},{"j1_reverse_limit_rad",1e-6},{"business_interval","FIRST_APPROACH"},{"j1_direction",-1}};
     require(m710::ecoCycleDirection(req)==-1,"FIRST_APPROACH_DIRECTION");

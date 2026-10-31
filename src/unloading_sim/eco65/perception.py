@@ -53,8 +53,9 @@ def require_tcp_calibration(cal):
     return cal
 
 
-def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.1), selected_column_rank=1):
-    """Observe three top cartons from rendered RGB and Z depth, without GT masks."""
+def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.1), selected_column_rank=1,
+           expected_columns=3, workspace_bounds=((.04,-.25,.2),(.45,.25,.7))):
+    """Observe visible top cartons from RGB-D; workspace bounds are not GT masks."""
     import cv2
     started = perf_counter(); path = Path(observations_path); root = path.parent
     obs = verify_record(load_json(path)); cal = verify_record(load_json(calibration_path))
@@ -72,30 +73,33 @@ def detect(observations_path, calibration_path, output, *, carton_size=(.15,.1,.
     world = p@T[:3,:3].T+T[:3,3]
     hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
     # Broad working envelope, not expected face/target coordinates.
-    mask = valid&(world[...,0]>.04)&(world[...,0]<.45)&(abs(world[...,1])<.25)&(world[...,2]>.2)&(world[...,2]<.7)
+    bounds=np.asarray(workspace_bounds,float)
+    if bounds.shape!=(2,3) or np.any(bounds[1]<=bounds[0]):raise ValueError('DETECTION_WORKSPACE_INVALID')
+    mask=valid&np.all(world>bounds[0],axis=-1)&np.all(world<bounds[1],axis=-1)
     mask &= (hsv[...,0]>3)&(hsv[...,0]<40)&(hsv[...,1]>28)&(hsv[...,2]>35)
     pts = world[mask]
     if len(pts)<2000: raise ValueError('INSUFFICIENT_CARTON_RGBD_PIXELS:'+str(len(pts)))
     # Robust horizontal plane mode; textured seams/edges do not define height.
-    bins = np.arange(.2,.702,.002); hist,edges = np.histogram(pts[:,2],bins)
+    bins = np.arange(bounds[0,2],bounds[1,2]+.002,.002); hist,edges = np.histogram(pts[:,2],bins)
     peaks = [i for i in range(1,len(hist)-1) if hist[i]>=hist[i-1] and hist[i]>=hist[i+1] and hist[i]>150]
     if not peaks: raise ValueError('CARTON_TOP_PLANE_NOT_OBSERVED')
     top_bin = max(peaks); top_seed = (edges[top_bin]+edges[top_bin+1])/2
     top_points = pts[abs(pts[:,2]-top_seed)<.003]
     top = float(np.median(top_points[:,2]))
     front_points = pts[(pts[:,2]>top-carton_size[2]+.008)&(pts[:,2]<top-.008)]
-    binsx = np.arange(.04,.451,.002); hx,ex = np.histogram(front_points[:,0],binsx)
+    binsx = np.arange(bounds[0,0],bounds[1,0]+.002,.002); hx,ex = np.histogram(front_points[:,0],binsx)
     front_seed = (ex[np.argmax(hx)]+ex[np.argmax(hx)+1])/2
     fp = front_points[abs(front_points[:,0]-front_seed)<.004]
     if len(fp)<500: raise ValueError('CARTON_FRONT_PLANE_NOT_OBSERVED')
     front = float(np.median(fp[:,0])); alltop = pts[(abs(pts[:,2]-top)<.003)|(abs(pts[:,0]-front)<.003)&(pts[:,2]>top-.09)]
     # Separate columns at observed gaps; no expected column centers are inputs.
-    hy,ey = np.histogram(alltop[:,1],np.arange(-.25,.251,.002))
+    hy,ey = np.histogram(alltop[:,1],np.arange(bounds[0,1],bounds[1,1]+.002,.002))
     active = hy>max(8,hy.max()*.08)
     active = cv2.morphologyEx(active.astype(np.uint8)[None,:],cv2.MORPH_CLOSE,np.ones((1,2),np.uint8))[0].astype(bool)
     starts = np.flatnonzero(active&~np.r_[False,active[:-1]]); ends = np.flatnonzero(active&~np.r_[active[1:],False])+1
     intervals = [(float(ey[a]),float(ey[b])) for a,b in zip(starts,ends) if .065<ey[b]-ey[a]<.12]
-    if len(intervals)!=3: raise ValueError('THREE_VISIBLE_COLUMNS_REQUIRED:'+str(intervals))
+    if len(intervals)!=expected_columns: raise ValueError('CONFIGURED_VISIBLE_COLUMNS_REQUIRED:'+str(intervals))
+    if not 0<=selected_column_rank<expected_columns:raise ValueError('DETECTION_TARGET_RANK_INVALID')
     detections = []
     for i,(lo,hi) in enumerate(intervals):
         selected = alltop[(alltop[:,1]>=lo)&(alltop[:,1]<hi)]

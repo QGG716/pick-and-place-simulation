@@ -268,6 +268,7 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
         from .coupled_scene import coupled_conveyor_state
         from .native_scene import world_objects
         init['coupled_cycle_binding'] = dict(schema='eco65_coupled_cycle_binding_v1',
+            inventory_count=len(scene['boxes']),
             mechanism_spec=scene['coupled_conveyor_spec'],
             initial_world=world_objects(scene),
             mechanism_initial_state=coupled_conveyor_state(scene['coupled_conveyor_spec'],
@@ -275,6 +276,8 @@ def build_native_model(scene, output, *, root=ROOT, config=None, native_asset_ro
             original_cartons=[{k: box[k] for k in ('id', 'pose', 'size_m', 'supported_by')}
                               for box in scene['boxes']],
             initial_target_id=scene['target_box_id'])
+        if scene.get('prototype'):
+            init['coupled_cycle_binding']['prototype']=scene['prototype']
         if scene.get('transverse_process_policy'):
             init['coupled_cycle_binding']['transverse_process_policy']=scene['transverse_process_policy']
             identity['transverse_process_policy_fingerprint']=digest(scene['transverse_process_policy'])

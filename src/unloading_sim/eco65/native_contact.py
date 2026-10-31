@@ -77,7 +77,9 @@ def validate_task_contract(scene):
         raise ValueError('NATIVE_TASK_LEGACY_TOP_FACE_REQUIRED')
     boxes = scene['boxes']; by_id = {b['id']: b for b in boxes}
     coverage=contract.get('coverage_context')
-    expected_count=12 if coverage is None else len(coverage['remaining_carton_ids'])
+    from .quarter_prototype import inventory, SCHEMA as PROTOTYPE_SCHEMA
+    prototype=scene.get('schema')==PROTOTYPE_SCHEMA
+    expected_count=len(inventory(scene)) if coverage is None else len(coverage['remaining_carton_ids'])
     if len(boxes) != expected_count or len(by_id) != expected_count:
         raise ValueError('NATIVE_TASK_TWELVE_CARTONS_REQUIRED')
     declared = contract.get('stack_carton_ids', [])
@@ -93,13 +95,13 @@ def validate_task_contract(scene):
     highest = np.flatnonzero(np.abs(tops-np.max(tops)) <= 1e-8)
     centered = np.abs(positions[highest, 1]-middle_y)
     selected = highest[np.flatnonzero(np.abs(centered-np.min(centered)) <= 1e-8)]
-    if len(selected) != 1:
-        raise ValueError('NATIVE_TASK_TOP_CENTER_AMBIGUOUS')
     explicit = contract.get('target_selection')
+    if len(selected) != 1 and explicit is None and coverage is None:
+        raise ValueError('NATIVE_TASK_TOP_CENTER_AMBIGUOUS')
     if explicit is not None:
         if (coverage is not None or explicit.get('schema')!='eco65_explicit_exposed_target_v1'
                 or explicit.get('target_id')!=contract['target_id']
-                or explicit.get('inventory_scope')!='UNCHANGED_TWELVE_CARTONS'
+                or explicit.get('inventory_scope')!=('FROZEN_CONFIGURED_CARTONS' if prototype else 'UNCHANGED_TWELVE_CARTONS')
                 or (explicit.get('source')!='USER_REQUEST' and not
                     (explicit.get('source')=='TRANSVERSE_PROCESS_DISPATCH' and scene.get('transverse_process_policy')))
                 or contract['target_id'] not in {boxes[int(i)]['id'] for i in highest}):

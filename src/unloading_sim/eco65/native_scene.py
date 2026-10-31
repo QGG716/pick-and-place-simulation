@@ -210,9 +210,10 @@ def verify_scene(scene, *, require_environment=True):
     if digest(check) != expected: raise ValueError('SCENE_FINGERPRINT_MISMATCH')
     if require_environment and scene['environment_status'] != 'ALL_BOUNDS_INCLUDED_CONSERVATIVELY':
         raise ValueError('WAREHOUSE_ENVIRONMENT_NOT_EVALUATED')
-    if scene.get('schema') == TWELVE_SCHEMA:
+    from .quarter_prototype import SCHEMA as PROTOTYPE_SCHEMA, inventory
+    if scene.get('schema') in (TWELVE_SCHEMA,PROTOTYPE_SCHEMA):
         from .native_contact import validate_task_contract
-        expected_ids = {f'carton_r00_l{l:02d}_c{c:02d}' for l in range(4) for c in range(3)}
+        expected_ids = inventory(scene)
         task = scene['native_task']
         coverage=task.get('coverage_context')
         if coverage is not None:expected_ids-=set(coverage['removed_carton_ids'])
@@ -223,7 +224,8 @@ def verify_scene(scene, *, require_environment=True):
                 or task['target_face'] not in ('top','front','left','right') or not scene['moving_attachments']
                 or not scene['native_world_objects'] or scene.get('enable_hardware') is not False
                 or scene.get('execution_mode') != 'simulation' or scene.get('planning_frame') != 'D'
-                or scene.get('T_W_D') != transform([.32, -.1, .8]).tolist()):
+                or scene.get('T_W_D') != transform(scene['prototype']['configuration']['external_translation_m']
+                    if scene.get('schema')==PROTOTYPE_SCHEMA else [.32, -.1, .8]).tolist()):
             raise ValueError('TWELVE_TASK_SCENE_BINDING_INVALID')
         validate_task_contract(scene)
         validate_fixed_interfaces(scene)

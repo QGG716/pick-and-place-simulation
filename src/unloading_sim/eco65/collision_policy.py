@@ -101,11 +101,14 @@ def extraction_carton_exemption(scene):
             or scene.get('extraction_carton_contact_mode') != EXTRACTION_CARTON_MODE):
         raise ValueError('EXTRACTION_CARTON_CONTACT_REQUIRES_COUPLED_SCENE')
     boxes = scene.get('boxes', [])
-    expected = {f'carton_r00_l{layer:02d}_c{column:02d}' for layer in range(4) for column in range(3)}
+    from .quarter_prototype import inventory, SCHEMA as PROTOTYPE_SCHEMA
+    expected=inventory(scene)
+    size=(scene['prototype']['configuration']['cartons']['size_m']
+          if scene.get('schema')==PROTOTYPE_SCHEMA else [.15,.1,.1])
     names = [box.get('id') for box in boxes]
-    if (len(names) != 12 or len(set(names)) != 12 or set(names) != expected
+    if (len(names) != len(expected) or len(set(names)) != len(expected) or set(names) != expected
             or scene.get('target_box_id') not in expected
-            or any(box.get('size_m') != [.15, .1, .1]
+            or any(box.get('size_m') != size
                    or len(box.get('pose', [])) != 3
                    or not all(isinstance(x, (int, float)) and math.isfinite(x) for x in box['pose'])
                    for box in boxes)):

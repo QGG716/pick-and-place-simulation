@@ -140,6 +140,8 @@ public:
       // Worker initialization binds every task_contract field to the scene's
       // contact geometry. A motion request cannot widen these permissions.
       const auto& task=spec_.at("task_contract");
+      const auto inventory_count=task.value("inventory_count",12u);
+      if(inventory_count==0 || inventory_count>256)throw std::runtime_error("ECO65_INVENTORY_RESOURCE_LIMIT");
       const bool cycle=task.value("continuous_task_mode",std::string())=="eco65_coupled_cycle_v1";
       const bool independent=task.value("cup_selection_mode",std::string())=="SIMULATED_INDEPENDENT_CUPS";
       if(task.at("schema")!="eco65_single_carton_task_v1" || task.at("target_id")!=target_id_ ||
@@ -172,13 +174,13 @@ public:
       }
       if(cycle) {
         const auto completed=task.at("completed_ids").get<std::set<std::string>>();
-        if(cartons.size()+completed.size()!=12)throw std::runtime_error("ECO65_CYCLE_CARTON_COUNT_INVALID");
+        if(cartons.size()+completed.size()!=inventory_count)throw std::runtime_error("ECO65_CYCLE_CARTON_COUNT_INVALID");
         for(const auto& id:completed)if(cartons.count(id))throw std::runtime_error("ECO65_CYCLE_COMPLETED_STILL_REMAINING");
         drained_=completed.count(target_id_);
         if(drained_ && (attached_ || stage_!="withdrawal"))
           throw std::runtime_error("ECO65_DRAINED_TARGET_STAGE_INVALID");
       }
-      if((!coverage && !cycle && cartons.size()!=12) || task.at("stack_carton_ids").size()!=cartons.size() || (!drained_ && !cartons.count(target_id_)) ||
+      if((!coverage && !cycle && cartons.size()!=inventory_count) || task.at("stack_carton_ids").size()!=cartons.size() || (!drained_ && !cartons.count(target_id_)) ||
          original_supports.empty() || original_supports.count(target_id_) || receiver_supports.empty() ||
          task.at("original_support_names").size()!=original_supports.size() ||
          task.at("receiving").at("support_ids").size()!=receiver_supports.size())

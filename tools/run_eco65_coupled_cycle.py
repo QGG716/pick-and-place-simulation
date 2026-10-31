@@ -25,6 +25,7 @@ def main():
     p.add_argument('--all-cartons',action='store_true',help='Continue until the entire frozen inventory is drained')
     p.add_argument('--carton-seconds',type=float,default=900.)
     p.add_argument('--search-trace',action='store_true')
+    p.add_argument('--stop-file',type=Path,help='Stop at the next checked boundary and preserve the accepted prefix')
     p.add_argument('--initial-mode',choices=('new_simulation','inherited_state'),default='new_simulation')
     p.add_argument('--first-approach-direction',choices=('unrestricted',),default='unrestricted')
     a=p.parse_args()
@@ -42,6 +43,7 @@ def main():
             task_seconds=a.task_seconds,connection_seconds=a.connection_seconds,
             stage_seconds=a.solver_seconds,rpc_seconds=a.rpc_seconds,ik_seeds=a.ik_seeds,
             max_grasps=a.max_grasps,initial_mode=a.initial_mode,first_approach_direction=a.first_approach_direction,search_trace=a.search_trace,
+            cancelled=(lambda:a.stop_file.exists()) if a.stop_file else None,
             trace_stages=('pregrasp','transit','residence'),progress_path=output/'native_progress.jsonl',
             **(dict(carton_seconds=a.carton_seconds) if a.all_cartons else {}))
         plan=task.run()

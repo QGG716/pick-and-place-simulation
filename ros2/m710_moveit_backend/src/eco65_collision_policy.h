@@ -65,7 +65,7 @@ inline std::set<std::string> eco65ExtractionOriginalIds(const EcoPolicyJson& pol
       e.at("physical_execution")!="NOT_RUN" || e.at("execution_ready")!=false ||
       policy.at("stack_contact_mode")!="attached_target_remaining_original_cartons_during_extraction" ||
       policy.at("stack_contact_stages")!=EcoPolicyJson::array({"extraction"}) ||
-      ids.size()!=12 || EcoPolicyJson(ids)!=e.at("original_carton_ids"))
+      ids.empty() || ids.size()>256 || EcoPolicyJson(ids)!=e.at("original_carton_ids"))
     throw std::runtime_error("ECO65_EXTRACTION_CONTACT_POLICY_INVALID");
   return ids;
 }
