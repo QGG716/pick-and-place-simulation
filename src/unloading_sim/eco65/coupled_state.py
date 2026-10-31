@@ -305,8 +305,17 @@ def validate_cycle(plan, snapshot, *, require_complete=True):
                             or req['transition'].get('outfeed')!=record['outfeed']
                             or not np.allclose(box_pose(after,target,robot),path['samples'][-1]['pose'],atol=1e-9,rtol=0)):
                         raise ValueError('CYCLE_OUTFEED_PATH_CHANGED')
-                    if len(record['samples'])!=len(path['samples']):raise ValueError('CYCLE_OUTFEED_SAMPLES_MISSING')
-                    for sample,position in zip(record['samples'],path['samples']):
+                    compact=req['transition'].get('sample_contract')=='HELD_WORLD_TARGET_POSES_V2'
+                    if compact:
+                        receipt=record['native_result'];checks=receipt.get('sample_checks',[])
+                        if (req['transition'].get('sample_requests')!=[]
+                                or receipt.get('outfeed_sample_contract')!='HELD_WORLD_TARGET_POSES_V2'
+                                or receipt.get('outfeed_sample_count')!=len(path['samples'])
+                                or [s.get('index') for s in checks]!=list(range(len(path['samples'])))
+                                or any(s.get('check',{}).get('status')!='SUCCESS' for s in checks)):
+                            raise ValueError('CYCLE_OUTFEED_COMPACT_RECEIPT_INVALID')
+                    elif len(record['samples'])!=len(path['samples']):raise ValueError('CYCLE_OUTFEED_SAMPLES_MISSING')
+                    for sample,position in zip(record.get('samples',[]),path['samples']):
                         check_state(sample['state'],ids);check_mechanism(sample['state'])
                         if (sample['state']['q']!=before['q'] or sample['state']['attachment'] is not None
                                 or not np.allclose(box_pose(sample['state'],target,robot),position['pose'],atol=1e-9,rtol=0)):

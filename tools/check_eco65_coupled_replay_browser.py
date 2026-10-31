@@ -167,9 +167,13 @@ if(segment.event_type==='IDEAL_OUTFEED'){
 check('OUTFEED_HOLDS_ACTUAL_Q_'+segment.record_id,close(currentQ,segment.state_before.q,1e-12));
 check('OUTFEED_KEEPS_WORLD_CARTON_'+segment.record_id,!state.attachment&&state.world.some(b=>b.id===state.target_id));
 check('OUTFEED_USES_RECORDED_SAMPLES_'+segment.record_id,segment.outfeed.samples.length>2);
+if(attempt.response.outfeed_sample_contract==='HELD_WORLD_TARGET_POSES_V2'){
+check('OUTFEED_COMPACT_ALL_SAMPLES_CHECKED_'+segment.record_id,attempt.response.sample_checks.length===segment.outfeed.samples.length&&attempt.response.outfeed_sample_count===segment.outfeed.samples.length);
+check('OUTFEED_COMPACT_NATIVE_SUCCESS_'+segment.record_id,attempt.response.sample_checks.every(s=>s.check.status==='SUCCESS'));
+}
 }
 if(segment.kind==='robot_motion')check('ROBOT_HOLDS_HEIGHT_'+segment.record_id,state.height_m===segment.state_before.height_m);
-if(segment.retreat_geometry?.strategy==='EMPTY_TOOL_UP'){
+if(['EMPTY_TOOL_UP','IDEAL_OUTFEED_ENVELOPE_UP'].includes(segment.retreat_geometry?.strategy)){
 check('EMPTY_UP_RETREAT_RETAINS_RECEIVED_BOX_'+segment.record_id,!state.attachment&&state.world.some(b=>b.id===state.target_id));
 check('EMPTY_UP_RETREAT_LABEL_'+segment.record_id,document.getElementById('hud').textContent.includes('空载工具沿 +Z'));
 }

@@ -578,6 +578,12 @@ class Worker {
           throw std::runtime_error("ECO65_CYCLE_DRAIN_BEFORE_RECEIVING");
       }
       const auto& samples=transition.at("sample_requests");
+      const auto sample_contract=transition.value("sample_contract",std::string("FULL_REQUESTS_V1"));
+      const bool compact_outfeed=sample_contract=="HELD_WORLD_TARGET_POSES_V2";
+      if(sample_contract!="FULL_REQUESTS_V1" && !compact_outfeed)
+        throw std::runtime_error("ECO65_CYCLE_SAMPLE_CONTRACT_UNKNOWN");
+      if(compact_outfeed && event!="IDEAL_OUTFEED")
+        throw std::runtime_error("ECO65_OUTFEED_COMPACT_EVENT_SCOPE");
       if(event=="COUPLED_LIFT" || dropped) {
         if(samples.size()<2 || samples.size()>100)throw std::runtime_error("ECO65_CYCLE_FINITE_SAMPLES_REQUIRED");
         double last=0;bool first=true;
@@ -626,20 +632,28 @@ class Worker {
             throw std::runtime_error("ECO65_CYCLE_RECEIVE_NOT_ON_SURFACE");
         }
       } else if(event=="IDEAL_OUTFEED") {
-        if(!checked_outfeed||!before_attachment.is_null()||samples.size()<2||samples.size()>256||r.parent.empty())
+        std::unique_ptr<m710::EcoHeldOutfeedSamples> held_samples;
+        if(compact_outfeed)held_samples=std::make_unique<m710::EcoHeldOutfeedSamples>(req);
+        const size_t sample_count=compact_outfeed?held_samples->size():samples.size();
+        r.result["outfeed_sample_contract"]=sample_contract;
+        r.result["outfeed_sample_count"]=sample_count;
+        if(!checked_outfeed||!before_attachment.is_null()||sample_count<2||sample_count>256||r.parent.empty())
           throw std::runtime_error("ECO65_OUTFEED_BINDING_OR_SAMPLE_COUNT");
         const auto& previous=*tasks.at(req.at("task_id").get<std::string>())->records.at(r.parent);
         if(previous.request.at("stage")!="withdrawal"||!previous.trajectory)
           throw std::runtime_error("ECO65_OUTFEED_WITHOUT_NATIVE_WITHDRAWAL");
         Eigen::Vector3d last;bool x_started=false;
-        for(size_t index=0;index<samples.size();++index) {
-          const auto& sample=samples.at(index);checkCycleGeometry(sample);
+        for(size_t index=0;index<sample_count;++index) {
+          const auto& sample=compact_outfeed?held_samples->sample(index):samples.at(index);
+          // The compact form cannot change held fields: it is constructed from
+          // this checked request, with only the target pose substituted.
+          if(!compact_outfeed)checkCycleGeometry(sample);
           if(sample.at("q_start")!=req.at("q_start")||!sample.at("attachment").is_null()||
               sample.at("completed_ids")!=req.at("completed_ids")||sample.at("mechanism_state")!=req.at("mechanism_state")||
               sample.at("process_policy").at("selection_binding")!=req.at("process_policy").at("selection_binding"))
             throw std::runtime_error("ECO65_OUTFEED_HELD_STATE_CHANGED");
           auto rows=m710::ecoCycleObjects(sample.at("world"));
-          if((index==0&&rows!=before_world)||(index+1==samples.size()&&rows!=after_world)||rows.size()!=before_world.size())
+          if((index==0&&rows!=before_world)||(index+1==sample_count&&rows!=after_world)||rows.size()!=before_world.size())
             throw std::runtime_error("ECO65_OUTFEED_SAMPLE_ENDPOINT_WORLD_CHANGED");
           for(const auto& item:before_world)if(item.first!=target) {
             if(!rows.count(item.first)||rows.at(item.first)!=item.second)throw std::runtime_error("ECO65_OUTFEED_UNRELATED_OBJECT_CHANGED");

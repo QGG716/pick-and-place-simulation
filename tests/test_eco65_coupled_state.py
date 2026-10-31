@@ -158,14 +158,15 @@ def test_return_search_reaches_other_carton_and_retains_matching_tool_family(mon
     task.robot=SimpleNamespace(fk=lambda q:np.eye(4));task.height_m=.33
     task.spec=dict(low_height_m=.18);task.max_grasps=8;task.deadline=123.
     task.carton_poses={b['id']:np.eye(4) for b in boxes};task.cycle_failures=[];task.snapshot={}
+    task.parent='accepted_previous_drain';task.continuation_search=[]
     task.checkpoint=lambda:dict(face='top',active_ids=['known_cup'])
     task.restore=lambda cp:None
     # The compatible family lies beyond the old first-eight truncation.
     front=[dict(candidate_id='front'+str(i),target_face='front',active_ids=['other'],
-                process_option={'option_id':'high'},tcp_pose_D=np.eye(4).tolist()) for i in range(10)]
+                process_option={'option_id':'high','template':'FRONT'},tcp_pose_D=np.eye(4).tolist()) for i in range(10)]
     compatible=dict(candidate_id='compatible',target_face='top',active_ids=['known_cup'],
-                    process_option={'option_id':'low'},tcp_pose_D=np.eye(4).tolist())
-    task.geometry_candidates=lambda:dict(candidates=front+[compatible])
+                    process_option={'option_id':'low','template':'TOP'},tcp_pose_D=np.eye(4).tolist())
+    task.geometry_candidates=lambda:dict(candidates=front+[compatible],process_options=[])
     attempts=[]
     task.select_next=lambda target,g:attempts.append((target['id'],g['candidate_id'],task.deadline))
     task.lift=lambda h:None

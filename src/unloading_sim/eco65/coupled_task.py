@@ -302,7 +302,8 @@ class CoupledTask(NativeTask):
         return ('transit' if self.stages and self.stages[-1]['stage'] in ('transit','place')
                 else 'extraction')
 
-    def transition(self, event_type, change, *, kind='event', samples=None, duration_s=0., details=None):
+    def transition(self, event_type, change, *, kind='event', samples=None, duration_s=0., details=None,
+                   sample_contract=None):
         """Commit a state change only after the worker accepts its native receipt."""
         checkpoint = self.checkpoint()
         before = self.state()
@@ -321,6 +322,7 @@ class CoupledTask(NativeTask):
             self.restore(checkpoint)
         req['transition']=dict(kind=kind,event_type=event_type,after_request=after_req,
                                sample_requests=[] if samples is None else [s['request'] for s in samples])
+        if sample_contract is not None:req['transition']['sample_contract']=sample_contract
         if details is not None:req['transition']['outfeed']=deepcopy(details)
         raw=self.call(req)
         if raw.get('status')!='SUCCESS':
@@ -672,17 +674,15 @@ class CoupledTask(NativeTask):
         if self.attachment is not None:raise ValueError('IDEAL_OUTFEED_REQUIRES_RELEASED_WORLD_CARTON')
         path=outfeed_path(self.target_pose,self.target['size_m'],self.spec,self.state()['mechanism'],
             self.scene['prototype']['configuration']['outfeed'])
-        cp=self.checkpoint();samples=[];target=self.target['id']
-        try:
-            for sample in path['samples']:
-                self.require_connection_budget()
-                self.target_pose=np.asarray(sample['pose']);self.carton_poses[target]=self.target_pose.copy()
-                samples.append(dict(height_m=self.height_m,state=self.state(),request=self.request(self.current_q,'withdrawal')))
-        finally:self.restore(cp)
+        # The worker binds q, geometry, mechanism and all other world objects
+        # once. Every original <=10 mm target pose still receives its native
+        # outfeed collision check; only redundant copies leave the wire/archive.
+        self.require_connection_budget();target=self.target['id']
         def change():
             self.target_pose=np.asarray(path['samples'][-1]['pose']);self.carton_poses[target]=self.target_pose.copy()
             self.receiver_history[-1]['outfeed']=deepcopy(path)
-        record=self.transition('IDEAL_OUTFEED',change,samples=samples,duration_s=path['duration_s'],details=path)
+        record=self.transition('IDEAL_OUTFEED',change,duration_s=path['duration_s'],details=path,
+            sample_contract='HELD_WORLD_TARGET_POSES_V2')
         record['outfeed']=path
 
     def select_next(self, target, grasp):

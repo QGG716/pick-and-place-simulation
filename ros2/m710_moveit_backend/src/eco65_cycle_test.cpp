@@ -124,7 +124,30 @@ int main() {
     bad=req;bad["world"][1]["pose"][2][3]=.2;rejects([&]{contract.checkRequest(bad);});
     bad=req;bad["world"].push_back({{"id","unknown"},{"size",{1,1,1}},{"pose",pose()}});
     rejects([&]{contract.checkRequest(bad);});
+    J compact={{"q_start",{0.,1.,2.,3.,4.,5.}},{"attachment",nullptr},
+      {"world",J::array({{{"id","box"},{"size",{.15,.1,.1}},{"pose",pose(0,0,.2)}},
+        {{"id","wall"},{"size",{1.,1.,1.}},{"pose",pose(1,0,0)}}})},
+      {"process_policy",{{"target_id","box"},{"target",{{"pose",pose(0,0,.2)}}}}}};
+    auto compact_end=compact;compact_end["world"][0]["pose"]=pose(-.01,0,.2);
+    compact["transition"]={{"event_type","IDEAL_OUTFEED"},{"sample_contract","HELD_WORLD_TARGET_POSES_V2"},
+      {"sample_requests",J::array()},{"after_request",compact_end},
+      {"outfeed",{{"samples",J::array({{{"pose",pose(0,0,.2)}},{{"pose",pose(-.01,0,.2)}}})}}}};
+    m710::EcoHeldOutfeedSamples held(compact);
+    require(held.size()==2,"COMPACT_SAMPLE_COUNT");
+    const auto& held_last=held.sample(1);
+    require(held_last.at("world")==compact_end.at("world") &&
+      held_last.at("q_start")==compact.at("q_start") && held_last.at("attachment").is_null(),"COMPACT_EXACT_HELD_WORLD");
+    require(held_last.at("process_policy").at("target").at("pose")==pose(-.01,0,.2),"COMPACT_TARGET_PROCESS_POSE");
+    bad=compact;bad["transition"]["sample_requests"].push_back(compact_end);
+    rejects([&]{m710::EcoHeldOutfeedSamples invalid(bad);});
+    bad=compact;bad["transition"]["outfeed"]["samples"][0]["pose"]=pose(.001,0,.2);
+    rejects([&]{m710::EcoHeldOutfeedSamples invalid(bad);});
+    bad=compact;bad["transition"]["outfeed"]["samples"].insert(
+      bad["transition"]["outfeed"]["samples"].begin()+1,J{{"pose",pose(-.005,0,.2)}});
+    bad["transition"]["outfeed"]["samples"][1]["pose"][0][0]=.99;
+    rejects([&]{m710::EcoHeldOutfeedSamples invalid(bad);invalid.sample(1);});
     std::cout<<J({{"status","PASS"},{"scope","SYNTHETIC_DIRECTION_AND_SCENE_PROTOCOL_ONLY"},
+      {"held_outfeed_protocol_cases",6},
       {"legacy_cases",25},{"bidirectional_business_intervals",3},{"contact_lift_cases",5},
       {"accumulated_legacy_reverse_rad",reverse},{"physical_execution","NOT_RUN"}}).dump()<<std::endl;
     return 0;

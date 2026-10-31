@@ -19,7 +19,7 @@
 <script>/*__VENDOR__*/</script><script type="application/json" id="eco65-replay-data">/*__DATA__*/</script><script>
 const dataElement=document.getElementById('eco65-replay-data');
 const DATA=JSON.parse(dataElement.textContent);dataElement.textContent='';dataElement.remove();window.REPLAY_DATA=DATA;
-function retreatDisplay(segment){return segment.retreat_geometry?.strategy==='EMPTY_TOOL_UP'?' · 空载工具沿 +Z 退出（箱体已落带）':'';}
+function retreatDisplay(segment){const strategy=segment.retreat_geometry?.strategy;return strategy==='IDEAL_OUTFEED_ENVELOPE_UP'?' · 空载工具沿 +Z 退出（覆盖整段出料箱体包络）':strategy==='EMPTY_TOOL_UP'?' · 空载工具沿 +Z 退出（箱体已落带）':'';}
 const restoredDefinitions=new WeakSet();
 function restoreDefinitions(value){if(!value||typeof value!=='object')return value;if(value.shared_definition_ref)return restoreDefinitions(DATA.shared_definitions[value.shared_definition_ref]);if(restoredDefinitions.has(value))return value;restoredDefinitions.add(value);for(const key of Object.keys(value))if(key!=='shared_definitions')value[key]=restoreDefinitions(value[key]);return value;}
 restoreDefinitions(DATA);

@@ -137,7 +137,18 @@ def transition_failures(request, result):
         checks.append(('AFTER_STATE', transition['after_request'], result['after_check']))
     samples = transition.get('sample_requests', [])
     for row in result.get('sample_checks', []):
-        checks.append(('SAMPLE_'+str(row['index']), samples[row['index']], row['check']))
+        if row['check'].get('status') == 'SUCCESS':
+            continue
+        if transition.get('sample_contract') == 'HELD_WORLD_TARGET_POSES_V2':
+            sample = deepcopy({k:v for k,v in request.items() if k!='transition'})
+            pose = transition['outfeed']['samples'][row['index']]['pose']
+            target = sample['process_policy']['target_id']
+            for obj in sample['world']:
+                if obj['id'] == target:obj['pose']=deepcopy(pose)
+            sample['process_policy']['target']['pose']=deepcopy(pose)
+        else:
+            sample = samples[row['index']]
+        checks.append(('SAMPLE_'+str(row['index']), sample, row['check']))
     failures = []
     for label, req, check in checks:
         witness = check.get('failure')
@@ -525,6 +536,7 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
     output.with_suffix('.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     # The bundle contains the actual evidence, not only paths to ignored files.
     with zipfile.ZipFile(output.with_suffix('.zip'), 'w', zipfile.ZIP_DEFLATED) as archive:
+        omissions=[]
         for path in (output, data_path, output.with_suffix('.json')):
             archive.write(path, path.name)
         archive.writestr('records/snapshot.json', json.dumps(snapshot))
@@ -535,7 +547,29 @@ def export(snapshot_path, output, *, plan_path=None, run_folder=None, preview_q=
             run_folder = Path(run_folder)
             for path in sorted(run_folder.rglob('*')):
                 if path.is_file() and path.suffix in ('.json', '.gz', '.jsonl'):
+                    reason=None
+                    if plan_path and path.resolve()==Path(plan_path).resolve():
+                        reason='EXACT_SOURCE_PLAN_ALREADY_STORED_AT_records/cycle'
+                    elif (plan and plan['complete'] and plan.get('completion_goal')=='ALL_CARTONS_DRAINED'
+                          and path.name=='latest_plan.json.gz' and path.parent.resolve()==run_folder.resolve()):
+                        # The complete plan owns every accepted motion/event;
+                        # every rejected request remains in native_calls. The
+                        # checkpoint stays in the source run, not another huge
+                        # duplicate in this delivery archive.
+                        reason='INTERMEDIATE_PREFIX_SUPERSEDED_BY_COMPLETE_PLAN_AND_NATIVE_ARCHIVE'
+                    if reason:
+                        h=hashlib.sha256()
+                        with path.open('rb') as stream:
+                            for chunk in iter(lambda:stream.read(8*1024*1024),b''):h.update(chunk)
+                        omissions.append(dict(source=path.relative_to(run_folder).as_posix(),
+                                              sha256=h.hexdigest(),reason=reason))
+                        continue
                     archive.write(path, 'records/native/'+path.relative_to(run_folder).as_posix())
+        archive.writestr('records/bundle_manifest.json',json.dumps(dict(
+            schema='eco65_offline_evidence_bundle_v1',
+            canonical_plan='records/cycle.json.gz' if plan_path and Path(plan_path).suffix=='.gz' else 'records/cycle.json' if plan_path else None,
+            all_native_requests_and_search_traces_retained=bool(run_folder and (Path(run_folder)/'native_calls.jsonl.gz').exists()),
+            omitted_redundant_files=omissions,source_files_deleted=False),indent=2))
     print(json.dumps(report, ensure_ascii=False))
     return report
 

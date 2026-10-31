@@ -19,6 +19,46 @@ inline constexpr const char* kEcoCycleJ1Policy="RAW_J1_FIRST_CW_OUTBOUND_CW_RETU
 inline constexpr const char* kEcoCaptureJ1Policy="RAW_J1_FIRST_CCW_OUTBOUND_CW_RETURN_CCW_TOTAL_REVERSE_1E6_V3";
 inline constexpr const char* kEcoFreeJ1Policy="RAW_FINITE_JOINTS_BIDIRECTIONAL_NO_J1_MONOTONICITY_V4";
 
+// A stopped outfeed may transmit the immutable world once. Only the named
+// released target's pose is mutable; each pose is still checked by native FCL.
+// Legacy full sample requests retain their original contract in the worker.
+class EcoHeldOutfeedSamples {
+  CycleJson held_,poses_,first_,last_;
+  size_t target_index_=0;
+public:
+  explicit EcoHeldOutfeedSamples(const CycleJson& request):held_(request) {
+    const auto& transition=request.at("transition");
+    if(transition.at("event_type")!="IDEAL_OUTFEED" ||
+       transition.at("sample_contract")!="HELD_WORLD_TARGET_POSES_V2" ||
+       !transition.at("sample_requests").empty())
+      throw std::runtime_error("ECO65_OUTFEED_COMPACT_CONTRACT");
+    poses_=transition.at("outfeed").at("samples");
+    if(!poses_.is_array() || poses_.size()<2 || poses_.size()>256)
+      throw std::runtime_error("ECO65_OUTFEED_BINDING_OR_SAMPLE_COUNT");
+    const auto target=request.at("process_policy").at("target_id");
+    size_t found=0;
+    for(size_t k=0;k<held_.at("world").size();++k)if(held_["world"][k].at("id")==target){target_index_=k;++found;}
+    if(found!=1)throw std::runtime_error("ECO65_OUTFEED_TARGET_REQUIRED");
+    first_=held_["world"][target_index_].at("pose");
+    found=0;
+    for(const auto& row:transition.at("after_request").at("world"))if(row.at("id")==target){last_=row.at("pose");++found;}
+    if(found!=1 || poses_.front().at("pose")!=first_ || poses_.back().at("pose")!=last_)
+      throw std::runtime_error("ECO65_OUTFEED_SAMPLE_ENDPOINT_WORLD_CHANGED");
+    held_.erase("transition");
+  }
+  size_t size() const {return poses_.size();}
+  const CycleJson& sample(size_t index) {
+    const auto& pose=poses_.at(index).at("pose");
+    const auto actual=processTransform(pose),initial=processTransform(first_);
+    if(!actual.matrix().allFinite() ||
+       (actual.linear()-initial.linear()).cwiseAbs().maxCoeff()>1e-12)
+      throw std::runtime_error("ECO65_OUTFEED_ORIENTATION_CHANGED");
+    held_["world"][target_index_]["pose"]=pose;
+    held_["process_policy"]["target"]["pose"]=pose;
+    return held_;
+  }
+};
+
 inline bool ecoCycleContactPreservingLift(const CycleJson& prior,const CycleJson& attach) {
   if(prior.value("op",std::string())!="eco65_transition" || !prior.contains("transition"))return false;
   const auto& event=prior.at("transition");
