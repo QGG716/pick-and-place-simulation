@@ -27,7 +27,10 @@ def refresh(source, output, *, failures=False):
     packed = source.with_suffix('.data.json.gz').read_bytes()
     payload = gzip.decompress(packed).decode('utf-8')
     # Bind the records to the verified HTML, not merely to an adjacent gzip filename.
-    if ('const DATA='+payload.replace('</', '<\\/')+';window.REPLAY_DATA=DATA;').encode() not in source_html:
+    escaped=payload.replace('</', '<\\/')
+    formats=('const DATA='+escaped+';window.REPLAY_DATA=DATA;',
+             '<script type="application/json" id="eco65-replay-data">'+escaped+'</script>')
+    if not any(value.encode() in source_html for value in formats):
         raise ValueError('SOURCE_PACKED_DATA_NOT_IN_VERIFIED_HTML')
     data = json.loads(payload)
     if data['snapshot_fingerprint'] != report['snapshot_fingerprint']:
@@ -51,7 +54,7 @@ def refresh(source, output, *, failures=False):
                   source_html_sha256=source_sha,
                   packed_records_sha256=hashlib.sha256(packed).hexdigest(),
                   source_html=str(source), start_in_failures=failures,
-                  failure_requests=sum(a['response']['status']!='SUCCESS' for a in data['attempts']))
+                  failure_requests=sum(a['response'].get('status')!='SUCCESS' for a in data['attempts']))
     output.with_suffix('.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     with zipfile.ZipFile(output.with_suffix('.zip'), 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in destinations[:3]:

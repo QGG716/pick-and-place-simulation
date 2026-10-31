@@ -63,12 +63,14 @@ def draw(snapshot,home,output):
         ax.axhline(0,color='black',lw=.6);ax.axvline(0,color='black',lw=.6)
         ax.set_title(title);ax.set_xlabel('X / mm');ax.set_ylabel(('Y' if indices[1]==1 else 'Z')+' / mm')
         ax.set_aspect('equal');ax.set_xlim(-1400,850);ax.set_ylim((-400,400) if indices[1]==1 else (-40,cfg['trailer']['inner_height_m']*1000+40));ax.grid(alpha=.15)
-    c=cfg['cartons'];w=c['columns']*100+(c['columns']-1)*c['column_gap_m']*1000
-    text=(f"Cartons: 150 x 100 x 100 mm; {c['columns']} columns x {c['layers']} layers = {len(scene['boxes'])}\n"
-        f"Stack: X 0..150; Y {-w/2:.1f}..{w/2:.1f}; Z 0..{c['layers']*100} mm\n"
-        f"Enclosure clear L/W/H: 1600 / {cfg['trailer']['inner_width_m']*1000:.0f} / {cfg['trailer']['inner_height_m']*1000:.0f} mm; -X entrance open\n"
+    c=cfg['cartons'];t=cfg['trailer'];r=cfg['receiver']
+    stack=np.vstack([corners(b) for b in scene['boxes']])*1000;lo,hi=stack.min(0),stack.max(0)
+    bounds=np.asarray(r['transverse_bounds_xy_m'])*1000;belt= bounds[1]-bounds[0]
+    text=(f"Cartons: {' x '.join(f'{v*1000:.0f}' for v in c['size_m'])} mm; {c['columns']} columns x {c['layers']} layers = {len(scene['boxes'])}\n"
+        f"Stack: X {lo[0]:.0f}..{hi[0]:.0f}; Y {lo[1]:.1f}..{hi[1]:.1f}; Z {lo[2]:.0f}..{hi[2]:.0f} mm\n"
+        f"Enclosure clear L/W/H: {(t['closed_end_x_m']-t['entrance_x_m'])*1000:.0f} / {t['inner_width_m']*1000:.0f} / {t['inner_height_m']*1000:.0f} mm; -X entrance open\n"
         f"Base XYZ: {', '.join(f'{v*1000:.1f}' for v in scene['base_position_m'])} mm; fixed installation candidate\n"
-        "Transverse: 550 x 175 mm, surface travel 100..525 mm; longitudinal: 700 x 150 mm, far end 150 mm\n"
+        f"Transverse: {belt[1]:.0f} x {belt[0]:.0f} mm, surface travel {r['low_height_m']*1000:.0f}..{r['high_height_m']*1000:.0f} mm; longitudinal: {r['longitudinal_length_m']*1000:.0f} x {r['longitudinal_width_m']*1000:.0f} mm, far end {r['longitudinal_lower_height_m']*1000:.0f} mm\n"
         "Layout reference scale 1:4; real ECO65/tool/camera unscaled. Static dimension drawing, not a task success.")
     fig.suptitle(text,fontsize=11,ha='left',x=.07)
     output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)

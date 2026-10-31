@@ -20,7 +20,7 @@ function showPosture(frames,q){
   const p=displayedPosture;
   $('postureMetrics').textContent=`实际 FK 构型\n上臂（肩→肘）偏离 +Z：${p.upper_arm_tilt_deg.toFixed(2)}°\n腕部相对肘部朝箱堆方向：${(p.wrist_forward_of_elbow_m*1000).toFixed(1)} mm\n吸具 TCP 相对肘部：${(p.tcp_forward_of_elbow_m*1000).toFixed(1)} mm\n负值表示折回肩侧；原始 J2 ${(q[1]*180/Math.PI).toFixed(2)}°。\n${(active?.request?.ik_posture_preference||DATA.plan_summary?.ik_posture_preference)?'本次使用肩肘展开偏好（软排序）；显示的仍是原始记录姿态。':'这是已有姿态的 FK 测量，不代表旧规划已使用新的构型偏好。'}`;
 }
-function statusLabel(a){return statusLabels[a.response.status]||a.response.status||'未记录结果';}
+function statusLabel(a){return statusLabels[a.response.status]||a.response.status||a.error||'未记录结果';}
 function witnesses(a){return [...(a.failure_samples||[]),...(a.trace?.planners||[]).flatMap(p=>(p.checked_samples||[]).filter(s=>!s[1]).map(s=>({q:s[0],witness:s[2]})))];}
 function hasPair(a){return witnesses(a).some(f=>pairOf(f.witness).length===2);}
 function failureCategory(a){return a.response.status==='NATIVE_IK_FAILED'?'ik':a.response.status==='NATIVE_SOLVER_DEADLINE_EXPIRED'?'timeout':'other';}
@@ -110,7 +110,8 @@ function renderDiagnosis(witness=null,poseLabel='当前姿态仅供请求上下�
       if(w.direction)reason+='\n要求：'+(w.direction<0?'顺时针 / 原始角非增':'逆时针 / 原始角非减');
     }
     const gap=w.surface_distance_m,required=w.required_pair_clearance_m;
-    if(Number.isFinite(gap)&&gap>=0)reason+=`\n实测间隙 ${(gap*1000).toFixed(3)} mm`;
+    if(w.distance_method==='CONSERVATIVE_CONVEX_SUPPORT_PLANE_BOUND')reason+=`\n实际凸体分离平面界 ${(gap*1000).toFixed(3)} mm；未满足接触容差证明，不将该界称为实测穿透深度。`;
+    else if(Number.isFinite(gap)&&gap>=0)reason+=`\n实测间隙 ${(gap*1000).toFixed(3)} mm`;
     else if(Number.isFinite(gap)&&gap<0)reason+='\n返回值是相交标记，未记录穿透深度。';
     if(Number.isFinite(required))reason+=`\n要求间隙 ${(required*1000).toFixed(3)} mm`;
     if(Number.isFinite(gap)&&gap>=0&&Number.isFinite(required)&&gap<required)reason+=` · 差 ${(1000*(required-gap)).toFixed(3)} mm`;

@@ -24,7 +24,7 @@ from unloading_sim.eco65.collision_policy import cup_neighbor_pairs, rigid_tool_
 
 SHARED_KEYS = {'source_policy','collision_policy','robot_mast_exemption',
                'process_geometry','task_contract','identity','camera_mount',
-               'contours','fixed_attachment_interfaces'}
+               'contours','fixed_attachment_interfaces','convex_mesh'}
 
 
 def reuse_runtime_values(value, cache):

@@ -12,7 +12,9 @@ def export(source, output, target):
     output=output.resolve();output.relative_to(root/'outputs')
     if output.exists():raise FileExistsError('Use a fresh output path')
     original=source.read_text(encoding='utf8')
-    payload=original.split('const DATA=',1)[1].split(';window.REPLAY_DATA=DATA;',1)[0]
+    marker='<script type="application/json" id="eco65-replay-data">'
+    payload=(original.split(marker,1)[1].split('</script>',1)[0] if marker in original
+             else original.split('const DATA=',1)[1].split(';window.REPLAY_DATA=DATA;',1)[0])
     data=json.loads(payload)
     def resolve(value):
         while isinstance(value,dict) and 'shared_definition_ref' in value:

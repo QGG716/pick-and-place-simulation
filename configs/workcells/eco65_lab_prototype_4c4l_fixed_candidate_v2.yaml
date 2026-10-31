@@ -1,0 +1,165 @@
+# Frozen dimensional candidate used by outputs/lab_prototype_20261031/candidate03.
+# Qualification status and actual run identity are recorded separately; rebuilding creates a new identity.
+schema: eco65_quarter_prototype_config_v1
+layout_id: eco65_lab_prototype_fixed_100mm_cartons_v2
+reference_sha: 4d191ecab065420e4b70c9b266c87654996bd91f
+scene_scale: 0.25
+equipment_scale: 1.0
+enable_hardware: false
+external_translation_m:
+- 0.0
+- 0.0
+- 0.0
+cartons:
+  size_m:
+  - 0.15
+  - 0.1
+  - 0.1
+  rows: 1
+  columns: 4
+  layers: 4
+  column_gap_m: 0.005
+  layer_gap_m: 0.0
+  front_x_m: 0.0
+  bottom_z_m: 0.0
+trailer:
+  entrance_x_m: -0.8
+  closed_end_x_m: 0.8
+  inner_width_m: 0.675
+  inner_height_m: 1.05
+  panel_thickness_m: 0.0125
+chassis:
+  center_m:
+  - -0.4875
+  - 0.0875
+  - 0.075
+  size_m:
+  - 0.525
+  - 0.375
+  - 0.15
+installation:
+  nominal_position_m:
+  - -0.4875
+  - 0.0375
+  - 0.225
+  position_m:
+  - -0.4875
+  - 0.0375
+  - 0.225
+  rpy_rad:
+  - 0.0
+  - 0.0
+  - 3.141592653589793
+  search_xyz_bounds_m:
+  - - -0.65
+    - -0.02
+    - 0.175
+  - - -0.33
+    - 0.19
+    - 0.25
+  search_yaw_rad:
+  - 0.0
+  - 1.5707963267948966
+  - 3.141592653589793
+  - -1.5707963267948966
+  mode: FIXED_INSTALLATION
+  reserved_empty_base_x_travel_m:
+  - 0.1
+  - 0.05
+receiver:
+  geometry_revision: upper_seam_lower_slider_v3
+  transverse_bounds_xy_m:
+  - - -0.225
+    - -0.275
+  - - -0.05
+    - 0.275
+  longitudinal_length_m: 0.7
+  longitudinal_width_m: 0.15
+  longitudinal_center_y_m: -0.2
+  longitudinal_lower_height_m: 0.15
+  low_height_m: 0.1
+  high_height_m: 0.525
+  initial_height_m: 0.3311827942858692
+  desired_drop_m: 0.0125
+  receiving_margin_m: 0.01
+  belt_depth_m: 0.006
+  frame_depth_m: 0.024
+  floor_z_m: 0.0
+  scissor_base_pin_z_m: 0.026
+  transverse_base_pin_z_m: 0.022
+  transverse_support_x_offset_m: 0.06
+  longitudinal_support_fraction: 0.42
+  longitudinal_support_x_offset_m: 0.035
+  lower_rail_y_offset_m: 0.08
+  lower_rail_end_margin_m: 0.035
+  lower_rail_below_frame_m: 0.028
+  lower_carriage_below_frame_m: 0.014
+  lower_rail_width_m: 0.004
+  lower_foot_width_m: 0.01
+  lower_housing_width_m: 0.004
+  lower_carriage_width_m: 0.004
+  lower_bracket_width_m: 0.002
+  lower_pin_width_m: 0.008
+  discharge_tray_length_m: 0.4
+  discharge_tray_depth_m: 0.006
+  transverse_scissor:
+    stages: 3
+    arm_length_m: 0.185
+    arm_depth_m: 0.006
+    arm_thickness_m: 0.004
+  longitudinal_scissor:
+    stages: 4
+    arm_length_m: 0.135
+    arm_depth_m: 0.006
+    arm_thickness_m: 0.004
+  lift_display_speed_m_s: 0.08
+  lift_sample_step_m: 0.01
+outfeed:
+  mode: CHECKED_IDEAL_KINEMATIC_CONVEYANCE
+  transverse_direction:
+  - 0.0
+  - -1.0
+  - 0.0
+  longitudinal_direction:
+  - -1.0
+  - 0.0
+  - 0.0
+  sample_step_m: 0.01
+  display_speed_m_s: 0.1
+  external_catch_end_x_m: -1.2
+  output_plane_x_m: -0.8
+layout_search:
+  populations:
+  - - 3
+    - 4
+  - - 4
+    - 4
+  - - 5
+    - 4
+  - - 3
+    - 5
+  - - 4
+    - 5
+  trailer_inner_widths_m:
+  - 0.575
+  - 0.675
+  - 0.775
+  trailer_inner_heights_m:
+  - 0.675
+  - 0.8
+  - 0.925
+  - 1.05
+  installation_positions_m:
+  - - -0.4875
+    - 0.0375
+    - 0.225
+  - - -0.4375
+    - 0.0375
+    - 0.225
+  - - -0.5375
+    - 0.0375
+    - 0.225
+  - - -0.4875
+    - 0.0875
+    - 0.175
+initial_target_id: carton_r00_l03_c00
