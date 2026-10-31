@@ -640,7 +640,14 @@ class CoupledTask(NativeTask):
             points.append(np.asarray(mesh.vertices)@cad[:3,:3].T+cad[:3,3])
         if not points:raise ValueError('TOOL_RETREAT_SOLID_GEOMETRY_MISSING')
         from .withdrawal import retreat_candidates
-        candidates=retreat_candidates(np.concatenate(points),corners(self.target,receive),direction)
+        outfeed_points=None
+        if self.scene.get('prototype'):
+            from .outfeed import outfeed_path
+            path=outfeed_path(receive,self.target['size_m'],self.spec,self.state()['mechanism'],
+                              self.scene['prototype']['configuration']['outfeed'])
+            outfeed_points=np.concatenate([corners(self.target,np.asarray(row['pose'])) for row in path['samples']])
+        candidates=retreat_candidates(np.concatenate(points),corners(self.target,receive),direction,
+                                      outfeed_points=outfeed_points)
         for candidate in candidates:
             self.restore(received)
             if self.attachment is not None:
