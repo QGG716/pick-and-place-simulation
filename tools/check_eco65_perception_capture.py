@@ -11,11 +11,13 @@ def main():
     p.add_argument('--snapshot', required=True)
     p.add_argument('--worker-command', required=True)
     p.add_argument('--output', required=True)
+    p.add_argument('--candidate-q',nargs=6,type=float,action='append',help='Finite static acquisition poses, checked in order')
     a = p.parse_args()
     from pathlib import Path
     out = Path(a.output); out.mkdir(parents=True, exist_ok=False)
     s = load_json(a.snapshot)
-    q = [-np.pi/2, 0., 0., 0., 0., 0.]
+    candidates=a.candidate_q or [[-np.pi/2, 0., 0., 0., 0., 0.]]
+    q = candidates[0]
     home = make_candidate(q, s['tool'], s['scene'], dict(source='CURRENT_LAYOUT_CAMERA_CAPTURE_STATE'))
     save_json(out/'capture_home_candidate.json', home)
     task = CoupledTask(s, a.worker_command, home_candidate=home, initial_mode='inherited_state',
@@ -29,10 +31,16 @@ def main():
         if not geometry['candidates']:
             raise ValueError('CAPTURE_CHECK_NO_LEGAL_TRANSVERSE_PROCESS_CONTEXT')
         task.select_grasp(geometry['candidates'][0])
-        check = task.call(task.request(np.asarray(q), 'pregrasp'))
+        attempts=[]
+        for q in candidates:
+            check = task.call(task.request(np.asarray(q), 'pregrasp'))
+            attempts.append(dict(q_rad=q,native_check=check))
+            if check['status']=='SUCCESS':break
+        save_json(out/'capture_home_candidate.json',make_candidate(q,s['tool'],s['scene'],
+            dict(source='CURRENT_LAYOUT_CAMERA_CAPTURE_STATE_NATIVE_CHECKED',native_status=check['status'])))
         fk = task.check_fk(np.asarray(q)) if check['status'] == 'SUCCESS' else None
         save_json(out/'report.json', dict(status=check['status'], q_rad=q, native_check=check,
-            fk=fk, snapshot_fingerprint=s['fingerprint'], physical_execution='NOT_RUN',
+            fk=fk, attempts=attempts, snapshot_fingerprint=s['fingerprint'], physical_execution='NOT_RUN',
             acquisition='INDEPENDENT_STATIC_SIMULATION_STATE_NO_CLAIMED_APPROACH_MOTION'))
         if check['status'] != 'SUCCESS':
             raise ValueError('CAPTURE_STATE_REJECTED')

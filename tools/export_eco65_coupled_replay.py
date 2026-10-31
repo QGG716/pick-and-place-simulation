@@ -314,7 +314,7 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
                 mechanism=mechanisms[key]['mechanism'])))
     segments = []
     duration = 0.
-    totals = dict(robot_motion_s=0., mechanism_display_s=0., nominal_drop_s=0.,
+    totals = dict(robot_motion_s=0., mechanism_display_s=0., nominal_drop_s=0., ideal_outfeed_s=0.,
                   event_display_s=0., planning_wall_s=plan.get('planning_wall_s') if plan else None)
     validation = None
     records = plan['records'] if plan else []
@@ -367,6 +367,8 @@ def prepare_data(snapshot, plan=None, run_folder=None, preview_q=None, *, check_
                 elapsed = float(row.get('duration_s', 0.))
                 if row.get('event_type') == 'NOMINAL_RECEIVE':
                     totals['nominal_drop_s'] += elapsed
+                elif row.get('event_type') == 'IDEAL_OUTFEED':
+                    totals['ideal_outfeed_s'] += elapsed
                 elif elapsed == 0:
                     # This is an event hold for inspection, never robot motion.
                     elapsed = .35

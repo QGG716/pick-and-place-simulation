@@ -36,7 +36,22 @@ def build(a):
         for b in group:
             if b['size_m']!=d['size_m']:raise ValueError('OBSERVED_SIZE_PRIOR_MISMATCH')
             b['pose']=(np.asarray(d['pose_D_m'])-[0,0,(top-b['layer'])*d['size_m'][2]]).tolist()
+            if scene.get('prototype'):
+                # Known physical support datum, not a fitted pedestal. Preserve
+                # the measured vertical residual as evidence of the constraint.
+                ground_residual=b['pose'][2]-(b['layer']+.5)*d['size_m'][2]
+                if abs(ground_residual)>.003:
+                    save_json(out/'ground_consistency_failure.json',dict(status='REJECTED',
+                        reason='OBSERVATION_INCONSISTENT_WITH_COMMON_GROUND',target_id=b['id'],
+                        estimated_center_D_m=b['pose'],known_center_z_m=(b['layer']+.5)*d['size_m'][2],
+                        ground_residual_m=float(ground_residual),maximum_residual_m=.003,
+                        observation_fingerprint=obs['fingerprint'],calibration_fingerprint=cal['fingerprint'],
+                        action='OBSERVED_PLANNING_WORLD_NOT_CREATED_GROUND_NOT_MOVED'))
+                    raise ValueError('OBSERVATION_INCONSISTENT_WITH_COMMON_GROUND')
+                b['observed_ground_residual_m']=float(ground_residual)
+                b['pose'][2]=(b['layer']+.5)*d['size_m'][2]
             b['evidence']='RGBD_TOP_FACE_ESTIMATE' if b['layer']==top else 'OCCLUDED_STACK_SIZE_ALIGNMENT_PRIOR_COMPLETION'
+            if scene.get('prototype'):b['evidence']+='_KNOWN_COMMON_GROUND_CONSTRAINT'
             assignments.append(dict(id=b['id'],pose_D_m=b['pose'],evidence=b['evidence']))
     scene['box']=deepcopy(next(b for b in scene['boxes'] if b['id']==scene['target_box_id']))
     image_root=Path(a.observations).resolve().parent

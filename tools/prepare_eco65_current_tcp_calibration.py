@@ -63,9 +63,26 @@ def prepare(a):
         # are selected from this bounded jig set, without moving approved layout.
         centers=[[-.72,.26,.52],[-.72,.32,.55],[-.66,.35,.54],[-.73,-.28,.53],[-.65,-.34,.54],
                  [-.78,.42,.56],[-.72,.48,.56],[-.75,.45,.63],[-.83,.46,.63],[-.72,.45,.68]]
-        for pid,split,ids in [('train_01','train',range(6)),('heldout_01','validation',[0,3,5])]:
+        if s['scene'].get('prototype'):
+            # Bounded fixture candidates in the configured enclosure/open
+            # entrance. Every full board/probe pose still gets geometry/FOV
+            # checks; these centres are not calibration observations.
+            cfg=s['scene']['prototype']['configuration'];base=np.asarray(s['scene']['base_position_m'])
+            lateral=min(.22,cfg['trailer']['inner_width_m']/2-.10)
+            stack_top=max(b['pose'][2]+b['size_m'][2]/2 for b in s['scene']['boxes'])
+            board_z=max(stack_top+.15,.55)
+            centers=[[.05,0.,board_z],[.10,.12,board_z],[.10,-.12,board_z],
+                     [.15,0.,board_z+.05],
+                     [base[0]-.21,lateral,.52],[base[0]-.21,-lateral,.52],
+                     [cfg['trailer']['entrance_x_m']-.04,.10,.55],
+                     [base[0]+.18,lateral,.55],[base[0]+.23,0.,.60],
+                     [base[0]+.18,-lateral,.55]]
+        groups=[(f'train_{i+1:02d}','train',range(6)) for i in range(a.training_placements)]
+        groups.append(('heldout_01','validation',[0,3,5]))
+        for pid,split,ids in groups:
             accepted_group=False
-            candidates=centers if split=='train' else [(np.array(c['placements'][0]['center_D_m'])+[.015,.025,0]).tolist()]
+            candidates=([p for p in centers if all(np.linalg.norm(np.array(p)-r['center_D_m'])>.08 for r in c['placements'])]
+                if split=='train' else [(np.array(c['placements'][0]['center_D_m'])+[.015,.025,0]).tolist()])
             for center in candidates:
                 direction=np.array(center)-np.array(s['scene']['base_position_m']);heading=direction[:2]/np.linalg.norm(direction[:2])
                 # Printed +Z points away from the robot, and downward 30 deg.
@@ -129,4 +146,7 @@ def prepare(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('snapshot','probe-source','capture-home','composed-usd','geometry-manifest','output'):p.add_argument('--'+key,type=Path,required=True)
-    p.add_argument('--worker-command',required=True);prepare(p.parse_args())
+    p.add_argument('--worker-command',required=True)
+    p.add_argument('--training-placements',type=int,choices=(1,2),default=1,
+        help='Bounded independent known-tip jig placements; held-out placement is never used to fit extrinsics')
+    prepare(p.parse_args())

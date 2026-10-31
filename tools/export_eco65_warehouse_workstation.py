@@ -61,8 +61,9 @@ def export(snapshot_path, home_path, config_path, out):
             c = yaml.safe_load((ROOT/'configs/workcells/eco65_desktop_warehouse_v1.yaml').read_text(encoding='utf-8'))
     else:
         c = yaml.safe_load(Path(config_path).read_text(encoding='utf-8'))
-    assert c['scope'] == 'STATIC_APPEARANCE_ONLY'
-    native_12carton = native and not full_face and scene.get('schema') == 'eco65_native_12carton_scene_v1'
+    prototype=bool(scene.get('prototype'))
+    if not prototype:assert c['scope'] == 'STATIC_APPEARANCE_ONLY'
+    native_12carton = native and not full_face and scene.get('schema') in ('eco65_native_12carton_scene_v1','eco65_quarter_prototype_scene_v1')
     actual_layout = full_face or native_12carton
     if not actual_layout: assert len(scene['boxes']) == 4
     elif c != scene['layout_config']: raise ValueError('FULL_FACE_CONFIG_CHANGED')
@@ -188,6 +189,11 @@ def export(snapshot_path, home_path, config_path, out):
         pose(prim,transform(b['pose'])); prim.SetCustomDataByKey('stable_id',b['id'])
         # This exact layout envelope is the sole carton collision proxy.
         cube('Cartons/'+b['id']+'/Collision',b['size_m'],[0,0,0],mats['table'],True)
+        if prototype:
+            # Physical envelope and rendered box share the configured size.
+            mat=material(stage,'carton_'+b['id'],[.58+.015*(b['column']%2),.35,.16])
+            visual=cube('Cartons/'+b['id']+'/Visual',b['size_m'],[0,0,0],mat)
+            visual.GetPrim().RemoveAPI(UsdPhysics.CollisionAPI)
         if actual_layout: prim.SetCustomDataByKey('supported_by', Vt.StringArray(b['supported_by']))
     if actual_layout:
         for item in scene['mesh_obstacles']:

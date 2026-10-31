@@ -28,10 +28,20 @@ def run(a):
         intrinsics_source='KNOWN_SIMULATION_PROJECTION_WITH_RENDERED_RAY_VALIDATION',
         physical_execution='NOT_RUN',execution_ready=False))
     require_tcp_calibration(cal);save_json(out/'calibration.json',cal)
-    d=detect(a.observations,out/'calibration.json',out/'vision',selected_column_rank=a.target_column_rank);print('TCP_CALIBRATION_AND_VISION',d['status'])
+    settings={}
+    if a.snapshot:
+        from unloading_sim.eco65.native_io import verify_snapshot
+        s=verify_snapshot(load_json(a.snapshot))
+        if s['fingerprint']!=vision['snapshot_fingerprint']:raise ValueError('DETECTION_SNAPSHOT_CHANGED')
+        if s['scene'].get('prototype'):
+            c=s['scene']['prototype']['configuration'];t=c['trailer']
+            settings=dict(carton_size=c['cartons']['size_m'],expected_columns=c['cartons']['columns'],
+                workspace_bounds=[[-.03,-t['inner_width_m']/2,-.01],[t['closed_end_x_m'],t['inner_width_m']/2,t['inner_height_m']]])
+    d=detect(a.observations,out/'calibration.json',out/'vision',selected_column_rank=a.target_column_rank,**settings);print('TCP_CALIBRATION_AND_VISION',d['status'])
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--target-column-rank',type=int,choices=(0,1,2),default=1)
+    p.add_argument('--target-column-rank',type=int,default=1)
+    p.add_argument('--snapshot',type=Path)
     for key in ('observations','tcp-observations','solver','validation','output'):p.add_argument('--'+key,type=Path,required=True)
     run(p.parse_args())

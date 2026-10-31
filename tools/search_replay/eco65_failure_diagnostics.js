@@ -201,7 +201,12 @@ function selectInspectionTarget(id,open=true){
   if(last){
     const reasons={PROCESS_RECEIVE_HEIGHT_OUT_OF_RANGE:'接收高度超出机构范围',LATERAL_CHANNEL_BLOCKED:'侧移通道被邻箱挡住',FACE_NOT_EXPOSED:'抓面未暴露',NO_INWARD_LATERAL_SPACE:'内侧移空间不足'};
     const frozen=last.process_options.frozen;
-    if(frozen&&DATA.receiver_hardware_range_m)$('targetSummary').textContent+=`\n冻结箱底 ${(frozen.z_b_m*1000).toFixed(1)} mm；横带范围 ${DATA.receiver_hardware_range_m.map(h=>(h*1000).toFixed(0)).join('–')} mm；顶吸${frozen.top_allowed?'允许':'不允许（箱底 ≥ 100 mm）'}。`;
+    if(frozen&&DATA.receiver_hardware_range_m){
+      const permission=frozen.top_permission==='EXPOSURE_SEAL_NATIVE_COLLISION_COMPLETE_CYCLE'
+        ?'无高度门槛；仍须满足顶面暴露、实际密封和完整周期碰撞检查'
+        :(frozen.top_allowed?'历史策略允许':'历史策略不允许（箱底 ≥ 100 mm）');
+      $('targetSummary').textContent+=`\n冻结箱底 ${(frozen.z_b_m*1000).toFixed(1)} mm；横带范围 ${DATA.receiver_hardware_range_m.map(h=>(h*1000).toFixed(0)).join('–')} mm；顶吸：${permission}。`;
+    }
     const rejected=last.process_options.rejected.map(r=>`${r.template||'工艺'}：${reasons[r.reason]||r.reason}${Number.isFinite(r.height_m)?'（候选 '+(r.height_m*1000).toFixed(1)+' mm）':''}${r.blocker_ids?.length?'；阻挡 '+r.blocker_ids.join(', '):''}`);
     $('targetSummary').textContent+=`\n完成 ${last.after_completed} 箱后的调度：${last.candidate_count} 个几何候选；本轮尝试 ${last.attempts.length} 次。\n`+rejected.join('\n');
     $('targetBudget').textContent+='\n'+JSON.stringify(dispatch,null,2);

@@ -98,7 +98,7 @@ check('TWO_CONVEYOR_ASSEMBLIES_'+i,new Set(belts.map(o=>o.userData.owner)).size=
 for(const owner of ['conveyor_transverse','conveyor_longitudinal']){
 const own=belts.filter(o=>o.userData.owner===owner);check('BELT_PRESENT_'+i+owner,own.length>0);
 const yMin=Math.min(...own.map(o=>new T.Box3().setFromBufferAttribute(o.geometry.getAttribute('position')).applyMatrix4(o.matrix).min.y));
-check('ACTUAL_MESH_YMIN_'+i+owner,Math.abs(yMin+.3)<1e-6);
+check('ACTUAL_MESH_YMIN_'+i+owner,Math.abs(yMin-DATA.mechanisms[DATA.previews[i].mechanism_ref].mechanism.seam.ymin_m)<1e-6);
 const frames=worldObjects.filter(o=>o.userData.layer==='visual'&&o.userData.owner===owner&&o.userData.role==='conveyor_frame');
 check('BELT_FRAME_ALIGNMENT_'+i+owner,frames.length===1&&Math.abs(new T.Box3().setFromBufferAttribute(frames[0].geometry.getAttribute('position')).applyMatrix4(frames[0].matrix).min.y-yMin)<1e-6);
 }
@@ -106,6 +106,10 @@ check('NO_OLD_STATIC_CONVEYORS_'+i,!model.static_visual.some(o=>o.id.startsWith(
 }
 const collision=document.querySelector('input[data-layer="collision"]');collision.click();
 check('COLLISION_LAYER_VISIBLE',robotObjects.filter(r=>r.item.layer==='collision').every(r=>r.object.visible));collision.click();
+const panels=document.querySelector('input[data-layer="panels"]');
+if(panels&&model.prototype){const saved=JSON.stringify(state.world);panels.click();
+check('HIDDEN_ENCLOSURE_PANELS_RETAIN_EXACT_COLLISION_WORLD',JSON.stringify(state.world)===saved);
+check('HIDDEN_ENCLOSURE_VISUALS',worldObjects.filter(o=>o.userData.role==='prototype_enclosure').every(o=>!o.visible));panels.click();}
 const accessory=model.joints.filter(j=>j.child.startsWith('eco65_mast_')||j.child.includes('camera'));
 check('J1_ACCESSORY_PARENTAGE',accessory.length>0&&accessory.every(j=>{let p=j.parent;while(p!=='link_1'&&p!=='world'){const edge=model.joints.find(k=>k.child===p);if(!edge)return false;p=edge.parent;}return p==='link_1';}));
 document.getElementById('top').click();check('TOP_VIEW',Math.abs(camera.position.x-controls.target.x)<1e-9);document.getElementById('reset').click();
@@ -118,7 +122,7 @@ const changed=matrix(C.T_mast_CAD).invert().multiply(matrix(C.T_mast_optical));
 check('CAMERA_CAD_OPTICAL_RIGID_RELATION',close(previous.elements,changed.elements,1e-10));
 const M=matrix(C.T_link1_mast).multiply(matrix(C.T_mast_optical)),f=new T.Vector3().setFromMatrixColumn(M,2);
 check('CAMERA_THIRTY_DEGREE_DOWNWARD_PITCH',Math.abs(f.z+.5)<1e-10);
-if(C.layout_remount){
+if(C.layout_remount&&model.layout_installation){
 const old=matrix(C.layout_remount.old_T_link1_optical),oldR=new T.Matrix4().makeRotationZ(C.layout_remount.old_base_rpy_rad[2]);
 const newR=new T.Matrix4().makeRotationZ(C.layout_remount.new_base_rpy_rad[2]);
 const oldWorld=oldR.multiply(old),newWorld=newR.multiply(M);
@@ -133,7 +137,7 @@ check('MAST_BASE_HORIZONTAL_AXIS_PARALLEL_X',horizontal.distanceTo(new T.Vector3
 }else check('CAMERA_WORLD_ORIENTATION_PRESERVED',[0,1,2].every(i=>new T.Vector3().setFromMatrixColumn(oldWorld,i).distanceTo(new T.Vector3().setFromMatrixColumn(newWorld,i))<1e-10));
 const base=fk(currentQ).base_link,switchNormal=new T.Vector3(1,0,0).transformDirection(base);
 check('BASE_SWITCH_FACE_MINUS_X',switchNormal.distanceTo(new T.Vector3(-1,0,0))<1e-10);
-}else check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);
+}else if(!C.layout_remount?.prototype)check('CAMERA_REVERSED_OPTICAL_HEADING',f.y<0);
 const visual=robotObjects.find(r=>r.item.id==='camera_camera_part_001'&&r.item.layer==='visual');
 const native=fk(currentQ)['eco65_camera_camera_part_001'];
 check('CAMERA_DISPLAY_NATIVE_SAME_TRANSFORM',!!visual&&!!native&&close(visual.object.matrix.elements,native.elements,1e-9));
@@ -159,6 +163,11 @@ check('RECORD_STATE_POLICY_'+segment.record_id,same(segment.state_before.collisi
 const expected=(segment.kind==='event'&&segment.event_type!=='NOMINAL_RECEIVE')?segment.state_after:segment.state_before;
 check('RECORD_RENDERED_OWNERSHIP_'+segment.record_id,same(objectIds(state.world),objectIds(expected.world))&&state.attachment?.id===expected.attachment?.id&&state.target_id===expected.target_id&&same(state.completed_ids,expected.completed_ids));
 if(segment.kind==='external_axis')check('EXTERNAL_AXIS_HOLDS_Q_'+segment.record_id,close(currentQ,segment.state_before.q,1e-12));
+if(segment.event_type==='IDEAL_OUTFEED'){
+check('OUTFEED_HOLDS_ACTUAL_Q_'+segment.record_id,close(currentQ,segment.state_before.q,1e-12));
+check('OUTFEED_KEEPS_WORLD_CARTON_'+segment.record_id,!state.attachment&&state.world.some(b=>b.id===state.target_id));
+check('OUTFEED_USES_RECORDED_SAMPLES_'+segment.record_id,segment.outfeed.samples.length>2);
+}
 if(segment.kind==='robot_motion')check('ROBOT_HOLDS_HEIGHT_'+segment.record_id,state.height_m===segment.state_before.height_m);
 if(segment.retreat_geometry?.strategy==='EMPTY_TOOL_UP'){
 check('EMPTY_UP_RETREAT_RETAINS_RECEIVED_BOX_'+segment.record_id,!state.attachment&&state.world.some(b=>b.id===state.target_id));
