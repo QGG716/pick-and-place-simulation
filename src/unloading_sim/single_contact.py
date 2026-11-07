@@ -79,6 +79,10 @@ class SingleContactClient:
         allowed |= self.lifted_receiver_binding is not None and op == "check_receiver_state"
         allowed &= request.get("planning_mode") == "cold_from_scratch"
         if op == "plan":
+            if ((self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema')=='fixed40_gap_search_20261107_v1'
+                    and request.get('planner_id')=='WAIT_IDEAL_OUTFEED'
+                    and request.get('outfeed',{}).get('finite_support',{}).get('schema')!='finite_belt_contact_envelope_v1'):
+                raise MoveItUnavailable('GAP_FINITE_OUTFEED_SUPPORT_REQUIRED')
             extraction = self.extraction_enabled and request.get("stage") == "extraction"
             direct=(self.recovery_enabled and request.get("stage")=="pregrasp" and
                 request.get("purpose")=="FREE_APPROACH" and request.get("attachment") is None and
@@ -109,7 +113,7 @@ class SingleContactClient:
                 and request.get('attachment') is None and bool(request.get('parent_stage_id')))
             allowed |= (getattr(self,'coupled_enabled',False) and request.get('stage')=='withdrawal'
                 and request.get('planning_mode')=='cold_from_scratch' and request.get('planning_only') is True
-                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema')=='fixed40_joint_search_20261028_v1'
+                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema') in ('fixed40_joint_search_20261028_v1','fixed40_gap_search_20261107_v1')
                 and request.get('pipeline_id')=='semantic_event' and request.get('planner_id')=='WAIT_IDEAL_OUTFEED'
                 and request.get('outfeed',{}).get('schema')=='fixed40_wait_outfeed_v1'
                 and request.get('attachment') is None and bool(request.get('parent_stage_id'))
@@ -118,7 +122,7 @@ class SingleContactClient:
                 and request.get('purpose')=='FREE_UNLOADED_REPOSITION' and request.get('planning_only') is True
                 and request.get('planning_mode')=='cold_from_scratch' and request.get('attachment') is None
                 and bool(request.get('parent_stage_id')) and request.get('ownership_transition') is None
-                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema')=='fixed40_joint_search_20261028_v1'
+                and (self.lifted_receiver_binding or {}).get('joint_search_layout',{}).get('schema') in ('fixed40_joint_search_20261028_v1','fixed40_gap_search_20261107_v1')
                 and isinstance(request.get('q_goal'),list) and len(request['q_goal'])==6
                 and request.get('q_goal')==(self.lifted_receiver_binding or {}).get('outfeed_park_q_rad')
                 and (request.get('pipeline_id'),request.get('planner_id')) in {

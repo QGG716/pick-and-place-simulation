@@ -1,0 +1,45 @@
+{
+  "status": "PASS_GIT_CANONICAL_DELIVERY_AND_RUNTIME_V6_RECONSTRUCTION",
+  "delivery": {
+    "status": "PASS_EXACT_MANIFEST_BYTES",
+    "files": 568,
+    "restored_line_endings": [
+      "configs/isaac/carton_assets.json",
+      "configs/isaac/conveyor_assets.json",
+      "configs/isaac/m710_visual_assets.json",
+      "configs/workcells/m710_fixed_gap_20261107_g0200.yaml",
+      "tests/fixtures/moveit2/clearance_rejections.json",
+      "tests/fixtures/moveit2/frozen_candidate.json",
+      "tests/test_receiver_candidate_labels.mjs",
+      "tools/check_m710_five_failures.mjs",
+      "tools/check_m710_j2_scissor_viewer.mjs",
+      "tools/check_m710_l01_failures.mjs",
+      "tools/check_m710_low_ik_failure.mjs",
+      "tools/check_m710_min250_failures.mjs",
+      "tools/check_m710_seam_viewers.mjs",
+      "tools/check_m710_top_ik_failures.mjs",
+      "tools/diagnostics/pilz_l05_j4_velocity_only.cpp",
+      "tools/diagnostics/pilz_l05_j4_velocity_only_test.cpp",
+      "tools/diagnostics/pilz_l05_joint_rates_only.cpp",
+      "tools/diagnostics/pilz_l05_joint_rates_only_test.cpp",
+      "tools/lifted_reception/coupled_blockers.js",
+      "tools/lifted_reception/coupled_view.js",
+      "tools/record_m710_blocker_inspection.mjs",
+      "tools/record_m710_top_layer_replay.mjs",
+      "tools/search_replay/five_failures.js",
+      "tools/search_replay/ik_prefix.js",
+      "tools/search_replay/j2_scissor_viewer.html",
+      "tools/search_replay/l01_failures.js",
+      "tools/search_replay/min250_failures.js",
+      "tools/search_replay/vendor/LICENSE.three",
+      "tools/search_replay/vendor/OrbitControls.js",
+      "tools/search_replay/vendor/three.min.js",
+      "tools/verify_m710_local_delivery.ps1"
+    ]
+  },
+  "runtime_v6": {
+    "status": "PASS_EXACT_MANIFEST_BYTES",
+    "files": 567,
+    "restored_line_endings": []
+  }
+}

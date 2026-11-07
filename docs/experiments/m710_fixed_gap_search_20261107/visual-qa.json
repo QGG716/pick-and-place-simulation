@@ -1,0 +1,307 @@
+{
+  "status": "PASS_REPLAY_COUNTS_AND_BROWSER",
+  "metadata": {
+    "duration": 194.284244330815,
+    "segments": [
+      {
+        "start": 0,
+        "duration": 8.451340864,
+        "phase": "pregrasp",
+        "kind": "motion"
+      },
+      {
+        "start": 8.451340864,
+        "duration": 6,
+        "phase": "\u8054\u52a8\u5347\u964d\uff08\u5c55\u793a\u901f\u5ea6\uff09",
+        "kind": "lift"
+      },
+      {
+        "start": 14.451340864,
+        "duration": 2.999974995,
+        "phase": "contact",
+        "kind": "motion"
+      },
+      {
+        "start": 17.451315859,
+        "duration": 20.754999999,
+        "phase": "extraction",
+        "kind": "motion"
+      },
+      {
+        "start": 38.206315857999996,
+        "duration": 0.3497486965634163,
+        "phase": "\u540d\u4e49\u4e0b\u843d",
+        "kind": "drop"
+      },
+      {
+        "start": 38.55606455456341,
+        "duration": 23.798503816363095,
+        "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+        "kind": "outfeed"
+      },
+      {
+        "start": 62.35456837092651,
+        "duration": 0.509911193,
+        "phase": "withdrawal",
+        "kind": "motion"
+      },
+      {
+        "start": 62.86447956392651,
+        "duration": 42.421876338,
+        "phase": "pregrasp",
+        "kind": "motion"
+      },
+      {
+        "start": 105.2863559019265,
+        "duration": 3.000000005,
+        "phase": "contact",
+        "kind": "motion"
+      },
+      {
+        "start": 108.2863559069265,
+        "duration": 20.754999999,
+        "phase": "extraction",
+        "kind": "motion"
+      },
+      {
+        "start": 129.0413559059265,
+        "duration": 0.3497487084897532,
+        "phase": "\u540d\u4e49\u4e0b\u843d",
+        "kind": "drop"
+      },
+      {
+        "start": 129.39110461441626,
+        "duration": 0.87178062,
+        "phase": "withdrawal",
+        "kind": "motion"
+      },
+      {
+        "start": 130.26288523441627,
+        "duration": 17.498503739613717,
+        "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+        "kind": "outfeed"
+      },
+      {
+        "start": 147.76138897402998,
+        "duration": 5.309675449,
+        "phase": "pregrasp",
+        "kind": "motion"
+      },
+      {
+        "start": 153.07106442302998,
+        "duration": 3.000022111,
+        "phase": "contact",
+        "kind": "motion"
+      },
+      {
+        "start": 156.07108653402997,
+        "duration": 20.754999999,
+        "phase": "extraction",
+        "kind": "motion"
+      },
+      {
+        "start": 176.82608653302998,
+        "duration": 0.34974870280296,
+        "phase": "\u540d\u4e49\u4e0b\u843d",
+        "kind": "drop"
+      },
+      {
+        "start": 177.17583523583295,
+        "duration": 15.598503689982037,
+        "phase": "\u673a\u68b0\u81c2\u7b49\u5f85 / \u7406\u60f3\u8f93\u9001",
+        "kind": "outfeed"
+      },
+      {
+        "start": 192.774338925815,
+        "duration": 0.509905405,
+        "phase": "withdrawal",
+        "kind": "motion"
+      },
+      {
+        "start": 193.284244330815,
+        "duration": 1,
+        "phase": "\u5df2\u63a5\u53d7\u5206\u652f\u672b\u6001",
+        "kind": "final"
+      }
+    ],
+    "header": "FANUC M-710 \u00b7 \u56fa\u5b9a g=200 mm \u00b7 3/40\n\u5b89\u88c5\u9762 1000 mm \u00b7 \u8f74\u7ebf\u8ddd\u5e95\u76d8\u524d\u6cbf 450 mm \u00b7 \u53f0\u5ea7 400 mm \u00b7 \u6a2a\u5e26 550\u20131500 mm \u00b7 \u539f\u751f\u89c4\u5212 / \u975e\u7269\u7406\u6267\u884c"
+  },
+  "samples": [
+    {
+      "name": "initial",
+      "state": {
+        "time": 0,
+        "phase": "pregrasp",
+        "completed_count": 0,
+        "carton_count": 40,
+        "q_rad": [
+          -2.629865043305387,
+          0.6191082544584714,
+          3.3874813229736613,
+          3.2749121141628734,
+          -0.6128095024939182,
+          -6.547921528730894
+        ],
+        "flange_matrix_column_major": [
+          0.8828101235924638,
+          0.4081249887250204,
+          -0.23255167008830657,
+          0,
+          -0.38683541136050315,
+          0.9125144738020861,
+          0.13294998916604883,
+          0,
+          0.2664669776918125,
+          -0.02741037540611424,
+          0.9634542132970756,
+          0,
+          -0.8766821150927939,
+          0.4004838835235814,
+          2.4759141596668184,
+          1
+        ],
+        "height_m": 0.6000000000000001,
+        "attached": false,
+        "nominal_count": 0,
+        "drain_count": 0,
+        "physical_count": 0,
+        "target": "carton_l07_c04",
+        "target_pose": null,
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": true,
+        "physical_execution": "NOT_RUN"
+      }
+    },
+    {
+      "name": "drop",
+      "state": {
+        "time": 38.3811902062817,
+        "phase": "\u540d\u4e49\u4e0b\u843d",
+        "completed_count": 0,
+        "carton_count": 40,
+        "q_rad": [
+          -1.494567521792534,
+          0.22538639730776652,
+          3.383618612309956,
+          4.711118906968115,
+          -1.647014488298993,
+          -4.7290767628467485
+        ],
+        "flange_matrix_column_major": [
+          0.9999999999997226,
+          8.269767405588713e-08,
+          7.402707559028832e-07,
+          0,
+          8.269754413840701e-08,
+          -0.9999999999999813,
+          1.755033497141678e-07,
+          0,
+          7.402707704195692e-07,
+          -1.7550328852006247e-07,
+          -0.9999999999997107,
+          0,
+          -1.2276999806093813,
+          0.8399998662834166,
+          2.2499996289024375,
+          1
+        ],
+        "height_m": 1.5,
+        "attached": false,
+        "nominal_count": 0,
+        "drain_count": 0,
+        "physical_count": 0,
+        "target": "carton_l07_c04",
+        "target_pose": [
+          [
+            0.9999999999999685,
+            -7.975581117643629e-11,
+            -2.5055711029832144e-07,
+            -0.5102000008873055
+          ],
+          [
+            7.979667590536586e-11,
+            0.9999999999999869,
+            1.6324499443633537e-07,
+            0.8399999894301426
+          ],
+          [
+            2.505571103003697e-07,
+            -1.6324499443017908e-07,
+            0.9999999999999555,
+            2.100000077379632
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": true,
+        "physical_execution": "NOT_RUN"
+      }
+    },
+    {
+      "name": "final",
+      "state": {
+        "time": 194.284244330815,
+        "phase": "\u5df2\u63a5\u53d7\u5206\u652f\u672b\u6001",
+        "completed_count": 3,
+        "carton_count": 37,
+        "q_rad": [
+          1.5123818966119056,
+          -0.11512357580213121,
+          3.0591703176921947,
+          1.5727081106907141,
+          -1.6291794645800162,
+          4.745145875736866
+        ],
+        "flange_matrix_column_major": [
+          0.9999999999999627,
+          -3.519703090093529e-08,
+          2.7145904218516155e-07,
+          0,
+          -3.519698734160452e-08,
+          -0.9999999999999865,
+          -1.6046745050790623e-07,
+          0,
+          2.714590478332648e-07,
+          1.6046744093917154e-07,
+          -0.99999999999995,
+          0,
+          -1.2328961395269844,
+          -0.8399997786573172,
+          2.2499998646385064,
+          1
+        ],
+        "height_m": 1.5,
+        "attached": false,
+        "nominal_count": 3,
+        "drain_count": 3,
+        "physical_count": 0,
+        "target": null,
+        "target_pose": null,
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": true,
+        "physical_execution": "NOT_RUN"
+      }
+    }
+  ],
+  "errors": []
+}

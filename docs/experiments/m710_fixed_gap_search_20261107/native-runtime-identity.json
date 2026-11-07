@@ -1,0 +1,35 @@
+{
+  "status": "NATIVE_RUNTIME_IDENTITY_RECORDED",
+  "captured_after_search": true,
+  "files": [
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-build-v1/m710_moveit_worker",
+      "bytes": 1769552,
+      "sha256": "4bf8a96c3c7f6b84ec498629a67d06541a71eae3e7da64697e426a362fcd3fe2",
+      "modified_unix": 1794045299.1838882
+    },
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-build-v1/libm710_search_trace.so",
+      "bytes": 418736,
+      "sha256": "554e48ec41c39a91c49fe3942814a5532f46e323fef99b11d38f8b4cb38eb6f4",
+      "modified_unix": 1794045244.003479
+    },
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-worker-v1.sh",
+      "bytes": 271,
+      "sha256": "2800af6854defe212b9f2a3e54499d768bc8a58b5d826265b1558aa349d8e301",
+      "modified_unix": 1794045429.0050426
+    }
+  ],
+  "first_accepted_init_versions": {
+    "status": "READY",
+    "versions": {
+      "moveit": "2.5.10",
+      "mtc": "0.1.3",
+      "pilz": "2.5.10"
+    }
+  },
+  "source_manifest_sha256": "fdff0ac49b2b45bde9544687f4416def4284ce15b2ddf47319fd6117470f595e",
+  "ros_distribution": "humble",
+  "physical_execution": "NOT_RUN"
+}

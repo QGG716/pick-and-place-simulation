@@ -78,7 +78,8 @@ def validate_junction_release(box, original, world, working_axis, receive_height
         validate_receive_contract(search_contract,original,actual)
     if search_contract is None and region["junction"] and facing_outfeed and abs(actual-required) > 1e-8:
         raise ValueError("JUNCTION_FRONT_REQUIRES_HMIN")
-    if abs(box.center[1]-original.center[1]) > 1e-5 or np.max(np.abs(box.rotation-original.rotation)) > 2e-4:
+    gap_side=search_contract is not None and search_contract.get('schema')=='fixed40_gap_search_20261107_v1' and search_contract.get('face') in ('y-','y+')
+    if (not gap_side and abs(box.center[1]-original.center[1]) > 1e-5) or np.max(np.abs(box.rotation-original.rotation)) > 2e-4:
         raise ValueError("JUNCTION_FRONT_Y_OR_ORIENTATION_CHANGED")
     return dict(**region, actual_receive_height_m=actual, frozen_height=capture.evidence(),
                 working_axis_world=list(working_axis), passed=True,

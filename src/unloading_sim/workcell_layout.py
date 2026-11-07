@@ -286,6 +286,9 @@ class WorkcellLayout:
         if 'joint_search' in self.data:
             from .joint_search_layout import mounting_geometry
             assembly = mounting_geometry(self,assembly)
+        if 'gap_search' in self.data:
+            from .gap_search_layout import mounting_geometry
+            assembly = mounting_geometry(self,assembly)
         return (*assembly, *self.trailer_boundary_boxes())
 
     def cartons(self) -> tuple[OBB, ...]:
@@ -348,6 +351,8 @@ class WorkcellLayout:
         robot.tool_connector_extension_m=extension
         if 'joint_search' in self.data:
             robot.joint_search_mount=copy.deepcopy(self.data['joint_search'])
+        if 'gap_search' in self.data:
+            robot.joint_search_mount=copy.deepcopy(self.data['gap_search'])
         return robot
 
 
@@ -409,7 +414,7 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     data = _mapping(data, "layout")
     _keys(
         data,
-        {"schema", "layout_id", "units", "world", "assembly", "chassis", "conveyors", "robot", "tool", "trailer", "carton_stack", "evidence"} | ({'joint_search'} if 'joint_search' in data else set()),
+        {"schema", "layout_id", "units", "world", "assembly", "chassis", "conveyors", "robot", "tool", "trailer", "carton_stack", "evidence"} | ({'joint_search','gap_search'} & set(data)),
         "layout",
     )
     if data["schema"] != LAYOUT_SCHEMA or data["layout_id"] != LAYOUT_SCHEMA:
@@ -434,7 +439,7 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
               ({"minimum_surface_height_world_m"} if "minimum_surface_height_world_m" in coupling else set()) |
               ({spacing_key} if spacing_key in coupling else set()) |
               ({"scissor_profile"} if "scissor_profile" in coupling else set()), "conveyors.coupling")
-        if "scissor_profile" in coupling and coupling["scissor_profile"] not in (('low_profile_250_v1','low_profile_200_v1','low_profile_200_v2','low_profile_200_outfeed20_v3') if 'joint_search' in data else ('low_profile_250_v1',)):
+        if "scissor_profile" in coupling and coupling["scissor_profile"] not in (('low_profile_250_v1','low_profile_200_v1','low_profile_200_v2','low_profile_200_outfeed20_v3') if {'joint_search','gap_search'} & set(data) else ('low_profile_250_v1',)):
             raise ValueError("UNKNOWN_SCISSOR_PROFILE")
         if coupling["geometry_revision"] != "upper_seam_lower_slider_v3":
             raise ValueError("UNKNOWN_CONVEYOR_GEOMETRY_REVISION")
@@ -505,6 +510,9 @@ def load_workcell_layout(path: str | Path) -> WorkcellLayout:
     result=WorkcellLayout(config_path, data, assets, compute_layout_fingerprint(data, assets))
     if 'joint_search' in data:
         from .joint_search_layout import validate_search_layout
+        validate_search_layout(result)
+    if 'gap_search' in data:
+        from .gap_search_layout import validate_search_layout
         validate_search_layout(result)
     return result
 
@@ -611,7 +619,7 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
     narrow = approval in {
         "user_20261020_longitudinal_width_060_ymin_fixed",
         "user_20261020_transverse_scissor_spacing_030_longitudinal_060",
-        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"} or approval in mounting_trials or 'joint_search' in layout.data
+        "user_20261020_transverse_scissor_spacing_026_longitudinal_060"} or approval in mounting_trials or bool({'joint_search','gap_search'} & set(layout.data))
     checks = {
         "chassis_size_xyz": vector(2.0 * chassis.half_extents, [2.1, 1.5, 0.6]),
         "transverse_size_xy": vector(2.0 * transverse.half_extents[:2], [0.7, 2.2 if seam else 1.5]),
@@ -684,6 +692,19 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         checks['robot_base_origin_world']=vector(base,candidate.evidence()['base_xyz_world_m'])
         checks['robot_mount_surface']=scalar(base[2],candidate.z)
         checks['transverse_support_spacing']=scalar(layout.data['conveyors']['coupling']['transverse_support_spacing_m'],.26)
+    if 'gap_search' in layout.data:
+        from .gap_search_layout import validate_search_layout
+        candidate=validate_search_layout(layout);g=candidate.g
+        checks.update(gap_search_frozen_contract={'status':'PASS','candidate':candidate.evidence()},
+            robot_base_origin_world=vector(base,[-1.15-g,.15,1.]),
+            robot_mount_surface=scalar(base[2],1.),
+            mount_axis_to_chassis_front=scalar(1.05-float(robot['base_origin_xy_a_m'][0]),.45),
+            plinth_height=scalar(base[2]-_interval(world['chassis'],2)[1],.4),
+            transverse_front_x=scalar(_interval(world['conveyor_transverse'],0)[1],-g),
+            longitudinal_front_x=scalar(_interval(world['conveyor_longitudinal'],0)[1],-.7-g),
+            stack_to_conveyor_clearance=scalar(float(layout.data['carton_stack']['front_face_x_m'])-assembly_bounds['x'][1],g),
+            conveyor_height_limits=vector([layout.data['conveyors']['coupling']['minimum_surface_height_world_m'],layout.data['conveyors']['coupling']['maximum_surface_height_world_m']],[.55,1.5]),
+            transverse_support_spacing=scalar(layout.data['conveyors']['coupling']['transverse_support_spacing_m'],.26))
     return {
         "schema": "m710id70_layout_numeric_audit_v1",
         "layout_id": layout.data["layout_id"],
@@ -743,7 +764,7 @@ def _audit_initial_state_prepared(
                     continue
                 if (link.name,obstacle.name) in mount_planes:
                     continue
-                if link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
+                if effective.fixed_mount_contact_mode=='legacy_base_chassis' and link.name in {"base_link", "J1_link"} and obstacle.name == "chassis" and robot_chassis_support_contact_allowed(link, chassis, tolerance):
                     continue
                 failures.append(query)
         tools = robot.tool_collision_obbs(q)
@@ -923,6 +944,9 @@ def build_scene_snapshot(config: LayoutValidationConfig, q: np.ndarray | None = 
     if 'joint_search' in layout.data:
         from .joint_search_layout import retained_chassis_contacts
         snapshot['assembly']['designed_contacts']=retained_chassis_contacts(layout,snapshot['assembly']['designed_contacts'])
+    if 'gap_search' in layout.data:
+        snapshot['gap_search']=copy.deepcopy(layout.data['gap_search'])
+        snapshot['assembly']['designed_contacts']=[p for p in snapshot['assembly']['designed_contacts'] if p!=['robot_mount','chassis']]+[['mount_plinth','chassis']]
     snapshot["scene_fingerprint"] = canonical_digest(snapshot)
     return snapshot
 

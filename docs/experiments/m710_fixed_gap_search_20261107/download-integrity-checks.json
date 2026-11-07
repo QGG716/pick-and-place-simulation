@@ -1,0 +1,40 @@
+{
+  "status": "PASS_SERVER_LOCAL_ARTIFACT_HASHES",
+  "artifacts": [
+    {
+      "name": "best-branch-verification.json",
+      "bytes": 2597,
+      "sha256": "b199509e6507aa5c25b4086d9302b5309ef0dc3218811c6edcf95bf6e6c4fe4e"
+    },
+    {
+      "name": "best-replay.html",
+      "bytes": 6492140,
+      "sha256": "733b27214c979d3ce9faf47d1f661eeca55f90a1abb702f686724545165ac0f8"
+    },
+    {
+      "name": "best-replay.checks.json",
+      "bytes": 3102,
+      "sha256": "3b2c1e916b21a431df3d909d84c550ccd308d2fd9f31ee32f22c43c8abebb000"
+    },
+    {
+      "name": "result.json",
+      "bytes": 1242193,
+      "sha256": "4eda378fc4805537b82658257487ad336ab45d63e7818c8157a9354b400218a1"
+    },
+    {
+      "name": "source-manifest-v6.json",
+      "bytes": 64848,
+      "sha256": "fdff0ac49b2b45bde9544687f4416def4284ce15b2ddf47319fd6117470f595e"
+    },
+    {
+      "name": "refine-source-manifest-v6.json",
+      "bytes": 64848,
+      "sha256": "fdff0ac49b2b45bde9544687f4416def4284ce15b2ddf47319fd6117470f595e"
+    },
+    {
+      "name": "delivery-source-manifest.json",
+      "bytes": 64955,
+      "sha256": "73b00613f6e12b0dd0f9c7305d849eb028403e56b8d1d50488b233d5d83ceb8f"
+    }
+  ]
+}

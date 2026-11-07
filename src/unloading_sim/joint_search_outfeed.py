@@ -20,13 +20,14 @@ def withdrawal_extra(option):
         raise ValueError('OUTFEED_FINITE_WITHDRAWAL_DISTANCE')
     return float(extra)
 
-def outfeed_path(box,world,*,step=.005,speed=.2,tool_timing=WAIT_FIRST):
+def outfeed_path(box,world,*,step=.005,speed=.2,tool_timing=WAIT_FIRST,finite_support=False):
     if tool_timing not in (WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST):raise ValueError('OUTFEED_TIMING_UNSUPPORTED')
     if not 0<step<=.005 or not speed>0:raise ValueError('OUTFEED_RESOLUTION_OR_SPEED')
     parts={b.name:b for b in world};belt=parts['conveyor_transverse'];long=parts['conveyor_longitudinal']
     hx=float((np.abs(box.rotation)@box.half_extents)[0]);hy=float((np.abs(box.rotation)@box.half_extents)[1])
     hz=float((np.abs(box.rotation)@box.half_extents)[2]);seam=belt.center[0]-belt.half_extents[0]
     height=belt.center[2]+belt.half_extents[2];slope=long.rotation[2,0]/long.rotation[0,0]
+    lower_top=long.center-long.rotation[:,0]*long.half_extents[0]+long.rotation[:,2]*long.half_extents[2]
     y=min(float(box.center[1]),float(long.center[1]));long_lo,long_hi=bounds(long)
     if y-hy<long_lo[1]+.005 or y+hy>long_hi[1]-.005:raise ValueError('OUTFEED_FULL_WIDTH_UNSUPPORTED')
     waypoints=[box.center.copy()]
@@ -39,7 +40,9 @@ def outfeed_path(box,world,*,step=.005,speed=.2,tool_timing=WAIT_FIRST):
         for alpha in np.linspace(0,1,n+1)[1:]:
             p=a+(b-a)*alpha
             if p[0]-hx<seam:
-                long_x=min(p[0]+hx,seam) if slope>=0 else max(p[0]-hx,long_lo[0])
+                long_x=min(p[0]+hx,seam) if slope>=0 else max(p[0]-hx,lower_top[0] if finite_support else long_lo[0])
+                if finite_support and (long_x<lower_top[0]-1e-9 or long_x>seam+1e-9 or min(p[0]+hx,seam)<=max(p[0]-hx,lower_top[0])+1e-9):
+                    raise ValueError('OUTFEED_NO_FINITE_CONVEYOR_SUPPORT')
                 support=height+(long_x-seam)*slope
                 if p[0]+hx>=seam:support=max(support,height)
                 p[2]=support+hz
@@ -47,10 +50,14 @@ def outfeed_path(box,world,*,step=.005,speed=.2,tool_timing=WAIT_FIRST):
             samples.append(dict(t=time,box=box_message(OBB(p,box.half_extents,box.rotation,box.name,box.category))))
             previous=p.copy()
     if len(samples)>4096:raise ValueError('OUTFEED_SAMPLE_RESOURCE_LIMIT')
-    return dict(schema=SCHEMA,samples=samples,maximum_displacement_m=step,speed_m_s=speed,
+    result=dict(schema=SCHEMA,samples=samples,maximum_displacement_m=step,speed_m_s=speed,
         output_plane_x_m=-3.2,tool_timing=tool_timing,
         model='IDEAL_KINEMATIC_SUPPORT_ENVELOPE_NOT_DYNAMICS',continuous_swept_proof=False,
         physical_execution='NOT_RUN')
+    if finite_support:result['finite_support']=dict(schema='finite_belt_contact_envelope_v1',
+        longitudinal_top_x_bounds_m=[float(lower_top[0]),float(seam)],
+        assumption='FINITE_NONZERO_CONTACT_OVERLAP; IDEAL_HOLDING_WITH_OVERHANG; STABILITY_AND_DYNAMICS_NOT_VERIFIED')
+    return result
 
 def check_full_tool_wait(connector,q,path):
     # Include uncompressed flexible lips; the native worker additionally checks
@@ -86,7 +93,7 @@ def check_full_tool_park(connector,path,stationary,*,step=.01):
         stationary_box=box_message(stationary),continuous_swept_proof=False)
 
 def plan_wait_outfeed(connector,state,landed,world,seed,*,tool_timing=WAIT_FIRST):
-    c=connector;path=outfeed_path(landed,world,tool_timing=tool_timing)
+    c=connector;path=outfeed_path(landed,world,tool_timing=tool_timing,finite_support=c.option.get('finite_outfeed_support',False))
     full=check_full_tool_wait(c,state,path)
     if not full['passed']:return None,dict(reason='OUTFEED_FULL_TOOL_COLLISION',detail=full)
     req=c._build_native_request(state,state,world,seed=seed,stage='withdrawal',target_contact=landed)

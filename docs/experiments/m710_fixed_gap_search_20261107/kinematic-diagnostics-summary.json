@@ -1,0 +1,241 @@
+{
+  "status": "DIAGNOSTICS_ONLY_NO_ACCEPTED_MOTIONS",
+  "formal_completion_increment": 0,
+  "total_cpu_diagnostic_wall_s": 15.44428506679833,
+  "runs": [
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/endpoint-kinematic-diagnostic-SUPERSEDED-MIXED-GAP-NOT-USED.json",
+      "sha256": "961612016ccd9b2f2da31863a89ad009d6428a5a21382188c3be8737bfd1d675",
+      "usable_kinematic_diagnostic": false,
+      "invalid_reason": "Initial helper selected a c03 trial from another gap; entire diagnostic excluded and corrected without changing any formal ledger",
+      "wall_s": 5.356946566142142,
+      "samples": [
+        {
+          "target": "carton_l07_c02",
+          "trial": 43,
+          "success": false,
+          "position_error_m": 0.09064093966870383,
+          "orientation_error_rad": 0.12712810668521446,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 49,
+            "last_seed_index": 48,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 19600,
+            "iterations_consumed": 19600,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "termination": "SEED_STREAM_EXHAUSTED"
+          },
+          "wall_s": 4.787594576366246,
+          "scope": "CPU_KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "fed_to_native_planner": false,
+          "global_unreachable": false
+        },
+        {
+          "target": "carton_l07_c03",
+          "trial": 32,
+          "success": true,
+          "position_error_m": 2.1125789463981088e-05,
+          "orientation_error_rad": 6.136829664157899e-05,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 7,
+            "last_seed_index": 6,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 2800,
+            "iterations_consumed": 2441,
+            "converged_pose_results": 1,
+            "valid_solutions": 1,
+            "deduplicated_candidates": 1,
+            "duplicate_candidates": 0,
+            "termination": "FIRST_VALID_SOLUTION"
+          },
+          "wall_s": 0.5693519897758961,
+          "scope": "CPU_KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "fed_to_native_planner": false,
+          "global_unreachable": false
+        }
+      ]
+    },
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/endpoint-kinematic-diagnostic.json",
+      "sha256": "4d521ee735b30c191d553c65438a00c75d711ec9ef5f3322ef6f9e43faeecff7",
+      "usable_kinematic_diagnostic": true,
+      "invalid_reason": null,
+      "wall_s": 5.438654611818492,
+      "samples": [
+        {
+          "target": "carton_l07_c02",
+          "trial": 43,
+          "gap_m": 0.2,
+          "layout": "044b6b0a5f0278c4",
+          "success": false,
+          "position_error_m": 0.09064093966870383,
+          "orientation_error_rad": 0.12712810668521446,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 49,
+            "last_seed_index": 48,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 19600,
+            "iterations_consumed": 19600,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "termination": "SEED_STREAM_EXHAUSTED"
+          },
+          "wall_s": 4.8171475157141685,
+          "scope": "CPU_KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "fed_to_native_planner": false,
+          "global_unreachable": false
+        },
+        {
+          "target": "carton_l07_c03",
+          "trial": 28,
+          "gap_m": 0.2,
+          "layout": "044b6b0a5f0278c4",
+          "success": true,
+          "position_error_m": 6.601879407792489e-06,
+          "orientation_error_rad": 1.1946962959941816e-06,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 7,
+            "last_seed_index": 6,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 2800,
+            "iterations_consumed": 2438,
+            "converged_pose_results": 1,
+            "valid_solutions": 1,
+            "deduplicated_candidates": 1,
+            "duplicate_candidates": 0,
+            "termination": "FIRST_VALID_SOLUTION"
+          },
+          "wall_s": 0.6215070961043239,
+          "scope": "CPU_KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "fed_to_native_planner": false,
+          "global_unreachable": false
+        }
+      ]
+    },
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/clearance-kinematic-diagnostic.json",
+      "sha256": "90bb69becf4b42840f70cbbfb95f05813b127f0e31098084e376bdda795eb513",
+      "usable_kinematic_diagnostic": true,
+      "invalid_reason": null,
+      "wall_s": 4.648683888837695,
+      "samples": [
+        {
+          "label": "CLEAR_X_ONLY",
+          "success": false,
+          "position_error_m": 0.040297416638092186,
+          "orientation_error_rad": 0.04754238587970458,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 49,
+            "last_seed_index": 48,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 19600,
+            "iterations_consumed": 19600,
+            "converged_pose_results": 0,
+            "valid_solutions": 0,
+            "deduplicated_candidates": 0,
+            "duplicate_candidates": 0,
+            "termination": "SEED_STREAM_EXHAUSTED"
+          },
+          "wall_s": 4.527392507530749,
+          "scope": "KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "global_unreachable": false,
+          "fed_to_native": false
+        },
+        {
+          "label": "RELEASE_RIGHT_LANE",
+          "success": true,
+          "position_error_m": 4.2772773590778095e-05,
+          "orientation_error_rad": 9.486629526945289e-05,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 1,
+            "last_seed_index": 0,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 400,
+            "iterations_consumed": 15,
+            "converged_pose_results": 1,
+            "valid_solutions": 1,
+            "deduplicated_candidates": 1,
+            "duplicate_candidates": 0,
+            "termination": "FIRST_VALID_SOLUTION"
+          },
+          "wall_s": 0.004913629032671452,
+          "scope": "KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "global_unreachable": false,
+          "fed_to_native": false
+        },
+        {
+          "label": "RELEASE_LEFT_LANE",
+          "success": true,
+          "position_error_m": 1.5066614797111157e-06,
+          "orientation_error_rad": 8.71832528535436e-06,
+          "search": {
+            "policy": "legacy_first_valid_result",
+            "seed_pool_available": 49,
+            "explicit_seed_count": 1,
+            "random_restart_count": 48,
+            "seeds_attempted": 2,
+            "last_seed_index": 1,
+            "iterations_per_seed_available": 400,
+            "iteration_capacity_available": 19600,
+            "iteration_capacity_for_attempted_seeds": 800,
+            "iterations_consumed": 457,
+            "converged_pose_results": 1,
+            "valid_solutions": 1,
+            "deduplicated_candidates": 1,
+            "duplicate_candidates": 0,
+            "termination": "FIRST_VALID_SOLUTION"
+          },
+          "wall_s": 0.11637775227427483,
+          "scope": "KINEMATICS_ONLY_NO_COLLISION_NO_MOTION_NO_LEDGER_CHANGE",
+          "global_unreachable": false,
+          "fed_to_native": false
+        }
+      ]
+    }
+  ],
+  "helpers": [
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/diagnose-gap-endpoint.py",
+      "sha256": "13b7b5b5ba7c64a4330e870007e8d32c2c8be646d935282ff1707d13e8bf206e"
+    },
+    {
+      "server_path": "/root/m710-gap-search-20261107/rootfs/diagnose-gap-clearance.py",
+      "sha256": "e0904cceb891be366f117a8593b1093cad86c878f3db0e3a23eca07208eefbdc"
+    }
+  ]
+}

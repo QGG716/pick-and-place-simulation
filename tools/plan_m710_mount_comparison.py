@@ -60,15 +60,20 @@ def make_context(layout_name, *, layout_path=None, robot_mount_contact_exemption
     if audit["overall_status"] != "PASS":
         raise ValueError("MOUNT_LAYOUT_AUDIT_REJECTED:"+layout_name)
     policy = replace(policy, layout_validation=replace(policy.layout_validation, layout=layout))
-    if robot_mount_contact_exemption or l01_tool_chassis_exemption:
+    if robot_mount_contact_exemption or l01_tool_chassis_exemption or 'gap_search' in layout.data:
         data=deepcopy(policy.layout_validation.data)
         data['collision_policy']['robot_mount_contact_exemption']=robot_mount_contact_exemption
         if l01_tool_chassis_exemption:
             from l01_tool_chassis import frozen_l01_scope
             data['collision_policy']['tool_chassis_contact_target_ids']=frozen_l01_scope(layout.cartons())['allowed_target_ids']
+        if 'gap_search' in layout.data:
+            if robot_mount_contact_exemption or l01_tool_chassis_exemption:
+                raise ValueError('GAP_SEARCH_FORBIDS_CHASSIS_EXEMPTIONS')
+            data['collision_policy'].update(robot_mount_contact_exemption=False,
+                tool_chassis_contact_target_ids=[],fixed_mount_contact_mode='qualified_planes_only')
         policy=replace(policy,layout_validation=replace(policy.layout_validation,data=data))
     if initial_q is not None or initial_seed is not None:
-        if 'joint_search' not in layout.data:raise ValueError('INITIAL_WITNESS_REQUIRES_JOINT_SEARCH_CONTRACT')
+        if not {'joint_search','gap_search'} & set(layout.data):raise ValueError('INITIAL_WITNESS_REQUIRES_SEARCH_CONTRACT')
         from unloading_sim.workcell_layout import audit_initial_state,_audit_initial_state_prepared,urdf_collision_shapes
         data=deepcopy(policy.layout_validation.data)
         if initial_q is not None:data['initial_state']['q_rad']=np.asarray(initial_q,float).tolist()

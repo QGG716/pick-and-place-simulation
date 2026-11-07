@@ -1,0 +1,223 @@
+{
+  "status": "PASS_BOTH_CPU_NATIVE_COUNTEREXAMPLES",
+  "source_identity": {
+    "source_manifest_sha256": "1313b2e1b6250be04583e2c4a2d55dd7924e33a04904baddfd77d119abd05677",
+    "native_binary_sha256": "4bf8a96c3c7f6b84ec498629a67d06541a71eae3e7da64697e426a362fcd3fe2"
+  },
+  "helper_sha256": "eb7de293a8700aa8b12d568869431c669fa753954ca107186a3b9642af7522f5",
+  "checks": [
+    {
+      "index": 0,
+      "q_rad": [
+        -2.629865043305387,
+        0.6191082544584714,
+        3.3874813229736613,
+        3.2749121141628734,
+        -0.6128095024939182,
+        -6.547921528730894
+      ],
+      "cpu": null,
+      "native_status": "SUCCESS",
+      "native_failure": {},
+      "native_first_witness": []
+    },
+    {
+      "index": 35,
+      "q_rad": [
+        -1.4598348966245036,
+        2.1431159929158747,
+        -0.7720193249937232,
+        -6.614198757972206,
+        -1.6839376778150936,
+        3.131694910759254
+      ],
+      "cpu": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "unloaded",
+        "pair": [
+          "J4_link",
+          "mount_plinth"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "fec48706edb746cc9e8a10d71c5e33cf3c2f3ce167fd4f2f0811d309d118ac38",
+        "colliders": [
+          "J4_link_0",
+          "mount_plinth"
+        ]
+      },
+      "native_status": "INVALID_START_CLEARANCE",
+      "native_failure": {
+        "pair": [
+          "base_link",
+          "tool_compliant_bellows_30"
+        ],
+        "reason": "INTERSECTION_OR_CONTACT",
+        "surface_distance_m": -1.0
+      },
+      "native_first_witness": [
+        {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "base_link",
+            "tool_compliant_bellows_30"
+          ],
+          "phase": "endpoint",
+          "q_rad": [
+            -1.4598348966245036,
+            2.1431159929158747,
+            -0.7720193249937232,
+            -6.614198757972206,
+            -1.6839376778150936,
+            3.131694910759254
+          ],
+          "query_range_m": 0.006,
+          "query_scope": "self_including_robot_tool_and_payload",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.005,
+          "surface_distance_m": -1.0
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "q_rad": [
+        3.1770706511139926,
+        2.1989033649164815,
+        1.5332135896329226,
+        -4.692430388723112,
+        -0.06402690126048594,
+        -2.5721909715907527
+      ],
+      "cpu": {
+        "reason": "ROBOT_MESH_COLLISION",
+        "collision_kind": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "classification": "GEOMETRY_CONTACT_OR_INTERSECTION",
+        "accepted": false,
+        "stage": "unloaded",
+        "pair": [
+          "J4_link",
+          "chassis"
+        ],
+        "geometry_scope": "OFFICIAL_COLLISION_MESH_AND_FROZEN_SOLIDS",
+        "query_method": "COAL_UNSCALED_COLLIDE_AND_SURFACE_DISTANCE",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": true,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "fec48706edb746cc9e8a10d71c5e33cf3c2f3ce167fd4f2f0811d309d118ac38",
+        "colliders": [
+          "J4_link_0",
+          "chassis"
+        ]
+      },
+      "native_status": "INVALID_START_CLEARANCE",
+      "native_failure": {
+        "pair": [
+          "J4_link",
+          "chassis"
+        ],
+        "reason": "INTERSECTION_OR_CONTACT",
+        "surface_distance_m": -1.0
+      },
+      "native_first_witness": [
+        {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "J4_link",
+            "chassis"
+          ],
+          "phase": "endpoint",
+          "q_rad": [
+            3.1770706511139926,
+            2.1989033649164815,
+            1.5332135896329226,
+            -4.692430388723112,
+            -0.06402690126048594,
+            -2.5721909715907527
+          ],
+          "query_range_m": 0.006,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.005,
+          "surface_distance_m": -1.0
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "q_rad": [
+        -1.5425296321844584,
+        1.0313953846979045,
+        -0.9714497332832562,
+        -4.1844695517360755,
+        0.2448490598148334,
+        3.3864473842516905
+      ],
+      "cpu": {
+        "reason": "RIGID_TOOL_COLLISION",
+        "classification": "PROXY_GEOMETRY_INTERSECTION",
+        "accepted": false,
+        "stage": "unloaded",
+        "pair": [
+          "tool_rigid_0",
+          "chassis"
+        ],
+        "geometry_scope": "CURRENT_PROXY_OBB_NOT_ORIGINAL_CAD",
+        "query_method": "UNINFLATED_OBB_VERTEX_FACE_EDGE_EDGE_EUCLIDEAN",
+        "geometry_intersection_confirmed": true,
+        "original_cad_intersection_confirmed": false,
+        "surface_distance_m": 0.0,
+        "required_pair_clearance_m": 0.005,
+        "numerical_gap_tolerance_m": 1e-09,
+        "contact_permission_source": null,
+        "policy_fingerprint": "fec48706edb746cc9e8a10d71c5e33cf3c2f3ce167fd4f2f0811d309d118ac38"
+      },
+      "native_status": "INVALID_START_CLEARANCE",
+      "native_failure": {
+        "pair": [
+          "tool_compliant_bellows_0",
+          "chassis"
+        ],
+        "reason": "INTERSECTION_OR_CONTACT",
+        "surface_distance_m": -1.0
+      },
+      "native_first_witness": [
+        {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "tool_compliant_bellows_0",
+            "chassis"
+          ],
+          "phase": "endpoint",
+          "q_rad": [
+            -1.5425296321844584,
+            1.0313953846979045,
+            -0.9714497332832562,
+            -4.1844695517360755,
+            0.2448490598148334,
+            3.3864473842516905
+          ],
+          "query_range_m": 0.006,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.005,
+          "surface_distance_m": -1.0
+        }
+      ]
+    }
+  ],
+  "raw_server_path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/counterexamples.json",
+  "raw_sha256": "84dbd3080074f228d07869a9ef4a18d99d3f2a5518dfad7c1c4ac52d1b43596f"
+}

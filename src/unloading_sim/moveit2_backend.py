@@ -1221,7 +1221,7 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             if (stage!='residence' or attachment is not None or support_names or initial_proximity is not None
                     or target_contact is None or goal_pose is not None or goal is None
                     or not self.planning_only or not getattr(self,'native_cold',False)
-                    or binding.get('joint_search_layout',{}).get('schema')!='fixed40_joint_search_20261028_v1'
+                    or binding.get('joint_search_layout',{}).get('schema') not in ('fixed40_joint_search_20261028_v1','fixed40_gap_search_20261107_v1')
                     or np.asarray(goal).tolist()!=binding.get('outfeed_park_q_rad')):
                 raise MoveItUnavailable('OUTFEED_PARK_SCOPE_CHANGED')
             # Only the detached, already separated object uses ordinary free

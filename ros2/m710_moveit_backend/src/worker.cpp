@@ -332,6 +332,8 @@ class Worker {
     else if(req.value("pipeline_id",std::string())=="semantic_event" && m710::coupledBinding(receiver_binding)) {
       if(req.value("planner_id","")=="WAIT_IDEAL_OUTFEED") {
         if(req.at("stage")!="withdrawal" || req.value("parent_stage_id","").empty())throw std::runtime_error("OUTFEED_SCOPE_INVALID");
+        if(m710::gapSearchLayout(receiver_binding.value("joint_search_layout",J(nullptr))) && !req.at("outfeed").contains("finite_support"))
+          throw std::runtime_error("GAP_FINITE_OUTFEED_SUPPORT_REQUIRED");
         m710::validateWaitOutfeed(req);
       } else if(req.value("planner_id","")!="NOMINAL_DROP_RELEASE" || req.at("stage")!="extraction" ||
           req.at("q_start")!=req.at("q_goal") || req.at("attachment").is_null() || req.value("parent_stage_id","").empty())

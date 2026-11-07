@@ -1,0 +1,19 @@
+[
+  {
+    "reason": "EXPLICIT_FAIR_ORDER_BACKTRACK_AFTER_RETAINED_DEEPEST_BRANCH_FAILURES",
+    "from_node": "1022430fecf9aed105579addc352cf14d6cde387b98a0921774a27c22bfaaa56",
+    "to_node": "31fd0774310f5f44b19dc4035f282bfc00ff0b59c0e64c747d598c9940c55158",
+    "preserved_best_node": "1022430fecf9aed105579addc352cf14d6cde387b98a0921774a27c22bfaaa56",
+    "preserved_best_count": 3,
+    "selected_completed_count": 2,
+    "cursor_unchanged": 3,
+    "trials_retained": 59,
+    "elapsed_search_s_retained": 4984.799267495051,
+    "backup_sha256": "5d37678b230206e4cfdcbde63e51afdb1437b1809e8213ca1543f998d11f094e",
+    "driver_sha256": "d10a8d4a19e34b08e5dce80ab28bd56bac2421a25506ea3a8e5b7cf9baac5e15",
+    "numerical_requests": "RESTART_NO_RETAINED_NATIVE_TREE",
+    "state_and_motion_source": "CURRENT_RUN_ACCEPTED_PARENT_CHAIN_ONLY",
+    "total_trial_allocation_unchanged": 74,
+    "accepted_states_changed": false
+  }
+]

@@ -233,7 +233,7 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
         pre=coupled_binding(layout,state.cartons,state.height,preheight,target.target_id,scene.snapshot['assembly']['designed_contacts'])
         binding=coupled_binding(layout,state.cartons,preheight,option['height_m'],target.target_id,scene.snapshot['assembly']['designed_contacts'])
         binding['pre_approach_transition']=pre
-        binding['joint_search_layout']=layout.data['joint_search']
+        binding['joint_search_layout']=layout.data.get('gap_search',layout.data.get('joint_search'))
         if option.get('park_goal_source'):
             assert option['park_goal_source']=='FRESH40_FROZEN_INITIAL_LEGAL_STATE'
             assert option['park_q_rad']==built.joint_search_initial_q
@@ -244,6 +244,9 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
         os.environ['M710_MOVEIT_SEED']=str(seed)
         client=CoupledBatchClient(ResidentMoveItClient(args.worker_command,log_path=str(folder/'worker.log')),binding=binding)
         cls=SearchTopConnector if target.face_role=='TOP' else SearchCycleConnector
+        if 'gap_search' in layout.data:
+            from unloading_sim.gap_search_recipes import GapCycleConnector,GapTopConnector,GapRaiseConnector
+            cls=GapTopConnector if target.face_role=='TOP' else GapCycleConnector if option['template']=='FRONT_DIRECT_HIGH_DROP' else GapRaiseConnector
         c=cls.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
             native_budget=dict(task_wall_time_s=budget,stage_wall_time_s=min(args.stage_seconds,budget),ipc_timeout_s=min(args.stage_seconds,budget)+10))
         c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
@@ -271,8 +274,8 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
             client.close()
     if plan is not None:
         from verify_m710_joint_search import verify_cycle
-        save(folder/'cycle-verification.json',verify_cycle(plan,folder,state.root(),layout,built))
         save(folder/'plan.json',plan)
+        save(folder/'cycle-verification.json',verify_cycle(plan,folder,state.root(),layout,built))
     wall=time.monotonic()-began
     costs={}
     for call in getattr(client,'records',[]):

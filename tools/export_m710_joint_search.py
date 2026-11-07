@@ -16,7 +16,8 @@ def export(run,output,key=None):
     proof=verify_search(run,key);node=record['nodes'][record['best_node']];chain=[]
     while node['incoming'] is not None:
         chain.append(db['trials'][node['incoming']]);node=record['nodes'][node['parent']]
-    chain.reverse();layout=load_workcell_layout(ROOT/'configs/workcells'/('joint-search-'+key+'.yaml'))
+    gap_search=db['contract']=='fixed40_gap_search_20261107_v1'
+    chain.reverse();layout=load_workcell_layout(ROOT/'configs/workcells'/(('gap-search-' if gap_search else 'joint-search-')+key+'.yaml'))
     robot=layout.robot();model=None;segments=[];worlds={};elapsed=0.;completed=0;native=0.;lifts=0.;drops=0.;outfeed=0.
     root=record['initial'];q=root['q_rad'];height=root['height_m'];cartons=root['world_cartons']
     def mechanism(h):
@@ -78,6 +79,9 @@ def export(run,output,key=None):
         duration=elapsed,times=dict(native_trajectory_s=native,lift_demo_s=lifts,nominal_drop_s=drops,ideal_outfeed_s=outfeed,event_display_s=1.),
         physical_execution='NOT_RUN',continuous_swept_proof=False,verification=proof)
     data['fk_witnesses']=[robot.named_link_frames(np.asarray(s['points'][0]['q'] if s['kind']=='motion' else s['q']))['flange'].T.reshape(-1).tolist() for s in segments]
+    if gap_search:
+        data['gap_search']=layout.data['gap_search']
+        data['source_manifest_sha256']=db['identity']['source_manifest_sha256']
     write_viewer(data,output);output.with_suffix('.checks.json').write_text(json.dumps(proof,indent=2))
     return dict(output=str(output),completed=completed,segments=len(segments))
 

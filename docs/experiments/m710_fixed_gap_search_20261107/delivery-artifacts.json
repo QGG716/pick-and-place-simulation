@@ -1,0 +1,45 @@
+{
+  "status": "PASS_FROZEN_SEARCH_DELIVERY",
+  "winner": "run-v1",
+  "completed": 3,
+  "remaining": 37,
+  "physical_execution": "NOT_RUN",
+  "artifacts": [
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/best-branch-verification.json",
+      "bytes": 2597,
+      "sha256": "b199509e6507aa5c25b4086d9302b5309ef0dc3218811c6edcf95bf6e6c4fe4e"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/best-replay.html",
+      "bytes": 6492140,
+      "sha256": "733b27214c979d3ce9faf47d1f661eeca55f90a1abb702f686724545165ac0f8"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/best-replay.checks.json",
+      "bytes": 3102,
+      "sha256": "3b2c1e916b21a431df3d909d84c550ccd308d2fd9f31ee32f22c43c8abebb000"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/result.json",
+      "bytes": 1242193,
+      "sha256": "4eda378fc4805537b82658257487ad336ab45d63e7818c8157a9354b400218a1"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/source-manifest-v6.json",
+      "bytes": 64848,
+      "sha256": "fdff0ac49b2b45bde9544687f4416def4284ce15b2ddf47319fd6117470f595e"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/refine-source-manifest-v6.json",
+      "bytes": 64848,
+      "sha256": "fdff0ac49b2b45bde9544687f4416def4284ce15b2ddf47319fd6117470f595e"
+    },
+    {
+      "path": "/root/m710-gap-search-20261107/rootfs/gap-search-20261107/delivery-source-manifest.json",
+      "bytes": 64955,
+      "sha256": "73b00613f6e12b0dd0f9c7305d849eb028403e56b8d1d50488b233d5d83ceb8f"
+    }
+  ],
+  "raw_archives_remain_on_server": true
+}

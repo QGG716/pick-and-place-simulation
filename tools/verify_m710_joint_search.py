@@ -33,6 +33,11 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
     read=read or (lambda name:json.loads((folder/name).read_text()))
     assert plan['batch_root']==root and plan['status']=='COUPLED_COMPLETE_CYCLE_PLANNED_NOT_EXECUTABLE'
     contract=plan['option']['joint_search_contract'];target=next(message_box(b) for b in root['world_cartons'] if b['id']==plan['target_id'])
+    gap_search='gap_search' in layout.data
+    if gap_search:
+        assert built.collision_policy.fixed_mount_contact_mode=='qualified_planes_only'
+        assert not built.collision_policy.robot_mount_contact_exemption and not built.collision_policy.tool_chassis_contact_target_ids
+        assert .55<=root['height_m']<=1.5 and plan['option']['finite_outfeed_support']
     validate_receive_contract(contract,target,plan['height_m'])
     limits=layout.data['conveyors']['coupling']
     assert contract['minimum_m']==limits['minimum_surface_height_world_m'] and contract['maximum_m']==limits['maximum_surface_height_world_m']
@@ -56,12 +61,20 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
         assert resp['generated_during_task'] and resp['mtc_generation']
         assert req['clearance_policy']['source_policy']==json.loads(json.dumps(built.collision_policy.to_mapping()))
         world=[message_box(b) for b in req['world']]
+        if gap_search:
+            expected_world=coupled_conveyor_state(layout,height,()).boxes
+            # The same target becomes category=payload after real planned
+            # attachment. Identity, not that category tag, separates fixed
+            # structure from the unchanged original carton population.
+            carton_names={b['id'] for b in root['world_cartons']}
+            assert {b.name:box_message(b) for b in world if b.name not in carton_names}=={b.name:box_message(b) for b in expected_world}
         expected=built.collision_policy.robot_mount_pairs()|built.collision_policy.tool_chassis_pairs(plan['target_id'],req['clearance_policy']['tool_links'])|qualified_mount_pairs(built.robot,world)
         assert {tuple(p) for p in req['allowed_pairs'] if 'chassis' in p or 'mount_plinth' in p}==expected
         if stage['generation_source']=='NATIVE_EXTERNAL_AXIS':
             axis=resp['external_axis'];assert axis['from_height_m']==height and all(c['passed'] for c in axis['checks'])
             assert axis['maximum_height_step_m']<=.010000001 and not axis['continuous_swept_proof']
             height=axis['to_height_m'];assert resp['terminal_q']==q
+            if gap_search:assert .55-1e-9<=height<=1.5+1e-9
         elif stage['generation_source']=='SEMANTIC_EVENT':
             assert resp['terminal_q']==q
             if stage['planner_id']=='NOMINAL_DROP_RELEASE':
@@ -123,7 +136,7 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
     assert all(types.count(t)==1 for t in needed) and [types.index(t) for t in needed]==sorted(types.index(t) for t in needed)
     release=next(e for e in events if e['event_type']=='RELEASE');waiting=plan['wait_outfeed']
     world=coupled_conveyor_state(layout,height,tuple(message_box(b) for b in root['world_cartons'])).boxes
-    expected_path=outfeed_path(message_box(plan['landed_box']),world,tool_timing=timing)
+    expected_path=outfeed_path(message_box(plan['landed_box']),world,tool_timing=timing,finite_support=plan['option'].get('finite_outfeed_support',False))
     assert waiting['path']==expected_path and waiting['passed']
     assert wait_q==(release['q_rad'] if timing==WAIT_FIRST else plan['end_q_rad'])
     assert next(e for e in events if e['event_type']=='WAIT_OUTFEED_COMPLETE')['q_rad']==wait_q
@@ -135,10 +148,11 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
 
 def verify_search(run,key,require_complete=False):
     run=Path(run);db=json.loads((run/'checkpoint.json').read_text());record=db['layouts'][key]
-    assert db['contract']==SCHEMA
+    gap_search=db['contract']=='fixed40_gap_search_20261107_v1'
+    assert gap_search or db['contract']==SCHEMA
     chain=selected_branch(db,key)
-    path=Path(__file__).resolve().parents[1]/'configs/workcells'/('joint-search-'+key+'.yaml')
-    original,built,_=make_context(key,layout_path=path,robot_mount_contact_exemption=True,l01_tool_chassis_exemption=True,
+    path=Path(__file__).resolve().parents[1]/'configs/workcells'/(('gap-search-' if gap_search else 'joint-search-')+key+'.yaml')
+    original,built,_=make_context(key,layout_path=path,robot_mount_contact_exemption=not gap_search,l01_tool_chassis_exemption=not gap_search,
         initial_q=record['initial']['q_rad'])
     layout=original.policy.layout_validation.layout;frozen=FrozenCartonPopulation.capture(original.cartons)
     initial=record['initial'];assert len(initial['world_cartons'])==40 and not initial['completed'] and not initial.get('assumed_removed')
@@ -149,7 +163,13 @@ def verify_search(run,key,require_complete=False):
     from unloading_sim.coupled_batch import batch_scene
     scene=batch_scene(original,state,built.robot,layout)
     assert built.validate_unloaded_state(state.q,scene.all_obstacles,stage='unloaded') is None
-    assert record['candidate']==layout.data['joint_search']
+    assert record['candidate']==layout.data['gap_search' if gap_search else 'joint_search']
+    if gap_search:
+        from unloading_sim.gap_search_layout import validate_search_layout,floor_support_evidence
+        candidate=validate_search_layout(layout)
+        np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.15-candidate.g,.15,1.],rtol=0,atol=1e-12)
+        assert abs(1.05-layout.data['robot']['base_origin_xy_a_m'][0]-.45)<1e-12
+        assert floor_support_evidence(layout,coupled_conveyor_state(layout,.6,()))['status']=='VERIFIED_ON_MODELED_FLOOR'
     reports=[]
     for node in chain:
         trial=db['trials'][node['incoming']];assert trial['layout']==key and not trial['diagnostic'] and trial['complete']

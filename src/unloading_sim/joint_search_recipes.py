@@ -26,6 +26,9 @@ def pose_target(target,offset,roll):
     return replace(target,source=SCHEMA,contact_pose=pose,approach_pose=approach,in_plane_x=pose[:3,0]).validate()
 
 def validate_receive_contract(contract,target,height):
+    if contract.get('schema')=='fixed40_gap_search_20261107_v1':
+        from .gap_search_recipes import validate_receive_contract as validate_gap
+        return validate_gap(contract,target,height)
     h=StartHeight.capture(target)
     if (contract['schema']!=SCHEMA or contract['target_identity']!=h.box_identity
             or contract['d_m']!=.05 or abs(contract['height_m']-height)>1e-9

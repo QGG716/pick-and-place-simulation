@@ -4204,6 +4204,9 @@ def build_m710_layout_trajectory_connector(
         "package_dirs": [str(Path(item).resolve()) for item in package_dirs],
         "kinematic_consistency_probes": [],
     }
+    if (collision_policy or {}).get("fixed_mount_contact_mode") == "qualified_planes_only":
+        evidence["collision_contract"]["fixed_body_aggregation_pairs"]["base_mount"] = ["base_link", "mount_plinth"]
+        evidence["collision_contract"]["base_mount_scope"] = "qualified_nonpenetrating_plane_only"
 
     def unavailable(reason: str, detail: str) -> LayoutTrajectoryConnectorBuildResult:
         evidence["status"] = "UNAVAILABLE"

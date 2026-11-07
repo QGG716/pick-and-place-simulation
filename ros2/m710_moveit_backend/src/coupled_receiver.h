@@ -1,5 +1,6 @@
 #pragma once
 #include "lifted_receiver.h"
+#include "gap_search.h"
 namespace m710 {
 inline bool coupledBinding(const ProcessJson& binding) {
   return binding.is_object() && (binding.value("schema","")=="m710_coupled_receiver_v2" ||
@@ -21,6 +22,10 @@ inline void validateCoupledBinding(const ProcessJson& b) {
   double previous=first.at("height_m");
   for(const auto& sample:b.at("samples")) {
     const double h=sample.at("height_m");
+    if(b.contains("joint_search_layout") && gapSearchLayout(b.at("joint_search_layout"))) {
+      validateGapLayout(b.at("joint_search_layout"));
+      if(h<.55-1e-9 || h>1.5+1e-9)throw std::runtime_error("GAP_TRANSITION_HEIGHT_RANGE");
+    }
     if(!std::isfinite(h) || std::abs(h-previous)>.010000000001 || sample.at("world").size()!=original.size())
       throw std::runtime_error("COUPLED_SAMPLE_COVERAGE_INVALID");
     previous=h;std::set<std::string> seen;
@@ -38,6 +43,9 @@ inline void validateCoupledBinding(const ProcessJson& b) {
         pre.at("samples").back().at("world")!=b.at("samples").front().at("world"))
       throw std::runtime_error("COUPLED_PRE_APPROACH_CONTINUITY_INVALID");
     validateCoupledBinding(pre);
+    if(b.contains("joint_search_layout") && gapSearchLayout(b.at("joint_search_layout")))
+      for(const auto& sample:pre.at("samples"))if(sample.at("height_m").get<double>()<.55-1e-9 || sample.at("height_m").get<double>()>1.5+1e-9)
+        throw std::runtime_error("GAP_PRE_APPROACH_HEIGHT_RANGE");
   }
 }
 inline ProcessJson coupledTransitionWorld(const ProcessJson& req,const ProcessJson& b) {
@@ -120,6 +128,9 @@ inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& bind
   if(l01_hmax)validateL01Hmax(req,binding);
   const bool search=contract.contains("joint_search_contract");
   if(search) {
+    if(gapSearchLayout(binding.at("joint_search_layout"))) {
+      validateGapReceive(contract.at("joint_search_contract"),contract.at("initial_target"),binding.at("joint_search_layout"),expected);
+    } else {
     const auto& policy=contract.at("joint_search_contract");const auto target=processBox(contract.at("initial_target"));
     const double h=2*target.pose.linear().row(2).cwiseAbs().dot(target.half),bottom=target.pose.translation().z()-h/2;
     const std::string mode=policy.at("mode");const double minimum=policy.at("minimum_m"),maximum=policy.at("maximum_m");
@@ -144,6 +155,7 @@ inline void validateReceiveHeight(const ProcessJson& req,const ProcessJson& bind
         std::abs(height-expected)>1e-8 || std::abs(policy.at("height_m").get<double>()-expected)>1e-8 ||
         std::abs(policy.at("release_bottom_m").get<double>()-release)>1e-8)
       throw std::runtime_error("SEARCH_RECEIVE_FORMULA_OR_RANGE_CHANGED");
+    }
   }
   if(contract.value("junction_front",false)) {
     const auto target=processBox(contract.at("initial_target"));

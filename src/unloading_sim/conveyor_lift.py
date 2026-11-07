@@ -242,7 +242,7 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
         raise ValueError("CONVEYOR_YMIN_ALIGNMENT_INVALID")
     trans0=OBB([*transverse.center[:2],height-transverse.half_extents[2]],
         transverse.half_extents,np.eye(3),transverse.name,transverse.category)
-    max_rise=limit-low
+    max_rise=(layout.data['gap_search']['relief_design_maximum_height_m'] if 'gap_search' in layout.data else limit)-low
     slope=max_rise/np.sqrt(length*length-max_rise*max_rise)
     trans=relieved_transverse(trans0,slope)
     long=OBB((upper+lower)/2-rotation[:,2]*thickness/2,
@@ -304,6 +304,13 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     rail_min=low_x-.25
     floor_min=float(layout.data["trailer"]["opening_x_m"])
     rail_max=max(low_x+travel+.18,floor_min+.30)
+    stand_x=(floor_min+.07,rail_max-.07)
+    if 'gap_search' in layout.data:
+        # Freeze the accepted mechanism at reference g=.2; door X is a world
+        # boundary, not a design variable that may stretch this rail.
+        offset=float(layout.world_from_assembly[0,3]);spec=layout.data['gap_search']
+        rail_min,rail_max=(offset+x for x in spec['lower_rail_x_bounds_a_m'])
+        stand_x=tuple(offset+x for x in spec['lower_rail_stations_x_a_m'])
     # Explicit physical mounting revision: the complete lower support assembly
     # moves down together. Bearing, carriage and rail solids keep their sizes;
     # the two rail stands still extend from the existing floor to the rail.
@@ -312,7 +319,7 @@ def _seam_coupled_state(layout, surface_z_world_m, cartons):
     for side in (-1,1):
         y=lower[1]+side*(width/2-.08);key=f"lift_lower_rail_{side+1}"
         parts.append(_box(key,[(rail_min+rail_max)/2,y,rail_z],[rail_max-rail_min,.06,.04]))
-        for index,x in enumerate((floor_min+.07,rail_max-.07)):
+        for index,x in enumerate(stand_x):
             foot=f"{key}_stand_{index}";h=rail_z-.02-floor
             parts.append(_box(foot,[x,y,floor+h/2],[.08,.08,h]))
             mates.extend([(foot,key,"FIXED_RAIL_STAND"),(foot,"trailer_floor","FOOT_ON_EXISTING_FLOOR")])

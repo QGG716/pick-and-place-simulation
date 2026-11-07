@@ -18,7 +18,7 @@ inline bool qualifiedSearchPlinthPair(const Json& request,const Json& mount,
     const Eigen::Isometry3d& actual_base,const std::string& a,const std::string& b) {
   if(!((a=="base_link"&&b=="mount_plinth")||(b=="base_link"&&a=="mount_plinth")) ||
      !request.value("planning_only",false) || request.value("planning_mode","")!="cold_from_scratch" ||
-     !mount.is_object() || mount.value("schema","")!="fixed40_joint_search_20261028_v1" ||
+     !mount.is_object() || (mount.value("schema","")!="fixed40_joint_search_20261028_v1" && mount.value("schema","")!="fixed40_gap_search_20261107_v1") ||
      mount.value("mount_design","")!="SOLID_PLINTH")return false;
   const auto xyz=mount.at("base_xyz_world_m").get<std::vector<double>>();
   if(xyz.size()!=3 || !actual_base.matrix().allFinite() ||
@@ -142,7 +142,10 @@ public:
     for(const auto& pair:request.at("allowed_pairs")) {
       if(pair.size()!=2) throw std::runtime_error("PROCESS_ALLOWED_PAIR_INVALID");
       const std::string a=pair.at(0),b=pair.at(1);
-      const bool assembly=(a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis") ||
+      const bool qualified_only=source_.value("fixed_mount_contact_mode","")=="qualified_planes_only";
+      if(qualified_only && (source_.value("robot_mount_contact_exemption",false) || !source_.value("tool_chassis_contact_target_ids",Json::array()).empty()))
+        throw std::runtime_error("GAP_CHASSIS_EXEMPTIONS_FORBIDDEN");
+      const bool assembly=(!qualified_only && ((a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis"))) ||
         authorizedRobotMountPair(source_,a,b) ||
         (scene->getRobotModel()->getLinkModel("base_link") && qualifiedSearchPlinthPair(request,search_mount,
           state.getGlobalLinkTransform("base_link"),a,b));

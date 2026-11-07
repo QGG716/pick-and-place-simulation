@@ -26,6 +26,12 @@ inline void validateWaitOutfeed(const ProcessJson& req) {
   const double height=belt.pose.translation().z()+belt.half.z();
   const double slope=longitudinal.pose.linear()(2,0)/longitudinal.pose.linear()(0,0);
   const double long_min_x=longitudinal.pose.translation().x()-longitudinal.pose.linear().row(0).cwiseAbs().dot(longitudinal.half);
+  const double lower_top_x=(longitudinal.pose.translation()-longitudinal.pose.linear().col(0)*longitudinal.half.x()+longitudinal.pose.linear().col(2)*longitudinal.half.z()).x();
+  const bool finite=path.contains("finite_support");
+  if(finite && (path.at("finite_support").at("schema")!="finite_belt_contact_envelope_v1" ||
+      std::abs(path.at("finite_support").at("longitudinal_top_x_bounds_m")[0].get<double>()-lower_top_x)>1e-9 ||
+      std::abs(path.at("finite_support").at("longitudinal_top_x_bounds_m")[1].get<double>()-seam)>1e-9))
+    throw std::runtime_error("OUTFEED_FINITE_SUPPORT_IDENTITY");
   bool x_started=false;double last_t=0.;
   for(size_t i=1;i<samples.size();++i) {
     const auto b=processBox(samples[i].at("box"));const double t=samples[i].at("t");
@@ -39,7 +45,11 @@ inline void validateWaitOutfeed(const ProcessJson& req) {
     if(delta.x()<0)x_started=true;
     double support=height;
     if(b.pose.translation().x()-extent.x()<seam) {
-      const double x=slope>=0?std::min(b.pose.translation().x()+extent.x(),seam):std::max(b.pose.translation().x()-extent.x(),long_min_x);
+      const double x=slope>=0?std::min(b.pose.translation().x()+extent.x(),seam):std::max(b.pose.translation().x()-extent.x(),finite?lower_top_x:long_min_x);
+      if(finite && (x<lower_top_x-1e-9 || x>seam+1e-9 ||
+          std::min(b.pose.translation().x()+extent.x(),seam)<=std::max(b.pose.translation().x()-extent.x(),lower_top_x)+1e-9 ||
+          std::abs(b.pose.translation().y()-longitudinal.pose.translation().y())+extent.y()>longitudinal.half.y()-.005+1e-9))
+        throw std::runtime_error("OUTFEED_NO_FINITE_CONVEYOR_SUPPORT");
       support=height+(x-seam)*slope;
       if(b.pose.translation().x()+extent.x()>=seam)support=std::max(support,height);
     }
@@ -57,7 +67,7 @@ inline void validateOutfeedPark(const ProcessJson& req,const ProcessJson& previo
       !req.at("attachment").is_null() || req.contains("goal_pose") || !req.contains("q_goal") ||
       !req.at("process_policy").at("support_names").empty() || !req.at("process_policy").at("initial_proximity").is_null() ||
       !binding.contains("outfeed_park_q_rad") || req.at("q_goal")!=binding.at("outfeed_park_q_rad") ||
-      binding.at("joint_search_layout").at("schema")!="fixed40_joint_search_20261028_v1" ||
+      (binding.at("joint_search_layout").at("schema")!="fixed40_joint_search_20261028_v1" && binding.at("joint_search_layout").at("schema")!="fixed40_gap_search_20261107_v1") ||
       !((pipeline=="pilz_industrial_motion_planner" && planner=="PTP") || (pipeline=="ompl" && planner=="RRTConnectkConfigDefault")) ||
       previous.value("stage","")!="withdrawal" || previous.value("planner_id","")!="LIN" ||
       previous.value("pipeline_id","")!="pilz_industrial_motion_planner" || !previous.at("attachment").is_null() ||

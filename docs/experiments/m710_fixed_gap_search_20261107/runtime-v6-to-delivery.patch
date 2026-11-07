@@ -1,0 +1,39 @@
+--- a/tools/plan_m710_gap_search.py
++++ b/tools/plan_m710_gap_search.py
+@@ -218,6 +218,9 @@
+             failure={k:v for k,v in failure.items() if isinstance(v,(str,int,float,bool))})
+         if len(state.ledger)==40:break
+         if row['category']=='SOFTWARE_ERROR':db['status']='SOFTWARE_ERROR_RETAINED';save(path,db);break
+-    if db['status']=='SEARCHING':db['status']='INVOCATION_RESOURCE_LIMIT_CHECKPOINTED';save(path,db)
++    if db['status']=='SEARCHING':db['status']='INVOCATION_RESOURCE_LIMIT_CHECKPOINTED'
++    # Exhausted/empty admissions can leave the loop without completing a
++    # trial. Persist that terminal status as well as ordinary resource stops.
++    save(path,db)
+     emit(event='checkpoint',status=db['status'],trials=len(db['trials']),best=db['best'],elapsed_search_s=db['elapsed_search_s'])
+ if __name__=='__main__':main()
+--- a/tests/test_gap_search.py
++++ b/tests/test_gap_search.py
+@@ -197,3 +197,23 @@
+     result=c.region_motion()
+     assert result[1] is None
+     assert c._single_connection_deadline==c._gap_full_suffix_deadline
++
++
++def test_gap_empty_admitted_search_persists_terminal_checkpoint(tmp_path,monkeypatch):
++    import hashlib,json,sys
++    sys.path.insert(0,str(ROOT/'tools'))
++    import plan_m710_gap_search as entry
++    manifest=tmp_path/'source.json';manifest.write_text('{"files":{}}')
++    worker=tmp_path/'worker';worker.write_bytes(b'not executed by this empty search')
++    identity=dict(source_manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
++        native_binary_sha256=hashlib.sha256(worker.read_bytes()).hexdigest())
++    checkpoint=tmp_path/'checkpoint.json'
++    checkpoint.write_text(json.dumps(dict(contract=entry.SCHEMA,identity=identity,requested_gaps_m=[],
++        layouts={'unsupported':dict(status='UNKNOWN_EXTERNAL_SUPPORT')},trials=[],best=None,
++        elapsed_search_s=17.,status='SEARCHING',pending=None)))
++    monkeypatch.setattr(sys,'argv',['gap-search','--output',str(tmp_path),'--resume',
++        '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest)])
++    entry.main()
++    saved=json.loads(checkpoint.read_text())
++    assert saved['status']=='FINITE_ADMITTED_SEARCH_EXHAUSTED'
++    assert saved['elapsed_search_s']==17. and saved['trials']==[]

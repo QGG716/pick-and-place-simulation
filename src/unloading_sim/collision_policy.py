@@ -36,8 +36,13 @@ class SimulationCollisionPolicy:
     boundary_mode: str = "legacy_infinite_side_planes"
     robot_mount_contact_exemption: bool = False
     tool_chassis_contact_target_ids: tuple[str, ...] = ()
+    fixed_mount_contact_mode: str = 'legacy_base_chassis'
 
     def __post_init__(self):
+        if self.fixed_mount_contact_mode not in ('legacy_base_chassis','qualified_planes_only'):
+            raise ValueError('unknown fixed mount contact mode')
+        if self.fixed_mount_contact_mode=='qualified_planes_only' and (self.robot_mount_contact_exemption or self.tool_chassis_contact_target_ids):
+            raise ValueError('qualified mount planes forbid robot/tool chassis exemptions')
         if (not isinstance(self.tool_chassis_contact_target_ids, tuple)
                 or any(not isinstance(n, str) or not n for n in self.tool_chassis_contact_target_ids)
                 or len(set(self.tool_chassis_contact_target_ids)) != len(self.tool_chassis_contact_target_ids)):
@@ -100,6 +105,8 @@ class SimulationCollisionPolicy:
 
     def _data(self):
         data = asdict(self)
+        if self.fixed_mount_contact_mode=='legacy_base_chassis':
+            data.pop('fixed_mount_contact_mode')
         if not self.tool_chassis_contact_target_ids:
             data.pop("tool_chassis_contact_target_ids")
         if not self.robot_mount_contact_exemption:
@@ -118,6 +125,8 @@ class SimulationCollisionPolicy:
         return {(link, name) for link in self.wrist_tool_exempt_links for name in owned_tool_names}
 
     def robot_mount_pairs(self, support="chassis"):
+        if self.fixed_mount_contact_mode=='qualified_planes_only':
+            return set()
         if self.robot_mount_contact_exemption and support != "chassis":
             raise ValueError("ROBOT_MOUNT_OWNERSHIP_CHANGED")
         links=OFFICIAL_ROBOT_MOUNT_LINKS if self.robot_mount_contact_exemption else ("base_link",)
