@@ -1,0 +1,74 @@
+diff --git a/tools/export_m710_gap_failures.py b/tools/export_m710_gap_failures.py
+--- a/tools/export_m710_gap_failures.py
++++ b/tools/export_m710_gap_failures.py
+@@ -69,13 +69,14 @@
+             failure_witness=dict(native=compact) if status!='SUCCESS' else None))
+         logs.append(dict(op='plan',stage=req['stage'],status=status,response=compact,round_trip_s=call.get('round_trip_s')))
+         statuses[(req['stage'],status,response.get('solver_message'))]+=1
+-    assert attempts and witnesses
++    assert attempts  # IK-only failures need a start/goal view, not invented collision witnesses.
+     layout=load_workcell_layout(ROOT/'configs/workcells'/record['layout_path']);robot=layout.robot()
+     for w in witnesses:
+         w['expected_flange_flat']=robot.named_link_frames(np.asarray(w['q_rad']))['flange'].T.reshape(-1).tolist()
+     endpoints=[]
+     from unloading_sim.front_arm_posture import front_arm_posture
+     for index,a in enumerate(attempts):
++        a['start_expected_flange_flat']=robot.named_link_frames(np.asarray(a['request']['q_start']))['flange'].T.reshape(-1).tolist()
+         if not a['final_timed_path']:continue
+         q=np.asarray(a['final_timed_path'][-1]['q'])
+         endpoints.append(dict(attempt_index=index,stage=a['request']['stage'],q_rad=q.tolist(),
+@@ -89,6 +90,7 @@
+         initial_orientation=record.get('initial_orientation_evidence'),target=dispatch['target'],
+         initial_arm_posture=record.get('initial_arm_posture_evidence'),
+         base_world_m=record['candidate']['base_xyz_world_m'],
++        failure={k:v for k,v in (trial.get('failure') or {}).items() if isinstance(v,(str,int,float,bool))},
+         archive_server_path=str(archive),archive_sha256=trial['evidence']['sha256'],source_identity=db['identity'],
+         witness_pair_counts=[dict(pair=list(k),count=v) for k,v in pairs.most_common()],
+         native_requests=[dict(stage=k[0],status=k[1],solver=k[2],count=v) for k,v in statuses.items()],
+diff --git a/tools/search_replay/gap_failure_overlay.js b/tools/search_replay/gap_failure_overlay.js
+--- a/tools/search_replay/gap_failure_overlay.js
++++ b/tools/search_replay/gap_failure_overlay.js
+@@ -9,6 +9,7 @@
+ const panel=document.createElement('section');panel.innerHTML=`<h3>查看已记录的失败位置</h3>
+ <button id="reviewInitial">初始姿态</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
+ <button id="reviewContact">已返回接触终点</button>
++<button id="reviewExtraction">外移失败的起点与目标</button>
+ <p><select id="reviewWitness" style="width:100%"></select></p><button id="reviewShow">显示拒绝状态</button>
+ <p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；所有箱子仍在场</p><pre id="reviewSummary"></pre>`;
+ document.querySelector('aside').prepend(panel);
+@@ -19,7 +20,10 @@
+ const pairs=failureData.witness_pair_counts;
+ $('reviewSummary').textContent=`本次有效接触：${failureData.contact_complete?'已到达':'未到达'}\n完成抓放：0 / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
+ if(failureData.receiver_lift_failures.length){const w=failureData.receiver_lift_failures[0];$('reviewSummary').textContent=`已记录升带拒绝 ${failureData.receiver_lift_failures.length} 次\n首个拒绝高度 ${w.height_m.toFixed(3)} m\n${w.pair.join(' ↔ ')}\n完成抓放 ${failureData.completed_count} / 40\n\n其他候选见下拉框；升带拒绝不代表所有路径的结果。`;}
++const noIK=failureData.native_requests.filter(r=>r.stage==='extraction' && r.solver==='NO_IK_SOLUTION').reduce((n,r)=>n+r.count,0);
++if(noIK)$('reviewSummary').textContent=`当前阻塞：带箱外移\n${noIK} 次原生外移请求返回无 IK 解\n${failureData.contact_complete?'接触检查已通过':'最终记录未确认接触'} · 完整抓放 ${failureData.completed_count}/40\n这是有限数值尝试的结果，不是全局不可达证明。\n\n另有 ${failureData.witnesses.length} 条碰撞见证，见下拉框。`;
+ $('reviewWitness').innerHTML=failureData.witnesses.map((w,i)=>`<option value="${i}">${i+1}. ${w.pair.join(' / ')} · ${reasons[w.reason]||w.reason}</option>`).join('');
++$('reviewWitness').disabled=$('reviewShow').disabled=!failureData.witnesses.length;
+ function reviewAnnotations(q){
+  for(const [o] of modelObjects)o.material.emissive?.set(0x000000);
+  clear(reviewGroup);const f=fk(q),contact=f.flange.clone().multiply(matrix(model.flange_from_contact));
+@@ -60,10 +64,23 @@
+  $('hud').innerHTML=`<b>原生接触路径终点 · ${failureData.target_id}</b><br>大臂仰角 ${s.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${s.forearm_elevation_deg.toFixed(1)}°<br>规划状态 · 尚未完成卸箱 · 未执行`;
+  window.failureReviewState={kind:'contact',q:currentQ,pair:[],expected:e.expected_flange_flat};
+ }
++function reviewExtraction(){
++ const i=DATA.raw.attempts.findIndex(a=>a.request.stage==='extraction' && a.response_identity.status!=='SUCCESS' && a.request.goal_pose);if(i<0)return;
++ reviewSelectAttempt(i);const a=DATA.raw.attempts[i],q=a.request.q_start;pose(q);reviewAnnotations(q);
++ const f=fk(q),fv=f.flange.clone().invert().multiply(f.m710_virtual_task_tcp);
++ const goal=matrix(a.request.goal_pose).multiply(fv.invert()).multiply(matrix(model.flange_from_contact));
++ const start=f.flange.clone().multiply(matrix(model.flange_from_contact)),delta=position(goal).sub(position(start));
++ const axis=new T.AxesHelper(.3);axis.matrixAutoUpdate=false;axis.matrix.copy(goal);reviewGroup.add(axis);
++ if(delta.length()>1e-8)reviewGroup.add(new T.ArrowHelper(delta.clone().normalize(),position(start),delta.length(),0xff5870,.12,.055));
++ $('hud').innerHTML=`<b>带箱外移失败 · ${failureData.target_id}</b><br>红色箭头指向请求的吸具目标<br>${a.response_identity.solver_message||a.response_identity.status} · 未返回目标关节构型<br>机械臂显示实际请求起点 · 未执行`;
++ $('motionText').textContent='只显示归档起点和笛卡尔目标；没有补造外移动画';
++ window.failureReviewState={kind:'extraction_start',q:currentQ,pair:[],expected:a.start_expected_flange_flat};
++}
+ $('reviewInitial').onclick=reviewInitial;$('reviewShow').onclick=()=>reviewWitness(Number($('reviewWitness').value));
+ const firstLiftWitness=failureData.witnesses.findIndex(w=>w.phase==='receiver_lift');
+ $('reviewLift').disabled=firstLiftWitness<0;$('reviewLift').onclick=()=>reviewWitness(firstLiftWitness);
+ $('reviewSide').onclick=()=>reviewCamera(true);$('reviewIso').onclick=()=>reviewCamera(false);
+ $('reviewContact').disabled=!failureData.native_endpoints?.some(e=>e.stage==='contact');$('reviewContact').onclick=reviewContact;
+-window.failureReview={initial:reviewInitial,witness:reviewWitness,camera:reviewCamera,contact:reviewContact,data:failureData};
++$('reviewExtraction').disabled=!DATA.raw.attempts.some(a=>a.request.stage==='extraction' && a.response_identity.status!=='SUCCESS' && a.request.goal_pose);$('reviewExtraction').onclick=reviewExtraction;
++window.failureReview={initial:reviewInitial,witness:reviewWitness,camera:reviewCamera,contact:reviewContact,extraction:reviewExtraction,data:failureData};
+ if(firstLiftWitness>=0)reviewWitness(firstLiftWitness);else reviewInitial();reviewCamera(true);

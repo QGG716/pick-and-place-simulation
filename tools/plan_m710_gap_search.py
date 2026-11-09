@@ -7,7 +7,7 @@ import numpy as np
 import yaml
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'src'),str(ROOT/'tools')]
-from unloading_sim.gap_search_layout import GapCandidate,SCHEMA,BASELINE,candidate_data,floor_support_evidence
+from unloading_sim.gap_search_layout import GapCandidate,SCHEMA,BASELINE,candidate_data,floor_support_evidence,initial_stack_facing_evidence
 from unloading_sim.gap_search_recipes import candidate_options
 from unloading_sim.workcell_layout import load_workcell_layout,audit_layout_constraints
 from unloading_sim.conveyor_lift import coupled_conveyor_state
@@ -24,8 +24,8 @@ from plan_m710_all_remaining import archive_task
 
 def emit(**data):print(json.dumps(data,ensure_ascii=False,allow_nan=False),flush=True)
 
-def frozen_layout(g):
-    candidate=GapCandidate(g);path=ROOT/'configs/workcells'/('gap-search-'+candidate.key+'.yaml')
+def frozen_layout(g,mount_height=1.):
+    candidate=GapCandidate(g,mount_height);path=ROOT/'configs/workcells'/('gap-search-'+candidate.key+'.yaml')
     base=yaml.safe_load((path.parent/BASELINE).read_text(encoding='utf-8'))
     data=candidate_data(base,candidate)
     if path.exists():
@@ -33,7 +33,11 @@ def frozen_layout(g):
     else:path.write_text(yaml.safe_dump(data,sort_keys=False))
     return load_workcell_layout(path)
 
-def admission(layout):
+SUPPORT_MODES=('require-modeled','record-unknown')
+
+
+def admission(layout,external_support_mode='require-modeled'):
+    if external_support_mode not in SUPPORT_MODES:raise ValueError('UNKNOWN_EXTERNAL_SUPPORT_MODE')
     numeric=audit_layout_constraints(layout);checks=[]
     if numeric['overall_status']!='PASS':raise ValueError('GAP_NUMERIC_AUDIT_FAILED')
     for height in (.55,.6,1.,1.5):
@@ -43,26 +47,41 @@ def admission(layout):
         checks.append(dict(height_m=height,geometry=checked,floor_support=support))
     collision=any(not c['geometry']['passed'] for c in checks)
     unknown=any(c['floor_support']['status']!='VERIFIED_ON_MODELED_FLOOR' for c in checks)
-    return dict(status='SAMPLED_WORLD_COLLISION' if collision else 'UNKNOWN_EXTERNAL_SUPPORT' if unknown else 'ADMITTED',
+    status=('SAMPLED_WORLD_COLLISION' if collision else
+        'ADMITTED_EXTERNAL_SUPPORT_UNVERIFIED' if unknown and external_support_mode=='record-unknown' else
+        'UNKNOWN_EXTERNAL_SUPPORT' if unknown else 'ADMITTED')
+    return dict(status=status,external_support_mode=external_support_mode,support_verified=not unknown,
         layout_data=layout.data,layout_fingerprint=layout.layout_fingerprint,numeric=numeric,checks=checks,
         full_footprint_support_required_for_verified_result=True,global_infeasibility_proven=False,
         mechanism_design='REFERENCE_G0200_RAIL_AND_RELIEF_DIMENSIONS_FROZEN_NO_LENGTH_CHANGE')
 
 def prepare(args,layout,record):
     initial=record.get('initial')
+    requested_initial_q=getattr(args,'initial_q_rad',None)
+    specified_q=initial['q_rad'] if initial else requested_initial_q
     original,built,audit=make_context('gap',layout_path=layout.config_path,
-        initial_q=initial['q_rad'] if initial else None,initial_seed=args.seed,initial_draws=args.initial_draws)
+        initial_q=specified_q,initial_seed=args.seed if specified_q is None else None,initial_draws=args.initial_draws)
     frozen=FrozenCartonPopulation.capture(original.cartons)
     state=BatchState(frozen,tuple(original.cartons),np.asarray(original.snapshot['robot']['q_rad']),.6)
     scene=batch_scene(original,state,built.robot,layout)
     attempts=[];rng=np.random.default_rng(args.seed)
-    proposals=[state.q] if initial else [state.q,*rng.uniform(built.robot.joint_limits[:,0]+.05,built.robot.joint_limits[:,1]-.05,size=(args.initial_draws,6))]
+    orientation=getattr(args,'initial_orientation','stack-facing')
+    if orientation not in ('stack-facing','unconstrained'):raise ValueError('UNKNOWN_INITIAL_ORIENTATION')
+    proposals=[state.q] if specified_q is not None else [state.q,*rng.uniform(built.robot.joint_limits[:,0]+.05,built.robot.joint_limits[:,1]-.05,size=(args.initial_draws,6))]
     for i,q in enumerate(proposals):
+        facing=initial_stack_facing_evidence(built.physical_from_virtual(built.robot.fk(q)),original.cartons)
         failure=built.validate_unloaded_state(q,scene.all_obstacles,stage='unloaded')
-        attempts.append(dict(index=i,q_rad=q.tolist(),failure=failure))
+        if failure is None and orientation=='stack-facing' and not facing['passed']:
+            failure='INITIAL_CUPS_NOT_FACING_STACK'
+        from unloading_sim.front_arm_posture import front_arm_posture
+        posture=front_arm_posture(built.robot,q,initial=True) if getattr(args,'front_arm_posture','legacy-soft')=='upright' else None
+        if failure is None and posture is not None and not posture['passed']:failure='INITIAL_ARM_POSTURE_REJECTED'
+        attempts.append(dict(index=i,q_rad=q.tolist(),failure=failure,stack_facing=facing,arm_posture=posture))
         if failure is None:state.q=q;break
     else:raise ValueError('NO_INITIAL_WITNESS_IN_FINITE_DRAWS:'+json.dumps(attempts))
     built.joint_search_initial_q=state.q.tolist()
+    record['initial_orientation_evidence']=dict(mode=orientation,**facing)
+    record['initial_arm_posture_evidence']=posture
     if initial:
         assert state.root()==initial
     else:
@@ -121,13 +140,25 @@ def main():
     p.add_argument('--max-trials',type=int,default=120,help='Finite invocation resource limit; resume retains all costs and cursors')
     p.add_argument('--trial-seconds',type=float,default=120.);p.add_argument('--prefix-seconds',type=float,default=45.)
     p.add_argument('--stage-seconds',type=float,default=60.);p.add_argument('--initial-draws',type=int,default=64)
+    p.add_argument('--connection-seconds',type=float,default=6.,help='Numerical visit to one retained IK configuration, bounded by the existing shared deadline')
+    p.add_argument('--ompl-seconds',type=float,default=2.,help='One native RRT restart allowance, bounded by connection, stage and task deadlines')
+    p.add_argument('--initial-q-rad',nargs=6,type=float,
+        help='Explicit fresh-world initial joints, independently checked without random fallback; never changes an existing world')
+    p.add_argument('--initial-orientation',choices=('stack-facing','unconstrained'),default='stack-facing',
+        help='Physical cup normal points into the stack at the initial state; unconstrained is for explicit historical reproduction only')
     p.add_argument('--seed',type=int,default=71107);p.add_argument('--refine',action='store_true')
+    p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
+    p.add_argument('--mount-height',type=float,choices=(.9,1.),default=1.,help='Fixed for the entire fresh world; 900 mm is the user-authorized ceiling fallback')
     p.add_argument('--admission-only',action='store_true');p.add_argument('--max-rounds',type=int,default=2)
+    p.add_argument('--external-support-mode',choices=SUPPORT_MODES,default='require-modeled',
+        help='record-unknown permits native planning only; preserves the finite floor and explicitly withholds support qualification')
     p.add_argument('--focus-gap',type=float,help='Continue only this already-admitted g; other worlds and all costs remain in the checkpoint')
     p.add_argument('--stop-file',type=Path,help='Finish the current trial, then checkpoint if this file exists')
     args=p.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
     if min(args.max_trials,args.trial_seconds,args.prefix_seconds,args.stage_seconds,args.initial_draws,args.max_rounds)<=0:
         raise ValueError('NONPOSITIVE_SEARCH_RESOURCE_LIMIT')
+    from unloading_sim.approach_recovery_policy import bounded_numeric_slice
+    for value in (args.connection_seconds,args.ompl_seconds):bounded_numeric_slice(value,args.trial_seconds)
     identity=dict(source_manifest_sha256=hashlib.sha256(args.source_manifest.read_bytes()).hexdigest(),
         native_binary_sha256=hashlib.sha256(args.worker_binary.read_bytes()).hexdigest())
     manifest=json.loads(args.source_manifest.read_text())
@@ -136,6 +167,16 @@ def main():
     path=out/'checkpoint.json'
     if args.resume:
         db=json.loads(path.read_text());assert db['identity']==identity and db['contract']==SCHEMA
+        if db.get('options',{}).get('external_support_mode','require-modeled')!=args.external_support_mode:
+            raise ValueError('RESUME_EXTERNAL_SUPPORT_MODE_CHANGED')
+        if args.initial_q_rad is not None and db.get('options',{}).get('requested_initial_q_rad')!=args.initial_q_rad:
+            raise ValueError('RESUME_INITIAL_STATE_CHANGED')
+        if db.get('options',{}).get('initial_orientation','unconstrained')!=args.initial_orientation:
+            raise ValueError('RESUME_INITIAL_ORIENTATION_CHANGED')
+        if db.get('options',{}).get('front_arm_posture','legacy-soft')!=args.front_arm_posture:
+            raise ValueError('RESUME_FRONT_ARM_POSTURE_CHANGED')
+        if db.get('options',{}).get('mount_height_m',1.)!=args.mount_height:
+            raise ValueError('RESUME_MOUNT_HEIGHT_CHANGED')
         if db.get('pending'):
             pending=db.pop('pending');folder=out/pending['folder']
             if folder.exists():pending['archive']=archive_task(folder,out)
@@ -147,34 +188,40 @@ def main():
         db=dict(contract=SCHEMA,identity=identity,source=manifest,created_unix=time.time(),layouts={},trials=[],interrupted=[],
             elapsed_search_s=0.,best=None,physical_execution='NOT_RUN',global_infeasibility_proven=False,
             requested_gaps_m=list(dict.fromkeys(args.gaps)),refinement_queue=[],status='ADMISSION',
-            options=dict(seed=args.seed,max_rounds=args.max_rounds),source_commit=manifest.get('base_commit','WORKTREE'))
+            options=dict(seed=args.seed,max_rounds=args.max_rounds,external_support_mode=args.external_support_mode,
+                requested_initial_q_rad=args.initial_q_rad,initial_orientation=args.initial_orientation,
+                front_arm_posture=args.front_arm_posture,mount_height_m=args.mount_height),
+            source_commit=manifest.get('base_commit','WORKTREE'))
         save(path,db)
     for g in db['requested_gaps_m']:
-        key=GapCandidate(g).key
+        key=GapCandidate(g,args.mount_height).key
         if key in db['layouts']:continue
-        layout=frozen_layout(g);start=time.monotonic();record=admission(layout)
+        layout=frozen_layout(g,args.mount_height);start=time.monotonic();record=admission(layout,args.external_support_mode)
         record.update(gap_m=g,layout_path=layout.config_path.name,admission_wall_s=time.monotonic()-start,trials=0,candidate=layout.data['gap_search'])
         db['layouts'][key]=record;save(path,db);emit(event='admission',gap_m=g,status=record['status'])
     if args.admission_only:return
     db.setdefault('invocations',[]).append(dict(started_unix=time.time(),source_identity=identity,
         max_trials=args.max_trials,trial_seconds=args.trial_seconds,prefix_seconds=args.prefix_seconds,
         stage_seconds=args.stage_seconds,max_rounds=args.max_rounds,focus_gap_m=args.focus_gap,
+        external_support_mode=args.external_support_mode,
+        connection_seconds=args.connection_seconds,ompl_seconds=args.ompl_seconds,
         starting_trial_count=len(db['trials']),semantics='NEW_NATIVE_REQUESTS_WITH_RETAINED_SCENE_AND_CUMULATIVE_COST'))
     save(path,db)
     cache={};invocation=0
     while invocation<args.max_trials:
         if args.stop_file is not None and args.stop_file.exists():
             db['status']='CHECKPOINTED_BETWEEN_TRIALS';save(path,db);break
-        available=[(k,r) for k,r in db['layouts'].items() if r['status'] in ('ADMITTED','ACTIVE')]
+        available=[(k,r) for k,r in db['layouts'].items() if r['status'] in ('ADMITTED','ADMITTED_EXTERNAL_SUPPORT_UNVERIFIED','ACTIVE')]
         if args.focus_gap is not None:
-            focus=GapCandidate(args.focus_gap).key
+            focus=GapCandidate(args.focus_gap,args.mount_height).key
             if focus not in db['layouts']:raise ValueError('FOCUSED_GAP_NOT_ADMITTED')
             available=[(k,r) for k,r in available if k==focus]
         if not available:db['status']='FINITE_ADMITTED_SEARCH_EXHAUSTED';break
         # Highest accepted progress gets one extra visit, while every admitted
         # g receives fair rounds. No accepted edges ever cross layout identities.
-        available.sort(key=lambda kr:(kr[1]['trials']//5,-kr[1].get('best_count',0),kr[1]['gap_m']!=.2,kr[1]['gap_m']))
-        key,record=available[0];layout=frozen_layout(record['gap_m'])
+        # Honor the explicitly requested distance order, without a hidden 200 mm preference.
+        available.sort(key=lambda kr:(kr[1]['trials']//5,-kr[1].get('best_count',0),db['requested_gaps_m'].index(kr[1]['gap_m'])))
+        key,record=available[0];layout=frozen_layout(record['gap_m'],args.mount_height)
         if key not in cache:
             start=time.monotonic()
             try:cache[key]=prepare(args,layout,record)
@@ -212,7 +259,9 @@ def main():
             if args.refine:queue_refinements(db,key)
         row['evidence']=archive_task(folder,out);db['trials'].append(row);db['pending']=None
         record['trials']+=1;record['status']='ACTIVE';db['elapsed_search_s']+=result['wall_s'];invocation+=1
-        db['status']='QUALIFIED_40_OF_40' if len(state.ledger)==40 else 'SEARCHING';save(path,db)
+        db['status']=('QUALIFIED_40_OF_40' if record.get('support_verified',True) else
+            'NATIVE_40_OF_40_EXTERNAL_SUPPORT_UNVERIFIED') if len(state.ledger)==40 else 'SEARCHING'
+        save(path,db)
         failure=result.get('failure') or {}
         emit(event='trial_end',number=number,gap_m=record['gap_m'],completed=len(state.ledger),category=row['category'],wall_s=result['wall_s'],
             failure={k:v for k,v in failure.items() if isinstance(v,(str,int,float,bool))})

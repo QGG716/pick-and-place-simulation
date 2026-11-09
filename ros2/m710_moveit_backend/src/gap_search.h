@@ -6,14 +6,18 @@ inline bool gapSearchLayout(const ProcessJson& layout) {
 }
 inline void validateGapLayout(const ProcessJson& layout) {
   const double g=layout.at("gap_m");
+  const auto local=layout.at("base_xyz_a_m").get<std::vector<double>>();
+  if(local.size()!=3)throw std::runtime_error("GAP_FIXED_LAYOUT_CONTRACT");
+  const double height=local[2];
   if(!gapSearchLayout(layout) || !std::isfinite(g) || g<.005 ||
-      layout.at("base_xyz_a_m")!=ProcessJson::array({.6,-.2,1.}) ||
+      local[0]!=.6 || local[1]!=-.2 || (height!=.9 && height!=1.) ||
+      std::abs(layout.at("plinth_height_m").get<double>()-(height-.6))>1e-10 ||
       layout.at("mount_rpy_rad")!=ProcessJson::array({0.,0.,0.}) ||
       layout.at("minimum_surface_height_m")!=.55 || layout.at("maximum_surface_height_m")!=1.5 ||
       layout.at("mount_design")!="SOLID_PLINTH")throw std::runtime_error("GAP_FIXED_LAYOUT_CONTRACT");
   const auto base=layout.at("base_xyz_world_m").get<std::vector<double>>();
   const auto assembly=layout.at("assembly_world_xyz_m").get<std::vector<double>>();
-  if(base.size()!=3 || assembly.size()!=3 || std::abs(base[0]+1.15+g)>1e-10 || base[1]!=.15 || base[2]!=1. ||
+  if(base.size()!=3 || assembly.size()!=3 || std::abs(base[0]+1.15+g)>1e-10 || base[1]!=.15 || base[2]!=height ||
       std::abs(assembly[0]+1.75+g)>1e-10 || assembly[1]!=.35 || assembly[2]!=0.)
     throw std::runtime_error("GAP_FIXED_WORLD_TRANSFORM");
 }

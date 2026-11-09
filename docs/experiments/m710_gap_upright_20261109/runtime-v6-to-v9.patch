@@ -1,0 +1,427 @@
+diff --git a/ros2/m710_moveit_backend/src/gap_search.h b/ros2/m710_moveit_backend/src/gap_search.h
+--- a/ros2/m710_moveit_backend/src/gap_search.h
++++ b/ros2/m710_moveit_backend/src/gap_search.h
+@@ -6,14 +6,18 @@
+ }
+ inline void validateGapLayout(const ProcessJson& layout) {
+   const double g=layout.at("gap_m");
++  const auto local=layout.at("base_xyz_a_m").get<std::vector<double>>();
++  if(local.size()!=3)throw std::runtime_error("GAP_FIXED_LAYOUT_CONTRACT");
++  const double height=local[2];
+   if(!gapSearchLayout(layout) || !std::isfinite(g) || g<.005 ||
+-      layout.at("base_xyz_a_m")!=ProcessJson::array({.6,-.2,1.}) ||
++      local[0]!=.6 || local[1]!=-.2 || (height!=.9 && height!=1.) ||
++      std::abs(layout.at("plinth_height_m").get<double>()-(height-.6))>1e-10 ||
+       layout.at("mount_rpy_rad")!=ProcessJson::array({0.,0.,0.}) ||
+       layout.at("minimum_surface_height_m")!=.55 || layout.at("maximum_surface_height_m")!=1.5 ||
+       layout.at("mount_design")!="SOLID_PLINTH")throw std::runtime_error("GAP_FIXED_LAYOUT_CONTRACT");
+   const auto base=layout.at("base_xyz_world_m").get<std::vector<double>>();
+   const auto assembly=layout.at("assembly_world_xyz_m").get<std::vector<double>>();
+-  if(base.size()!=3 || assembly.size()!=3 || std::abs(base[0]+1.15+g)>1e-10 || base[1]!=.15 || base[2]!=1. ||
++  if(base.size()!=3 || assembly.size()!=3 || std::abs(base[0]+1.15+g)>1e-10 || base[1]!=.15 || base[2]!=height ||
+       std::abs(assembly[0]+1.75+g)>1e-10 || assembly[1]!=.35 || assembly[2]!=0.)
+     throw std::runtime_error("GAP_FIXED_WORLD_TRANSFORM");
+ }
+diff --git a/ros2/m710_moveit_backend/src/gap_search_test.cpp b/ros2/m710_moveit_backend/src/gap_search_test.cpp
+--- a/ros2/m710_moveit_backend/src/gap_search_test.cpp
++++ b/ros2/m710_moveit_backend/src/gap_search_test.cpp
+@@ -6,18 +6,20 @@
+ #include <iostream>
+ using J=nlohmann::json;
+ template<class F> void rejects(F f){bool failed=false;try{f();}catch(const std::exception&){failed=true;}assert(failed);}
+-int main(int argc,char**argv) {
+-  assert(argc==2);std::ifstream f(argv[1]);J data;f>>data;
++void check(const J& data) {
+   m710::validateGapLayout(data.at("layout"));
+   for(const auto& item:data.at("receive")) {
+     const auto& req=item.at("request");const auto& binding=item.at("binding");
+     m710::validateReceiveHeight(req,binding);m710::validateCoupledBinding(binding);
+-    for(int i=0;i<5;++i){auto bad=binding;
++    for(int i=0;i<8;++i){auto bad=binding;
+       if(i==0)bad["receive_contract"]["joint_search_contract"]["release_bottom_m"]=.1;
+       if(i==1)bad["receive_contract"]["joint_search_contract"]["mode"]="Hmax";
+       if(i==2)bad["joint_search_layout"]["base_xyz_a_m"][0]=.625;
+       if(i==3)bad["joint_search_layout"]["maximum_surface_height_m"]=2.1;
+       if(i==4)bad["receive_contract"]["joint_search_contract"]["original_bottom_m"]=9.;
++      if(i==5)bad["joint_search_layout"]["base_xyz_a_m"][2]=.8;
++      if(i==6)bad["joint_search_layout"]["base_xyz_world_m"][2]=.95;
++      if(i==7)bad["joint_search_layout"]["plinth_height_m"]=.2;
+       rejects([&]{m710::validateReceiveHeight(req,bad);});
+     }
+     auto bad=binding;bad["samples"][0]["height_m"]=.54;
+@@ -28,13 +30,21 @@
+     auto bad=req;bad["outfeed"]["finite_support"]["longitudinal_top_x_bounds_m"][0]=-99.;
+     rejects([&]{m710::validateWaitOutfeed(bad);});
+   }
+-  Eigen::Isometry3d base=Eigen::Isometry3d::Identity();base.translation()=Eigen::Vector3d(-1.35,.15,1.);
++  Eigen::Isometry3d base=Eigen::Isometry3d::Identity();base.translation()=Eigen::Vector3d(-1.35,.15,data.at("layout").at("base_xyz_world_m").at(2).get<double>());
+   J req={{"planning_only",true},{"planning_mode","cold_from_scratch"},{"world",J::array({data.at("plinth")})}};
+   assert(m710::qualifiedSearchPlinthPair(req,data.at("layout"),base,"base_link","mount_plinth"));
+   for(auto link:{"J1_link","J6_link","tool_rigid_0"})assert(!m710::qualifiedSearchPlinthPair(req,data.at("layout"),base,link,"mount_plinth"));
+-  req["world"][0]["pose"][2][3]=.801;
++  req["world"][0]["pose"][2][3]=req["world"][0]["pose"][2][3].get<double>()+.001;
+   assert(!m710::qualifiedSearchPlinthPair(req,data.at("layout"),base,"base_link","mount_plinth"));
+   J policy={{"fixed_mount_contact_mode","qualified_planes_only"},{"robot_mount_contact_exemption",false}};
+   assert(!m710::authorizedRobotMountPair(policy,"J1_link","chassis"));
+-  std::cout<<"PASS gap receive/transition range, direct drop, lower raise, finite outfeed and plinth tamper checks\n";
+ }
++int main(int argc,char**argv) {
++  assert(argc==2);std::ifstream f(argv[1]);J data;f>>data;
++  assert(data.at("layout").at("base_xyz_world_m").at(2)==1.);
++  assert(data.at("plinth").at("size").at(2)==.4);
++  assert(data.at("lower_mount").at("layout").at("base_xyz_world_m").at(2)==.9);
++  assert(data.at("lower_mount").at("plinth").at("size").at(2)==.3);
++  check(data);check(data.at("lower_mount"));
++  std::cout<<"PASS 1000/900 mm mount, receive/transition range, direct drop, lower raise, finite outfeed and plinth tamper checks\n";
++}
+diff --git a/src/unloading_sim/gap_search_layout.py b/src/unloading_sim/gap_search_layout.py
+--- a/src/unloading_sim/gap_search_layout.py
++++ b/src/unloading_sim/gap_search_layout.py
+@@ -1,4 +1,4 @@
+-"""2026-11-07 fixed mount: g is the sole free layout coordinate.
++"""Fixed station: gap and an explicitly selected 1000/900 mm mounting height.
+ 
+ Legacy search schemas are deliberately not accepted as evidence for this task.
+ """
+@@ -43,11 +43,14 @@
+ @dataclass(frozen=True)
+ class GapCandidate:
+     g: float
++    mount_height: float = 1.
+ 
+     def __post_init__(self):
+         object.__setattr__(self, 'g', float(self.g))
+         if not np.isfinite(self.g) or self.g < .005:
+             raise ValueError('GAP_REQUIRES_AT_LEAST_5MM')
++        object.__setattr__(self,'mount_height',float(self.mount_height))
++        if self.mount_height not in (.9,1.):raise ValueError('UNAPPROVED_GAP_MOUNT_HEIGHT')
+ 
+     @property
+     def key(self):
+@@ -56,9 +59,9 @@
+     def evidence(self):
+         return dict(schema=SCHEMA, gap_m=self.g,
+             assembly_world_xyz_m=[-1.75-self.g,.35,0.],
+-            base_xyz_a_m=[.6,-.2,1.], base_xyz_world_m=[-1.15-self.g,.15,1.],
++            base_xyz_a_m=[.6,-.2,self.mount_height], base_xyz_world_m=[-1.15-self.g,.15,self.mount_height],
+             mount_rpy_rad=[0.,0.,0.], mount_design='SOLID_PLINTH',
+-            plinth_height_m=.4, mount_axis_to_chassis_front_m=.45,
++            plinth_height_m=round(self.mount_height-.6,9), mount_axis_to_chassis_front_m=.45,
+             minimum_surface_height_m=.55, maximum_surface_height_m=1.5,
+             initial_surface_height_m=.6, mechanism_profile=PROFILE, tool_extension_m=.2,
+             upper_layer_original_bottom_threshold_m=1.5, upper_layer_faces=['FRONT'],
+@@ -72,7 +75,7 @@
+     if 'joint_search' in d or 'gap_search' in d:
+         raise ValueError('GAP_BASELINE_MUST_BE_ORIGINAL_LAYOUT')
+     d['assembly']['world_xyz_m']=e['assembly_world_xyz_m']
+-    d['robot'].update(base_origin_xy_a_m=[.6,-.2],mounting_surface_z_a_m=1.,
++    d['robot'].update(base_origin_xy_a_m=[.6,-.2],mounting_surface_z_a_m=candidate.mount_height,
+         base_front_edge_x_world_m=-.925-candidate.g)
+     d['conveyors']['coupling'].update(minimum_surface_height_world_m=.55,
+         maximum_surface_height_world_m=1.5,scissor_profile=PROFILE)
+@@ -83,15 +86,16 @@
+ def validate_search_layout(layout):
+     import yaml
+     baseline=yaml.safe_load((layout.config_path.parent/BASELINE).read_text(encoding='utf-8'))
+-    candidate=GapCandidate(layout.data['gap_search']['gap_m'])
++    candidate=GapCandidate(layout.data['gap_search']['gap_m'],layout.data['gap_search']['base_xyz_a_m'][2])
+     if layout.data!=candidate_data(baseline,candidate):
+         raise ValueError('GAP_SEARCH_FROZEN_FIELDS_CHANGED')
+     return candidate
+ 
+ def mounting_geometry(layout, original):
+-    validate_search_layout(layout)
++    candidate=validate_search_layout(layout)
+     # Exact official base footprint; unchanged, solid 2100 x 1500 x 600 chassis.
+-    plinth=OBB([.54325,-.2,.8],[.28175,.275,.2],np.eye(3),
++    plinth=OBB([.54325,-.2,round((candidate.mount_height+.6)/2,9)],
++        [.28175,.275,round((candidate.mount_height-.6)/2,9)],np.eye(3),
+         'mount_plinth','mount_structure').transformed(layout.world_from_assembly)
+     return (*original,plinth)
+ 
+diff --git a/src/unloading_sim/workcell_layout.py b/src/unloading_sim/workcell_layout.py
+--- a/src/unloading_sim/workcell_layout.py
++++ b/src/unloading_sim/workcell_layout.py
+@@ -696,10 +696,10 @@
+         from .gap_search_layout import validate_search_layout
+         candidate=validate_search_layout(layout);g=candidate.g
+         checks.update(gap_search_frozen_contract={'status':'PASS','candidate':candidate.evidence()},
+-            robot_base_origin_world=vector(base,[-1.15-g,.15,1.]),
+-            robot_mount_surface=scalar(base[2],1.),
++            robot_base_origin_world=vector(base,[-1.15-g,.15,candidate.mount_height]),
++            robot_mount_surface=scalar(base[2],candidate.mount_height),
+             mount_axis_to_chassis_front=scalar(1.05-float(robot['base_origin_xy_a_m'][0]),.45),
+-            plinth_height=scalar(base[2]-_interval(world['chassis'],2)[1],.4),
++            plinth_height=scalar(base[2]-_interval(world['chassis'],2)[1],candidate.mount_height-.6),
+             transverse_front_x=scalar(_interval(world['conveyor_transverse'],0)[1],-g),
+             longitudinal_front_x=scalar(_interval(world['conveyor_longitudinal'],0)[1],-.7-g),
+             stack_to_conveyor_clearance=scalar(float(layout.data['carton_stack']['front_face_x_m'])-assembly_bounds['x'][1],g),
+diff --git a/tests/native_gap_search_fixtures.py b/tests/native_gap_search_fixtures.py
+--- a/tests/native_gap_search_fixtures.py
++++ b/tests/native_gap_search_fixtures.py
+@@ -10,8 +10,8 @@
+ from unloading_sim.joint_search_outfeed import outfeed_path
+ from unloading_sim.geometry import OBB
+ 
+-def generate():
+-    l=layout_for(load_workcell_layout(ROOT/'configs/workcells'/BASELINE),.2)
++def generate(mount_height=1.,gap=.2):
++    l=layout_for(load_workcell_layout(ROOT/'configs/workcells'/BASELINE),gap,mount_height)
+     outfeeds=[];receives=[]
+     for h in (.55,.6,1.,1.5):
+         world=coupled_conveyor_state(l,h,()).boxes
+@@ -29,4 +29,6 @@
+             receives.append(dict(request=req,binding=binding))
+     return dict(layout=l.data['gap_search'],receive=receives,outfeeds=outfeeds,
+         plinth=box_message(next(b for b in l.fixed_components() if b.name=='mount_plinth')))
+-if __name__=='__main__':Path(sys.argv[1]).write_text(json.dumps(generate()))
++if __name__=='__main__':
++    data=generate();data['lower_mount']=generate(.9,.2)
++    Path(sys.argv[1]).write_text(json.dumps(data))
+diff --git a/tests/test_gap_search.py b/tests/test_gap_search.py
+--- a/tests/test_gap_search.py
++++ b/tests/test_gap_search.py
+@@ -23,8 +23,8 @@
+ ROOT=Path(__file__).resolve().parents[1]
+ @pytest.fixture(scope='module')
+ def base():return load_workcell_layout(ROOT/'configs/workcells'/BASELINE)
+-def layout_for(base,g):
+-    d=candidate_data(base.data,GapCandidate(g))
++def layout_for(base,g,mount_height=1.):
++    d=candidate_data(base.data,GapCandidate(g,mount_height))
+     return replace(base,data=d,layout_fingerprint=compute_layout_fingerprint(d,base.assets))
+ 
+ @pytest.mark.parametrize('g,assembly,base_x',[(.2,-1.95,-1.35),(.4,-2.15,-1.55),(.5,-2.25,-1.65),(.6,-2.35,-1.75)])
+@@ -59,6 +59,26 @@
+         assert check_coupled_state(a,h,(),designed_contacts=[['chassis','conveyor_transverse']])['passed']
+     for h in (.549999,1.500001):
+         with pytest.raises(ValueError):coupled_conveyor_state(a,h,())
++
++
++def test_authorized_900mm_mount_changes_only_robot_and_solid_plinth(base):
++    d=candidate_data(base.data,GapCandidate(.8,.9))
++    lower=replace(base,data=d,layout_fingerprint=compute_layout_fingerprint(d,base.assets))
++    normal=layout_for(base,.8)
++    assert GapCandidate(.8).key=='ccab97638437b486'  # preserve historical identity
++    assert GapCandidate(.8,.9).key!=GapCandidate(.8).key
++    assert audit_layout_constraints(lower)['overall_status']=='PASS'
++    np.testing.assert_allclose(lower.robot_base_transform()[:3,3],[-1.95,.15,.9],atol=1e-12,rtol=0)
++    a={b.name:b for b in coupled_conveyor_state(normal,.6,normal.cartons()).boxes}
++    b={b.name:b for b in coupled_conveyor_state(lower,.6,lower.cartons()).boxes}
++    for name in a:
++        if name=='mount_plinth':continue
++        np.testing.assert_array_equal(a[name].center,b[name].center)
++        np.testing.assert_array_equal(a[name].half_extents,b[name].half_extents)
++    np.testing.assert_allclose(b['mount_plinth'].corners()[:,2].min(),.6,atol=1e-12)
++    np.testing.assert_allclose(b['mount_plinth'].corners()[:,2].max(),.9,atol=1e-12)
++    assert 2*b['mount_plinth'].half_extents[2]==pytest.approx(.3)
++    with pytest.raises(ValueError,match='UNAPPROVED'):GapCandidate(.8,.8)
+ 
+ 
+ def test_large_gap_can_be_planned_without_inventing_external_floor(base):
+diff --git a/tools/plan_m710_gap_search.py b/tools/plan_m710_gap_search.py
+--- a/tools/plan_m710_gap_search.py
++++ b/tools/plan_m710_gap_search.py
+@@ -24,8 +24,8 @@
+ 
+ def emit(**data):print(json.dumps(data,ensure_ascii=False,allow_nan=False),flush=True)
+ 
+-def frozen_layout(g):
+-    candidate=GapCandidate(g);path=ROOT/'configs/workcells'/('gap-search-'+candidate.key+'.yaml')
++def frozen_layout(g,mount_height=1.):
++    candidate=GapCandidate(g,mount_height);path=ROOT/'configs/workcells'/('gap-search-'+candidate.key+'.yaml')
+     base=yaml.safe_load((path.parent/BASELINE).read_text(encoding='utf-8'))
+     data=candidate_data(base,candidate)
+     if path.exists():
+@@ -148,6 +148,7 @@
+         help='Physical cup normal points into the stack at the initial state; unconstrained is for explicit historical reproduction only')
+     p.add_argument('--seed',type=int,default=71107);p.add_argument('--refine',action='store_true')
+     p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
++    p.add_argument('--mount-height',type=float,choices=(.9,1.),default=1.,help='Fixed for the entire fresh world; 900 mm is the user-authorized ceiling fallback')
+     p.add_argument('--admission-only',action='store_true');p.add_argument('--max-rounds',type=int,default=2)
+     p.add_argument('--external-support-mode',choices=SUPPORT_MODES,default='require-modeled',
+         help='record-unknown permits native planning only; preserves the finite floor and explicitly withholds support qualification')
+@@ -174,6 +175,8 @@
+             raise ValueError('RESUME_INITIAL_ORIENTATION_CHANGED')
+         if db.get('options',{}).get('front_arm_posture','legacy-soft')!=args.front_arm_posture:
+             raise ValueError('RESUME_FRONT_ARM_POSTURE_CHANGED')
++        if db.get('options',{}).get('mount_height_m',1.)!=args.mount_height:
++            raise ValueError('RESUME_MOUNT_HEIGHT_CHANGED')
+         if db.get('pending'):
+             pending=db.pop('pending');folder=out/pending['folder']
+             if folder.exists():pending['archive']=archive_task(folder,out)
+@@ -187,13 +190,13 @@
+             requested_gaps_m=list(dict.fromkeys(args.gaps)),refinement_queue=[],status='ADMISSION',
+             options=dict(seed=args.seed,max_rounds=args.max_rounds,external_support_mode=args.external_support_mode,
+                 requested_initial_q_rad=args.initial_q_rad,initial_orientation=args.initial_orientation,
+-                front_arm_posture=args.front_arm_posture),
++                front_arm_posture=args.front_arm_posture,mount_height_m=args.mount_height),
+             source_commit=manifest.get('base_commit','WORKTREE'))
+         save(path,db)
+     for g in db['requested_gaps_m']:
+-        key=GapCandidate(g).key
++        key=GapCandidate(g,args.mount_height).key
+         if key in db['layouts']:continue
+-        layout=frozen_layout(g);start=time.monotonic();record=admission(layout,args.external_support_mode)
++        layout=frozen_layout(g,args.mount_height);start=time.monotonic();record=admission(layout,args.external_support_mode)
+         record.update(gap_m=g,layout_path=layout.config_path.name,admission_wall_s=time.monotonic()-start,trials=0,candidate=layout.data['gap_search'])
+         db['layouts'][key]=record;save(path,db);emit(event='admission',gap_m=g,status=record['status'])
+     if args.admission_only:return
+@@ -210,7 +213,7 @@
+             db['status']='CHECKPOINTED_BETWEEN_TRIALS';save(path,db);break
+         available=[(k,r) for k,r in db['layouts'].items() if r['status'] in ('ADMITTED','ADMITTED_EXTERNAL_SUPPORT_UNVERIFIED','ACTIVE')]
+         if args.focus_gap is not None:
+-            focus=GapCandidate(args.focus_gap).key
++            focus=GapCandidate(args.focus_gap,args.mount_height).key
+             if focus not in db['layouts']:raise ValueError('FOCUSED_GAP_NOT_ADMITTED')
+             available=[(k,r) for k,r in available if k==focus]
+         if not available:db['status']='FINITE_ADMITTED_SEARCH_EXHAUSTED';break
+@@ -218,7 +221,7 @@
+         # g receives fair rounds. No accepted edges ever cross layout identities.
+         # Honor the explicitly requested distance order, without a hidden 200 mm preference.
+         available.sort(key=lambda kr:(kr[1]['trials']//5,-kr[1].get('best_count',0),db['requested_gaps_m'].index(kr[1]['gap_m'])))
+-        key,record=available[0];layout=frozen_layout(record['gap_m'])
++        key,record=available[0];layout=frozen_layout(record['gap_m'],args.mount_height)
+         if key not in cache:
+             start=time.monotonic()
+             try:cache[key]=prepare(args,layout,record)
+diff --git a/tools/plan_m710_joint_search.py b/tools/plan_m710_joint_search.py
+--- a/tools/plan_m710_joint_search.py
++++ b/tools/plan_m710_joint_search.py
+@@ -266,7 +266,8 @@
+         plan,detail=c.plan_target(target,state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
+     except Exception as exc:
+         fatal=isinstance(exc,(TypeError,AttributeError,KeyError,AssertionError)) or isinstance(exc,MoveItUnavailable) and any(
+-            s in str(exc) for s in ('MISMATCH','SCOPE_CHANGED','REQUEST_STOP:ERROR','FORBIDDEN_REQUEST'))
++            s in str(exc) for s in ('MISMATCH','SCOPE_CHANGED','REQUEST_STOP:ERROR','FORBIDDEN_REQUEST',
++                'GAP_FIXED_LAYOUT_CONTRACT','GAP_FIXED_WORLD_TRANSFORM'))
+         detail=deepcopy(getattr(c,'_single_active_row',None) or {})
+         detail.update(complete=False,failure=dict(reason=type(exc).__name__,detail=str(exc),global_unreachable=False))
+         (folder/'exception.txt').write_text(traceback.format_exc())
+diff --git a/tools/verify_m710_joint_search.py b/tools/verify_m710_joint_search.py
+--- a/tools/verify_m710_joint_search.py
++++ b/tools/verify_m710_joint_search.py
+@@ -179,7 +179,8 @@
+     if gap_search:
+         from unloading_sim.gap_search_layout import validate_search_layout,floor_support_evidence
+         candidate=validate_search_layout(layout)
+-        np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.15-candidate.g,.15,1.],rtol=0,atol=1e-12)
++        np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.15-candidate.g,.15,candidate.mount_height],rtol=0,atol=1e-12)
++        assert candidate.mount_height==db.get('options',{}).get('mount_height_m',1.)
+         assert abs(1.05-layout.data['robot']['base_origin_xy_a_m'][0]-.45)<1e-12
+         support=[dict(height_m=h,**floor_support_evidence(layout,coupled_conveyor_state(layout,h,()))) for h in (.55,.6,1.,1.5)]
+         support_verified=all(s['status']=='VERIFIED_ON_MODELED_FLOOR' for s in support)
+diff --git a/tools/prepare_m710_gap_home.py b/tools/prepare_m710_gap_home.py
+--- a/tools/prepare_m710_gap_home.py
++++ b/tools/prepare_m710_gap_home.py
+@@ -29,10 +29,11 @@
+     p.add_argument('--seed',type=int,default=911109)
+     p.add_argument('--draws',type=int,default=64)
+     p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
++    p.add_argument('--mount-height',type=float,choices=(.9,1.),default=1.)
+     args=p.parse_args();started=time.monotonic()
+     if args.output.exists():raise ValueError('INITIALIZATION_EVIDENCE_ALREADY_EXISTS')
+     if args.draws<=0:raise ValueError('NONPOSITIVE_INITIAL_DRAWS')
+-    layout=frozen_layout(args.gap)
++    layout=frozen_layout(args.gap,args.mount_height)
+     original,built,audit=make_context('gap',layout_path=layout.config_path,initial_seed=args.seed,initial_draws=64)
+     state=BatchState(FrozenCartonPopulation.capture(original.cartons),tuple(original.cartons),
+         np.asarray(original.snapshot['robot']['q_rad']),.6)
+@@ -60,6 +61,7 @@
+         requested_physical_pose_world=physical.tolist(),seed=args.seed,maximum_draws=args.draws,
+         tool_grid_orientation='SHORT_6_ROW_AXIS_WORLD_PLUS_Z_LONG_12_COLUMN_AXIS_WORLD_MINUS_Y',
+         front_arm_posture=args.front_arm_posture,
++        mount_height_m=args.mount_height,
+         selected=selected,attempts=rows,unsearched_draws=args.draws-len(rows),
+         wall_s=time.monotonic()-started,historical_solution_loaded=False,native_motion_credit=False,
+         scope='FRESH40_STATIC_INITIALIZATION_ONLY',physical_execution='NOT_RUN')
+diff --git a/tools/export_m710_gap_failures.py b/tools/export_m710_gap_failures.py
+--- a/tools/export_m710_gap_failures.py
++++ b/tools/export_m710_gap_failures.py
+@@ -73,17 +73,27 @@
+     layout=load_workcell_layout(ROOT/'configs/workcells'/record['layout_path']);robot=layout.robot()
+     for w in witnesses:
+         w['expected_flange_flat']=robot.named_link_frames(np.asarray(w['q_rad']))['flange'].T.reshape(-1).tolist()
++    endpoints=[]
++    from unloading_sim.front_arm_posture import front_arm_posture
++    for index,a in enumerate(attempts):
++        if not a['final_timed_path']:continue
++        q=np.asarray(a['final_timed_path'][-1]['q'])
++        endpoints.append(dict(attempt_index=index,stage=a['request']['stage'],q_rad=q.tolist(),
++            expected_flange_flat=robot.named_link_frames(q)['flange'].T.reshape(-1).tolist(),
++            arm_posture=front_arm_posture(robot,q)))
+     initial_q=record['initial']['q_rad']
+     metadata=dict(run=run.name,trial_number=trial_number,gap_m=record['gap_m'],target_id=trial['target_id'],
+         completed_count=len(dispatch['initial']['completed']),carton_count=len(dispatch['initial']['world_cartons']),wall_s=trial['wall_s'],category=trial['category'],
+         contact_complete=trial.get('contact_complete',False),initial_q_rad=initial_q,
+         initial_expected_flange_flat=robot.named_link_frames(np.asarray(initial_q))['flange'].T.reshape(-1).tolist(),
+         initial_orientation=record.get('initial_orientation_evidence'),target=dispatch['target'],
++        initial_arm_posture=record.get('initial_arm_posture_evidence'),
++        base_world_m=record['candidate']['base_xyz_world_m'],
+         archive_server_path=str(archive),archive_sha256=trial['evidence']['sha256'],source_identity=db['identity'],
+         witness_pair_counts=[dict(pair=list(k),count=v) for k,v in pairs.most_common()],
+         native_requests=[dict(stage=k[0],status=k[1],solver=k[2],count=v) for k,v in statuses.items()],
+         receiver_lift_failures=lift_failures,
+-        witnesses=witnesses,physical_execution='NOT_RUN',global_unreachable=False)
++        witnesses=witnesses,native_endpoints=endpoints,physical_execution='NOT_RUN',global_unreachable=False)
+     data=dict(label=f"g={record['gap_m']*1000:.0f} mm · 失败诊断",raw=dict(run_id=run.name,source_commit=db['source_commit'],attempts=attempts),
+         result=dict(complete=False,target_id=trial['target_id']),model=export_model(trace['model']),request_log=logs,
+         failure_review=metadata,qualification_status='NOT_EVALUATED',physical_execution='NOT_RUN')
+diff --git a/tools/search_replay/gap_failure_overlay.js b/tools/search_replay/gap_failure_overlay.js
+--- a/tools/search_replay/gap_failure_overlay.js
++++ b/tools/search_replay/gap_failure_overlay.js
+@@ -1,13 +1,14 @@
+ 
+ // Displays only saved q and witnesses. No invented motion between rejected states.
+ const failureData=DATA.failure_review,reviewGroup=new T.Group();scene.add(reviewGroup);
+-document.title='800 mm · 当前失败情况';
++document.title=`${(failureData.gap_m*1000).toFixed(0)} mm · 当前失败情况`;
+ document.querySelector('h1').textContent=`${(failureData.gap_m*1000).toFixed(0)} mm · ${failureData.target_id} 失败诊断`;
+ $('identity').textContent=`完整 40 箱初场景 · 第 ${failureData.trial_number+1} 次尝试 · ${failureData.wall_s.toFixed(1)} s 搜索`;
+-document.querySelector('.badge').innerHTML='完整抓放 0 / 40 · 未执行<br>有限搜索未完成 ≠ 已证明不可达';
++document.querySelector('.badge').innerHTML=`完整抓放 ${failureData.completed_count} / 40 · 未执行<br>有限搜索未完成 ≠ 已证明不可达`;
+ $('hud').style.top='auto';$('hud').style.bottom='62px';$('hud').style.maxWidth='600px';
+ const panel=document.createElement('section');panel.innerHTML=`<h3>查看已记录的失败位置</h3>
+ <button id="reviewInitial">初始姿态</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
++<button id="reviewContact">已返回接触终点</button>
+ <p><select id="reviewWitness" style="width:100%"></select></p><button id="reviewShow">显示拒绝状态</button>
+ <p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；所有箱子仍在场</p><pre id="reviewSummary"></pre>`;
+ document.querySelector('aside').prepend(panel);
+@@ -17,7 +18,7 @@
+ const reasons={CLEARANCE_INSUFFICIENT:'净空不足 5 mm',INTERSECTION_OR_CONTACT:'相交 / 接触'};
+ const pairs=failureData.witness_pair_counts;
+ $('reviewSummary').textContent=`本次有效接触：${failureData.contact_complete?'已到达':'未到达'}\n完成抓放：0 / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
+-if(failureData.receiver_lift_failures.length){const h=failureData.receiver_lift_failures[0].height_m;$('reviewSummary').textContent=`主要阻塞：接近后升带\n${failureData.receiver_lift_failures.length} 次升带检查被拒绝\n首个拒绝高度 ${h.toFixed(3)} m\nJ3 连杆 ↔ 横向输送带\n尚未有效接触，完整抓放 0 / 40\n\n其他候选还有顶棚碰撞；可在下拉框查看。`;}
++if(failureData.receiver_lift_failures.length){const w=failureData.receiver_lift_failures[0];$('reviewSummary').textContent=`已记录升带拒绝 ${failureData.receiver_lift_failures.length} 次\n首个拒绝高度 ${w.height_m.toFixed(3)} m\n${w.pair.join(' ↔ ')}\n完成抓放 ${failureData.completed_count} / 40\n\n其他候选见下拉框；升带拒绝不代表所有路径的结果。`;}
+ $('reviewWitness').innerHTML=failureData.witnesses.map((w,i)=>`<option value="${i}">${i+1}. ${w.pair.join(' / ')} · ${reasons[w.reason]||w.reason}</option>`).join('');
+ function reviewAnnotations(q){
+  for(const [o] of modelObjects)o.material.emissive?.set(0x000000);
+@@ -35,7 +36,8 @@
+ function reviewInitial(){
+  reviewSelectAttempt(0);pose(failureData.initial_q_rad,'已校验的完整 40 箱初态；吸盘朝向箱堆');reviewAnnotations(failureData.initial_q_rad);
+  const angle=(failureData.initial_orientation?.actual_angle_rad||0)*180/Math.PI;
+- $('hud').innerHTML=`<b>初始姿态 · ${failureData.target_id}</b><br>吸盘朝 +X · 偏差 ${angle.toFixed(4)}°<br>未附着 · 完成抓放 0 / 40`;
++ const shape=failureData.initial_arm_posture;
++ $('hud').innerHTML=`<b>初始姿态 · ${failureData.target_id}</b><br>吸盘朝 +X · 偏差 ${angle.toFixed(4)}°`+(shape?`<br>大臂仰角 ${shape.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${shape.forearm_elevation_deg.toFixed(1)}°`:'')+`<br>未附着 · 完成抓放 ${failureData.completed_count} / 40`;
+  $('motionText').textContent='初始状态；静态展示';
+  window.failureReviewState={kind:'initial',q:currentQ,pair:[],expected:failureData.initial_expected_flange_flat};
+ }
+@@ -51,9 +53,17 @@
+  window.failureReviewState={kind:'witness',index,q:currentQ,pair:w.pair,expected:w.expected_flange_flat};
+ }
+ function reviewCamera(side){camera.position.set(...(side?[-.95,-6.7,2.65]:[-4.6,-5.1,3.7]));controls.target.set(-.75,0,1.4);controls.update();}
++function reviewContact(){
++ const e=failureData.native_endpoints?.find(e=>e.stage==='contact');if(!e)return;
++ reviewSelectAttempt(e.attempt_index);setMotion(active.final_timed_path.length-1);reviewAnnotations(e.q_rad);
++ const s=e.arm_posture;
++ $('hud').innerHTML=`<b>原生接触路径终点 · ${failureData.target_id}</b><br>大臂仰角 ${s.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${s.forearm_elevation_deg.toFixed(1)}°<br>规划状态 · 尚未完成卸箱 · 未执行`;
++ window.failureReviewState={kind:'contact',q:currentQ,pair:[],expected:e.expected_flange_flat};
++}
+ $('reviewInitial').onclick=reviewInitial;$('reviewShow').onclick=()=>reviewWitness(Number($('reviewWitness').value));
+ const firstLiftWitness=failureData.witnesses.findIndex(w=>w.phase==='receiver_lift');
+ $('reviewLift').disabled=firstLiftWitness<0;$('reviewLift').onclick=()=>reviewWitness(firstLiftWitness);
+ $('reviewSide').onclick=()=>reviewCamera(true);$('reviewIso').onclick=()=>reviewCamera(false);
+-window.failureReview={initial:reviewInitial,witness:reviewWitness,camera:reviewCamera,data:failureData};
++$('reviewContact').disabled=!failureData.native_endpoints?.some(e=>e.stage==='contact');$('reviewContact').onclick=reviewContact;
++window.failureReview={initial:reviewInitial,witness:reviewWitness,camera:reviewCamera,contact:reviewContact,data:failureData};
+ if(firstLiftWitness>=0)reviewWitness(firstLiftWitness);else reviewInitial();reviewCamera(true);

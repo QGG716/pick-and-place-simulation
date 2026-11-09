@@ -225,6 +225,8 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
     folder.mkdir();began=time.monotonic();layout=original.policy.layout_validation.layout;fatal=False
     scene=batch_scene(original,state,built.robot,layout);client=None;c=None;plan=None;detail={}
     row=dict(initial=state.root(),target=target.evidence(),option=option,seed=seed,
+        numeric_search_policy=dict(fixed_target_connection_slice_s=getattr(args,'connection_seconds',6.),
+            native_ompl_restart_slice_s=getattr(args,'ompl_seconds',2.),shared_deadlines_preserved=True),
         solver_seed_scope='EXPLICIT_MOVEIT_OMPL_SEED_NOT_KDL_INTERNAL_RANDOMNESS',planning_mode='cold_from_scratch',
         restart=True,historical_solver_state_loaded=False,layout_fingerprint=layout.layout_fingerprint)
     save(folder/'dispatch.json',row)
@@ -251,6 +253,9 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
             native_budget=dict(task_wall_time_s=budget,stage_wall_time_s=min(args.stage_seconds,budget),ipc_timeout_s=min(args.stage_seconds,budget)+10))
         c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
         c.upper_arm_preference_enabled=True;c.empty_approach_direct_first=True
+        c.front_arm_posture_required=(getattr(args,'front_arm_posture','legacy-soft')=='upright' and target.face_role=='FRONT')
+        c.fixed_target_connection_slice_s=row['numeric_search_policy']['fixed_target_connection_slice_s']
+        c.native_ompl_restart_slice_s=row['numeric_search_policy']['native_ompl_restart_slice_s']
         c.height_stage_deadlines={'prefix':began+min(args.prefix_seconds,budget)};c.height_prefix_active=True
         c.height_visit_deadline=c.height_stage_deadlines['prefix']
         c.budget=replace(c.budget,planning_wall_time_s=budget,candidate_wall_time_s=None,
@@ -261,7 +266,8 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
         plan,detail=c.plan_target(target,state.q,scene.all_obstacles,scene.policy.data['suction'],seed)
     except Exception as exc:
         fatal=isinstance(exc,(TypeError,AttributeError,KeyError,AssertionError)) or isinstance(exc,MoveItUnavailable) and any(
-            s in str(exc) for s in ('MISMATCH','SCOPE_CHANGED','REQUEST_STOP:ERROR','FORBIDDEN_REQUEST'))
+            s in str(exc) for s in ('MISMATCH','SCOPE_CHANGED','REQUEST_STOP:ERROR','FORBIDDEN_REQUEST',
+                'GAP_FIXED_LAYOUT_CONTRACT','GAP_FIXED_WORLD_TRANSFORM'))
         detail=deepcopy(getattr(c,'_single_active_row',None) or {})
         detail.update(complete=False,failure=dict(reason=type(exc).__name__,detail=str(exc),global_unreachable=False))
         (folder/'exception.txt').write_text(traceback.format_exc())
@@ -274,6 +280,7 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
             client.close()
     if plan is not None:
         from verify_m710_joint_search import verify_cycle
+        plan['front_arm_posture_required']=c.front_arm_posture_required
         save(folder/'plan.json',plan)
         save(folder/'cycle-verification.json',verify_cycle(plan,folder,state.root(),layout,built))
     wall=time.monotonic()-began

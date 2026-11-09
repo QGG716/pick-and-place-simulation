@@ -49,6 +49,9 @@ def summarize(run):
         trials=[t for t in db['trials'] if t['layout']==key]
         nodes=r.get('nodes',{})
         layouts.append(dict(key=key,gap_m=r['gap_m'],status=r['status'],best_continuous_count=r.get('best_count',0),
+            support_verified=r.get('support_verified',all(c['floor_support']['status']=='VERIFIED_ON_MODELED_FLOOR' for c in r['checks'])),
+            external_support_mode=r.get('external_support_mode','require-modeled'),
+            initial_orientation_evidence=r.get('initial_orientation_evidence'),
             trials=len(trials),trial_wall_s=sum(t['wall_s'] for t in trials),admission_wall_s=r['admission_wall_s'],
             failures=dict(Counter(t['category'] for t in trials)),
             nodes=[dict(id=n['id'],completed=len(n['root']['completed']),closed=n['closed'],
@@ -59,6 +62,8 @@ def summarize(run):
             floor_support=[dict(height_m=c['height_m'],status=c['floor_support']['status'],
                 unknown_parts=[f['id'] for f in c['floor_support']['footprints'] if f['status']!='VERIFIED_ON_MODELED_FLOOR']) for c in r['checks']]))
     best=db['layouts'].get(db['best']);chain=[];cycles=[]
+    remaining_by_layout={key:[b['id'] for b in r['nodes'][r['best_node']]['root']['world_cartons']]
+        for key,r in db['layouts'].items() if r.get('nodes') and r.get('best_node')}
     if best:
         node=best['nodes'][best['best_node']]
         remaining=[b['id'] for b in node['root']['world_cartons']]
@@ -83,16 +88,17 @@ def summarize(run):
                 archive=row['evidence']['archive'],archive_sha256=row['evidence']['sha256'],
                 finite_outfeed_support=outfeed.get('finite_support'),
                 final_state_receipt_summary=receipt_summary(plan['final_state_receipt'])))
-    else:remaining=[]
+    else:remaining=next(iter(remaining_by_layout.values())) if len(remaining_by_layout)==1 else None
     # Inspect the most recent failure for each carton still offered at the
     # deepest accepted node. Older worlds remain in trials and raw archives.
     blocking=[]
-    if best:
-        node=best['nodes'][best['best_node']]
+    diagnostic_keys=[db['best']] if best else list(remaining_by_layout)
+    for key in diagnostic_keys:
+        record=db['layouts'][key];node=record['nodes'][record['best_node']]
         for name in node.get('screens',{}):
-            matches=[r for r in db['trials'] if r['layout']==db['best'] and r['node']==node['id']
+            matches=[r for r in db['trials'] if r['layout']==key and r['node']==node['id']
                 and r['target_id']==name and not r['complete']]
-            if matches:blocking.append(native_failure_summary(run,matches[-1]))
+            if matches:blocking.append(dict(layout_key=key,gap_m=record['gap_m'],**native_failure_summary(run,matches[-1])))
     trials=[]
     for row in db['trials']:
         f=row.get('failure') or {};last=f.get('last_failure') or {}
@@ -108,7 +114,10 @@ def summarize(run):
         elapsed_search_s=db['elapsed_search_s'],admission_wall_s=sum(x['admission_wall_s'] for x in layouts),
         trial_count=len(trials),interrupted=db['interrupted'],layouts=sorted(layouts,key=lambda x:x['gap_m']),
         best_gap_m=best['gap_m'] if best else None,best_count=best.get('best_count',0) if best else 0,
+        best_support_verified=next((r['support_verified'] for r in layouts if best and r['gap_m']==best['gap_m']),None),
+        external_support_mode=db.get('options',{}).get('external_support_mode','require-modeled'),
         best_layout=best['candidate'] if best else None,best_cycles=cycles,remaining_target_ids=remaining,
+        remaining_target_ids_by_layout=remaining_by_layout,
         deepest_branch_failure_diagnostics=blocking,
         trials=trials,requested_gaps_m=db['requested_gaps_m'],
         queued_unadmitted_gaps_m=[g for g in db['requested_gaps_m'] if g not in {r['gap_m'] for r in layouts}],

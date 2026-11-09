@@ -2,7 +2,7 @@
 from time import perf_counter
 import numpy as np
 from .moveit2_backend import MoveItUnavailable, digest
-from .approach_recovery_policy import equivalent_bounded_configurations
+from .approach_recovery_policy import equivalent_bounded_configurations,bounded_numeric_slice
 from .approach_quality import path_metrics
 
 
@@ -11,10 +11,11 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
     previous=getattr(c,"_single_connection_deadline",None)
     c._single_connection_deadline=min(perf_counter()+stage_s,previous) if previous is not None else perf_counter()+stage_s
     original_q=np.asarray(start).copy();original_pose=np.asarray(pose).copy()
+    upright=getattr(c,'front_arm_posture_required',False) and stage=='pregrasp'
     def current_context():
         request=c._build_native_request(start,None,obstacles,seed=seed,stage=stage,attachment=attachment,goal_pose=pose)
         receipt,_,transition=c._native_parent_for_request(start,request)
-        return digest(dict(request=request,parent=receipt.evidence(),transition=transition))
+        return digest(dict(request=request,parent=receipt.evidence(),transition=transition,front_upright=upright))
     context=current_context();state={} if recovery_state is None else recovery_state
     if state and state.get("context_sha256")!=context:
         c._single_connection_deadline=previous
@@ -43,6 +44,13 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
         variants=equivalent_bounded_configurations(c.robot,q) if hasattr(c,"robot") else [q]
         for v in variants:
             if not any(same(v,p["q"]) for p in pool) and not any(same(v,x) for x in invalid):
+                if upright:
+                    from .front_arm_posture import front_arm_posture
+                    shape=front_arm_posture(c.robot,v)
+                    if not shape['passed']:
+                        invalid.append(np.asarray(v).copy())
+                        state.setdefault('posture_rejections',[]).append(dict(q_rad=np.asarray(v).tolist(),**shape))
+                        continue
                 pool.append(dict(q=np.asarray(v).copy(),motion_s=0.,returned_prefixes=0,
                     joint_cost=float(np.abs(v-original_q).sum()),endpoint_invalid=False))
                 if posture:
@@ -99,6 +107,7 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                 if any(same(q,x) for x in invalid):
                     return [],None,dict(reason="SINGLE_TARGET_NO_NUMERICAL_PROGRESS"),costs
                 add(q)
+            if upright:row['posture_rejected_ik_count']=len(state.get('posture_rejections',[]))
             if direct and pool and not state.get("initial_comparison_done"):
                 # A short numerical comparison at this SAME business pose. Do
                 # not let the first wrist branch become the only candidate just
@@ -133,15 +142,31 @@ def connect_fixed_target(c,pose,start,obstacles,seed,*,stage,purpose,attachment=
                 valid_configuration_retained=True)
             if posture:row["upper_arm_preference"]=candidate["upper_arm_preference"]
             before=perf_counter()
+            visit_s=bounded_numeric_slice(getattr(c,'fixed_target_connection_slice_s',6.),
+                c._single_connection_deadline-before)
             path,failure,evidence=c._native_plan(start,q,obstacles,seed=seed,stage=stage,attachment=attachment,
                 support_names=(),initial_proximity=None,purpose=purpose,allow_ompl=True,
-                recovery_mode="shared_budget",search_deadline=min(c._single_connection_deadline,before+6.),
-                try_ptp=direct,try_lin_pose=pose if direct else None,try_prior=False)
+                recovery_mode="shared_budget",search_deadline=min(c._single_connection_deadline,before+visit_s),
+                # Upright recovery selects a joint branch for its downstream
+                # motion. A pose-only LIN may silently return an already failed
+                # branch and prevent RRT from ever trying the selected goal.
+                try_ptp=direct,try_lin_pose=pose if direct and not upright and not state.get('lin_posture_rejected') else None,try_prior=False)
             elapsed=perf_counter()-before;row["motion_s"]=elapsed;costs["motion_s"]+=elapsed
             candidate["motion_s"]+=elapsed
             row.update(status="SUCCESS" if failure is None else "CONNECTION_NOT_COMPLETED",failure=brief(failure))
             guard()
             if failure is None:
+                if upright:
+                    from .front_arm_posture import front_arm_posture
+                    row['actual_endpoint_arm_posture']=front_arm_posture(c.robot,path[-1])
+                    if not row['actual_endpoint_arm_posture']['passed']:
+                        # Pose-only LIN can return a different IK branch than
+                        # q_goal. Retain its cost, then use joint-goal recovery.
+                        state['lin_posture_rejected']=True
+                        row.update(status='ACTUAL_ENDPOINT_ARM_POSTURE_REJECTED',
+                            actual_endpoint_q_rad=np.asarray(path[-1]).tolist())
+                        last_failure=dict(reason='FRONT_ARM_POSTURE_REJECTED')
+                        continue
                 incumbent=(path,np.asarray(path[-1]).copy(),quality(path,evidence,elapsed))
                 row["raw_candidate_quality"]=incumbent[2]
                 # Improve only an actual detour, before any suffix is bound.

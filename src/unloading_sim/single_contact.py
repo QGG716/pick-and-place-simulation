@@ -461,6 +461,11 @@ class SingleContactConnector(PlanningOnlyConnector):
                         orientation_tolerance=float(self.ik["orientation_tolerance_rad"]))
                     row["contact_fk_check"]=audit
                     row["failure"]=audit["failure"]
+                    if getattr(self,'front_arm_posture_required',False):
+                        from .front_arm_posture import front_arm_posture
+                        row['actual_contact_arm_posture']=front_arm_posture(self.robot,contact[-1])
+                        if not row['actual_contact_arm_posture']['passed']:
+                            row['failure']=dict(reason='FRONT_ARM_POSTURE_REJECTED',scope='FACE_ATTEMPT')
                     if audit["passed"]:
                         geometry=evaluate_independent_cup_geometry(self.physical_contact_pose(contact[-1]),
                             target.box,target.legacy_face,array,max_attachment_gap_m=.002,
@@ -503,7 +508,7 @@ class SingleContactConnector(PlanningOnlyConnector):
         allowed={"SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED","SINGLE_TARGET_NO_NUMERICAL_PROGRESS","NATIVE_IK_FAILED","APPROACH_IK_FK_RESIDUAL","INVALID_GOAL_CLEARANCE",
             "INVALID_GOAL_PROCESS","MOVEIT2_SEARCH_EXHAUSTED","NATIVE_PLANNING_FAILED",
             "NATIVE_PLANNING_TIMEOUT","SEARCH_EXHAUSTED","CONTACT_NORMAL_LINE_OR_ORIENTATION",
-            "CONTACT_ENDPOINT_FK","TERMINAL_CONTACT_GEOMETRY_NOT_SATISFIED"}
+            "CONTACT_ENDPOINT_FK","TERMINAL_CONTACT_GEOMETRY_NOT_SATISFIED","FRONT_ARM_POSTURE_REJECTED"}
         if reason not in allowed:
             raise MoveItUnavailable("REQUEST_FAILURE:"+reason)
         row["failure"]["scope"]="FACE_ATTEMPT"

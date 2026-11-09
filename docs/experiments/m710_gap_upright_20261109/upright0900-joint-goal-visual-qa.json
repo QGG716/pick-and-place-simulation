@@ -1,0 +1,1415 @@
+{
+  "status": "PASS_BROWSER_FK_AND_40_IDENTITIES",
+  "metadata": {
+    "run": "g0800-upright0900-joint-goal",
+    "initial": {
+      "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+      "passed": true,
+      "initial": true,
+      "upper_arm": {
+        "shoulder_world_m": [
+          -2.0981930416640844,
+          0.17321254838114136,
+          1.4649999999999999
+        ],
+        "elbow_world_m": [
+          -2.0330745471612017,
+          0.1630125674158975,
+          2.3575696286912224
+        ],
+        "direction_world": [
+          0.07275809441662864,
+          -0.011396626776808774,
+          0.9972845013309748
+        ],
+        "length_m": 0.8950000000000001,
+        "elevation_rad": 1.4970843393221525,
+        "elevation_deg": 85.77661421829056,
+        "q2_rad": -0.07371198747274418,
+        "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+      },
+      "forearm_root_world_m": [
+        -2.0230811759657006,
+        0.16144723337752814,
+        2.1878708300463963
+      ],
+      "wrist_world_m": [
+        -0.9924988509020078,
+        1.96669232535307e-05,
+        2.250049701497754
+      ],
+      "forearm_direction_world": [
+        0.9862031818791317,
+        -0.1544761401476312,
+        0.05950131239364362
+      ],
+      "forearm_length_m": 1.0450000000000002,
+      "forearm_elevation_deg": 3.4111889308237138,
+      "minimum_upper_elevation_deg": 75,
+      "maximum_forearm_absolute_elevation_deg": 20,
+      "forearm_forward_world_plus_x_required": true,
+      "collision_checks_unchanged": true
+    },
+    "base": [
+      -1.95,
+      0.15,
+      0.9
+    ],
+    "contact": true,
+    "endpoints": [
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011652,
+              0.16776669270312086,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791948266,
+              0.12533256475705432,
+              2.285166940307792
+            ],
+            "direction_world": [
+              0.3974742120858386,
+              -0.04741243345929223,
+              0.9163876428020022
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565564338,
+            "elevation_deg": 66.40356570155046,
+            "q2_rad": -0.4118354702384627,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283519085,
+            0.1227613498040932,
+            2.116558649575383
+          ],
+          "wrist_world_m": [
+            -0.6925001363228969,
+            8.053896244364367e-09,
+            2.249999998181143
+          ],
+          "forearm_direction_world": [
+            0.9848317627071883,
+            -0.11747496818200666,
+            0.12769507043613373
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.3364194756117875,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011652,
+              0.16776669270312086,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791948266,
+              0.12533256475705432,
+              2.285166940307792
+            ],
+            "direction_world": [
+              0.3974742120858386,
+              -0.04741243345929223,
+              0.9163876428020022
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565564338,
+            "elevation_deg": 66.40356570155046,
+            "q2_rad": -0.4118354702384627,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283519085,
+            0.1227613498040932,
+            2.116558649575383
+          ],
+          "wrist_world_m": [
+            -0.6925001363228969,
+            8.053896244364367e-09,
+            2.249999998181143
+          ],
+          "forearm_direction_world": [
+            0.9848317627071883,
+            -0.11747496818200666,
+            0.12769507043613373
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.3364194756117875,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.099092578258261,
+              0.16647431662631912,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868671516,
+              0.11626731635977969,
+              2.2344472550603953
+            ],
+            "direction_world": [
+              0.5076797669174408,
+              -0.056097207001720044,
+              0.8597176034194364
+            ],
+            "length_m": 0.8949999999999999,
+            "elevation_rad": 1.0347165305439214,
+            "elevation_deg": 59.28489019258603,
+            "q2_rad": -0.536079796250975,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297619182,
+            0.11299896778875163,
+            2.0670721468238638
+          ],
+          "wrist_world_m": [
+            -0.5925000881036486,
+            2.2603126065279255e-08,
+            2.2499998947021376
+          ],
+          "forearm_direction_world": [
+            0.9786033891466693,
+            -0.10813296190012013,
+            0.17505047643853952
+          ],
+          "forearm_length_m": 1.0450000000000002,
+          "forearm_elevation_deg": 10.081595536993706,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011638,
+              0.16776669270323802,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791952254,
+              0.12533256475693696,
+              2.285166940307959
+            ],
+            "direction_world": [
+              0.39747421208537714,
+              -0.047412433459554246,
+              0.9163876428021888
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565569,
+            "elevation_deg": 66.40356570157718,
+            "q2_rad": -0.41183547023799666,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283523822,
+            0.12276134980396758,
+            2.116558649575541
+          ],
+          "wrist_world_m": [
+            -0.6925001363234096,
+            8.052954372783638e-09,
+            2.24999999818085
+          ],
+          "forearm_direction_world": [
+            0.9848317627071511,
+            -0.11747496818278778,
+            0.1276950704357024
+          ],
+          "forearm_length_m": 1.0449999999999997,
+          "forearm_elevation_deg": 7.33641947558687,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011638,
+              0.16776669270323802,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791952254,
+              0.12533256475693696,
+              2.285166940307959
+            ],
+            "direction_world": [
+              0.39747421208537714,
+              -0.047412433459554246,
+              0.9163876428021888
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565569,
+            "elevation_deg": 66.40356570157718,
+            "q2_rad": -0.41183547023799666,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283523822,
+            0.12276134980396758,
+            2.116558649575541
+          ],
+          "wrist_world_m": [
+            -0.6925001363234096,
+            8.052954372783638e-09,
+            2.24999999818085
+          ],
+          "forearm_direction_world": [
+            0.9848317627071511,
+            -0.11747496818278778,
+            0.1276950704357024
+          ],
+          "forearm_length_m": 1.0449999999999997,
+          "forearm_elevation_deg": 7.33641947558687,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.099092578258261,
+              0.16647431662631912,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868671518,
+              0.1162673163597797,
+              2.2344472550603953
+            ],
+            "direction_world": [
+              0.5076797669174405,
+              -0.05609720700172003,
+              0.8597176034194365
+            ],
+            "length_m": 0.8949999999999998,
+            "elevation_rad": 1.0347165305439217,
+            "elevation_deg": 59.28489019258605,
+            "q2_rad": -0.5360797962509749,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297619182,
+            0.11299896778875163,
+            2.0670721468238638
+          ],
+          "wrist_world_m": [
+            -0.5925000881036488,
+            2.2603126079157043e-08,
+            2.249999894702138
+          ],
+          "forearm_direction_world": [
+            0.9786033891466693,
+            -0.10813296190012014,
+            0.17505047643853996
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 10.081595536993731,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011652,
+              0.16776669270312095,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791948266,
+              0.12533256475705423,
+              2.285166940307792
+            ],
+            "direction_world": [
+              0.3974742120858386,
+              -0.047412433459292413,
+              0.9163876428020022
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565564338,
+            "elevation_deg": 66.40356570155046,
+            "q2_rad": -0.4118354702384627,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283519085,
+            0.1227613498040931,
+            2.116558649575383
+          ],
+          "wrist_world_m": [
+            -0.6925001363228969,
+            8.053895703130642e-09,
+            2.249999998181143
+          ],
+          "forearm_direction_world": [
+            0.9848317627071883,
+            -0.11747496818200709,
+            0.12769507043613373
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.336419475611786,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099011652,
+              0.16776669270312095,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432046791948266,
+              0.12533256475705423,
+              2.285166940307792
+            ],
+            "direction_world": [
+              0.3974742120858386,
+              -0.047412433459292413,
+              0.9163876428020022
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.1589608565564338,
+            "elevation_deg": 66.40356570155046,
+            "q2_rad": -0.4118354702384627,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283519085,
+            0.1227613498040931,
+            2.116558649575383
+          ],
+          "wrist_world_m": [
+            -0.6925001363228969,
+            8.053895703130642e-09,
+            2.249999998181143
+          ],
+          "forearm_direction_world": [
+            0.9848317627071883,
+            -0.11747496818200709,
+            0.12769507043613373
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.336419475611786,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.099092578258261,
+              0.16647431662631912,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868671518,
+              0.11626731635977972,
+              2.2344472550603958
+            ],
+            "direction_world": [
+              0.5076797669174404,
+              -0.056097207001719995,
+              0.8597176034194366
+            ],
+            "length_m": 0.8950000000000001,
+            "elevation_rad": 1.0347165305439219,
+            "elevation_deg": 59.28489019258606,
+            "q2_rad": -0.5360797962509748,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297619184,
+            0.11299896778875165,
+            2.067072146823864
+          ],
+          "wrist_world_m": [
+            -0.5925000881036488,
+            2.260312609303483e-08,
+            2.2499998947021385
+          ],
+          "forearm_direction_world": [
+            0.9786033891466693,
+            -0.10813296190012013,
+            0.17505047643853994
+          ],
+          "forearm_length_m": 1.0450000000000002,
+          "forearm_elevation_deg": 10.081595536993731,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299414,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.12533257866773062,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612856,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059058,
+            0.1227613673917262,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999686,
+            3.404128823270014e-08,
+            2.249999858760675
+          ],
+          "forearm_direction_world": [
+            0.9848317858430027,
+            -0.11747496014395983,
+            0.1276948993987528
+          ],
+          "forearm_length_m": 1.0449999999999995,
+          "forearm_elevation_deg": 7.336409595003985,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299414,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.12533257866773062,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612856,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059058,
+            0.1227613673917262,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999686,
+            3.404128823270014e-08,
+            2.249999858760675
+          ],
+          "forearm_direction_world": [
+            0.9848317858430027,
+            -0.11747496014395983,
+            0.1276948993987528
+          ],
+          "forearm_length_m": 1.0449999999999995,
+          "forearm_elevation_deg": 7.336409595003985,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.0990925782582766,
+              0.16647431662617948,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868766238,
+              0.11626731636111574,
+              2.234447255066076
+            ],
+            "direction_world": [
+              0.5076797669068746,
+              -0.05609720700007121,
+              0.8597176034257835
+            ],
+            "length_m": 0.895,
+            "elevation_rad": 1.034716530556348,
+            "elevation_deg": 59.28489019329802,
+            "q2_rad": -0.5360797962385486,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297739725,
+            0.11299896779040104,
+            2.067072146829082
+          ],
+          "wrist_world_m": [
+            -0.592500088112772,
+            2.2605421076682397e-08,
+            2.2499998946913675
+          ],
+          "forearm_direction_world": [
+            0.9786033891494743,
+            -0.10813296189950236,
+            0.17505047642323993
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 10.081595536103357,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299414,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.12533257866773062,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612856,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059056,
+            0.12276136739172619,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999683,
+            3.404128821882235e-08,
+            2.2499998587606753
+          ],
+          "forearm_direction_world": [
+            0.9848317858430025,
+            -0.11747496014395982,
+            0.12769489939875323
+          ],
+          "forearm_length_m": 1.0449999999999997,
+          "forearm_elevation_deg": 7.33640959500401,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299414,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.12533257866773062,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612856,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059056,
+            0.12276136739172619,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999683,
+            3.404128821882235e-08,
+            2.2499998587606753
+          ],
+          "forearm_direction_world": [
+            0.9848317858430025,
+            -0.11747496014395982,
+            0.12769489939875323
+          ],
+          "forearm_length_m": 1.0449999999999997,
+          "forearm_elevation_deg": 7.33640959500401,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.0990925782582766,
+              0.16647431662617948,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868766242,
+              0.1162673163611158,
+              2.2344472550660766
+            ],
+            "direction_world": [
+              0.507679766906874,
+              -0.056097207000071134,
+              0.8597176034257837
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.0347165305563486,
+            "elevation_deg": 59.28489019329806,
+            "q2_rad": -0.536079796238548,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.615140629773973,
+            0.1129989677904011,
+            2.0670721468290822
+          ],
+          "wrist_world_m": [
+            -0.5925000881127724,
+            2.2605421132193548e-08,
+            2.2499998946913684
+          ],
+          "forearm_direction_world": [
+            0.9786033891494743,
+            -0.10813296189950236,
+            0.17505047642324037
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 10.081595536103382,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.0989440990116432,
+              0.16776669270319258,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.743204679194446,
+              0.12533256475690802,
+              2.285166940307619
+            ],
+            "direction_world": [
+              0.397474212086254,
+              -0.04741243345953584,
+              0.9163876428018094
+            ],
+            "length_m": 0.8949999999999998,
+            "elevation_rad": 1.1589608565559522,
+            "elevation_deg": 66.40356570152287,
+            "q2_rad": -0.41183547023894423,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283516998,
+            0.12276134980395688,
+            2.1165586495751887
+          ],
+          "wrist_world_m": [
+            -0.6925001363226122,
+            8.053248387596135e-09,
+            2.249999998179892
+          ],
+          "forearm_direction_world": [
+            0.9848317627072609,
+            -0.11747496818249617,
+            0.12769507043512274
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.3364194755533845,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.0989440990116432,
+              0.16776669270319258,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.743204679194446,
+              0.12533256475690802,
+              2.285166940307619
+            ],
+            "direction_world": [
+              0.397474212086254,
+              -0.04741243345953584,
+              0.9163876428018094
+            ],
+            "length_m": 0.8949999999999998,
+            "elevation_rad": 1.1589608565559522,
+            "elevation_deg": 66.40356570152287,
+            "q2_rad": -0.41183547023894423,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216493283516998,
+            0.12276134980395688,
+            2.1165586495751887
+          ],
+          "wrist_world_m": [
+            -0.6925001363226122,
+            8.053248387596135e-09,
+            2.249999998179892
+          ],
+          "forearm_direction_world": [
+            0.9848317627072609,
+            -0.11747496818249617,
+            0.12769507043512274
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.3364194755533845,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.099092578258261,
+              0.16647431662631912,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.6447191868671518,
+              0.1162673163597797,
+              2.2344472550603953
+            ],
+            "direction_world": [
+              0.5076797669174405,
+              -0.05609720700172003,
+              0.8597176034194365
+            ],
+            "length_m": 0.8949999999999998,
+            "elevation_rad": 1.0347165305439217,
+            "elevation_deg": 59.28489019258605,
+            "q2_rad": -0.5360797962509749,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297619184,
+            0.11299896778875164,
+            2.0670721468238638
+          ],
+          "wrist_world_m": [
+            -0.5925000881036491,
+            2.2603126079157043e-08,
+            2.2499998947021376
+          ],
+          "forearm_direction_world": [
+            0.9786033891466693,
+            -0.10813296190012016,
+            0.17505047643853955
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 10.081595536993706,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299408,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.1253325786677307,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612696,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059058,
+            0.12276136739172629,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999681,
+            3.404128874617829e-08,
+            2.249999858760675
+          ],
+          "forearm_direction_world": [
+            0.9848317858430027,
+            -0.11747496014395938,
+            0.12769489939875275
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.336409595003984,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "pregrasp",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.098944099203715,
+              0.16776669109299408,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.7432047768049428,
+              0.1253325786677307,
+              2.285166983364938
+            ],
+            "direction_world": [
+              0.39747410323885146,
+              -0.047412416117612696,
+              0.9163876909105454
+            ],
+            "length_m": 0.8950000000000002,
+            "elevation_rad": 1.158960976740073,
+            "elevation_deg": 66.40357258756576,
+            "q2_rad": -0.41183535005482363,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.7216494548059058,
+            0.12276136739172629,
+            2.1165586888889782
+          ],
+          "wrist_world_m": [
+            -0.6925002385999681,
+            3.404128874617829e-08,
+            2.249999858760675
+          ],
+          "forearm_direction_world": [
+            0.9848317858430027,
+            -0.11747496014395938,
+            0.12769489939875275
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 7.336409595003984,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      },
+      {
+        "stage": "contact",
+        "posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": true,
+          "initial": false,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -2.0990925782582766,
+              0.16647431662617948,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -1.644719186876624,
+              0.11626731636111576,
+              2.234447255066076
+            ],
+            "direction_world": [
+              0.5076797669068744,
+              -0.0560972070000712,
+              0.8597176034257836
+            ],
+            "length_m": 0.8949999999999999,
+            "elevation_rad": 1.0347165305563482,
+            "elevation_deg": 59.28489019329803,
+            "q2_rad": -0.5360797962385483,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -1.6151406297739728,
+            0.11299896779040106,
+            2.067072146829082
+          ],
+          "wrist_world_m": [
+            -0.5925000881127722,
+            2.2605421090560185e-08,
+            2.249999894691368
+          ],
+          "forearm_direction_world": [
+            0.9786033891494743,
+            -0.10813296189950236,
+            0.17505047642324037
+          ],
+          "forearm_length_m": 1.045,
+          "forearm_elevation_deg": 10.081595536103382,
+          "minimum_upper_elevation_deg": 45,
+          "maximum_forearm_absolute_elevation_deg": 30,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        }
+      }
+    ]
+  },
+  "samples": [
+    {
+      "name": "initial",
+      "state": {
+        "kind": "initial",
+        "q": [
+          2.986217927095259,
+          -0.07371198747274418,
+          3.0083441878665904,
+          5.075852527400722,
+          0.16630438228322542,
+          1.2026990878766133
+        ],
+        "pair": [],
+        "expected": [
+          0.9999999974335176,
+          -2.6253313902864596e-05,
+          -6.666129492854501e-05,
+          0,
+          -2.625356337096604e-05,
+          -0.9999999996483758,
+          -3.7414506802857156e-06,
+          0,
+          -6.666119667962966e-05,
+          3.7432007672075522e-06,
+          -0.9999999977711365,
+          0,
+          -0.8174988513511421,
+          1.5072593320529396e-05,
+          2.2500380357711407,
+          1
+        ]
+      },
+      "actual": [
+        0.9999999974335176,
+        -2.6253313902852016e-05,
+        -6.666129492852862e-05,
+        0,
+        -2.6253563370955844e-05,
+        -0.9999999996483758,
+        -3.741450680272429e-06,
+        0,
+        -6.666119667963721e-05,
+        3.743200767181154e-06,
+        -0.9999999977711365,
+        0,
+        -0.8174988513511421,
+        1.5072593320531597e-05,
+        2.2500380357711407,
+        1
+      ],
+      "cartons": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c00",
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ]
+    },
+    {
+      "name": "contact",
+      "state": {
+        "kind": "contact",
+        "q": [
+          3.031541869844612,
+          -0.536079796250975,
+          2.429555821363912,
+          5.72011865102479,
+          0.20723581254835569,
+          0.5533497572420144
+        ],
+        "pair": [],
+        "expected": [
+          0.9999999999999913,
+          -1.311324117557087e-07,
+          -2.0168590540373594e-08,
+          0,
+          -1.3113241207095034e-07,
+          -0.9999999999999913,
+          -1.6114030542398482e-08,
+          0,
+          -2.016858845150811e-08,
+          1.611403333827068e-08,
+          -0.9999999999999998,
+          0,
+          -0.41750008810365014,
+          -3.450459919697659e-10,
+          2.249999891172634,
+          1
+        ]
+      },
+      "actual": [
+        0.9999999999999913,
+        -1.3113241176254675e-07,
+        -2.0168590519897833e-08,
+        0,
+        -1.3113241208058703e-07,
+        -0.9999999999999913,
+        -1.6114030609859498e-08,
+        0,
+        -2.0168588442474574e-08,
+        1.6114033329905908e-08,
+        -0.9999999999999998,
+        0,
+        -0.41750008810365014,
+        -3.4504599316642493e-10,
+        2.249999891172634,
+        1
+      ],
+      "cartons": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c00",
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ]
+    },
+    {
+      "name": "extraction",
+      "state": {
+        "kind": "extraction_start",
+        "q": [
+          3.031541869844612,
+          -0.536079796250975,
+          2.429555821363912,
+          5.72011865102479,
+          0.20723581254835569,
+          0.5533497572420144
+        ],
+        "pair": [],
+        "expected": [
+          0.9999999999999913,
+          -1.311324117557087e-07,
+          -2.0168590540373594e-08,
+          0,
+          -1.3113241207095034e-07,
+          -0.9999999999999913,
+          -1.6114030542398482e-08,
+          0,
+          -2.016858845150811e-08,
+          1.611403333827068e-08,
+          -0.9999999999999998,
+          0,
+          -0.41750008810365014,
+          -3.450459919697659e-10,
+          2.249999891172634,
+          1
+        ]
+      },
+      "actual": [
+        0.9999999999999913,
+        -1.3113241176254675e-07,
+        -2.0168590519897833e-08,
+        0,
+        -1.3113241208058703e-07,
+        -0.9999999999999913,
+        -1.6114030609859498e-08,
+        0,
+        -2.0168588442474574e-08,
+        1.6114033329905908e-08,
+        -0.9999999999999998,
+        0,
+        -0.41750008810365014,
+        -3.4504599316642493e-10,
+        2.249999891172634,
+        1
+      ],
+      "cartons": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c00",
+        "carton_l07_c01",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ]
+    }
+  ],
+  "errors": []
+}

@@ -23,11 +23,11 @@ from unloading_sim.moveit2_backend import box_message
 ROOT=Path(__file__).resolve().parents[1]
 @pytest.fixture(scope='module')
 def base():return load_workcell_layout(ROOT/'configs/workcells'/BASELINE)
-def layout_for(base,g):
-    d=candidate_data(base.data,GapCandidate(g))
+def layout_for(base,g,mount_height=1.):
+    d=candidate_data(base.data,GapCandidate(g,mount_height))
     return replace(base,data=d,layout_fingerprint=compute_layout_fingerprint(d,base.assets))
 
-@pytest.mark.parametrize('g,assembly,base_x',[(.2,-1.95,-1.35),(.4,-2.15,-1.55),(.6,-2.35,-1.75)])
+@pytest.mark.parametrize('g,assembly,base_x',[(.2,-1.95,-1.35),(.4,-2.15,-1.55),(.5,-2.25,-1.65),(.6,-2.35,-1.75)])
 def test_literal_mount_world_and_only_gap(base,g,assembly,base_x):
     l=layout_for(base,g);assert audit_layout_constraints(l)['overall_status']=='PASS'
     np.testing.assert_allclose(l.robot_base_transform()[:3,3],[base_x,.15,1.],atol=1e-12,rtol=0)
@@ -59,6 +59,116 @@ def test_bounds_reconstruction_fixed_rail_and_floor_evidence(base):
         assert check_coupled_state(a,h,(),designed_contacts=[['chassis','conveyor_transverse']])['passed']
     for h in (.549999,1.500001):
         with pytest.raises(ValueError):coupled_conveyor_state(a,h,())
+
+
+def test_authorized_900mm_mount_changes_only_robot_and_solid_plinth(base):
+    d=candidate_data(base.data,GapCandidate(.8,.9))
+    lower=replace(base,data=d,layout_fingerprint=compute_layout_fingerprint(d,base.assets))
+    normal=layout_for(base,.8)
+    assert GapCandidate(.8).key=='ccab97638437b486'  # preserve historical identity
+    assert GapCandidate(.8,.9).key!=GapCandidate(.8).key
+    assert audit_layout_constraints(lower)['overall_status']=='PASS'
+    np.testing.assert_allclose(lower.robot_base_transform()[:3,3],[-1.95,.15,.9],atol=1e-12,rtol=0)
+    a={b.name:b for b in coupled_conveyor_state(normal,.6,normal.cartons()).boxes}
+    b={b.name:b for b in coupled_conveyor_state(lower,.6,lower.cartons()).boxes}
+    for name in a:
+        if name=='mount_plinth':continue
+        np.testing.assert_array_equal(a[name].center,b[name].center)
+        np.testing.assert_array_equal(a[name].half_extents,b[name].half_extents)
+    np.testing.assert_allclose(b['mount_plinth'].corners()[:,2].min(),.6,atol=1e-12)
+    np.testing.assert_allclose(b['mount_plinth'].corners()[:,2].max(),.9,atol=1e-12)
+    assert 2*b['mount_plinth'].half_extents[2]==pytest.approx(.3)
+    with pytest.raises(ValueError,match='UNAPPROVED'):GapCandidate(.8,.8)
+
+
+def test_large_gap_can_be_planned_without_inventing_external_floor(base):
+    import sys
+    sys.path.insert(0,str(ROOT/'tools'))
+    from plan_m710_gap_search import admission
+    layout=layout_for(base,.5);before=deepcopy(layout.data)
+    strict=admission(layout)
+    planning=admission(layout,'record-unknown')
+    assert strict['status']=='UNKNOWN_EXTERNAL_SUPPORT'
+    assert planning['status']=='ADMITTED_EXTERNAL_SUPPORT_UNVERIFIED'
+    assert not planning['support_verified'] and not planning['global_infeasibility_proven']
+    assert strict['checks']==planning['checks'] and layout.data==before
+    for c in planning['checks']:
+        assert c['geometry']['passed']
+        assert c['floor_support']['chassis_rear_world_x_m']==pytest.approx(-3.3)
+        assert c['floor_support']['floor_x_bounds_m']==[-3.2,3.2]
+        assert c['floor_support']['external_floor_added'] is False
+
+
+def test_external_support_mode_never_admits_actual_collision(base,monkeypatch):
+    import sys
+    sys.path.insert(0,str(ROOT/'tools'))
+    import plan_m710_gap_search as entry
+    monkeypatch.setattr(entry,'check_coupled_state',lambda *a,**k:dict(passed=False,witness='retained_collision'))
+    checked=entry.admission(layout_for(base,.5),'record-unknown')
+    assert checked['status']=='SAMPLED_WORLD_COLLISION'
+    assert all(c['geometry']['witness']=='retained_collision' for c in checked['checks'])
+
+
+def test_explicit_initial_joint_state_is_never_silently_replaced(base,monkeypatch):
+    import sys
+    sys.path.insert(0,str(ROOT/'tools'))
+    import plan_m710_gap_search as entry
+    q=[100.]*6
+    def reject(*a,**kwargs):
+        assert kwargs['initial_q']==q and kwargs['initial_seed'] is None
+        raise ValueError('INVALID_SPECIFIED_INITIAL_STATE')
+    monkeypatch.setattr(entry,'make_context',reject)
+    with pytest.raises(ValueError,match='INVALID_SPECIFIED_INITIAL_STATE'):
+        entry.prepare(SimpleNamespace(seed=71109,initial_draws=64,initial_q_rad=q),layout_for(base,.5),{})
+
+
+@pytest.mark.parametrize('normal,position,passed',[
+    ([1.,0.,0.],[-.6,0.,2.25],True),
+    ([-1.,0.,0.],[-.6,0.,2.25],False),
+    ([0.,1.,0.],[-.6,0.,2.25],False),
+    ([1.,0.,0.],[-.6,2.,2.25],False),
+    ([1.,0.,0.],[-.6,0.,3.],False),
+    ([1.,0.,0.],[.1,0.,2.25],False),
+    ([.9993908270190958,.03489949670250097,0.],[-.6,0.,2.25],False),
+])
+def test_initial_physical_cups_must_face_and_aim_at_stack(base,normal,position,passed):
+    from unloading_sim.gap_search_layout import initial_stack_facing_evidence
+    from unloading_sim.geometry import make_tool_rotation,make_transform
+    pose=make_transform(make_tool_rotation(np.asarray(normal)),position)
+    check=initial_stack_facing_evidence(pose,base.cartons())
+    assert check['passed'] is passed
+    np.testing.assert_allclose(check['physical_working_normal_world'],normal,atol=1e-12)
+    assert check['required_normal_world']==[1.,0.,0.]
+
+
+def test_initial_orientation_rejects_nonrigid_transform(base):
+    from unloading_sim.gap_search_layout import initial_stack_facing_evidence
+    pose=np.eye(4);pose[0,0]=2.
+    with pytest.raises(ValueError,match='INVALID_PHYSICAL_INITIAL_TOOL_POSE'):
+        initial_stack_facing_evidence(pose,base.cartons())
+
+
+def test_initial_home_keeps_short_cup_axis_up_and_long_axis_horizontal():
+    from prepare_m710_gap_home import physical_home_pose
+    pose=physical_home_pose([-.6,0.,2.25])
+    np.testing.assert_allclose(pose,[[0.,0.,1.,-.6],[0.,-1.,0.,0.],[1.,0.,0.,2.25],[0.,0.,0.,1.]],atol=1e-12,rtol=0)
+
+
+def test_zero_success_report_retains_all_40_remaining_identities(base,tmp_path):
+    import json
+    from report_m710_gap_search import summarize
+    ids=[b.name for b in base.cartons()]
+    layout=dict(gap_m=.8,status='ACTIVE',best_count=0,checks=[],trials=0,admission_wall_s=0.,
+        nodes={'root':dict(id='root',root={'completed':[],'world_cartons':[{'id':n} for n in ids]},
+            closed=False,cursor=0,candidate_count=45)},best_node='root')
+    db=dict(contract='fixed40_gap_search_20261107_v1',layouts={'g800':layout},trials=[],best=None,
+        status='SEARCHING',identity={},source_commit='fixture',options={'max_rounds':3},
+        elapsed_search_s=0.,interrupted=[],requested_gaps_m=[.8],refinement_queue=[])
+    (tmp_path/'checkpoint.json').write_text(json.dumps(db))
+    report=summarize(tmp_path)
+    assert report['best_count']==0 and report['best_gap_m'] is None
+    assert report['remaining_target_ids']==ids and len(report['remaining_target_ids'])==40
+    assert report['remaining_target_ids_by_layout']=={'g800':ids}
 
 def test_mount_policy_rejects_broad_pairs_and_bad_plinth(base):
     policy=SimulationCollisionPolicy(fixed_mount_contact_mode='qualified_planes_only')
@@ -212,8 +322,13 @@ def test_gap_empty_admitted_search_persists_terminal_checkpoint(tmp_path,monkeyp
         layouts={'unsupported':dict(status='UNKNOWN_EXTERNAL_SUPPORT')},trials=[],best=None,
         elapsed_search_s=17.,status='SEARCHING',pending=None)))
     monkeypatch.setattr(sys,'argv',['gap-search','--output',str(tmp_path),'--resume',
-        '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest)])
+        '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest),
+        '--initial-orientation','unconstrained'])
     entry.main()
     saved=json.loads(checkpoint.read_text())
     assert saved['status']=='FINITE_ADMITTED_SEARCH_EXHAUSTED'
     assert saved['elapsed_search_s']==17. and saved['trials']==[]
+    monkeypatch.setattr(sys,'argv',['gap-search','--output',str(tmp_path),'--resume',
+        '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest),
+        '--external-support-mode','record-unknown'])
+    with pytest.raises(ValueError,match='RESUME_EXTERNAL_SUPPORT_MODE_CHANGED'):entry.main()

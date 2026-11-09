@@ -10,8 +10,8 @@ from unloading_sim.moveit2_backend import box_message
 from unloading_sim.joint_search_outfeed import outfeed_path
 from unloading_sim.geometry import OBB
 
-def generate():
-    l=layout_for(load_workcell_layout(ROOT/'configs/workcells'/BASELINE),.2)
+def generate(mount_height=1.,gap=.2):
+    l=layout_for(load_workcell_layout(ROOT/'configs/workcells'/BASELINE),gap,mount_height)
     outfeeds=[];receives=[]
     for h in (.55,.6,1.,1.5):
         world=coupled_conveyor_state(l,h,()).boxes
@@ -29,4 +29,6 @@ def generate():
             receives.append(dict(request=req,binding=binding))
     return dict(layout=l.data['gap_search'],receive=receives,outfeeds=outfeeds,
         plinth=box_message(next(b for b in l.fixed_components() if b.name=='mount_plinth')))
-if __name__=='__main__':Path(sys.argv[1]).write_text(json.dumps(generate()))
+if __name__=='__main__':
+    data=generate();data['lower_mount']=generate(.9,.2)
+    Path(sys.argv[1]).write_text(json.dumps(data))

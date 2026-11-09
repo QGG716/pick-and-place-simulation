@@ -696,10 +696,10 @@ def audit_layout_constraints(layout: WorkcellLayout, *, local_components: Iterab
         from .gap_search_layout import validate_search_layout
         candidate=validate_search_layout(layout);g=candidate.g
         checks.update(gap_search_frozen_contract={'status':'PASS','candidate':candidate.evidence()},
-            robot_base_origin_world=vector(base,[-1.15-g,.15,1.]),
-            robot_mount_surface=scalar(base[2],1.),
+            robot_base_origin_world=vector(base,[-1.15-g,.15,candidate.mount_height]),
+            robot_mount_surface=scalar(base[2],candidate.mount_height),
             mount_axis_to_chassis_front=scalar(1.05-float(robot['base_origin_xy_a_m'][0]),.45),
-            plinth_height=scalar(base[2]-_interval(world['chassis'],2)[1],.4),
+            plinth_height=scalar(base[2]-_interval(world['chassis'],2)[1],candidate.mount_height-.6),
             transverse_front_x=scalar(_interval(world['conveyor_transverse'],0)[1],-g),
             longitudinal_front_x=scalar(_interval(world['conveyor_longitudinal'],0)[1],-.7-g),
             stack_to_conveyor_clearance=scalar(float(layout.data['carton_stack']['front_face_x_m'])-assembly_bounds['x'][1],g),

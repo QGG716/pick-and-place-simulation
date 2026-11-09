@@ -1316,7 +1316,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
                 if remaining<=0:break
                 # Direct planners together get at most 20% of this connection's
                 # time slice. At least 80% remains available to OMPL fallback.
-                allowance=min(2.,remaining) if pipeline=="ompl" else min(.75,max(0.,search_deadline-started)*.10,remaining)
+                from .approach_recovery_policy import bounded_numeric_slice
+                allowance=bounded_numeric_slice(getattr(self,'native_ompl_restart_slice_s',2.),remaining) if pipeline=="ompl" else min(.75,max(0.,search_deadline-started)*.10,remaining)
                 submitted["allowed_planning_time_s"]=min(submitted["allowed_planning_time_s"],allowance)
             # An uncovered graph must yield to the next legal branch/fallback.
             # This query-only ceiling cannot enlarge the shared fast/task budget.

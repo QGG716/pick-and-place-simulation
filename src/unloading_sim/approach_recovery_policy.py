@@ -6,6 +6,14 @@ The caller owns the shared absolute task/stage deadline.
 import numpy as np
 
 
+def bounded_numeric_slice(configured_s,remaining_s):
+    """Give one numerical solve time without extending its shared deadline."""
+    if (isinstance(configured_s,bool) or not np.isfinite(configured_s) or configured_s<=0
+            or not np.isfinite(remaining_s)):
+        raise ValueError('INVALID_NUMERICAL_TIME_SLICE')
+    return min(float(configured_s),max(0.,float(remaining_s)))
+
+
 def native_schedule(initial, *, budget_driven, legacy_attempts, deadline, now,
                     allow_ompl, constrained):
     for method in initial:

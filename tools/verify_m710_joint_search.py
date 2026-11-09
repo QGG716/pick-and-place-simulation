@@ -92,6 +92,9 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
             assert max(abs(v) for v in points[-1]['v'])<=1e-8
             assert all(points[i]['t']<=points[i+1]['t'] for i in range(len(points)-1))
             q=points[-1]['q']
+            if plan.get('front_arm_posture_required') and stage['stage'] in ('pregrasp','contact'):
+                from unloading_sim.front_arm_posture import front_arm_posture
+                assert front_arm_posture(built.robot,np.asarray(q))['passed']
             if stage['stage']=='withdrawal':
                 assert req['parent_stage_id']==(outfeed_stage if timing==WAIT_FIRST else drop_stage)
                 assert req['planner_id']=='LIN' and req['attachment'] is None
@@ -163,13 +166,28 @@ def verify_search(run,key,require_complete=False):
     from unloading_sim.coupled_batch import batch_scene
     scene=batch_scene(original,state,built.robot,layout)
     assert built.validate_unloaded_state(state.q,scene.all_obstacles,stage='unloaded') is None
+    if gap_search and db.get('options',{}).get('front_arm_posture')=='upright':
+        from unloading_sim.front_arm_posture import front_arm_posture
+        posture=front_arm_posture(built.robot,state.q,initial=True)
+        assert posture['passed'] and posture==record['initial_arm_posture_evidence']
+    if gap_search and db.get('options',{}).get('initial_orientation')=='stack-facing':
+        from unloading_sim.gap_search_layout import initial_stack_facing_evidence
+        facing=initial_stack_facing_evidence(built.physical_from_virtual(built.robot.fk(state.q)),original.cartons)
+        assert facing['passed'] and record['initial_orientation_evidence']==dict(mode='stack-facing',**facing)
     assert record['candidate']==layout.data['gap_search' if gap_search else 'joint_search']
+    support=None
     if gap_search:
         from unloading_sim.gap_search_layout import validate_search_layout,floor_support_evidence
         candidate=validate_search_layout(layout)
-        np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.15-candidate.g,.15,1.],rtol=0,atol=1e-12)
+        np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.15-candidate.g,.15,candidate.mount_height],rtol=0,atol=1e-12)
+        assert candidate.mount_height==db.get('options',{}).get('mount_height_m',1.)
         assert abs(1.05-layout.data['robot']['base_origin_xy_a_m'][0]-.45)<1e-12
-        assert floor_support_evidence(layout,coupled_conveyor_state(layout,.6,()))['status']=='VERIFIED_ON_MODELED_FLOOR'
+        support=[dict(height_m=h,**floor_support_evidence(layout,coupled_conveyor_state(layout,h,()))) for h in (.55,.6,1.,1.5)]
+        support_verified=all(s['status']=='VERIFIED_ON_MODELED_FLOOR' for s in support)
+        assert record.get('support_verified',support_verified)==support_verified
+        if not support_verified:
+            assert db.get('options',{}).get('external_support_mode')=='record-unknown'
+            assert record.get('external_support_mode')=='record-unknown'
     reports=[]
     for node in chain:
         trial=db['trials'][node['incoming']];assert trial['layout']==key and not trial['diagnostic'] and trial['complete']
@@ -182,13 +200,18 @@ def verify_search(run,key,require_complete=False):
                 assert hashlib.sha256(raw).hexdigest()==trial['evidence']['file_sha256'][name]
                 return json.loads(raw)
             plan=read('plan.json');assert read('dispatch.json')['layout_fingerprint']==layout.layout_fingerprint
+            if gap_search and db.get('options',{}).get('front_arm_posture')=='upright':
+                assert plan.get('front_arm_posture_required')==(plan['target']['face_role']=='FRONT')
             if plan['option'].get('outfeed_timing')==PARK_FIRST:assert plan['option']['park_q_rad']==initial['q_rad']
             reports.append(verify_cycle(plan,None,state.root(),layout,built,read=read))
         state.commit(plan);assert state.root()==node['root'] and state.ledger==node['ledger']
     assert len(state.ledger)==record['best_count']==len({x['target_id'] for x in state.ledger})
     assert len(state.cartons)+len(state.ledger)==40 and not state.assumed_removed
-    if require_complete:assert len(state.ledger)==40 and not state.cartons
-    return dict(status='PASS_FIXED40_COMPLETE_UNDER_LISTED_MODEL_ASSUMPTIONS' if not state.cartons else 'PASS_PARTIAL_SINGLE_BRANCH_ONLY',
+    support_verified=support is None or all(s['status']=='VERIFIED_ON_MODELED_FLOOR' for s in support)
+    if require_complete:assert len(state.ledger)==40 and not state.cartons and support_verified
+    status='PASS_FIXED40_COMPLETE_UNDER_LISTED_MODEL_ASSUMPTIONS' if not state.cartons else 'PASS_PARTIAL_SINGLE_BRANCH_ONLY'
+    if not support_verified:status='PASS_NATIVE_BRANCH_EXTERNAL_SUPPORT_UNVERIFIED'
+    return dict(status=status,support_verified=support_verified,floor_support=support,
         layout=record['candidate'],layout_fingerprint=layout.layout_fingerprint,completed=len(state.ledger),remaining=len(state.cartons),
         historical_completed_count=0,assumed_removed=[],cycles=reports,physical_execution='NOT_RUN',continuous_swept_proof=False,
         collision_policy=built.collision_policy.to_mapping(),search_cost_s=db['elapsed_search_s'])

@@ -1,0 +1,36 @@
+diff --git a/src/unloading_sim/single_target_recovery.py b/src/unloading_sim/single_target_recovery.py
+--- a/src/unloading_sim/single_target_recovery.py
++++ b/src/unloading_sim/single_target_recovery.py
+@@ -147,7 +147,10 @@
+             path,failure,evidence=c._native_plan(start,q,obstacles,seed=seed,stage=stage,attachment=attachment,
+                 support_names=(),initial_proximity=None,purpose=purpose,allow_ompl=True,
+                 recovery_mode="shared_budget",search_deadline=min(c._single_connection_deadline,before+visit_s),
+-                try_ptp=direct,try_lin_pose=pose if direct and not state.get('lin_posture_rejected') else None,try_prior=False)
++                # Upright recovery selects a joint branch for its downstream
++                # motion. A pose-only LIN may silently return an already failed
++                # branch and prevent RRT from ever trying the selected goal.
++                try_ptp=direct,try_lin_pose=pose if direct and not upright and not state.get('lin_posture_rejected') else None,try_prior=False)
+             elapsed=perf_counter()-before;row["motion_s"]=elapsed;costs["motion_s"]+=elapsed
+             candidate["motion_s"]+=elapsed
+             row.update(status="SUCCESS" if failure is None else "CONNECTION_NOT_COMPLETED",failure=brief(failure))
+diff --git a/tests/test_single_target_recovery.py b/tests/test_single_target_recovery.py
+--- a/tests/test_single_target_recovery.py
++++ b/tests/test_single_target_recovery.py
+@@ -161,3 +161,17 @@
+         purpose='FREE_APPROACH',residual_reason='FK')
+     assert f is None and len(iks)==2 and len(motions)==1
+     assert q[0]==pytest.approx(.02) and len(iks[1]['excluded_ik'])==1
++
++
++def test_upright_branch_recovery_connects_joint_goal_without_pose_lin_substitution(monkeypatch):
++    import unloading_sim.front_arm_posture as posture
++    c,_,_,iks,motions=fixture(monkeypatch)
++    c.front_arm_posture_required=True;c.empty_approach_direct_first=True
++    c.robot=NS(joint_limits=np.array([[-3.,3.]]*6))
++    monkeypatch.setattr(posture,'front_arm_posture',lambda robot,q:dict(passed=True))
++    path,q,f,cost=connect_fixed_target(c,np.eye(4),np.zeros(6),[],1,stage='pregrasp',
++        purpose='FREE_APPROACH',residual_reason='FK')
++    assert f is None and len(motions)==1
++    assert motions[0]['try_ptp'] and motions[0]['allow_ompl']
++    assert motions[0]['try_lin_pose'] is None and not motions[0]['try_prior']
++    np.testing.assert_array_equal(path[-1],motions[0]['q'])

@@ -1,0 +1,162 @@
+schema: m710id70_unloading_layout_v1
+layout_id: m710id70_unloading_layout_v1
+units:
+  length: metre
+  angle: radian
+  mass: kilogram
+world:
+  origin: initial_stack_front_face_width_center_floor_projection
+  axes:
+    x: into_trailer
+    y: left_when_facing_into_trailer
+    z: up
+  floor_z_m: 0.0
+assembly:
+  world_xyz_m: &id001
+  - -2.55
+  - 0.35
+  - 0.0
+  world_rpy_rad:
+  - 0.0
+  - 0.0
+  - 0.0
+chassis:
+  size_xyz_m:
+  - 2.1
+  - 1.5
+  - 0.6
+  center_a_m:
+  - 0.0
+  - 0.0
+  - 0.3
+conveyors:
+  body_thickness_m: 0.12
+  body_thickness_source: retained_engineering_assumption_not_manufacturing_dimension
+  surface_z_a_m: 0.6
+  coupling:
+    geometry_revision: upper_seam_lower_slider_v3
+    maximum_surface_height_world_m: 1.5
+    scissor_profile: low_profile_200_outfeed20_v3
+    minimum_surface_height_world_m: 0.55
+    transverse_support_spacing_m: 0.26
+  transverse:
+    size_xy_m:
+    - 0.7
+    - 2.2
+    center_xy_a_m:
+    - 1.4
+    - -0.35
+  longitudinal:
+    size_xy_m:
+    - 2.8
+    - 0.6
+    center_xy_a_m:
+    - -0.35
+    - -1.15
+robot:
+  model: fanuc_m710id_70
+  model_config: ../robots/fanuc_m710id_70.yaml
+  urdf_path: ../../assets/robots/fanuc_m710id_70/official/fanuc_m710_description/urdf/m710id_70_official.urdf
+  mounting_surface_z_a_m: 1.0
+  base_origin_xy_a_m:
+  - 0.6
+  - -0.2
+  base_support_bbox_min_xyz_m:
+  - -0.3385
+  - -0.275
+  - 0.0
+  base_support_bbox_max_xyz_m:
+  - 0.225
+  - 0.275
+  - 0.245
+  base_front_edge_x_world_m: -1.725
+  positioning_basis: fanuc_official_base_collision_mesh_bbox_at_fb40c9803a826ba68c7c8e28ba904a25efa7fcd2
+  positioning_status: EXECUTION_QUALIFIED_CAD_COLLISION
+tool:
+  connector_extension_m: 0.2
+  load_config: ../tools/unloading_gripper_20kg.yaml
+  geometry_config: ../tools/unloading_gripper_10kg.yaml
+  geometry_status: CAD_DERIVED_COMPOUND_OBB_COVERAGE_UNVERIFIED
+  physical_step_length_m: 0.2275
+  planning_tcp_status: PROJECT_EXECUTION_FRAME_EXPLICITLY_ADAPTED_FROM_OFFICIAL_FLANGE
+trailer:
+  inner_width_m: 2.3
+  right_wall_y_m: -1.15
+  left_wall_y_m: 1.15
+  opening_x_m: -3.2
+  closed_end_wall_x_m: 3.2
+  length_m: 6.4
+  height_m: 2.7
+  wall_thickness_m: 0.05
+  length_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
+  height_status: DEVELOPMENT_SCENE_ASSUMPTION_NOT_MEASURED
+carton_stack:
+  carton_size_xyz_m:
+  - 0.6
+  - 0.4
+  - 0.3
+  front_face_x_m: 0.0
+  depth_rows: 1
+  width_columns: 5
+  height_layers: 8
+  column_gap_m: 0.02
+  layer_gap_m: 0.0
+  center_y_m:
+  - -0.84
+  - -0.42
+  - 0.0
+  - 0.42
+  - 0.84
+  no_pallet: true
+evidence:
+  approval_basis: fixed40_gap_search_20261107_v1
+  development_scene_assumptions:
+  - trailer_length_6p4m
+  - trailer_height_2p7m
+  - trailer_opening_x_minus_3p2m
+  unconfirmed:
+  - trailer_length
+  - trailer_height
+  - real_robot_mounting_plate_cad
+  - conveyor_manufacturing_details
+gap_search:
+  schema: fixed40_gap_search_20261107_v1
+  gap_m: 0.8
+  assembly_world_xyz_m: *id001
+  base_xyz_a_m:
+  - 0.6
+  - -0.2
+  - 1.0
+  base_xyz_world_m:
+  - -1.95
+  - 0.15
+  - 1.0
+  mount_rpy_rad:
+  - 0.0
+  - 0.0
+  - 0.0
+  mount_design: SOLID_PLINTH
+  plinth_height_m: 0.4
+  mount_axis_to_chassis_front_m: 0.45
+  minimum_surface_height_m: 0.55
+  maximum_surface_height_m: 1.5
+  initial_surface_height_m: 0.6
+  mechanism_profile: low_profile_200_outfeed20_v3
+  tool_extension_m: 0.2
+  upper_layer_original_bottom_threshold_m: 1.5
+  upper_layer_faces:
+  - FRONT
+  lower_layer_face_priority:
+  - TOP
+  - FRONT
+  - SIDE
+  mechanical_reference_gap_m: 0.2
+  relief_design_maximum_height_m: 2.1
+  lower_rail_x_bounds_a_m:
+  - -2.0
+  - -0.95
+  lower_rail_stations_x_a_m:
+  - -1.18
+  - -1.02
+  structural_strength: NOT_VERIFIED
+  physical_execution: NOT_RUN
