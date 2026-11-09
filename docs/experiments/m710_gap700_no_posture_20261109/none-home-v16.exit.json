@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "wall_s": 1.745411328971386,
+  "command": "cd /work-gap-20261109-v16 && PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /opt/planning-venv/bin/python tools/prepare_m710_gap_home.py --gap .7 --mount-height .9 --home-definition pose --tcp-xyz -.6 0 2.25 --front-arm-posture none --seed 71109 --draws 64 --output /gap-search-20261109/g0700-no-posture-home.json"
+}

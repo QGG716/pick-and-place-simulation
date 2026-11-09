@@ -1,0 +1,1709 @@
+{
+  "recorded_unix": 1794229846.07412,
+  "checkpoint_sha256": "ef3b49b470fbd7b1f45065b9bc6d9012ed83a933355d412256064f3bab95d243",
+  "run": "/gap-search-20261109/g0700-no-arm-posture",
+  "review_snapshot": "/gap-search-20261109/g0700-none-baseline-reviewed",
+  "verification": {
+    "status": "PASS_NATIVE_BRANCH_EXTERNAL_SUPPORT_UNVERIFIED",
+    "support_verified": false,
+    "floor_support": [
+      {
+        "height_m": 0.55,
+        "status": "UNKNOWN_EXTERNAL_SUPPORT",
+        "chassis_rear_world_x_m": -3.5,
+        "floor_x_bounds_m": [
+          -3.2,
+          3.2
+        ],
+        "footprints": [
+          {
+            "id": "chassis",
+            "footprint_min_xy_m": [
+              -3.5,
+              -0.4
+            ],
+            "footprint_max_xy_m": [
+              -1.4000000000000001,
+              1.1
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_transverse_left_foot_0",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_left_foot_1",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_0",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_1",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_0",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_1",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_0",
+            "footprint_min_xy_m": [
+              -2.45,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_1",
+            "footprint_min_xy_m": [
+              -2.45,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          }
+        ],
+        "external_floor_added": false,
+        "global_infeasibility_proven": false
+      },
+      {
+        "height_m": 0.6,
+        "status": "UNKNOWN_EXTERNAL_SUPPORT",
+        "chassis_rear_world_x_m": -3.5,
+        "floor_x_bounds_m": [
+          -3.2,
+          3.2
+        ],
+        "footprints": [
+          {
+            "id": "chassis",
+            "footprint_min_xy_m": [
+              -3.5,
+              -0.4
+            ],
+            "footprint_max_xy_m": [
+              -1.4000000000000001,
+              1.1
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_transverse_left_foot_0",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_left_foot_1",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_0",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_1",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_0",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_1",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_0",
+            "footprint_min_xy_m": [
+              -2.45,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_1",
+            "footprint_min_xy_m": [
+              -2.45,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          }
+        ],
+        "external_floor_added": false,
+        "global_infeasibility_proven": false
+      },
+      {
+        "height_m": 1.0,
+        "status": "UNKNOWN_EXTERNAL_SUPPORT",
+        "chassis_rear_world_x_m": -3.5,
+        "floor_x_bounds_m": [
+          -3.2,
+          3.2
+        ],
+        "footprints": [
+          {
+            "id": "chassis",
+            "footprint_min_xy_m": [
+              -3.5,
+              -0.4
+            ],
+            "footprint_max_xy_m": [
+              -1.4000000000000001,
+              1.1
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_transverse_left_foot_0",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_left_foot_1",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_0",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_1",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_0",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_1",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_0",
+            "footprint_min_xy_m": [
+              -2.45,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_1",
+            "footprint_min_xy_m": [
+              -2.45,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          }
+        ],
+        "external_floor_added": false,
+        "global_infeasibility_proven": false
+      },
+      {
+        "height_m": 1.5,
+        "status": "UNKNOWN_EXTERNAL_SUPPORT",
+        "chassis_rear_world_x_m": -3.5,
+        "floor_x_bounds_m": [
+          -3.2,
+          3.2
+        ],
+        "footprints": [
+          {
+            "id": "chassis",
+            "footprint_min_xy_m": [
+              -3.5,
+              -0.4
+            ],
+            "footprint_max_xy_m": [
+              -1.4000000000000001,
+              1.1
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_transverse_left_foot_0",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_left_foot_1",
+            "footprint_min_xy_m": [
+              -1.2300000000000002,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -1.1300000000000001,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_0",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              -0.675
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              -0.575
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_transverse_right_foot_1",
+            "footprint_min_xy_m": [
+              -0.9700000000000003,
+              0.575
+            ],
+            "footprint_max_xy_m": [
+              -0.8700000000000002,
+              0.675
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_0",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_rear_foot_1",
+            "footprint_min_xy_m": [
+              -2.6900000000000004,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.5900000000000007,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_0",
+            "footprint_min_xy_m": [
+              -2.45,
+              -1.1199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -1.0199999999999998
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_longitudinal_near_foot_1",
+            "footprint_min_xy_m": [
+              -2.45,
+              -0.5199999999999999
+            ],
+            "footprint_max_xy_m": [
+              -2.3500000000000005,
+              -0.4199999999999999
+            ],
+            "status": "VERIFIED_ON_MODELED_FLOOR"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_0_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -1.06
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.98
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_0",
+            "footprint_min_xy_m": [
+              -3.67,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.59,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          },
+          {
+            "id": "lift_lower_rail_2_stand_1",
+            "footprint_min_xy_m": [
+              -3.5100000000000002,
+              -0.62
+            ],
+            "footprint_max_xy_m": [
+              -3.43,
+              -0.5399999999999999
+            ],
+            "status": "UNKNOWN_EXTERNAL_SUPPORT"
+          }
+        ],
+        "external_floor_added": false,
+        "global_infeasibility_proven": false
+      }
+    ],
+    "layout": {
+      "schema": "fixed40_gap_search_20261107_v1",
+      "gap_m": 0.7,
+      "assembly_world_xyz_m": [
+        -2.45,
+        0.35,
+        0.0
+      ],
+      "base_xyz_a_m": [
+        0.6,
+        -0.2,
+        0.9
+      ],
+      "base_xyz_world_m": [
+        -1.8499999999999999,
+        0.15,
+        0.9
+      ],
+      "mount_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mount_design": "SOLID_PLINTH",
+      "plinth_height_m": 0.3,
+      "mount_axis_to_chassis_front_m": 0.45,
+      "minimum_surface_height_m": 0.55,
+      "maximum_surface_height_m": 1.5,
+      "initial_surface_height_m": 0.6,
+      "mechanism_profile": "low_profile_200_outfeed20_v3",
+      "tool_extension_m": 0.2,
+      "upper_layer_original_bottom_threshold_m": 1.5,
+      "upper_layer_faces": [
+        "FRONT"
+      ],
+      "lower_layer_face_priority": [
+        "TOP",
+        "FRONT",
+        "SIDE"
+      ],
+      "mechanical_reference_gap_m": 0.2,
+      "relief_design_maximum_height_m": 2.1,
+      "lower_rail_x_bounds_a_m": [
+        -2.0,
+        -0.95
+      ],
+      "lower_rail_stations_x_a_m": [
+        -1.18,
+        -1.02
+      ],
+      "structural_strength": "NOT_VERIFIED",
+      "physical_execution": "NOT_RUN"
+    },
+    "layout_fingerprint": "9e3a41389c49eed3075293613c55b0e784b53051842c769772e4ff78b64ec4d9",
+    "completed": 1,
+    "remaining": 39,
+    "historical_completed_count": 0,
+    "assumed_removed": [],
+    "cycles": [
+      {
+        "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+        "native_stages": 7,
+        "outfeed_samples": 609
+      }
+    ],
+    "physical_execution": "NOT_RUN",
+    "continuous_swept_proof": false,
+    "collision_policy": {
+      "schema": "m710_poc_pair_collision_policy_v4",
+      "wrist_tool_exempt_links": [
+        "J5_link",
+        "J6_link"
+      ],
+      "stack_contact_mode": "planner_relaxed_physics_checked",
+      "stack_contact_stages": [
+        "support-release",
+        "extraction"
+      ],
+      "maximum_planned_stack_penetration_m": 0.01,
+      "free_space_clearance_m": 0.0052,
+      "free_space_clearance_loss_tolerance_m": 0.0002,
+      "maximum_actual_penetration_m": 0.01,
+      "maximum_neighbor_displacement_m": 0.06,
+      "maximum_neighbor_tilt_rad": 0.2,
+      "progress_timeout_s": 3.0,
+      "minimum_progress_m": 0.002,
+      "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+      "compliant_cup_neighbor_contact_mode": "ignore",
+      "maximum_compliant_cup_additional_compression_m": 0.005,
+      "required_pair_clearance_m": 0.005,
+      "self_collision_clearance_m": 0.0,
+      "boundary_mode": "finite_frozen_scene_walls",
+      "fixed_mount_contact_mode": "qualified_planes_only",
+      "fingerprint": "fec48706edb746cc9e8a10d71c5e33cf3c2f3ce167fd4f2f0811d309d118ac38",
+      "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+      "box_box_physics_enabled": true
+    },
+    "search_cost_s": 528.0814669579268
+  },
+  "summary": {
+    "schema": "fixed_gap_search_delivery_summary_v1",
+    "status": "SEARCHING",
+    "checkpoint": {
+      "server_path": "/gap-search-20261109/g0700-none-baseline-reviewed/checkpoint.json",
+      "sha256": "ef3b49b470fbd7b1f45065b9bc6d9012ed83a933355d412256064f3bab95d243",
+      "bytes": 256708
+    },
+    "identity": {
+      "source_manifest_sha256": "e9e132303d34f553dc43930997409ef04fdf94d6cd75b7ba8018b02e5a55a950",
+      "native_binary_sha256": "fd64e6a601c4e61c984a4f31dcb1bb58193395f5c53da169ff645bedb8df2734"
+    },
+    "base_commit": "ff08b12ab2741612bcbf2f22660d45c4b7ba3a9b",
+    "source_revisions": [],
+    "invocations": [
+      {
+        "started_unix": 1794229179.4152944,
+        "source_identity": {
+          "source_manifest_sha256": "e9e132303d34f553dc43930997409ef04fdf94d6cd75b7ba8018b02e5a55a950",
+          "native_binary_sha256": "fd64e6a601c4e61c984a4f31dcb1bb58193395f5c53da169ff645bedb8df2734"
+        },
+        "max_trials": 120,
+        "trial_seconds": 600.0,
+        "prefix_seconds": 360.0,
+        "stage_seconds": 360.0,
+        "max_rounds": 3,
+        "focus_gap_m": null,
+        "external_support_mode": "record-unknown",
+        "connection_seconds": 30.0,
+        "ompl_seconds": 20.0,
+        "starting_trial_count": 0,
+        "semantics": "NEW_NATIVE_REQUESTS_WITH_RETAINED_SCENE_AND_CUMULATIVE_COST"
+      }
+    ],
+    "pending": {
+      "layout": "206f7dc240e961da",
+      "node": "b9a9bf2c5b9750c60d7340d8b7f46fbb47805175b6c0de7f30390626a04b13f0",
+      "folder": "task-000002",
+      "target_id": "carton_l07_c02",
+      "option_key": "13f6e32b1cca54c8937c6288d635f03a92940947647544c72b4c74552868ecdd",
+      "started_unix": 1794229724.9122272,
+      "allocated_budget_s": 600.0,
+      "seed": 71111
+    },
+    "elapsed_search_s": 528.0814669579268,
+    "admission_wall_s": 0.9101348966360092,
+    "trial_count": 2,
+    "interrupted": [],
+    "layouts": [
+      {
+        "key": "206f7dc240e961da",
+        "gap_m": 0.7,
+        "status": "ACTIVE",
+        "best_continuous_count": 1,
+        "support_verified": false,
+        "external_support_mode": "record-unknown",
+        "initial_orientation_evidence": {
+          "mode": "stack-facing",
+          "passed": true,
+          "physical_pose_world": [
+            [
+              5.7338667762271265e-05,
+              2.827122237190738e-05,
+              0.9999999979565075,
+              -0.6000058928987856
+            ],
+            [
+              -4.914899418395618e-06,
+              -0.9999999995882828,
+              2.82715042318471e-05,
+              -4.760635745939406e-06
+            ],
+            [
+              0.9999999983440604,
+              -4.916520458753126e-06,
+              -5.733852878847534e-05,
+              2.2500086424848598
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "physical_working_normal_world": [
+            0.9999999979565075,
+            2.82715042318471e-05,
+            -5.733852878847534e-05
+          ],
+          "required_normal_world": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "maximum_angle_rad": 0.017453292519943295,
+          "actual_angle_rad": 6.392953131429316e-05,
+          "stack_front_x_m": 0.0,
+          "forward_ray_hits_stack": true,
+          "intersection_world_m": [
+            0.0,
+            1.2202433428945713e-05,
+            2.2499742390296262
+          ]
+        },
+        "trials": 2,
+        "trial_wall_s": 526.8544971942902,
+        "admission_wall_s": 0.9101348966360092,
+        "failures": {
+          "NUMERICAL_SEARCH_DEADLINE_NOT_UNREACHABLE": 1,
+          "COMPLETE_CYCLE": 1
+        },
+        "nodes": [
+          {
+            "id": "a7bb9f2f598c93eaf7b9a26efc685a3dd54359cd12f8ca68af7049d3e9b4f239",
+            "completed": 0,
+            "closed": false,
+            "candidate_count": 225,
+            "cursor": 2,
+            "unvisited_candidates": 223,
+            "unvisited_round_visits": 673
+          },
+          {
+            "id": "b9a9bf2c5b9750c60d7340d8b7f46fbb47805175b6c0de7f30390626a04b13f0",
+            "completed": 1,
+            "closed": false,
+            "candidate_count": 180,
+            "cursor": 1,
+            "unvisited_candidates": 179,
+            "unvisited_round_visits": 539
+          }
+        ],
+        "floor_support": [
+          {
+            "height_m": 0.55,
+            "status": "UNKNOWN_EXTERNAL_SUPPORT",
+            "unknown_parts": [
+              "chassis",
+              "lift_lower_rail_0_stand_0",
+              "lift_lower_rail_0_stand_1",
+              "lift_lower_rail_2_stand_0",
+              "lift_lower_rail_2_stand_1"
+            ]
+          },
+          {
+            "height_m": 0.6,
+            "status": "UNKNOWN_EXTERNAL_SUPPORT",
+            "unknown_parts": [
+              "chassis",
+              "lift_lower_rail_0_stand_0",
+              "lift_lower_rail_0_stand_1",
+              "lift_lower_rail_2_stand_0",
+              "lift_lower_rail_2_stand_1"
+            ]
+          },
+          {
+            "height_m": 1.0,
+            "status": "UNKNOWN_EXTERNAL_SUPPORT",
+            "unknown_parts": [
+              "chassis",
+              "lift_lower_rail_0_stand_0",
+              "lift_lower_rail_0_stand_1",
+              "lift_lower_rail_2_stand_0",
+              "lift_lower_rail_2_stand_1"
+            ]
+          },
+          {
+            "height_m": 1.5,
+            "status": "UNKNOWN_EXTERNAL_SUPPORT",
+            "unknown_parts": [
+              "chassis",
+              "lift_lower_rail_0_stand_0",
+              "lift_lower_rail_0_stand_1",
+              "lift_lower_rail_2_stand_0",
+              "lift_lower_rail_2_stand_1"
+            ]
+          }
+        ]
+      }
+    ],
+    "best_gap_m": 0.7,
+    "best_count": 1,
+    "best_support_verified": false,
+    "external_support_mode": "record-unknown",
+    "best_layout": {
+      "schema": "fixed40_gap_search_20261107_v1",
+      "gap_m": 0.7,
+      "assembly_world_xyz_m": [
+        -2.45,
+        0.35,
+        0.0
+      ],
+      "base_xyz_a_m": [
+        0.6,
+        -0.2,
+        0.9
+      ],
+      "base_xyz_world_m": [
+        -1.8499999999999999,
+        0.15,
+        0.9
+      ],
+      "mount_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mount_design": "SOLID_PLINTH",
+      "plinth_height_m": 0.3,
+      "mount_axis_to_chassis_front_m": 0.45,
+      "minimum_surface_height_m": 0.55,
+      "maximum_surface_height_m": 1.5,
+      "initial_surface_height_m": 0.6,
+      "mechanism_profile": "low_profile_200_outfeed20_v3",
+      "tool_extension_m": 0.2,
+      "upper_layer_original_bottom_threshold_m": 1.5,
+      "upper_layer_faces": [
+        "FRONT"
+      ],
+      "lower_layer_face_priority": [
+        "TOP",
+        "FRONT",
+        "SIDE"
+      ],
+      "mechanical_reference_gap_m": 0.2,
+      "relief_design_maximum_height_m": 2.1,
+      "lower_rail_x_bounds_a_m": [
+        -2.0,
+        -0.95
+      ],
+      "lower_rail_stations_x_a_m": [
+        -1.18,
+        -1.02
+      ],
+      "structural_strength": "NOT_VERIFIED",
+      "physical_execution": "NOT_RUN"
+    },
+    "best_cycles": [
+      {
+        "target_id": "carton_l07_c01",
+        "trial_number": 1,
+        "face": "x-",
+        "mode": "FRONT_DIRECT_HIGH_DROP",
+        "face_role": "FRONT",
+        "receive_height_m": 1.5,
+        "release_bottom_m": 2.0999999617242655,
+        "actual_nominal_drop_m": 0.5999999617242655,
+        "planning_wall_s": 99.68713312596083,
+        "robot_trajectory_s": 42.18377494200001,
+        "nominal_fall_s": 0.3497486972355937,
+        "ideal_outfeed_s": 14.85857417739109,
+        "hardware_complete_cycle_s": null,
+        "native_stages": 7,
+        "target_still_attached": false,
+        "archive": "task-000001.tar.gz",
+        "archive_sha256": "3925e8a55b54c53078b47a26afacaf6927228b6098c81869c53dbbe10d081893",
+        "finite_outfeed_support": {
+          "schema": "finite_belt_contact_envelope_v1",
+          "longitudinal_top_x_bounds_m": [
+            -4.0514147167125705,
+            -1.4000000000000004
+          ],
+          "assumption": "FINITE_NONZERO_CONTACT_OVERLAP; IDEAL_HOLDING_WITH_OVERHANG; STABILITY_AND_DYNAMICS_NOT_VERIFIED"
+        },
+        "final_state_receipt_summary": {
+          "receipt_id": "57797190e7a04387a87b0bc410c53f95",
+          "task_id": "native-cold-7bf57e8b8788441aa957300baadc5929",
+          "stage_id": "native-cold-7bf57e8b8788441aa957300baadc5929:7",
+          "q_rad": [
+            -1.6720214958663275,
+            -0.7743125681276268,
+            -0.7980369641606834,
+            4.7147980377156955,
+            -1.6719929040178414,
+            4.736234949960287
+          ],
+          "canonical_json_sha256": "c52d196c61f7429b7f72fc7dd43cbc83b6756b63c11d7581b76d5d7f3c620cdd",
+          "full_context_location": "plan.json/final_state_receipt in the named verified server archive"
+        }
+      }
+    ],
+    "remaining_target_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "remaining_target_ids_by_layout": {
+      "206f7dc240e961da": [
+        "carton_l00_c00",
+        "carton_l00_c01",
+        "carton_l00_c02",
+        "carton_l00_c03",
+        "carton_l00_c04",
+        "carton_l01_c00",
+        "carton_l01_c01",
+        "carton_l01_c02",
+        "carton_l01_c03",
+        "carton_l01_c04",
+        "carton_l02_c00",
+        "carton_l02_c01",
+        "carton_l02_c02",
+        "carton_l02_c03",
+        "carton_l02_c04",
+        "carton_l03_c00",
+        "carton_l03_c01",
+        "carton_l03_c02",
+        "carton_l03_c03",
+        "carton_l03_c04",
+        "carton_l04_c00",
+        "carton_l04_c01",
+        "carton_l04_c02",
+        "carton_l04_c03",
+        "carton_l04_c04",
+        "carton_l05_c00",
+        "carton_l05_c01",
+        "carton_l05_c02",
+        "carton_l05_c03",
+        "carton_l05_c04",
+        "carton_l06_c00",
+        "carton_l06_c01",
+        "carton_l06_c02",
+        "carton_l06_c03",
+        "carton_l06_c04",
+        "carton_l07_c00",
+        "carton_l07_c02",
+        "carton_l07_c03",
+        "carton_l07_c04"
+      ]
+    },
+    "deepest_branch_failure_diagnostics": [],
+    "trials": [
+      {
+        "number": 0,
+        "gap_m": 0.7,
+        "target_id": "carton_l07_c02",
+        "parent_node": "a7bb9f2f598c93eaf7b9a26efc685a3dd54359cd12f8ca68af7049d3e9b4f239",
+        "complete": false,
+        "category": "NUMERICAL_SEARCH_DEADLINE_NOT_UNREACHABLE",
+        "wall_s": 427.16736406832933,
+        "contact_complete": true,
+        "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+        "termination": "LOCAL_NUMERICAL_VISIT_DEADLINE_NOT_UNREACHABLE",
+        "last_stage": null,
+        "option": {
+          "template": "FRONT_DIRECT_HIGH_DROP",
+          "target_id": "carton_l07_c02",
+          "face": {
+            "geometric_face_id": "x-",
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "height_m": 1.5,
+          "release_bottom_world_m": 2.1,
+          "segment_directions_world": [
+            [
+              -1.0,
+              -0.0,
+              -0.0
+            ]
+          ],
+          "synchronization": "PREGRASP",
+          "pre_approach_height_m": 0.6,
+          "original_role": "MIDDLE",
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -1.0900000000000003,
+                  -0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0100000000000002,
+                  -0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0100000000000002,
+                  0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0900000000000003,
+                  0.8900000000000001,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "reception": {
+            "region_class": "TRANSVERSE",
+            "junction": false,
+            "outfeed_direction_world": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "inlet_edge_world": [
+              [
+                -1.4000000000000004,
+                -1.0999999999999999,
+                0.6000000000000001
+              ],
+              [
+                -1.4000000000000004,
+                -0.49999999999999994,
+                0.6000000000000001
+              ]
+            ],
+            "influence_polygon_world_xy_m": [
+              [
+                -1.4000000000000004,
+                -1.0999999999999999
+              ],
+              [
+                -0.7000000000000003,
+                -1.0999999999999999
+              ],
+              [
+                -0.7000000000000003,
+                -0.49999999999999994
+              ],
+              [
+                -1.4000000000000004,
+                -0.49999999999999994
+              ]
+            ],
+            "box_projection_world_xy_m": [
+              [
+                -1.3500000000000003,
+                -0.2
+              ],
+              [
+                -1.3500000000000003,
+                -0.2
+              ],
+              [
+                -1.3500000000000003,
+                0.2
+              ],
+              [
+                -1.3500000000000003,
+                0.2
+              ],
+              [
+                -0.7500000000000002,
+                -0.2
+              ],
+              [
+                -0.7500000000000002,
+                -0.2
+              ],
+              [
+                -0.7500000000000002,
+                0.2
+              ],
+              [
+                -0.7500000000000002,
+                0.2
+              ]
+            ],
+            "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+            "physical_transport": "NOT_RUN"
+          },
+          "requires_open_channel": false,
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "third_sync_disabled": true,
+          "acceptance": "NOT_PLANNED",
+          "joint_search_contract": {
+            "schema": "fixed40_gap_search_20261107_v1",
+            "target_identity": "852f5e6196324fa059dbaaf9f3cbcaa5deed5681d7fe9354b1a19009e19fd5b2",
+            "target_id": "carton_l07_c02",
+            "d_m": 0.05,
+            "mode": "FRONT_DIRECT_HIGH_DROP",
+            "height_m": 1.5,
+            "minimum_m": 0.55,
+            "maximum_m": 1.5,
+            "original_bottom_m": 2.1,
+            "face": "x-",
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "release_bottom_m": 2.1,
+            "expected_drop_m": 0.6000000000000001
+          },
+          "outfeed_timing": "WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW",
+          "finite_outfeed_support": true,
+          "visit_order": [
+            0,
+            0,
+            0
+          ],
+          "candidate_key": "1355e766318d9d1d54becdbd0eeb8572b1adde36c01a4a9027fe1448fd9ff29c"
+        },
+        "seed": 71109,
+        "archive": "task-000000.tar.gz",
+        "archive_sha256": "57728d32b85a0be6c9d8446201f5348baef64287ce7a45c6bf38dcfde1d5a440"
+      },
+      {
+        "number": 1,
+        "gap_m": 0.7,
+        "target_id": "carton_l07_c01",
+        "parent_node": "a7bb9f2f598c93eaf7b9a26efc685a3dd54359cd12f8ca68af7049d3e9b4f239",
+        "complete": true,
+        "category": "COMPLETE_CYCLE",
+        "wall_s": 99.68713312596083,
+        "contact_complete": true,
+        "reason": null,
+        "termination": null,
+        "last_stage": null,
+        "option": {
+          "template": "FRONT_DIRECT_HIGH_DROP",
+          "target_id": "carton_l07_c01",
+          "face": {
+            "geometric_face_id": "x-",
+            "working_axis_into_box": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "height_m": 1.5,
+          "release_bottom_world_m": 2.1,
+          "segment_directions_world": [
+            [
+              -1.0,
+              -0.0,
+              -0.0
+            ]
+          ],
+          "synchronization": "PREGRASP",
+          "pre_approach_height_m": 0.6,
+          "original_role": "MIDDLE",
+          "region": {
+            "rectangles_belt_local_m": [
+              [
+                -0.03999999999999998,
+                0.03999999999999998,
+                -0.8900000000000001,
+                0.8900000000000001
+              ]
+            ],
+            "polygons_world_m": [
+              [
+                [
+                  -1.0900000000000003,
+                  -0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0100000000000002,
+                  -0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0100000000000002,
+                  0.8900000000000001,
+                  0.6000000000000001
+                ],
+                [
+                  -1.0900000000000003,
+                  0.8900000000000001,
+                  0.6000000000000001
+                ]
+              ]
+            ],
+            "projection_center_limits_before_occupancy": [
+              -0.03999999999999998,
+              0.03999999999999998,
+              -0.8900000000000001,
+              0.8900000000000001
+            ],
+            "edge_reserve_m": 0.01,
+            "occupied_exclusions": [],
+            "geometric_fit": true,
+            "region_status": "GEOMETRIC_REGION_AVAILABLE",
+            "robot_reachability": "NOT_EVALUATED",
+            "sample_pass_does_not_qualify_region": true,
+            "exists": true,
+            "coverage": "ALL_8_CORNERS_HORIZONTAL_PROJECTION",
+            "scope": "RECEPTION_REGION_NOT_ROBOT_REACHABILITY",
+            "receiver_id": "conveyor_transverse"
+          },
+          "reception": {
+            "region_class": "LONGITUDINAL_INLET_JUNCTION",
+            "junction": true,
+            "outfeed_direction_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "inlet_edge_world": [
+              [
+                -1.4000000000000004,
+                -1.0999999999999999,
+                0.6000000000000001
+              ],
+              [
+                -1.4000000000000004,
+                -0.49999999999999994,
+                0.6000000000000001
+              ]
+            ],
+            "influence_polygon_world_xy_m": [
+              [
+                -1.4000000000000004,
+                -1.0999999999999999
+              ],
+              [
+                -0.7000000000000003,
+                -1.0999999999999999
+              ],
+              [
+                -0.7000000000000003,
+                -0.49999999999999994
+              ],
+              [
+                -1.4000000000000004,
+                -0.49999999999999994
+              ]
+            ],
+            "box_projection_world_xy_m": [
+              [
+                -1.3500000000000003,
+                -0.62
+              ],
+              [
+                -1.3500000000000003,
+                -0.62
+              ],
+              [
+                -1.3500000000000003,
+                -0.21999999999999997
+              ],
+              [
+                -1.3500000000000003,
+                -0.21999999999999997
+              ],
+              [
+                -0.7500000000000002,
+                -0.62
+              ],
+              [
+                -0.7500000000000002,
+                -0.62
+              ],
+              [
+                -0.7500000000000002,
+                -0.21999999999999997
+              ],
+              [
+                -0.7500000000000002,
+                -0.21999999999999997
+              ]
+            ],
+            "definition": "FULL_PROJECTION_INTERSECTS_SEAM_INLET_WIDTH_CORRIDOR",
+            "physical_transport": "NOT_RUN"
+          },
+          "requires_open_channel": false,
+          "endpoint": "REGION_NOT_FIXED_POINT",
+          "third_sync_disabled": true,
+          "acceptance": "NOT_PLANNED",
+          "joint_search_contract": {
+            "schema": "fixed40_gap_search_20261107_v1",
+            "target_identity": "06734ca24f03f7692ea04a27d77b58217d9e11bf5b2d13d66b2099481fa98b9f",
+            "target_id": "carton_l07_c01",
+            "d_m": 0.05,
+            "mode": "FRONT_DIRECT_HIGH_DROP",
+            "height_m": 1.5,
+            "minimum_m": 0.55,
+            "maximum_m": 1.5,
+            "original_bottom_m": 2.1,
+            "face": "x-",
+            "contact_pose": [
+              [
+                0.0,
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                0.0,
+                -1.0,
+                0.0,
+                -0.42
+              ],
+              [
+                1.0,
+                0.0,
+                0.0,
+                2.25
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "release_bottom_m": 2.1,
+            "expected_drop_m": 0.6000000000000001
+          },
+          "outfeed_timing": "WAIT_AT_RELEASE_UNTIL_FULL_ENVELOPE_OUTFED_THEN_WITHDRAW",
+          "finite_outfeed_support": true,
+          "visit_order": [
+            0,
+            0,
+            0
+          ],
+          "candidate_key": "ca9fe50402ec98a4ab8be19e16dae9fee8a62cf41a91fa38fda1bd3546067958"
+        },
+        "seed": 71110,
+        "archive": "task-000001.tar.gz",
+        "archive_sha256": "3925e8a55b54c53078b47a26afacaf6927228b6098c81869c53dbbe10d081893"
+      }
+    ],
+    "requested_gaps_m": [
+      0.7
+    ],
+    "queued_unadmitted_gaps_m": [],
+    "refinement_queue": [],
+    "physical_execution": "NOT_RUN",
+    "global_infeasibility_proven": false,
+    "search_scope": "Finite candidate visits and numerical budgets; unvisited nodes and gaps remain open",
+    "assumptions": [
+      "ideal_independent_cups",
+      "nominal_gravity_fixed_orientation",
+      "RECEPTION_ASSUMED",
+      "finite_belt_contact_with_ideal_overhang_no_dynamic_stability_proof",
+      "ideal_outfeed",
+      "sampled_collision_checks_not_continuous_swept_proof"
+    ]
+  },
+  "source_identity": {
+    "source_manifest_sha256": "e9e132303d34f553dc43930997409ef04fdf94d6cd75b7ba8018b02e5a55a950",
+    "native_binary_sha256": "fd64e6a601c4e61c984a4f31dcb1bb58193395f5c53da169ff645bedb8df2734"
+  },
+  "original_fresh_cartons": 40,
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "global_unreachable": false,
+  "optimal_gap_proven": false,
+  "physical_execution": "NOT_RUN",
+  "ongoing_pending_at_snapshot": {
+    "layout": "206f7dc240e961da",
+    "node": "b9a9bf2c5b9750c60d7340d8b7f46fbb47805175b6c0de7f30390626a04b13f0",
+    "folder": "task-000002",
+    "target_id": "carton_l07_c02",
+    "option_key": "13f6e32b1cca54c8937c6288d635f03a92940947647544c72b4c74552868ecdd",
+    "started_unix": 1794229724.9122272,
+    "allocated_budget_s": 600.0,
+    "seed": 71111
+  },
+  "trials": [
+    {
+      "number": 0,
+      "target": "carton_l07_c02",
+      "complete": false,
+      "contact_complete": true,
+      "wall_s": 427.16736406832933,
+      "category": "NUMERICAL_SEARCH_DEADLINE_NOT_UNREACHABLE",
+      "parent_node": "a7bb9f2f598c93eaf7b9a26efc685a3dd54359cd12f8ca68af7049d3e9b4f239",
+      "failure": {
+        "reason": "RECEIVER_REGION_SEARCH_INCOMPLETE",
+        "scope": "FRONT_TEMPLATE_ONLY",
+        "termination": "LOCAL_NUMERICAL_VISIT_DEADLINE_NOT_UNREACHABLE",
+        "samples_attempted": 27,
+        "global_unreachable": false
+      },
+      "archive": "task-000000.tar.gz",
+      "archive_sha256": "57728d32b85a0be6c9d8446201f5348baef64287ce7a45c6bf38dcfde1d5a440"
+    },
+    {
+      "number": 1,
+      "target": "carton_l07_c01",
+      "complete": true,
+      "contact_complete": true,
+      "wall_s": 99.68713312596083,
+      "category": "COMPLETE_CYCLE",
+      "parent_node": "a7bb9f2f598c93eaf7b9a26efc685a3dd54359cd12f8ca68af7049d3e9b4f239",
+      "failure": {},
+      "archive": "task-000001.tar.gz",
+      "archive_sha256": "3925e8a55b54c53078b47a26afacaf6927228b6098c81869c53dbbe10d081893"
+    }
+  ]
+}

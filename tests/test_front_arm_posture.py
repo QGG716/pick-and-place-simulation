@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 import numpy as np
 import pytest
-from unloading_sim.front_arm_posture import front_arm_posture
+from unloading_sim.front_arm_posture import front_arm_posture,arm_posture_policy
 
 
 def robot(upper, forearm, forward=1.):
@@ -34,3 +34,19 @@ def test_initial_stricter_than_contact_and_forearm_must_point_forward():
 @pytest.mark.parametrize('upper,forearm',[(44.9,0),(90,30.1),(90,-30.1)])
 def test_posture_bounds(upper,forearm):
     assert not front_arm_posture(robot(upper,forearm),np.zeros(6))['passed']
+
+
+def test_none_removes_initial_and_front_gates_and_posture_ranking():
+    policy=arm_posture_policy('none')
+    rejected=front_arm_posture(robot(-24.681,80.439),np.zeros(6),initial=True)
+    assert not rejected['passed']
+    assert not policy['initial_hard_gate']
+    assert not policy['front_endpoint_hard_gate']
+    assert not policy['upper_arm_soft_preference']
+    assert arm_posture_policy('legacy-soft')['upper_arm_soft_preference']
+    assert arm_posture_policy('upright')['front_endpoint_hard_gate']
+
+
+def test_unknown_posture_mode_fails_closed():
+    with pytest.raises(ValueError,match='UNKNOWN_ARM_POSTURE_MODE'):
+        arm_posture_policy('unknown')

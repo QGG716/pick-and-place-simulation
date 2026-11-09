@@ -9,6 +9,15 @@ from .upper_arm_preference import upper_arm
 POLICY = 'UPRIGHT_UPPER_FORWARD_FOREARM_V1'
 
 
+def arm_posture_policy(mode):
+    """Keep explicit historical modes; none removes gates and posture ranking."""
+    if mode not in ('none', 'legacy-soft', 'upright'):
+        raise ValueError('UNKNOWN_ARM_POSTURE_MODE')
+    return dict(mode=mode, initial_hard_gate=mode == 'upright',
+        front_endpoint_hard_gate=mode == 'upright',
+        upper_arm_soft_preference=mode != 'none')
+
+
 def front_arm_posture(robot, q, *, initial=False):
     upper = upper_arm(robot, q)
     frames = robot.named_link_frames(q)

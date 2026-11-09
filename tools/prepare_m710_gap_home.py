@@ -38,7 +38,7 @@ def main():
     p.add_argument('--home-definition',choices=('pose','stack-facing-upright'),default='pose')
     p.add_argument('--seed',type=int,default=911109)
     p.add_argument('--draws',type=int,default=64)
-    p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
+    p.add_argument('--front-arm-posture',choices=('none','legacy-soft','upright'),default='none')
     p.add_argument('--mount-height',type=float,choices=(.9,1.),default=1.)
     args=p.parse_args();started=time.monotonic()
     if args.output.exists():raise ValueError('INITIALIZATION_EVIDENCE_ALREADY_EXISTS')
@@ -74,8 +74,9 @@ def main():
             row['failure']=built.validate_unloaded_state(q,scene.all_obstacles,stage='unloaded')
             actual=built.physical_from_virtual(built.robot.fk(q))
             row['stack_facing']=initial_stack_facing_evidence(actual,original.cartons)
-            from unloading_sim.front_arm_posture import front_arm_posture
+            from unloading_sim.front_arm_posture import front_arm_posture,arm_posture_policy
             row['arm_posture']=front_arm_posture(built.robot,q,initial=True)
+            row['arm_posture_policy']=arm_posture_policy(args.front_arm_posture)
             reference=physical_home_pose([0,0,0])[:3,:3]
             angle=float(np.arccos(np.clip((np.trace(reference.T@actual[:3,:3])-1)/2,-1.,1.)))
             tolerance=float(np.deg2rad(1.)) if explicit_q is not None else .0002
@@ -84,14 +85,15 @@ def main():
             row['cup_grid_orientation_passed']=bool(angle<=tolerance+1e-12)
             if (row['failure'] is None and row['stack_facing']['passed']
                     and row['cup_grid_orientation_passed']
-                    and (args.front_arm_posture=='legacy-soft' or row['arm_posture']['passed'])):selected=row
+                    and (not row['arm_posture_policy']['initial_hard_gate'] or row['arm_posture']['passed'])):selected=row
         rows.append(row)
         if selected is not None:break
     maximum_draws=args.draws if explicit_q is None else 1
     report=dict(schema='gap_stack_facing_home_v1',gap_m=args.gap,layout_fingerprint=layout.layout_fingerprint,
         requested_physical_pose_world=physical.tolist(),seed=args.seed,maximum_draws=maximum_draws,
         home_definition=args.home_definition,initial_forearm_direction_rule=(
-            'UPRIGHT_FORWARD_NOT_EXACT_AXIS' if args.front_arm_posture=='upright' else 'LEGACY_SOFT'),
+            'UPRIGHT_FORWARD_NOT_EXACT_AXIS' if args.front_arm_posture=='upright' else
+            'UNCONSTRAINED_ARM_POSTURE' if args.front_arm_posture=='none' else 'LEGACY_SOFT'),
         tool_grid_orientation='SHORT_6_ROW_AXIS_WORLD_PLUS_Z_LONG_12_COLUMN_AXIS_WORLD_MINUS_Y',
         front_arm_posture=args.front_arm_posture,
         mount_height_m=args.mount_height,

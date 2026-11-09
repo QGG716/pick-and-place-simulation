@@ -1,0 +1,54 @@
+{
+  "status": "PASS_STATIC_BROWSER_FK_AND_40_IDENTITIES",
+  "header": "FANUC M-710 · g=700 mm · 无臂型限制初态\n安装面 900 mm · 初态与正吸端点臂型门槛均关闭 · 吸具朝向箱堆 · 静态检查",
+  "state": {
+    "time": 0,
+    "phase": "已检查初态（非运动）",
+    "completed_count": 0,
+    "carton_count": 40,
+    "q_rad": [
+      -0.2243312003631651,
+      -0.6369722056788532,
+      -0.7362841462999454,
+      4.302732534226782,
+      -0.24499468838845673,
+      5.133243797266537
+    ],
+    "flange_matrix_column_major": [
+      0.9999999979565075,
+      2.82715042318471e-05,
+      -5.7338528788253296e-05,
+      0,
+      2.827122237190738e-05,
+      -0.9999999995882828,
+      -4.916520458753126e-06,
+      0,
+      -5.733866776204922e-05,
+      4.914899418395624e-06,
+      -0.9999999983440604,
+      0,
+      -1.0175058920456275,
+      -1.6563988762756388e-05,
+      2.2500325813206286,
+      1
+    ],
+    "height_m": 0.6000000000000001,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": null,
+    "target_pose": null,
+    "base_delta_m": [
+      0,
+      0,
+      0
+    ],
+    "base_xyz_world_m": null,
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "maximum_flange_matrix_error": 4.440892098500626e-16,
+  "errors": [],
+  "physical_execution": "NOT_RUN"
+}

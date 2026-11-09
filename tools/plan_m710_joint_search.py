@@ -224,7 +224,10 @@ def offered(original,built,state,frozen):
 def run_trial(args,original,built,state,target,option,folder,budget,seed):
     folder.mkdir();began=time.monotonic();layout=original.policy.layout_validation.layout;fatal=False
     scene=batch_scene(original,state,built.robot,layout);client=None;c=None;plan=None;detail={}
+    from unloading_sim.front_arm_posture import arm_posture_policy
+    posture_policy=arm_posture_policy(getattr(args,'front_arm_posture','legacy-soft'))
     row=dict(initial=state.root(),target=target.evidence(),option=option,seed=seed,
+        arm_posture_policy=posture_policy,
         numeric_search_policy=dict(fixed_target_connection_slice_s=getattr(args,'connection_seconds',6.),
             native_ompl_restart_slice_s=getattr(args,'ompl_seconds',2.),shared_deadlines_preserved=True),
         solver_seed_scope='EXPLICIT_MOVEIT_OMPL_SEED_NOT_KDL_INTERNAL_RANDOMNESS',planning_mode='cold_from_scratch',
@@ -252,8 +255,8 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
         c=cls.from_existing(built,scene,native_client=client,planning_mode='cold_from_scratch',
             native_budget=dict(task_wall_time_s=budget,stage_wall_time_s=min(args.stage_seconds,budget),ipc_timeout_s=min(args.stage_seconds,budget)+10))
         c.option=option;c.batch_root=state.root();c.template_provenance=dict(role=dict(role=option['original_role']),template=option['template'])
-        c.upper_arm_preference_enabled=True;c.empty_approach_direct_first=True
-        c.front_arm_posture_required=(getattr(args,'front_arm_posture','legacy-soft')=='upright' and target.face_role=='FRONT')
+        c.upper_arm_preference_enabled=posture_policy['upper_arm_soft_preference'];c.empty_approach_direct_first=True
+        c.front_arm_posture_required=(posture_policy['front_endpoint_hard_gate'] and target.face_role=='FRONT')
         c.fixed_target_connection_slice_s=row['numeric_search_policy']['fixed_target_connection_slice_s']
         c.native_ompl_restart_slice_s=row['numeric_search_policy']['native_ompl_restart_slice_s']
         c.height_stage_deadlines={'prefix':began+min(args.prefix_seconds,budget)};c.height_prefix_active=True
@@ -281,6 +284,7 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
     if plan is not None:
         from verify_m710_joint_search import verify_cycle
         plan['front_arm_posture_required']=c.front_arm_posture_required
+        plan['arm_posture_policy']=posture_policy
         save(folder/'plan.json',plan)
         save(folder/'cycle-verification.json',verify_cycle(plan,folder,state.root(),layout,built))
     wall=time.monotonic()-began

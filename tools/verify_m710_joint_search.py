@@ -200,8 +200,13 @@ def verify_search(run,key,require_complete=False):
                 assert hashlib.sha256(raw).hexdigest()==trial['evidence']['file_sha256'][name]
                 return json.loads(raw)
             plan=read('plan.json');assert read('dispatch.json')['layout_fingerprint']==layout.layout_fingerprint
-            if gap_search and db.get('options',{}).get('front_arm_posture')=='upright':
-                assert plan.get('front_arm_posture_required')==(plan['target']['face_role']=='FRONT')
+            if gap_search:
+                from unloading_sim.front_arm_posture import arm_posture_policy
+                expected=arm_posture_policy(db.get('options',{}).get('front_arm_posture','legacy-soft'))
+                assert bool(plan.get('front_arm_posture_required'))==(expected['front_endpoint_hard_gate'] and plan['target']['face_role']=='FRONT')
+                if expected['mode']=='none':
+                    assert plan.get('arm_posture_policy')==expected
+                    assert record['initial_arm_posture_evidence'] is None
             if plan['option'].get('outfeed_timing')==PARK_FIRST:assert plan['option']['park_q_rad']==initial['q_rad']
             reports.append(verify_cycle(plan,None,state.root(),layout,built,read=read))
         state.commit(plan);assert state.root()==node['root'] and state.ledger==node['ledger']

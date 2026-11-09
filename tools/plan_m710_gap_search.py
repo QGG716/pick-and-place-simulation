@@ -73,8 +73,9 @@ def prepare(args,layout,record):
         failure=built.validate_unloaded_state(q,scene.all_obstacles,stage='unloaded')
         if failure is None and orientation=='stack-facing' and not facing['passed']:
             failure='INITIAL_CUPS_NOT_FACING_STACK'
-        from unloading_sim.front_arm_posture import front_arm_posture
-        posture=front_arm_posture(built.robot,q,initial=True) if getattr(args,'front_arm_posture','legacy-soft')=='upright' else None
+        from unloading_sim.front_arm_posture import front_arm_posture,arm_posture_policy
+        posture_policy=arm_posture_policy(getattr(args,'front_arm_posture','none'))
+        posture=front_arm_posture(built.robot,q,initial=True) if posture_policy['initial_hard_gate'] else None
         if failure is None and posture is not None and not posture['passed']:failure='INITIAL_ARM_POSTURE_REJECTED'
         attempts.append(dict(index=i,q_rad=q.tolist(),failure=failure,stack_facing=facing,arm_posture=posture))
         if failure is None:state.q=q;break
@@ -147,7 +148,8 @@ def main():
     p.add_argument('--initial-orientation',choices=('stack-facing','unconstrained'),default='stack-facing',
         help='Physical cup normal points into the stack at the initial state; unconstrained is for explicit historical reproduction only')
     p.add_argument('--seed',type=int,default=71107);p.add_argument('--refine',action='store_true')
-    p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
+    p.add_argument('--front-arm-posture',choices=('none','legacy-soft','upright'),default='none',
+        help='none: no initial/FRONT arm-shape gates or upright ranking; tool-facing and collision checks remain independent')
     p.add_argument('--mount-height',type=float,choices=(.9,1.),default=1.,help='Fixed for the entire fresh world; 900 mm is the user-authorized ceiling fallback')
     p.add_argument('--admission-only',action='store_true');p.add_argument('--max-rounds',type=int,default=2)
     p.add_argument('--external-support-mode',choices=SUPPORT_MODES,default='require-modeled',

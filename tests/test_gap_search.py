@@ -340,11 +340,14 @@ def test_gap_empty_admitted_search_persists_terminal_checkpoint(tmp_path,monkeyp
         elapsed_search_s=17.,status='SEARCHING',pending=None)))
     monkeypatch.setattr(sys,'argv',['gap-search','--output',str(tmp_path),'--resume',
         '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest),
-        '--initial-orientation','unconstrained'])
+        '--initial-orientation','unconstrained','--front-arm-posture','legacy-soft'])
     entry.main()
     saved=json.loads(checkpoint.read_text())
     assert saved['status']=='FINITE_ADMITTED_SEARCH_EXHAUSTED'
     assert saved['elapsed_search_s']==17. and saved['trials']==[]
+    # The new none default must not silently reinterpret a historical checkpoint.
+    monkeypatch.setattr(sys,'argv',sys.argv[:-2])
+    with pytest.raises(ValueError,match='RESUME_FRONT_ARM_POSTURE_CHANGED'):entry.main()
     monkeypatch.setattr(sys,'argv',['gap-search','--output',str(tmp_path),'--resume',
         '--worker-command','unused','--worker-binary',str(worker),'--source-manifest',str(manifest),
         '--external-support-mode','record-unknown'])

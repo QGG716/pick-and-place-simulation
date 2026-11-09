@@ -1,0 +1,36 @@
+{
+  "status": "PASS_INITIAL_AND_NATIVE_REQUEST_POSTURE_GATES_DISABLED",
+  "initial_hard_gate": false,
+  "front_endpoint_hard_gate": false,
+  "upper_arm_soft_preference": false,
+  "trials": [
+    {
+      "trial": 0,
+      "target": "carton_l07_c02",
+      "complete": false,
+      "dispatch_policy": {
+        "mode": "none",
+        "initial_hard_gate": false,
+        "front_endpoint_hard_gate": false,
+        "upper_arm_soft_preference": false
+      },
+      "posture_rejections": 0,
+      "soft_upper_arm_seed_requests": 0
+    },
+    {
+      "trial": 1,
+      "target": "carton_l07_c01",
+      "complete": true,
+      "dispatch_policy": {
+        "mode": "none",
+        "initial_hard_gate": false,
+        "front_endpoint_hard_gate": false,
+        "upper_arm_soft_preference": false
+      },
+      "posture_rejections": 0,
+      "soft_upper_arm_seed_requests": 0
+    }
+  ],
+  "independent_stack_facing_required": true,
+  "physical_execution": "NOT_RUN"
+}

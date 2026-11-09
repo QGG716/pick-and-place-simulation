@@ -1,0 +1,343 @@
+{
+  "scope": "STATIC_INITIAL_STATE_ONLY",
+  "initial_state_passed": true,
+  "carton_count": 40,
+  "layout_fingerprint": "9e3a41389c49eed3075293613c55b0e784b53051842c769772e4ff78b64ec4d9",
+  "q_rad": [
+    -0.2243312003631651,
+    -0.6369722056788532,
+    -0.7362841462999454,
+    4.302732534226782,
+    -0.24499468838845673,
+    5.133243797266537
+  ],
+  "flange_matrix_column_major": [
+    0.9999999979565075,
+    2.82715042318471e-05,
+    -5.7338528788253296e-05,
+    0.0,
+    2.827122237190738e-05,
+    -0.9999999995882828,
+    -4.916520458753126e-06,
+    0.0,
+    -5.733866776204922e-05,
+    4.914899418395624e-06,
+    -0.9999999983440604,
+    0.0,
+    -1.0175058920456275,
+    -1.656398876273557e-05,
+    2.250032581320629,
+    1.0
+  ],
+  "home": {
+    "schema": "gap_stack_facing_home_v1",
+    "gap_m": 0.7,
+    "layout_fingerprint": "9e3a41389c49eed3075293613c55b0e784b53051842c769772e4ff78b64ec4d9",
+    "requested_physical_pose_world": [
+      [
+        -0.0,
+        0.0,
+        1.0,
+        -0.6
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0,
+        2.25
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "seed": 71109,
+    "maximum_draws": 64,
+    "home_definition": "pose",
+    "initial_forearm_direction_rule": "UNCONSTRAINED_ARM_POSTURE",
+    "tool_grid_orientation": "SHORT_6_ROW_AXIS_WORLD_PLUS_Z_LONG_12_COLUMN_AXIS_WORLD_MINUS_Y",
+    "front_arm_posture": "none",
+    "mount_height_m": 0.9,
+    "selected": {
+      "index": 0,
+      "seed_q_rad": [
+        -2.5195299480918156,
+        0.5407945513619787,
+        -0.024661098447856133,
+        6.068060333874705,
+        0.28713087059326936,
+        5.586924664603211
+      ],
+      "q_rad": [
+        -0.2243312003631651,
+        -0.6369722056788532,
+        -0.7362841462999454,
+        4.302732534226782,
+        -0.24499468838845673,
+        5.133243797266537
+      ],
+      "converged": true,
+      "iterations": 51,
+      "reason": "converged",
+      "position_error_m": 9.769399331065816e-06,
+      "orientation_error_rad": 6.411824268463245e-05,
+      "method": "FRESH_NUMERICAL_IK",
+      "failure": null,
+      "stack_facing": {
+        "passed": true,
+        "physical_pose_world": [
+          [
+            5.7338667762271265e-05,
+            2.827122237190738e-05,
+            0.9999999979565075,
+            -0.6000058928987856
+          ],
+          [
+            -4.914899418395618e-06,
+            -0.9999999995882828,
+            2.82715042318471e-05,
+            -4.760635745939406e-06
+          ],
+          [
+            0.9999999983440604,
+            -4.916520458753126e-06,
+            -5.733852878847534e-05,
+            2.2500086424848598
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "physical_working_normal_world": [
+          0.9999999979565075,
+          2.82715042318471e-05,
+          -5.733852878847534e-05
+        ],
+        "required_normal_world": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "maximum_angle_rad": 0.017453292519943295,
+        "actual_angle_rad": 6.392953131429316e-05,
+        "stack_front_x_m": 0.0,
+        "forward_ray_hits_stack": true,
+        "intersection_world_m": [
+          0.0,
+          1.2202433428945713e-05,
+          2.2499742390296262
+        ]
+      },
+      "arm_posture": {
+        "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+        "passed": false,
+        "initial": true,
+        "upper_arm": {
+          "shoulder_world_m": [
+            -1.7037585346246207,
+            0.1166318444492099,
+            1.4649999999999999
+          ],
+          "elbow_world_m": [
+            -2.2227342933476333,
+            0.23504739642489625,
+            2.184490735804268
+          ],
+          "direction_world": [
+            -0.5798611829307403,
+            0.13230787930244284,
+            0.8039002634684559
+          ],
+          "length_m": 0.8950000000000001,
+          "elevation_rad": 0.9338241211160433,
+          "elevation_deg": 53.5041809474627,
+          "q2_rad": -0.6369722056788532,
+          "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+        },
+        "forearm_root_world_m": [
+          -2.2063013435582057,
+          0.2312978632584688,
+          2.353653081384637
+        ],
+        "wrist_world_m": [
+          -1.1925058916880162,
+          -2.1511502003301874e-05,
+          2.2500426155631668
+        ],
+        "forearm_direction_world": [
+          0.9701391883925261,
+          -0.2213582533593035,
+          -0.09914877112102399
+        ],
+        "forearm_length_m": 1.0449999999999997,
+        "forearm_elevation_deg": -5.690155052842434,
+        "minimum_upper_elevation_deg": 75.0,
+        "maximum_forearm_absolute_elevation_deg": 20.0,
+        "forearm_forward_world_plus_x_required": true,
+        "collision_checks_unchanged": true
+      },
+      "arm_posture_policy": {
+        "mode": "none",
+        "initial_hard_gate": false,
+        "front_endpoint_hard_gate": false,
+        "upper_arm_soft_preference": false
+      },
+      "cup_grid_orientation_error_rad": 6.411824389561265e-05,
+      "maximum_cup_grid_orientation_error_rad": 0.0002,
+      "cup_grid_orientation_passed": true
+    },
+    "attempts": [
+      {
+        "index": 0,
+        "seed_q_rad": [
+          -2.5195299480918156,
+          0.5407945513619787,
+          -0.024661098447856133,
+          6.068060333874705,
+          0.28713087059326936,
+          5.586924664603211
+        ],
+        "q_rad": [
+          -0.2243312003631651,
+          -0.6369722056788532,
+          -0.7362841462999454,
+          4.302732534226782,
+          -0.24499468838845673,
+          5.133243797266537
+        ],
+        "converged": true,
+        "iterations": 51,
+        "reason": "converged",
+        "position_error_m": 9.769399331065816e-06,
+        "orientation_error_rad": 6.411824268463245e-05,
+        "method": "FRESH_NUMERICAL_IK",
+        "failure": null,
+        "stack_facing": {
+          "passed": true,
+          "physical_pose_world": [
+            [
+              5.7338667762271265e-05,
+              2.827122237190738e-05,
+              0.9999999979565075,
+              -0.6000058928987856
+            ],
+            [
+              -4.914899418395618e-06,
+              -0.9999999995882828,
+              2.82715042318471e-05,
+              -4.760635745939406e-06
+            ],
+            [
+              0.9999999983440604,
+              -4.916520458753126e-06,
+              -5.733852878847534e-05,
+              2.2500086424848598
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "physical_working_normal_world": [
+            0.9999999979565075,
+            2.82715042318471e-05,
+            -5.733852878847534e-05
+          ],
+          "required_normal_world": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "maximum_angle_rad": 0.017453292519943295,
+          "actual_angle_rad": 6.392953131429316e-05,
+          "stack_front_x_m": 0.0,
+          "forward_ray_hits_stack": true,
+          "intersection_world_m": [
+            0.0,
+            1.2202433428945713e-05,
+            2.2499742390296262
+          ]
+        },
+        "arm_posture": {
+          "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+          "passed": false,
+          "initial": true,
+          "upper_arm": {
+            "shoulder_world_m": [
+              -1.7037585346246207,
+              0.1166318444492099,
+              1.4649999999999999
+            ],
+            "elbow_world_m": [
+              -2.2227342933476333,
+              0.23504739642489625,
+              2.184490735804268
+            ],
+            "direction_world": [
+              -0.5798611829307403,
+              0.13230787930244284,
+              0.8039002634684559
+            ],
+            "length_m": 0.8950000000000001,
+            "elevation_rad": 0.9338241211160433,
+            "elevation_deg": 53.5041809474627,
+            "q2_rad": -0.6369722056788532,
+            "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+          },
+          "forearm_root_world_m": [
+            -2.2063013435582057,
+            0.2312978632584688,
+            2.353653081384637
+          ],
+          "wrist_world_m": [
+            -1.1925058916880162,
+            -2.1511502003301874e-05,
+            2.2500426155631668
+          ],
+          "forearm_direction_world": [
+            0.9701391883925261,
+            -0.2213582533593035,
+            -0.09914877112102399
+          ],
+          "forearm_length_m": 1.0449999999999997,
+          "forearm_elevation_deg": -5.690155052842434,
+          "minimum_upper_elevation_deg": 75.0,
+          "maximum_forearm_absolute_elevation_deg": 20.0,
+          "forearm_forward_world_plus_x_required": true,
+          "collision_checks_unchanged": true
+        },
+        "arm_posture_policy": {
+          "mode": "none",
+          "initial_hard_gate": false,
+          "front_endpoint_hard_gate": false,
+          "upper_arm_soft_preference": false
+        },
+        "cup_grid_orientation_error_rad": 6.411824389561265e-05,
+        "maximum_cup_grid_orientation_error_rad": 0.0002,
+        "cup_grid_orientation_passed": true
+      }
+    ],
+    "unsearched_draws": 63,
+    "wall_s": 1.4668643549084663,
+    "historical_solution_loaded": false,
+    "native_motion_credit": false,
+    "scope": "FRESH40_STATIC_INITIALIZATION_ONLY",
+    "physical_execution": "NOT_RUN"
+  },
+  "source_manifest_sha256": "e9e132303d34f553dc43930997409ef04fdf94d6cd75b7ba8018b02e5a55a950",
+  "html_sha256": "da3ef60ff8d44dec2c3551feecdb5b0a9ca02646521fb88e7f9dbc3f50a1b45c",
+  "physical_execution": "NOT_RUN"
+}
