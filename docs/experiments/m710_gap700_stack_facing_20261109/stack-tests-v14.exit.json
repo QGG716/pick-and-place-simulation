@@ -1,0 +1,1 @@
+{"exit": 0, "wall_s": 4.47038558870554, "command": "cd /work-gap-20261109-v14 && PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /opt/planning-venv/bin/python -m pytest -q tests/test_front_arm_posture.py tests/test_gap_search.py"}

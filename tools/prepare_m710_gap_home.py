@@ -21,11 +21,21 @@ def physical_home_pose(xyz):
     return make_transform(make_tool_rotation(np.array([1.,0.,0.]),np.array([0.,-1.,0.])),xyz)
 
 
+def upright_stack_home_q():
+    # Explicit official-model joint definition, not an imported previous solution.
+    # The actual link directions, cup orientation and collisions are checked below.
+    # A small wrist bend avoids the straight-wrist singularity without changing
+    # J4-to-J5 direction. This is a candidate, not an exact-axis acceptance gate.
+    # Cups retain the existing one-degree facing tolerance.
+    return np.array([np.pi, 0., np.pi, 0., np.deg2rad(.5), 0.])
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--gap',type=float,required=True)
     p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--tcp-xyz',nargs=3,type=float,default=[-.6,0.,2.25])
+    p.add_argument('--tcp-xyz',nargs=3,type=float)
+    p.add_argument('--home-definition',choices=('pose','stack-facing-upright'),default='pose')
     p.add_argument('--seed',type=int,default=911109)
     p.add_argument('--draws',type=int,default=64)
     p.add_argument('--front-arm-posture',choices=('legacy-soft','upright'),default='legacy-soft')
@@ -33,36 +43,59 @@ def main():
     args=p.parse_args();started=time.monotonic()
     if args.output.exists():raise ValueError('INITIALIZATION_EVIDENCE_ALREADY_EXISTS')
     if args.draws<=0:raise ValueError('NONPOSITIVE_INITIAL_DRAWS')
+    if args.home_definition=='stack-facing-upright' and args.tcp_xyz is not None:
+        raise ValueError('UPRIGHT_HOME_DERIVES_TCP_DO_NOT_SPECIFY_POSE')
     layout=frozen_layout(args.gap,args.mount_height)
-    original,built,audit=make_context('gap',layout_path=layout.config_path,initial_seed=args.seed,initial_draws=64)
+    explicit_q=upright_stack_home_q() if args.home_definition=='stack-facing-upright' else None
+    original,built,audit=make_context('gap',layout_path=layout.config_path,
+        initial_q=None if explicit_q is None else explicit_q.tolist(),
+        initial_seed=args.seed if explicit_q is None else None,initial_draws=64)
     state=BatchState(FrozenCartonPopulation.capture(original.cartons),tuple(original.cartons),
         np.asarray(original.snapshot['robot']['q_rad']),.6)
     scene=batch_scene(original,state,built.robot,layout)
-    physical=physical_home_pose(args.tcp_xyz)
+    physical=(physical_home_pose(args.tcp_xyz or [-.6,0.,2.25]) if explicit_q is None else
+        built.physical_from_virtual(built.robot.fk(explicit_q)))
     virtual=physical@np.linalg.inv(built.flange_from_physical_contact)@built.flange_from_virtual_task_tcp
     rng=np.random.default_rng(args.seed);limits=built.robot.joint_limits
-    proposals=rng.uniform(limits[:,0]+.05,limits[:,1]-.05,size=(args.draws,6))
+    proposals=(rng.uniform(limits[:,0]+.05,limits[:,1]-.05,size=(args.draws,6)) if explicit_q is None else [explicit_q])
     rows=[];selected=None
     for i,seed in enumerate(proposals):
-        result=solve_ik(built.robot,virtual,seed,max_iterations=300,position_tolerance=.0001,orientation_tolerance=.0001)
-        row=dict(index=i,seed_q_rad=seed.tolist(),q_rad=result.q.tolist(),converged=result.success,
-            iterations=result.iterations,reason=result.message,position_error_m=result.position_error,
-            orientation_error_rad=result.orientation_error)
-        if result.success:
-            row['failure']=built.validate_unloaded_state(result.q,scene.all_obstacles,stage='unloaded')
-            row['stack_facing']=initial_stack_facing_evidence(built.physical_from_virtual(built.robot.fk(result.q)),original.cartons)
+        if explicit_q is None:
+            result=solve_ik(built.robot,virtual,seed,max_iterations=300,position_tolerance=.0001,orientation_tolerance=.0001)
+            q=result.q;success=result.success
+            row=dict(index=i,seed_q_rad=seed.tolist(),q_rad=q.tolist(),converged=success,
+                iterations=result.iterations,reason=result.message,position_error_m=result.position_error,
+                orientation_error_rad=result.orientation_error,method='FRESH_NUMERICAL_IK')
+        else:
+            q=explicit_q;success=True
+            row=dict(index=i,q_rad=q.tolist(),method='EXPLICIT_OFFICIAL_JOINT_DEFINITION_WITH_FK_CHECKS',
+                inverse_kinematics_run=False)
+        if success:
+            row['failure']=built.validate_unloaded_state(q,scene.all_obstacles,stage='unloaded')
+            actual=built.physical_from_virtual(built.robot.fk(q))
+            row['stack_facing']=initial_stack_facing_evidence(actual,original.cartons)
             from unloading_sim.front_arm_posture import front_arm_posture
-            row['arm_posture']=front_arm_posture(built.robot,result.q,initial=True)
+            row['arm_posture']=front_arm_posture(built.robot,q,initial=True)
+            reference=physical_home_pose([0,0,0])[:3,:3]
+            angle=float(np.arccos(np.clip((np.trace(reference.T@actual[:3,:3])-1)/2,-1.,1.)))
+            tolerance=float(np.deg2rad(1.)) if explicit_q is not None else .0002
+            row['cup_grid_orientation_error_rad']=angle
+            row['maximum_cup_grid_orientation_error_rad']=tolerance
+            row['cup_grid_orientation_passed']=bool(angle<=tolerance+1e-12)
             if (row['failure'] is None and row['stack_facing']['passed']
+                    and row['cup_grid_orientation_passed']
                     and (args.front_arm_posture=='legacy-soft' or row['arm_posture']['passed'])):selected=row
         rows.append(row)
         if selected is not None:break
+    maximum_draws=args.draws if explicit_q is None else 1
     report=dict(schema='gap_stack_facing_home_v1',gap_m=args.gap,layout_fingerprint=layout.layout_fingerprint,
-        requested_physical_pose_world=physical.tolist(),seed=args.seed,maximum_draws=args.draws,
+        requested_physical_pose_world=physical.tolist(),seed=args.seed,maximum_draws=maximum_draws,
+        home_definition=args.home_definition,initial_forearm_direction_rule=(
+            'UPRIGHT_FORWARD_NOT_EXACT_AXIS' if args.front_arm_posture=='upright' else 'LEGACY_SOFT'),
         tool_grid_orientation='SHORT_6_ROW_AXIS_WORLD_PLUS_Z_LONG_12_COLUMN_AXIS_WORLD_MINUS_Y',
         front_arm_posture=args.front_arm_posture,
         mount_height_m=args.mount_height,
-        selected=selected,attempts=rows,unsearched_draws=args.draws-len(rows),
+        selected=selected,attempts=rows,unsearched_draws=maximum_draws-len(rows),
         wall_s=time.monotonic()-started,historical_solution_loaded=False,native_motion_credit=False,
         scope='FRESH40_STATIC_INITIALIZATION_ONLY',physical_execution='NOT_RUN')
     args.output.parent.mkdir(parents=True,exist_ok=True)

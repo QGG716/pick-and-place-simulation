@@ -1,0 +1,54 @@
+{
+  "status": "PASS_STATIC_BROWSER_FK_AND_40_IDENTITIES",
+  "header": "FANUC M-710 · g=700 mm · 已检查初态\n安装面 900 mm · 大臂竖起、小臂朝向箱堆 · 不要求严格 +X · 静态姿态检查，非运动回放",
+  "state": {
+    "time": 0,
+    "phase": "已检查初态（非运动）",
+    "completed_count": 0,
+    "carton_count": 40,
+    "q_rad": [
+      3.141592653589793,
+      0,
+      3.141592653589793,
+      0,
+      0.008726646259971648,
+      0
+    ],
+    "flange_matrix_column_major": [
+      0.9999619230641713,
+      -1.2246001683497691e-16,
+      -0.008726535498373812,
+      0,
+      -1.2246467991473532e-16,
+      -1,
+      0,
+      0,
+      -0.008726535498373812,
+      1.0686923765729241e-18,
+      -0.9999619230641713,
+      0,
+      -0.7800066634637701,
+      0.14999999999999983,
+      2.1884728562877847,
+      1
+    ],
+    "height_m": 0.6000000000000001,
+    "attached": false,
+    "nominal_count": 0,
+    "drain_count": 0,
+    "physical_count": 0,
+    "target": null,
+    "target_pose": null,
+    "base_delta_m": [
+      0,
+      0,
+      0
+    ],
+    "base_xyz_world_m": null,
+    "continuous": true,
+    "physical_execution": "NOT_RUN"
+  },
+  "maximum_flange_matrix_error": 0.0,
+  "errors": [],
+  "physical_execution": "NOT_RUN"
+}

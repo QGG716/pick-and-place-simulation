@@ -1,0 +1,28 @@
+{
+  "command": [
+    "chroot",
+    "/root/m710-gap-search-20261107/rootfs",
+    "/bin/bash",
+    "-c",
+    "cd /work-gap-20261109-v14 && export PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 && exec /opt/planning-venv/bin/python tools/plan_m710_gap_search.py --output /gap-search-20261109/g0700-stack-facing-upright --worker-command /gap-worker-nov09-v2.sh --worker-binary /gap-search-build-v2/m710_moveit_worker --source-manifest /gap-search-20261109/source-manifest-v14.json --gaps .7 --mount-height .9 --external-support-mode record-unknown --max-trials 120 --trial-seconds 600 --prefix-seconds 360 --stage-seconds 360 --connection-seconds 30 --ompl-seconds 20 --max-rounds 3 --seed 71109 --stop-file /gap-search-20261109/STOP-g0700-stack-facing-upright --initial-orientation stack-facing --front-arm-posture upright --initial-q-rad 3.141592653589793 0.0 3.141592653589793 0.0 0.008726646259971648 0.0"
+  ],
+  "pid": 11378,
+  "started_unix": 1794204664.950109,
+  "source_manifest_sha256": "ff10878301cff355f8479a5477e788e17d7e182a00ccfe1dbc230adf70a7ef64",
+  "fresh_initial_carton_count": 40,
+  "imported_completed_count": 0,
+  "initial_forearm_direction_rule": "UPRIGHT_FORWARD_NOT_EXACT_AXIS",
+  "initial_q_rad": [
+    3.141592653589793,
+    0.0,
+    3.141592653589793,
+    0.0,
+    0.008726646259971648,
+    0.0
+  ],
+  "gap_m": 0.7,
+  "mount_height_m": 0.9,
+  "stop_file": "/root/m710-gap-search-20261107/rootfs/gap-search-20261109/STOP-g0700-stack-facing-upright",
+  "free_space_guard_mib": 1200,
+  "physical_execution": "NOT_RUN"
+}

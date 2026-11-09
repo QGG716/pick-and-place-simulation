@@ -154,6 +154,23 @@ def test_initial_home_keeps_short_cup_axis_up_and_long_axis_horizontal():
     np.testing.assert_allclose(pose,[[0.,0.,1.,-.6],[0.,-1.,0.,0.],[1.,0.,0.,2.25],[0.,0.,0.,1.]],atol=1e-12,rtol=0)
 
 
+def test_700mm_900mm_home_uses_literal_official_link_directions(base):
+    from prepare_m710_gap_home import upright_stack_home_q
+    from unloading_sim.front_arm_posture import front_arm_posture
+    layout=layout_for(base,.7,.9);q=upright_stack_home_q();robot=layout.robot()
+    assert q[4]==pytest.approx(.008726646259971648)
+    np.testing.assert_allclose(layout.robot_base_transform()[:3,3],[-1.85,.15,.9],atol=1e-12,rtol=0)
+    np.testing.assert_allclose(layout.data['assembly']['world_xyz_m'],[-2.45,.35,0.],atol=1e-12,rtol=0)
+    assert layout.data['gap_search']['plinth_height_m']==.3
+    posture=front_arm_posture(robot,q,initial=True)
+    assert posture['passed']
+    np.testing.assert_allclose(posture['forearm_direction_world'],[1.,0.,0.],atol=1e-12,rtol=0)
+    assert np.linalg.cond(robot.geometric_jacobian(q))<10000.
+    assert posture['upper_arm']['elevation_deg']==pytest.approx(90.)
+    assert posture['forearm_elevation_deg']==pytest.approx(0.)
+    np.testing.assert_allclose(robot.named_link_frames(q)['J5_link'][:3,3],[-.955,.15,2.19],atol=1e-12,rtol=0)
+
+
 def test_zero_success_report_retains_all_40_remaining_identities(base,tmp_path):
     import json
     from report_m710_gap_search import summarize
