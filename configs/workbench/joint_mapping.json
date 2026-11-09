@@ -1,0 +1,10 @@
+{
+  "mapping_id": "ECO65_B_REFERENCE_F0353D7_IDENTITY_DEGREES_TO_RADIANS",
+  "source_names": ["J1", "J2", "J3", "J4", "J5", "J6"],
+  "target_names": ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"],
+  "source_indices": [0, 1, 2, 3, 4, 5],
+  "signs": [1, 1, 1, 1, 1, 1],
+  "zero_offsets_rad": [0, 0, 0, 0, 0, 0],
+  "source_unit": "degree",
+  "evidence": "audit_eco65_workbench_frames.py: same origins/axes/order; all-link FK checked at three poses. Main limits retained. Hardware zero not independently verified."
+}

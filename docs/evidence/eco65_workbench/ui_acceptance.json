@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "os": "Linux-5.15.0-94-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "tk": 8.6,
+  "checks": [
+    "no_device_startup",
+    "old_configuration_does_not_connect",
+    "rgbd_joint_pressure_segmentation_replay",
+    "coordinate_scroll_survives_refresh",
+    "manual_static_transform_training_label",
+    "invalid_extrinsic_clears_previous_calibration",
+    "expired_data_not_live_or_paired",
+    "stop_replay_clears_previews",
+    "original_complete_scene_rendered",
+    "clean_shutdown"
+  ],
+  "hardware_validation": "NOT_RUN",
+  "display": ":100",
+  "screenshots": [
+    "ubuntu_complete_scene.png",
+    "ubuntu_coordinates.png",
+    "ubuntu_no_devices.png",
+    "ubuntu_replay.png",
+    "ubuntu_stale.png"
+  ]
+}

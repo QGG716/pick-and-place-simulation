@@ -58,6 +58,20 @@ from video panels; retain them in evidence. Apply this to all future recordings.
 Historical burned-in overlays remain part of original evidence. The requested
 16x 720P montage is a presentation derivative, not a new recording default.
 
+## November 9 ECO65-B stage-one integration scope
+
+The explicit current user request supersedes earlier source-branch and no-SDK restrictions for
+`feat/v0.6-eco65-ubuntu-real-integration`, based on `269ab67f8932771b6f1ad1f43ed73beaf6f90602`.
+Target Ubuntu 22.04 with existing Humble/MoveIt. Keep all physical execution unavailable:
+no robot motion/stop, valve/threshold/conveyor commands or automatic connection, including
+legacy enable_hardware configuration, alarms and shutdown. Keep observation adapters isolated
+from the old GUI/executor. Preserve original calibration status, missing-session evidence,
+70 mm probe versus 140 mm tool, explicit world/base transforms and original observation clocks.
+Do not change grasp candidates, IK search or placement internals. The prototype cartons remain
+150 x 100 x 100 mm with all placements on the transverse conveyor and retained trailer/layout;
+do not restore forced 40-box counts, the 100 mm top-suction threshold or J1 direction constraints.
+Never describe replay/fake-device acceptance as hardware validation. See docs/eco65_ubuntu_workbench.md.
+
 ## Architecture constraints
 - September 15 persistent user update, overriding the earlier flexible-cup neighbor rules: this round and future rounds do not reject flexible-cup contacts with named non-target stack cartons (`compliant_cup_neighbor_contact_mode=ignore`), in CPU and Isaac contact acceptance. Retain physical collider ownership, target identity, full target seal-ring and target compression checks. This does not exempt rigid inserts, the rigid tool, robot, floor, walls, conveyors, or unknown objects. Physical response is retained; this acceptance assumption does not claim neighbor-contact qualification.
 - Keep `geometry.py`, `robot.py`, `scene.py`, `ik.py`, `planner.py`, and `grasp.py` independently testable.

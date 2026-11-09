@@ -1,0 +1,8 @@
+{
+  "mode": "READ_ONLY_STAGE_1",
+  "robot_host": "192.168.1.18",
+  "robot_port": 8080,
+  "serial_port": "/dev/ttyUSB0",
+  "camera_serial": "",
+  "max_age_s": 1.0
+}

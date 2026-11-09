@@ -1,0 +1,16 @@
+[
+  {
+    "name": "calibration_probe_70mm",
+    "parent_frame": "link_6",
+    "matrix": [[1,0,0,0],[0,1,0,0],[0,0,1,0.07],[0,0,0,1]],
+    "source": "reference active_extrinsics.json settings.probe_tip_m and unloading/tool_tip.json calibrated_probe_tip_m",
+    "status": "CALIBRATION_PROBE_POSITION_ONLY; orientation identity is a display convention"
+  },
+  {
+    "name": "unloading_tool_140mm",
+    "parent_frame": "link_6",
+    "matrix": [[1,0,0,0],[0,1,0,0],[0,0,1,0.14],[0,0,0,1]],
+    "source": "reference unloading/tool_tip.json tool_tip_m at f0353d720374066528f258de6f4de24502408535",
+    "status": "REFERENCE_POSITION; actual TCP and orientation require independent validation"
+  }
+]

@@ -1,0 +1,136 @@
+{
+  "hardware_validation": "NOT_RUN",
+  "physical_execution": "UNAVAILABLE",
+  "checks": [
+    {
+      "q_deg": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_matrix_error": 7.771561172376096e-16
+    },
+    {
+      "q_deg": [
+        20,
+        -30,
+        45,
+        10,
+        25,
+        -15
+      ],
+      "max_matrix_error": 5.551115123125783e-16
+    },
+    {
+      "q_deg": [
+        -35,
+        15,
+        -40,
+        20,
+        -30,
+        45
+      ],
+      "max_matrix_error": 6.661338147750939e-16
+    }
+  ],
+  "ready": {
+    "budget": {
+      "remaining_on_return_s": 86396.66014386,
+      "request_budget_s": 86400.0,
+      "return_reserve_s": 5.0
+    },
+    "capabilities": {
+      "max_task_sessions": 8,
+      "max_task_stages_per_session": 4096,
+      "native_ik": true,
+      "native_ik_batch": false,
+      "native_task_session": true,
+      "process_geometry_bound": true,
+      "process_policy_schema": "m710_native_process_v1",
+      "semantic_place_event": false,
+      "static_prior_graph": false
+    },
+    "cold_start_s": 3.339812732,
+    "context_reused": false,
+    "evaluation_profile": "strict",
+    "identity": {
+      "asset_fingerprint": "2a5ad34fa8945bbff85e116c0d290e174b72e7f9a442220c1ebca17553ac2123",
+      "base_link": "base_link",
+      "collision_exemption_fingerprint": "4e3b19b378375433c15ccd4256ce43559652cc0afec04d2cc6739e3e4ca5dfc1",
+      "collision_policy_mode": "robot_body_vision_mast_exempt_v2",
+      "collision_policy_schema": "eco65_pair_collision_policy_v6",
+      "contact_geometry_fingerprint": "947511281aae40d8e014d77de9cf07551daf30474d3e923f1743937f0b158fe5",
+      "coupled_cycle_binding_fingerprint": "2accb26b9bc2930c07861a4d0a9779444db12e5e54bd57b953571d6befcd0d66",
+      "cup_neighbor_contact_fingerprint": "d64afd61d6c139f60ca9002de3088975e7d2b3ed5bff6d69a6c62b36150bd2bb",
+      "extraction_carton_contact_fingerprint": "f687cd2aba6ab733e735a542756ab5eeb14592d03cafdb5bb75fdd1df9fe9827",
+      "flange_from_task_tcp": [
+        [
+          0.9999977397207271,
+          0.002126159315938315,
+          0.0,
+          3.236667849973998e-17
+        ],
+        [
+          -0.002126159315938315,
+          0.9999977397207271,
+          0.0,
+          -7.007726458344294e-18
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.14275043380451888
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "flange_link": "link_6",
+      "model_tool_fingerprint": "8a95d6e092c87439c00b1fa978d921c6e8071ecaeeaaa3c57c852c4dbb7f1546",
+      "planning_group": "eco65_arm",
+      "policy_fingerprint": "01201feddd3ce88b42cfe8d58607f83708684861a71a975206a2b9311671e625",
+      "policy_scope": "PLANNING_ONLY_NOT_EXECUTABLE",
+      "rigid_tool_carton_contact_fingerprint": "7a8f2fa28eb6759e2214e18f0e27e4523e8d751d7ba4c2e59fe0e367887b9e97",
+      "robot_id": "realman_eco65",
+      "robot_tool_exemption_fingerprint": "45481272f6f78e2efa6fe9cca8be0874225830eb934a2a35dde20b6dee6e4a75",
+      "robot_variant": "ECO65-B",
+      "scene_fingerprint": "f7967710a3f0c9070c452435489885941d00237c848aa76fee1847c8e31dd379",
+      "schema": "eco65_native_model_v1",
+      "task_tcp_fingerprint": "9e330d423f56830bc312a56074bfc9b4ec152b1bb8d93c12de21c2169c0427cd",
+      "task_tcp_link": "eco65_task_tcp",
+      "transverse_process_policy_fingerprint": "46869b9abd70f6ac8dbccf0ccefb2a0c7102aa3f486c4700d72564001c81cfd9"
+    },
+    "joint_names": [
+      "joint_1",
+      "joint_2",
+      "joint_3",
+      "joint_4",
+      "joint_5",
+      "joint_6"
+    ],
+    "pipelines": [
+      "pilz_industrial_motion_planner",
+      "ompl"
+    ],
+    "planning_mode": "cold_from_scratch",
+    "planning_only": true,
+    "request_id": "1",
+    "request_wall_s": 3.33985952,
+    "seed": 6518,
+    "status": "READY",
+    "versions": {
+      "moveit": "2.5.10",
+      "mtc": "0.1.3",
+      "pilz": "2.5.10"
+    },
+    "transport_and_worker_s": 4.3150549083948135
+  },
+  "status": "PASS"
+}

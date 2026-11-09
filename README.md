@@ -1,4 +1,15 @@
-# 当前 ECO65-B 任务：十二箱顶层中箱，代码接入待实际运行（2026-10-17）
+# ECO65-B Ubuntu 只读集成阶段一（2026-11-09）
+
+新增 Ubuntu 22.04 观测工作台：D435i RGB-D、机器人关节、四路真空压力/报警、
+训练外参检查、TCP 与完整场景显示、明确标记的离线回放。设备手动连接，后端仅允许观测；
+未接入真实运动、阀门、输送带或自动卸箱。硬件验证未完成。
+
+安装与启动：`bash scripts/install_eco65_workbench_ubuntu.sh`，随后运行
+`.venv-workbench/bin/eco65-workbench`。详见[Ubuntu 工作台说明](docs/eco65_ubuntu_workbench.md)、
+[坐标映射](docs/eco65_workbench_frames.md)和[验收记录](docs/eco65_workbench_validation.md)。
+原 MoveIt 仿真入口保留；下文为历史阶段记录。
+
+# 历史 ECO65-B 任务：十二箱顶层中箱（2026-10-17）
 
 当前目标为四层三列中的 `carton_r00_l03_c01`，先采用完整 12 杯顶吸。
 新增从当前静态场景生成原生任务的入口，保留全部箱体、仓库、真实输送带、

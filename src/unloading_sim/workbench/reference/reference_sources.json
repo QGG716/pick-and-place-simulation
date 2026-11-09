@@ -1,0 +1,62 @@
+{
+  "repository": "zhangyong333/Unloading-Robot-Control-Platform",
+  "commit": "f0353d720374066528f258de6f4de24502408535",
+  "source_files": [
+    {
+      "source": "arith_dex_pkg/arith_grounding_dino.py",
+      "sha256": "f1b58f28e4f23821d57e3d0c6908f7d0e6e2623bcf9c194455b3f96e9b8e735c",
+      "selection": "unchanged file"
+    },
+    {
+      "source": "arith_dex_pkg/arith_sam_v1.py",
+      "sha256": "71cee395c9cad03e203bbc60427e1d85a54a65c4396e4f2eaefb2f0e91cdbad2",
+      "selection": "unchanged file"
+    },
+    {
+      "source": "arith_dex_pkg/camera_geometry.py",
+      "sha256": "fa262facc6d00ec6b28f46311c13b4a481593cd09ef91ba97b9d9762e750c60f",
+      "selection": "unchanged file"
+    },
+    {
+      "source": "arith_dex_pkg/vacuum.py",
+      "sha256": "e0daaccaa747692e90ae310eaa0d1b6bfb85097c4c960bec30535475174360b0",
+      "selection": [
+        "ALARMS",
+        "BAUD",
+        "COMMANDS",
+        "DEVICE",
+        "FrameParser",
+        "GAUGES",
+        "Gauge",
+        "HEADER",
+        "HEARTBEATS",
+        "HEARTBEAT_FORMAT",
+        "MAX_PARAMETERS",
+        "NEGATIVE_THRESHOLD",
+        "PLAUSIBLE_KPA",
+        "POSITIVE_THRESHOLD",
+        "TextReportParser",
+        "_remove_frames",
+        "parse_heartbeat"
+      ]
+    },
+    {
+      "source": "arith_dex_pkg/rgbd_geometry.py",
+      "sha256": "e3f277fc94ecdaf27f5ef39dc988e2881d9b26abe73c580c8c0f0e557c377c11",
+      "selection": [
+        "RGBDInput",
+        "validate_input"
+      ]
+    }
+  ],
+  "source_hash_basis": "PINNED_GIT_BLOB_BYTES",
+  "credentials_included": false,
+  "output_sha256": {
+    "arith_grounding_dino.py": "f1b58f28e4f23821d57e3d0c6908f7d0e6e2623bcf9c194455b3f96e9b8e735c",
+    "arith_sam_v1.py": "71cee395c9cad03e203bbc60427e1d85a54a65c4396e4f2eaefb2f0e91cdbad2",
+    "camera_geometry.py": "fa262facc6d00ec6b28f46311c13b4a481593cd09ef91ba97b9d9762e750c60f",
+    "rgbd_geometry.py": "edec2cdbbc06f7a9585e127933bf6ba7ff91a35040bb9aa241420d269d47ac67",
+    "vacuum_receive.py": "91c9c5c013e50ad5b0ced9a500ff4c5b29b7ae48c2399f40d490dc21bcad6910",
+    "__init__.py": "e01c6fcc9e3dd81e86347233f78d7955490ec8c3102121f918b0c1040f897c35"
+  }
+}

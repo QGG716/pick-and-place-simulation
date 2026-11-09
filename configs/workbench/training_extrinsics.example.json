@@ -1,0 +1,48 @@
+{
+  "parent_frame": "link_1",
+  "child_frame": "camera_optical",
+  "matrix": [
+    [
+      0.9867452098968954,
+      0.08221679538189336,
+      -0.1399081459482049,
+      -0.021553275982846603
+    ],
+    [
+      0.15199691579793737,
+      -0.16627343950902296,
+      0.9742946581510931,
+      0.14914158671415392
+    ],
+    [
+      0.05684037590874154,
+      -0.982646193637859,
+      -0.1765662192934473,
+      0.2909768314852272
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "status": "SOLVED_REQUIRES_VALIDATION",
+  "usage": "TRAINING_ONLY_TEST",
+  "unit": "m",
+  "model_sha256": "f842fc3e6973e37d622553e8cc614e8eb2e133a955e8648541ac4ea854ae6faf",
+  "session_file": null,
+  "session_status": "MISSING_FROM_REFERENCE_CHECKOUT",
+  "settings": {
+    "probe_tip_m": [
+      0,
+      0,
+      0.07
+    ]
+  },
+  "provenance": {
+    "kind": "EXCERPT_OF_TRAINING_CALIBRATION_NOT_NEW_SOLUTION",
+    "reference_commit": "f0353d720374066528f258de6f4de24502408535",
+    "original_file_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7"
+  }
+}

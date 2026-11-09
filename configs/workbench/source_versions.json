@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-11-09",
+  "main_repository": "QGG716/pick-and-place-simulation",
+  "base_branch": "feat/v0.6-eco65-moveit2-native-single-carton",
+  "base_head": "269ab67f8932771b6f1ad1f43ed73beaf6f90602",
+  "integration_branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "reference_repository": "zhangyong333/Unloading-Robot-Control-Platform",
+  "reference_head": "f0353d720374066528f258de6f4de24502408535",
+  "future_planner_branch": "feat/v0.5-online-continuous",
+  "future_planner_head": "f7f7e0934ad425ab62cd2df8201812df1ba8e505",
+  "future_planner_imported": false,
+  "hardware_validation": "NOT_RUN"
+}

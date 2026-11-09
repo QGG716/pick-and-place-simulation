@@ -1,0 +1,7 @@
+{
+  "dino_config": "/opt/eco65/models/GroundingDINO_SwinT_OGC.py",
+  "dino_weights": "/opt/eco65/models/groundingdino_swint_ogc.pth",
+  "sam_weights": "/opt/eco65/models/sam_vit_b_01ec64.pth",
+  "sam_type": "vit_b",
+  "prompt": "carton . box ."
+}
