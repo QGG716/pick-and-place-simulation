@@ -1,0 +1,21 @@
+{
+  "command": [
+    "chroot",
+    "/root/m710-gap-search-20261107/rootfs",
+    "/bin/bash",
+    "-c",
+    "cd /work-gap-20261109-v11 && export PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 && exec /opt/planning-venv/bin/python tools/plan_m710_gap_search.py --output /gap-search-20261109/g0800-upright0900-joint-goal --worker-command /gap-worker-nov09-v2.sh --worker-binary /gap-search-build-v2/m710_moveit_worker --source-manifest /gap-search-20261109/source-manifest-v11.json --gaps 0.8 --external-support-mode record-unknown --max-trials 120 --trial-seconds 600 --prefix-seconds 360 --stage-seconds 360 --connection-seconds 30 --ompl-seconds 20 --max-rounds 3 --seed 71109 --stop-file /gap-search-20261109/STOP-g0800-upright0900-joint-goal --initial-orientation stack-facing --front-arm-posture upright --mount-height .9 --initial-q-rad 2.986217927095259 -0.07371198747274418 3.0083441878665904 5.075852527400722 0.16630438228322542 1.2026990878766133 --resume"
+  ],
+  "pid": 9234,
+  "started_unix": 1794200434.4041014,
+  "checkpoint_before_sha256": "a013873a831c4ede530127a80a43d99c4cffdf7f0180e41335bc96c9093b6ee4",
+  "previous_trial_count": 5,
+  "previous_completed": 1,
+  "additional_trial_limit": 120,
+  "cumulative_cost_retained": true,
+  "same_frozen_world": true,
+  "source_manifest_sha256": "d072511873526fb32a4a3099f5b5e75d0d6866e50bc1e855b3794a5663ab4ecb",
+  "stop_file": "/root/m710-gap-search-20261107/rootfs/gap-search-20261109/STOP-g0800-upright0900-joint-goal",
+  "free_space_guard_mib": 1200,
+  "physical_execution": "NOT_RUN"
+}

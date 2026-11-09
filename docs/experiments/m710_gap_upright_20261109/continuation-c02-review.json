@@ -1,0 +1,600 @@
+{
+  "run": "g0800-upright0900-joint-goal",
+  "trial_number": 3,
+  "target_id": "carton_l07_c02",
+  "gap_m": 0.8,
+  "base_world_m": [
+    -1.95,
+    0.15,
+    0.9
+  ],
+  "completed": 1,
+  "remaining": 39,
+  "contact_complete": false,
+  "complete": false,
+  "wall_s": 393.85405638068914,
+  "category": "NUMERICAL_SEARCH_DEADLINE_NOT_UNREACHABLE",
+  "failure": {
+    "reason": "SINGLE_TARGET_STAGE_BUDGET_EXHAUSTED",
+    "interpretation": "INCOMPLETE_NOT_GLOBAL_UNREACHABILITY",
+    "attempts": 3,
+    "retained_legal_configurations": 20,
+    "scope": "FACE_ATTEMPT"
+  },
+  "archive": "/gap-search-20261109/g0800-upright0900-joint-goal/task-000003.tar.gz",
+  "archive_sha256": "61499a557eaf9ef60213585cc821ed2c636cc30a2ca848235c97666e89df4e18",
+  "source_identity": {
+    "source_manifest_sha256": "d072511873526fb32a4a3099f5b5e75d0d6866e50bc1e855b3794a5663ab4ecb",
+    "native_binary_sha256": "fd64e6a601c4e61c984a4f31dcb1bb58193395f5c53da169ff645bedb8df2734"
+  },
+  "initial_posture": {
+    "policy": "UPRIGHT_UPPER_FORWARD_FOREARM_V1",
+    "passed": true,
+    "initial": true,
+    "upper_arm": {
+      "shoulder_world_m": [
+        -2.0981930416640844,
+        0.17321254838114136,
+        1.4649999999999999
+      ],
+      "elbow_world_m": [
+        -2.0330745471612017,
+        0.1630125674158975,
+        2.3575696286912224
+      ],
+      "direction_world": [
+        0.07275809441662864,
+        -0.011396626776808774,
+        0.9972845013309748
+      ],
+      "length_m": 0.8950000000000001,
+      "elevation_rad": 1.4970843393221525,
+      "elevation_deg": 85.77661421829056,
+      "q2_rad": -0.07371198747274418,
+      "definition": "OFFICIAL_J2_J3_JOINT_ORIGINS_WORLD_FK"
+    },
+    "forearm_root_world_m": [
+      -2.0230811759657006,
+      0.16144723337752814,
+      2.1878708300463963
+    ],
+    "wrist_world_m": [
+      -0.9924988509020078,
+      1.96669232535307e-05,
+      2.250049701497754
+    ],
+    "forearm_direction_world": [
+      0.9862031818791317,
+      -0.1544761401476312,
+      0.05950131239364362
+    ],
+    "forearm_length_m": 1.0450000000000002,
+    "forearm_elevation_deg": 3.4111889308237138,
+    "minimum_upper_elevation_deg": 75.0,
+    "maximum_forearm_absolute_elevation_deg": 20.0,
+    "forearm_forward_world_plus_x_required": true,
+    "collision_checks_unchanged": true
+  },
+  "counts": [
+    {
+      "stage": null,
+      "op": "init",
+      "status": "READY",
+      "solver": null,
+      "count": 1
+    },
+    {
+      "stage": null,
+      "op": "fk",
+      "status": "SUCCESS",
+      "solver": null,
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "op": "check_start",
+      "status": "SUCCESS",
+      "solver": null,
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "op": "ik",
+      "status": "SUCCESS",
+      "solver": null,
+      "count": 6
+    },
+    {
+      "stage": "pregrasp",
+      "op": "plan",
+      "status": "SUCCESS",
+      "solver": "",
+      "count": 2
+    },
+    {
+      "stage": "contact",
+      "op": "plan",
+      "status": "SUCCESS",
+      "solver": "",
+      "count": 2
+    },
+    {
+      "stage": "extraction",
+      "op": "plan",
+      "status": "NATIVE_PLANNING_FAILED",
+      "solver": "NO_IK_SOLUTION",
+      "count": 44
+    },
+    {
+      "stage": "pregrasp",
+      "op": "plan",
+      "status": "NATIVE_PLANNING_FAILED",
+      "solver": "INVALID_MOTION_PLAN",
+      "count": 11
+    },
+    {
+      "stage": "pregrasp",
+      "op": "plan",
+      "status": "NATIVE_PLANNING_FAILED",
+      "solver": "TIMED_OUT",
+      "count": 21
+    },
+    {
+      "stage": "pregrasp",
+      "op": "ik",
+      "status": "NATIVE_IK_FAILED",
+      "solver": null,
+      "count": 9
+    }
+  ],
+  "collision_pairs": [
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_10",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 47
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_11",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 45
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "J5_link",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 13
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_71",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 12
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "J4_link",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 11
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_53",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 10
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_53",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 9
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_23",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 9
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_59",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 9
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_71",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 7
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_59",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 7
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_65",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 6
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_47",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 6
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_47",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 6
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_5",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 6
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_41",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 5
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_29",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 4
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_29",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 4
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_10",
+        "trailer_right_wall"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 4
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_65",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_17",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_11",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_35",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_5",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 3
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_60",
+        "carton_l07_c02"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 2
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_11",
+        "trailer_right_wall"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 2
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_1",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 2
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_rigid_0",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_17",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_41",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_66",
+        "carton_l07_c02"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_0",
+        "carton_l07_c02"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "J5_link",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_47",
+        "carton_l07_c02"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_1",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_42",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_0",
+        "trailer_right_wall"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_0",
+        "trailer_right_wall"
+      ],
+      "phase": "search",
+      "reason": "INTERSECTION_OR_CONTACT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_1",
+        "trailer_right_wall"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_70",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_10",
+        "trailer_ceiling"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    },
+    {
+      "stage": "pregrasp",
+      "pair": [
+        "tool_compliant_bellows_30",
+        "carton_l07_c02"
+      ],
+      "phase": "search",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "count": 1
+    }
+  ],
+  "actual_native_endpoints": [],
+  "receiver_lifts": [],
+  "successful_native_stages": [
+    {
+      "stage": "pregrasp",
+      "planner": "PTP",
+      "request_id": "9"
+    },
+    {
+      "stage": "contact",
+      "planner": "LIN",
+      "request_id": "10"
+    },
+    {
+      "stage": "pregrasp",
+      "planner": "PTP",
+      "request_id": "61"
+    },
+    {
+      "stage": "contact",
+      "planner": "LIN",
+      "request_id": "62"
+    }
+  ],
+  "posture_rejected_actual_endpoints": 0,
+  "substituted_q2_branches": [],
+  "physical_execution": "NOT_RUN",
+  "global_unreachable": false
+}
