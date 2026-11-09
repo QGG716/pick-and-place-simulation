@@ -3,25 +3,27 @@
 const failureData=DATA.failure_review,reviewGroup=new T.Group();scene.add(reviewGroup);
 document.title=`${(failureData.gap_m*1000).toFixed(0)} mm · 当前失败情况`;
 document.querySelector('h1').textContent=`${(failureData.gap_m*1000).toFixed(0)} mm · ${failureData.target_id} 失败诊断`;
-$('identity').textContent=`完整 40 箱初场景 · 第 ${failureData.trial_number+1} 次尝试 · ${failureData.wall_s.toFixed(1)} s 搜索`;
+$('identity').textContent=`原始 40 箱 · 已卸 ${failureData.completed_count} 箱 / 现场 ${failureData.carton_count} 箱 · 尝试编号 ${failureData.trial_number} · ${failureData.wall_s.toFixed(1)} s 搜索`;
 document.querySelector('.badge').innerHTML=`完整抓放 ${failureData.completed_count} / 40 · 未执行<br>有限搜索未完成 ≠ 已证明不可达`;
 $('hud').style.top='auto';$('hud').style.bottom='62px';$('hud').style.maxWidth='600px';
 const panel=document.createElement('section');panel.innerHTML=`<h3>查看已记录的失败位置</h3>
-<button id="reviewInitial">初始姿态</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
+<button id="reviewInitial">本次起点</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
 <button id="reviewContact">已返回接触终点</button>
 <button id="reviewExtraction">外移失败的起点与目标</button>
 <p><select id="reviewWitness" style="width:100%"></select></p><button id="reviewShow">显示拒绝状态</button>
-<p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；所有箱子仍在场</p><pre id="reviewSummary"></pre>`;
+<p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；本次失败目标保留在场</p><pre id="reviewSummary"></pre>`;
 document.querySelector('aside').prepend(panel);
 $('searchPlay').closest('section').hidden=true;
 $('motionTitle').textContent='返回的原生候选路径（若有）';
 $('notice').textContent='本页仅展示归档中的受检姿态、拒绝原因及原生候选路径。静态失败姿态不是机器人实际走到的位置，不在失败状态之间补动画。原始搜索树与日志保留在服务器。';
 const reasons={CLEARANCE_INSUFFICIENT:'净空不足 5 mm',INTERSECTION_OR_CONTACT:'相交 / 接触'};
 const pairs=failureData.witness_pair_counts;
-$('reviewSummary').textContent=`本次有效接触：${failureData.contact_complete?'已到达':'未到达'}\n完成抓放：0 / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
+const contactPaths=failureData.returned_contact_path_count??failureData.native_endpoints.filter(e=>e.stage==='contact').length;
+const approachTimeouts=failureData.native_requests.filter(r=>r.stage==='pregrasp'&&r.solver==='TIMED_OUT').reduce((n,r)=>n+r.count,0);
+$('reviewSummary').textContent=`返回接触路径 ${contactPaths} 条\n接近规划超时 ${approachTimeouts} 次\n累计完成抓放 ${failureData.completed_count} / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
 if(failureData.receiver_lift_failures.length){const w=failureData.receiver_lift_failures[0];$('reviewSummary').textContent=`已记录升带拒绝 ${failureData.receiver_lift_failures.length} 次\n首个拒绝高度 ${w.height_m.toFixed(3)} m\n${w.pair.join(' ↔ ')}\n完成抓放 ${failureData.completed_count} / 40\n\n其他候选见下拉框；升带拒绝不代表所有路径的结果。`;}
 const noIK=failureData.native_requests.filter(r=>r.stage==='extraction' && r.solver==='NO_IK_SOLUTION').reduce((n,r)=>n+r.count,0);
-if(noIK)$('reviewSummary').textContent=`当前阻塞：带箱外移\n${noIK} 次原生外移请求返回无 IK 解\n${failureData.contact_complete?'接触检查已通过':'最终记录未确认接触'} · 完整抓放 ${failureData.completed_count}/40\n这是有限数值尝试的结果，不是全局不可达证明。\n\n另有 ${failureData.witnesses.length} 条碰撞见证，见下拉框。`;
+if(noIK)$('reviewSummary').textContent=`当前阻塞：带箱外移\n${noIK} 次原生外移请求返回无 IK 解\n已返回接触路径 ${contactPaths} 条 · 累计完整抓放 ${failureData.completed_count}/40\n这是有限数值尝试的结果，不是全局不可达证明。\n\n另有 ${failureData.witnesses.length} 条碰撞见证，见下拉框。`;
 $('reviewWitness').innerHTML=failureData.witnesses.map((w,i)=>`<option value="${i}">${i+1}. ${w.pair.join(' / ')} · ${reasons[w.reason]||w.reason}</option>`).join('');
 $('reviewWitness').disabled=$('reviewShow').disabled=!failureData.witnesses.length;
 function reviewAnnotations(q){
@@ -38,10 +40,10 @@ function reviewSelectAttempt(index){
  motionPlaying=searchPlaying=false;clear(graph);clear(framesGroup);
 }
 function reviewInitial(){
- reviewSelectAttempt(0);pose(failureData.initial_q_rad,'已校验的完整 40 箱初态；吸盘朝向箱堆');reviewAnnotations(failureData.initial_q_rad);
+ reviewSelectAttempt(0);pose(failureData.initial_q_rad,'本次请求的实际起点；承接已接受父状态');reviewAnnotations(failureData.initial_q_rad);
  const angle=(failureData.initial_orientation?.actual_angle_rad||0)*180/Math.PI;
  const shape=failureData.initial_arm_posture;
- $('hud').innerHTML=`<b>初始姿态 · ${failureData.target_id}</b><br>吸盘朝 +X · 偏差 ${angle.toFixed(4)}°`+(shape?`<br>大臂仰角 ${shape.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${shape.forearm_elevation_deg.toFixed(1)}°`:'')+`<br>未附着 · 完成抓放 ${failureData.completed_count} / 40`;
+ $('hud').innerHTML=`<b>本次起点 · ${failureData.target_id}</b><br>吸盘法向与 +X 夹角 ${angle.toFixed(4)}°`+(shape?`<br>大臂仰角 ${shape.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${shape.forearm_elevation_deg.toFixed(1)}°`:'')+`<br>未附着 · 完成抓放 ${failureData.completed_count} / 40`;
  $('motionText').textContent='初始状态；静态展示';
  window.failureReviewState={kind:'initial',q:currentQ,pair:[],expected:failureData.initial_expected_flange_flat};
 }

@@ -1,0 +1,58 @@
+[
+  {
+    "trial": 7,
+    "target": "carton_l07_c02",
+    "matching_lines": 97,
+    "distinct_messages": {
+      "[moveit.pilz_industrial_motion_planner.trajectory_functions]: Unable to find IK solution.": 38,
+      "[moveit.pilz_industrial_motion_planner.trajectory_generator]: Failed to compute inverse kinematics for link: m710_virtual_task_tcp of goal pose": 38,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 20.1s \u2265 20.0s": 10,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.2s \u2265 8.2s": 2,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.3s \u2265 8.3s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 7.9s \u2265 7.9s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 7.6s \u2265 7.5s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.9s \u2265 8.9s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.6s \u2265 8.5s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 6.7s \u2265 6.7s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 6.3s \u2265 6.3s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.9s \u2265 8.8s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 19.9s \u2265 19.8s": 1
+    },
+    "first_lines": [
+      "[ERROR] [1794201238.872538904] [moveit.pilz_industrial_motion_planner.trajectory_functions]: Unable to find IK solution.",
+      "[ERROR] [1794201238.872689224] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Failed to compute inverse kinematics for link: m710_virtual_task_tcp of goal pose",
+      "[ERROR] [1794201239.291850543] [moveit.pilz_industrial_motion_planner.trajectory_functions]: Unable to find IK solution.",
+      "[ERROR] [1794201239.291973034] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Failed to compute inverse kinematics for link: m710_virtual_task_tcp of goal pose",
+      "[ERROR] [1794201239.720186877] [moveit.pilz_industrial_motion_planner.trajectory_functions]: Unable to find IK solution.",
+      "[ERROR] [1794201239.720307628] [moveit.pilz_industrial_motion_planner.trajectory_generator]: Failed to compute inverse kinematics for link: m710_virtual_task_tcp of goal pose"
+    ]
+  },
+  {
+    "trial": 8,
+    "target": "carton_l07_c03",
+    "matching_lines": 23,
+    "distinct_messages": {
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 20.1s \u2265 20.0s": 11,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.5s \u2265 8.5s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.5s \u2265 8.4s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.4s \u2265 8.4s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.3s \u2265 8.2s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.0s \u2265 7.9s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 7.7s \u2265 7.7s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 7.2s \u2265 7.2s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.8s \u2265 8.7s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 7.0s \u2265 7.0s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.7s \u2265 8.7s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 6.4s \u2265 6.4s": 1,
+      "[moveit.ompl_planning.model_based_planning_context]: Planning timed out: 18.0s \u2265 17.9s": 1
+    },
+    "first_lines": [
+      "[WARN] [1794201665.144143814] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 20.1s \u2265 20.0s",
+      "[WARN] [1794201674.885956664] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.5s \u2265 8.5s",
+      "[WARN] [1794201696.241789727] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 20.1s \u2265 20.0s",
+      "[WARN] [1794201705.917645615] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.5s \u2265 8.4s",
+      "[WARN] [1794201727.415443163] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 20.1s \u2265 20.0s",
+      "[WARN] [1794201737.079801842] [moveit.ompl_planning.model_based_planning_context]: Planning timed out: 8.4s \u2265 8.4s"
+    ]
+  }
+]

@@ -1,0 +1,79 @@
+diff --git a/tools/export_m710_gap_failures.py b/tools/export_m710_gap_failures.py
+index f9f96af..92b76fe 100644
+--- a/tools/export_m710_gap_failures.py
++++ b/tools/export_m710_gap_failures.py
+@@ -82,13 +82,21 @@ def export(run,trial_number,output):
+         endpoints.append(dict(attempt_index=index,stage=a['request']['stage'],q_rad=q.tolist(),
+             expected_flange_flat=robot.named_link_frames(q)['flange'].T.reshape(-1).tolist(),
+             arm_posture=front_arm_posture(robot,q)))
+-    initial_q=record['initial']['q_rad']
++    # Continuation trials start from the accepted parent's state, not the
++    # original forty-carton home pose. Keep the displayed world and q together.
++    initial_q=dispatch['initial']['q_rad']
++    assert np.allclose(initial_q,attempts[0]['request']['q_start'],atol=1e-12,rtol=0)
++    initial_contact=robot.named_link_frames(np.asarray(initial_q))['flange'] @ np.asarray(
++        trace['model']['process_geometry']['flange_from_physical_contact'])
++    initial_orientation=dict(actual_angle_rad=float(np.arccos(np.clip(initial_contact[0,2],-1.,1.))),
++        physical_working_normal_world=initial_contact[:3,2].tolist(),source='ACTUAL_TRIAL_PARENT_FK')
+     metadata=dict(run=run.name,trial_number=trial_number,gap_m=record['gap_m'],target_id=trial['target_id'],
+         completed_count=len(dispatch['initial']['completed']),carton_count=len(dispatch['initial']['world_cartons']),wall_s=trial['wall_s'],category=trial['category'],
+         contact_complete=trial.get('contact_complete',False),initial_q_rad=initial_q,
+         initial_expected_flange_flat=robot.named_link_frames(np.asarray(initial_q))['flange'].T.reshape(-1).tolist(),
+-        initial_orientation=record.get('initial_orientation_evidence'),target=dispatch['target'],
+-        initial_arm_posture=record.get('initial_arm_posture_evidence'),
++        initial_orientation=initial_orientation,target=dispatch['target'],
++        initial_arm_posture=front_arm_posture(robot,np.asarray(initial_q)),
++        returned_contact_path_count=sum(e['stage']=='contact' for e in endpoints),
+         base_world_m=record['candidate']['base_xyz_world_m'],
+         failure={k:v for k,v in (trial.get('failure') or {}).items() if isinstance(v,(str,int,float,bool))},
+         archive_server_path=str(archive),archive_sha256=trial['evidence']['sha256'],source_identity=db['identity'],
+diff --git a/tools/search_replay/gap_failure_overlay.js b/tools/search_replay/gap_failure_overlay.js
+index f378e88..326190e 100644
+--- a/tools/search_replay/gap_failure_overlay.js
++++ b/tools/search_replay/gap_failure_overlay.js
+@@ -3,25 +3,27 @@
+ const failureData=DATA.failure_review,reviewGroup=new T.Group();scene.add(reviewGroup);
+ document.title=`${(failureData.gap_m*1000).toFixed(0)} mm · 当前失败情况`;
+ document.querySelector('h1').textContent=`${(failureData.gap_m*1000).toFixed(0)} mm · ${failureData.target_id} 失败诊断`;
+-$('identity').textContent=`完整 40 箱初场景 · 第 ${failureData.trial_number+1} 次尝试 · ${failureData.wall_s.toFixed(1)} s 搜索`;
++$('identity').textContent=`原始 40 箱 · 已卸 ${failureData.completed_count} 箱 / 现场 ${failureData.carton_count} 箱 · 尝试编号 ${failureData.trial_number} · ${failureData.wall_s.toFixed(1)} s 搜索`;
+ document.querySelector('.badge').innerHTML=`完整抓放 ${failureData.completed_count} / 40 · 未执行<br>有限搜索未完成 ≠ 已证明不可达`;
+ $('hud').style.top='auto';$('hud').style.bottom='62px';$('hud').style.maxWidth='600px';
+ const panel=document.createElement('section');panel.innerHTML=`<h3>查看已记录的失败位置</h3>
+-<button id="reviewInitial">初始姿态</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
++<button id="reviewInitial">本次起点</button><button id="reviewLift">升带受阻</button><button id="reviewSide">侧视</button><button id="reviewIso">三维</button>
+ <button id="reviewContact">已返回接触终点</button>
+ <button id="reviewExtraction">外移失败的起点与目标</button>
+ <p><select id="reviewWitness" style="width:100%"></select></p><button id="reviewShow">显示拒绝状态</button>
+-<p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；所有箱子仍在场</p><pre id="reviewSummary"></pre>`;
++<p class="metric">红色：本次检查涉及的碰撞对<br>青色箭头：吸盘实际工作法向<br>白框：目标箱正面；本次失败目标保留在场</p><pre id="reviewSummary"></pre>`;
+ document.querySelector('aside').prepend(panel);
+ $('searchPlay').closest('section').hidden=true;
+ $('motionTitle').textContent='返回的原生候选路径（若有）';
+ $('notice').textContent='本页仅展示归档中的受检姿态、拒绝原因及原生候选路径。静态失败姿态不是机器人实际走到的位置，不在失败状态之间补动画。原始搜索树与日志保留在服务器。';
+ const reasons={CLEARANCE_INSUFFICIENT:'净空不足 5 mm',INTERSECTION_OR_CONTACT:'相交 / 接触'};
+ const pairs=failureData.witness_pair_counts;
+-$('reviewSummary').textContent=`本次有效接触：${failureData.contact_complete?'已到达':'未到达'}\n完成抓放：0 / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
++const contactPaths=failureData.returned_contact_path_count??failureData.native_endpoints.filter(e=>e.stage==='contact').length;
++const approachTimeouts=failureData.native_requests.filter(r=>r.stage==='pregrasp'&&r.solver==='TIMED_OUT').reduce((n,r)=>n+r.count,0);
++$('reviewSummary').textContent=`返回接触路径 ${contactPaths} 条\n接近规划超时 ${approachTimeouts} 次\n累计完成抓放 ${failureData.completed_count} / 40\n已保存拒绝见证最多的碰撞对：\n`+pairs.slice(0,4).map(r=>r.pair.join(' / ')+`（${r.count} 条）`).join('\n')+'\n这是见证记录数，不是碰撞概率。';
+ if(failureData.receiver_lift_failures.length){const w=failureData.receiver_lift_failures[0];$('reviewSummary').textContent=`已记录升带拒绝 ${failureData.receiver_lift_failures.length} 次\n首个拒绝高度 ${w.height_m.toFixed(3)} m\n${w.pair.join(' ↔ ')}\n完成抓放 ${failureData.completed_count} / 40\n\n其他候选见下拉框；升带拒绝不代表所有路径的结果。`;}
+ const noIK=failureData.native_requests.filter(r=>r.stage==='extraction' && r.solver==='NO_IK_SOLUTION').reduce((n,r)=>n+r.count,0);
+-if(noIK)$('reviewSummary').textContent=`当前阻塞：带箱外移\n${noIK} 次原生外移请求返回无 IK 解\n${failureData.contact_complete?'接触检查已通过':'最终记录未确认接触'} · 完整抓放 ${failureData.completed_count}/40\n这是有限数值尝试的结果，不是全局不可达证明。\n\n另有 ${failureData.witnesses.length} 条碰撞见证，见下拉框。`;
++if(noIK)$('reviewSummary').textContent=`当前阻塞：带箱外移\n${noIK} 次原生外移请求返回无 IK 解\n已返回接触路径 ${contactPaths} 条 · 累计完整抓放 ${failureData.completed_count}/40\n这是有限数值尝试的结果，不是全局不可达证明。\n\n另有 ${failureData.witnesses.length} 条碰撞见证，见下拉框。`;
+ $('reviewWitness').innerHTML=failureData.witnesses.map((w,i)=>`<option value="${i}">${i+1}. ${w.pair.join(' / ')} · ${reasons[w.reason]||w.reason}</option>`).join('');
+ $('reviewWitness').disabled=$('reviewShow').disabled=!failureData.witnesses.length;
+ function reviewAnnotations(q){
+@@ -38,10 +40,10 @@ function reviewSelectAttempt(index){
+  motionPlaying=searchPlaying=false;clear(graph);clear(framesGroup);
+ }
+ function reviewInitial(){
+- reviewSelectAttempt(0);pose(failureData.initial_q_rad,'已校验的完整 40 箱初态；吸盘朝向箱堆');reviewAnnotations(failureData.initial_q_rad);
++ reviewSelectAttempt(0);pose(failureData.initial_q_rad,'本次请求的实际起点；承接已接受父状态');reviewAnnotations(failureData.initial_q_rad);
+  const angle=(failureData.initial_orientation?.actual_angle_rad||0)*180/Math.PI;
+  const shape=failureData.initial_arm_posture;
+- $('hud').innerHTML=`<b>初始姿态 · ${failureData.target_id}</b><br>吸盘朝 +X · 偏差 ${angle.toFixed(4)}°`+(shape?`<br>大臂仰角 ${shape.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${shape.forearm_elevation_deg.toFixed(1)}°`:'')+`<br>未附着 · 完成抓放 ${failureData.completed_count} / 40`;
++ $('hud').innerHTML=`<b>本次起点 · ${failureData.target_id}</b><br>吸盘法向与 +X 夹角 ${angle.toFixed(4)}°`+(shape?`<br>大臂仰角 ${shape.upper_arm.elevation_deg.toFixed(1)}° · 小臂仰角 ${shape.forearm_elevation_deg.toFixed(1)}°`:'')+`<br>未附着 · 完成抓放 ${failureData.completed_count} / 40`;
+  $('motionText').textContent='初始状态；静态展示';
+  window.failureReviewState={kind:'initial',q:currentQ,pair:[],expected:failureData.initial_expected_flange_flat};
+ }

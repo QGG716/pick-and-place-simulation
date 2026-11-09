@@ -4,6 +4,25 @@
 
 ## 同一场景续跑更新
 
+### l07_c02 / l07_c03 失败查看（编号 7 / 8）
+
+以下对应后续已归档的编号 7、8 尝试，均从 `l07_c01` 卸下后的同一 39 箱父状态出发，安装高 900 mm、g=800 mm。不是将不同独立世界的结果相加。
+
+| 目标 | 失败阶段 | 本次原生记录 |
+|---|---|---|
+| `l07_c02`，编号 7 | 接触后的带箱外移 | 返回 2 条接触路径；38 次 LIN 请求的目标姿态逆解失败。换接近构型时另有 11 次 PTP 无效路径、21 次 RRT 超时；总计 392.19 s。 |
+| `l07_c03`，编号 8 | 空载接近 | 12 次 PTP 无效路径、23 次 RRT 超时，没有返回接触路径；总计 388.59 s。 |
+
+原生日志明确记录 c02 的 `Failed to compute inverse kinematics ... of goal pose`，尚不能把这 38 次目标逆解失败全部归因于顶棚。接近搜索则确实保留了 J4/J5、工具与顶棚的拒绝见证，c03 另有 J4/J5 与左侧壁的拒绝见证。降低安装面没有免除这些检查。有限求解失败和超时不证明全局不可达。详见 [c02 请求摘要](current-failure-trial7.summary.json)、[c03 请求摘要](current-failure-trial8.summary.json) 和 [原生日志摘录](failure-c02-c03-native-log-excerpts.json)。
+
+![c02：实际外移起点和请求的目标；无目标关节解](current-failure-trial7-extraction.png)
+
+![c03：被拒绝的 J5/顶棚候选姿态；不是执行位置](current-failure-trial8-ceiling.png)
+
+三维查看器在本地及服务器的 `gap-search-20261109/current-failure-trial7.html`、`current-failure-trial8.html`。可切换实际起点、已返回接触终点、外移请求和碰撞候选。原始证据包留在服务器。
+
+本次修正了失败查看器的续跑显示：使用该次请求真正的父状态与剩余 39 箱，不套用原始 40 箱 home；分别显示返回接触路径数与最终尝试标记。两个页面通过浏览器 FK、父状态和 39 箱身份检查：[c02](current-failure-trial7-qa.json)、[c03](current-failure-trial8-qa.json)。只是展示修改，运行中的规划 v11 未改变。还原运行源码时，先反向应用 `runtime-before-failure-view-fix.patch`，再按下文还原模板与历史版本；展示源文件身份见 [failure-view-renderer.json](failure-view-renderer.json)。
+
 截至 2026-11-09T13:00:29.599267+08:00，900 mm 安装高度、g=800 mm 的同一父链独立复核为 **1/40**，剩余 **39** 箱。原始 40 箱身份不变，没有假定移走箱体，没有导入历史完成数。源代码和 worker 仍为 v11 / v2。详情及档案哈希见 [continuation-result.json](continuation-result.json)。
 
 | 尝试编号 | 目标 | 本次结果 | 求解耗时 s |

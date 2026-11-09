@@ -82,13 +82,21 @@ def export(run,trial_number,output):
         endpoints.append(dict(attempt_index=index,stage=a['request']['stage'],q_rad=q.tolist(),
             expected_flange_flat=robot.named_link_frames(q)['flange'].T.reshape(-1).tolist(),
             arm_posture=front_arm_posture(robot,q)))
-    initial_q=record['initial']['q_rad']
+    # Continuation trials start from the accepted parent's state, not the
+    # original forty-carton home pose. Keep the displayed world and q together.
+    initial_q=dispatch['initial']['q_rad']
+    assert np.allclose(initial_q,attempts[0]['request']['q_start'],atol=1e-12,rtol=0)
+    initial_contact=robot.named_link_frames(np.asarray(initial_q))['flange'] @ np.asarray(
+        trace['model']['process_geometry']['flange_from_physical_contact'])
+    initial_orientation=dict(actual_angle_rad=float(np.arccos(np.clip(initial_contact[0,2],-1.,1.))),
+        physical_working_normal_world=initial_contact[:3,2].tolist(),source='ACTUAL_TRIAL_PARENT_FK')
     metadata=dict(run=run.name,trial_number=trial_number,gap_m=record['gap_m'],target_id=trial['target_id'],
         completed_count=len(dispatch['initial']['completed']),carton_count=len(dispatch['initial']['world_cartons']),wall_s=trial['wall_s'],category=trial['category'],
         contact_complete=trial.get('contact_complete',False),initial_q_rad=initial_q,
         initial_expected_flange_flat=robot.named_link_frames(np.asarray(initial_q))['flange'].T.reshape(-1).tolist(),
-        initial_orientation=record.get('initial_orientation_evidence'),target=dispatch['target'],
-        initial_arm_posture=record.get('initial_arm_posture_evidence'),
+        initial_orientation=initial_orientation,target=dispatch['target'],
+        initial_arm_posture=front_arm_posture(robot,np.asarray(initial_q)),
+        returned_contact_path_count=sum(e['stage']=='contact' for e in endpoints),
         base_world_m=record['candidate']['base_xyz_world_m'],
         failure={k:v for k,v in (trial.get('failure') or {}).items() if isinstance(v,(str,int,float,bool))},
         archive_server_path=str(archive),archive_sha256=trial['evidence']['sha256'],source_identity=db['identity'],

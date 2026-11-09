@@ -1,0 +1,11 @@
+{
+  "scope": "DISPLAY_ONLY_ARCHIVED_TRIALS_7_8",
+  "planning_runtime_unchanged": "/work-gap-20261109-v11",
+  "display_runtime": "/gap-failure-display-20261109",
+  "raw_archives_downloaded": false,
+  "files": {
+    "tools/export_m710_gap_failures.py": "c7b79519063cf05a5450e55282ec26a09247d364009e93a5fc8636c025fe7874",
+    "tools/search_replay/gap_failure_overlay.js": "92a858f1b38a7aae767561628391e22b611cc64b4d35db388a91b3a73fee93a3"
+  },
+  "validation": "Native/Browser FK agree within 1e-9; actual trial parent q; 39 remaining identities including both failed cartons; c01 absent."
+}
