@@ -1,0 +1,53 @@
+{
+  "status": "IMPORTED_SIMULATION_PLACEMENT_ASSUMPTION",
+  "cad_manifest": "assets/mast/derived/20261015_readable_v3/cad.json",
+  "cad_manifest_sha256": "8c3f5d8a8786ed110570fcbcfae8d4cb450c73e762f6adeff3f6715d0de8fe59",
+  "source_sha256": "b9c07e997c0a98c5ccb247cda15bf37d14ea64f432757a4ef28dd729c0ca6173",
+  "T_D_mast": [
+    [
+      0.5000000000000002,
+      -0.8660254037844386,
+      0.0,
+      -0.79516767245458
+    ],
+    [
+      0.8660254037844386,
+      0.5000000000000002,
+      0.0,
+      0.5327761836806229
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "placement": "SIMULATION_PLACEMENT_ASSUMPTION",
+  "mount_reference_part": "mast_part_001",
+  "mount_reference_CAD_m": [
+    0.02250009870998765,
+    -0.004523681502259118,
+    0.0
+  ],
+  "mount_reference_D_m": [
+    -0.78,
+    0.55,
+    0
+  ],
+  "yaw_D_deg": 60,
+  "optical_axis_CAD_assumption": [
+    0,
+    -1,
+    0
+  ],
+  "optical_axis_basis": "head protrusion geometry only; optical calibration NOT_EVALUATED",
+  "attachment": "fixed_environment_not_robot",
+  "dynamics": "NOT_EVALUATED"
+}

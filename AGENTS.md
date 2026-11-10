@@ -73,6 +73,14 @@ do not restore forced 40-box counts, the 100 mm top-suction threshold or J1 dire
 Never describe replay/fake-device acceptance as hardware validation. See docs/eco65_ubuntu_workbench.md.
 
 ## Architecture constraints
+The November 10 explicit asset-publication request overrides the older local-only asset
+ignore rules: publish the current project's local/GPU assets and available model weights
+on `feat/v0.6-eco65-ubuntu-real-integration`, using Git LFS for large files and an exact
+SHA-256 inventory. Preserve distinct versions and original bytes; do not rewrite Git
+history. Keep credentials, runtime installations, incomplete downloads, transfer caches
+and run logs excluded. Asset publication does not authorize hardware control, new
+simulation runs, model-weight execution or changes to calibration validation status.
+
 - September 15 persistent user update, overriding the earlier flexible-cup neighbor rules: this round and future rounds do not reject flexible-cup contacts with named non-target stack cartons (`compliant_cup_neighbor_contact_mode=ignore`), in CPU and Isaac contact acceptance. Retain physical collider ownership, target identity, full target seal-ring and target compression checks. This does not exempt rigid inserts, the rigid tool, robot, floor, walls, conveyors, or unknown objects. Physical response is retained; this acceptance assumption does not claim neighbor-contact qualification.
 - Keep `geometry.py`, `robot.py`, `scene.py`, `ik.py`, `planner.py`, and `grasp.py` independently testable.
 - Do not introduce Isaac Sim, ROS 2, or GPU dependencies into the core package.

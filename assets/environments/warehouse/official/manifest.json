@@ -1,0 +1,958 @@
+{
+  "asset_root": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0",
+  "files": [
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_Barcode_0001.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_Barcode_0001.mdl",
+      "bytes": 1734,
+      "sha256": "a0720a4347a20a2298fc59cba802a9c1636e66d74399ec466e02ff047c45cfbc"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_CeilingA_06b.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_CeilingA_06b.mdl",
+      "bytes": 2772,
+      "sha256": "bbc1398090cf0b78248f22b0ba5f6ec3ad4ba398e7b92f01d85d456be14a18ad"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_Floor_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_Floor_01.mdl",
+      "bytes": 2907,
+      "sha256": "a0d52a8b3f7f93c31fb4629bd95390e64f86ddb19a84cb54621e1dfff4b44a78"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_FrameA_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_FrameA_01.mdl",
+      "bytes": 2769,
+      "sha256": "510828f6dab0648d6ac85c7c99b955d57ee37bc09e89960750ad1256fe6b17e2"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_LampCeilingA.mdl",
+      "bytes": 2605,
+      "sha256": "14af0a60278973bbbf7dc28fb0838f4e29c7743320b21ce9c6927755160ba78d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_PushcartA_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_PushcartA_01.mdl",
+      "bytes": 2932,
+      "sha256": "24a8627ad59ef4f6b4eb9e1bfd454d0e33445dbe4e84219a35fa42eccc71ffc6"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_RackShield_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_RackShield_01.mdl",
+      "bytes": 2606,
+      "sha256": "0cbbcb4a0664f2cf6aa345b263eb2bd873110f95a85e1988e7da0ce7cb1df964"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_SignB.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_SignB.mdl",
+      "bytes": 1471,
+      "sha256": "4c7935d88dbbe882310cba331718ac17f8544d7a9abd05f845aeb9cb08441751"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_WallB_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/MI_WallB_01.mdl",
+      "bytes": 2907,
+      "sha256": "659fbee02a08b6dff0a5b38f2effb714d51af312c482183b179ebbf57957359f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_AisleSign.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_AisleSign.mdl",
+      "bytes": 2726,
+      "sha256": "09cd32b65f2f92bb28ea49040253dd2dd4acae08ddfa7f10fa91072cf6e191ab"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_Glow.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_Glow.mdl",
+      "bytes": 1260,
+      "sha256": "2be6f6ba54a54c6e49c4df253ee140dc8acd4376952505e3e9d57b256a462e7a"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_WallBoard_01.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/M_WallBoard_01.mdl",
+      "bytes": 2611,
+      "sha256": "f0805e600f60e76b22d415c8eb3f11cfe8d9ddffe6083dd121600a849610d95e"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Base.mdl",
+      "bytes": 8281,
+      "sha256": "5ca22bdae198012f2fa285de0c1b6c7041c8c539c76671a19e471f021b99370d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/OmniUe4Function.mdl",
+      "bytes": 46073,
+      "sha256": "9217e09bfd17109af755e4a1910c8c6fa7fca3f859b9081ff28e75167795bd85"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/0001.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/0001.png",
+      "bytes": 6866,
+      "sha256": "1ba947674a0128b040889844ae3d86bc2c8f5f457baf04f43c45a9ec303d5e5f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/AisleSign_Text_01.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/AisleSign_Text_01.png",
+      "bytes": 67149,
+      "sha256": "78e4407e191b2279db1095762706d4441f78cc7a85693fefc9fe135ee118f14d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/Alum_Anodized_roughness.png",
+      "bytes": 46432193,
+      "sha256": "78fbda4ad9fc3ceabd3286580b99829cb7bdad420cd9db37b24c91f641504d79"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_D.png",
+      "bytes": 1350374,
+      "sha256": "846803a0609b7efe892feacf1a1c8f0ff2d3e9f8d8a20e87193d1e8f9e06589b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_N.png",
+      "bytes": 4517828,
+      "sha256": "8b193a273fba57715fdd0dddfb25fcbddaaca3f72b5a8c7bf70f3173874d98a7"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_AisleSign_ORM.png",
+      "bytes": 4015777,
+      "sha256": "68b1bb01ede355427e2d9440b11e7193bad185e07c6b2f9e4d52b940327e0dda"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_D.png",
+      "bytes": 694074,
+      "sha256": "ca389948ee0ce142ab18af9fa2d0d42828f0ff4c28c6474f051447f2a686eb57"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_M.png",
+      "bytes": 3393694,
+      "sha256": "21c48d073e289211dd04b4dd6ae4a3f77fa2d4be23e12804012fa554457c3900"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_N.png",
+      "bytes": 3709546,
+      "sha256": "648f6b01d4d38202e5b20a022448d87a1fa7792f9f713f3ea5e506d9bc419f45"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BarelPlasticA_ORM.png",
+      "bytes": 5022539,
+      "sha256": "725601e6474a395ed08df2d689a0d7911809b2033cccd073caf48decf70145f0"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_D.png",
+      "bytes": 6329215,
+      "sha256": "8a433ae32888ed7dcac16e2cc08372dc79bf9a4367c6f3a63023bad807fbd866"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_M.png",
+      "bytes": 3455896,
+      "sha256": "04c0b622294cc9b2f7a5dbf1c4ac1f9474b3f64a4f13f1d2c2dd8276071baa44"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_N.png",
+      "bytes": 7146123,
+      "sha256": "1cd57807234677e8052d7f83991de7e779a86c7a55c8174e549274cd08f93bd7"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BeamsA_ORM.png",
+      "bytes": 7301834,
+      "sha256": "619e87dad93429469dcca447a573851eeee0805fae9cab432ae3bbb445f8eeea"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BlankMask_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_BlankMask_M.png",
+      "bytes": 1673,
+      "sha256": "2e6f6f9919cbb1a9576bbaf7aecb65e4cbef5c8b3340bf30087799c004e46a97"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_D.png",
+      "bytes": 6121195,
+      "sha256": "4409289f550915651a7da8400061e339b9bf8d8614592e51ceff10a54d636530"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_N.png",
+      "bytes": 5080102,
+      "sha256": "124c63109931aa50a6c85ac342ab12088beafdb8b5947b372b11c515ffca8de3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxA_ORM.png",
+      "bytes": 3071821,
+      "sha256": "7fbee22ae8599548ced630569f9562bb53e97b092789298ba3a7b69fef643ffd"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_D.png",
+      "bytes": 5662826,
+      "sha256": "58ab06b1de8d1321c1d6d0321bd03184b6059ddca46f5887a4f3b7e6d7e1ce1a"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_N.png",
+      "bytes": 4823660,
+      "sha256": "62f719d666197fde5a243ec5997a29520921169666c70a2a00935685b2ab33ba"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CardBoxD_ORM.png",
+      "bytes": 2243369,
+      "sha256": "6273e3b4224381321457ab25f7141c19582274706b1571ee8e3ecba6a5138043"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_D.png",
+      "bytes": 5179493,
+      "sha256": "fd9f0d2f6e774981506cff5fe23716abfa3d5f92e1c1ae15392f311f81c2925f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_M.png",
+      "bytes": 1787780,
+      "sha256": "70a1ec3a4d9fc822f1552312e4d8d0c18971f0b0242fb35b40dfce5c238cad90"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_N.png",
+      "bytes": 3826720,
+      "sha256": "cbf0404adef69512e1e83fbbdf5e5ed371e392a1e4332701bd5efa6b78dcb1c4"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_CeilingA_ORM.png",
+      "bytes": 4063436,
+      "sha256": "0f9b997b63fd97524ce85ca6f4b5093e65ba656bc246a417f61ac1dcf46ab406"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_D.png",
+      "bytes": 668264,
+      "sha256": "a39ae5ce51c10eef6174e929122b7f73cc092b8e1846486aae92b27d82f56d6f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_N.png",
+      "bytes": 799130,
+      "sha256": "5dd0ff8bacc95e5e5ca94c6fe9ae4a630b9b67edee84b21be7c9ca35c6bc79f3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FireExtinguisher_ORM.png",
+      "bytes": 831576,
+      "sha256": "941ab417978a4116d1ff064915e7c98b0bf3d52c405a15ad255713792d111a9a"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_D.png",
+      "bytes": 1266760,
+      "sha256": "2074dec0f4ed953680331008617a389a4bb9a8362484f0afa9926dbaa396f367"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_M.png",
+      "bytes": 92194,
+      "sha256": "44f2109030a33caad502bd9f2feb1ce6eba1231d763555babf69e2b6a650b418"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_N.png",
+      "bytes": 406115,
+      "sha256": "4d5913f366655707b37ed790542294b2ecf9a31638c798a4575ed5966f30185b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FloorStripes_ORM.png",
+      "bytes": 825397,
+      "sha256": "8bd385b2465b2a8b04afcdbca16f3e436dd9b54831a2f2fabdd446b971b85083"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_D.png",
+      "bytes": 6909181,
+      "sha256": "e1c2dce6aa3438248ad3c960cba22c4160d9a86c152a978f6f228b8a99770834"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_M.png",
+      "bytes": 2986846,
+      "sha256": "abb0e99482b0c3c3e8f5b08d743782a6e971826a1280fdee7aacd2dac19da1d3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_N.png",
+      "bytes": 3999816,
+      "sha256": "4ab1797de4aad446a31ee70f7e5ebe29afabafe4bda17d203c2a01e286f71fc7"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_Floor_01_ORM.png",
+      "bytes": 6585070,
+      "sha256": "09d51273b9afc4c37208ed29c3ec53033fd7b036061538efa926d28b517b1082"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_D.png",
+      "bytes": 4329765,
+      "sha256": "8fe18340184317b3bec61b644b11094889978289bbea0d3c21f074ba7050b623"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_M.png",
+      "bytes": 2276717,
+      "sha256": "4507b9703e63c9aefc78717c7608acd7c2b72142b8d6b4deff545d6bc7810b22"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_N.png",
+      "bytes": 2850028,
+      "sha256": "20d382dda74c1e364c59a301362de980349945edcd515428d09240955ddaba80"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_FrameA_ORM.png",
+      "bytes": 5616029,
+      "sha256": "d92facd89c3be88ecc28a8e893945bb8f56276783648848c403254626acff40b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_D.png",
+      "bytes": 734041,
+      "sha256": "537c6b009dd38b2059b0f1ee51c874fce344cccfe9177c8113f7dbc7b2950944"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_N.png",
+      "bytes": 1125394,
+      "sha256": "4c6253db4e8d15334cd72c0444bbade75450324795db7cf143c2a991fdbbddb6"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_LampCeilingA_ORM.png",
+      "bytes": 987580,
+      "sha256": "18e324cad0b5ab07fb6ffb62a8082f795c7cd4cd49436c9ce6f92a9887dc0b21"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_D.png",
+      "bytes": 5782145,
+      "sha256": "d3f6edbe67b9f2842bfac346446fe871fda282729bfdc535386d68b68e120e67"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_M.png",
+      "bytes": 198488,
+      "sha256": "8fac0c633f6aef6c6747457dde6e1ee62cc9780436b733dfd9382f8212cff3da"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_N.png",
+      "bytes": 825178,
+      "sha256": "4fb925f395a3703157fa8ab006226eeeafacc69f70c73259635ada8fefedf810"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PaletteA_01_ORM.png",
+      "bytes": 4816979,
+      "sha256": "29c5d1b99d5c34855194ef1b168ed288c6a2a99f3843cc883d02d9e8bad0c45e"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_D.png",
+      "bytes": 2596667,
+      "sha256": "867008a8350b0a797cbddc23e2604a431bbdda53eb26bf0e4cd8e394399508b1"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_M.png",
+      "bytes": 1395827,
+      "sha256": "4042e9120a856a8eb932f9704d3522bc416dff06e11302082f3d94433a8d7066"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_N.png",
+      "bytes": 4166799,
+      "sha256": "9e2c2985442bdae90c1c95d843f311e56088ad7e8ee45af7c55277402338d0bf"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_PushcartA_ORM.png",
+      "bytes": 5353578,
+      "sha256": "556c0dea7497a45b261428506c5e7e8db1186ac914c3e00c06a6822fb0132d64"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_D.png",
+      "bytes": 2079438,
+      "sha256": "ec4159aa188bd266881bbeeebd31ee00f8318d27b3bee692bc66d9500bc9ad01"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_M.png",
+      "bytes": 1695275,
+      "sha256": "2499034582baa78ce43b22cd4fc1a43a599fc026f493904f78dc64e4733d847d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_N.png",
+      "bytes": 954727,
+      "sha256": "39c2447cadfb229bd585e3ed4bf235bd3bf26d678c0b003b3222b0d137de3f2d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_01_ORM.png",
+      "bytes": 3263727,
+      "sha256": "715f69449a6bdff88d289fb25ac835d8c9b13a452a3949b5a62d9652b8c720a8"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_D.png",
+      "bytes": 2903175,
+      "sha256": "ac8d3aaf89967aada64051949d8f65d807b2b6a291c8a9da44a20c418f7ebb79"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_M.png",
+      "bytes": 1634780,
+      "sha256": "26ee9fdd339f75581d4c9592a4b6a1a0a37ca940f5c7b6583da15cf9bc13a2d5"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_N.png",
+      "bytes": 1591448,
+      "sha256": "56ecabb55967fc519a99761e60a58e8eeb0b69986ad56ce5e36b4c0e4278f938"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_02_ORM.png",
+      "bytes": 5233272,
+      "sha256": "85630c73ef3042ee76006454c644af0e28ca9e8c651cac237bef5f2f2b9bb704"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_D.png",
+      "bytes": 695475,
+      "sha256": "23a61da3c66dfb4914f959034e542faa753366f99c7c88ad41711253268379eb"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_M.png",
+      "bytes": 296163,
+      "sha256": "f06d7b61981bb941fe262a3ea12b98be288b532eeccf8752209a8608695e640c"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_N.png",
+      "bytes": 1066548,
+      "sha256": "5ce48f0e024af650651785cfcb443f32e21f57434e12ee6b71e106acd2748040"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_03_ORM.png",
+      "bytes": 1149915,
+      "sha256": "a1a584c8e03ffc7a6afbae37a38f9bd338fe5ab00acbd5c877a4620312b39bd9"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_D.png",
+      "bytes": 441866,
+      "sha256": "3abd38d4eaea5ed7fe84afc50778885cc9e4f96022a5a61772c0997e04bbc5dc"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_M.png",
+      "bytes": 181773,
+      "sha256": "617a83afe6f814d7af4526a2aa59b1e7661cf90c55c9d4f671a3971650ffa81a"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_N.png",
+      "bytes": 235859,
+      "sha256": "402f7f3720cc2f24dc82cecf31b16a55655cdb12d303dd49644132889d066b56"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackSetA_04_ORM.png",
+      "bytes": 971334,
+      "sha256": "347322abd4463f1144100566e6ba8a4e6ba2edd4cb81f331457b704f1bc14270"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_D.png",
+      "bytes": 1445005,
+      "sha256": "2fb1909572ac82a21cff2284bda2a259ef8be22f64feb466fb36d9b94c21b3a5"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_N.png",
+      "bytes": 1205686,
+      "sha256": "f17d688a1c1245a2846e08b1107787534a98adde773ede662bb28920dfaaf309"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_RackShield_ORM.png",
+      "bytes": 1611503,
+      "sha256": "fc2e235950988a366f8942fa522d5da081b08fa63e16f89592b5ddc8919e694b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsA_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsA_D.png",
+      "bytes": 1317486,
+      "sha256": "aac902a39d07545563524ab389a6525c872ea9c0250139f88581c16afab97f42"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsB_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsB_D.png",
+      "bytes": 1182552,
+      "sha256": "e261426bb160a4b2e7e6be8aeaf60e8cdc536317a39f13029c0cc3491b131d77"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsC_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsC_D.png",
+      "bytes": 556905,
+      "sha256": "e8be1122988730e8de0124e98560633c64f8eda0705d6a0cb55fc2db05be9077"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsC_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_SignsC_ORM.png",
+      "bytes": 552764,
+      "sha256": "ed7d97b0b99208e7f8cb291ef380b0d1605da77248bf70c7ae1aec433e3268e4"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_D.png",
+      "bytes": 5821860,
+      "sha256": "7c102157a73b034966bbc5e96323cac2177147b72b70e06625423320f82d7297"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_N.png",
+      "bytes": 6487997,
+      "sha256": "5869967b526e62b5f8f8c93cedb55ad7628afbe5d157e8d8c9620498fbd86f69"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_01_ORM.png",
+      "bytes": 5106819,
+      "sha256": "541fe094f05d47f0c3723ca23752909442dd4b5910e2f5e454463c118efe685d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_D.png",
+      "bytes": 3166242,
+      "sha256": "d60032e5b22e1b9663a8d089623a09cc78655a22f4f3be29fb571441e398cf72"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_N.png",
+      "bytes": 4275415,
+      "sha256": "6bc80a25f1e9626cabbaeb3ade13d8a42ab36bf34010f3322faca42f22f77d93"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallA_02_ORM.png",
+      "bytes": 5669356,
+      "sha256": "674cf1198d7dee829e8a5b644ec26bdea7d7f24ae5d554b61e026bc458ca5b81"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_D.png",
+      "bytes": 277313,
+      "sha256": "fe30a29375ee700eb8e840e7a492e47e5d7a1406f51b3fcd040c9c1da26ae5a2"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_M.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_M.png",
+      "bytes": 44909,
+      "sha256": "1c052a8b10a62236a61eb4b2a3eb1e9204914e9db0f2e1d5d87b17217587e542"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_N.png",
+      "bytes": 234716,
+      "sha256": "01a4fd25ebead3d532658e1489411a8d9c137705045519ec1f56603505b0d3f9"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallBoard_01_ORM.png",
+      "bytes": 322433,
+      "sha256": "12e6b2184e138f8b69d66331c07f0529845746a797f44770eb32b41de32ecd81"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_D.png",
+      "bytes": 2065567,
+      "sha256": "ab1ef0bc07324394ebff7f4b7f879fa0242261d36cca9c875ab1bb3bbc8910bb"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_N.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_N.png",
+      "bytes": 1172052,
+      "sha256": "761d7839e980e077cff4a146b724b7a4bbd59785bcca8e778297114c4c371622"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_ORM.png",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Materials/Textures/T_WallDetails_ORM.png",
+      "bytes": 3568422,
+      "sha256": "0b7aa6be8f9999711df544cd16c4d8ec3dcfcd1a4e4ca32aef4d77a697c1d22e"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BeamA_9M.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BeamA_9M.usd",
+      "bytes": 5871,
+      "sha256": "a60fc6a501d621f753c48847747c15d3ca6e9eb7c5e8f173b025b872a0246ede"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketBeam.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketBeam.usd",
+      "bytes": 3908,
+      "sha256": "794bc4d9ef1e7a48a662bd342e6e46fe9235bb0267207fc7a0d20b87c4a9b4b3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketBeam_3m.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketBeam_3m.usd",
+      "bytes": 3913,
+      "sha256": "b7e24c15702669f5b6c3c05626adf782dbfebdfa16113688150a00deb381d08f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketSlot.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_BracketSlot.usd",
+      "bytes": 13182,
+      "sha256": "95228f9d1d415c0bb724f2f3f7c62c5922b12d8d7883ce69bfaedbfcfe831e42"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxA_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxA_02.usd",
+      "bytes": 13485,
+      "sha256": "bd41a0d74a17d7620d5fd573f25ab3bc5c6f12b199a44130d67321c706cb88f3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CardBoxD_04.usd",
+      "bytes": 5056,
+      "sha256": "e35bac376af806f52c5413fbe397e587450c942201525ada5bbfca58989c52ff"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CeilingA_6X6.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_CeilingA_6X6.usd",
+      "bytes": 3373,
+      "sha256": "50fa164543e0b087a9a0a82f794957a2b7e90f933b1b47b5726667f1cd1a08de"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FireExtinguisher_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FireExtinguisher_02.usd",
+      "bytes": 166691,
+      "sha256": "f32ba3183b36ab209b4cd6ec4f1c1d6a511571cdbbaec0bab1600e32ca6686ba"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_Keepclear.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_Keepclear.usd",
+      "bytes": 3299,
+      "sha256": "5c7fa2b34905d39f25159c2a60b321bf28c7948928ff9ac1c8d13793fa3578ef"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_RecRed1X1.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_RecRed1X1.usd",
+      "bytes": 4154,
+      "sha256": "9977d438c70182c65a9bc3a865ed387ba3f012a4b85c01a4ddb7596865235c51"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_StripeFull_4m.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FloorDecal_StripeFull_4m.usd",
+      "bytes": 3300,
+      "sha256": "fd69c30a0b85ee103bd6e70690802a715e5c91182caecb15b6185428ec9cf642"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FuseBox_01.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FuseBox_01.usd",
+      "bytes": 44591,
+      "sha256": "9beaad81cb5cb5e8378ac880d01311588d5d0c14628b351c1e5726feb25ffe19"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FuseBox_04.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_FuseBox_04.usd",
+      "bytes": 8124,
+      "sha256": "6b39ca06ae6d761c7a8377b4437886e80fef6b7eb936909727e9fa428d5bc27f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_LampCeilingA_04.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_LampCeilingA_04.usd",
+      "bytes": 24097,
+      "sha256": "34bcc83950749c77c3658d09a5b29272aefb0035c4c76620d6f956e154d0573f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PaletteA_01.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PaletteA_01.usd",
+      "bytes": 52055,
+      "sha256": "419bfc1fcd24eec0da27fae86e2f8f31bea615f0383eb3c01216c581c26d295c"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PaletteA_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PaletteA_02.usd",
+      "bytes": 27070,
+      "sha256": "75ac771650d7402898b468ba3fe94d87a99e8d94a8523bb7f4fdb93d3ea539b0"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PillarA_9M.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PillarA_9M.usd",
+      "bytes": 5949,
+      "sha256": "cef2a2907368a00c3e4382b526294d1e9eb05d2b582e8bbd9301ef3bac2e207d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PillarPartA_9M.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PillarPartA_9M.usd",
+      "bytes": 69404,
+      "sha256": "67836c56ba39cfb1262989c08ca1e5e0eefbce8a1f4700dbf8a0ddf2806f30ca"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PushcartA_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_PushcartA_02.usd",
+      "bytes": 85538,
+      "sha256": "7b6ba0345adb3a291b283f16dc7092026fbdd1265db309dfaab87ea162e1e6e5"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_RackFrame_03.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_RackFrame_03.usd",
+      "bytes": 18524,
+      "sha256": "ebf8b9718a964242b1573a17270e3d52c203964f0fe350bf8b19075a59d76288"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_RackShelf_01.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_RackShelf_01.usd",
+      "bytes": 93543,
+      "sha256": "1e18140a6aff89027789355f648b745a62d4ac6f80721e9511649f83bbdd982c"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_Rackshield_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_Rackshield_02.usd",
+      "bytes": 22105,
+      "sha256": "9ed7448b1ba66cf6f1bbf3425429dd4fc5b0498369b3065b055b6d324740b60d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignA_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignA_02.usd",
+      "bytes": 3655,
+      "sha256": "2b853cc93053aa77a66f74c313d26fb3903c71c391fb787b3626445cd12e120b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignB_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignB_02.usd",
+      "bytes": 3279,
+      "sha256": "171695b6e99a2bdca5246b07fc24edcc63dc5dfa1c045954afa4aa57061fbcc3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignB_11.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignB_11.usd",
+      "bytes": 3279,
+      "sha256": "e06e5842f88dd9f9ab409202c0223a62a820ca19acf1660d31472e40add6e177"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_01.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_01.usd",
+      "bytes": 5179,
+      "sha256": "66794621c46bb44dba39e9c906de4904c1dc357de5f6211f0be6a8cf8e55a3e4"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_02.usd",
+      "bytes": 5179,
+      "sha256": "f8abd4851dfca80d2e4ce876267fea04f2d56cd963e90c2f384923b031c5c733"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_03.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_03.usd",
+      "bytes": 5179,
+      "sha256": "398d2901821494e4af46c94e841c452c639bacf798a26cb7e3ae72a1bbe5728f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_04.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_04.usd",
+      "bytes": 5179,
+      "sha256": "ecd7693faeb12ac1c9af511dbdec12ea322bfba0b67ab3b27442992bf121f5ec"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_05.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_05.usd",
+      "bytes": 5179,
+      "sha256": "c9fb0b824d8f0824710f667e3a97a4c5b8251683a29fffb75a5400cf45427e8f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_06.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_06.usd",
+      "bytes": 5171,
+      "sha256": "5a772c73deb11942a8405638f820d1545860b6f1603db7d911bff32b7fcfd3af"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_07.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_07.usd",
+      "bytes": 5187,
+      "sha256": "ab674ef8ada16be51b93d17308b050fe37a9e712ca8a553f07faa496d7c495b3"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_08.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_08.usd",
+      "bytes": 5179,
+      "sha256": "790404280546555529042f9ef4194d48fa63e4a6c4ac40bb2c2fe1ac58bc3dc0"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_09.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_09.usd",
+      "bytes": 5179,
+      "sha256": "b4d426fbc42d5707a137e0705205ddea66472ae288290fe3da7b04a74cffde6f"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_10.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_10.usd",
+      "bytes": 5179,
+      "sha256": "51730b3245b8115057959cf5e5fbc3c1be851243bef33c82cd67ab9540ff2d3b"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_11.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_11.usd",
+      "bytes": 5179,
+      "sha256": "4fcf900d31025d1eeca885ac2622912841932ba9fc9061d60134b0bb3bfb9e87"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_12.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_12.usd",
+      "bytes": 5179,
+      "sha256": "0d27e49288e588fb32adf32d328c5989e54ea9cadd30af08892ec5df39184fc6"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_13.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_SignCVer_13.usd",
+      "bytes": 5179,
+      "sha256": "e8021188bec8ba11ab2d065cafb50632b0a53fe0baa106234feae46d6c147246"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallA_6M.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallA_6M.usd",
+      "bytes": 6070,
+      "sha256": "0133a7fcae7197b29c1cdb2f07600191928b6ea326b94166bd121f0debbe32ff"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallA_InnerCorner.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallA_InnerCorner.usd",
+      "bytes": 9705,
+      "sha256": "1c5e0364b4f339e83f4e9447ef40811070698f5dcfc4ba3ef40b715e06d04570"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallB_6M.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallB_6M.usd",
+      "bytes": 3349,
+      "sha256": "cd878dc625d4bc0d7f9832710a1f6183603ce1afc5cb7f1d23d9b23298148771"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallB_InnerCorner.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallB_InnerCorner.usd",
+      "bytes": 3695,
+      "sha256": "314d88f8bd6582b1ca6980d16aa865b421d35eab3300a45c0e024a2f0d84bf2d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_02.usd",
+      "bytes": 38790,
+      "sha256": "4f40c1da4613fc5ae6d01807689387b4816b60b14a869ea50f6b4e5a4b4783d6"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_03.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_03.usd",
+      "bytes": 52816,
+      "sha256": "1731fc251efd95fcb552f783670da6728201231108467425990921c6f7cc04a9"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_06.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_06.usd",
+      "bytes": 31399,
+      "sha256": "42dc24830c3f244f8976c586c44652e75d52addd4c47ef7f8406df5bfd704f9e"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_07.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_07.usd",
+      "bytes": 36993,
+      "sha256": "03f77a37f07b0d6a6b1ed9ad2bc26840a52a0105b7be83d268e09e1fd8a0cd4d"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_08.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_08.usd",
+      "bytes": 23247,
+      "sha256": "47f789f546c7d4d3ebdfc389ee027396c701193cb2bf2538814cb9ff4760e63a"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_10.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_WallWire_10.usd",
+      "bytes": 56110,
+      "sha256": "80704b82a81ace12df887d9844fe007833659948a484de3923aa29a1d3b6349e"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_floor02.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/SM_floor02.usd",
+      "bytes": 4370,
+      "sha256": "2deeedf511b6c51e8c327812066ad84d1b3552f3f8c18ab00bac995df9093532"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/S_AisleSign.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/S_AisleSign.usd",
+      "bytes": 4428,
+      "sha256": "73dc61a83cfd504551feee8d55baa35225266aded4493beb3c6f35cd22ac3cf4"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/S_Barcode.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/Props/S_Barcode.usd",
+      "bytes": 3147,
+      "sha256": "74b61089c49f556d55bb075436a11b8f8f25f201ca79ec85e8bdfb29ad1c43d8"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Environments/Simple_Warehouse/warehouse.usd",
+      "bytes": 1593402,
+      "sha256": "0b833b2c59c18832a1fb421292c256e7ca21977961f62a2b9b4e2feee86b9903"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Labels_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Labels_D.png",
+      "bytes": 6674448,
+      "sha256": "7ed4642ab31d970e22c7edf62508347c6fbb14bfdf47487696a6a9a681359f22"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Magenta_Box_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Magenta_Box_D.png",
+      "bytes": 8461312,
+      "sha256": "191e3e8f6b583dc35232f5079d18b421f97dd09d79b374b03b1b1745dd9d8477"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Mesh_Labels_D.png",
+      "path": "Assets/Isaac/6.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Mesh_Labels_D.png",
+      "bytes": 6674448,
+      "sha256": "7ed4642ab31d970e22c7edf62508347c6fbb14bfdf47487696a6a9a681359f22"
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/KLT_Bin/small_KLT_visual.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Props/KLT_Bin/small_KLT_visual.usd",
+      "bytes": 179929,
+      "sha256": "2810154bdae1532dea35603024a0fefd94eaf3909cecc5edbe09b6cb510e3a2b",
+      "kit_mdl_modules": [
+        "OmniPBR.mdl"
+      ]
+    },
+    {
+      "url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Props/KLT_Bin/small_KLT_visual_collision.usd",
+      "path": "Assets/Isaac/6.0/Isaac/Props/KLT_Bin/small_KLT_visual_collision.usd",
+      "bytes": 226995,
+      "sha256": "2e6172432c1b5ee2b7ea047229e070ccf1d49b69d01b4796c0445531af392bb9"
+    }
+  ],
+  "file_count": 158,
+  "total_bytes": 299133603
+}

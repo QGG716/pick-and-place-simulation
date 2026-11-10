@@ -1,0 +1,32 @@
+{
+  "cells": 4731,
+  "contact_area_m2": 0.0035186098299972266,
+  "max_surface_error_m": 2.6451063561694355e-14,
+  "construction": "Closed convex cells bounded by original surface triangles; exact triangle collision mesh",
+  "provenance": "PROJECT_DERIVED_CONFORMAL_J1_SEAT_NOT_ORIGINAL_CAD",
+  "seconds": 26.738671300001442,
+  "source_robot_sha256": "3cbce7422e2e070bd95c7831f63d0ebb52eaa7f9dd84cdad06c6a69984295c6c",
+  "source_base_sha256": "6d58b997d7fd93273c0b0072d9aadb8ee3bf26a228422b07b33a20ae53f5ca80",
+  "source_mount_config_sha256": "c3d3df392b6eefc5dc9c69893c969e28a602681fd7f875ffee4abc5bc6b3b76f",
+  "mesh": "assets/mast/derived/j1_conformal_seat_20261016_v2/mounting_seat.obj",
+  "sha256": "f33ae22f947d81c1c737be30cba473a3b9dcea8ece128662681faad51c91b6db",
+  "bounds_link1_m": [
+    [
+      -0.0414998,
+      -0.039253298035800105,
+      0.021078143002405226
+    ],
+    [
+      0.03944886103272438,
+      0.03244029,
+      0.044077002591336345
+    ]
+  ],
+  "volume_m3": 2.4016699597858498e-05,
+  "vertices": 36200,
+  "triangles": 53476,
+  "winding_consistent": true,
+  "cells_watertight": true,
+  "max_thickness_m": 0.015,
+  "omitted_projected_area_m2": 0.0005895777372599425
+}

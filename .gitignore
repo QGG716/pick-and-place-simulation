@@ -21,29 +21,14 @@ tmp/
 .pytest-tmp-*/
 .vscode/
 
-# ECO65 local-only originals and derived assets
-/assets/tools/desktop_suction/cad/raw/*
-!/assets/tools/desktop_suction/cad/raw/.gitkeep
-!/assets/tools/desktop_suction/cad/raw/README.md
-/assets/tools/desktop_suction/meshes/*
-!/assets/tools/desktop_suction/meshes/.gitkeep
-/assets/tools/desktop_suction/collision/*
-!/assets/tools/desktop_suction/collision/.gitkeep
-/assets/robots/realman_eco65/official/*
-!/assets/robots/realman_eco65/official/SOURCE_MANIFEST.json
-!/assets/robots/realman_eco65/official/README.md
+# November 10: the user authorized publishing project assets and model weights.
+# Large assets use explicit Git LFS rules; transfer caches remain under outputs/.
 .firecrawl/
 .venv-workbench/
 .tmp-eco65-*.log
 
-# Private round-1 derived geometry and generated configuration
-/assets/tools/desktop_suction/derived/
-/configs/local/eco65_desktop/
-
-# User-provided private visual mast and independent derived geometry
-/assets/mast/
-/configs/local/eco65_mast/
-
-# Private calibration camera originals and derived assets
-/assets/camera/
-/configs/local/eco65_calibration/
+# Local credentials must never be included with asset publication.
+.env
+.env.*
+.aws/
+.ssh/

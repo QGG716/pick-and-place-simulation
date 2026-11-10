@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+  FANUC M-710iD/70 first-layer engineering URDF.
+  Joint axis lines and the zero-pose flange location are transcribed from the
+  supplied FANUC ROBCAD M-710iD/70 v01 mechanism. SI units are used here.
+  No link inertials are present: inverse dynamics must fail closed.
+-->
+<robot name="fanuc_m710id_70">
+  <link name="base_link">
+    <visual><origin xyz="0 0 0.2825"/><geometry><cylinder radius="0.31" length="0.565"/></geometry></visual>
+    <collision><origin xyz="0 0 0.2825"/><geometry><cylinder radius="0.31" length="0.565"/></geometry></collision>
+  </link>
+  <link name="J1_link">
+    <visual><origin xyz="0.075 0 0.2825" rpy="0 1.5707963267948966 0"/><geometry><box size="0.565 0.56 0.40"/></geometry></visual>
+    <collision><origin xyz="0.075 0 0.2825" rpy="0 1.5707963267948966 0"/><geometry><box size="0.565 0.56 0.40"/></geometry></collision>
+  </link>
+  <link name="J2_link">
+    <visual><origin xyz="0 0 0.4475"/><geometry><box size="0.48 0.52 0.895"/></geometry></visual>
+    <collision><origin xyz="0 0 0.4475"/><geometry><box size="0.48 0.52 0.895"/></geometry></collision>
+  </link>
+  <link name="J3_link">
+    <visual><origin xyz="0 0 0.085"/><geometry><box size="0.42 0.46 0.17"/></geometry></visual>
+    <collision><origin xyz="0 0 0.085"/><geometry><box size="0.42 0.46 0.17"/></geometry></collision>
+  </link>
+  <link name="J4_link">
+    <visual><origin xyz="0.5225 0 0"/><geometry><box size="1.045 0.36 0.36"/></geometry></visual>
+    <collision><origin xyz="0.5225 0 0"/><geometry><box size="1.045 0.36 0.36"/></geometry></collision>
+  </link>
+  <link name="J5_link">
+    <visual><geometry><sphere radius="0.15"/></geometry></visual>
+    <collision><geometry><sphere radius="0.15"/></geometry></collision>
+  </link>
+  <link name="J6_link">
+    <visual><origin xyz="0.0875 0 0" rpy="0 1.5707963267948966 0"/><geometry><cylinder radius="0.12" length="0.175"/></geometry></visual>
+    <collision><origin xyz="0.0875 0 0" rpy="0 1.5707963267948966 0"/><geometry><cylinder radius="0.12" length="0.175"/></geometry></collision>
+  </link>
+  <link name="flange"/>
+  <link name="tool0"/>
+
+  <joint name="J1" type="revolute">
+    <origin xyz="0 0 0"/><parent link="base_link"/><child link="J1_link"/><axis xyz="0 0 1"/>
+    <limit lower="-3.228859116" upper="3.228859116" effort="0" velocity="3.141592654"/>
+  </joint>
+  <joint name="J2" type="revolute">
+    <origin xyz="0.15 0 0.565"/><parent link="J1_link"/><child link="J2_link"/><axis xyz="0 1 0"/>
+    <limit lower="-1.308996939" upper="2.617993878" effort="0" velocity="3.141592654"/>
+  </joint>
+  <joint name="J3" type="revolute">
+    <origin xyz="0 0 0.895"/><parent link="J2_link"/><child link="J3_link"/><axis xyz="0 -1 0"/>
+    <limit lower="-1.404990048" upper="3.577924967" effort="0" velocity="3.141592654"/>
+  </joint>
+  <joint name="J4" type="revolute">
+    <origin xyz="0 0 0.17"/><parent link="J3_link"/><child link="J4_link"/><axis xyz="-1 0 0"/>
+    <limit lower="-6.981317008" upper="6.981317008" effort="0" velocity="4.537856055"/>
+  </joint>
+  <joint name="J5" type="revolute">
+    <origin xyz="1.045 0 0"/><parent link="J4_link"/><child link="J5_link"/><axis xyz="0 -1 0"/>
+    <limit lower="-2.181661565" upper="2.181661565" effort="0" velocity="4.537856055"/>
+  </joint>
+  <joint name="J6" type="revolute">
+    <origin xyz="0 0 0"/><parent link="J5_link"/><child link="J6_link"/><axis xyz="-1 0 0"/>
+    <limit lower="-6.981317008" upper="6.981317008" effort="0" velocity="6.457718232"/>
+  </joint>
+  <joint name="J6-flange" type="fixed">
+    <origin xyz="0.175 0 0"/><parent link="J6_link"/><child link="flange"/>
+  </joint>
+  <joint name="flange-tool0" type="fixed">
+    <origin xyz="0 0 0" rpy="0 1.5707963267948966 0"/><parent link="flange"/><child link="tool0"/>
+  </joint>
+</robot>

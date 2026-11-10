@@ -1,0 +1,90 @@
+{
+  "schema": "eco65_j1_mast_attachment_v1",
+  "attachment": "link_1",
+  "placement": "SIMULATION_ASSEMBLY_ASSUMPTION",
+  "source_sha256": "b9c07e997c0a98c5ccb247cda15bf37d14ea64f432757a4ef28dd729c0ca6173",
+  "cad_manifest_sha256": "8c3f5d8a8786ed110570fcbcfae8d4cb450c73e762f6adeff3f6715d0de8fe59",
+  "T_link1_mast": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.04206523299217224
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "T_mast_camera": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.11622779641183899
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0184381811777651
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      0.4326833333333333
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "arm_forward_link1": [
+    -1,
+    0,
+    0
+  ],
+  "arm_heading_basis": "Fixed local -X from joint_1 to joint_2 origin in pinned official URDF; not TCP/elbow or world heading",
+  "relative_heading_deg": -90,
+  "installation_side": "2026-10-16 user correction: reverse existing silver base 180 degrees in horizontal plane about vertical J1 axis; rigid CAD assembly follows; replaces prior initial side assumption",
+  "optical_axis_CAD_assumption": [
+    0,
+    1,
+    0
+  ],
+  "optical_axis_basis": "CAD front window normal +Y; explicit fixed camera +Z optical frame, no look-at; not calibrated",
+  "mount_reference_CAD_m": [
+    0,
+    0,
+    0
+  ],
+  "mount_interface": {
+    "status": "HARDWARE_FIT_NOT_VERIFIED",
+    "source": "Original silver CAD connector retained, original black upright/head retained",
+    "origin": "CAD circular plate center aligned with J1 rotation axis",
+    "height_basis": "CAD bottom z=0 placed on measured upper envelope of official link_1 mesh",
+    "height_link1_m": 0.04206523299217224,
+    "limitation": "Envelope contact only; detailed seating area, fasteners and hole correspondence not verified; no extra adapter geometry"
+  },
+  "revision_source": {
+    "config": "configs/local/eco65_mast/j1_attachment_20261015_v1.json",
+    "change": "Rz(pi) about link_1 origin, no translation/scale/individual-part edits"
+  }
+}
