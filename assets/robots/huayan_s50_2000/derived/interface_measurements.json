@@ -1,0 +1,2855 @@
+{
+  "schema": "s50_cad_interface_measurements_v1",
+  "source_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "coordinate_frame": "Original STEP global CAD coordinates, metres; +Y is upright in the supplied reference",
+  "controller_semantics_verified": false,
+  "rigid_reference_assembly_is_not_controller_zero": true,
+  "axes": [
+    {
+      "joint_label": "J1",
+      "parent_cad_body": "base_s50",
+      "child_cad_body": "j1_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.02,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        1.702226029278184e-17,
+        0.0,
+        3.494041729521311e-17
+      ],
+      "unoriented_axis_CAD": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 13,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 14,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 22,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 23,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 26,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 30,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.2212199603905843e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 70,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365913e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 269,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 279,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 294,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 300,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 338,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 404,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 516,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 29,
+          "child_face_index": 529,
+          "parent_radius_m": 0.163,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309087e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 30,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.2212199603905843e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 70,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365913e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 269,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 279,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 294,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 300,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 338,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 404,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 516,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 30,
+          "child_face_index": 529,
+          "parent_radius_m": 0.1295,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309087e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 30,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.2212199603905843e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 70,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 269,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 279,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 294,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 300,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 338,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 404,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 516,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559724e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 529,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309087e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 269,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 279,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 294,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 300,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 338,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 404,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 516,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 86,
+          "child_face_index": 529,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309085e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 30,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.2212199603905843e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 70,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 269,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 279,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 294,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 300,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 338,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 404,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.13,
+          "axis_offset_m": 2.6880421616876476e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 516,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.7977857087559722e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 274,
+          "child_face_index": 529,
+          "parent_radius_m": 0.1305,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.6662605789309087e-16,
+          "parallel_error": 4.200320983745349e-16
+        }
+      ]
+    },
+    {
+      "joint_label": "J2",
+      "parent_cad_body": "j1_s50",
+      "child_cad_body": "j2_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.02,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        0.0,
+        0.2803000000000001,
+        -1.0760852026674324e-16
+      ],
+      "unoriented_axis_CAD": [
+        1.0,
+        3.10771333753579e-17,
+        -1.318389841742374e-16
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 46,
+          "child_face_index": 7,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 46,
+          "child_face_index": 88,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 46,
+          "child_face_index": 164,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 46,
+          "child_face_index": 179,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 126,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 126,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 126,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 126,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 129,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 129,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 129,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 129,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 146,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 146,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 146,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 146,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 150,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 150,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 150,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 150,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 164,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 164,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 164,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 164,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 168,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 168,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 168,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 168,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 182,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 182,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 182,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 182,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 186,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 186,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 186,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 186,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 200,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 200,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 200,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 200,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 204,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 204,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 204,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 204,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 214,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 214,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 214,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 214,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 218,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 218,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 218,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 218,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 235,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 235,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 235,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 235,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 239,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 239,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 239,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 239,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 253,
+          "child_face_index": 7,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 253,
+          "child_face_index": 88,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 253,
+          "child_face_index": 164,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 253,
+          "child_face_index": 179,
+          "parent_radius_m": 0.062,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 257,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 257,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 257,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 257,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 264,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 264,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 264,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 264,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 275,
+          "child_face_index": 7,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 275,
+          "child_face_index": 88,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 275,
+          "child_face_index": 164,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 275,
+          "child_face_index": 179,
+          "parent_radius_m": 0.09850000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 283,
+          "child_face_index": 7,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 283,
+          "child_face_index": 88,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 283,
+          "child_face_index": 164,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 283,
+          "child_face_index": 179,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 287,
+          "child_face_index": 7,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 287,
+          "child_face_index": 88,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 287,
+          "child_face_index": 164,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 287,
+          "child_face_index": 179,
+          "parent_radius_m": 0.054,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 314,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 314,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 314,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 314,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 318,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 318,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 318,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 318,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 330,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 330,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 330,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 330,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 334,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 334,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 334,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 334,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 348,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 348,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 348,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 348,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 352,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 352,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 352,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 352,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 366,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 366,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 366,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 366,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 370,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 370,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 370,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 370,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 384,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 384,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 384,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 384,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 388,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 388,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 388,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 388,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 395,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 395,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 395,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 395,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 398,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 398,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 398,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 398,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 414,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 414,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 414,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 414,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 418,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 418,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 418,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 418,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 432,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 432,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 432,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 432,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 436,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 436,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 436,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 436,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 450,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 450,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 450,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 450,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 454,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 454,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 454,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 454,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 468,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 468,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 468,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 468,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 472,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 472,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 472,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 472,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 486,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 486,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 486,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 486,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 490,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 490,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 490,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 490,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 496,
+          "child_face_index": 7,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 496,
+          "child_face_index": 88,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 496,
+          "child_face_index": 164,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 496,
+          "child_face_index": 179,
+          "parent_radius_m": 0.10700000000000003,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 500,
+          "child_face_index": 7,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 500,
+          "child_face_index": 88,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 500,
+          "child_face_index": 164,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.07527595234204258,
+          "axis_offset_m": 1.8609854516542185e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 500,
+          "child_face_index": 179,
+          "parent_radius_m": 0.12299999999999996,
+          "child_radius_m": 0.12550000000000006,
+          "axis_offset_m": 1.8609854513333476e-07,
+          "parallel_error": 7.108045008102095e-16
+        }
+      ]
+    },
+    {
+      "joint_label": "J3",
+      "parent_cad_body": "j2_s50",
+      "child_cad_body": "j3_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.009,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        1.942890293094024e-16,
+        1.180300000000009,
+        -1.8609854495943093e-07
+      ],
+      "unoriented_axis_CAD": [
+        1.0,
+        -1.5647597882003945e-16,
+        5.438641454004742e-16
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 145,
+          "child_face_index": 338,
+          "parent_radius_m": 0.10550000000000004,
+          "child_radius_m": 0.010000000000000005,
+          "axis_offset_m": 3.202060718455045e-17,
+          "parallel_error": 2.2169926646435865e-16
+        },
+        {
+          "parent_face_index": 148,
+          "child_face_index": 338,
+          "parent_radius_m": 0.10400000000000001,
+          "child_radius_m": 0.010000000000000005,
+          "axis_offset_m": 9.739385412252826e-17,
+          "parallel_error": 1.4821206710406725e-16
+        },
+        {
+          "parent_face_index": 150,
+          "child_face_index": 338,
+          "parent_radius_m": 0.02500000000000001,
+          "child_radius_m": 0.010000000000000005,
+          "axis_offset_m": 3.819166261277925e-17,
+          "parallel_error": 1.4821206710406725e-16
+        }
+      ]
+    },
+    {
+      "joint_label": "J4",
+      "parent_cad_body": "j3_s50",
+      "child_cad_body": "j4_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.02,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        8.881784197001252e-16,
+        2.1217999999999906,
+        -2.317948486003615e-16
+      ],
+      "unoriented_axis_CAD": [
+        1.0,
+        -4.185881581597456e-16,
+        4.945401592793331e-16
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 330,
+          "child_face_index": 77,
+          "parent_radius_m": 0.059000000419978015,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 2.535243863682852e-16,
+          "parallel_error": 3.5394180770356783e-16
+        }
+      ]
+    },
+    {
+      "joint_label": "J5",
+      "parent_cad_body": "j4_s50",
+      "child_cad_body": "j5_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.02,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        -0.2539998016477047,
+        0.0,
+        -2.477441862769319e-16
+      ],
+      "unoriented_axis_CAD": [
+        1.0390488085761018e-16,
+        1.0,
+        6.245004513516506e-17
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 79,
+          "child_face_index": 77,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 1.958356065081972e-17,
+          "parallel_error": 6.245004513516506e-17
+        },
+        {
+          "parent_face_index": 81,
+          "child_face_index": 77,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 1.9581079687952355e-17,
+          "parallel_error": 6.245004513516506e-17
+        }
+      ]
+    },
+    {
+      "joint_label": "J6",
+      "parent_cad_body": "j5_s50",
+      "child_cad_body": "j6_s50",
+      "candidate_line_groups": 1,
+      "minimum_matching_radius_m": 0.02,
+      "controller_positive_sign": null,
+      "controller_zero_offset_rad": null,
+      "point_CAD_m": [
+        2.220446049250313e-16,
+        2.2802999999999907,
+        1.1143876248228748e-17
+      ],
+      "unoriented_axis_CAD": [
+        1.0,
+        -1.0390488085760716e-16,
+        5.526514449819124e-16
+      ],
+      "evidence": [
+        {
+          "parent_face_index": 80,
+          "child_face_index": 0,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.058,
+          "axis_offset_m": 9.525600404450449e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 80,
+          "child_face_index": 4,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.05900000000000001,
+          "axis_offset_m": 7.417338316761713e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 80,
+          "child_face_index": 8,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.0535,
+          "axis_offset_m": 1.0082408402768639e-16,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 80,
+          "child_face_index": 30,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.033,
+          "axis_offset_m": 9.636910662511723e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 82,
+          "child_face_index": 0,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.058,
+          "axis_offset_m": 9.524359261080186e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 82,
+          "child_face_index": 4,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.05900000000000001,
+          "axis_offset_m": 7.417403815721871e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 82,
+          "child_face_index": 8,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.0535,
+          "axis_offset_m": 1.0080914528678308e-16,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 82,
+          "child_face_index": 30,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.033,
+          "axis_offset_m": 9.635616629940067e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 0,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.058,
+          "axis_offset_m": 9.525600404450449e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 4,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.05900000000000001,
+          "axis_offset_m": 7.417338316761713e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 8,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.0535,
+          "axis_offset_m": 1.0082408402768639e-16,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 84,
+          "child_face_index": 30,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.033,
+          "axis_offset_m": 9.636910662511723e-17,
+          "parallel_error": 5.897552717360289e-16
+        }
+      ]
+    }
+  ],
+  "support_plane": {
+    "y_CAD_m": -0.0030000000000000022,
+    "up_CAD": [
+      0,
+      1,
+      0
+    ],
+    "axis_intersection_CAD_m": [
+      0,
+      -0.0030000000000000022,
+      0
+    ],
+    "support_faces": [
+      {
+        "face_index": 17,
+        "area_m2": 0.002655504837061522,
+        "surface_centroid_m": [
+          6.374726968398227e-16,
+          -0.0030000000000000152,
+          -0.14264192647611507
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      },
+      {
+        "face_index": 18,
+        "area_m2": 0.002320510365915363,
+        "surface_centroid_m": [
+          0.12003361244075963,
+          -0.0029999999999999892,
+          -0.07604583419272676
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      },
+      {
+        "face_index": 19,
+        "area_m2": 0.0023205100124620587,
+        "surface_centroid_m": [
+          0.12003361297680072,
+          -0.0029999999999999753,
+          0.07604583761737262
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      },
+      {
+        "face_index": 20,
+        "area_m2": 0.0026555048370615207,
+        "surface_centroid_m": [
+          -1.650421904376628e-15,
+          -0.0029999999999999892,
+          0.14264192647611504
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      },
+      {
+        "face_index": 21,
+        "area_m2": 0.0026555048370614644,
+        "surface_centroid_m": [
+          -0.12353153197306825,
+          -0.0030000000000000165,
+          0.07132096323805694
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      },
+      {
+        "face_index": 28,
+        "area_m2": 0.002655504837061521,
+        "surface_centroid_m": [
+          -0.12353153197306767,
+          -0.0030000000000000296,
+          -0.07132096323805764
+        ],
+        "origin_m": [
+          1.7524159889135272e-17,
+          -0.0030000000000000022,
+          3.5215830403972466e-17
+        ],
+        "normal": [
+          1.6729986545114403e-16,
+          -1.0,
+          9.180436958645251e-17
+        ]
+      }
+    ],
+    "interpretation": "Lowest parallel support surfaces of the base (not the recessed centre plane at Y=0). Mounting clocking and controller-base frame remain unverified."
+  },
+  "flange_distal_face": {
+    "face_index": 10,
+    "area_m2": 0.00484197967734525,
+    "surface_centroid_m": [
+      -0.3884998016477048,
+      2.2800766386806584,
+      -4.442932880961159e-05
+    ],
+    "origin_m": [
+      -0.3884998016477048,
+      2.2802999999999907,
+      -1.0286044798081286e-16
+    ],
+    "normal": [
+      -1.0,
+      3.0978751951332657e-16,
+      9.860761315262648e-32
+    ],
+    "bolt_cylinders": [
+      {
+        "face_index": 11,
+        "area_m2": 0.0001570796326794898,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.2802999999999902,
+          0.045999999999999895
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.2802999999999902,
+          0.0459999999999999
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0025000000000000022
+      },
+      {
+        "face_index": 13,
+        "area_m2": 0.00015707963267948936,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.3128269119345712,
+          0.03252691193458136
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.3128269119345712,
+          0.03252691193458136
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0024999999999999953
+      },
+      {
+        "face_index": 15,
+        "area_m2": 0.0001570796326794895,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.234299999999991,
+          -1.0036416142611415e-16
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.234299999999991,
+          -9.97805856613729e-17
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.002499999999999998
+      },
+      {
+        "face_index": 17,
+        "area_m2": 0.00015707963267948957,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.2477730880654097,
+          -0.03252691193458134
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.2477730880654097,
+          -0.032526911934581335
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0024999999999999988
+      },
+      {
+        "face_index": 19,
+        "area_m2": 0.0001570796326794898,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.2802999999999907,
+          -0.04600000000000011
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.2802999999999907,
+          -0.0460000000000001
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0025000000000000022
+      },
+      {
+        "face_index": 21,
+        "area_m2": 0.00015707963267948936,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.3128269119345717,
+          -0.032526911934581126
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.3128269119345717,
+          -0.03252691193458112
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0024999999999999953
+      },
+      {
+        "face_index": 23,
+        "area_m2": 0.0001570796326794895,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.3262999999999905,
+          -1.0658141036401502e-16
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.3262999999999905,
+          -1.0594031030025283e-16
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.002499999999999998
+      },
+      {
+        "face_index": 25,
+        "area_m2": 0.00015707963267948936,
+        "surface_centroid_m": [
+          -0.38349980164770486,
+          2.247773088065409,
+          0.032526911934580696
+        ],
+        "origin_m": [
+          -0.3884998016477048,
+          2.247773088065409,
+          0.032526911934580696
+        ],
+        "direction": [
+          -1.0,
+          3.0978751951332657e-16,
+          9.860761315262648e-32
+        ],
+        "radius_m": 0.0024999999999999953
+      }
+    ],
+    "bolt_circle_radii_m": [
+      0.046000000000000006,
+      0.04599999999999976,
+      0.04599999999999982,
+      0.045999999999999916,
+      0.046,
+      0.045999999999999756,
+      0.04599999999999982,
+      0.04599999999999992
+    ],
+    "interpretation": "Measured distal J6 plane and eight CAD cylinder bores of 5mm diameter on 92mm PCD. Official mechanical manual PDF page 56 specifies 8-M6 threaded holes, depth 10mm; 5mm is the modeled tap-drill/core geometry, NOT the nominal fastener diameter. Tool clocking/control flange axes still require documentation."
+  },
+  "geometry_checks": {
+    "base_top_y_m": 0.1363,
+    "shoulder_axis_height_above_support_m": 0.2833,
+    "J2_J3_axis_separation_m": 0.9,
+    "J3_J4_axis_separation_m": 0.9415,
+    "axis_line_tolerance_m": 1e-05
+  },
+  "not_inferred": [
+    "controller zero",
+    "controller positive joint directions",
+    "joint hard stops",
+    "mounting orientation about the installation axis",
+    "controller flange clocking"
+  ]
+}

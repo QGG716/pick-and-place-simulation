@@ -1,0 +1,274 @@
+{
+  "schema": "huayan_s50_2000_sources_v1",
+  "checked_on": "2026-11-10",
+  "model_identity": {
+    "manufacturer": "Huayan Robotics / 华沿机器人",
+    "model": "S50-2000",
+    "dof": 6,
+    "substitute_models_used": false
+  },
+  "status": "CAD_ACQUIRED_KINEMATICS_NOT_YET_VERIFIED",
+  "user_supplied_cad": {
+    "source_path": "D:/code/eco65 pick and place/assets/robots/huayan_S50/S50.STEP",
+    "copied_path": "assets/robots/huayan_s50_2000/source/S50.STEP",
+    "bytes": 17798145,
+    "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+    "filename_in_header": "S50-2000-外发模型-58模组整机.STEP",
+    "header_timestamp": "2025-08-01T09:58:12",
+    "producer": "SolidWorks 2022 / SwSTEP 2.0",
+    "schema": "AUTOMOTIVE_DESIGN (STEP AP214)",
+    "units": "millimetres",
+    "normalization_scale_to_m": 0.001,
+    "provenance": "User supplied local file. Model identity matches STEP header and named S50 components; exact hash equivalence to gated official ZIP is unverified.",
+    "license": "No explicit redistribution license embedded/obtained for this CAD; user authorized use and code delivery. Official ROS BSD license is not assumed to cover CAD."
+  },
+  "official_cad_listing": {
+    "url": "https://www.huayan-robotics.com/service/download/3dmoxing?pagenum=3",
+    "title": "华沿机器人S50-2000大负载机器人本体模型",
+    "format": "zip[STEP]",
+    "reported_size": "4.94mb",
+    "article_id": 2621,
+    "anonymous_download_url": "https://www.huayan-robotics.com/feedback/article-download?id=2621",
+    "anonymous_response": {
+      "code": 403,
+      "msg": "请登录后重试!",
+      "data": []
+    },
+    "http_status": 200,
+    "archive_downloaded_from_site": false,
+    "archive_sha256": null,
+    "form_submitted": false
+  },
+  "scalar_specifications": {
+    "sources": [
+      "https://www.huayan-robotics.com/s",
+      "https://www.huayan-robotics.net/s-heavy-payload-collaborative-robot"
+    ],
+    "rated_payload_kg": 50,
+    "reported_total_mass_kg": 156,
+    "reach_m": 2,
+    "joint_limits_deg": [
+      [
+        -360,
+        360
+      ],
+      [
+        -190,
+        10
+      ],
+      [
+        -160,
+        160
+      ],
+      [
+        -360,
+        360
+      ],
+      [
+        -360,
+        360
+      ],
+      [
+        -360,
+        360
+      ]
+    ],
+    "joint_velocity_limits_deg_s": [
+      180,
+      120,
+      120,
+      180,
+      180,
+      224
+    ],
+    "joint_limits_rad": [
+      [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      [
+        -3.3161255787892263,
+        0.17453292519943295
+      ],
+      [
+        -2.792526803190927,
+        2.792526803190927
+      ],
+      [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      [
+        -6.283185307179586,
+        6.283185307179586
+      ]
+    ],
+    "joint_velocity_limits_rad_s": [
+      3.141592653589793,
+      2.0943951023931953,
+      2.0943951023931953,
+      3.141592653589793,
+      3.141592653589793,
+      3.9095375244672983
+    ],
+    "interpretation": "Limits refer to manufacturer controller coordinates, not unverified CAD zero. Whole-robot mass is not per-link inertia. Payload qualification must not short-circuit geometric comparisons.",
+    "speed_revision_verified_for_supplied_cad": false
+  },
+  "official_ros_repository": {
+    "url": "https://github.com/huayan-robotics/elfin_s_robot",
+    "license": "BSD-3-Clause, Copyright 2017 Han's Robot Co., Ltd.; applicable to repository contents only",
+    "branches": [
+      {
+        "name": "main",
+        "sha": "cfa35bcf5b071e4d4aa4d5ca5e9b46b3437a6659",
+        "tree_entries": 344,
+        "tree_truncated": false,
+        "urdf_paths": [
+          "elfin_description/urdf/S05.urdf.xacro",
+          "elfin_description/urdf/S10.urdf.xacro",
+          "elfin_description/urdf/S20.urdf.xacro",
+          "elfin_description/urdf/S30.urdf.xacro",
+          "elfin_description/urdf/elfin_transmission.xacro",
+          "elfin_description/urdf/materials.xacro"
+        ],
+        "s50_paths": []
+      },
+      {
+        "name": "melodic_controlbox",
+        "sha": "24d4beb31898cf95007586789e39376aa34f8219",
+        "tree_entries": 545,
+        "tree_truncated": false,
+        "urdf_paths": [
+          "elfin_description/urdf/S05.urdf.xacro",
+          "elfin_description/urdf/S10.urdf.xacro",
+          "elfin_description/urdf/S20.urdf.xacro",
+          "elfin_description/urdf/S30.urdf.xacro",
+          "elfin_description/urdf/elfin_transmission.xacro",
+          "elfin_description/urdf/materials.xacro"
+        ],
+        "s50_paths": []
+      },
+      {
+        "name": "noetic",
+        "sha": "9008c0d5ffe7445822717d2a6b92fc89ce1d40b6",
+        "tree_entries": 344,
+        "tree_truncated": false,
+        "urdf_paths": [
+          "elfin_description/urdf/S05.urdf.xacro",
+          "elfin_description/urdf/S10.urdf.xacro",
+          "elfin_description/urdf/S20.urdf.xacro",
+          "elfin_description/urdf/S30.urdf.xacro",
+          "elfin_description/urdf/elfin_transmission.xacro",
+          "elfin_description/urdf/materials.xacro"
+        ],
+        "s50_paths": []
+      }
+    ],
+    "releases": [],
+    "tags_audit": "Not completed: connector rejected tags endpoint; no claim that every git ref was audited.",
+    "s50_urdf_found": false
+  },
+  "missing_for_articulated_model": [
+    "Controller zero angles relative to the measured CAD reference and positive directions of J1..J6",
+    "Controller-base clocking relative to the mounting bolt/dowel pattern and fixed world installation orientation",
+    "Controller flange/tool0 frame clocking and physical connection to the unchanged Wantai tool/200 mm extension",
+    "Resolved S50 maximum-speed revision for the supplied 2025-08-01 58-module CAD export",
+    "Qualified complete collision coverage for J1/J2: retained missing-face and invalid-topology evidence must be resolved",
+    "Physical wrist/tool ownership mapping and adjacent-link self-collision exclusions after articulated frames are verified"
+  ],
+  "missing_for_dynamics_only": [
+    "Per-link masses, centres of mass and inertia tensors",
+    "Reliable joint effort/torque limits"
+  ],
+  "dynamics_note": "Missing inertials do not block kinematic/collision planning once articulated geometry and coordinate semantics are verified. No dynamics passed claim.",
+  "official_mechanical_manual": {
+    "title": "S-Series Robots Mechanical Operation Instructions (For S05/S10/S20/S30/S35/S40/S50 Robots)",
+    "listing_url": "https://www.huayan-robotics.net/service/download/yonghuzhinan",
+    "download_endpoint": "https://www.huayan-robotics.net/feedback/article-download?id=1098",
+    "url": "https://www.huayan-robotics.net/media/upload/LargeFile/HuaYan%20Robotics%20Mechanical%20Instruction%20Manual(S-series).pdf",
+    "path": "assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf",
+    "bytes": 3245292,
+    "sha256": "2122d5d29d2e8e33c04f36183caa820d2f80e6a93ca03f8d229f0a8fdf69cd02",
+    "pdf_pages": 66,
+    "pdf_creation_date_metadata": "D:20251223171934+08'00'",
+    "visible_document_revision": null,
+    "version_note": "Creation timestamp is metadata, not a verified engineering document revision; footer pagination includes 61/44.",
+    "s50_pdf_pages_1based": {
+      "dimensions": 25,
+      "range": 33,
+      "base_mounting": 55,
+      "flange": 56,
+      "specifications": 65
+    },
+    "anonymous_download_http_status": 200,
+    "anonymous_download_application_code": 200,
+    "form_submitted": false,
+    "license": "Publicly downloadable manufacturer reference manual; no explicit redistribution license was identified. Not covered by the separate ROS repository BSD license."
+  },
+  "specification_conflicts": [
+    {
+      "field": "maximum joint velocity in controller order J1..J6",
+      "current_official_web_deg_s": [
+        180,
+        120,
+        120,
+        180,
+        180,
+        224
+      ],
+      "official_manual_pdf_page_65_deg_s": [
+        244,
+        150,
+        120,
+        180,
+        180,
+        180
+      ],
+      "different_joints": [
+        "J1",
+        "J2",
+        "J6"
+      ],
+      "resolved": false,
+      "policy": "Keep both values and source identity. Do not silently choose a model revision, transfer speeds to an unverified zero/sign convention, or claim motion validation."
+    }
+  ],
+  "cad_verified_facts": {
+    "body_count": 7,
+    "body_names": [
+      "base",
+      "J1",
+      "J2",
+      "J3",
+      "J4",
+      "J5",
+      "J6"
+    ],
+    "unoriented_six_axis_lines_measured": true,
+    "source": "derived/interface_measurements.json",
+    "manual_dimension_checks": 13,
+    "manual_dimension_checks_passed": 13,
+    "manual_dimension_max_error_mm": 0.000198352186515649,
+    "support_plane_CAD_y_m": -0.003,
+    "support_surface_count": 6,
+    "mounting_holes": "6 x diameter 13.5 mm on PCD 302 mm",
+    "flange_holes": "8-M6 depth 10 mm on PCD 92 mm; CAD represents 5 mm tap/core bores",
+    "controller_zero_verified": false,
+    "controller_positive_directions_verified": false,
+    "mount_clocking_verified": false
+  },
+  "cad_mesh_limitations": {
+    "source_j1_topology_valid": false,
+    "j1_missing_tessellation_face": 74,
+    "j2_missing_tessellation_face": 75,
+    "missing_face_signed_area_m2_each": -1.2925292930544856e-06,
+    "shape_fix_attempt": "derived/shape_fix_attempt.json",
+    "shape_fix_improved_geometry": false,
+    "collision_mesh_ready": false,
+    "static_evidence_visualization_allowed": true
+  }
+}

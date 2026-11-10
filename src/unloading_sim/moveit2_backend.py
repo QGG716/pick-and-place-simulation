@@ -411,25 +411,40 @@ def native_tool_collision_boxes(connector,q):
         collision_semantics="same_nominal_compressed_lip_OBBs_as_CPU_authority; additional_compression_limit_unchanged")
 
 
-def model_request(connector, scene, *, asset_root=None, seed=71070):
+def model_request(connector, scene, *, asset_root=None, seed=71070, model_binding=None):
     from .independent_cups import m710_cup_array_from_mapping
+    from .robot_model_binding import RobotModelBinding
+    from .robot_native_binding import native_model_from_binding, configured_wrist_tool_pairs, physical_flange_frame
     root = scene.policy.project_root
-    urdf = ET.parse(root / OFFICIAL_MODEL_URDF).getroot()
-    names = [j.attrib["name"] for j in urdf.findall("joint") if j.attrib["type"] == "revolute"]
-    srdf = ET.parse(root / OFFICIAL_MODEL_SRDF).getroot()
-    mount = np.asarray(connector.robot.base_transform)
-    for joint in urdf.findall("joint"):
-        if joint.find("parent").attrib["link"] == "world" and joint.find("child").attrib["link"] == "base_link":
-            origin = joint.find("origin")
-            if origin is None: origin = ET.SubElement(joint, "origin")
-            origin.set("xyz", " ".join(map(str, mount[:3, 3])))
-            origin.set("rpy", " ".join(map(str, _rpy(mount[:3, :3]))))
-    native_root = Path(asset_root) if asset_root else root
-    package = native_root / "assets/robots/fanuc_m710id_70/official"
-    for mesh in urdf.iter("mesh"):
-        mesh.set("filename", "file://"+str(package / mesh.attrib["filename"].removeprefix("package://")).replace("\\", "/"))
+    binding = model_binding if model_binding is not None else getattr(connector.robot, 'model_binding', None)
+    if binding is not None:
+        if not isinstance(binding, RobotModelBinding):
+            binding = RobotModelBinding.from_config(binding)
+        robot_binding = getattr(connector.robot, 'model_binding', None)
+        if robot_binding is None or robot_binding.identity() != binding.identity():
+            raise ValueError('NATIVE_CORE_MODEL_BINDING_MISMATCH')
+        urdf, srdf, native_roles = native_model_from_binding(binding, connector.robot.base_transform,
+            project_root=root, asset_root=asset_root)
+        names = list(binding.active_joint_names)
+    else:
+        # Historical FANUC entry remains unchanged; configured models never
+        # enter this branch when their binding is missing or invalid.
+        urdf = ET.parse(root / OFFICIAL_MODEL_URDF).getroot()
+        names = [j.attrib["name"] for j in urdf.findall("joint") if j.attrib["type"] == "revolute"]
+        srdf = ET.parse(root / OFFICIAL_MODEL_SRDF).getroot()
+        mount = np.asarray(connector.robot.base_transform)
+        for joint in urdf.findall("joint"):
+            if joint.find("parent").attrib["link"] == "world" and joint.find("child").attrib["link"] == "base_link":
+                origin = joint.find("origin")
+                if origin is None: origin = ET.SubElement(joint, "origin")
+                origin.set("xyz", " ".join(map(str, mount[:3, 3])))
+                origin.set("rpy", " ".join(map(str, _rpy(mount[:3, :3]))))
+        native_root = Path(asset_root) if asset_root else root
+        package = native_root / "assets/robots/fanuc_m710id_70/official"
+        for mesh in urdf.iter("mesh"):
+            mesh.set("filename", "file://"+str(package / mesh.attrib["filename"].removeprefix("package://")).replace("\\", "/"))
     q0 = np.zeros(6)
-    flange = connector.robot.named_link_frames(q0)["flange"]
+    flange = physical_flange_frame(connector.robot, q0)
     tool, tool_geometry = native_tool_collision_boxes(connector,q0)
     tool_names = [b.name for b in tool]
     compliant = {b.name for b in connector.robot_state_validator._compliant_boxes(q0)}
@@ -453,7 +468,9 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
     # Owned tool solids form one assembly. Wrist exceptions retain exact ownership.
     for first, second in itertools.combinations(tool_names, 2):
         ET.SubElement(srdf, "disable_collisions", link1=first, link2=second, reason="Owned_tool_assembly")
-    for first, second in sorted(connector.collision_policy.wrist_tool_pairs(tool_names)):
+    wrist_pairs = (configured_wrist_tool_pairs(binding, connector.collision_policy, tool_names)
+        if binding is not None else connector.collision_policy.wrist_tool_pairs(tool_names))
+    for first, second in sorted(wrist_pairs):
         ET.SubElement(srdf, "disable_collisions", link1=first, link2=second, reason="Approved_owned_wrist_tool")
     params = {"robot_description": ET.tostring(urdf, encoding="unicode"),
         "robot_description_semantic": ET.tostring(srdf, encoding="unicode"),
@@ -489,6 +506,12 @@ def model_request(connector, scene, *, asset_root=None, seed=71070):
                       "native_POC_stage_scoped_process_with_ordered_checks_plus_independent_authority"
                       if getattr(connector,"native_cold",False) else
                       "native_POC_free_pair_clearance_search_and_edges_plus_existing_authority"))
+    if binding is not None:
+        identity['robot_model_binding'] = binding.identity()
+        identity['native_frame_roles'] = {key: value for key, value in native_roles.items() if key != 'urdf_parser_compatibility'}
+        identity['native_urdf_parser_compatibility'] = native_roles['urdf_parser_compatibility']
+        identity['dynamics_qualified'] = False
+        identity['scene_version'] = scene.snapshot.get('schema', 'configured_robot_scene')
     return dict(op="init", parameters=params, identity=identity, joint_names=names, seed=seed,
         collision_policy=connector.collision_policy.to_mapping(),tool_links=sorted(tool_names),
         compliant_tool_links=sorted(compliant),
@@ -1078,8 +1101,12 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
 
     def check_fk(self):
         checks=[]
-        for q in (np.zeros(6), np.array([.2,-.3,.4,.5,-.6,.7]), np.array([-.4,.2,-.35,-.6,.4,-.8])):
-            links=["base_link", "J3_link", "J6_link", "flange", "fanuc_flange", "tool0"]
+        binding = getattr(self.robot, 'model_binding', None)
+        probes = (binding.fk_probe_configurations() if binding is not None else
+            (np.zeros(6), np.array([.2,-.3,.4,.5,-.6,.7]), np.array([-.4,.2,-.35,-.6,.4,-.8])))
+        for q in probes:
+            links = (list(dict.fromkeys([binding.base_link, *binding.chain_child_links, binding.flange_link, binding.tip_link]))
+                if binding is not None else ["base_link", "J3_link", "J6_link", "flange", "fanuc_flange", "tool0"])
             reference=self.robot.named_link_frames(q)
             links=[l for l in links if l in reference]
             result=self.native.request(dict(op="fk",identity=self.native_identity,q_start=q.tolist(),
@@ -1111,7 +1138,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
         attached=None
         if attachment is not None:
             b=attachment.box_at(start)
-            attached=box_message(b,np.linalg.inv(self.robot.named_link_frames(start)["flange"])@b.world_from_local)
+            from .robot_native_binding import physical_flange_frame
+            attached=box_message(b,np.linalg.inv(physical_flange_frame(self.robot,start))@b.world_from_local)
             attached["touch_links"]=sorted(self.native_compliant)
             if b.name not in {item["id"] for item in world}: world.append(box_message(b))
         if (not getattr(self, "require_native_motion", False) and target_contact is not None and
@@ -1725,7 +1753,8 @@ class MoveItLayoutConnector(LayoutTrajectoryConnector):
             spec=dict(name=name,path=path[a:b+1].tolist(),durations=[max(.002,x) for x in floors[a:b]],
                 generator="checked_mixed_core_and_native_stage")
             if name=="contact":
-                flange=self.robot.named_link_frames(path[b])["flange"]
+                from .robot_native_binding import physical_flange_frame
+                flange=physical_flange_frame(self.robot,path[b])
                 attached=box_message(target,np.linalg.inv(flange)@target.world_from_local)
                 attached["touch_links"]=sorted(self.native_compliant);spec["attach"]=attached
             if name=="place":

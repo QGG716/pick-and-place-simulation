@@ -1,0 +1,258 @@
+{
+  "schema": "s50_manual_cad_crosscheck_v1",
+  "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "manual_sha256": "2122d5d29d2e8e33c04f36183caa820d2f80e6a93ca03f8d229f0a8fdf69cd02",
+  "dimension_checks": [
+    {
+      "measurement": "installation plane to J2 axis",
+      "pdf_page_1based": 25,
+      "measured_mm": 283.3000000000001,
+      "drawing_mm": 283.3,
+      "absolute_error_mm": 1.1368683772161603e-13,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J2 to J3 parallel-axis distance",
+      "pdf_page_1based": 25,
+      "measured_mm": 900.0000000000089,
+      "drawing_mm": 900,
+      "absolute_error_mm": 8.86757334228605e-12,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J3 to J4 parallel-axis distance",
+      "pdf_page_1based": 25,
+      "measured_mm": 941.4999999999816,
+      "drawing_mm": 941.5,
+      "absolute_error_mm": 1.8417267710901797e-11,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J4 to J6 parallel-axis distance",
+      "pdf_page_1based": 25,
+      "measured_mm": 158.50000000000009,
+      "drawing_mm": 158.5,
+      "absolute_error_mm": 8.526512829121202e-14,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J3 to J6 parallel-axis distance",
+      "pdf_page_1based": 25,
+      "measured_mm": 1099.9999999999816,
+      "drawing_mm": 1100,
+      "absolute_error_mm": 1.8417267710901797e-11,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J2 to J6 straight-reference distance",
+      "pdf_page_1based": 25,
+      "measured_mm": 1999.9999999999907,
+      "drawing_mm": 2000,
+      "absolute_error_mm": 9.322320693172514e-12,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "base axis to J2 tube centre offset",
+      "pdf_page_1based": 25,
+      "measured_mm": 334.4999999999998,
+      "drawing_mm": 334.5,
+      "absolute_error_mm": 2.2737367544323206e-13,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J2 to J3 tube centre offset",
+      "pdf_page_1based": 25,
+      "measured_mm": 239.0000000001086,
+      "drawing_mm": 239,
+      "absolute_error_mm": 1.0859935173357371e-10,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J3 tube to J5 axis offset",
+      "pdf_page_1based": 25,
+      "measured_mm": 158.49980164781348,
+      "drawing_mm": 158.5,
+      "absolute_error_mm": 0.000198352186515649,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "J5 axis to distal flange plane",
+      "pdf_page_1based": 25,
+      "measured_mm": 134.5000000000001,
+      "drawing_mm": 134.5,
+      "absolute_error_mm": 1.1368683772161603e-13,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "base mounting hole diameter",
+      "pdf_page_1based": 55,
+      "measured_mm": 13.500000000000012,
+      "drawing_mm": 13.5,
+      "absolute_error_mm": 1.2434497875801753e-14,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "base mounting bolt circle diameter",
+      "pdf_page_1based": 55,
+      "measured_mm": 301.9999999999999,
+      "drawing_mm": 302,
+      "absolute_error_mm": 1.1368683772161603e-13,
+      "tolerance_mm": 0.01,
+      "passed": true
+    },
+    {
+      "measurement": "flange bolt circle diameter",
+      "pdf_page_1based": 56,
+      "measured_mm": 92.00000000000001,
+      "drawing_mm": 92,
+      "absolute_error_mm": 1.4210854715202004e-14,
+      "tolerance_mm": 0.01,
+      "passed": true
+    }
+  ],
+  "base_mounting_bolt_cylinders": [
+    {
+      "face_index": 31,
+      "area_m2": 0.0007846127652340515,
+      "surface_centroid_m": [
+        -0.13076983597144926,
+        0.00624999999999997,
+        -0.0755000000000016
+      ],
+      "origin_m": [
+        -0.13076983597144926,
+        -0.0030000000000000313,
+        -0.0755000000000016
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000006
+    },
+    {
+      "face_index": 32,
+      "area_m2": 0.0007846127652340515,
+      "surface_centroid_m": [
+        -0.13076983597145095,
+        0.006249999999999984,
+        0.07549999999999871
+      ],
+      "origin_m": [
+        -0.13076983597145095,
+        -0.0030000000000000174,
+        0.07549999999999871
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000006
+    },
+    {
+      "face_index": 33,
+      "area_m2": 0.000784612765234051,
+      "surface_centroid_m": [
+        -9.705085625218088e-17,
+        0.0062500000000000125,
+        0.15100000000000002
+      ],
+      "origin_m": [
+        -9.56353218957838e-17,
+        -0.0029999999999999884,
+        0.15100000000000002
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000001
+    },
+    {
+      "face_index": 34,
+      "area_m2": 0.0007846127652340515,
+      "surface_centroid_m": [
+        0.1307698359714499,
+        0.006250000000000026,
+        0.07550000000000076
+      ],
+      "origin_m": [
+        0.1307698359714499,
+        -0.0029999999999999736,
+        0.07550000000000076
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000006
+    },
+    {
+      "face_index": 35,
+      "area_m2": 0.0007846127652340515,
+      "surface_centroid_m": [
+        0.1307698359714505,
+        0.006250000000000014,
+        -0.07549999999999957
+      ],
+      "origin_m": [
+        0.1307698359714505,
+        -0.002999999999999987,
+        -0.07549999999999957
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000006
+    },
+    {
+      "face_index": 36,
+      "area_m2": 0.000784612765234051,
+      "surface_centroid_m": [
+        1.2943464077135105e-16,
+        0.006249999999999986,
+        -0.15099999999999997
+      ],
+      "origin_m": [
+        1.3068364167405432e-16,
+        -0.003000000000000016,
+        -0.15099999999999997
+      ],
+      "direction": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645251e-17
+      ],
+      "radius_m": 0.006750000000000001
+    }
+  ],
+  "base_mounting_bolt_count": 6,
+  "flange_bolt_count": 8,
+  "threaded_flange_holes": {
+    "manual": "8-M6 depth 10mm",
+    "cad_representation": "8 cylindrical tap/core bores diameter 5mm",
+    "not_nominal_fastener_diameter": true
+  },
+  "geometry_matches_drawings": true,
+  "controller_zero_and_signs_verified": false,
+  "mount_clocking_verified": false,
+  "physical_tool_adapter_verified": false,
+  "disclaimer": "Dimensional agreement does not identify controller zero offsets, positive directions, or a permitted speed revision."
+}

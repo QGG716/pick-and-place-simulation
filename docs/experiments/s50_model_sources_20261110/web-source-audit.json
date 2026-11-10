@@ -1,0 +1,28 @@
+{
+  "checked_on": "2026-11-10",
+  "official_entry_excerpt": "<a data-id=\"2621\" data-url=\"/feedback/article-download\">\n                    <div class=\"list-item\">\n                        <div class=\"item-title fs-20 fw-300\">华沿机器人S50-2000大负载机器人本体模型</div>\n                        <div class=\"item-attr\">\n                            <div class=\"item-val fw-300\">zip[STEP]<i class=\"line\"></i>4.94mb</div>\n                            <div class=\"item-sym icon-download fs-18\"></div>\n                        </div>\n                    </div>\n                </a>",
+  "anonymous_download_response_raw": "{\"code\":403,\"msg\":\"\\u8bf7\\u767b\\u5f55\\u540e\\u91cd\\u8bd5!\",\"data\":[]}",
+  "anonymous_download_http_status": 200,
+  "anonymous_download_application_code": 403,
+  "contact_form_submitted": false,
+  "english_model_listing_page": "https://www.huayan-robotics.net/service/download/3dmoxing/pagenum/4",
+  "english_entry": "S50-2000 _3D Model",
+  "official_org_default_branch_s50_code_search": {
+    "query": "S50",
+    "org": "huayan-robotics",
+    "result_count": 0,
+    "scope": "Indexed default branches only; not proof that no S50 model exists elsewhere."
+  },
+  "checked_local_before_user_supplied_step": {
+    "roots": [
+      "assets",
+      "configs",
+      "docs",
+      "C:/Users/Leo11/.codex/attachments"
+    ],
+    "method": "Filename search for S50, huayan, elfin, 华沿; STEP/STP/ZIP attachment filename inventory",
+    "matched_model_files": []
+  },
+  "user_supplied_step_supersedes_initial_acquisition_blocker": true,
+  "no_substitute_model_or_placeholder_urdf_created": true
+}

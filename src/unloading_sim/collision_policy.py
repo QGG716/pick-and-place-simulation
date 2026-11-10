@@ -37,6 +37,10 @@ class SimulationCollisionPolicy:
     robot_mount_contact_exemption: bool = False
     tool_chassis_contact_target_ids: tuple[str, ...] = ()
     fixed_mount_contact_mode: str = 'legacy_base_chassis'
+    robot_binding_model_id: str = ''
+    robot_binding_urdf_sha256: str = ''
+    reviewed_wrist_tool_exempt_links: tuple[str, ...] = ()
+    wrist_tool_review_source: str = ''
 
     def __post_init__(self):
         if self.fixed_mount_contact_mode not in ('legacy_base_chassis','qualified_planes_only'):
@@ -58,7 +62,18 @@ class SimulationCollisionPolicy:
                 raise ValueError("POC pair policy requires 5 mm total gap, zero self gap and finite walls")
         elif self.required_pair_clearance_m is not None or self.boundary_mode != "legacy_infinite_side_planes":
             raise ValueError("pair clearance must be explicitly bound to the POC schema")
-        if not set(self.wrist_tool_exempt_links) <= {"J5_link", "J6_link"}:
+        if self.robot_binding_model_id:
+            if (len(self.robot_binding_urdf_sha256) != 64
+                    or any(character not in '0123456789abcdef' for character in self.robot_binding_urdf_sha256)
+                    or not isinstance(self.reviewed_wrist_tool_exempt_links, tuple)
+                    or len(set(self.reviewed_wrist_tool_exempt_links)) != len(self.reviewed_wrist_tool_exempt_links)
+                    or set(self.wrist_tool_exempt_links) != set(self.reviewed_wrist_tool_exempt_links)
+                    or (self.wrist_tool_exempt_links and not self.wrist_tool_review_source)):
+                raise ValueError('configured wrist/tool exemptions require matching model and reviewed physical ownership')
+            if self.robot_mount_contact_exemption:
+                raise ValueError('configured robot forbids whole-arm legacy chassis exemption')
+        elif (self.robot_binding_urdf_sha256 or self.reviewed_wrist_tool_exempt_links or self.wrist_tool_review_source
+                or not set(self.wrist_tool_exempt_links) <= {"J5_link", "J6_link"}):
             raise ValueError("only the explicitly authorized wrist/tool pairs may be exempt")
         if self.stack_contact_mode not in {"strict_initial_proximity", "planner_relaxed_physics_checked"}:
             raise ValueError("unsupported stack contact mode")
@@ -82,13 +97,32 @@ class SimulationCollisionPolicy:
         recorded = data.pop("fingerprint", None)
         data.pop("wrist_tool_exemption_status", None)
         data.pop("box_box_physics_enabled", None)
-        for name in ("wrist_tool_exempt_links", "stack_contact_stages", "tool_chassis_contact_target_ids"):
+        for name in ("wrist_tool_exempt_links", "stack_contact_stages", "tool_chassis_contact_target_ids", "reviewed_wrist_tool_exempt_links"):
             if name in data:
                 data[name] = tuple(data[name])
         result = cls(**data)
         if recorded is not None and recorded != result.fingerprint:
             raise ValueError("collision policy fingerprint mismatch")
         return result
+
+    @classmethod
+    def for_robot_binding(cls, binding, policy):
+        """Bind unchanged contact rules to reviewed model-specific wrist links.
+
+        Loading a model never copies FANUC wrist names. The source config must
+        name the physical links explicitly, including an empty approved set.
+        """
+        import json
+        from .robot_native_binding import configured_wrist_tool_links
+        names = configured_wrist_tool_links(binding)
+        data = policy.to_mapping() if isinstance(policy, cls) else dict(policy)
+        data.pop('fingerprint', None)
+        source = (binding.data.get('collision') or {}).get('owned_tool_exemptions_source')
+        data.update(robot_binding_model_id=binding.model_id,
+            robot_binding_urdf_sha256=binding.identity()['urdf_sha256'],
+            wrist_tool_exempt_links=names, reviewed_wrist_tool_exempt_links=names,
+            wrist_tool_review_source=source if isinstance(source, str) else json.dumps(source, sort_keys=True) if source else '')
+        return cls.from_mapping(data)
 
     @property
     def fingerprint(self):
@@ -105,6 +139,10 @@ class SimulationCollisionPolicy:
 
     def _data(self):
         data = asdict(self)
+        if not self.robot_binding_model_id:
+            for key in ('robot_binding_model_id', 'robot_binding_urdf_sha256',
+                        'reviewed_wrist_tool_exempt_links', 'wrist_tool_review_source'):
+                data.pop(key)  # Preserve every historical FANUC fingerprint.
         if self.fixed_mount_contact_mode=='legacy_base_chassis':
             data.pop('fixed_mount_contact_mode')
         if not self.tool_chassis_contact_target_ids:

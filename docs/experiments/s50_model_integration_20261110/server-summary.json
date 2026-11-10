@@ -1,0 +1,79 @@
+{
+  "schema": "s50_server_validation_summary_v1",
+  "date": "2026-11-10",
+  "baseline_commit": "a3f08cc2283138e5905b4cc9829cefd7b4aac6b7",
+  "isolated_rootfs_path": "/work-s50-integration-20261110-v1",
+  "status": "INTERFACE_TESTS_PASS_S50_MODEL_NOT_READY",
+  "code_input_manifest_sha256": "4bd3f7eab87f3c54143aa2fd303b4be7fb1aa2f02461f008d96bb5a4aeb7a940",
+  "input_files_verified": 202,
+  "input_sha_mismatches": [],
+  "tests": {
+    "tests": "62",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "10.797"
+  },
+  "admission_status": "MODEL_NOT_READY",
+  "native_worker_launched": false,
+  "s50_native_single_carton": "NOT_RUN",
+  "initial_carton_count": 40,
+  "fanuc_original_process_running": true,
+  "parser_fixture": {
+    "model": "analytical_fixture_not_s50",
+    "source_exit": 255,
+    "native_exit": 0,
+    "source_error": "joint limit: no effort",
+    "scope": "ROS_URDF_PARSE_ONLY_NOT_S50_FK_OR_PLANNING"
+  },
+  "cross_platform": {
+    "windows_raw_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "linux_raw_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "exact_entity_geometry_equal": true,
+    "only_diagnostic_angles_differ": true,
+    "max_angle_difference_rad": 1.1102230246251565e-16,
+    "raw_differences": [
+      {
+        "path": "/environment_fingerprint",
+        "before": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+        "after": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950"
+      },
+      {
+        "path": "/height_samples/1/mechanism/stacks/0/angle_rad",
+        "before": 0.17285956782310907,
+        "after": 0.17285956782310904
+      },
+      {
+        "path": "/height_samples/1/mechanism/stacks/1/angle_rad",
+        "before": 0.17285956782310907,
+        "after": 0.17285956782310904
+      },
+      {
+        "path": "/height_samples/2/mechanism/stacks/0/angle_rad",
+        "before": 0.33842304879759794,
+        "after": 0.338423048797598
+      },
+      {
+        "path": "/height_samples/2/mechanism/stacks/1/angle_rad",
+        "before": 0.33842304879759794,
+        "after": 0.338423048797598
+      },
+      {
+        "path": "/height_samples/3/mechanism/stacks/0/angle_rad",
+        "before": 0.5609608055180793,
+        "after": 0.5609608055180794
+      },
+      {
+        "path": "/height_samples/3/mechanism/stacks/1/angle_rad",
+        "before": 0.5609608055180793,
+        "after": 0.5609608055180794
+      }
+    ]
+  },
+  "setup_failures_retained": [
+    "server-admission-missing-original-tool-source.log",
+    "server-tests-final.log"
+  ],
+  "setup_resolution": "Copied unchanged Wantai source and existing Three.js license into isolated workspace. No acceptance rule disabled.",
+  "supplemental_license_sha256": "abe364d9a4939d4c0bae8c091c26f9e576381729f329f0d23fd428b752b71a84"
+}

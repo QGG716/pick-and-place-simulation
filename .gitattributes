@@ -115,3 +115,12 @@ docs/experiments/m710_c04_extension200_20261024/** -text -whitespace
 tools/search_replay/selected_routes.js text eol=lf
 docs/experiments/m710_joint_search_continuation_20261029/** -text -whitespace
 docs/experiments/m710_xy_base_continuation_20261029/** -text -whitespace
+
+# Keep the supplied S50 CAD, derived mesh hashes and audit evidence byte-exact.
+assets/robots/huayan_s50_2000/source/** -text
+assets/robots/huayan_s50_2000/derived/** -text -whitespace
+assets/robots/huayan_s50_2000/derived/*.obj binary
+assets/robots/huayan_s50_2000/derived/*.obj.gz binary
+assets/robots/huayan_s50_2000/sources.json -text -whitespace
+docs/experiments/s50_model_sources_20261110/** -text -whitespace
+docs/experiments/s50_model_integration_20261110/** -text -whitespace

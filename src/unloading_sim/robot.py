@@ -447,6 +447,53 @@ class URDFRobot:
         )
 
     @classmethod
+    def from_config(
+        cls,
+        config_path: str | Path,
+        *,
+        mounting_world_transform: np.ndarray | None = None,
+        tip_from_tcp: np.ndarray | None = None,
+        tool_collision_size: Sequence[float] | None = None,
+        tool_collision_center_offset: float | None = None,
+        tool_collision_local_boxes: Sequence[Sequence[float]] | None = None,
+    ) -> "URDFRobot":
+        """Load an explicitly bound model without inheriting FANUC geometry.
+
+        An omitted TCP means a bare-model FK endpoint, not a tool adapter.
+        A caller installing a tool must supply its full checked SE(3) mapping.
+        Missing capsule proxies disable this approximate collision interface;
+        they do not prevent a separate per-link mesh backend from being used.
+        """
+        from .robot_model_binding import RobotModelBinding, rigid_transform
+        if tip_from_tcp is None and (tool_collision_size is not None or tool_collision_local_boxes is not None):
+            raise ValueError('INSTALLED_TOOL_REQUIRES_EXPLICIT_TIP_FROM_TCP')
+        binding = RobotModelBinding.from_config(config_path)
+        collision = binding.data.get('collision') or {}
+        radii = collision.get('capsule_radii_m')
+        if radii is not None:
+            radii = np.asarray(radii, dtype=float)
+            if radii.shape != (6,) or not np.isfinite(radii).all() or np.any(radii <= 0):
+                raise ValueError('INVALID_CONFIGURED_CAPSULE_RADII')
+        robot = cls.from_urdf(binding.urdf_path, binding.active_joint_names, binding.base_link,
+            binding.tip_link, tool_length=0., link_radii=np.zeros(6) if radii is None else radii,
+            tool_collision_size=tool_collision_size, tool_collision_center_offset=tool_collision_center_offset,
+            tool_collision_local_boxes=tool_collision_local_boxes, name=binding.model_id)
+        robot.base_transform = binding.world_from_base(np.eye(4) if mounting_world_transform is None else mounting_world_transform)
+        robot.tip_from_tcp = np.eye(4) if tip_from_tcp is None else rigid_transform(tip_from_tcp, 'tip_from_tcp')
+        robot.model_binding = binding
+        robot.joint_velocity_limits_rad_s = binding.joint_velocity_limits.copy()
+        robot.capsule_geometry_available = radii is not None
+        # The historical constructor's exclusions are model-specific. No pair
+        # is inherited by a model loaded through the configuration interface.
+        robot.self_collision_exclusions = set()
+        for pair in collision.get('capsule_self_exclusions') or []:
+            if (len(pair) != 2 or any(type(x) is not int for x in pair)
+                    or not 0 <= pair[0] < pair[1] <= robot.dof):
+                raise ValueError('INVALID_CONFIGURED_CAPSULE_EXCLUSION')
+            robot.self_collision_exclusions.add(tuple(pair))
+        return robot
+
+    @classmethod
     def kuka_kr50_r2500(
         cls,
         urdf_path: str | Path = "assets/robots/kuka_kr50_r2500/kr_50_r2500.urdf",
@@ -662,6 +709,8 @@ class URDFRobot:
         return float(np.degrees(np.arctan2(vector[2], np.linalg.norm(vector[:2]))))
 
     def link_capsules(self, q: np.ndarray) -> list[Capsule]:
+        if not getattr(self, 'capsule_geometry_available', True):
+            raise ValueError('CAPSULE_PROXY_UNAVAILABLE_USE_QUALIFIED_MESH_BACKEND')
         frames = self.frames(q, include_tool=True)
         points = [f[:3, 3] for f in frames]
         capsules: list[Capsule] = []

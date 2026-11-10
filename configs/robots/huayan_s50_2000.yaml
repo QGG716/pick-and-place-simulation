@@ -1,0 +1,70 @@
+schema_version: robot_load_limits_v1
+model: huayan_s50_2000
+model_id: huayan_s50_2000
+model_revision: supplied_step_20250801_controller_mapping_pending_20261110
+rated_payload_kg: 50.0
+reach_m: 2.0
+published_total_mass_kg: 156.0
+published_axis_count: 6
+published_axis_labels: [J1, J2, J3, J4, J5, J6]
+# Published axis labels are NOT a claim about unavailable URDF joint names.
+joint_position_limits_rad:
+  J1: [-6.283185307179586, 6.283185307179586]
+  J2: [-3.316125578789226, 0.17453292519943295]
+  J3: [-2.792526803190927, 2.792526803190927]
+  J4: [-6.283185307179586, 6.283185307179586]
+  J5: [-6.283185307179586, 6.283185307179586]
+  J6: [-6.283185307179586, 6.283185307179586]
+joint_velocity_limits_rad_s: [3.141592653589793, 2.0943951023931953, 2.0943951023931953, 3.141592653589793, 3.141592653589793, 3.9095375244672983]
+joint_velocity_source: https://www.huayan-robotics.com/s
+joint_velocity_version_conflict:
+  current_product_page_deg_s: [180, 120, 120, 180, 180, 224]
+  mechanical_manual_pdf_page_65_deg_s: [244, 150, 120, 180, 180, 180]
+  resolution: Unresolved hardware/firmware revision. Current-page values are recorded, not motion-qualified for the supplied CAD.
+joint_effort_limits_nm: null
+link_inertials: null
+joint_acceleration_limits_rad_s2: null
+joint_jerk_limits_rad_s3: null
+kinematics:
+  urdf_path: null
+  srdf_path: null
+  active_joint_names: null
+  base_link: null
+  flange_link: null
+  tip_link: null
+  mounting_from_base: null
+  package_map: {}
+  planning_group: manipulator
+  zero_pose_reference: null
+  axes_zero_offsets_signs_source: null
+collision:
+  per_link_visual_collision_sources: null
+  capsule_radii_m: null
+  capsule_self_exclusions: null
+  reviewed_self_collision_pairs: null
+  owned_tool_exempt_robot_links: null
+tool_interface:
+  flange_from_project_tool_mount: null
+  mounting_geometry_source: null
+  additional_physical_adapter: false
+readiness:
+  state: CRITICAL_MODEL_DATA_MISSING
+  derive_from_required_fields: true
+  historical_fanuc_model_fallback_allowed: false
+  dynamics_data_missing_must_not_block_kinematics: true
+  note: Real seven-part CAD and six unoriented joint-axis lines are available. Controller zero/sign mapping, mount clocking, physical tool alignment and complete collision coverage remain unverified. CAD assembly posture is not asserted as controller zero.
+source:
+  manufacturer: Huayan Robotics
+  requested_model: S50-2000
+  product_page: https://www.huayan-robotics.com/s
+  download_listing: https://www.huayan-robotics.com/service/download/3dmoxing?pagenum=3
+  download_item_id: 2621
+  advertised_format: ZIP containing STEP
+  advertised_size_mb: 4.94
+  ros_reference: https://github.com/huayan-robotics/elfin_s_robot
+  accessed_date: '2026-11-10'
+  model_file_sha256: 7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3
+  model_license_or_usage_terms: User-supplied CAD for this project; no explicit CAD redistribution license obtained. ROS repository license is not applied to CAD.
+  model_source: ../../assets/robots/huayan_s50_2000/sources.json
+  cad_measurements: ../../assets/robots/huayan_s50_2000/derived/interface_measurements.json
+  specifications_scope: S50 scalar specifications and measured real CAD geometry; controller coordinates and collision coverage not qualified.

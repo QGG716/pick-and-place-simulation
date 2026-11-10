@@ -1,0 +1,87 @@
+{
+  "schema": "s50_lossless_mesh_transport_v1",
+  "cad_audit_path": "assets/robots/huayan_s50_2000/derived/cad_audit.json",
+  "cad_audit_sha256": "a813a655fefec84bf3824c1463747c20fc1de6fde1ac1671b94f0a1c21066931",
+  "compression": "gzip",
+  "compression_level": 9,
+  "header_mtime": 0,
+  "header_filename": "",
+  "meshes": [
+    {
+      "id": "j1_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j1_s50_cad.obj",
+      "raw_sha256": "f6b0ad356b5e26659151c9c14324428636dfc04e4d15d315c7e9b5101da484b0",
+      "raw_bytes": 13135037,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j1_s50_cad.obj.gz",
+      "gzip_sha256": "b4d3c46ef202c246f2216a4209273b806e3d3a0abae0a10acc7ab02f249438a3",
+      "gzip_bytes": 3646219,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "base_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/base_s50_cad.obj",
+      "raw_sha256": "4c7f384580f40a677d7e0a72ec188f018205f234e1b4f24154a3e31b1ed3d431",
+      "raw_bytes": 3425682,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/base_s50_cad.obj.gz",
+      "gzip_sha256": "618f0686580b5ed4441d83438c19079934847b239b3f6770ac399a4fff1d3501",
+      "gzip_bytes": 867435,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "j2_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j2_s50_cad.obj",
+      "raw_sha256": "282990bf6264fb5bcd8b6bcad50d96c70494e8190d5ac75f9d094b31a7a3b50a",
+      "raw_bytes": 10824499,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j2_s50_cad.obj.gz",
+      "gzip_sha256": "c92b8578f86f90122209e1abc5314203b5fb03aadd2a012b48fe1626aad6112f",
+      "gzip_bytes": 3017068,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "j3_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j3_s50_cad.obj",
+      "raw_sha256": "c05cc8b52b1ba936bd48ed100867afd73bb96b0ba12d0c3e472d34daeacfb893",
+      "raw_bytes": 13178010,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j3_s50_cad.obj.gz",
+      "gzip_sha256": "288aec9c6ad646e7ca55caa50b7bfac1daf5d74dd2dbd05cbd1f7231dd9c1c50",
+      "gzip_bytes": 3610739,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "j5_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j5_s50_cad.obj",
+      "raw_sha256": "54db4f1c20b650527a3a8831b5655adc6a12f0b883a6d6a71b7ca90ebfa3a3b1",
+      "raw_bytes": 4609035,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j5_s50_cad.obj.gz",
+      "gzip_sha256": "ea8c011660bf18b0bbc6fbf62e61eda42ad8907e7329600f33e41fd20c65622b",
+      "gzip_bytes": 1292871,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "j4_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j4_s50_cad.obj",
+      "raw_sha256": "c2d565e5dacc1c5bead1d45d62173d68c5f901adcee1356d201e258664262b47",
+      "raw_bytes": 4593747,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j4_s50_cad.obj.gz",
+      "gzip_sha256": "1bd44451920a7a6e6d3d04653baca8be8343b6e53c694f76a415061e2d6ae3bd",
+      "gzip_bytes": 1288992,
+      "decompressed_matches_raw": true
+    },
+    {
+      "id": "j6_s50",
+      "raw_path": "assets/robots/huayan_s50_2000/derived/j6_s50_cad.obj",
+      "raw_sha256": "d07c9bea79c732bd50d20647aee541ff363c5fa585fa12ce2f8784cee7e67ec9",
+      "raw_bytes": 938945,
+      "gzip_path": "assets/robots/huayan_s50_2000/derived/j6_s50_cad.obj.gz",
+      "gzip_sha256": "225de755daf3fad6bbc1cd89fd6882b2ac852307f3e38f2fa63ed042580027ee",
+      "gzip_bytes": 210691,
+      "decompressed_matches_raw": true
+    }
+  ],
+  "total_raw_bytes": 50704955,
+  "total_gzip_bytes": 13934015,
+  "maximum_gzip_bytes": 3646219,
+  "all_round_trips_exact": true,
+  "original_obj_files_removed": false,
+  "publication": "Git tracks *.obj.gz; raw *.obj paths/hashes stay unchanged in cad_audit.json."
+}

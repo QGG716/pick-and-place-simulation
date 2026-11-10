@@ -20,3 +20,10 @@ tmp/
 .test-tmp/
 .pytest-tmp-*/
 .vscode/
+
+# S50 complete assets remain local pending explicit publication authorization.
+assets/robots/huayan_s50_2000/derived/*_cad.obj
+assets/robots/huayan_s50_2000/derived/*_cad.obj.gz
+assets/robots/huayan_s50_2000/source/S50.STEP
+assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf
+docs/experiments/s50_model_integration_20261110/viewer.html

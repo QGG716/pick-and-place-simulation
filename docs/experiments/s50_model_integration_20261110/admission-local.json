@@ -1,0 +1,204 @@
+{
+  "schema": "s50_model_integration_admission_v1",
+  "baseline_commit": "a3f08cc2283138e5905b4cc9829cefd7b4aac6b7",
+  "status": "MODEL_NOT_READY",
+  "replacement_complete": false,
+  "missing_critical_data": [
+    "collision.owned_tool_exempt_robot_links",
+    "collision.per_link_visual_collision_sources",
+    "collision.reviewed_self_collision_pairs",
+    "joint_velocity_version_conflict.verified_resolution_source",
+    "kinematics.active_joint_names",
+    "kinematics.axes_zero_offsets_signs_source",
+    "kinematics.base_link",
+    "kinematics.flange_link",
+    "kinematics.mounting_from_base",
+    "kinematics.srdf_path",
+    "kinematics.tip_link",
+    "kinematics.urdf_path",
+    "kinematics.zero_pose_reference",
+    "tool_interface.flange_from_project_tool_mount",
+    "tool_interface.mounting_geometry_source"
+  ],
+  "config_sha256": "49c44067459fb38ae76eca135aaf57e03342cacf0fc56f9ec61c93a422bc6035",
+  "model_binding": null,
+  "cad": {
+    "path": "assets/robots/huayan_s50_2000/source/S50.STEP",
+    "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+    "source_hash_verified": true,
+    "official_download_hash_equivalence_verified": false
+  },
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "after_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "parameters": {
+    "gap_m": 0.7000000000000003,
+    "mounting_surface_height_m": 0.9,
+    "world_from_physical_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mount_axis_to_chassis_front_m": 0.44999999999999996,
+    "minimum_belt_height_m": 0.55,
+    "maximum_belt_height_m": 1.5,
+    "initial_belt_height_m": 0.6,
+    "tool_extension_m": 0.2
+  },
+  "environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+  "full_scene_fingerprint": null,
+  "initial_carton_ids": [
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l05_c00",
+    "carton_l05_c01",
+    "carton_l05_c02",
+    "carton_l05_c03",
+    "carton_l05_c04",
+    "carton_l06_c00",
+    "carton_l06_c01",
+    "carton_l06_c02",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "initial_q_rad": null,
+  "requested_contact_pose_world": [
+    [
+      -0.0,
+      0.0,
+      1.0,
+      -0.2
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      0.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0,
+      1.5
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "initial_ik": {
+    "status": "NOT_RUN",
+    "search_attempts": 0,
+    "reason": "MODEL_NOT_READY"
+  },
+  "initial_mesh_collision": {
+    "status": "NOT_RUN"
+  },
+  "native_single_carton": {
+    "status": "NOT_RUN",
+    "target": "carton_l07_c02",
+    "start_carton_count": 40,
+    "planning_attempts": 0,
+    "global_unreachable": false,
+    "reason": "MODEL_NOT_READY"
+  },
+  "native_worker_launched": false,
+  "dynamics": {
+    "status": "NOT_RUN",
+    "missing_data": [
+      "link_inertials",
+      "joint_effort_limits_nm",
+      "joint_acceleration_limits_rad_s2"
+    ],
+    "missing_dynamic_data_blocks_geometric_search": false
+  },
+  "payload": {
+    "rated_robot_payload_kg": 50.0,
+    "tool_mass_kg": 20.0,
+    "carton_mass_kg": 42.5,
+    "combined_mass_kg": 62.5,
+    "nominal_mass_exceeds_rating": true,
+    "qualification": "NOT_QUALIFIED",
+    "blocks_geometric_search": false
+  },
+  "measured_capability": {
+    "robot_belt_minimum_gap_m": null,
+    "elbow_envelope_m": null,
+    "wrist_envelope_m": null,
+    "target_reachable": null,
+    "reason": "NO_QUALIFIED_S50_MOTION_MODEL"
+  }
+}

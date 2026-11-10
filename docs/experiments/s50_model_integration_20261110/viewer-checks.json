@@ -1,0 +1,54 @@
+{
+  "model_status": "MODEL_NOT_READY",
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "after_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "cad_source_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "audit_sha256": "a813a655fefec84bf3824c1463747c20fc1de6fde1ac1671b94f0a1c21066931",
+  "cad_triangles": 1312676,
+  "cad_parts": 7,
+  "joint_controls_enabled": false,
+  "trajectory_status": "NOT_RUN",
+  "display_contract": {
+    "cad_and_environment_views_separate": true,
+    "cad_is_not_planning_initial_state": true,
+    "tool_target_is_not_accepted_initial_state": true,
+    "no_fanuc_joint_values_reused": true,
+    "physical_execution": "NOT_RUN",
+    "collision_qualification": "NOT_EVALUATED"
+  },
+  "offline_payload": {
+    "format": "gzip_base64_json_utf8",
+    "gzip_mtime": 0,
+    "uncompressed_sha256": "d4c678f1ad66fadf11dcd5379f77db4bf6dfb68a988e765fea9ba05f57d47b0f",
+    "uncompressed_bytes": 31752879,
+    "lossless": true,
+    "required_browser_capabilities": [
+      "DecompressionStream(gzip)",
+      "Blob.stream",
+      "Response.text",
+      "WebGL"
+    ],
+    "unsupported_browser_behavior": "VISIBLE_LOAD_ERROR_NO_MODEL_OR_TRAJECTORY"
+  }
+}

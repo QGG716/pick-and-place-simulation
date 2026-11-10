@@ -1,0 +1,96 @@
+{
+  "schema": "s50_source_bundle_validation_v1",
+  "status": "SOURCE_AUDIT_PASSED_ARTICULATED_MODEL_NOT_READY",
+  "original_file_hashes": [
+    {
+      "name": "S50.STEP",
+      "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+      "passed": true
+    },
+    {
+      "name": "S-series-mechanical.pdf",
+      "sha256": "2122d5d29d2e8e33c04f36183caa820d2f80e6a93ca03f8d229f0a8fdf69cd02",
+      "passed": true
+    }
+  ],
+  "mesh_hashes": [
+    {
+      "id": "j1_s50",
+      "sha256_matches": true,
+      "bytes": 13135037,
+      "vertices": 168030,
+      "triangles": 335737
+    },
+    {
+      "id": "base_s50",
+      "sha256_matches": true,
+      "bytes": 3425682,
+      "vertices": 46063,
+      "triangles": 92180
+    },
+    {
+      "id": "j2_s50",
+      "sha256_matches": true,
+      "bytes": 10824499,
+      "vertices": 139401,
+      "triangles": 278573
+    },
+    {
+      "id": "j3_s50",
+      "sha256_matches": true,
+      "bytes": 13178010,
+      "vertices": 167913,
+      "triangles": 335732
+    },
+    {
+      "id": "j5_s50",
+      "sha256_matches": true,
+      "bytes": 4609035,
+      "vertices": 61128,
+      "triangles": 122252
+    },
+    {
+      "id": "j4_s50",
+      "sha256_matches": true,
+      "bytes": 4593747,
+      "vertices": 60959,
+      "triangles": 121916
+    },
+    {
+      "id": "j6_s50",
+      "sha256_matches": true,
+      "bytes": 938945,
+      "vertices": 13146,
+      "triangles": 26286
+    }
+  ],
+  "body_count": 7,
+  "solid_count": 15,
+  "dimension_checks_passed": 13,
+  "dimension_checks_total": 13,
+  "python_compile": "PASS (audit_step.py, measure_interfaces.py, crosscheck_manual.py, pack_meshes.py)",
+  "collision_mesh_complete": false,
+  "controller_zero_and_signs_verified": false,
+  "source_asset_bytes": 35715104,
+  "file_count": 20,
+  "articulated_fk_or_planning_run": false,
+  "source_asset_bytes_before_mesh_compression": 72476427,
+  "mesh_transport": {
+    "compression": "gzip",
+    "compression_level": 9,
+    "header_mtime": 0,
+    "header_filename": "",
+    "cad_audit_sha256": "a813a655fefec84bf3824c1463747c20fc1de6fde1ac1671b94f0a1c21066931",
+    "total_raw_bytes": 50704955,
+    "total_gzip_bytes": 13934015,
+    "maximum_gzip_bytes": 3646219,
+    "all_round_trips_exact": true,
+    "original_obj_files_removed": false,
+    "manifest": "assets/robots/huayan_s50_2000/derived/compressed_meshes.json",
+    "manifest_sha256": "79f64155813329744395c589f3a4db89d8e3ceab47636cd2b0ca1f72935c325b",
+    "all_gzip_files_under_4_MB": true,
+    "unpack_existing_identical_files": "PASS",
+    "cad_audit_unchanged": true
+  },
+  "source_asset_byte_count_semantics": "Repository transport files: excludes local raw OBJ copies, includes gzip meshes and scripts."
+}

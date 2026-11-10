@@ -1,0 +1,53 @@
+{
+  "schema": "s50_packaging_server_validation_v1",
+  "status": "PASS",
+  "scope": "LOSSLESS_VIEWER_SERIALIZATION_AND_OBJ_GZIP_STORAGE_NO_MODEL_OR_SCENE_CHANGE",
+  "workspace": "/work-s50-integration-20261110-v1",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "65",
+    "time": "10.728",
+    "timestamp": "2026-11-10T18:44:55.252818+08:00",
+    "hostname": "autodl-container-06474b8321-4591acde"
+  },
+  "junit_sha256": "6c832e25a3744c422ccfc69853d55349f47f58e309e6218a8668389a69ecfc63",
+  "junit_server_path": "/work-s50-integration-20261110-v1/outputs/s50_model_integration/server-tests-compressed.xml",
+  "patch_manifest": {
+    "schema": "s50_compressed_viewer_patch_v1",
+    "baseline_commit": "4464b04ec406b2b71c5c35f14973d92a6ac3520f",
+    "files": [
+      {
+        "path": "tools/export_s50_model_viewer.py",
+        "bytes": 9469,
+        "sha256": "932fd31ae67c03695c5c77d60a7632b464d631aaea1912665ef990106ab02e07"
+      },
+      {
+        "path": "tools/s50_model_viewer.html",
+        "bytes": 19452,
+        "sha256": "ddb3c5e42c97ad88c8d2c1d1fbd7f010e121023464321ac8e01e329a4a288536"
+      },
+      {
+        "path": "tests/test_s50_model_viewer.py",
+        "bytes": 7263,
+        "sha256": "4782df19e7916f2eae42af6eca44b8532a11bc0a0f61801885916906b93b24a2"
+      }
+    ],
+    "archive": {
+      "path": "outputs/s50_model_integration/compressed-viewer-patch.tar.gz",
+      "bytes": 13417,
+      "sha256": "5139174ca2ed5d053b67248eddb5f312237df58f0c6bf4b5075dab93596709bd"
+    },
+    "includes_generated_html": false,
+    "server_retest_status": "PENDING"
+  },
+  "patch_archive_sha256": "5139174ca2ed5d053b67248eddb5f312237df58f0c6bf4b5075dab93596709bd",
+  "server_patch_archive_hash_verified": true,
+  "server_three_source_file_hashes_match_local_manifest": true,
+  "fanuc_pid_5155_running_at_post_test_check": true,
+  "s50_native_worker_started": false,
+  "s50_model_status": "MODEL_NOT_READY",
+  "browser_visual_validation": "NOT_PASSED_OR_CLAIMED"
+}

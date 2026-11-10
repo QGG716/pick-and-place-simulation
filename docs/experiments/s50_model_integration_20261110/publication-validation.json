@@ -1,0 +1,35 @@
+{
+  "schema": "s50_code_report_publication_validation_v1",
+  "assets_in_public_tree": false,
+  "excluded_assets": [
+    "source/S50.STEP",
+    "source/S-series-mechanical.pdf",
+    "seven derived OBJ.gz meshes",
+    "generated viewer.html"
+  ],
+  "checkout_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "1",
+    "tests": "66",
+    "time": "5.889",
+    "timestamp": "2026-11-10T19:01:29.363229+08:00",
+    "hostname": "Leo"
+  },
+  "checkout_junit_sha256": "2b911f08327d3a486dd9d111d35f1ac83ec6ace2e1680d75ee71aa0cbffed883",
+  "asset_present_changed_module_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "5",
+    "time": "1.151",
+    "timestamp": "2026-11-10T19:00:23.012443+08:00",
+    "hostname": "Leo"
+  },
+  "skip_reason": "One test requires the real local STEP; missing-asset admission has its own passing regression",
+  "setup_failure_retained": "publication-checkout-tests-setup-first.xml: temporary outputs parent initially absent, fixed before final test",
+  "runtime_code_changed_since_server_65_pass": false,
+  "s50_motion_model_status": "MODEL_NOT_READY"
+}

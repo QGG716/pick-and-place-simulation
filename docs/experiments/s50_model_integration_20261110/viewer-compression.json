@@ -1,0 +1,180 @@
+{
+  "schema": "s50_viewer_compression_validation_v1",
+  "validated_at_utc": "2026-11-10T10:43:16.916797+00:00",
+  "compared_to_commit": "4464b04ec406b2b71c5c35f14973d92a6ac3520f",
+  "compared_to_path": "docs/experiments/s50_model_integration_20261110/viewer.html",
+  "byte_comparison": {
+    "status": "PASS",
+    "decoded_payload_equals_original_json_bytes": true,
+    "comparison": "Full byte equality after gzip decompression; no parsed-only or rounded comparison."
+  },
+  "original_html": {
+    "bytes": 32403507,
+    "sha256": "388a0908f4b6f88a7a7bbfde8e4d0bcc7883fab11d222704d6f8f0c5bfa752c2"
+  },
+  "original_json": {
+    "bytes": 31752879,
+    "sha256": "d4c678f1ad66fadf11dcd5379f77db4bf6dfb68a988e765fea9ba05f57d47b0f"
+  },
+  "current_html": {
+    "bytes": 18077694,
+    "sha256": "af200a26312051b440277c0756d067f41f77abcd7daa787c7189f31b23c8fced"
+  },
+  "gzip_payload": {
+    "bytes": 13069657,
+    "sha256": "5f2278c5e31a8e918601a0a8ebdaa99384133a16b591071d0794de9fa4680a5d"
+  },
+  "base64_payload": {
+    "bytes": 17426212,
+    "sha256": "d5fa250c53afd296022b11feeff89e6529f3acb0d95e26a151d168d47317796e"
+  },
+  "decoded_json": {
+    "bytes": 31752879,
+    "sha256": "d4c678f1ad66fadf11dcd5379f77db4bf6dfb68a988e765fea9ba05f57d47b0f"
+  },
+  "gzip_mtime": 0,
+  "html_bytes_reduction": 14325813,
+  "html_fraction_reduced": 0.4421068682473166,
+  "retained_content": {
+    "cad_parts": 7,
+    "cad_triangles": 1312676,
+    "initial_cartons": 40,
+    "model_status": "MODEL_NOT_READY",
+    "joint_controls_enabled": false,
+    "trajectory_status": "NOT_RUN",
+    "full_scene_fingerprint": null
+  },
+  "gzip_only_checkout": {
+    "status": "PASS",
+    "raw_obj_files_in_test_checkout": 0,
+    "gzip_meshes": 7,
+    "full_cad_payload_byte_equal": true,
+    "payload": {
+      "bytes": 31514643,
+      "sha256": "3665a74168acd64fc9effba5a34d75223b35ea1d8573e7a35ee1013ae838fcb2"
+    },
+    "triangle_count": 1312676,
+    "cad_audit_sha256": "a813a655fefec84bf3824c1463747c20fc1de6fde1ac1671b94f0a1c21066931",
+    "compressed_assets": [
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j1_s50_cad.obj.gz",
+        "bytes": 3646219,
+        "sha256": "b4d3c46ef202c246f2216a4209273b806e3d3a0abae0a10acc7ab02f249438a3"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/base_s50_cad.obj.gz",
+        "bytes": 867435,
+        "sha256": "618f0686580b5ed4441d83438c19079934847b239b3f6770ac399a4fff1d3501"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j2_s50_cad.obj.gz",
+        "bytes": 3017068,
+        "sha256": "c92b8578f86f90122209e1abc5314203b5fb03aadd2a012b48fe1626aad6112f"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j3_s50_cad.obj.gz",
+        "bytes": 3610739,
+        "sha256": "288aec9c6ad646e7ca55caa50b7bfac1daf5d74dd2dbd05cbd1f7231dd9c1c50"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j5_s50_cad.obj.gz",
+        "bytes": 1292871,
+        "sha256": "ea8c011660bf18b0bbc6fbf62e61eda42ad8907e7329600f33e41fd20c65622b"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j4_s50_cad.obj.gz",
+        "bytes": 1288992,
+        "sha256": "1bd44451920a7a6e6d3d04653baca8be8343b6e53c694f76a415061e2d6ae3bd"
+      },
+      {
+        "path": "assets/robots/huayan_s50_2000/derived/j6_s50_cad.obj.gz",
+        "bytes": 210691,
+        "sha256": "225de755daf3fad6bbc1cd89fd6882b2ac852307f3e38f2fa63ed042580027ee"
+      }
+    ],
+    "display_mesh_paths_unchanged": true,
+    "validation": "Actual seven source-derived meshes exported from a fresh root containing only .obj.gz and original audit."
+  },
+  "focused_viewer_tests": {
+    "status": "PASS",
+    "count": 11,
+    "cases": [
+      "test_cad_assembly_vertices_never_reapply_instance_placement",
+      "test_gzip_only_checkout_exports_identical_cad_payload",
+      "test_gzip_fallback_rejects_corruption_and_wrong_content[invalid_gzip-GZIP_INVALID]",
+      "test_gzip_fallback_rejects_corruption_and_wrong_content[wrong_decompressed_hash-SHA256_MISMATCH]",
+      "test_corrupt_cad_manifest_fails_closed[hash-SHA256]",
+      "test_corrupt_cad_manifest_fails_closed[count-COUNT]",
+      "test_corrupt_cad_manifest_fails_closed[bounds-BOUNDS]",
+      "test_invalid_mesh_index_is_not_drawn",
+      "test_cad_defects_are_preserved_in_viewer_metadata",
+      "test_actual_frozen_reference_does_not_claim_robot_fk",
+      "test_single_file_output_uses_offline_vendor_and_nonexecutable_compressed_data"
+    ],
+    "evidence_junit": "outputs/s50_model_integration/compressed-final-local-tests.xml"
+  },
+  "six_module_regression": {
+    "status": "PASS",
+    "platform": "Windows local",
+    "count": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_timestamp": "2026-11-10T18:41:47.413809+08:00",
+    "suite_time_s": 6.226,
+    "evidence_junit": "outputs/s50_model_integration/compressed-final-local-tests.xml",
+    "junit_sha256": "f2969e16f20ef0f0a7306bbc2262666291e3c13a6fb6ec472ba9e61e30ad69ad",
+    "modules": [
+      "test_robot_model_binding",
+      "test_robot_replacement_layout",
+      "test_s50_integration_admission",
+      "test_s50_model_viewer",
+      "test_moveit2_tcp",
+      "test_contact_simulation_policy"
+    ]
+  },
+  "server_after_compression": {
+    "status": "PASS",
+    "platform": "GPU server Linux",
+    "passed": 65,
+    "pytest_reported_duration_s": 10.73,
+    "tests_exit_code": 0,
+    "patch_archive_sha256": "5139174ca2ed5d053b67248eddb5f312237df58f0c6bf4b5075dab93596709bd",
+    "patch_archive_sha256_verified": true,
+    "evidence_basis": "Observed server pytest output: 65 passed in 10.73s; TESTS_EXIT=0; patch SHA verification OK.",
+    "junit_evidence_status": "DOWNLOADED_SMALL_XML_AND_VERIFIED",
+    "junit_sha256": "6c832e25a3744c422ccfc69853d55349f47f58e309e6218a8668389a69ecfc63",
+    "junit_summary": "server-packaging-summary.json",
+    "source_patch_hashes_checked_on_server": true
+  },
+  "browser_visual_recheck": "NOT_PASSED_OR_CLAIMED",
+  "patch": {
+    "schema": "s50_compressed_viewer_patch_v1",
+    "baseline_commit": "4464b04ec406b2b71c5c35f14973d92a6ac3520f",
+    "files": [
+      {
+        "path": "tools/export_s50_model_viewer.py",
+        "bytes": 9469,
+        "sha256": "932fd31ae67c03695c5c77d60a7632b464d631aaea1912665ef990106ab02e07"
+      },
+      {
+        "path": "tools/s50_model_viewer.html",
+        "bytes": 19452,
+        "sha256": "ddb3c5e42c97ad88c8d2c1d1fbd7f010e121023464321ac8e01e329a4a288536"
+      },
+      {
+        "path": "tests/test_s50_model_viewer.py",
+        "bytes": 7263,
+        "sha256": "4782df19e7916f2eae42af6eca44b8532a11bc0a0f61801885916906b93b24a2"
+      }
+    ],
+    "archive": {
+      "path": "outputs/s50_model_integration/compressed-viewer-patch.tar.gz",
+      "bytes": 13417,
+      "sha256": "5139174ca2ed5d053b67248eddb5f312237df58f0c6bf4b5075dab93596709bd"
+    },
+    "includes_generated_html": false,
+    "server_retest_status": "PASS_65_TESTS_EXIT_0"
+  },
+  "scope": "LOSSLESS_VIEWER_SERIALIZATION_AND_OBJ_GZIP_STORAGE_NO_MODEL_OR_SCENE_CHANGE"
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "s50_cad_shape_fix_attempt_v1",
+  "source_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "method": "OCCT ShapeFix_Shape.Perform",
+  "outcome": "NO_IMPROVEMENT",
+  "reader": "OCP 7.9.3.1",
+  "parts": [
+    {
+      "id": "j1_s50",
+      "source_topology_valid": false,
+      "shape_fix_requested": true,
+      "shape_fix_performed": true,
+      "topology_valid": false,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [
+        {
+          "face_index": 74,
+          "area_m2": -1.2925292930544856e-06,
+          "surface_centroid_m": [
+            0.1268872099506426,
+            0.34630067456388486,
+            -2.9324589242826986e-05
+          ],
+          "surface_type": "GeomAbs_SurfaceType.GeomAbs_Plane"
+        }
+      ],
+      "mesh_complete": false,
+      "mesh_sha256": "f6b0ad356b5e26659151c9c14324428636dfc04e4d15d315c7e9b5101da484b0",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "base_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": false,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [],
+      "mesh_complete": true,
+      "mesh_sha256": "4c7f384580f40a677d7e0a72ec188f018205f234e1b4f24154a3e31b1ed3d431",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "j2_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": true,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [
+        {
+          "face_index": 75,
+          "area_m2": -1.292529293053576e-06,
+          "surface_centroid_m": [
+            -0.400500674563886,
+            0.15341279004936167,
+            2.913849064340702e-05
+          ],
+          "surface_type": "GeomAbs_SurfaceType.GeomAbs_Plane"
+        }
+      ],
+      "mesh_complete": false,
+      "mesh_sha256": "282990bf6264fb5bcd8b6bcad50d96c70494e8190d5ac75f9d094b31a7a3b50a",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "j3_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": false,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [],
+      "mesh_complete": true,
+      "mesh_sha256": "c05cc8b52b1ba936bd48ed100867afd73bb96b0ba12d0c3e472d34daeacfb893",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "j5_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": true,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [],
+      "mesh_complete": true,
+      "mesh_sha256": "54db4f1c20b650527a3a8831b5655adc6a12f0b883a6d6a71b7ca90ebfa3a3b1",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "j4_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": true,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [],
+      "mesh_complete": true,
+      "mesh_sha256": "c2d565e5dacc1c5bead1d45d62173d68c5f901adcee1356d201e258664262b47",
+      "mesh_identical_to_unmodified_export": true
+    },
+    {
+      "id": "j6_s50",
+      "source_topology_valid": true,
+      "shape_fix_requested": true,
+      "shape_fix_performed": true,
+      "topology_valid": true,
+      "geometry_bounds_change_max_m": 0.0,
+      "missing_tessellation_faces": [],
+      "mesh_complete": true,
+      "mesh_sha256": "d07c9bea79c732bd50d20647aee541ff363c5fa585fa12ce2f8784cee7e67ec9",
+      "mesh_identical_to_unmodified_export": true
+    }
+  ]
+}

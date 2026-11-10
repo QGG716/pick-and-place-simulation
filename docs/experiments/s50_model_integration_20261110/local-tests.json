@@ -1,0 +1,13 @@
+{
+  "schema": "s50_local_focused_tests_v1",
+  "tests": {
+    "tests": "62",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "5.497"
+  },
+  "junit_sha256": "f0fb2edcd49019805269f6214b350e4a43322c2bef50b544e29ff0db3f1034b1",
+  "scope": "interfaces_layout_viewer_export_fanuc_regression_not_s50_motion",
+  "browser_visual_review": "BLOCKED_BROWSER_HOST_UNAVAILABLE_AND_MINIMIZED_WINDOW"
+}
