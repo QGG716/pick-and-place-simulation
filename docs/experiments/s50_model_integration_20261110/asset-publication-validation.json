@@ -1,0 +1,87 @@
+{
+  "schema": "s50_authorized_asset_publication_v1",
+  "user_authorization": "允许发布这些模型资产及手册",
+  "scope": "S50 STEP, official mechanical manual, seven derived gzip meshes, embedded-mesh offline viewer",
+  "manufacturer_redistribution_license_obtained": false,
+  "previous_public_commit": "cff77cebcad2bd6566e7f0d5897f454de8738e04",
+  "files": [
+    {
+      "path": "assets/robots/huayan_s50_2000/source/S50.STEP",
+      "bytes": 17798145,
+      "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf",
+      "bytes": 3245292,
+      "sha256": "2122d5d29d2e8e33c04f36183caa820d2f80e6a93ca03f8d229f0a8fdf69cd02",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j1_s50_cad.obj.gz",
+      "bytes": 3646219,
+      "sha256": "b4d3c46ef202c246f2216a4209273b806e3d3a0abae0a10acc7ab02f249438a3",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/base_s50_cad.obj.gz",
+      "bytes": 867435,
+      "sha256": "618f0686580b5ed4441d83438c19079934847b239b3f6770ac399a4fff1d3501",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j2_s50_cad.obj.gz",
+      "bytes": 3017068,
+      "sha256": "c92b8578f86f90122209e1abc5314203b5fb03aadd2a012b48fe1626aad6112f",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j3_s50_cad.obj.gz",
+      "bytes": 3610739,
+      "sha256": "288aec9c6ad646e7ca55caa50b7bfac1daf5d74dd2dbd05cbd1f7231dd9c1c50",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j5_s50_cad.obj.gz",
+      "bytes": 1292871,
+      "sha256": "ea8c011660bf18b0bbc6fbf62e61eda42ad8907e7329600f33e41fd20c65622b",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j4_s50_cad.obj.gz",
+      "bytes": 1288992,
+      "sha256": "1bd44451920a7a6e6d3d04653baca8be8343b6e53c694f76a415061e2d6ae3bd",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/j6_s50_cad.obj.gz",
+      "bytes": 210691,
+      "sha256": "225de755daf3fad6bbc1cd89fd6882b2ac852307f3e38f2fa63ed042580027ee",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    },
+    {
+      "path": "docs/experiments/s50_model_integration_20261110/viewer.html",
+      "bytes": 18077694,
+      "sha256": "af200a26312051b440277c0756d067f41f77abcd7daa787c7189f31b23c8fced",
+      "byte_identical_to_audited_local_commit": "73c65931fb9ff82fb7cc928f36029573dcd91564"
+    }
+  ],
+  "all_asset_hashes_match_previous_audited_files": true,
+  "seven_gzip_meshes_exactly_restore_original_obj_hashes": true,
+  "local_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "66",
+    "time": "5.562",
+    "timestamp": "2026-11-10T19:45:48.133209+08:00",
+    "hostname": "Leo"
+  },
+  "junit_sha256": "2ae3fc294fb4fa8f46e7522900ecac183339e4b7ca90d73d945edf2e3908c466",
+  "runtime_code_changed_since_server_65_pass": false,
+  "historical_asset_free_checkout_tests": "publication-validation.json",
+  "model_status": "MODEL_NOT_READY",
+  "s50_initial_ik_collision_and_native_planning": "NOT_RUN",
+  "browser_visual_validation": "NOT_PASSED_OR_CLAIMED"
+}

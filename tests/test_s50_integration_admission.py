@@ -17,7 +17,7 @@ spec.loader.exec_module(admission)
 
 @pytest.mark.skipif(
     not (ROOT / 'assets/robots/huayan_s50_2000/source/S50.STEP').is_file(),
-    reason='User-supplied CAD is retained locally pending asset publication authorization',
+    reason='Requires the real S50 STEP asset; missing assets have a separate fail-closed regression',
 )
 def test_supplied_cad_is_not_a_qualified_motion_model():
     report = admission.audit(ROOT / "configs/robots/huayan_s50_2000.yaml")
