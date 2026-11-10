@@ -1,0 +1,167 @@
+{
+  "status": "PASS_STATIC_VIEWER_40_IDENTITIES_TWO_POSES_AND_FK",
+  "states": [
+    {
+      "variant": "new",
+      "state": {
+        "time": 0,
+        "phase": "\u65b0\u521d\u6001 \u00b7 \u9759\u6001\u9884\u89c8",
+        "completed_count": 0,
+        "carton_count": 40,
+        "q_rad": [
+          -0.14091348707069612,
+          0.2863282073136233,
+          -0.7662513461329418,
+          0.16187705766371607,
+          1.0582604965219213,
+          3.06167945685074
+        ],
+        "flange_matrix_column_major": [
+          0.999999999211093,
+          1.3670083287779798e-05,
+          3.72953468016357e-05,
+          0,
+          1.3669897640568952e-05,
+          -0.9999999998941768,
+          4.978008839320869e-06,
+          0,
+          3.7295414847424006e-05,
+          -4.977499011807329e-06,
+          -0.9999999992921383,
+          0,
+          -0.6175087612198382,
+          -6.5926224053531815e-06,
+          1.499979612256057,
+          1
+        ],
+        "height_m": 0.6000000000000001,
+        "attached": false,
+        "nominal_count": 0,
+        "drain_count": 0,
+        "physical_count": 0,
+        "target": null,
+        "target_pose": null,
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": false,
+        "physical_execution": "NOT_RUN",
+        "pose_variant": "new",
+        "execution_ready": false
+      },
+      "fk_error": 1.1102230246251565e-16
+    },
+    {
+      "variant": "old",
+      "state": {
+        "time": 0,
+        "phase": "\u8c03\u6574\u524d \u00b7 \u9759\u6001\u5bf9\u7167",
+        "completed_count": 0,
+        "carton_count": 40,
+        "q_rad": [
+          -0.2243312003631651,
+          -0.6369722056788532,
+          -0.7362841462999454,
+          4.302732534226782,
+          -0.24499468838845673,
+          5.133243797266537
+        ],
+        "flange_matrix_column_major": [
+          0.9999999979565075,
+          2.82715042318471e-05,
+          -5.7338528788253296e-05,
+          0,
+          2.827122237190738e-05,
+          -0.9999999995882828,
+          -4.916520458753126e-06,
+          0,
+          -5.733866776204922e-05,
+          4.914899418395624e-06,
+          -0.9999999983440604,
+          0,
+          -1.0175058920456275,
+          -1.6563988762756388e-05,
+          2.2500325813206286,
+          1
+        ],
+        "height_m": 0.6000000000000001,
+        "attached": false,
+        "nominal_count": 0,
+        "drain_count": 0,
+        "physical_count": 0,
+        "target": null,
+        "target_pose": null,
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": false,
+        "physical_execution": "NOT_RUN",
+        "pose_variant": "old",
+        "execution_ready": false
+      },
+      "fk_error": 4.440892098500626e-16
+    },
+    {
+      "variant": "new",
+      "state": {
+        "time": 0,
+        "phase": "\u65b0\u521d\u6001 \u00b7 \u9759\u6001\u9884\u89c8",
+        "completed_count": 0,
+        "carton_count": 40,
+        "q_rad": [
+          -0.14091348707069612,
+          0.2863282073136233,
+          -0.7662513461329418,
+          0.16187705766371607,
+          1.0582604965219213,
+          3.06167945685074
+        ],
+        "flange_matrix_column_major": [
+          0.999999999211093,
+          1.3670083287779798e-05,
+          3.72953468016357e-05,
+          0,
+          1.3669897640568952e-05,
+          -0.9999999998941768,
+          4.978008839320869e-06,
+          0,
+          3.7295414847424006e-05,
+          -4.977499011807329e-06,
+          -0.9999999992921383,
+          0,
+          -0.6175087612198382,
+          -6.5926224053531815e-06,
+          1.499979612256057,
+          1
+        ],
+        "height_m": 0.6000000000000001,
+        "attached": false,
+        "nominal_count": 0,
+        "drain_count": 0,
+        "physical_count": 0,
+        "target": null,
+        "target_pose": null,
+        "base_delta_m": [
+          0,
+          0,
+          0
+        ],
+        "base_xyz_world_m": null,
+        "continuous": false,
+        "physical_execution": "NOT_RUN",
+        "pose_variant": "new",
+        "execution_ready": false
+      },
+      "fk_error": 1.1102230246251565e-16
+    }
+  ],
+  "javascript_errors": [],
+  "execution_ready": false,
+  "physical_execution": "NOT_RUN"
+}

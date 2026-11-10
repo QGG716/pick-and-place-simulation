@@ -1,0 +1,21 @@
+{
+  "status": "PASS_SAME_PREVIEW_POSE_EXACT_ENDPOINT_VALIDATION",
+  "maximum_q_difference_rad": 1.1102230246251565e-16,
+  "q_deg": [
+    -8.073748085622181,
+    16.405397834617485,
+    -43.90296817963556,
+    9.274872204126789,
+    60.633860076125025,
+    175.42131109945365
+  ],
+  "backend": {
+    "status": "PASS",
+    "backend": "PinocchioHppFclBackend"
+  },
+  "source_manifest_sha256": "2bf67c3fad2161e7598c3913795378d0e5a29b44f66aed1770dc561e59719035",
+  "home_sha256": "a6f03d5256c1d72db740d0bd1409d47679a5c311fcd5545fe8af8b145601e697",
+  "export_source_sha256": "add6bcda031397ead858969d1e9524ccfcac22625150be035e2ab075d3868d93",
+  "physical_execution": "NOT_RUN",
+  "scope": "STATIC_INITIAL_STATE_ONLY"
+}

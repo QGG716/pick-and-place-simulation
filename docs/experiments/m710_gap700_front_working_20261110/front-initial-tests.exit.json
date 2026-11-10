@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "wall_s": 0.714587040245533,
+  "command": "cd /work-gap-20261110-front-v1 && PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /opt/planning-venv/bin/python -m pytest -q tests/test_initial_front_working.py tests/test_front_arm_posture.py",
+  "source_manifest_sha256": "2bf67c3fad2161e7598c3913795378d0e5a29b44f66aed1770dc561e59719035"
+}

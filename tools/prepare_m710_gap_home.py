@@ -35,7 +35,8 @@ def main():
     p.add_argument('--gap',type=float,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--tcp-xyz',nargs=3,type=float)
-    p.add_argument('--home-definition',choices=('pose','stack-facing-upright'),default='pose')
+    p.add_argument('--home-definition',choices=('front-working','pose','stack-facing-upright'),default='front-working')
+    p.add_argument('--preview-only',action='store_true',help='Allow a clearly unaccepted static preview if the exact backend is unavailable')
     p.add_argument('--seed',type=int,default=911109)
     p.add_argument('--draws',type=int,default=64)
     p.add_argument('--front-arm-posture',choices=('none','legacy-soft','upright'),default='none')
@@ -43,6 +44,11 @@ def main():
     args=p.parse_args();started=time.monotonic()
     if args.output.exists():raise ValueError('INITIALIZATION_EVIDENCE_ALREADY_EXISTS')
     if args.draws<=0:raise ValueError('NONPOSITIVE_INITIAL_DRAWS')
+    if args.home_definition=='front-working':
+        from prepare_m710_front_working_home import prepare_front_working_home
+        prepare_front_working_home(args)
+        return
+    if args.preview_only:raise ValueError('PREVIEW_ONLY_IS_FOR_FRONT_WORKING_INITIALIZATION')
     if args.home_definition=='stack-facing-upright' and args.tcp_xyz is not None:
         raise ValueError('UPRIGHT_HOME_DERIVES_TCP_DO_NOT_SPECIFY_POSE')
     layout=frozen_layout(args.gap,args.mount_height)

@@ -1,0 +1,12 @@
+--- a/tools/export_m710_front_working_initial.py
++++ b/tools/export_m710_front_working_initial.py
+@@ -26,7 +26,8 @@
+     old_q=prior['segments'][0]['q'];data['segments'][0].update(q=q,phase='新初态 · 静态预览',source='STATIC_INITIAL_POSE_NOT_A_TRAJECTORY')
+     data.update(initialization=home,seed=home['seed'],source_commit='LOCAL_FRONT_WORKING_INITIAL_20261110',
+         verification=dict(scope='STATIC_INITIAL_STATE_ONLY',initial_geometry_passed=True,
+-            exact_endpoint_validation=home['exact_endpoint_validation'],execution_ready=home['accepted_initial_state']),
++            exact_endpoint_validation=home['exact_endpoint_validation'],
++            initial_state_accepted=home['accepted_initial_state'],execution_ready=False),
+         execution_ready=False,physical_execution='NOT_RUN')
+     fk=robot.named_link_frames(np.asarray(q))['flange'].T.reshape(-1).tolist()
+     old_fk=robot.named_link_frames(np.asarray(old_q))['flange'].T.reshape(-1).tolist()

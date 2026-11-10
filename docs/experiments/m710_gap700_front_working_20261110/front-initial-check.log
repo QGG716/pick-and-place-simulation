@@ -1,0 +1,1 @@
+{"output": "/gap-search-20261110/front-working-home-checked.json", "status": "PASS", "selected_q_deg": [-8.073748085622181, 16.405397834617485, -43.90296817963556, 9.274872204126789, 60.633860076125025, 175.42131109945365], "geometry_candidates": 2, "exact_validation": {"status": "PASS", "backend": "PinocchioHppFclBackend"}, "wall_s": 8.155100800096989}

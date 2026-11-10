@@ -1,0 +1,25 @@
+{
+  "status": "PASS_RUNTIME_SOURCE_WITH_DECLARED_DISPLAY_CORRECTION",
+  "files": 578,
+  "counts": {
+    "EXACT_BYTES": 577,
+    "DOCUMENTED_STATIC_VIEWER_LABEL_CORRECTION": 1
+  },
+  "semantic_changes": [
+    {
+      "path": "tools/export_m710_front_working_initial.py",
+      "runtime_sha256": "450fd11761996e85f6f59daee893f77181e680e8ac626e15d8e8b13370ddc762",
+      "publication_worktree_sha256": "add6bcda031397ead858969d1e9524ccfcac22625150be035e2ab075d3868d93",
+      "status": "DOCUMENTED_STATIC_VIEWER_LABEL_CORRECTION"
+    }
+  ],
+  "description": "Static viewer labels distinguish accepted initial state from execution readiness. Planner, initializer, collision checks and recorded native worker are unchanged.",
+  "runtime_manifest_sha256": "2bf67c3fad2161e7598c3913795378d0e5a29b44f66aed1770dc561e59719035",
+  "changed_code_sha256": {
+    "src/unloading_sim/initial_front_working.py": "b6f6e32e238f394d92d0d2c5a37edcd1c27052157f834a4f89a39ff1551329e0",
+    "tests/test_initial_front_working.py": "9ae7b49048d8d782481cb19d14d199a4261e30411d59d3da358afd9f20730347",
+    "tools/prepare_m710_front_working_home.py": "0b7aa3fd4168f9caf517cc8d8bec2603379f10c971a22ea709ee696d81f9f9a0",
+    "tools/prepare_m710_gap_home.py": "48ea59b1b6cdcf437947c16453e017152d065709051c1caae1dbecdb2b49f0ba",
+    "tools/export_m710_front_working_initial.py": "add6bcda031397ead858969d1e9524ccfcac22625150be035e2ab075d3868d93"
+  }
+}

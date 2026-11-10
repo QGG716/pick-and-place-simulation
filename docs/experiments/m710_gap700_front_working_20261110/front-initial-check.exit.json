@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "wall_s": 8.654232636094093,
+  "command": "cd /work-gap-20261110-front-v1 && PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /opt/planning-venv/bin/python tools/prepare_m710_gap_home.py --gap .7 --mount-height .9 --home-definition front-working --front-arm-posture none --seed 71110 --draws 64 --output /gap-search-20261110/front-working-home-checked.json",
+  "source_manifest_sha256": "2bf67c3fad2161e7598c3913795378d0e5a29b44f66aed1770dc561e59719035"
+}

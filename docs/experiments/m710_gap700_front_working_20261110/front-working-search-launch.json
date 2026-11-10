@@ -1,0 +1,58 @@
+{
+  "command": [
+    "chroot",
+    "/root/m710-gap-search-20261107/rootfs",
+    "/bin/bash",
+    "-c",
+    "cd /work-gap-20261110-front-v1 && export PYTHONPATH=src:tools:tests OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 && exec /opt/planning-venv/bin/python tools/plan_m710_gap_search.py --output /gap-search-20261110/g0700-front-working --worker-command /gap-worker-nov09-v2.sh --worker-binary /gap-search-build-v2/m710_moveit_worker --source-manifest /gap-search-20261110/front-initial-manifest-v1.json --gaps .7 --mount-height .9 --external-support-mode record-unknown --max-trials 120 --trial-seconds 600 --prefix-seconds 360 --stage-seconds 360 --connection-seconds 30 --ompl-seconds 20 --max-rounds 3 --seed 71109 --stop-file /gap-search-20261110/STOP-g0700-front-working --initial-orientation stack-facing --front-arm-posture none --initial-q-rad -0.14091348707069612 0.2863282073136233 -0.7662513461329418 0.16187705766371607 1.0582604965219213 3.06167945685074"
+  ],
+  "pid": 5155,
+  "supervisor_pid": 5154,
+  "started_unix": 1794281454.1282918,
+  "source_manifest_sha256": "2bf67c3fad2161e7598c3913795378d0e5a29b44f66aed1770dc561e59719035",
+  "initial_home_sha256": "a6f03d5256c1d72db740d0bd1409d47679a5c311fcd5545fe8af8b145601e697",
+  "initial_q_rad": [
+    -0.14091348707069612,
+    0.2863282073136233,
+    -0.7662513461329418,
+    0.16187705766371607,
+    1.0582604965219213,
+    3.06167945685074
+  ],
+  "initial_direction_evidence": {
+    "policy": "STACK_FORWARD_INITIAL_ONLY_V1",
+    "passed": true,
+    "scope": "STATIC_INITIAL_STATE_ONLY",
+    "affects_grasp_endpoints": false,
+    "upper_direction_world": [
+      0.2796323999258209,
+      -0.039666874684742934,
+      0.9592873708980384
+    ],
+    "forearm_direction_world": [
+      0.4904221568597399,
+      -0.06956816965393546,
+      -0.8687038493249827
+    ],
+    "body_forward_world_x": 0.9900881122522209,
+    "j1_rad": -0.14091348707069612,
+    "j1_deg": -8.073748085622181,
+    "j1_fixed": false,
+    "j1_near_zero_hard_window": false,
+    "exact_upright_or_horizontal_required": false,
+    "selection_cost": 0.059496747037872014,
+    "preference_components": {
+      "j1_near_zero": 0.04485415603123434,
+      "bounded_wrist_rotation": 0.11806711106442269
+    }
+  },
+  "fresh_initial_carton_count": 40,
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "front_endpoint_posture_gate": false,
+  "gap_m": 0.7,
+  "mount_height_m": 0.9,
+  "free_space_guard_mib": 1200,
+  "scope": "FRESH40_NATIVE_PLANNING_NOMINAL_RECEPTION_IDEAL_OUTFEED",
+  "physical_execution": "NOT_RUN"
+}

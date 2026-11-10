@@ -1,0 +1,790 @@
+{
+  "status": "PASS_NATIVE_BRANCH_EXTERNAL_SUPPORT_UNVERIFIED",
+  "support_verified": false,
+  "floor_support": [
+    {
+      "height_m": 0.55,
+      "status": "UNKNOWN_EXTERNAL_SUPPORT",
+      "chassis_rear_world_x_m": -3.5,
+      "floor_x_bounds_m": [
+        -3.2,
+        3.2
+      ],
+      "footprints": [
+        {
+          "id": "chassis",
+          "footprint_min_xy_m": [
+            -3.5,
+            -0.4
+          ],
+          "footprint_max_xy_m": [
+            -1.4000000000000001,
+            1.1
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_transverse_left_foot_0",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_left_foot_1",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_0",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_1",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_0",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_1",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_0",
+          "footprint_min_xy_m": [
+            -2.45,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_1",
+          "footprint_min_xy_m": [
+            -2.45,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        }
+      ],
+      "external_floor_added": false,
+      "global_infeasibility_proven": false
+    },
+    {
+      "height_m": 0.6,
+      "status": "UNKNOWN_EXTERNAL_SUPPORT",
+      "chassis_rear_world_x_m": -3.5,
+      "floor_x_bounds_m": [
+        -3.2,
+        3.2
+      ],
+      "footprints": [
+        {
+          "id": "chassis",
+          "footprint_min_xy_m": [
+            -3.5,
+            -0.4
+          ],
+          "footprint_max_xy_m": [
+            -1.4000000000000001,
+            1.1
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_transverse_left_foot_0",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_left_foot_1",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_0",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_1",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_0",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_1",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_0",
+          "footprint_min_xy_m": [
+            -2.45,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_1",
+          "footprint_min_xy_m": [
+            -2.45,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        }
+      ],
+      "external_floor_added": false,
+      "global_infeasibility_proven": false
+    },
+    {
+      "height_m": 1.0,
+      "status": "UNKNOWN_EXTERNAL_SUPPORT",
+      "chassis_rear_world_x_m": -3.5,
+      "floor_x_bounds_m": [
+        -3.2,
+        3.2
+      ],
+      "footprints": [
+        {
+          "id": "chassis",
+          "footprint_min_xy_m": [
+            -3.5,
+            -0.4
+          ],
+          "footprint_max_xy_m": [
+            -1.4000000000000001,
+            1.1
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_transverse_left_foot_0",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_left_foot_1",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_0",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_1",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_0",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_1",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_0",
+          "footprint_min_xy_m": [
+            -2.45,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_1",
+          "footprint_min_xy_m": [
+            -2.45,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        }
+      ],
+      "external_floor_added": false,
+      "global_infeasibility_proven": false
+    },
+    {
+      "height_m": 1.5,
+      "status": "UNKNOWN_EXTERNAL_SUPPORT",
+      "chassis_rear_world_x_m": -3.5,
+      "floor_x_bounds_m": [
+        -3.2,
+        3.2
+      ],
+      "footprints": [
+        {
+          "id": "chassis",
+          "footprint_min_xy_m": [
+            -3.5,
+            -0.4
+          ],
+          "footprint_max_xy_m": [
+            -1.4000000000000001,
+            1.1
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_transverse_left_foot_0",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_left_foot_1",
+          "footprint_min_xy_m": [
+            -1.2300000000000002,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -1.1300000000000001,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_0",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            -0.675
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            -0.575
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_transverse_right_foot_1",
+          "footprint_min_xy_m": [
+            -0.9700000000000003,
+            0.575
+          ],
+          "footprint_max_xy_m": [
+            -0.8700000000000002,
+            0.675
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_0",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_rear_foot_1",
+          "footprint_min_xy_m": [
+            -2.6900000000000004,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.5900000000000007,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_0",
+          "footprint_min_xy_m": [
+            -2.45,
+            -1.1199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -1.0199999999999998
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_longitudinal_near_foot_1",
+          "footprint_min_xy_m": [
+            -2.45,
+            -0.5199999999999999
+          ],
+          "footprint_max_xy_m": [
+            -2.3500000000000005,
+            -0.4199999999999999
+          ],
+          "status": "VERIFIED_ON_MODELED_FLOOR"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_0_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -1.06
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.98
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_0",
+          "footprint_min_xy_m": [
+            -3.67,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.59,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        },
+        {
+          "id": "lift_lower_rail_2_stand_1",
+          "footprint_min_xy_m": [
+            -3.5100000000000002,
+            -0.62
+          ],
+          "footprint_max_xy_m": [
+            -3.43,
+            -0.5399999999999999
+          ],
+          "status": "UNKNOWN_EXTERNAL_SUPPORT"
+        }
+      ],
+      "external_floor_added": false,
+      "global_infeasibility_proven": false
+    }
+  ],
+  "layout": {
+    "schema": "fixed40_gap_search_20261107_v1",
+    "gap_m": 0.7,
+    "assembly_world_xyz_m": [
+      -2.45,
+      0.35,
+      0.0
+    ],
+    "base_xyz_a_m": [
+      0.6,
+      -0.2,
+      0.9
+    ],
+    "base_xyz_world_m": [
+      -1.8499999999999999,
+      0.15,
+      0.9
+    ],
+    "mount_rpy_rad": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "mount_design": "SOLID_PLINTH",
+    "plinth_height_m": 0.3,
+    "mount_axis_to_chassis_front_m": 0.45,
+    "minimum_surface_height_m": 0.55,
+    "maximum_surface_height_m": 1.5,
+    "initial_surface_height_m": 0.6,
+    "mechanism_profile": "low_profile_200_outfeed20_v3",
+    "tool_extension_m": 0.2,
+    "upper_layer_original_bottom_threshold_m": 1.5,
+    "upper_layer_faces": [
+      "FRONT"
+    ],
+    "lower_layer_face_priority": [
+      "TOP",
+      "FRONT",
+      "SIDE"
+    ],
+    "mechanical_reference_gap_m": 0.2,
+    "relief_design_maximum_height_m": 2.1,
+    "lower_rail_x_bounds_a_m": [
+      -2.0,
+      -0.95
+    ],
+    "lower_rail_stations_x_a_m": [
+      -1.18,
+      -1.02
+    ],
+    "structural_strength": "NOT_VERIFIED",
+    "physical_execution": "NOT_RUN"
+  },
+  "layout_fingerprint": "9e3a41389c49eed3075293613c55b0e784b53051842c769772e4ff78b64ec4d9",
+  "completed": 3,
+  "remaining": 37,
+  "historical_completed_count": 0,
+  "assumed_removed": [],
+  "cycles": [
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 7,
+      "outfeed_samples": 609
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 875
+    },
+    {
+      "status": "PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED",
+      "native_stages": 6,
+      "outfeed_samples": 528
+    }
+  ],
+  "physical_execution": "NOT_RUN",
+  "continuous_swept_proof": false,
+  "collision_policy": {
+    "schema": "m710_poc_pair_collision_policy_v4",
+    "wrist_tool_exempt_links": [
+      "J5_link",
+      "J6_link"
+    ],
+    "stack_contact_mode": "planner_relaxed_physics_checked",
+    "stack_contact_stages": [
+      "support-release",
+      "extraction"
+    ],
+    "maximum_planned_stack_penetration_m": 0.01,
+    "free_space_clearance_m": 0.0052,
+    "free_space_clearance_loss_tolerance_m": 0.0002,
+    "maximum_actual_penetration_m": 0.01,
+    "maximum_neighbor_displacement_m": 0.06,
+    "maximum_neighbor_tilt_rad": 0.2,
+    "progress_timeout_s": 3.0,
+    "minimum_progress_m": 0.002,
+    "inactive_compliant_cup_stack_contact_mode": "physical_contact_within_compression",
+    "compliant_cup_neighbor_contact_mode": "ignore",
+    "maximum_compliant_cup_additional_compression_m": 0.005,
+    "required_pair_clearance_m": 0.005,
+    "self_collision_clearance_m": 0.0,
+    "boundary_mode": "finite_frozen_scene_walls",
+    "fixed_mount_contact_mode": "qualified_planes_only",
+    "fingerprint": "fec48706edb746cc9e8a10d71c5e33cf3c2f3ce167fd4f2f0811d309d118ac38",
+    "wrist_tool_exemption_status": "USER_APPROVED_SIMULATION_EXEMPTION",
+    "box_box_physics_enabled": true
+  },
+  "search_cost_s": 8739.571213953197
+}
