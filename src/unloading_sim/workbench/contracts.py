@@ -45,6 +45,12 @@ class Stamp:
     presented_monotonic_ns: int | None = None
     original_source: str | None = None
 
+    @property
+    def acquisition_source(self):
+        """Known physical/synthetic origin, distinct from the REPLAY presentation mode."""
+        origin = self.original_source if self.source == Source.REPLAY else self.source
+        return Source(origin) if origin in (Source.LIVE, Source.SIMULATED) else None
+
     @classmethod
     def receive(cls, source=Source.LIVE, device=None):
         return cls(Source(source), monotonic_ns(), time_ns(), HOST_SESSION,
@@ -185,6 +191,13 @@ class Pairing:
     stationary_evidence: str = "NONE"
 
 
+def compatible_observation_stamps(first: Stamp, second: Stamp):
+    """Shared by capture pairing and history selection; unknown origins never match."""
+    return (first.source == second.source and first.acquisition_source is not None
+            and first.acquisition_source == second.acquisition_source
+            and bool(first.host_session) and first.host_session == second.host_session)
+
+
 def static_pair(frame, joint, *, camera_connected, robot_connected,
                 manual_stationary=False, max_age_s=1.0, max_skew_s=0.1, now_ns=None):
     """Receipt-time proximity is only a visualization approximation, never sync proof."""
@@ -196,7 +209,7 @@ def static_pair(frame, joint, *, camera_connected, robot_connected,
     for sample, connected in ((frame, camera_connected), (joint, robot_connected)):
         if sample.stamp.state(connected, max_age_s, now_ns) not in {"LIVE_VALID", "REPLAY", "SIMULATED"}:
             return result("STALE_OR_DISCONNECTED")
-    if frame.stamp.source != joint.stamp.source or frame.stamp.host_session != joint.stamp.host_session:
+    if not compatible_observation_stamps(frame.stamp, joint.stamp):
         return result("INCOMPATIBLE_CLOCK_OR_SOURCE")
     delta = abs(frame.stamp.received_monotonic_ns-joint.stamp.received_monotonic_ns)/1e9
     if delta > max_skew_s:

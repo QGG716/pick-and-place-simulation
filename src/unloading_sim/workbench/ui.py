@@ -42,6 +42,9 @@ class Workbench:
         self.detect_busy = False
         self.detector = None
         self.inference_generation = 0
+        self._observed_generation = backend.observation_generation
+        self.scene_generation = 0
+        self.scene_windows = []
         self.last_inferred_id = None
         self.results = Queue()
         self.original_detection_frame = None
@@ -172,7 +175,7 @@ class Workbench:
         self.button(box, "只读连接", lambda: self.backend.command("robot", "connect", self.robot_host.get(), int(self.robot_port.get())))
         self.button(box, "断开", lambda: self.backend.command("robot", "disconnect"))
         self.joints_text = tk.StringVar(value="J1 —  J2 —  J3 —  J4 —  J5 —  J6 —  | DISCONNECTED")
-        ttk.Label(box, textvariable=self.joints_text, font=("DejaVu Sans Mono", 9)).pack(side="left", padx=10)
+        ttk.Label(box, textvariable=self.joints_text, font=("DejaVu Sans Mono", 9), wraplength=850).pack(side="left", padx=10)
 
     def _vacuum_controls(self, box):
         ttk.Entry(box, textvariable=self.serial_port, width=20).pack(side="left", padx=4)
@@ -229,22 +232,62 @@ class Workbench:
     def choose_replay(self):
         path = filedialog.askdirectory()
         if path:
-            self.stop_detection()
-            self.backend.load_replay(path)
-            self.replay_step()
+            self.load_replay(path)
 
-    def replay_step(self):
-        self.backend.step_replay()
-        self.inference_generation += 1
+    def _sync_observations(self):
+        """Invalidate GUI work when the backend revokes an observation generation."""
+        if self._observed_generation == self.backend.observation_generation:
+            return
+        self._observed_generation = self.backend.observation_generation
+        self.stop_detection()
+        self.last_inferred_id = None
         self.original_detection_frame = self.backend.frame
         self.original_detection_joint = self.backend.joint
-        self.stationary.set(False)
-        self.notice.set("离线回放 · " + self.backend.replay.manifest['provenance'])
+        self._shown_frame = self._shown_detection = None
+        self._invalidate_scenes()
+
+    def _inference_token(self):
+        return (self.backend.observation_generation, self.inference_generation)
+
+    def _invalidate_scenes(self):
+        self.scene_generation += 1
+        for window in self.scene_windows:
+            if window.winfo_exists():
+                window.destroy()
+        self.scene_windows.clear()
+
+    def load_replay(self, path):
+        try:
+            self.backend.load_replay(path)
+            self.notice.set("离线回放 · " + self.backend.replay.manifest['provenance'])
+        except Exception as exc:
+            self.notice.set("Replay load failed: " + str(exc))
+            raise
+        finally:
+            self._sync_observations()
+            self.refresh(schedule=False)
+
+    def replay_step(self):
+        try:
+            advanced = self.backend.step_replay()
+            self.inference_generation += 1
+            self.original_detection_frame = self.backend.frame
+            self.original_detection_joint = self.backend.joint
+            self._invalidate_scenes()
+            self.notice.set("离线回放 · " + self.backend.replay.manifest['provenance'] if advanced
+                            else "HISTORICAL_END_OF_REPLAY · 已到末尾，保留历史末帧")
+        except Exception as exc:
+            self.notice.set("Replay read failed: " + str(exc))
+            raise
+        finally:
+            self._sync_observations()
+            self.refresh(schedule=False)
 
     def stop_replay(self):
-        self.stop_detection()
         self.backend.stop_replay()
-        self.original_detection_frame = self.original_detection_joint = None
+        self._sync_observations()
+        self.notice.set("Replay stopped / 观测已清空")
+        self.refresh(schedule=False)
 
     def choose_calibration(self):
         path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
@@ -252,16 +295,20 @@ class Workbench:
 
     def load_calibration(self, path):
         self.calibration = None  # An invalid replacement cannot leave an old calibration active.
+        self._invalidate_scenes()
+        self.refresh(schedule=False)
         self.calibration_text.set("加载检查中；旧外参已停用")
         try:
             self.calibration = Extrinsics.load(path)
-        except Exception:
-            self.calibration_text.set("外参被拒绝 / 未加载")
+        except Exception as exc:
+            self.calibration_text.set("外参被拒绝 / 未加载: " + str(exc))
+            self.notice.set(str(exc))
             raise
         self.calibration_text.set(self.calibration.label + "\n父 link_1 → 子 camera_optical；矩阵把光学坐标转换到 link_1。")
         self.backend.log("Loaded extrinsics SHA-256 " + self.calibration.sha256 + "; " + self.calibration.label)
 
     def change_tool(self):
+        self._invalidate_scenes()
         if self.model:
             self.model.tool = next(t for t in self.tools if t.name == self.tool_name.get())
         self.backend.log("Tool display profile changed; calibration probe remains 70 mm")
@@ -291,7 +338,7 @@ class Workbench:
                 self.detector = ExistingGroundingSAM(**config)
             self.results.put(("detection", (generation, frame, joint_at_capture, self.detector.detect(frame))))
         except Exception as exc:
-            self.results.put(("detection_error", str(exc)))
+            self.results.put(("detection_error", (generation, str(exc))))
 
     def load_plan(self):
         path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
@@ -314,8 +361,7 @@ class Workbench:
         q = np.zeros(6)
         if source == "MEASURED_OR_REPLAY":
             joint = self.backend.joint
-            if joint is None or joint.stamp.state(self.backend.replay_active or self.backend.workers["robot"].device.connected,
-                                                  self.backend.config.max_age_s) not in {"LIVE_VALID", "REPLAY", "SIMULATED"}:
+            if joint is None or self.backend.sample_state(joint.stamp, "robot") not in {"LIVE_VALID", "REPLAY", "SIMULATED"}:
                 raise RuntimeError("Measured/replay pose missing or stale")
             q = np.asarray(joint.q_rad)
             source = joint.stamp.source.value + " JOINT OBSERVATION"
@@ -329,15 +375,16 @@ class Workbench:
         tcp = scene_from_world @ self.model.tcp(q) if self.model else None
         azimuth = {"前方斜视": -30, "前视": 0, "左侧": 90, "右侧": 270, "后视": 180}[self.scene_view.get()]
         self.backend.log("Rendering complete original scene: " + source)
+        generation = (self.backend.observation_generation, self.scene_generation)
         def render():
             renderer = None
             try:
                 from .scene import SceneRenderer
                 renderer = SceneRenderer(self.snapshot_path, self.scene_input_root)
                 image = renderer.render(q, optical, tcp, azimuth=azimuth)
-                self.results.put(("scene", (image, source)))
+                self.results.put(("scene", (generation, image, source)))
             except Exception as exc:
-                self.results.put(("error", "Scene unavailable: " + str(exc)))
+                self.results.put(("scene_error", (generation, "Scene unavailable: " + str(exc))))
             finally:
                 if renderer is not None: renderer.close()
         threading.Thread(target=render, daemon=True).start()
@@ -348,13 +395,14 @@ class Workbench:
         self._photos[key] = ImageTk.PhotoImage(im)
         self.images[key].configure(image=self._photos[key], text="")
 
-    def stamp_text(self, stamp, connected):
+    def stamp_text(self, stamp, device):
         age = stamp.age_s()
-        return f"{stamp.state(connected, self.backend.config.max_age_s)} · age {age:.2f}s" if age is not None else "CLOCK_UNKNOWN"
+        return self.backend.sample_state(stamp, device) + (f" · age {age:.2f}s" if age is not None else " · age UNKNOWN")
 
-    def refresh(self):
+    def refresh(self, schedule=True):
         if self._closed: return
         b = self.backend
+        self._sync_observations()
         for name, kind, value in b.poll():
             if name == "camera" and kind == "state" and value["action"] == "connect":
                 self.profiles = {f"{p.width}×{p.height} @ {p.fps}": p for p in value["value"]}
@@ -367,28 +415,38 @@ class Workbench:
             if kind == "detection":
                 generation, frame, capture_joint, result = value
                 self.detect_busy = False
-                if self.detecting and generation == self.inference_generation:
+                if self.detecting and generation == self._inference_token():
                     self.original_detection_frame, b.detections = frame, result
                     self.original_detection_joint = capture_joint
             elif kind == "scene":
-                pixels, source = value
+                generation, pixels, source = value
+                if generation != (b.observation_generation, self.scene_generation):
+                    continue
                 window = tk.Toplevel(self.root)
+                self.scene_windows.append(window)
                 window.title("ECO65 scene / " + source)
                 ttk.Label(window, text=source + " · geometry only · no execution", foreground="#e59524").pack()
                 photo = ImageTk.PhotoImage(Image.fromarray(pixels))
                 label = ttk.Label(window, image=photo); label.image = photo; label.pack()
                 ttk.Label(window, text="RGB arrows: loaded optical frame / selected TCP. Original shell and full tool remain nominal. 待独立验证").pack()
-            else:
+            elif kind == "detection_error":
+                generation, message = value
                 self.detect_busy = False
+                if generation != self._inference_token():
+                    continue
                 self.detecting = False
-                b.log(value)
-                self.notice.set(value)
+                b.log(message)
+                self.notice.set(message)
+            elif kind == "scene_error":
+                generation, message = value
+                if generation == (b.observation_generation, self.scene_generation):
+                    b.log(message)
+                    self.notice.set(message)
         frame, joint = b.frame, b.joint
         live_camera = b.workers["camera"].device
         live_robot = b.workers["robot"].device
-        camera_active = b.replay_active or (live_camera.connected and live_camera.streaming)
-        robot_active = b.replay_active or live_robot.connected
-        self.camera_status.set(self.stamp_text(frame.stamp, camera_active) if frame else ("CONNECTED / STOPPED" if live_camera.connected else "DISCONNECTED"))
+        camera_active = frame is not None and b.sample_active(frame.stamp, "camera")
+        self.camera_status.set(self.stamp_text(frame.stamp, "camera") if frame else ("CONNECTED / STOPPED" if live_camera.connected else "DISCONNECTED"))
         if frame:
             if frame is not self._shown_frame:
                 self._shown_frame = frame
@@ -396,15 +454,16 @@ class Workbench:
                 import cv2
                 scaled = np.uint8(np.clip(frame.depth*frame.depth_scale_m/2.0, 0, 1)*255)
                 self.image("depth", cv2.applyColorMap(scaled, cv2.COLORMAP_TURBO)[:, :, ::-1])
-            self.metadata.set(f"{frame.stamp.source.value} / original={frame.stamp.original_source or frame.stamp.source.value} · {frame.device_id} · RGB#{frame.rgb_number} Depth#{frame.depth_number}\n"
+            origin = frame.stamp.acquisition_source
+            self.metadata.set(f"{frame.stamp.source.value} / original={origin.value if origin else 'UNKNOWN'} · {frame.device_id} · RGB#{frame.rgb_number} Depth#{frame.depth_number}\n"
                 f"RGB device={frame.rgb_device_time.value_ms}ms/{frame.rgb_device_time.domain}; Depth device={frame.depth_device_time.value_ms}ms/{frame.depth_device_time.domain}; scale={frame.depth_scale_m}m; frame={frame.frame_id}\n"
-                f"Host receive={frame.stamp.received_monotonic_ns}ns; processing complete={frame.stamp.processed_monotonic_ns}ns; {self.stamp_text(frame.stamp,camera_active)}")
+                f"Host receive={frame.stamp.received_monotonic_ns}ns; processing complete={frame.stamp.processed_monotonic_ns}ns; {self.stamp_text(frame.stamp,'camera')}")
             if (self.detecting and not b.replay_active and not self.detect_busy and camera_active
                     and frame.observation_id != self.last_inferred_id
                     and frame.stamp.state(camera_active, b.config.max_age_s) == "LIVE_VALID"):
                 self.detect_busy = True
                 self.last_inferred_id = frame.observation_id
-                threading.Thread(target=self._infer, args=(frame, b.joint_for_frame(frame), self.inference_generation), daemon=True).start()
+                threading.Thread(target=self._infer, args=(frame, b.joint_for_frame(frame), self._inference_token()), daemon=True).start()
         else:
             self.metadata.set("No RGB-D observation / DISCONNECTED")
             self.pairing_text.set("NO_OBSERVATION / 未配对")
@@ -412,19 +471,19 @@ class Workbench:
             for key in ("rgb", "depth"):
                 self.images[key].configure(image="", text="NO OBSERVATION")
         if joint:
-            self.joints_text.set("  ".join(f"J{i+1} {v:6.1f}°" for i, v in enumerate(np.rad2deg(joint.q_rad))) + " | " + self.stamp_text(joint.stamp, robot_active))
-        elif not live_robot.connected: self.joints_text.set("J1 —  J2 —  J3 —  J4 —  J5 —  J6 — | DISCONNECTED")
+            self.joints_text.set("  ".join(f"J{i+1} {v:6.1f}°" for i, v in enumerate(np.rad2deg(joint.q_rad))) + " | " + self.stamp_text(joint.stamp, "robot"))
+        else: self.joints_text.set("J1 —  J2 —  J3 —  J4 —  J5 —  J6 — | " + ("WAITING" if live_robot.connected else "DISCONNECTED"))
         vacuum = b.workers["vacuum"].device
-        if b.replay_active and b.pressure:
+        if b.pressure:
             p = b.pressure
-            self.pressure_text.set(" / ".join(f"{n} {v:.1f}" for n, v in zip(("吸具", "储气罐", "真空泵", "压缩机"), p.kpa)) + " kPa | " + self.stamp_text(p.stamp, True) + " | " + p.integrity + " " + ",".join(p.alarms))
+            self.pressure_text.set(" / ".join(f"{n} {v:.1f}" for n, v in zip(("吸具", "储气罐", "真空泵", "压缩机"), p.kpa)) + " kPa | " + self.stamp_text(p.stamp, "vacuum") + " | " + p.integrity + " " + ",".join(p.alarms))
         else:
             values = []
             for i, name in enumerate(("吸具", "储气罐", "真空泵", "压缩机"), 1):
-                sample = vacuum.gauges()[i]
-                values.append(name+" —" if sample is None else f"{name} {sample.kpa:.1f}kPa {sample.integrity} {self.stamp_text(sample.stamp,vacuum.connected)}")
+                sample = vacuum.gauges()[i] if vacuum.connected else None
+                values.append(name+" —" if sample is None else f"{name} {sample.kpa:.1f}kPa {sample.integrity} {self.stamp_text(sample.stamp,'vacuum')}")
             self.pressure_text.set(("CONNECTED | " if vacuum.connected else "DISCONNECTED | ") + " | ".join(values)
-                + " | 报警 " + ",".join(v["name"]+" "+self.stamp_text(v['stamp'],vacuum.connected) for v in tuple(vacuum.alarms.values())))
+                + " | 报警 " + ",".join(v["name"]+" "+self.stamp_text(v['stamp'],'vacuum') for v in tuple(vacuum.alarms.values()) if vacuum.connected))
         result = b.detections
         if result is None:
             self.detection_status.set("NO DETECTION")
@@ -434,7 +493,7 @@ class Workbench:
         elif self.original_detection_frame:
             self.detection_status.set("Detection " + ("RUNNING" if self.detecting else "STOPPED / historical output")
                 + " · " + result.observation_id + " · " + result.source.value + " · "
-                + self.stamp_text(self.original_detection_frame.stamp, camera_active))
+                + self.stamp_text(self.original_detection_frame.stamp, "camera"))
         if result is not None and result is not self._shown_detection:
             self._shown_detection = result
             self.detection_list.delete(*self.detection_list.get_children())
@@ -458,7 +517,9 @@ class Workbench:
                 "T_nominal_camera_calibrated_camera:\n" + str(np.round(deltas['T_nominal_camera_calibrated_camera'], 6))
                 + "\nT_nominal_tcp_configured_tcp:\n" + str(np.round(deltas['T_nominal_tcp_configured_tcp'], 6)))
         if frame:
-            pairing = static_pair(frame, b.joint_for_frame(frame), camera_connected=camera_active, robot_connected=robot_active,
+            capture_joint = b.joint_for_frame(frame)
+            pairing = static_pair(frame, capture_joint, camera_connected=camera_active,
+                                  robot_connected=capture_joint is not None and b.sample_active(capture_joint.stamp, "robot"),
                                   manual_stationary=b.manual_stationary, max_age_s=b.config.max_age_s)
             self.pairing_text.set(pairing.status + f" | receive skew={pairing.receipt_delta_s}s | reliable capture pairing=False")
             if self.model and self.calibration and pairing.q_capture_rad is not None:
@@ -468,8 +529,9 @@ class Workbench:
                 except ValueError as exc: details += "\n" + str(exc)
         original = self.original_detection_frame
         if original and result and self.model and self.calibration and original.observation_id == result.observation_id:
-            association = static_pair(original, self.original_detection_joint, camera_connected=camera_active,
-                robot_connected=robot_active, manual_stationary=b.manual_stationary, max_age_s=b.config.max_age_s)
+            association = static_pair(original, self.original_detection_joint, camera_connected=b.sample_active(original.stamp, "camera"),
+                robot_connected=self.original_detection_joint is not None and b.sample_active(self.original_detection_joint.stamp, "robot"),
+                manual_stationary=b.manual_stationary, max_age_s=b.config.max_age_s)
             if association.q_capture_rad is not None:
                 try:
                     transforms = self.model.paired_camera(association, self.calibration)
@@ -489,7 +551,8 @@ class Workbench:
         if log != self._log_text:
             self._log_text = log
             self.logbox.configure(state="normal"); self.logbox.delete("1.0", "end"); self.logbox.insert("end", log); self.logbox.see("end"); self.logbox.configure(state="disabled")
-        self.root.after(100, self.refresh)
+        if schedule:
+            self.root.after(100, self.refresh)
 
     def close(self):
         self._closed = True
@@ -519,6 +582,5 @@ def main():
     if a.config: ui.safe(ui.load_config, a.config)
     if a.calibration: ui.safe(ui.load_calibration, a.calibration)
     if a.replay:
-        ui.safe(backend.load_replay, a.replay)
-        ui.safe(ui.replay_step)
+        ui.safe(ui.load_replay, a.replay)
     root.mainloop()

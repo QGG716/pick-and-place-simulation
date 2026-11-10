@@ -38,6 +38,8 @@ class Extrinsics:
         data = path.read_bytes()
         raw = json.loads(data.decode("utf-8-sig"))
         matrix = rigid(raw["matrix"])
+        if raw.get("unit") != "m":
+            raise ValueError(f"EXTRINSICS_UNIT_M_REQUIRED: unit must explicitly be 'm'; got {raw.get('unit', '<missing>')!r}. No unit inference or conversion is allowed")
         if raw.get("parent_frame") != "link_1" or raw.get("child_frame") != "camera_optical":
             raise ValueError("Expected T_link1_camera: parent link_1, child camera_optical")
         if raw.get("model_sha256") not in {

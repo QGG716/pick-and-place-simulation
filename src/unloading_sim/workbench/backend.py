@@ -7,6 +7,7 @@ import threading
 from time import monotonic
 
 from .policy import ReadOnlyViolation, DisabledExecution, ObservationConfig, load_config
+from .contracts import Source, compatible_observation_stamps
 
 
 class DeviceWorker:
@@ -104,6 +105,8 @@ class WorkbenchBackend:
         self.joint_history = deque(maxlen=128)
         self.replay = None
         self.replay_active = False
+        self.replay_exhausted = False
+        self.observation_generation = 0
         self.manual_stationary = False
         self.log("READ_ONLY_STAGE_1; all devices disconnected; physical execution unavailable")
 
@@ -119,7 +122,7 @@ class WorkbenchBackend:
     def command(self, device, action, *args):
         if device not in self.workers:
             raise ReadOnlyViolation("Unknown observation device")
-        if self.replay_active:
+        if self.replay is not None:
             raise ReadOnlyViolation("Stop replay before connecting live devices")
         self.manual_stationary = False
         self.workers[device].command(action, *args)
@@ -134,6 +137,8 @@ class WorkbenchBackend:
                     break
                 changes.append((name, kind, value))
                 if kind == "sample":
+                    if self.replay is not None or not worker.device.connected:
+                        continue
                     if name == "camera": self.frame = value
                     elif name == "robot":
                         self.joint = value
@@ -148,36 +153,80 @@ class WorkbenchBackend:
                         self.manual_stationary = False
         return changes
 
-    def joint_for_frame(self, frame):
-        candidates = [q for q in self.joint_history if q.stamp.source == frame.stamp.source
-                      and q.stamp.host_session == frame.stamp.host_session]
+    def joint_for_frame(self, frame, max_skew_s=.1):
+        candidates = [q for q in self.joint_history if compatible_observation_stamps(frame.stamp, q.stamp)
+                      and abs(q.stamp.received_monotonic_ns-frame.stamp.received_monotonic_ns) <= max_skew_s*1e9]
         return min(candidates, key=lambda q: abs(q.stamp.received_monotonic_ns-frame.stamp.received_monotonic_ns)) if candidates else None
+
+    def sample_active(self, stamp, device):
+        if stamp.source == Source.REPLAY:
+            return self.replay_active
+        if stamp.source == Source.LIVE:
+            observed = self.workers[device].device
+            return observed.connected and (device != 'camera' or observed.streaming)
+        # No live simulator producer is registered in this workbench.
+        return False
+
+    def sample_state(self, stamp, device):
+        if stamp.source == Source.REPLAY and self.replay_exhausted:
+            return "HISTORICAL_END_OF_REPLAY"
+        return stamp.state(self.sample_active(stamp, device), self.config.max_age_s)
+
+    def _clear_observations(self):
+        self.observation_generation += 1
+        self.replay = None
+        self.replay_active = self.replay_exhausted = self.manual_stationary = False
+        self.frame = self.joint = self.pressure = self.detections = None
+        self.joint_history.clear()
+
+    def _publish_replay(self, observation):
+        self.frame, self.joint, self.pressure, self.detections = observation
+        self.joint_history.append(self.joint)
+        self.manual_stationary = False
+        self.log("Replay observation " + self.frame.observation_id + " (not live hardware)")
 
     def load_replay(self, directory):
         if any(w.device.connected or w.busy for w in self.workers.values()):
             raise RuntimeError("Disconnect live devices before loading replay")
         from .replay import Replay
-        self.replay = Replay(directory)
         # Consume completed disconnect events before entering a different source domain.
         self.poll()
-        self.joint_history.clear()
+        self._clear_observations()
+        try:
+            candidate = Replay(directory)
+            first = candidate.step()  # Validate every first-record component before publication.
+        except Exception as exc:
+            self.log(f"Replay load failed: {type(exc).__name__}: {exc}")
+            raise
+        self.replay = candidate
+        self._publish_replay(first)
         self.replay_active = True
-        self.manual_stationary = False
         self.log("Replay loaded: " + self.replay.manifest["provenance"])
 
     def step_replay(self):
-        if not self.replay_active:
+        if self.replay is None:
             raise RuntimeError("No active replay")
-        self.frame, self.joint, self.pressure, self.detections = self.replay.step()
-        self.joint_history.append(self.joint)
-        self.manual_stationary = False
-        self.log("Replay observation " + self.frame.observation_id + " (not live hardware)")
+        if self.replay_exhausted:
+            return False
+        try:
+            observation = self.replay.step()
+        except StopIteration:
+            self.replay_active = False
+            self.replay_exhausted = True
+            self.manual_stationary = False
+            self.joint_history.clear()
+            self.observation_generation += 1
+            self.log("Replay ended; retained last observation is HISTORICAL_END_OF_REPLAY")
+            return False
+        except Exception as exc:
+            self._clear_observations()
+            self.log(f"Replay read failed: {type(exc).__name__}: {exc}")
+            raise
+        self._publish_replay(observation)
+        return True
 
     def stop_replay(self):
-        self.replay_active = False
-        self.manual_stationary = False
-        self.frame = self.joint = self.pressure = self.detections = None
-        self.joint_history.clear()
+        self._clear_observations()
         self.log("Replay stopped")
 
     def close(self):

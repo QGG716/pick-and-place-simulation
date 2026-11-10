@@ -20,7 +20,13 @@ def _path(root, name):
 
 def _stamp(raw, presented):
     data = dict(raw)
-    original_source = data.get("original_source") or data["source"]
+    # A captured LIVE/SIMULATED stamp names its origin in source. A replay of a
+    # replay must supply original_source; missing/unknown origins stay unknown.
+    original_source = data.get("original_source")
+    if data.get("source") != Source.REPLAY:
+        if original_source is not None and original_source != data.get("source"):
+            raise ValueError("Conflicting recorded source and original_source")
+        original_source = data.get("source")
     data.update(source=Source.REPLAY, original_source=original_source,
                 presented_monotonic_ns=presented, device=DeviceTime(**data.get("device", {})))
     return Stamp(**data)

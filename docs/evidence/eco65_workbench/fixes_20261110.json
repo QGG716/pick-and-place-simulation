@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-10",
+  "baseline_commit": "db4e110509c013948d309a499c096a4434030621",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "scope": "READ_ONLY_STAGE_1 software regression, no physical devices connected",
+  "pytest_command": "python -m pytest tests/test_workbench_readonly.py tests/test_workbench_coordinates.py -q -ra --junitxml=../pytest.xml",
+  "pytest_windows": {
+    "tests": 57,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 57
+  },
+  "pytest_ubuntu": {
+    "tests": 57,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 57
+  },
+  "gui_command": "PYTHONPATH=\"$PWD/src\" xvfb-run -a -s '-screen 0 1600x1100x24' /root/autodl-tmp/eco65-real-integration-20261109/venv/bin/python tools/check_eco65_workbench_ui.py --output outputs/workbench/ui_fixes",
+  "gui": {
+    "status": "PASS",
+    "os": "Linux-5.15.0-113-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "tk": 8.6,
+    "checks": [
+      "no_device_startup",
+      "old_configuration_does_not_connect",
+      "rgbd_joint_pressure_segmentation_replay",
+      "first_and_next_records_not_skipped_or_duplicated",
+      "manual_static_pair_and_training_label",
+      "manual_static_coordinate_transform",
+      "coordinate_scroll_survives_refresh",
+      "invalid_unit_clears_calibration_and_scene_'mm'",
+      "invalid_unit_clears_calibration_and_scene_'MISSING'",
+      "invalid_unit_clears_calibration_and_scene_None",
+      "invalid_unit_clears_calibration_and_scene_''",
+      "invalid_unit_clears_calibration_and_scene_'unknown'",
+      "invalid_extrinsic_clears_previous_calibration",
+      "expired_data_not_live_or_paired",
+      "cancel_chooser_preserves_observations_and_confirmation",
+      "eof_retains_explicit_history_without_pairing",
+      "stop_replay_clears_previews",
+      "incompatible_origin_not_paired_SIMULATED",
+      "incompatible_origin_not_paired_None",
+      "failed_switch_clears_live_and_discards_late_inference_missing_npz",
+      "failed_switch_clears_live_and_discards_late_inference_invalid_joint",
+      "read_error_clears_instead_of_retaining_eof_frame",
+      "clean_shutdown"
+    ],
+    "skips": [
+      "Complete scene render NOT_RUN: no --scene-snapshot; unrelated to this patch"
+    ],
+    "hardware_validation": "NOT_RUN",
+    "display": ":100",
+    "screenshots": [
+      "ubuntu_coordinates.png",
+      "ubuntu_failed_replay.png",
+      "ubuntu_invalid_unit.png",
+      "ubuntu_no_devices.png",
+      "ubuntu_replay.png",
+      "ubuntu_replay_end.png",
+      "ubuntu_stale.png"
+    ]
+  },
+  "gui_passed": 23,
+  "gui_skipped": 1,
+  "gui_failed": 0,
+  "official_model_tests": "EXECUTED; existing pinned ECO65-B URDF available",
+  "ubuntu_version": "22.04.5 LTS",
+  "ubuntu_source_root": "/tmp/eco65-workbench-fixes-20261110/repo",
+  "normalized_lf_sha256": {
+    "src/unloading_sim/workbench/backend.py": "fc73b6dab4ec0e1fa49819c09049d1067acb558d0e8521a35bb8aa7a0754dbfd",
+    "src/unloading_sim/workbench/contracts.py": "b2a2cad3e0106a650634a83f629a26746e75ad8296401c83d2000a764c29f803",
+    "src/unloading_sim/workbench/coordinates.py": "f7913202eccf9b89489ae9d6abfa34f48481639a36b6679efb734eff1c214d0c",
+    "src/unloading_sim/workbench/replay.py": "8795d3e368eb21e8ff5704cc08905fa68d4f28f81939217dfdb73057b96136e5",
+    "src/unloading_sim/workbench/ui.py": "e6ab03be769e0c47b9244d7ee69071464a4705ecd0dd4d41cec7f2d20d85cbe7",
+    "tests/test_workbench_readonly.py": "69dd0dacc740d4905d4ce3217840fe507b83ff012e199d46a7ddea5978ae6370",
+    "tests/test_workbench_coordinates.py": "76592eab7dfb0d94dc5cd067bdb3d3f6f0cbd331ef26c45ffd3a83f812489334",
+    "tools/check_eco65_workbench_ui.py": "d36e4e9ec29d36943abe36f2b6993f29bb7ebcaa717d3923a76eeb0c722e201c"
+  },
+  "deployment_source_verification": "8 selected source/test files matched normalized LF SHA-256 between local delivery and the Ubuntu test directory",
+  "not_run": [
+    "Physical hardware",
+    "Independent calibration",
+    "Hardware synchronization",
+    "Real pick and place",
+    "MoveIt worker rerun",
+    "Whole-carton planning or full simulation",
+    "GroundingDINO/SAM weights inference (GUI concurrency uses a delayed fake detector)"
+  ],
+  "initial_gui_attempt": "Old fixed scroll-position > 0.2 assertion failed on shorter no-scene content; changed to check actual overflow and preservation of actual position. Initial failure log retained, final scroll check passed.",
+  "artifacts": "outputs/workbench/fixes_20261110/; screenshots in repo/outputs/workbench/ui_fixes/ under that directory"
+}

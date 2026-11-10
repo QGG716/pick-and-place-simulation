@@ -176,6 +176,25 @@ def test_training_extrinsics_keeps_status_and_missing_session():
     e = Extrinsics.load(ROOT/'configs/workbench/training_extrinsics.example.json')
     assert e.status == 'SOLVED_REQUIRES_VALIDATION' and e.usage == 'TRAINING_ONLY_TEST'
     assert e.session_status == 'MISSING' and '待独立验证' in e.label
+    assert e.raw['unit'] == 'm'
+    np.testing.assert_array_equal(e.matrix, e.raw['matrix'])
+
+
+@pytest.mark.parametrize('unit', ['mm', 'MISSING', None, '', 'cm', 'meters', 'M'])
+def test_extrinsics_requires_explicit_metres_without_modifying_input(tmp_path, unit):
+    data = json.loads((ROOT/'configs/workbench/training_extrinsics.example.json').read_text())
+    if unit == 'MISSING':
+        del data['unit']
+    else:
+        data['unit'] = unit
+    if unit == 'mm':
+        for row in data['matrix'][:3]: row[3] *= 1000
+    path = tmp_path/'unit.json'
+    path.write_text(json.dumps(data))
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match='EXTRINSICS_UNIT_M_REQUIRED'):
+        Extrinsics.load(path)
+    assert path.read_bytes() == before
 
 
 def test_unreviewed_model_identity_is_not_applied(tmp_path):
@@ -287,3 +306,222 @@ def test_fake_realsense_profile_alignment_scale_and_separate_device_clocks():
     assert got.depth_scale_m == .002 and got.aligned_to == 'color'
     assert got.stamp.processed_monotonic_ns >= got.stamp.received_monotonic_ns
     assert got.rgb[0,0].tolist() == [1,2,3] and not camera.connected
+
+
+@pytest.fixture
+def observation_backend():
+    b = WorkbenchBackend(D435iObserver(), RobotObserver(mapping(), lambda: RobotSpy()), VacuumObserver())
+    try:
+        yield b
+    finally:
+        b.close()
+
+
+@pytest.mark.parametrize('mode,frame_origin,joint_origin,compatible', [
+    ('CAPTURE', 'LIVE', 'LIVE', True),
+    ('CAPTURE', 'SIMULATED', 'SIMULATED', True),
+    ('CAPTURE', 'LIVE', 'SIMULATED', False),
+    ('CAPTURE', 'SIMULATED', 'LIVE', False),
+    ('CAPTURE', 'UNKNOWN', 'UNKNOWN', False),
+    ('REPLAY', 'LIVE', 'LIVE', True),
+    ('REPLAY', 'SIMULATED', 'SIMULATED', True),
+    ('REPLAY', 'LIVE', 'SIMULATED', False),
+    ('REPLAY', 'SIMULATED', 'LIVE', False),
+    ('REPLAY', 'MISSING', 'MISSING', False),
+    ('REPLAY', None, None, False),
+    ('REPLAY', '', '', False),
+    ('REPLAY', 'UNKNOWN', 'UNKNOWN', False),
+    ('REPLAY', 'REPLAY', 'REPLAY', False),
+    ('REPLAY', 'LIVE', None, False),
+])
+def test_replay_acquisition_origin_is_used_for_pairing_and_history(
+        tmp_path, observation_backend, mode, frame_origin, joint_origin, compatible):
+    path = generate_demo(tmp_path/'fixture')
+    manifest = path/'manifest.json'
+    data = json.loads(manifest.read_text())
+    record = data['records'][0]
+    for name, origin in [('frame', frame_origin), ('joint', joint_origin)]:
+        stamp = record[name]['stamp']
+        stamp['device'] = {'value_ms': 345.25, 'domain': 'hardware_clock'}
+        stamp['processed_monotonic_ns'] = 1_020_000_000
+        stamp['source'] = 'REPLAY' if mode == 'REPLAY' else origin
+        if mode == 'REPLAY':
+            if origin == 'MISSING': stamp.pop('original_source')
+            else: stamp['original_source'] = origin
+    manifest.write_text(json.dumps(data))
+    frame, joint, *_ = Replay(path).step()
+    for name, sample in [('frame', frame), ('joint', joint)]:
+        raw = record[name]['stamp']
+        assert sample.stamp.source == Source.REPLAY
+        for key in ('host_session', 'received_monotonic_ns', 'received_utc_ns', 'processed_monotonic_ns'):
+            assert getattr(sample.stamp, key) == raw[key]
+        assert sample.stamp.device == DeviceTime(**raw['device'])
+        if mode == 'REPLAY': assert sample.stamp.original_source == raw.get('original_source')
+    assert frame.rgb_device_time == DeviceTime(**record['frame']['rgb_device_time'])
+    assert frame.depth_device_time == DeviceTime(**record['frame']['depth_device_time'])
+    pair = static_pair(frame, joint, camera_connected=True, robot_connected=True, manual_stationary=True)
+    assert (pair.q_capture_rad is not None) == compatible
+    assert pair.reliable_capture_pair is False
+    b = observation_backend
+    b.joint_history.append(joint)
+    assert (b.joint_for_frame(frame) is joint) == compatible
+    if compatible:
+        assert pair.stationary_evidence == 'MANUAL_CONFIRMATION'
+        assert static_pair(frame, joint, camera_connected=True, robot_connected=True).q_capture_rad is None
+    else:
+        assert pair.status == 'INCOMPATIBLE_CLOCK_OR_SOURCE'
+
+
+def test_conflicting_capture_origin_rejected(tmp_path):
+    path = generate_demo(tmp_path/'fixture')
+    manifest = path/'manifest.json'; data = json.loads(manifest.read_text())
+    data['records'][0]['frame']['stamp'].update(source='LIVE', original_source='SIMULATED')
+    manifest.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match='Conflicting recorded source'):
+        Replay(path).step()
+
+
+def test_history_excludes_nearer_incompatible_origin_clock_and_receipt_time(tmp_path, observation_backend):
+    frame, joint, *_ = Replay(generate_demo(tmp_path/'fixture')).step()
+    b = observation_backend
+    good = replace(joint, sample_id='compatible', stamp=replace(joint.stamp,
+                   received_monotonic_ns=joint.stamp.received_monotonic_ns+50_000_000))
+    b.joint_history.append(good)
+    bad_stamps = [replace(joint.stamp, original_source='LIVE'),
+                  replace(joint.stamp, original_source=None),
+                  replace(joint.stamp, host_session='another-recording'),
+                  replace(joint.stamp, host_session=''),
+                  replace(joint.stamp, received_monotonic_ns=joint.stamp.received_monotonic_ns+200_000_000)]
+    for stamp in bad_stamps:
+        bad = replace(joint, stamp=stamp)
+        b.joint_history.append(bad)
+        assert b.joint_for_frame(frame) is good
+        pair = static_pair(frame, bad, camera_connected=True, robot_connected=True, manual_stationary=True)
+        assert pair.q_capture_rad is None and not pair.reliable_capture_pair
+    b.joint_history.remove(good)
+    assert b.joint_for_frame(frame) is None
+
+
+def corrupt_replay(path, fault, index=0):
+    manifest = path/'manifest.json'; data = json.loads(manifest.read_text())
+    record = data['records'][index]
+    if fault == 'missing_npz': record['frame']['arrays'] = 'missing.npz'
+    elif fault == 'bad_rgb':
+        np.savez(path/'bad.npz', rgb=np.zeros((240,320,3), np.float32), depth=np.zeros((240,320), np.uint16))
+        record['frame']['arrays'] = 'bad.npz'
+    elif fault == 'bad_joint': record['joint']['q_rad'] = [0]*5
+    elif fault == 'bad_pressure': record['pressure']['kpa'] = [float('nan')]*4
+    elif fault == 'bad_detection': record['detections']['observation_id'] = 'wrong-frame'
+    else: raise AssertionError(fault)
+    manifest.write_text(json.dumps(data))
+
+
+@pytest.mark.parametrize('fault', ['missing_npz', 'bad_rgb', 'bad_joint', 'bad_pressure', 'bad_detection'])
+def test_failed_first_replay_record_revokes_live_observations(tmp_path, observation_backend, fault):
+    path = generate_demo(tmp_path/'fixture')
+    frame, joint, pressure, detection = Replay(path).step()
+    b = observation_backend
+    live = Stamp.receive()
+    b.frame, b.joint = replace(frame, stamp=live), replace(joint, stamp=live)
+    b.pressure, b.detections = replace(pressure, stamp=live), detection
+    b.joint_history.append(b.joint)
+    b.manual_stationary = True
+    old_frame, old_joint = b.frame, b.joint
+    before = b.observation_generation
+    corrupt_replay(path, fault)
+    with pytest.raises((ValueError, FileNotFoundError)):
+        b.load_replay(path)
+    assert not b.replay_active and not b.replay_exhausted and b.replay is None
+    assert b.frame is b.joint is b.pressure is b.detections is None
+    assert not b.manual_stationary and not b.joint_history
+    assert b.observation_generation > before
+    # A completed but unconsumed old worker event cannot refill the cleared source.
+    b.workers['camera'].emit('sample', old_frame)
+    b.workers['robot'].emit('sample', old_joint)
+    b.poll()
+    assert b.frame is b.joint is None and not b.joint_history
+    assert b.sample_state(live, 'camera') == b.sample_state(live, 'robot') == 'DISCONNECTED'
+    b.replay_active = True  # Even an inconsistent mode flag cannot bless a LIVE stamp.
+    assert b.sample_state(live, 'camera') == b.sample_state(live, 'robot') == 'DISCONNECTED'
+    assert any('Replay load failed' in line for line in b.logs)
+
+
+def test_load_replay_publishes_first_once_eof_is_historical_then_stop_clears(tmp_path, observation_backend):
+    b = observation_backend
+    b.load_replay(generate_demo(tmp_path/'fixture'))
+    assert b.replay_active and b.frame.observation_id == 'synthetic_rgbd_0' and b.replay.index == 1
+    assert b.step_replay() and b.frame.observation_id == 'synthetic_rgbd_1'
+    assert b.step_replay() and b.frame.observation_id == 'synthetic_rgbd_2'
+    last = b.frame
+    b.manual_stationary = True
+    assert not b.step_replay()
+    assert b.frame is last and not b.replay_active and b.replay_exhausted
+    assert not b.manual_stationary and not b.joint_history
+    assert b.sample_state(last.stamp, 'camera') == 'HISTORICAL_END_OF_REPLAY'
+    assert not b.sample_active(last.stamp, 'camera')
+    generation = b.observation_generation
+    assert not b.step_replay() and b.observation_generation == generation and b.frame is last
+    with pytest.raises(ReadOnlyViolation): b.command('robot', 'connect', 'fake', 8080)
+    b.stop_replay()
+    assert not b.replay_active and not b.replay_exhausted and b.replay is None
+    assert b.frame is b.joint is b.pressure is b.detections is None
+
+
+def test_replay_is_not_published_until_first_record_validated(tmp_path, observation_backend, monkeypatch):
+    b = observation_backend
+    path = generate_demo(tmp_path/'fixture')
+    b.load_replay(path)
+    b.manual_stationary = True
+    original_step = Replay.step
+    calls = []
+    def validating_step(candidate):
+        calls.append(candidate.index)
+        assert b.replay is None and not b.replay_active
+        assert b.frame is b.joint is b.pressure is b.detections is None
+        assert not b.joint_history and not b.manual_stationary
+        return original_step(candidate)
+    monkeypatch.setattr(Replay, 'step', validating_step)
+    b.load_replay(path)
+    assert calls == [0] and b.replay_active
+    assert b.frame.observation_id == 'synthetic_rgbd_0'
+
+
+def test_disconnected_fake_sdk_then_bad_replay_does_not_restore_live(tmp_path):
+    sdk, serial = RobotSpy(), SerialSpy()
+    b = WorkbenchBackend(D435iObserver(), RobotObserver(mapping(), lambda: sdk), VacuumObserver(lambda _: serial))
+    try:
+        b.command('robot', 'connect', 'fake', 8080)
+        b.command('vacuum', 'connect', 'fake-serial')
+        wait_until(lambda: 'query' in sdk.calls and b.workers['vacuum'].device.alarms)
+        b.poll()
+        assert b.sample_state(b.joint.stamp, 'robot') == 'LIVE_VALID'
+        b.command('robot', 'disconnect'); b.command('vacuum', 'disconnect')
+        wait_until(lambda: all(not w.device.connected and not w.busy for w in b.workers.values()))
+        b.poll()
+        assert b.sample_state(b.joint.stamp, 'robot') == 'DISCONNECTED'
+        path = generate_demo(tmp_path/'fixture'); corrupt_replay(path, 'missing_npz')
+        with pytest.raises(FileNotFoundError): b.load_replay(path)
+        assert not b.replay_active and b.joint is None and not b.joint_history
+    finally:
+        b.close()
+    assert set(sdk.calls) <= {'connect', 'query', 'disconnect'}
+    assert serial.closed and serial.writes == []
+
+
+@pytest.mark.parametrize('operation', ['next', 'replace'])
+def test_replay_read_error_is_not_end_of_replay(tmp_path, observation_backend, operation):
+    b = observation_backend
+    path = generate_demo(tmp_path/'fixture')
+    corrupt_replay(path, 'bad_joint', index=1)
+    b.load_replay(path)
+    b.manual_stationary = True
+    before = b.observation_generation
+    with pytest.raises(ValueError):
+        if operation == 'next': b.step_replay()
+        else:
+            corrupt_replay(path, 'bad_joint')
+            b.load_replay(path)
+    assert not b.replay_active and not b.replay_exhausted and b.replay is None
+    assert b.frame is b.joint is b.pressure is b.detections is None
+    assert not b.manual_stationary and not b.joint_history
+    assert b.observation_generation > before

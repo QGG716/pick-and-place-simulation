@@ -33,7 +33,10 @@ eco65-workbench --replay outputs/workbench/demo \
 
 demo 是程序编写的 RGB-D、三组关节、四路压力及矩形分割夹具，来源为
 `REPLAY / original=SIMULATED`，设备时间 UNKNOWN，**不是实物采集或模型推理结果**。
-每次“下一条回放”只推进一条观测；过期后显示 STALE；停止回放清除预览和配对。
+加载回放先校验完整首条记录，成功后直接显示首帧；每次“下一条回放”只推进一条观测。
+过期后显示 STALE；末尾保留末帧并明确标记 `HISTORICAL_END_OF_REPLAY`，不再参与配对；
+读取错误和停止回放均清除预览、检测关联和配对。切换开始后加载失败也不会恢复旧实测数据；
+取消目录选择保留当前观测。连接设备前需先停止回放（包括已到末尾的回放）。
 没有人工确认静止时不计算观测到机器人坐标的配对；人工确认仍只标记为近似，可靠同步标志恒为 False。
 
 坐标计算需要主工程固定官方 URDF（SHA-256 `08b33a0588839f9fef4f08e13bb04ff27071c332f5ac40e688949a1ea5e9970b`）。
@@ -99,7 +102,8 @@ rgbd_geometry 的输入验证；vacuum 的接收解析器和协议映射。精�
   保留源码硬件核对映射 0x71 正压、0x72 负压；本阶段不发送这些指令。
   0x51/52、53/54、55/56 分别对应空压机、吸具总阀、真空泵，绝不解释为三个吸盘。
   每个通道在 receive/parse 时记录独立时间，GUI 消费不更新时间；旧心跳不会被新 ASCII 值默默替代。
-  ASCII 标记 `ASCII_DEBUG_UNCHECKED`，二进制 `CHECKED_BINARY`。报警锁存显示至重连，并显示年龄，只记日志。
+  ASCII 标记 `ASCII_DEBUG_UNCHECKED`，二进制 `CHECKED_BINARY`。连接期间显示锁存报警及年龄，只记日志；
+  断连后不沿用旧压力/报警缓存作为当前显示，重连清空锁存。
 
 窗口始终显示来源、连接、过期状态。实测姿态、仿真姿态和规划轨迹预览分别选择；轨迹滑块只选预览样本。
 退出只结束采集/关闭连接；没有本系统发起的真实运动任务，故不调用旧机器人 stop。
@@ -111,6 +115,13 @@ rgbd_geometry 的输入验证；vacuum 的接收解析器和协议映射。精�
 每条 record 绑定 frame（无 pickle 的 RGB/depth NPZ）、joint、pressure 与 detections。
 detections 必须引用原 `observation_id`，bool NPY mask 必须与原图同尺寸；越界路径、错配 ID 拒绝。
 保留原始 receive/process/device 信息，另加 replay presentation time 用于回放新鲜度，不重写为真实采集时间。
+`source=REPLAY` 只表示展示方式，`original_source` 标识原始采集来源；只允许原始 LIVE/LIVE 或
+SIMULATED/SIMULATED、同一非空原始 host_session 的候选继续检查接收时间差和人工静止条件。
+已经标记 REPLAY 的输入缺少原始来源时保留未知，不能将 REPLAY 当作采集来源，也不能与另一未知来源配对。
+回放切换会使未完成的旧推理结果失效；实测数据有效性始终依赖设备实际连接和新鲜度。
+
+外参文件必须显式声明 `unit="m"`；毫米、缺失、null、空值或其他单位直接拒绝，不换算或修正矩阵。
+非法替换立即停用旧外参，清除相关动态坐标及旧场景显示。训练外参仍显示待独立验证。
 
 实时推理通过 `--detector-config configs/workbench/detector.example.json`，先将路径换成现场已有权重和配置，
 并安装参考环境的 torch、GroundingDINO、segment-anything。点击“开始检测”才加载模型。
