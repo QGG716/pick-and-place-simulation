@@ -31,6 +31,8 @@
    仍为零或与 1.5 kg 相差超过 0.05 kg 时拒绝执行。不会擅自改写控制器工具参数。
 3. 到“受控执行”页，点击“填入当前实测”，明确输入一个邻近关节目标。第一次现场试验可在
    人员已确认的方向将一个关节改动约 0.5°；每关节与起点差值上限 10°。
+   填入按钮只复制当前位置，不会自动选择目标。未修改就规划会提示“目标与当前实测姿态基本相同”。
+   当前 Pilz PTP 最小运动量为 0.001 rad（约 0.0573°）；至少一个关节差需超过该值。
    保持默认时间放大倍数 **10**。输入顺序是 J1、J2、J3、J4、J5、J6，界面单位为度。
 4. 点击“从实测起点规划”，等待原生 MoveIt/Pilz 规划及最终发送路径检查完成。
    点击“查看轨迹预览”，拖动预览时间，并查看所选姿态的完整三维场景。
@@ -51,6 +53,11 @@
 “填入当前实测”会明确显示读取中、成功及读取时反馈年龄。未连接、空反馈或反馈超过
 100 ms 时显示原因并保留原目标，不再静默返回。此按钮只读关节；不会自动连接或运动。
 切换机器人地址前需要先断开；误点其他地址不会破坏当前连接。
+
+填入后直接规划曾因静止反馈的微小波动进入 Pilz，返回单个静止点（t=0.1 s），继而显示
+`INVALID_TIMED_TRAJECTORY`。现提前提示无需运动，并区分“读取实测未完成”与“规划未完成”。
+原生规划若仍返回少于两个点，也会明确拒绝，不补造时间点或签发执行许可。
+尚未规划成功或目标已改动时，“查看轨迹预览”和“执行这一条”不可用。
 
 ## 现场模型、工具及版本绑定
 
@@ -152,7 +159,8 @@ ctrl `V1.7.0-1a610b9`，plan `V1.7.0-b34c631`，algorithm `1.5.2-0cabec5b`。
 
 ```bash
 xvfb-run -a .venv/bin/pytest -q \
-  tests/test_controlled_execution.py tests/test_workbench_readonly.py \
+  tests/test_controlled_execution.py tests/test_controlled_read_ui.py \
+  tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py \
   tests/test_workbench_coordinates.py tests/test_workbench_installation.py
 xvfb-run -a .venv/bin/python -m unloading_sim.workbench.controlled.ui --ui-smoke
 ```
@@ -174,3 +182,7 @@ ECO65 seal contours）。受控界面启动/关闭、假轨迹图表及完整三
 运动/阀门命令。107 项读取 UI、执行监督和只读回归测试通过（新增 `tests/test_controlled_read_ui.py`）。
 实测记录位于本机 `outputs/execution_development/fill_current/after-fix-live-ui-report.json`。
 此记录只证明读取链路；实际轨迹运动与软件停止试验仍为 NOT_RUN。
+
+2026-11-11 静止目标修复：137 项定向 Python 测试通过，包含实测填入后直接规划的 Tk
+回归、静止反馈波动、Pilz 最小运动量、过期/非法反馈、原生空/单点轨迹拒绝，以及原有
+执行监督、只读、坐标和安装关系回归。新增测试不连接设备，也不修改原生返回轨迹。

@@ -103,6 +103,7 @@ class ControlledWorkbench(Workbench):
         ttk.Entry(row,textvariable=self.scale,width=8).pack(side='left',padx=8)
         self.plan_button=self.button(row,'从实测起点规划',self.plan_empty)
         self.preview_button=self.button(row,'查看轨迹预览',self.preview)
+        self.preview_button.configure(state='disabled')
         self.execute_button=self.button(row,'执行这一条',self.execute)
         self.execute_button.configure(state='disabled')
         self.button(row,'软件停止',self.stop_task)
@@ -140,6 +141,7 @@ class ControlledWorkbench(Workbench):
         self.package=None;self.previewed=False;self.goal_generation+=1
         self.planner.authority.invalidate()
         if hasattr(self,'execute_button'):self.execute_button.configure(state='disabled')
+        if hasattr(self,'preview_button'):self.preview_button.configure(state='disabled')
     def job(self,kind,function):
         if self.busy:raise RuntimeError('当前操作尚未完成')
         self.busy=True
@@ -157,6 +159,7 @@ class ControlledWorkbench(Workbench):
         self.job('fill',read)
         self.summary.set('正在读取当前实测关节…')
     def plan_empty(self):
+        if self.busy:raise RuntimeError('当前操作尚未完成')
         if not self.live_status.get('connected') or self.live_status['state'] not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('请先连接，并结束当前任务')
         q=np.deg2rad([float(v) for v in self.goal.get().split()]);scale=float(self.scale.get());self.invalidate()
         generation=self.goal_generation
@@ -220,17 +223,20 @@ class ControlledWorkbench(Workbench):
             if kind=='feedback':self.feedback_busy=False
             else:self.busy=False
             if error:
-                self.summary.set(error);self.backend.log(error)
+                label={'fill':'读取实测未完成','plan':'规划未完成','submit':'执行提交未完成','feedback':'实时反馈读取失败','close':'退出未完成'}.get(kind,kind)
+                message=f'{label}：{error}'
+                self.summary.set(message);self.backend.log(message)
                 if kind in ('submit','plan'):self.invalidate()
                 if kind=='close':self.closing=False
                 continue
             if kind=='fill':
                 self.goal.set(value['target_degrees'])
-                self.summary.set(f"已填入当前实测 J1—J6（度）；读取时反馈年龄 {value['feedback_age_s']*1000:.1f} ms。可修改邻近目标后规划。")
+                self.summary.set(f"已填入当前实测 J1—J6（度）；读取时反馈年龄 {value['feedback_age_s']*1000:.1f} ms。此时目标等于当前位置，请修改一个邻近关节目标后再规划。")
             elif kind=='plan':
                 generation,package=value
                 if generation==self.goal_generation:
                     self.package=package;p=package['prepared']
+                    self.preview_button.configure(state='normal')
                     self.summary.set(f"规划成功 · 原时长 {p['source_duration_s']:.3f} s · ×{p['time_scale']:g} 后 {p['send_duration_s']:.3f} s · 最终发送路径碰撞检查 PASS · 请预览")
             elif kind=='submit':self.task_id=value;self.summary.set('任务已提交；正在监测实际运动。')
             elif kind=='feedback':self.live_status=value

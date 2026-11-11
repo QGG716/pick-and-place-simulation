@@ -21,6 +21,26 @@ ROOT=Path(__file__).resolve().parents[4]
 POLICY=dict(schema='eco65_pair_collision_policy_v1',collision_margin_m=.002,
             mesh_error_reserve_m=.0002,required_pair_clearance_m=.0024,
             self_collision_clearance_m=.0024,contact_tolerance_m=.0004)
+# Installed Humble Pilz trajectory_generator_ptp.h: MIN_MOVEMENT = 0.001 rad.
+# Below this, PTP can return a single stationary point at t=0.1, not a timed
+# motion. Sensor variation after "fill current" must not become a motion task.
+MIN_GOAL_CHANGE_RAD=.001
+
+def validate_live_goal(sample,goal,now=None):
+    now=time.monotonic() if now is None else now
+    if (sample is None or sample.get('source')!='LIVE'
+            or not isinstance(sample.get('received_s'),(int,float))
+            or not 0<=now-sample['received_s']<=.1):
+        raise ValueError('FRESH_LIVE_START_REQUIRED')
+    q=np.asarray(sample.get('q',[]),float);goal=np.asarray(goal,float)
+    if q.shape!=(6,) or not np.isfinite(q).all():raise ValueError('INVALID_LIVE_START')
+    if goal.shape!=(6,) or not np.isfinite(goal).all() or np.max(abs(goal-q))>np.deg2rad(10):
+        raise ValueError('NEARBY_GOAL_REQUIRED_MAX_10_DEGREES')
+    delta=float(np.max(abs(goal-q)))
+    if delta<=MIN_GOAL_CHANGE_RAD:
+        raise ValueError(f'目标与当前实测姿态基本相同（最大关节差 {np.rad2deg(delta):.4f}°），无需运动。'
+                         '请先修改目标，再规划；至少一个关节差需大于 0.0573°（当前规划器最小运动量）。')
+    return q.tolist(),goal
 
 def file_hash(path):
     h=hashlib.sha256()
@@ -182,10 +202,7 @@ class EmptyPlanner:
     def request(self,q,**kw):
         return dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],scene_fingerprint=self.scene_hash,world=self.world,allowed_pairs=[['base_link','robot_mount_plate']],attachment=None,clearance_policy=self.clearance,stage='residence',planning_only=False,seed=6518,**kw)
     def plan(self,sample,goal,time_scale=10.):
-        if sample is None or sample.get('source')!='LIVE' or not 0<=time.monotonic()-sample['received_s']<=.1:raise ValueError('FRESH_LIVE_START_REQUIRED')
-        q=list(sample['q']);goal=np.asarray(goal,float)
-        if goal.shape!=(6,) or not np.isfinite(goal).all() or np.max(abs(goal-q))>np.deg2rad(10):raise ValueError('NEARBY_GOAL_REQUIRED_MAX_10_DEGREES')
-        if np.max(abs(goal-q))<1e-5:raise ValueError('NONZERO_GOAL_REQUIRED')
+        q,goal=validate_live_goal(sample,goal)
         self.build();binding=self.binding();self.authority.invalidate()
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         directory=Path(self.config['record_root'])/('plan-'+uuid.uuid4().hex);directory.mkdir(parents=True,exist_ok=True)
@@ -196,6 +213,8 @@ class EmptyPlanner:
             result=self.client.request(self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
             (directory/'native-plan.json').write_text(json.dumps(result,indent=2))
             if result['status']!='SUCCESS' or result.get('native_output_status')!='PASS':raise ValueError('NATIVE_PLAN_REJECTED:'+str(result.get('failure',result['status'])))
+            if len(result.get('points',[]))<2:
+                raise ValueError('原生规划器未生成可运动的时间轨迹（少于两个时间点）。请检查目标后重新规划；当前轨迹不可执行。')
             prepared=prepare(result['points'],self.limits,time_scale=time_scale,period=self.config['period_s'],reach_bound_m=self.reach_bound)
             checked=self.client.request(self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=600)
             (directory/'sent-path-check.json').write_text(json.dumps(checked,indent=2))

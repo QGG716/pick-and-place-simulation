@@ -1,14 +1,13 @@
 """Regression of real Tk read controls with a fake service; no device IO."""
 import os
 import time
-from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
 from unloading_sim.workbench.backend import DeviceRequestRejected,DeviceWorker
 from unloading_sim.workbench.controlled.ui import ManagedRobotView,live_target_sample
-from unloading_sim.workbench.controlled.planner import ROOT
+from unloading_sim.workbench.controlled.planner import ROOT,EmptyPlanner
 from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.ui import load_mapping
 
@@ -90,7 +89,10 @@ def test_actual_read_button_reports_disconnection_then_fills_then_rejects_stale(
     backend=ControlledBackend(D435iObserver(),view,VacuumObserver(),service)
     root=tk.Tk();root.withdraw()
     config=dict(snapshot=None,installation=ROOT/'configs/workbench/link1_base.example.json',host='192.168.1.19',port=8080,time_scale=10)
-    ui=ControlledWorkbench(root,backend,SimpleNamespace(authority=Authority()),config)
+    planner=EmptyPlanner(config,mapping,Authority())
+    def unexpected_build():raise AssertionError('A current-as-target click must not start native planning')
+    planner.build=unexpected_build
+    ui=ControlledWorkbench(root,backend,planner,config)
     def pump_until(predicate):
         end=time.monotonic()+3
         while not predicate():
@@ -107,6 +109,14 @@ def test_actual_read_button_reports_disconnection_then_fills_then_rejects_stale(
         assert ui.goal.get()=='10.0000 -20.0000 30.0000 -40.0000 50.0000 -60.0000'
         assert '已填入当前实测' in ui.summary.get()
         assert str(ui.execute_button['state'])=='disabled'
+        pump_until(lambda:ui.live_status.get('connected'))
+        ui.plan_button.invoke();pump_until(lambda:not ui.busy)
+        assert '规划未完成：目标与当前实测姿态基本相同' in ui.summary.get()
+        assert 'INVALID_TIMED_TRAJECTORY' not in ui.summary.get()
+        assert ui.package is None and str(ui.preview_button['state'])=='disabled'
+        assert str(ui.execute_button['state'])=='disabled'
+        ui.fill_button.invoke();pump_until(lambda:not ui.busy)
+        assert '已填入当前实测' in ui.summary.get()  # A later read clears the plan message.
         ui.safe(ui.connect_robot);pump_until(lambda:not ui.waiting_connection)
         assert len([c for c in service.calls if c[0]=='connect'])==1 and view.connected
         service.sample_mode='stale';ui.fill_button.invoke();pump_until(lambda:not ui.busy)
