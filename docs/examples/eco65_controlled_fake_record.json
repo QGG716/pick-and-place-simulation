@@ -1,0 +1,227 @@
+{
+  "scope": "FAKE_SDK_CONTROLLED_CLOCK_EXAMPLE_NOT_HARDWARE",
+  "hardware_execution": "NOT_RUN",
+  "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+  "source_trajectory": [
+    {
+      "t": 0.0,
+      "q": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "v": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "a": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "t": 0.13,
+      "q": [
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001,
+        0.001
+      ],
+      "v": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "a": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "t": 0.5,
+      "q": [
+        0.002,
+        0.002,
+        0.002,
+        0.002,
+        0.002,
+        0.002
+      ],
+      "v": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "a": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "prepared_summary": {
+    "period_s": 0.005,
+    "time_scale": 1,
+    "source_duration_s": 0.5,
+    "send_duration_s": 0.5,
+    "interpolation": "quintic_q_v_a_nonuniform_knots",
+    "collision_sampling": {
+      "reach_bound_m": 10.0,
+      "analytic_speed_bounds_rad_s": [
+        0.01442307692307693,
+        0.01442307692307693,
+        0.01442307692307693,
+        0.01442307692307693,
+        0.01442307692307693,
+        0.01442307692307693
+      ],
+      "maximum_pair_displacement_between_checks_m": 0.001,
+      "subdivisions_per_send": 18
+    }
+  },
+  "versions": {
+    "model": "SYNTHETIC_TEST_FIXTURE",
+    "tool": "SYNTHETIC_NO_PHYSICAL_PAYLOAD",
+    "scene": "SYNTHETIC_TEST_FIXTURE",
+    "mapping": "TEST_IDENTITY"
+  },
+  "event_excerpt": [
+    {
+      "kind": "accepted",
+      "monotonic_s": 10.0,
+      "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+      "monitor": {
+        "start_rad": 0.0001745329252,
+        "tracking_rad": 0.05235987756,
+        "tracking_dwell_s": 0.1,
+        "arrival_rad": 0.00872664626,
+        "stopped_rad_s": 0.00872664626,
+        "feedback_timeout_s": 0.1,
+        "dwell_s": 0.4,
+        "completion_timeout_s": 5.0,
+        "stop_timeout_s": 2.0,
+        "jitter_s": 0.002,
+        "max_send_gap_s": 0.009
+      },
+      "start_feedback": {
+        "source": "LIVE",
+        "sequence": 1,
+        "received_s": 10.0,
+        "q": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "alarm": false,
+        "enabled": true
+      }
+    },
+    {
+      "kind": "send",
+      "monotonic_s": 10.010000000000002,
+      "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+      "index": 0,
+      "due_s": 10.01,
+      "sent_s": 10.010000000000002,
+      "returned_s": 10.010000000000002,
+      "jitter_s": 1.7763568394002505e-15,
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sdk_code": 0
+    },
+    {
+      "kind": "feedback",
+      "monotonic_s": 10.005,
+      "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+      "sample": {
+        "source": "LIVE",
+        "sequence": 2,
+        "received_s": 10.005,
+        "q": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "alarm": false,
+        "enabled": true
+      },
+      "feedback_age_s": 0.0
+    },
+    {
+      "kind": "tracking",
+      "monotonic_s": 10.015000000000002,
+      "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+      "error_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "command_index": 0
+    },
+    {
+      "kind": "result",
+      "monotonic_s": 10.915000000000143,
+      "task_id": "eec078f8a2864c5cafa1c955441b6dfb",
+      "state": "SUCCEEDED"
+    }
+  ],
+  "full_event_count": 467,
+  "final_state": "SUCCEEDED"
+}

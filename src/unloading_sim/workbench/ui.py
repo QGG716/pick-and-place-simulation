@@ -16,7 +16,7 @@ from PIL import Image, ImageTk, ImageDraw
 
 from .backend import WorkbenchBackend
 from .contracts import Source, static_pair
-from .coordinates import CoordinateModel, Extrinsics, JointMapping, ToolFrame, rigid
+from .coordinates import CoordinateModel, Extrinsics, Installation, JointMapping, ToolFrame, rigid
 from .devices import D435iObserver, RobotObserver, VacuumObserver
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,11 +33,12 @@ def load_mapping(path):
 
 
 class Workbench:
-    def __init__(self, root, backend, *, snapshot=None, scene_input_root=None, detector_config=None):
+    def __init__(self, root, backend, *, snapshot=None, scene_input_root=None, detector_config=None, installation=None):
         self.root, self.backend = root, backend
         self.snapshot_path, self.detector_config = snapshot, detector_config
         self.scene_input_root = scene_input_root
         self.calibration = None
+        self.installation = Installation.load(installation) if installation else None
         self.detecting = False
         self.detect_busy = False
         self.detector = None
@@ -54,6 +55,10 @@ class Workbench:
         self._shown_detection = None
         self._closed = False
         self.tools = [ToolFrame.from_dict(t) for t in json.loads((ROOT/"configs/workbench/tool_frames.json").read_text())]
+        active_tool = self.tools[1]
+        if self.installation:
+            active_tool = self.installation.tool
+            self.tools = [active_tool] if active_tool else []
         self.world_from_base = np.eye(4)
         self.world_from_scene = np.eye(4)
         self.snapshot = None
@@ -67,9 +72,17 @@ class Workbench:
             self.world_from_scene = rigid(scene['T_W_D'])
             self.world_from_base = self.world_from_scene @ self.world_from_base
             self.coordinate_basis = "Viewer uses planning frame D; world means external W (+X into trailer, +Y left, +Z up). T_W_base = T_W_D @ T_D_base"
+        if self.installation:
+            # Scene geometry remains in D. Express its display transform in the
+            # user-defined world=base without modifying any frozen scene inputs.
+            if self.snapshot:
+                self.world_from_scene = np.linalg.inv(self.world_from_base) @ self.world_from_scene
+            self.world_from_base = self.installation.world_from_base.copy()
+            camera_mount = "相机随 link_1 转动" if self.installation.camera_parent_frame == "link_1" else "相机为外部固定支架"
+            self.coordinate_basis = f"现场定义：world 与机器人 base_link 原点和坐标轴重合。{camera_mount}；历史仿真场景保持原几何。"
         self.model = None
         try:
-            self.model = CoordinateModel(URDF, URDF_SHA, self.world_from_base, self.tools[1])
+            self.model = CoordinateModel(URDF, URDF_SHA, self.world_from_base, active_tool)
         except Exception as exc:
             backend.log("Model unavailable: " + str(exc))
         root.title("ECO65-B · Ubuntu observation workbench · READ ONLY")
@@ -188,8 +201,12 @@ class Workbench:
         bar = ttk.Frame(self.coords)
         bar.pack(fill="x")
         self.button(bar, "加载相机外参 JSON", self.choose_calibration)
-        self.tool_name = tk.StringVar(value=self.tools[1].name)
+        if self.installation:
+            self.button(bar, "加载实测工具 TCP", self.choose_tool)
+        current_tool = self.model.tool if self.model else (self.tools[-1] if self.tools else None)
+        self.tool_name = tk.StringVar(value=current_tool.name if current_tool else "正式吸具：TCP 待标定")
         combo = ttk.Combobox(bar, textvariable=self.tool_name, values=[t.name for t in self.tools], state="readonly", width=30)
+        self.tool_combo = combo
         combo.pack(side="left", padx=10)
         combo.bind("<<ComboboxSelected>>", lambda e: self.change_tool())
         self.stationary = tk.BooleanVar(value=False)
@@ -199,7 +216,11 @@ class Workbench:
         ttk.Label(self.coords, textvariable=self.calibration_text, foreground="#ffd17b", wraplength=1280).pack(fill="x", pady=12)
         self.pairing_text = tk.StringVar(value="未配对")
         ttk.Label(self.coords, textvariable=self.pairing_text, wraplength=1250).pack(fill="x", pady=6)
-        ttk.Label(self.coords, text="T_world_camera = T_world_base × T_base_link1(q_capture) × T_link1_camera", foreground=CYAN).pack(anchor="w", pady=10)
+        chain = ("外部固定相机：T_world_camera = T_base_camera（与机器人关节角无关）；吸具 TCP 需要实测标定。"
+                 if self.installation and self.installation.camera_parent_frame == "base_link"
+                 else "T_world_camera = T_world_base × T_base_link1(q_capture) × T_link1_camera")
+        self.camera_chain_text = tk.StringVar(value=chain)
+        ttk.Label(self.coords, textvariable=self.camera_chain_text, foreground=CYAN).pack(anchor="w", pady=10)
         self.coordinate_text = ScrolledText(self.coords, height=16, bg=BG, fg=TEXT, font=("DejaVu Sans Mono", 11), wrap="word", state="disabled")
         self.coordinate_text.pack(fill="both", expand=True)
         scene_bar = ttk.Frame(self.coords)
@@ -299,19 +320,51 @@ class Workbench:
         self.refresh(schedule=False)
         self.calibration_text.set("加载检查中；旧外参已停用")
         try:
-            self.calibration = Extrinsics.load(path)
+            calibration = Extrinsics.load(path)
+            if self.installation:
+                self.installation.check_camera(calibration)
+            self.calibration = calibration
         except Exception as exc:
             self.calibration_text.set("外参被拒绝 / 未加载: " + str(exc))
             self.notice.set(str(exc))
             raise
-        self.calibration_text.set(self.calibration.label + "\n父 link_1 → 子 camera_optical；矩阵把光学坐标转换到 link_1。")
+        parent = self.calibration.parent_frame
+        self.calibration_text.set(self.calibration.label + f"\n父 {parent} → 子 camera_optical；矩阵把光学坐标转换到 {parent}。")
+        if parent == "base_link":
+            self.camera_chain_text.set("外部固定相机：T_world_camera = T_world_base × T_base_camera（与机器人关节角无关）")
+        else:
+            self.camera_chain_text.set("T_world_camera = T_world_base × T_base_link1(q_capture) × T_link1_camera")
         self.backend.log("Loaded extrinsics SHA-256 " + self.calibration.sha256 + "; " + self.calibration.label)
 
     def change_tool(self):
         self._invalidate_scenes()
         if self.model:
             self.model.tool = next(t for t in self.tools if t.name == self.tool_name.get())
-        self.backend.log("Tool display profile changed; calibration probe remains 70 mm")
+        self.backend.log("Tool display profile changed; original camera calibration unchanged")
+
+    def choose_tool(self):
+        path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
+        if path:
+            self.load_tool(path)
+
+    def load_tool(self, path):
+        self._invalidate_scenes()
+        if self.model:
+            self.model.tool = None
+        self.tools = []
+        self.tool_combo.configure(values=[])
+        self.tool_name.set("正式吸具：TCP 待标定")
+        self.refresh(schedule=False)
+        raw = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+        if raw.get("unit") != "m" or not raw.get("status") or not raw.get("source"):
+            raise ValueError("TOOL_REQUIRES_METRES_STATUS_AND_SOURCE")
+        tool = ToolFrame.from_dict(raw)
+        self.tools = [tool]
+        self.tool_combo.configure(values=[tool.name])
+        if self.model:
+            self.model.tool = tool
+        self.tool_name.set(tool.name)
+        self.backend.log("Loaded tool TCP: " + tool.name + "; " + tool.status)
 
     def confirm_stationary(self):
         self.backend.manual_stationary = bool(self.stationary.get())
@@ -372,7 +425,7 @@ class Workbench:
             source += f" {self.plan[1][i]:.3f}s / NOT EXECUTION"
         scene_from_world = np.linalg.inv(self.world_from_scene)
         optical = scene_from_world @ self.model.camera(q, self.calibration)["T_world_camera"] if self.model and self.calibration else None
-        tcp = scene_from_world @ self.model.tcp(q) if self.model else None
+        tcp = scene_from_world @ self.model.tcp(q) if self.model and self.model.tool else None
         azimuth = {"前方斜视": -30, "前视": 0, "左侧": 90, "右侧": 270, "后视": 180}[self.scene_view.get()]
         self.backend.log("Rendering complete original scene: " + source)
         generation = (self.backend.observation_generation, self.scene_generation)
@@ -508,14 +561,17 @@ class Workbench:
         self.stationary.set(b.manual_stationary)
         details = (self.coordinate_basis + "\nT_W_D:\n" + str(np.round(self.world_from_scene, 5))
                    + "\nT_world_base:\n" + str(np.round(self.world_from_base, 5)))
-        if self.model:
+        if self.model and self.model.tool:
             details += "\n\nTool: " + self.model.tool.name + "\n" + self.model.tool.status + "\nT_link6_tcp:\n" + str(self.model.tool.matrix)
-        if self.snapshot and self.calibration and self.model:
-            deltas = self.model.installation_difference(np.zeros(6), self.calibration,
-                self.snapshot['scene']['permanent_camera']['T_link1_optical'], self.snapshot['tool']['T_flange_tcp'])
+        elif self.installation:
+            details += "\n\n正式吸具已安装；实际 TCP 平移和朝向待测量。未采用历史 70 mm 探针或 140 mm 吸具数值。\nT_link6_tcp: 未标定，不计算实际 TCP。"
+        if self.snapshot and self.calibration and self.model and self.calibration.parent_frame == "link_1":
+            camera_delta = np.linalg.inv(rigid(self.snapshot['scene']['permanent_camera']['T_link1_optical'])) @ self.calibration.matrix
             details += ("\n\nINSTALLATION DISAGREEMENT / 原仿真外壳保留；加载的标定光学坐标单独显示\n"
-                "T_nominal_camera_calibrated_camera:\n" + str(np.round(deltas['T_nominal_camera_calibrated_camera'], 6))
-                + "\nT_nominal_tcp_configured_tcp:\n" + str(np.round(deltas['T_nominal_tcp_configured_tcp'], 6)))
+                "T_nominal_camera_calibrated_camera:\n" + str(np.round(camera_delta, 6)))
+            if self.model.tool:
+                tool_delta = np.linalg.inv(rigid(self.snapshot['tool']['T_flange_tcp'])) @ self.model.tool.matrix
+                details += "\nT_nominal_tcp_configured_tcp:\n" + str(np.round(tool_delta, 6))
         if frame:
             capture_joint = b.joint_for_frame(frame)
             pairing = static_pair(frame, capture_joint, camera_connected=camera_active,
@@ -566,6 +622,7 @@ def main():
     p.add_argument("--config", type=Path)
     p.add_argument("--replay", type=Path)
     p.add_argument("--calibration", type=Path)
+    p.add_argument("--installation", type=Path, help="Explicit physical mounting and world/base definition")
     p.add_argument("--scene-snapshot", type=Path)
     p.add_argument("--scene-input-root", type=Path, help="Explicit archived input repository for historical snapshot config verification")
     p.add_argument("--detector-config", type=Path)
@@ -578,7 +635,7 @@ def main():
     mapping = load_mapping(ROOT / "configs/workbench/joint_mapping.json")
     backend = WorkbenchBackend(D435iObserver(), RobotObserver(mapping), VacuumObserver())
     root = tk.Tk()
-    ui = Workbench(root, backend, snapshot=a.scene_snapshot, scene_input_root=a.scene_input_root, detector_config=a.detector_config)
+    ui = Workbench(root, backend, snapshot=a.scene_snapshot, scene_input_root=a.scene_input_root, detector_config=a.detector_config, installation=a.installation)
     if a.config: ui.safe(ui.load_config, a.config)
     if a.calibration: ui.safe(ui.load_calibration, a.calibration)
     if a.replay:

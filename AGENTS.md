@@ -1,3 +1,36 @@
+# November 11 ECO65-B controlled empty execution (active override)
+
+The explicit current user request authorizes development on
+`feat/v0.6-eco65-ubuntu-real-integration` from the actual latest HEAD. This scope
+supersedes the old branch-only/no-SDK/stage-one prohibition below **only for**
+`unloading_sim.workbench.controlled` and its explicit entry. Default
+`eco65-workbench` remains read-only: preserve RobotObserver's three-call
+whitelist, DisabledExecution, replay source isolation and passive shutdown.
+Legacy enable_hardware and imported configuration never enable motion.
+
+User-confirmed premises: devices connected; coordinates/calibration checked;
+camera on link_1; world=robot base; ECO65-B rated payload 5 kg; suction tool
+mass 1.5 kg. Preserve historical calibration statuses as evidence; missing old
+acceptance reports are not a development gate. CAD-derived COM/inertia are
+explicit estimates, never measured evidence. Keep full geometry and inertials.
+
+Only an explicit operator click may submit one newly generated, source-bound,
+collision-checked, time-scaled native MoveIt empty trajectory from fresh real
+joints. No carton grasp, vacuum/valve/conveyor action, online scheduler or
+unplanned catch-up movement. No simulation flexible-contact, ideal-attachment,
+robot/mast or robot/tool exemptions. Retain only exact fixed mating/assembly
+interfaces and adjacent official links. Do not restore J1 direction or top-grasp
+height constraints; keep the 150 x 100 x 100 mm cartons and layout.
+
+Use rm_movej_canfd pure high-follow passthrough with SI internally, owned
+connection/UDP feedback, independent software-stop channel and one active task.
+Late sends, stale feedback, alarms, persistent errors or SDK errors stop sending.
+Never infer arrival/stop from a successful API return or preview time. Keep
+STOP_UNCONFIRMED latched without reconnect/resume. Constructors, imports,
+planning, development checks and fake tests never move physical equipment.
+User performs real low-speed arrival/stop trials; until then record NOT_RUN.
+See docs/eco65_controlled_execution.md for the executable entry and thresholds.
+
 # Active ECO65 native migration (2026-10-13)
 The current user request supersedes branch-specific FANUC instructions below.
 Work only on feat/v0.6-eco65-moveit2-native-single-carton, rooted at 3a84888.

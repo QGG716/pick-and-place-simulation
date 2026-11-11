@@ -1,0 +1,17 @@
+{
+  "schema": "eco65_controlled_empty_config_v1",
+  "snapshot": "outputs/workbench/scene_snapshot.json",
+  "installation": "outputs/workbench/installation.local.json",
+  "mapping": "configs/workbench/joint_mapping.json",
+  "record_root": "outputs/controlled_execution",
+  "host": "192.168.1.19",
+  "port": 8080,
+  "udp_port": 18089,
+  "tool_mass_kg": 1.5,
+  "robot_rated_payload_kg": 5,
+  "field_confirmation": "USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION",
+  "field_confirmation_note": "Current user confirms device connections, coordinates and calibration completed. Camera on link_1; world equals robot base. Historical evidence remains unchanged.",
+  "period_s": 0.005,
+  "time_scale": 10.0,
+  "monitor": {}
+}

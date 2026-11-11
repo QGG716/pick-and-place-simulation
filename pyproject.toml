@@ -33,6 +33,7 @@ unloading-layer1-pybullet-online-kuka = "unloading_sim.pybullet_online_kuka:main
 unloading-layer1-calibrate = "unloading_sim.calibration:main"
 unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
 eco65-workbench = "unloading_sim.workbench.ui:main"
+eco65-workbench-controlled = "unloading_sim.workbench.controlled.ui:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

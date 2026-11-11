@@ -1,0 +1,24 @@
+{
+  "schema": "eco65_workbench_installation_v1",
+  "world": {
+    "parent_frame": "world",
+    "child_frame": "base_link",
+    "unit": "m",
+    "definition": "world_equals_robot_base",
+    "matrix": [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]
+  },
+  "camera": {
+    "mount": "external_fixed",
+    "parent_frame": "base_link",
+    "child_frame": "camera_optical",
+    "status": "AWAITING_PHYSICAL_CALIBRATION"
+  },
+  "tool": {
+    "name": "installed_suction_tool",
+    "parent_frame": "link_6",
+    "unit": "m",
+    "matrix": null,
+    "status": "AWAITING_TCP_MEASUREMENT",
+    "source": "Installed suction tool; no measured flange-to-TCP transform supplied"
+  }
+}

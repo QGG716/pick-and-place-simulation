@@ -41,9 +41,10 @@ def load_config(path):
 
 
 class ExecutionPort(Protocol):
-    """Next-stage boundary: planned SI trajectory plus model/frame provenance.
+    """SI trajectory boundary with model/frame provenance.
 
-    No implementation is registered by stage one. Do not pass a vendor handle
+    The default stage-one backend registers DisabledExecution; the explicit
+    controlled entry registers ExecutionService. Do not pass a vendor handle
     through this interface or equate preview time with physical progress.
     """
     def submit(self, trajectory: dict) -> str: ...

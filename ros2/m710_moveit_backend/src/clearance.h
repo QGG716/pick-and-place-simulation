@@ -39,7 +39,15 @@ public:
             NativeDeadlinePtr deadline={},const Json& request=nullptr)
     : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode),deadline_(std::move(deadline)) {
     const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
-    eco65_=policy.at("schema")=="eco65_native_process_clearance_v1";
+    eco65_=policy.at("schema")=="eco65_native_process_clearance_v1" ||
+      policy.at("schema")=="eco65_native_empty_clearance_v1";
+    if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
+       (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
+        request.is_null() || request.contains("process_policy") ||
+        !request.at("attachment").is_null() ||
+        request.at("allowed_pairs")!=Json::array({Json::array({"base_link","robot_mount_plate"})}) ||
+        request.at("identity").value("policy_scope",std::string())!="CONTROLLED_EMPTY_NO_CONTACT"))
+      throw std::runtime_error("EMPTY_MOTION_SCOPE_INVALID");
     if(eco65_) {
       const auto& source=policy.at("source_policy");
       if((source.at("schema")!="eco65_pair_collision_policy_v1" && !eco65HasMastPolicy(source)) ||
