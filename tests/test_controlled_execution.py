@@ -206,7 +206,8 @@ def test_stop_channel_has_only_fixed_stop_command_and_parses_split_reply(monkeyp
     channel.close();assert sock.closed
 
 
-def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monkeypatch):
+@pytest.mark.parametrize('controller_mass',[1.5,3.])
+def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monkeypatch,controller_mass):
     """Exercise actual IPC/record lifecycle with fake transport; never load SDK."""
     import multiprocessing as mp
     import time
@@ -232,7 +233,7 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
         def disconnect(self):self.connected=False;self.deletes+=1
     monkeypatch.setattr(svc,'RealmanTransport',FakeTransport)
     parent,child=mp.Pipe();stop=threading.Event()
-    config=dict(record_root=str(tmp_path),tool_mass_kg=1.5,monitor=dict(dwell_s=.02,jitter_s=.004,max_send_gap_s=.01))
+    config=dict(record_root=str(tmp_path),tool_mass_kg=1.5,controller_payload_kg=controller_mass,monitor=dict(dwell_s=.02,jitter_s=.004,max_send_gap_s=.01))
     thread=threading.Thread(target=svc.worker,args=(child,None,config,stop),daemon=True);thread.start()
     ident=0
     def call(op,arg=None):
@@ -240,7 +241,8 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
         ident+=1;parent.send((ident,op,arg));assert parent.poll(3);_,ok,value=parent.recv();return ok,value
     try:
         assert call('connect',('fake',8080))[0]
-        for mass,code,reason in [(0.,0,'CONTROLLER_PAYLOAD_MUST_MATCH_1_5_KG'),(1.5,1,'CONTROLLER_TOOL_QUERY_FAILED')]:
+        mismatch='CONTROLLER_PAYLOAD_MUST_MATCH_'+f'{controller_mass:g}'.replace('.','_')+'_KG'
+        for mass,code,reason in [(0.,0,mismatch),(1.5,1,'CONTROLLER_TOOL_QUERY_FAILED')]:
             instances[0].payload=mass;instances[0].tool_code=code
             ok,check=call('check_payload');assert ok and not check['matches']
             ok,why=call('submit',dict(prepared=prepare(points(),LIMITS,10)))
@@ -250,7 +252,7 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
         for p in rejected:
             assert json.loads(p.read_text())['hardware_motion']=='NOT_STARTED'
             assert 'payload_check' in json.loads((p.parent/'controller.json').read_text())
-        instances[0].payload=1.5;instances[0].tool_code=0
+        instances[0].payload=controller_mass;instances[0].tool_code=0
         ok,check=call('check_payload');assert ok and check['matches']
         ok,task=call('submit',dict(prepared=prepare(points(),LIMITS,10)));assert ok
         queries=instances[0].tool_queries
@@ -306,6 +308,7 @@ def test_full_geometry_and_mass_are_preserved_without_simulation_exemptions():
     assert len(new.findall('.//collision'))==len(old.findall('.//collision'))==715
     assert len(p.world)==928
     assert p.mass['mass_kg']==1.5 and min(np.linalg.eigvalsh(p.mass['inertia_com_flange_kg_m2']))>0
+    assert p.binding()['controller_payload_kg']==3.
     for link in old.findall('link'):
         if link.find('inertial') is not None:
             new_link=new.find(f"link[@name='{link.get('name')}']")

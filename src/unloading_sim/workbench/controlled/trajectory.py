@@ -12,6 +12,14 @@ def digest(x):
     return hashlib.sha256(json.dumps(x,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
 
 
+def expected_controller_payload(config):
+    """Controller test setting is distinct from the physical tool mass model."""
+    mass=float(config.get('controller_payload_kg',config.get('tool_mass_kg',1.5)))
+    if not np.isfinite(mass) or not 0<mass<=float(config.get('robot_rated_payload_kg',5.)):
+        raise ValueError('INVALID_CONTROLLER_PAYLOAD_SETTING')
+    return mass
+
+
 @dataclass(frozen=True)
 class Limits:
     lower: tuple

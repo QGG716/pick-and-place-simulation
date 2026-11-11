@@ -14,6 +14,13 @@ mass 1.5 kg. Preserve historical calibration statuses as evidence; missing old
 acceptance reports are not a development gate. CAD-derived COM/inertia are
 explicit estimates, never measured evidence. Keep full geometry and inertials.
 
+The November 11 explicit user request sets the controller payload to 3 kg for
+empty tests. This is controller_payload_kg, distinct from the 1.5 kg physical
+tool model; do not relabel 3 kg as a measured tool mass. The authorized one-time
+configuration created/selected Empty3kg after Arm_Tip modification was rejected,
+preserving its pose and COM. Ordinary startup/connect/import/preview still never
+write tool configuration. Submit checks the explicit controller setting again.
+
 Only an explicit operator click may submit one newly generated, source-bound,
 collision-checked, time-scaled native MoveIt empty trajectory from fresh real
 joints. No carton grasp, vacuum/valve/conveyor action, online scheduler or

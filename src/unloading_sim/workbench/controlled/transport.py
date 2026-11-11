@@ -14,11 +14,21 @@ import os
 import hashlib
 from collections import deque
 import numpy as np
-from .trajectory import inverse_mapping
+from .trajectory import inverse_mapping,expected_controller_payload
 
 def payload_matches(tool,mass):
     try:return np.isfinite(float(tool['payload'])) and abs(float(tool['payload'])-mass)<=.05
     except (TypeError,ValueError,KeyError):return False
+
+def controller_has_alarm(data):
+    # Gen-3 sends err:[0] for no system error. A nonempty zero-valued list is
+    # truthy in Python; inspect codes instead. Malformed packets are not evidence.
+    system=data['err'];joints=data['joint_status']['joint_err_code']
+    if type(system) is int:system=[system]
+    if (not isinstance(system,list) or not system or not isinstance(joints,list)
+            or len(joints)!=6 or any(type(x) is not int for x in system+joints)):
+        raise ValueError('INVALID_CONTROLLER_ERROR_CODES')
+    return any(x!=0 for x in system+joints)
 
 class StopChannel:
     """Dedicated controller TCP socket, independent of SDK global locks.
@@ -94,7 +104,7 @@ class RealmanTransport:
             self.capabilities['python_sdk_version']=importlib.metadata.version('Robotic_Arm')
             self.capabilities['send_configuration']=dict(period_s=.005,follow=True,trajectory_mode=0,radio=0,expand=0,units='SDK_DEGREES_INTERNAL_RADIANS')
             tool=get('rm_get_current_tool_frame')
-            self.capabilities['payload_agrees']=payload_matches(tool,self.config['tool_mass_kg'])
+            self.capabilities['payload_agrees']=payload_matches(tool,expected_controller_payload(self.config))
             self.capabilities['software_stop']=self.stop_api+'; NOT hardware emergency stop'
             self.saved_udp=get('rm_get_realtime_push')
             if get('rm_get_arm_run_mode')!=1:raise RuntimeError('REAL_CONTROLLER_MODE_REQUIRED')
@@ -153,7 +163,7 @@ class RealmanTransport:
                             received_utc_ns=sec*10**9+nsec,
                             controller_sample_time='UNKNOWN',velocity_source='MEASURED_UDP_SPEED' if speed.shape==(6,) else 'FINITE_DIFFERENCE_OF_ACTUAL_UDP_SAMPLES',
                             enabled=all(x==1 for x in j['joint_en_flag']),
-                            alarm=bool(data['err'] or any(j['joint_err_code'])),raw=data)
+                            alarm=controller_has_alarm(data),raw=data)
                 self.latest=sample;previous=sample
             except socket.timeout:continue
             except (OSError,ValueError,KeyError,TypeError):

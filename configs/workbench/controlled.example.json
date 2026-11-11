@@ -8,6 +8,8 @@
   "port": 8080,
   "udp_port": 18089,
   "tool_mass_kg": 1.5,
+  "controller_payload_kg": 3.0,
+  "controller_payload_basis": "USER_REQUESTED_EMPTY_TEST_3_KG",
   "robot_rated_payload_kg": 5,
   "field_confirmation": "USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION",
   "field_confirmation_note": "Current user confirms device connections, coordinates and calibration completed. Camera on link_1; world equals robot base. Historical evidence remains unchanged.",

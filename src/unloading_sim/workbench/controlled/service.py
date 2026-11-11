@@ -8,6 +8,7 @@ import time
 import uuid
 from .engine import Supervisor,MonitorConfig,TERMINAL
 from .transport import RealmanTransport,payload_matches
+from .trajectory import expected_controller_payload
 
 
 def read_controller_payload(transport,mass):
@@ -23,8 +24,9 @@ def payload_error(result):
     if result['sdk_code']:
         return f"CONTROLLER_TOOL_QUERY_FAILED: 工具负载读取失败，SDK 返回 {result['sdk_code']}；未发送运动。"
     tool=result['tool'] if isinstance(result['tool'],dict) else {}
-    return (f"CONTROLLER_PAYLOAD_MUST_MATCH_1_5_KG: 控制器当前工具 {tool.get('name','—')} 的负载为 "
-            f"{tool.get('payload','未知')} kg，需要 {result['required_kg']:g} kg。请在控制器中选择/设置已确认的吸具负载，"
+    mass_code=f"{result['required_kg']:g}".replace('.','_')
+    return (f"CONTROLLER_PAYLOAD_MUST_MATCH_{mass_code}_KG: 控制器当前工具 {tool.get('name','—')} 的负载为 "
+            f"{tool.get('payload','未知')} kg，需要 {result['required_kg']:g} kg。请在控制器中选择/设置本次确认的控制器负载，"
             '然后点击“刷新工具负载（只读）”并重新规划。5 kg 是机械臂额定能力。未发送运动。')
 
 
@@ -79,7 +81,7 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                 elif op=='check_payload':
                     if not transport.connected:raise RuntimeError('DISCONNECTED')
                     if engine.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
-                    value=read_controller_payload(transport,config['tool_mass_kg'])
+                    value=read_controller_payload(transport,expected_controller_payload(config))
                 elif op=='submit':
                     ticket=arg.get('cancel_epoch');arg=arg.get('package',arg)
                     if not transport.connected:raise RuntimeError('DISCONNECTED')
@@ -95,7 +97,7 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                             stop_event.clear()
                     else:stop_event.clear()
                     # No active sender while this bounded TCP query occurs.
-                    payload=read_controller_payload(transport,config['tool_mass_kg'])
+                    payload=read_controller_payload(transport,expected_controller_payload(config))
                     transport.capabilities['submit_tool_frame']=payload['tool']
                     (task_dir/'controller.json').write_text(json.dumps(transport.capabilities,indent=2))
                     if not payload['matches']:raise RuntimeError(payload_error(payload))

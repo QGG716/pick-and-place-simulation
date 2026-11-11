@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 from scipy.spatial.transform import Rotation
 from ..coordinates import Installation
-from .trajectory import Limits, digest, prepare
+from .trajectory import Limits, digest, prepare,expected_controller_payload
 
 ROOT=Path(__file__).resolve().parents[4]
 POLICY=dict(schema='eco65_pair_collision_policy_v1',collision_margin_m=.002,
@@ -53,6 +53,9 @@ def load_config(path):
     if c.get('schema')!='eco65_controlled_empty_config_v1':raise ValueError('CONTROLLED_CONFIG_REQUIRED')
     if c.get('period_s')!=.005:raise ValueError('REVIEWED_CANFD_PERIOD_MUST_BE_5_MS')
     if c.get('tool_mass_kg')!=1.5 or c.get('robot_rated_payload_kg')!=5:raise ValueError('CONFIRMED_MASS_CHANGED')
+    controller_mass=expected_controller_payload(c)
+    if controller_mass!=c['tool_mass_kg'] and not (controller_mass==3. and c.get('controller_payload_basis')=='USER_REQUESTED_EMPTY_TEST_3_KG'):
+        raise ValueError('CONTROLLER_TEST_PAYLOAD_REQUIRES_EXPLICIT_FIELD_SETTING')
     if c.get('field_confirmation')!='USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION':raise ValueError('FIELD_CONTEXT_MISSING')
     for k in ('snapshot','installation','mapping','record_root'):
         c[k]=str((ROOT/c[k]).resolve())
@@ -73,6 +76,8 @@ class EmptyPlanner:
         return dict(files=current,model=self.model_hash,scene=self.scene_hash,
                     implementation_commit=self.commit,
                     joint_mapping=asdict(self.mapping),tool_mass_properties=self.mass,
+                    controller_payload_kg=expected_controller_payload(self.config),
+                    controller_payload_basis=self.config.get('controller_payload_basis','MATCH_PHYSICAL_TOOL_MASS'),
                     field_confirmation=self.config['field_confirmation'],
                     camera_mount='link_1',optical_extrinsics_use='NOT_USED_BY_JOINT_GOAL',
                     world_from_base=np.eye(4).tolist(),source_snapshot_geometry_only=True)

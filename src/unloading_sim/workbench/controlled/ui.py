@@ -14,7 +14,7 @@ from ..backend import WorkbenchBackend,DeviceRequestRejected
 from ..contracts import JointSample,Stamp
 from ..devices import D435iObserver,VacuumObserver
 from .planner import ROOT,EmptyPlanner,load_config
-from .trajectory import Authority
+from .trajectory import Authority,expected_controller_payload
 from .service import ExecutionService,payload_error
 from .transport import payload_matches
 from .engine import TERMINAL
@@ -86,7 +86,7 @@ class ControlledWorkbench(Workbench):
         root.title('ECO65-B · 单条低速空载轨迹 · 受控执行')
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
         labels[0].configure(text='ECO65-B / 单条低速空载执行')
-        labels[1].configure(text='现场设备与坐标标定按用户已确认配置；吸具 1.5 kg。软件停止不是硬件急停。')
+        labels[1].configure(text=f"现场设备与坐标标定按用户已确认配置；吸具模型 {config.get('tool_mass_kg',1.5):g} kg，控制器设定 {expected_controller_payload(config):g} kg。软件停止不是硬件急停。")
         self.calibration_text.set('沿用现场已确认关系：相机在 link_1，world=base；本任务为关节目标，不调用训练相机外参。')
         self.robot_host.set(config['host']);self.robot_port.set(str(config['port']))
         tab=ttk.Frame(self.tabs,padding=12);self.tabs.add(tab,text='受控执行');self.tabs.select(tab)
@@ -176,7 +176,7 @@ class ControlledWorkbench(Workbench):
         caps=self.live_status.get('capabilities',{})
         if 'payload_check' in caps:return caps['payload_check']
         tool=caps.get('submit_tool_frame',caps.get('rm_get_current_tool_frame',{}).get('value',{}))
-        mass=self.control_config.get('tool_mass_kg',1.5)
+        mass=expected_controller_payload(self.control_config)
         return dict(tool=tool,matches=payload_matches(tool,mass),required_kg=mass,sdk_code=0)
     def refresh_payload(self):
         if self.busy:raise RuntimeError('当前操作尚未完成')
@@ -266,7 +266,7 @@ class ControlledWorkbench(Workbench):
             elif kind=='feedback':self.live_status=value
             elif kind=='payload':
                 self.live_status.setdefault('capabilities',{})['payload_check']=value
-                self.summary.set('控制器吸具负载核对通过；请重新规划并预览。' if value['matches'] else payload_error(value))
+                self.summary.set('控制器负载核对通过；请重新规划并预览。' if value['matches'] else payload_error(value))
             elif kind=='close':
                 super().close();return
         robot_worker=self.backend.workers['robot']
@@ -279,17 +279,18 @@ class ControlledWorkbench(Workbench):
         payload_check=self.controller_payload();tool=payload_check['tool']
         if not isinstance(tool,dict):tool={}
         payload=tool.get('payload','—')
+        required=expected_controller_payload(self.control_config)
         if not s.get('connected'):
             self.payload_label.configure(text='工具负载：等待连接后读取')
         elif payload_check['matches']:
-            self.payload_label.configure(text=f"最近读取工具 {tool.get('name','—')} · 吸具负载 {payload} kg，核对通过；提交前仍会重新读取。")
+            self.payload_label.configure(text=f"最近读取工具 {tool.get('name','—')} · 控制器负载 {payload} kg（本次要求 {required:g} kg），核对通过；提交前仍会重新读取。")
         else:
-            self.payload_label.configure(text=f"执行未就绪：最近读取工具 {tool.get('name','—')} 负载 {payload} kg，需要 1.5 kg。请在控制器选择/设置已确认的吸具负载，再刷新工具负载。仍可规划和预览。")
+            self.payload_label.configure(text=f"执行未就绪：最近读取工具 {tool.get('name','—')} 负载 {payload} kg，需要 {required:g} kg。请在控制器选择/设置本次确认的负载，再刷新工具负载。仍可规划和预览。")
             self.execute_button.configure(state='disabled')
         if self.planning_progress:
             message,started=self.planning_progress
             self.summary.set(f'{message} · 本阶段已用 {time.monotonic()-started:.1f} s（尚未运动）')
-        self.execution_status.set(f"受控模式 · {'已连接' if s.get('connected') else '未连接'} · task_id={s.get('task_id') or '—'} · {s['state']} · {s.get('reason','')} · 最近读取工具负载 {payload} kg（需要 1.5 kg）")
+        self.execution_status.set(f"受控模式 · {'已连接' if s.get('connected') else '未连接'} · task_id={s.get('task_id') or '—'} · {s['state']} · {s.get('reason','')} · 最近读取工具负载 {payload} kg（需要 {required:g} kg）")
         def fmt(x):return '—' if x is None else ' '.join(f'{v:.3f}' for v in np.rad2deg(x))
         age=s.get('feedback_age_s')
         self.actual_text.set(f"实测 °: {fmt(s.get('actual_q'))}\n指令 °: {fmt(s.get('command_q'))}\n跟踪误差 °: {fmt(s.get('tracking_error_rad'))}\n距目标误差 °: {fmt(s.get('goal_error_rad'))}\n反馈年龄: {'—' if age is None else f'{age*1000:.1f} ms'} · 发送 {s.get('sent_points',0)}/{s.get('total_points',0)} · 到位确认: {s.get('arrival_confirmed',False)}")
