@@ -106,6 +106,8 @@ def run(output,*,pose_ids=None,mesh_only=False):
                 scope=SCOPE,elapsed_s=perf_counter()-began)),flush=True)
             save(output/'runtime-collision-report.json',report)
         report['all_requested_pairs_queried']=all(p['unknown_pair_count']==0 for p in report['poses'])
+        from unloading_sim.s50_compactness import summarize_samples
+        report['compactness_summary']=summarize_samples(p['compactness'] for p in report['poses'] if p.get('compactness'))
         report['elapsed_s']=perf_counter()-began
         report['status']=('DIAGNOSTIC_QUERIES_COMPLETED_NOT_TASK_QUALIFIED' if report['all_requested_pairs_queried']
             else 'DIAGNOSTIC_QUERY_UNCERTAINTY_RETAINED')

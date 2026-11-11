@@ -2,6 +2,7 @@ schema_version: robot_load_limits_v1
 model: huayan_s50_2000
 model_id: huayan_s50_2000
 model_usage: installed_task_model_pending_qualification
+task_model_role: generator_input
 cad_preview_config: huayan_s50_2000_cad_preview.yaml
 model_revision: independent_task_generator_20261111_controller_mapping_pending
 generated_definition_schema: s50_task_model_v1

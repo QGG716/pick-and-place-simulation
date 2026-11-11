@@ -1,0 +1,811 @@
+{
+  "status": "DIAGNOSTIC_QUERIES_COMPLETED_NOT_TASK_QUALIFIED",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+  "scene_context": {
+    "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "world_from_physical_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "world_from_model_base": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "initial_carton_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "conveyor_height_m": 0.6
+  },
+  "obstacle_count": 148,
+  "initial_carton_count": 40,
+  "poses": 15,
+  "queried_pairs": 20520,
+  "unknown_pairs": 0,
+  "elapsed_s": 200.99252703785896,
+  "full_report": {
+    "path": "/root/m710-gap-search-20261107/rootfs/work-s50-mount-entry-20261111-v1/outputs/s50_mount_entry_20261111/collision/runtime-collision-report.json",
+    "bytes": 30478387,
+    "sha256": "30dbda7cae452fe6b32a1e519d72949dafd36722fd5c95b395883268695ccba0"
+  },
+  "compactness_summary": {
+    "schema": "s50_component_compactness_summary_v1",
+    "sample_count": 15,
+    "phases": {
+      "CAD_DIAGNOSTIC": {
+        "all_robot": {
+          "sample_count": 15,
+          "all_samples_known": true,
+          "minimum_sampled_distance_m": 0.4139108671303065,
+          "minimum_configuration": {
+            "pose_id": "cad_q0",
+            "q_rad": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "conveyor_height_m": 0.6,
+            "pair": {
+              "kind": "robot_environment",
+              "relation": "UNFILTERED_DIAGNOSTIC_PAIR",
+              "first": {
+                "link": "s50_base",
+                "geometry": "s50_base_0"
+              },
+              "second": {
+                "object": "conveyor_transverse",
+                "category": "conveyor",
+                "geometry": "frozen_convex_solid",
+                "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+                "is_bounding_proxy": false,
+                "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+                "vertex_count": 8,
+                "triangle_count": 12
+              },
+              "status": "QUERIED",
+              "intersects": false,
+              "surface_distance_m": 0.4139108671303065,
+              "unsigned_separation_m": 0.4139108671303065,
+              "nearest_points_world": [
+                [
+                  -1.6623999983072282,
+                  0.15037038998561908,
+                  0.9201069302856922
+                ],
+                [
+                  -1.4000000000000004,
+                  0.15037038998561897,
+                  0.6
+                ]
+              ],
+              "nearest_points_valid": true,
+              "contacts": [],
+              "reported_contact_count": 0,
+              "contact_limit": 8,
+              "contacts_truncated": false,
+              "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+              "nearest_point_segment_length_m": 0.41391086713030645,
+              "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+            }
+          },
+          "horizontal_extrema": {
+            "x_min": {
+              "value_m": -0.6409219714033807,
+              "q_rad": [
+                0.4,
+                -0.55,
+                0.85,
+                -0.35,
+                -0.6,
+                0.2
+              ],
+              "pose_id": "coupled_b"
+            },
+            "x_max": {
+              "value_m": 0.1876000016927719,
+              "q_rad": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "cad_q0"
+            },
+            "y_min": {
+              "value_m": -0.746265441897115,
+              "q_rad": [
+                0.0,
+                0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_positive"
+            },
+            "y_max": {
+              "value_m": 0.7462771918108886,
+              "q_rad": [
+                0.0,
+                -0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_negative"
+            }
+          },
+          "maximum_sampled_radius_m": 0.8358726270691839,
+          "maximum_radius_configuration": {
+            "pose_id": "axis_2_negative",
+            "q_rad": [
+              0.0,
+              -0.35,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "any_intersection": false
+        },
+        "active_links": {
+          "sample_count": 15,
+          "all_samples_known": true,
+          "minimum_sampled_distance_m": 0.5439887650882713,
+          "minimum_configuration": {
+            "pose_id": "axis_1_negative",
+            "q_rad": [
+              -0.35,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "conveyor_height_m": 0.6,
+            "pair": {
+              "kind": "robot_environment",
+              "relation": "UNFILTERED_DIAGNOSTIC_PAIR",
+              "first": {
+                "link": "s50_link_1",
+                "geometry": "s50_link_1_0"
+              },
+              "second": {
+                "object": "conveyor_transverse",
+                "category": "conveyor",
+                "geometry": "frozen_convex_solid",
+                "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+                "is_bounding_proxy": false,
+                "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+                "vertex_count": 8,
+                "triangle_count": 12
+              },
+              "status": "QUERIED",
+              "intersects": false,
+              "surface_distance_m": 0.5439887650882713,
+              "unsigned_separation_m": 0.5439887650882713,
+              "nearest_points_world": [
+                [
+                  -1.7207000194494837,
+                  0.1510669778131451,
+                  1.03940331594944
+                ],
+                [
+                  -1.4000000000000004,
+                  0.1510669778131452,
+                  0.6000000000000001
+                ]
+              ],
+              "nearest_points_valid": true,
+              "contacts": [],
+              "reported_contact_count": 0,
+              "contact_limit": 8,
+              "contacts_truncated": false,
+              "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+              "nearest_point_segment_length_m": 0.5439887650882712,
+              "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+            }
+          },
+          "horizontal_extrema": {
+            "x_min": {
+              "value_m": -0.6409219714033807,
+              "q_rad": [
+                0.4,
+                -0.55,
+                0.85,
+                -0.35,
+                -0.6,
+                0.2
+              ],
+              "pose_id": "coupled_b"
+            },
+            "x_max": {
+              "value_m": 0.12949858605861664,
+              "q_rad": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "cad_q0"
+            },
+            "y_min": {
+              "value_m": -0.746265441897115,
+              "q_rad": [
+                0.0,
+                0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_positive"
+            },
+            "y_max": {
+              "value_m": 0.7462771918108886,
+              "q_rad": [
+                0.0,
+                -0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_negative"
+            }
+          },
+          "maximum_sampled_radius_m": 0.8358726270691839,
+          "maximum_radius_configuration": {
+            "pose_id": "axis_2_negative",
+            "q_rad": [
+              0.0,
+              -0.35,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "any_intersection": false
+        },
+        "elbow": {
+          "sample_count": 15,
+          "all_samples_known": true,
+          "minimum_sampled_distance_m": 0.7631155689015752,
+          "minimum_configuration": {
+            "pose_id": "coupled_b",
+            "q_rad": [
+              0.4,
+              -0.55,
+              0.85,
+              -0.35,
+              -0.6,
+              0.2
+            ],
+            "conveyor_height_m": 0.6,
+            "pair": {
+              "kind": "robot_environment",
+              "relation": "UNFILTERED_DIAGNOSTIC_PAIR",
+              "first": {
+                "link": "s50_link_2",
+                "geometry": "s50_link_2_0"
+              },
+              "second": {
+                "object": "conveyor_transverse",
+                "category": "conveyor",
+                "geometry": "frozen_convex_solid",
+                "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+                "is_bounding_proxy": false,
+                "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+                "vertex_count": 8,
+                "triangle_count": 12
+              },
+              "status": "QUERIED",
+              "intersects": false,
+              "surface_distance_m": 0.7631155689015752,
+              "unsigned_separation_m": 0.7631155689015752,
+              "nearest_points_world": [
+                [
+                  -2.002904143952156,
+                  0.02208509054798906,
+                  1.067816165502319
+                ],
+                [
+                  -1.4000000000000004,
+                  0.022085090547989017,
+                  0.6000000000000001
+                ]
+              ],
+              "nearest_points_valid": true,
+              "contacts": [],
+              "reported_contact_count": 0,
+              "contact_limit": 8,
+              "contacts_truncated": false,
+              "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+              "nearest_point_segment_length_m": 0.7631155689015752,
+              "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+            }
+          },
+          "horizontal_extrema": {
+            "x_min": {
+              "value_m": -0.6409219714033807,
+              "q_rad": [
+                0.4,
+                -0.55,
+                0.85,
+                -0.35,
+                -0.6,
+                0.2
+              ],
+              "pose_id": "coupled_b"
+            },
+            "x_max": {
+              "value_m": 0.001748920896505814,
+              "q_rad": [
+                0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_1_positive"
+            },
+            "y_min": {
+              "value_m": -0.6919254629020046,
+              "q_rad": [
+                0.0,
+                0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_positive"
+            },
+            "y_max": {
+              "value_m": 0.6919233843160233,
+              "q_rad": [
+                0.0,
+                -0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_negative"
+            }
+          },
+          "maximum_sampled_radius_m": 0.8141591932002096,
+          "maximum_radius_configuration": {
+            "pose_id": "coupled_a",
+            "q_rad": [
+              0.0,
+              0.7,
+              -1.1,
+              0.25,
+              0.4,
+              -0.3
+            ]
+          },
+          "any_intersection": false
+        },
+        "wrist": {
+          "sample_count": 15,
+          "all_samples_known": true,
+          "minimum_sampled_distance_m": 2.1602766561892985,
+          "minimum_configuration": {
+            "pose_id": "coupled_a",
+            "q_rad": [
+              0.0,
+              0.7,
+              -1.1,
+              0.25,
+              0.4,
+              -0.3
+            ],
+            "conveyor_height_m": 0.6,
+            "pair": {
+              "kind": "robot_environment",
+              "relation": "UNFILTERED_DIAGNOSTIC_PAIR",
+              "first": {
+                "link": "s50_link_4",
+                "geometry": "s50_link_4_0"
+              },
+              "second": {
+                "object": "conveyor_transverse",
+                "category": "conveyor",
+                "geometry": "frozen_convex_solid",
+                "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+                "is_bounding_proxy": false,
+                "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+                "vertex_count": 8,
+                "triangle_count": 12
+              },
+              "status": "QUERIED",
+              "intersects": false,
+              "surface_distance_m": 2.1602766561892985,
+              "unsigned_separation_m": 2.1602766561892985,
+              "nearest_points_world": [
+                [
+                  -2.063502781760734,
+                  -0.056222906368026015,
+                  2.655859744698598
+                ],
+                [
+                  -1.4000000000000004,
+                  -0.05622290636802596,
+                  0.6000000000000001
+                ]
+              ],
+              "nearest_points_valid": true,
+              "contacts": [],
+              "reported_contact_count": 0,
+              "contact_limit": 8,
+              "contacts_truncated": false,
+              "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+              "nearest_point_segment_length_m": 2.160276656189298,
+              "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+            }
+          },
+          "horizontal_extrema": {
+            "x_min": {
+              "value_m": -0.4541580352116862,
+              "q_rad": [
+                0.4,
+                -0.55,
+                0.85,
+                -0.35,
+                -0.6,
+                0.2
+              ],
+              "pose_id": "coupled_b"
+            },
+            "x_max": {
+              "value_m": -0.14713934825284,
+              "q_rad": [
+                -0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_1_negative"
+            },
+            "y_min": {
+              "value_m": -0.746265441897115,
+              "q_rad": [
+                0.0,
+                0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_positive"
+            },
+            "y_max": {
+              "value_m": 0.7462771918108886,
+              "q_rad": [
+                0.0,
+                -0.35,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "pose_id": "axis_2_negative"
+            }
+          },
+          "maximum_sampled_radius_m": 0.8358726270691839,
+          "maximum_radius_configuration": {
+            "pose_id": "axis_2_negative",
+            "q_rad": [
+              0.0,
+              -0.35,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "any_intersection": false
+        }
+      }
+    },
+    "extrema_scope": "RECORDED_SAMPLES_ONLY_NOT_CONTINUOUS_PATH_MINIMUM",
+    "replaces_all_robot_safety_checks": false,
+    "structural_unreachability_claimed": false
+  },
+  "task_acceptance_evaluated": false,
+  "pose_checks": [
+    {
+      "pose_id": "cad_q0",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_1_negative",
+      "q_rad": [
+        -0.35,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_1_positive",
+      "q_rad": [
+        0.35,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_2_negative",
+      "q_rad": [
+        0.0,
+        -0.35,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_2_positive",
+      "q_rad": [
+        0.0,
+        0.35,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_3_negative",
+      "q_rad": [
+        0.0,
+        0.0,
+        -0.35,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_3_positive",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.35,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_4_negative",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        -0.35,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_4_positive",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.35,
+        0.0,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_5_negative",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.35,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_5_positive",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.35,
+        0.0
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_6_negative",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.35
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "axis_6_positive",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.35
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    },
+    {
+      "pose_id": "coupled_a",
+      "q_rad": [
+        0.0,
+        0.7,
+        -1.1,
+        0.25,
+        0.4,
+        -0.3
+      ],
+      "queried_pairs": 1368,
+      "collisions": 10
+    },
+    {
+      "pose_id": "coupled_b",
+      "q_rad": [
+        0.4,
+        -0.55,
+        0.85,
+        -0.35,
+        -0.6,
+        0.2
+      ],
+      "queried_pairs": 1368,
+      "collisions": 9
+    }
+  ]
+}

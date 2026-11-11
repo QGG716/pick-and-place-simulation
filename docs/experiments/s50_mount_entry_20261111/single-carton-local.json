@@ -1,0 +1,79 @@
+{
+  "schema": "s50_native_single_carton_attempt_v1",
+  "status": "NOT_RUN_MODEL_NOT_READY",
+  "complete": false,
+  "missing": [
+    "collision.coverage.NOT_VERIFIED",
+    "collision.owned_tool_exempt_robot_links",
+    "collision.reviewed_self_collision_pairs",
+    "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+    "installation.mount_clocking.NOT_VERIFIED",
+    "task.GENERATED_DEFINITION_FILE_MISSING",
+    "task.GENERATED_TASK_CONFIG_FILE_MISSING",
+    "tool_interface.flange_from_project_tool_mount",
+    "tool_interface.mounting_geometry_source",
+    "tool_interface.physical_connection.NOT_VERIFIED"
+  ],
+  "implementation_gaps": [],
+  "single_carton_run_trial_connected": true,
+  "model_binding": null,
+  "effective_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+  "task_config_selection": {
+    "schema": "s50_task_configuration_selection_v1",
+    "requested_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "requested_config_role": "generator_input",
+    "input_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "generated_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\assets\\robots\\huayan_s50_2000\\task\\model.yaml",
+    "selected_task_config": null,
+    "audit_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "status": "GENERATED_TASK_MODEL_NOT_READY",
+    "task_definition_sha256": null,
+    "missing": [
+      "task.GENERATED_TASK_CONFIG_FILE_MISSING"
+    ],
+    "generator_input_used_for_task_execution": false
+  },
+  "target": "carton_l07_c02",
+  "start_carton_count": 40,
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "seed": 50,
+  "native_worker_launched": false,
+  "initial_ik": {
+    "status": "NOT_RUN",
+    "attempts": []
+  },
+  "collision_check": {
+    "status": "NOT_RUN"
+  },
+  "planning_attempts": 0,
+  "global_unreachable": false,
+  "attempts": [],
+  "native_trajectory": {
+    "status": "NOT_RUN",
+    "points": []
+  },
+  "physical_execution": "NOT_RUN",
+  "dynamics_qualified": false,
+  "payload": {
+    "rated_robot_payload_kg": 50.0,
+    "tool_mass_kg": 20.0,
+    "carton_mass_kg": 42.5,
+    "combined_mass_kg": 62.5,
+    "nominal_mass_exceeds_rating": true,
+    "qualification": "NOT_QUALIFIED",
+    "blocks_geometric_search": false
+  },
+  "environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1"
+}

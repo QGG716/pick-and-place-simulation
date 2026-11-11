@@ -117,8 +117,9 @@ def run_preview_fk(config, output, *, worker_command=None, seed=50, root=ROOT):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=['preview-fk', 'single-carton'], default='single-carton')
-    parser.add_argument('--config', type=Path)
-    parser.add_argument('--output', type=Path, default=ROOT/'outputs/s50_native_single_carton')
+    parser.add_argument('--config', type=Path,
+        help='Single-carton: generated task/model.yaml or its input resolved to that model; preview-fk: preview config')
+    parser.add_argument('--output', type=Path, default=ROOT/'outputs/s50_mount_entry_20261111/single-carton')
     parser.add_argument('--worker-command')
     parser.add_argument('--seed', type=int, default=50)
     parser.add_argument('--initial-draws', type=int, default=64)
@@ -133,8 +134,9 @@ def main(argv=None):
         print(json.dumps({'status': report['status'], 'probes': len(report['probes'])}))
         return 0 if report['status'] == 'PASS_PREVIEW_CORE_PINOCCHIO_NATIVE_FK_ONLY' else 2
     from check_s50_integration import audit
-    config = args.config or ROOT/'configs/robots/huayan_s50_2000.yaml'
-    admission = audit(config)
+    admission = audit(args.config)
+    config = Path(admission['effective_config'])
+    save(args.output/'admission.json', admission)
     from unloading_sim.configured_layout_trajectory import plan_single_carton_from_admission
     report = plan_single_carton_from_admission(admission, config=config, output=args.output,
         worker_command=args.worker_command, seed=args.seed, root=ROOT,

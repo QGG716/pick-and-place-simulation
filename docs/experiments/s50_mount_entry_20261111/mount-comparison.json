@@ -1,0 +1,724 @@
+{
+  "schema": "s50_mount_v2_comparison_v1",
+  "cases": [
+    {
+      "case_id": "normal_contact",
+      "python_mount_passed": true,
+      "native_mount_passed": true,
+      "permission_agreement": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "real_base_penetration",
+      "python_mount_passed": false,
+      "native_mount_passed": false,
+      "permission_agreement": true,
+      "allowed_pairs": [],
+      "failures": [
+        "declared_model_base_pose_unchanged",
+        "full_contact_region_supported",
+        "measured_axis_on_installation_reference",
+        "measured_plane_is_support_top",
+        "no_unexplained_base_penetration"
+      ],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "moving_link_plinth_probe",
+      "python_mount_passed": true,
+      "native_mount_passed": true,
+      "permission_agreement": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "synthetic_declared_yaw90",
+      "python_mount_passed": true,
+      "native_mount_passed": true,
+      "permission_agreement": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": {
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "manufacturer_mapping": false,
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_extra_yaw",
+      "python_mount_passed": false,
+      "native_mount_passed": false,
+      "permission_agreement": true,
+      "allowed_pairs": [],
+      "failures": [
+        "declared_model_base_pose_unchanged"
+      ],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": {
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "manufacturer_mapping": false,
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_shift_1mm",
+      "python_mount_passed": false,
+      "native_mount_passed": false,
+      "permission_agreement": true,
+      "allowed_pairs": [],
+      "failures": [
+        "declared_model_base_pose_unchanged",
+        "measured_axis_on_installation_reference"
+      ],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": {
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "manufacturer_mapping": false,
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_down_1mm",
+      "python_mount_passed": false,
+      "native_mount_passed": false,
+      "permission_agreement": true,
+      "allowed_pairs": [],
+      "failures": [
+        "declared_model_base_pose_unchanged",
+        "full_contact_region_supported",
+        "measured_axis_on_installation_reference",
+        "measured_plane_is_support_top",
+        "no_unexplained_base_penetration"
+      ],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": {
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "manufacturer_mapping": false,
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_mapped_active_link_probe",
+      "python_mount_passed": true,
+      "native_mount_passed": true,
+      "permission_agreement": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "raw_pair_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_intersects": true,
+          "native_intersects": true,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_intersects": false,
+          "native_intersects": false,
+          "agreement": true,
+          "permission_applies": false
+        }
+      ],
+      "synthetic_fixture": {
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "manufacturer_mapping": false,
+        "task_qualified": false
+      }
+    }
+  ],
+  "all_permissions_agree": true,
+  "all_raw_pairs_agree": true,
+  "formal_installation_verified": false,
+  "task_planning_performed": false,
+  "sources": {
+    "python-coal-report.json": {
+      "path": "/root/m710-gap-search-20261107/rootfs/work-s50-mount-entry-20261111-v1/outputs/s50_mount_entry_20261111/mount/python-coal-report.json",
+      "sha256": "ef14d64fa48ad5b56f147d5116b8f9747866f2aa1cb5f36a3343fba955daae5f"
+    },
+    "native-report.json": {
+      "path": "/root/m710-gap-search-20261107/rootfs/work-s50-mount-entry-20261111-v1/outputs/s50_mount_entry_20261111/mount/native-report.json",
+      "sha256": "232e8457c627ebf4f0719b25650932776cae8c9b19d79a351546bb524832563a"
+    }
+  }
+}

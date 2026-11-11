@@ -1,0 +1,43 @@
+[
+  {
+    "argv": [
+      "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "tools/build_s50_task_model.py",
+      "--output",
+      "docs\\experiments\\s50_mount_entry_20261111\\task-generation-local.json"
+    ],
+    "returncode": 2,
+    "stdout": "{\"status\": \"MODEL_NOT_READY\", \"task_model_generated\": false, \"task_definition_sha256\": null, \"missing\": [\"controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J1.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J1.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\", \"controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J2.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J2.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\", \"controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J3.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J3.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\", \"controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J4.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J4.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\", \"controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J5.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J5.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\", \"controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J6.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J6.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED\"]}\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "tools/check_s50_integration.py",
+      "--output",
+      "docs\\experiments\\s50_mount_entry_20261111\\admission-local.json"
+    ],
+    "returncode": 2,
+    "stdout": "{\"status\": \"MODEL_NOT_READY\", \"missing_critical_data\": [\"collision.coverage.NOT_VERIFIED\", \"collision.owned_tool_exempt_robot_links\", \"collision.reviewed_self_collision_pairs\", \"controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J1.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J2.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J3.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J4.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J5.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J6.REFERENCE_NOT_VERIFIED\", \"installation.mount_clocking.NOT_VERIFIED\", \"task.GENERATED_DEFINITION_FILE_MISSING\", \"task.GENERATED_TASK_CONFIG_FILE_MISSING\", \"tool_interface.flange_from_project_tool_mount\", \"tool_interface.mounting_geometry_source\", \"tool_interface.physical_connection.NOT_VERIFIED\"], \"native_worker_launched\": false}\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "tools/plan_s50_single_carton.py",
+      "--mode",
+      "single-carton",
+      "--output",
+      "outputs\\s50_mount_entry_20261111\\single-carton"
+    ],
+    "returncode": 2,
+    "stdout": "{\"status\": \"NOT_RUN_MODEL_NOT_READY\", \"missing\": [\"collision.coverage.NOT_VERIFIED\", \"collision.owned_tool_exempt_robot_links\", \"collision.reviewed_self_collision_pairs\", \"controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J1.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J2.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J3.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J4.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J5.REFERENCE_NOT_VERIFIED\", \"controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE\", \"controller_mapping.J6.REFERENCE_NOT_VERIFIED\", \"installation.mount_clocking.NOT_VERIFIED\", \"task.GENERATED_DEFINITION_FILE_MISSING\", \"task.GENERATED_TASK_CONFIG_FILE_MISSING\", \"tool_interface.flange_from_project_tool_mount\", \"tool_interface.mounting_geometry_source\", \"tool_interface.physical_connection.NOT_VERIFIED\"]}\n",
+    "stderr": ""
+  }
+]

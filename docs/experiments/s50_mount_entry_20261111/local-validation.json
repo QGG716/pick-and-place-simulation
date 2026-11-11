@@ -1,0 +1,53 @@
+{
+  "runs": [
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\entry-selection-compactness-tests.xml",
+      "tests": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "seconds": 14.688
+    },
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\entry-selection-tests.xml",
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "seconds": 13.924
+    },
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\final-changed-tests.xml",
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.385
+    },
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\focused-tests.xml",
+      "tests": 69,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.661
+    },
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\integration-tests.xml",
+      "tests": 79,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 10.918
+    },
+    {
+      "path": "outputs\\s50_mount_entry_20261111\\plan-compactness-tests.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.314
+    }
+  ],
+  "distinct_count_not_sum_due_to_overlapping_suites": true
+}

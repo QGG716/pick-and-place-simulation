@@ -26,6 +26,7 @@ MODEL_USAGE = 'installed_task_geometry'
 TASK_DIRECTORY = 'assets/robots/huayan_s50_2000/task'
 TASK_DEFINITION = TASK_DIRECTORY + '/task_model.json'
 INPUT_CONFIG = 'configs/robots/huayan_s50_2000.yaml'
+GENERATED_CONFIG = TASK_DIRECTORY + '/model.yaml'
 
 
 def _root(root=None):
@@ -71,6 +72,81 @@ def _path_transport_contract(task, config):
 
 def _config(path):
     return yaml.safe_load(Path(path).read_text(encoding='utf-8'))
+
+
+def select_task_configuration(config_path=None, *, root=None):
+    """Select the generated task configuration without falling back after failure.
+
+    A generator input is useful for a missing-data report, never for ready task
+    execution. Existing but stale/invalid generated files are retained and
+    rejected. Callers must require ``selected_task_config`` before task work.
+    """
+    root = _root(root)
+    requested = Path(config_path or root/INPUT_CONFIG).resolve()
+    fallback_input = root/INPUT_CONFIG
+    input_path = requested
+    missing = []
+    requested_role = 'generator_input'
+    if not requested.is_file():
+        candidate = requested
+        input_path = fallback_input
+        requested_role = 'missing_requested_config'
+        missing.append('task.REQUESTED_CONFIG_FILE_MISSING')
+    else:
+        requested_data = _config(requested)
+        if requested_data.get('model_id') != MODEL_ID:
+            raise ValueError('TASK_SELECTION_REQUIRES_EXACT_S50_MODEL_ID')
+        if requested_data.get('model_usage') == MODEL_USAGE:
+            candidate = requested
+            input_path = None
+            requested_role = 'generated_task_model'
+        else:
+            declared = (requested_data.get('task_generation') or {}).get('generated_config')
+            if not declared:
+                raise ValueError('TASK_SELECTION_REQUIRES_GENERATOR_INPUT_OR_GENERATED_TASK_CONFIG')
+            candidate = (requested.parent/declared).resolve()
+    report = dict(schema='s50_task_configuration_selection_v1', requested_config=str(requested),
+        requested_config_role=requested_role, input_config=None if input_path is None else str(input_path),
+        generated_config=str(candidate), selected_task_config=None,
+        audit_config=str(candidate if candidate.is_file() else input_path or fallback_input),
+        status='GENERATED_TASK_MODEL_NOT_READY', task_definition_sha256=None, missing=missing,
+        generator_input_used_for_task_execution=False)
+    if not candidate.is_file():
+        report['missing'].append('task.GENERATED_TASK_CONFIG_FILE_MISSING')
+        return report
+    try:
+        data = _config(candidate)
+        definition = verify_task_definition(candidate, data)
+        definition_path = (candidate.parent/data['generated_definition']).resolve()
+        original = (definition_path.parent/definition['source_input_config']['path']).resolve()
+        if requested_role == 'generator_input' and original != requested:
+            raise ValueError('GENERATED_TASK_MODEL_BELONGS_TO_ANOTHER_INPUT_CONFIG')
+        if missing:
+            return report
+        report.update(status='GENERATED_TASK_MODEL_SELECTED', input_config=str(original),
+            selected_task_config=str(candidate), task_definition_sha256=definition['definition_sha256'])
+    except (OSError, ValueError, TypeError, KeyError, ModelNotReady) as exc:
+        report['missing'].extend(exc.missing if isinstance(exc,ModelNotReady) else [type(exc).__name__+':'+str(exc)])
+    return report
+
+
+def task_command_chain(generated_config, *, run_directory='outputs/s50_mount_entry_20261111/single-carton',
+                       worker_command='ros2 run m710_moveit_backend m710_moveit_worker'):
+    """Executable argv lists after successful generation and ROS environment setup."""
+    config = str(generated_config); run = str(run_directory)
+    return dict(shared_generated_config=config,
+        prerequisites=['Run the generator successfully; resolve admission requirements; activate the existing planning environment and source the built ROS workspace.'],
+        commands=[
+            dict(stage='admission',argv=['python','tools/check_s50_integration.py','--config',config,
+                '--output','outputs/s50_mount_entry_20261111/admission.json']),
+            dict(stage='home_ik_and_single_carton_native_plan',argv=['python','tools/plan_s50_single_carton.py',
+                '--mode','single-carton','--config',config,'--output',run,'--worker-command',worker_command]),
+            dict(stage='same_model_viewer',argv=['python','tools/export_s50_cad_motion_viewer.py','--task-config',config,
+                '--output','docs/experiments/s50_mount_entry_20261111/task-viewer.html']),
+            dict(stage='same_model_actual_trajectory_viewer',requires='A real successful native trajectory export exists.',
+                argv=['python','tools/export_s50_cad_motion_viewer.py','--task-config',config,
+                      '--trajectory-report',str(Path(run)/'native-joint-trajectory.json'),
+                      '--output','docs/experiments/s50_mount_entry_20261111/task-trajectory-viewer.html'])])
 
 
 def _relocate_references(value, old_parent, new_parent):
@@ -248,7 +324,8 @@ def _task_documents(data, definition, source_urdf, source_srdf, input_config, ou
         for label,records in mapped['evidence_files'].items()}
     config = _relocate_references(data, input_config.parent, output_directory)
     config.update(model_usage=MODEL_USAGE, generated_definition='task_model.json',
-        generated_definition_schema=SCHEMA, joint_position_limits_rad=deepcopy(task['joint_position_limits_rad']))
+        generated_definition_schema=SCHEMA, task_model_role='generated_task_model',
+        joint_position_limits_rad=deepcopy(task['joint_position_limits_rad']))
     config['kinematics'].update(urdf_path='s50_task.urdf', srdf_path='s50_task.srdf',
         package_map={'huayan_s50_2000':_relative(root/'assets/robots/huayan_s50_2000', output_directory)})
     config['cad_preview_config'] = _relative(root/'configs/robots/huayan_s50_2000_cad_preview.yaml',output_directory)
@@ -266,10 +343,18 @@ def generate_task_model(config_path=None, *, root=None, output_directory=None):
     """Return NOT_READY without writing a task model if mapping is unknown."""
     from .s50_cad_model import ensure_preview_assets, load_definition
     root = _root(root); config_path = Path(config_path or root/INPUT_CONFIG).resolve()
-    output_directory = Path(output_directory or root/TASK_DIRECTORY).resolve()
     data = _config(config_path)
     if data.get('model_id') != MODEL_ID:
         raise ValueError('TASK_GENERATOR_REQUIRES_REAL_S50_MODEL_ID')
+    if data.get('model_usage') == MODEL_USAGE or data.get('task_model_role') == 'generated_task_model':
+        raise ValueError('TASK_GENERATOR_REQUIRES_INPUT_CONFIG_NOT_GENERATED_MODEL')
+    declared_output=(data.get('task_generation') or {}).get('generated_config')
+    if not declared_output:
+        raise ValueError('TASK_GENERATOR_INPUT_REQUIRES_GENERATED_CONFIG_DESTINATION')
+    destination=(config_path.parent/declared_output).resolve()
+    if destination.name!='model.yaml':
+        raise ValueError('TASK_GENERATOR_DESTINATION_MUST_NAME_MODEL_YAML')
+    output_directory = Path(output_directory).resolve() if output_directory is not None else destination.parent
     definition = load_definition(root)
     assets = ensure_preview_assets(root)
     mapping = mapping_requirements(data, config_path)
@@ -278,6 +363,8 @@ def generate_task_model(config_path=None, *, root=None, output_directory=None):
         source_cad_definition_sha256=definition['definition_sha256'], source_assets=assets,
         input_config=str(config_path), input_config_sha256=_sha(config_path.read_bytes()),
         output_directory=str(output_directory), missing=mapping['missing'],
+        default_input_target=str(destination), output_directory_overridden=output_directory!=destination.parent,
+        command_chain=task_command_chain(output_directory/'model.yaml'),
         controller_limit_mapping=mapping['mapping'], timing=mapping['timing'],
         physical_frame_derivations=physical_frame_derivations(definition, root),
         installed_task_qualified=False, native_worker_launched=False, dynamics_qualified=False)

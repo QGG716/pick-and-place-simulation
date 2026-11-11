@@ -1,0 +1,1727 @@
+{
+  "cases": [
+    {
+      "case_id": "normal_contact",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [
+          [
+            "s50_base",
+            "mount_plinth"
+          ]
+        ],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": true,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": true,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": true,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": true,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "real_base_penetration",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.899
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.899
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": false,
+          "full_contact_region_supported": false,
+          "measured_axis_on_installation_reference": false,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": false,
+          "no_unexplained_base_penetration": false,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [
+          "declared_model_base_pose_unchanged",
+          "full_contact_region_supported",
+          "measured_axis_on_installation_reference",
+          "measured_plane_is_support_top",
+          "no_unexplained_base_penetration"
+        ],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -0.001000540000030442,
+        "passed": false,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "moving_link_plinth_probe",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [
+          [
+            "s50_base",
+            "mount_plinth"
+          ]
+        ],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": true,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": true,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": true,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        2.4,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": true,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": null
+    },
+    {
+      "case_id": "synthetic_declared_yaw90",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [
+          [
+            "s50_base",
+            "mount_plinth"
+          ]
+        ],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": true,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": true,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": true,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": true,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": {
+        "manufacturer_mapping": false,
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_extra_yaw",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            -0.049979169270678137,
+            -0.9987502603949663,
+            0.0,
+            -1.85
+          ],
+          [
+            0.9987502603949663,
+            -0.049979169270678137,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            -0.049979169270678137,
+            -0.9987502603949663,
+            0.0,
+            -1.85
+          ],
+          [
+            0.9987502603949663,
+            -0.049979169270678137,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": false,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": true,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [
+          "declared_model_base_pose_unchanged"
+        ],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": false,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": {
+        "manufacturer_mapping": false,
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_shift_1mm",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.8490000000000002
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.8490000000000002
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": false,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": false,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [
+          "declared_model_base_pose_unchanged",
+          "measured_axis_on_installation_reference"
+        ],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": false,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": {
+        "manufacturer_mapping": false,
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_undeclared_down_1mm",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.899
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.899
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": false,
+          "full_contact_region_supported": false,
+          "measured_axis_on_installation_reference": false,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": false,
+          "no_unexplained_base_penetration": false,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [
+          "declared_model_base_pose_unchanged",
+          "full_contact_region_supported",
+          "measured_axis_on_installation_reference",
+          "measured_plane_is_support_top",
+          "no_unexplained_base_penetration"
+        ],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -0.001000540000030442,
+        "passed": false,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": {
+        "manufacturer_mapping": false,
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "task_qualified": false
+      }
+    },
+    {
+      "case_id": "synthetic_mapped_active_link_probe",
+      "mount_contact": {
+        "active_links_exempted": [],
+        "actual_world_from_base": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "actual_world_from_cad_support_frame": [
+          [
+            2.220446049250313e-16,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            2.220446049250313e-16,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "allowed_pairs": [
+          [
+            "s50_base",
+            "mount_plinth"
+          ]
+        ],
+        "cad_support_tangent_axes_are_not_installation_clocking": true,
+        "checks": {
+          "declared_model_base_pose_unchanged": true,
+          "full_contact_region_supported": true,
+          "measured_axis_on_installation_reference": true,
+          "measured_normal_matches_installation_reference": true,
+          "measured_plane_is_support_top": true,
+          "no_unexplained_base_penetration": true,
+          "opposed_support_normals": true,
+          "positive_source_contact_area": true,
+          "source_geometry_verified": true,
+          "support_geometry_unchanged": true
+        },
+        "contact_area_m2": 0.015258774481966933,
+        "contact_triangle_count": 693,
+        "expected_world_from_model_base": [
+          [
+            0.0,
+            -1.0,
+            0.0,
+            -1.85
+          ],
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "failures": [],
+        "formal_task_readiness_not_implied": true,
+        "geometry_provider": "ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES",
+        "installation_scope": "CAD_SIMULATION_CONVENTION_ONLY",
+        "installation_verified": false,
+        "matched_source_vertices": 1,
+        "minimum_raw_mesh_support_distance_m": -5.4000003044119e-07,
+        "passed": true,
+        "world_from_installation_reference": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            -1.85
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            0.14999999999999997
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.9
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "q_rad": [
+        0.0,
+        2.4,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "raw_link_support_pairs": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "permission_applies": true,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 8,
+          "raw_intersects": true
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "permission_applies": false,
+          "raw_contact_count": 0,
+          "raw_intersects": false
+        }
+      ],
+      "synthetic_fixture": {
+        "manufacturer_mapping": false,
+        "scope": "SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY",
+        "task_qualified": false
+      }
+    }
+  ],
+  "schema": "s50_native_mount_contact_diagnostic_v1",
+  "task_planning_performed": false
+}

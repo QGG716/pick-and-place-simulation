@@ -1,0 +1,806 @@
+{
+  "schema": "s50_mechanical_source_review_v1",
+  "review_date": "2026-11-11",
+  "base_commit": "b7bb327",
+  "review_scope": "EXISTING_SUPPLIED_CAD_MANUAL_AND_PROJECT_ATTACHMENTS_ONLY",
+  "source_files": [
+    {
+      "path": "assets/robots/huayan_s50_2000/source/S50.STEP",
+      "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+      "bytes": 17798145
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf",
+      "sha256": "2122d5d29d2e8e33c04f36183caa820d2f80e6a93ca03f8d229f0a8fdf69cd02",
+      "bytes": 3245292
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/interface_measurements.json",
+      "sha256": "98699bb9299053e7aeb8d412ceaafd05d5090eb00044e4ba46eb6daa48ebea73",
+      "bytes": 97043
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/derived/manual_cad_crosscheck.json",
+      "sha256": "fd9443009668f0fd524c4b263e895fbd40c5f6b7f9adee362446c9532ee9ced3",
+      "bytes": 7323
+    },
+    {
+      "path": "assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json",
+      "sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+      "bytes": 116162
+    },
+    {
+      "path": "assets/grippers/shanghai_wantai_three_zone/asset_manifest.yaml",
+      "sha256": "f3f5fab0fe151fac31cfa812254bebb349f3aa5394d214783ab908635fac6592",
+      "bytes": 5108
+    },
+    {
+      "path": "assets/grippers/shanghai_wantai_three_zone/mass_properties.json",
+      "sha256": "2596f20270848f8874cf8e766602be7985da8dd047d769889b83f690009f13f0",
+      "bytes": 39807
+    },
+    {
+      "path": "configs/validation/m710id70_proof_of_concept.yaml",
+      "sha256": "8fe5648af91d0d92ed5e74b66cabf6c6385cb3dc17d3f4e5dbb80b8f4fc48fb0",
+      "bytes": 5302
+    },
+    {
+      "path": "configs/robots/huayan_s50_2000.yaml",
+      "sha256": "b1d66d1fa66012649b23de0887d27a77d098137e2bf1369a94a1a73212cfc7b4",
+      "bytes": 6280
+    },
+    {
+      "path": "res/上海皖泰吸具和机械臂末端的安装关系.png",
+      "sha256": "f96f7098d25ea4880d0aa0ecba842e7cd7055c97e868acf02cd77286718271ae",
+      "bytes": 154444
+    },
+    {
+      "path": "res/上海皖泰真空吸盘三分区.STEP",
+      "sha256": "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b",
+      "bytes": 17912914
+    }
+  ],
+  "manual_pages_visually_rechecked_1based": [
+    25,
+    33,
+    55,
+    56,
+    65
+  ],
+  "controller_mapping_newly_resolved": [],
+  "installation_clocking_newly_resolved": false,
+  "physical_tool_connection_newly_resolved": false,
+  "confirmed": {
+    "six_body_joint_chain": [
+      {
+        "joint": "J1",
+        "parent_body": "base_s50",
+        "child_body": "j1_s50",
+        "axis_point_CAD_m": [
+          1.702226029278184e-17,
+          0.0,
+          3.494041729521311e-17
+        ],
+        "unoriented_axis_CAD": [
+          -1.6729986545114403e-16,
+          1.0,
+          -9.180436958645251e-17
+        ]
+      },
+      {
+        "joint": "J2",
+        "parent_body": "j1_s50",
+        "child_body": "j2_s50",
+        "axis_point_CAD_m": [
+          0.0,
+          0.2803000000000001,
+          -1.0760852026674324e-16
+        ],
+        "unoriented_axis_CAD": [
+          1.0,
+          3.10771333753579e-17,
+          -1.318389841742374e-16
+        ]
+      },
+      {
+        "joint": "J3",
+        "parent_body": "j2_s50",
+        "child_body": "j3_s50",
+        "axis_point_CAD_m": [
+          1.942890293094024e-16,
+          1.180300000000009,
+          -1.8609854495943093e-07
+        ],
+        "unoriented_axis_CAD": [
+          1.0,
+          -1.5647597882003945e-16,
+          5.438641454004742e-16
+        ]
+      },
+      {
+        "joint": "J4",
+        "parent_body": "j3_s50",
+        "child_body": "j4_s50",
+        "axis_point_CAD_m": [
+          8.881784197001252e-16,
+          2.1217999999999906,
+          -2.317948486003615e-16
+        ],
+        "unoriented_axis_CAD": [
+          1.0,
+          -4.185881581597456e-16,
+          4.945401592793331e-16
+        ]
+      },
+      {
+        "joint": "J5",
+        "parent_body": "j4_s50",
+        "child_body": "j5_s50",
+        "axis_point_CAD_m": [
+          -0.2539998016477047,
+          0.0,
+          -2.477441862769319e-16
+        ],
+        "unoriented_axis_CAD": [
+          1.0390488085761018e-16,
+          1.0,
+          6.245004513516506e-17
+        ]
+      },
+      {
+        "joint": "J6",
+        "parent_body": "j5_s50",
+        "child_body": "j6_s50",
+        "axis_point_CAD_m": [
+          2.220446049250313e-16,
+          2.2802999999999907,
+          1.1143876248228748e-17
+        ],
+        "unoriented_axis_CAD": [
+          1.0,
+          -1.0390488085760716e-16,
+          5.526514449819124e-16
+        ]
+      }
+    ],
+    "support_plane": {
+      "y_CAD_m": -0.0030000000000000022,
+      "up_CAD": [
+        0,
+        1,
+        0
+      ],
+      "axis_intersection_CAD_m": [
+        0,
+        -0.0030000000000000022,
+        0
+      ],
+      "support_faces": [
+        {
+          "face_index": 17,
+          "area_m2": 0.002655504837061522,
+          "surface_centroid_m": [
+            6.374726968398227e-16,
+            -0.0030000000000000152,
+            -0.14264192647611507
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        },
+        {
+          "face_index": 18,
+          "area_m2": 0.002320510365915363,
+          "surface_centroid_m": [
+            0.12003361244075963,
+            -0.0029999999999999892,
+            -0.07604583419272676
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        },
+        {
+          "face_index": 19,
+          "area_m2": 0.0023205100124620587,
+          "surface_centroid_m": [
+            0.12003361297680072,
+            -0.0029999999999999753,
+            0.07604583761737262
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        },
+        {
+          "face_index": 20,
+          "area_m2": 0.0026555048370615207,
+          "surface_centroid_m": [
+            -1.650421904376628e-15,
+            -0.0029999999999999892,
+            0.14264192647611504
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        },
+        {
+          "face_index": 21,
+          "area_m2": 0.0026555048370614644,
+          "surface_centroid_m": [
+            -0.12353153197306825,
+            -0.0030000000000000165,
+            0.07132096323805694
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        },
+        {
+          "face_index": 28,
+          "area_m2": 0.002655504837061521,
+          "surface_centroid_m": [
+            -0.12353153197306767,
+            -0.0030000000000000296,
+            -0.07132096323805764
+          ],
+          "origin_m": [
+            1.7524159889135272e-17,
+            -0.0030000000000000022,
+            3.5215830403972466e-17
+          ],
+          "normal": [
+            1.6729986545114403e-16,
+            -1.0,
+            9.180436958645251e-17
+          ]
+        }
+      ],
+      "interpretation": "Lowest parallel support surfaces of the base (not the recessed centre plane at Y=0). Mounting clocking and controller-base frame remain unverified."
+    },
+    "physical_flange": {
+      "face_index": 10,
+      "area_m2": 0.00484197967734525,
+      "surface_centroid_m": [
+        -0.3884998016477048,
+        2.2800766386806584,
+        -4.442932880961159e-05
+      ],
+      "origin_m": [
+        -0.3884998016477048,
+        2.2802999999999907,
+        -1.0286044798081286e-16
+      ],
+      "normal": [
+        -1.0,
+        3.0978751951332657e-16,
+        9.860761315262648e-32
+      ],
+      "bolt_cylinders": [
+        {
+          "face_index": 11,
+          "area_m2": 0.0001570796326794898,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.2802999999999902,
+            0.045999999999999895
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.2802999999999902,
+            0.0459999999999999
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0025000000000000022
+        },
+        {
+          "face_index": 13,
+          "area_m2": 0.00015707963267948936,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.3128269119345712,
+            0.03252691193458136
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.3128269119345712,
+            0.03252691193458136
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0024999999999999953
+        },
+        {
+          "face_index": 15,
+          "area_m2": 0.0001570796326794895,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.234299999999991,
+            -1.0036416142611415e-16
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.234299999999991,
+            -9.97805856613729e-17
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.002499999999999998
+        },
+        {
+          "face_index": 17,
+          "area_m2": 0.00015707963267948957,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.2477730880654097,
+            -0.03252691193458134
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.2477730880654097,
+            -0.032526911934581335
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0024999999999999988
+        },
+        {
+          "face_index": 19,
+          "area_m2": 0.0001570796326794898,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.2802999999999907,
+            -0.04600000000000011
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.2802999999999907,
+            -0.0460000000000001
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0025000000000000022
+        },
+        {
+          "face_index": 21,
+          "area_m2": 0.00015707963267948936,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.3128269119345717,
+            -0.032526911934581126
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.3128269119345717,
+            -0.03252691193458112
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0024999999999999953
+        },
+        {
+          "face_index": 23,
+          "area_m2": 0.0001570796326794895,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.3262999999999905,
+            -1.0658141036401502e-16
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.3262999999999905,
+            -1.0594031030025283e-16
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.002499999999999998
+        },
+        {
+          "face_index": 25,
+          "area_m2": 0.00015707963267948936,
+          "surface_centroid_m": [
+            -0.38349980164770486,
+            2.247773088065409,
+            0.032526911934580696
+          ],
+          "origin_m": [
+            -0.3884998016477048,
+            2.247773088065409,
+            0.032526911934580696
+          ],
+          "direction": [
+            -1.0,
+            3.0978751951332657e-16,
+            9.860761315262648e-32
+          ],
+          "radius_m": 0.0024999999999999953
+        }
+      ],
+      "bolt_circle_radii_m": [
+        0.046000000000000006,
+        0.04599999999999976,
+        0.04599999999999982,
+        0.045999999999999916,
+        0.046,
+        0.045999999999999756,
+        0.04599999999999982,
+        0.04599999999999992
+      ],
+      "interpretation": "Measured distal J6 plane and eight CAD cylinder bores of 5mm diameter on 92mm PCD. Official mechanical manual PDF page 56 specifies 8-M6 threaded holes, depth 10mm; 5mm is the modeled tap-drill/core geometry, NOT the nominal fastener diameter. Tool clocking/control flange axes still require documentation."
+    },
+    "manual_dimension_checks": [
+      {
+        "measurement": "installation plane to J2 axis",
+        "pdf_page_1based": 25,
+        "measured_mm": 283.3000000000001,
+        "drawing_mm": 283.3,
+        "absolute_error_mm": 1.1368683772161603e-13,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J2 to J3 parallel-axis distance",
+        "pdf_page_1based": 25,
+        "measured_mm": 900.0000000000089,
+        "drawing_mm": 900,
+        "absolute_error_mm": 8.86757334228605e-12,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J3 to J4 parallel-axis distance",
+        "pdf_page_1based": 25,
+        "measured_mm": 941.4999999999816,
+        "drawing_mm": 941.5,
+        "absolute_error_mm": 1.8417267710901797e-11,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J4 to J6 parallel-axis distance",
+        "pdf_page_1based": 25,
+        "measured_mm": 158.50000000000009,
+        "drawing_mm": 158.5,
+        "absolute_error_mm": 8.526512829121202e-14,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J3 to J6 parallel-axis distance",
+        "pdf_page_1based": 25,
+        "measured_mm": 1099.9999999999816,
+        "drawing_mm": 1100,
+        "absolute_error_mm": 1.8417267710901797e-11,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J2 to J6 straight-reference distance",
+        "pdf_page_1based": 25,
+        "measured_mm": 1999.9999999999907,
+        "drawing_mm": 2000,
+        "absolute_error_mm": 9.322320693172514e-12,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "base axis to J2 tube centre offset",
+        "pdf_page_1based": 25,
+        "measured_mm": 334.4999999999998,
+        "drawing_mm": 334.5,
+        "absolute_error_mm": 2.2737367544323206e-13,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J2 to J3 tube centre offset",
+        "pdf_page_1based": 25,
+        "measured_mm": 239.0000000001086,
+        "drawing_mm": 239,
+        "absolute_error_mm": 1.0859935173357371e-10,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J3 tube to J5 axis offset",
+        "pdf_page_1based": 25,
+        "measured_mm": 158.49980164781348,
+        "drawing_mm": 158.5,
+        "absolute_error_mm": 0.000198352186515649,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "J5 axis to distal flange plane",
+        "pdf_page_1based": 25,
+        "measured_mm": 134.5000000000001,
+        "drawing_mm": 134.5,
+        "absolute_error_mm": 1.1368683772161603e-13,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "base mounting hole diameter",
+        "pdf_page_1based": 55,
+        "measured_mm": 13.500000000000012,
+        "drawing_mm": 13.5,
+        "absolute_error_mm": 1.2434497875801753e-14,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "base mounting bolt circle diameter",
+        "pdf_page_1based": 55,
+        "measured_mm": 301.9999999999999,
+        "drawing_mm": 302,
+        "absolute_error_mm": 1.1368683772161603e-13,
+        "tolerance_mm": 0.01,
+        "passed": true
+      },
+      {
+        "measurement": "flange bolt circle diameter",
+        "pdf_page_1based": 56,
+        "measured_mm": 92.00000000000001,
+        "drawing_mm": 92,
+        "absolute_error_mm": 1.4210854715202004e-14,
+        "tolerance_mm": 0.01,
+        "passed": true
+      }
+    ],
+    "controller_position_limits_rad": {
+      "J1": [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      "J2": [
+        -3.316125578789226,
+        0.17453292519943295
+      ],
+      "J3": [
+        -2.792526803190927,
+        2.792526803190927
+      ],
+      "J4": [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      "J5": [
+        -6.283185307179586,
+        6.283185307179586
+      ],
+      "J6": [
+        -6.283185307179586,
+        6.283185307179586
+      ]
+    },
+    "controller_position_limit_source": {
+      "path": "assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf",
+      "pdf_page_1based": 65
+    },
+    "mounting_holes": {
+      "count": 6,
+      "diameter_m": 0.0135,
+      "pitch_circle_diameter_m": 0.302,
+      "source_pdf_page_1based": 55
+    },
+    "flange_holes": {
+      "count": 8,
+      "thread": "M6",
+      "thread_depth_m": 0.01,
+      "pitch_circle_diameter_m": 0.092,
+      "cad_core_bore_diameter_m": 0.005,
+      "source_pdf_page_1based": 56
+    },
+    "rated_payload_kg": 50.0,
+    "tool_intrinsic_frames": {
+      "T_tool_mount_reference_virtual_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.45
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_tool_mount_reference_uncompressed_cup_plane": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.4275
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_tool_mount_reference_nominal_compressed_contact": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.4175
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "tool_mass_kg": 20.0,
+    "carton_mass_kg": 42.5,
+    "tool_extension_m": 0.2
+  },
+  "missing_minimum_inputs": [
+    {
+      "id": "CONTROLLER_TO_CAD",
+      "numeric_fields": [
+        "controller_mapping.joints.J1..J6.sign in {-1,+1}",
+        "controller_mapping.joints.J1..J6.offset_rad"
+      ],
+      "existing_evidence_insufficient": "PDF25/33 give dimensions/envelope but no six controller readings or positive-motion arrows for this CAD pose.",
+      "minimum_reference": "One labeled S50-2000 reference pose tied to this STEP with all six controller readings, plus signed motion direction for each measured axis; or equivalent revision-matched manufacturer zero/sign table.",
+      "affected_steps": [
+        "Convert published controller limits into simulation coordinates",
+        "Joint-limit-valid initial IK",
+        "Qualified native task model"
+      ]
+    },
+    {
+      "id": "INSTALLATION_CLOCKING",
+      "numeric_fields": [
+        "rotation about fixed installation normal between model base and installation reference"
+      ],
+      "existing_evidence_insufficient": "CAD support normal and axis intersection are measured; bolt/pin drawing does not state cable/dowel direction in the frozen world.",
+      "minimum_reference": "Top-view installation drawing naming a unique base connector/dowel/bolt datum and the world +X arrow; provide yaw angle/sign or the corresponding 3x3 rotation.",
+      "affected_steps": [
+        "Place the S50 physical body at the frozen mounting axis without guessing yaw",
+        "Installed environment collision and FK target comparison"
+      ]
+    },
+    {
+      "id": "S50_TO_EXISTING_TOOL",
+      "numeric_fields": [
+        "tool_interface.flange_from_project_tool_mount 4x4",
+        "actual adapter physical geometry and ownership, if any"
+      ],
+      "existing_evidence_insufficient": "PDF56 specifies only bare S50 flange; supplied Wantai assembly image shows the old robot and is not an S50 mating drawing.",
+      "minimum_reference": "Mating/section drawing or measured assembly with S50 flange center/normal and one clocking datum, old tool-mount reference center/normal and one clocking datum, axial/lateral offsets, bolt correspondence and every real connector solid. Preserve existing 200mm extension.",
+      "affected_steps": [
+        "Installed physical tool collision geometry",
+        "Actual suction contact pose and initial IK",
+        "Wrist/tool contact-policy ownership review",
+        "Single-carton grasp/extraction/release"
+      ]
+    },
+    {
+      "id": "MOTION_SPEED_REVISION",
+      "numeric_fields": [
+        "J1/J2/J6 maximum velocity for this S50 hardware/controller revision"
+      ],
+      "existing_evidence_insufficient": "Stored official webpage gives 180/120/224 deg/s; manual PDF65 gives 244/150/180 for J1/J2/J6.",
+      "minimum_reference": "Revision-tagged data sheet or controller limits identifying the supplied model revision.",
+      "affected_steps": [
+        "Velocity-qualified trajectory time law"
+      ],
+      "blocks_static_fk": false
+    },
+    {
+      "id": "DYNAMICS_ONLY",
+      "numeric_fields": [
+        "per-link mass/COM/inertia",
+        "joint effort limits"
+      ],
+      "minimum_reference": "Link inertial and finite actuator capability data for this exact model.",
+      "affected_steps": [
+        "Dynamics only"
+      ],
+      "blocks_kinematics_collision": false
+    }
+  ],
+  "task_gate_values_not_filled_by_guess": true,
+  "physical_tool_installed": false,
+  "controller_semantics_verified": false
+}

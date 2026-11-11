@@ -1,0 +1,906 @@
+{
+  "schema": "s50_actual_loader_triangle_audit_v1",
+  "scope": "ACTUAL_COAL_IMPORT_POINT_AND_TRIANGLE_CORRESPONDENCE_NOT_TASK_QUALIFICATION",
+  "status": "LOADER_DIFFERENCE_RETAINED",
+  "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "model_binding": {
+    "model_id": "huayan_s50_2000_cad_preview",
+    "config_sha256": "f41424a773f46dc36dc60901fffd444d54cb489446b13f8e81a257426af488a5",
+    "urdf_sha256": "f667eab0e23d0a26481bc0f3188281fdf7074c1c66c78f1bf98b476d924293ca",
+    "srdf_sha256": "4c9126abd2c63e94284625af2ce9f49507135af2c18a91938c0fcd77800e72d5",
+    "mesh_sha256": {
+      "../meshes/link-local/s50_base.obj": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+      "../meshes/link-local/s50_link_1.obj": "b92ba8ca4f4e76eaa0862cc577204715eb77d6645e5f307f7f81815568152c68",
+      "../meshes/link-local/s50_link_1_collision_patch_0.obj": "df4f988aaf780ffac77563a29f642f6a95924026272617ceef6d43513a6999b0",
+      "../meshes/link-local/s50_link_2.obj": "e1fce1e6e867e4f1070b5c88efbcb0a0104eedf12c2c4ea69c095eba5af226bb",
+      "../meshes/link-local/s50_link_2_collision_patch_1.obj": "0631e9a8f2e4d6976df207980d64708e908a0ae2f306265d74d2df355d916985",
+      "../meshes/link-local/s50_link_3.obj": "23c8a80412ab7074ad831552b60a5bf769afdde97649fabf58504c47fe89b7f4",
+      "../meshes/link-local/s50_link_4.obj": "0a33f795b9a662d4ce3278881bcb4079a456ea3ac1b4307e2d5b94581736b44b",
+      "../meshes/link-local/s50_link_5.obj": "47645d680356ea05a7a56822f623691f7be7313944af429710e00cbecb10dc74",
+      "../meshes/link-local/s50_link_6.obj": "3fba47bd6c749db84a3e06acf1886d86a33f66f3c36cc960f4bb1f2907f18402"
+    },
+    "active_joint_names": [
+      "s50_joint_1",
+      "s50_joint_2",
+      "s50_joint_3",
+      "s50_joint_4",
+      "s50_joint_5",
+      "s50_joint_6"
+    ],
+    "base_link": "s50_base",
+    "flange_link": "s50_flange",
+    "tip_link": "s50_flange",
+    "mounting_from_base": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "planning_group": "manipulator",
+    "inertials_required": false,
+    "effort_limits_required": false
+  },
+  "coal_version": "3.0.3",
+  "pinocchio_version": "4.1.0",
+  "selected_geometry_names": [
+    "s50_base_0",
+    "s50_link_1_0",
+    "s50_link_1_1",
+    "s50_link_2_0",
+    "s50_link_2_1",
+    "s50_link_3_0",
+    "s50_link_4_0",
+    "s50_link_5_0",
+    "s50_link_6_0"
+  ],
+  "source_code_sha256": {
+    "tools/audit_s50_loader_triangles.py": "eab6e2ec64714a50f0fb86e08d5cb113be5ee3ea2da41c64aba9c48e7fd17b83",
+    "src/unloading_sim/s50_loader_audit.py": "eaed113f88f8c3354885fe593ee6b7983a541b3ed9d2181e6843a72eb1c3832c",
+    "src/unloading_sim/s50_cad_model.py": "176f5fa3a8fe6909e7c2e637b50b159961028f703b79404ddfd6a9f723f028cd",
+    "src/unloading_sim/pinocchio_backend.py": "b5d040ce62e00d72ae71ca37142335b1782e1a64f0760624bac9ba5913459aae"
+  },
+  "results": [
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 46063,
+      "loaded_vertex_count": 46063,
+      "source_triangle_count": 92180,
+      "loaded_triangle_count": 92164,
+      "source_vertices_sha256": "83a5d1d1ac4501d2d68688b0ec4f6ac104b867d9e6b55368f47c4f0562aade30",
+      "source_triangle_indices_sha256": "9a5aeab8ce316c0d203ff6f8dc3245caa71e2cc0d5a77328267c267427506130",
+      "actual_loaded_vertices_sha256": "e7ba23cd816017f650fc5f49d4b67f569328eda2ffc6f59fa05deb7a2bdf83b2",
+      "actual_loaded_triangle_indices_sha256": "220b1fd601d80f04ff8190e15ea1e1f76311a974ea9af00a04895a2bbd8959f3",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [
+        38313,
+        45225,
+        54390,
+        54804,
+        55148,
+        56341,
+        56429,
+        57612,
+        57700,
+        58883,
+        58971,
+        60154,
+        61430,
+        62019,
+        62608,
+        63197
+      ],
+      "source_zero_area_triangle_count": 16,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.325953136008023,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.3207440475092316,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.320744052529335,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 0,
+      "geometry_name": "s50_base_0",
+      "physical_link": "s50_base",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+      "source_mesh_sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_base_0-actual-correspondence.npz",
+        "bytes": 752049,
+        "sha256": "1e2c160fa648d04844539f9d394e1745c84089a9097d8d8861dead998d23d1bf",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 168030,
+      "loaded_vertex_count": 168030,
+      "source_triangle_count": 335737,
+      "loaded_triangle_count": 335737,
+      "source_vertices_sha256": "cc04f4350ada6ee1107c5f7343d66d17cd8ad9d468238a2a916e3fb1b1130483",
+      "source_triangle_indices_sha256": "511721988878c541ba9e2b1c6661914e8f95c77b326bc78fcff0a7ba344573a8",
+      "actual_loaded_vertices_sha256": "2fab0cc7cb55d6ecf50dd18894d45d2e63461da9de3d33ef39ba4f5521fc1b2f",
+      "actual_loaded_triangle_indices_sha256": "b784d6e4d4dcba7fca076f4352aee6744a1ffd1a78e2200e1f3e1a64dd20d553",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [],
+      "source_zero_area_triangle_count": 0,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.35515171074929713,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.2589066767767334,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.25890667736530304,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 1,
+      "geometry_name": "s50_link_1_0",
+      "physical_link": "s50_link_1",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+      "source_mesh_sha256": "b92ba8ca4f4e76eaa0862cc577204715eb77d6645e5f307f7f81815568152c68",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_1_0-actual-correspondence.npz",
+        "bytes": 3118724,
+        "sha256": "0fd178bc06aa75572f5c6c656a41210575f42c54bd9cb8f5ef34f8bb84850688",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 1025,
+      "loaded_vertex_count": 1025,
+      "source_triangle_count": 1023,
+      "loaded_triangle_count": 1023,
+      "source_vertices_sha256": "f69211dad4234eacadf4d08b876b9066c028c25b9601f0aab9bd0e3864d2cacb",
+      "source_triangle_indices_sha256": "48194f416d718f883104a93fbd5f4dbdf5698ba3145f93b271ff21168a3e4880",
+      "actual_loaded_vertices_sha256": "0e63fa201b01b308ecd9b296ba5971bea558d726e628ef9abdc08be70722d4ac",
+      "actual_loaded_triangle_indices_sha256": "cc543c6edfa623cf271efadb349017c0f508a4aa664e757f62ac452f890306f3",
+      "coordinate_conversion": "FLOAT32_ROUNDTRIP_EXACT",
+      "coordinate_conversion_proven": true,
+      "source_zero_area_triangle_indices": [],
+      "source_zero_area_triangle_count": 0,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.10491905175028952,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.10491904086089837,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.10491904243826866,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": true,
+      "status": "EXACT_REMOVED_SOURCE_ZERO_AREA_CORRESPONDENCE",
+      "topology_correspondence_attempted": true,
+      "source_vertex_index_equals_loaded_vertex_index": false,
+      "exact_unique_vertex_permutation_proven": true,
+      "moved_vertex_indices": 1025,
+      "cyclically_rotated_triangle_corner_count": 0,
+      "source_to_loaded_maximum_matched_vertex_distance_m": 8.139052496484406e-09,
+      "retained_ordered_triangle_indices_match": true,
+      "retained_source_triangle_order_preserved": false,
+      "duplicate_source_triangle_count": 0,
+      "duplicate_matching_rule": "EXACT_VERTEX_PERMUTATION_AND_CYCLIC_CORNER_ROTATION_WITH_STABLE_DUPLICATE_OCCURRENCE_NO_WINDING_REVERSAL",
+      "unmatched_loaded_triangle_count": 0,
+      "unmatched_loaded_triangle_indices": [],
+      "removed_source_triangle_count": 0,
+      "removed_source_triangles": [],
+      "all_removed_source_triangles_exact_zero_area": true,
+      "removed_source_index_set_equals_all_source_exact_zero_area_indices": true,
+      "mapping_arrays_sha256": {
+        "loaded_triangle_to_source_index": "da78c3564bfbf9e14313d4a980205f15a87717fa5d43a88cc6f2b1ac0a8c2262",
+        "source_triangle_to_loaded_index": "b4af47297449f4af2c54f840e6f3ef6f12752e6fa22ac179cd0dc2e8e5ef949d",
+        "loaded_vertex_to_source_index": "b2f09fcdf23a9913f1670df7f4996613240c7a609e9da8e04c53aeb62e3945c5",
+        "source_vertex_to_loaded_index": "81f209d5485b937eb37b307317866f3bddde41b634c44f9982cab21be4007b8a",
+        "loaded_triangle_corner_rotation_to_source": "b2404d3743531dae11fbf1cef3a0f615d6008f851d2349dd9b2c41eab9284bb5"
+      },
+      "float32_observation_scope": "Exact equality over every loaded coordinate, not a presumed loader implementation",
+      "geometry_index": 2,
+      "geometry_name": "s50_link_1_1",
+      "physical_link": "s50_link_1",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1_collision_patch_0.obj",
+      "source_mesh_sha256": "df4f988aaf780ffac77563a29f642f6a95924026272617ceef6d43513a6999b0",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1_collision_patch_0.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_1_1-actual-correspondence.npz",
+        "bytes": 22309,
+        "sha256": "082646e206e9962024606484ed35e474fb845409c88a60c38df03ab415fba448",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices",
+          "loaded_triangle_corner_rotation_to_source",
+          "loaded_triangle_to_source_index",
+          "loaded_vertex_to_source_index",
+          "removed_source_triangle_indices",
+          "source_triangle_to_loaded_index",
+          "source_vertex_to_loaded_index"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 139401,
+      "loaded_vertex_count": 139401,
+      "source_triangle_count": 278573,
+      "loaded_triangle_count": 278573,
+      "source_vertices_sha256": "ebe09a1bd9053a1eac18bfb1f09fe9e42212d270de86b1141c35f8dff6a81206",
+      "source_triangle_indices_sha256": "c0e3048584a904c48c59bc0a0596cd47e86d40ebf8d894e122d29017748fe298",
+      "actual_loaded_vertices_sha256": "9f59baee3e3385cda9865b16363ae3879f4a3fc75c48366e901a01f20f58694f",
+      "actual_loaded_triangle_indices_sha256": "ee23397584f220deeb5e815f08196954596514db31d0fd1f8a67ff61b4d02573",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [],
+      "source_zero_area_triangle_count": 0,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.3554071211835221,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.2589854767518616,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.2589854747056961,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 3,
+      "geometry_name": "s50_link_2_0",
+      "physical_link": "s50_link_2",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+      "source_mesh_sha256": "e1fce1e6e867e4f1070b5c88efbcb0a0104eedf12c2c4ea69c095eba5af226bb",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_2_0-actual-correspondence.npz",
+        "bytes": 2556641,
+        "sha256": "40f05ce00e008fea90517fd49cd9d33248d0ffa6a40807dc73fa9d857189d50b",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 1025,
+      "loaded_vertex_count": 1025,
+      "source_triangle_count": 1023,
+      "loaded_triangle_count": 1023,
+      "source_vertices_sha256": "20894dd7659b800d193f68c712dbb4dc1eb0f1528c73f4db540ab217986a3cbd",
+      "source_triangle_indices_sha256": "48194f416d718f883104a93fbd5f4dbdf5698ba3145f93b271ff21168a3e4880",
+      "actual_loaded_vertices_sha256": "5483156bdf860c47fb477622e3663ccfad24207477626a78caea191524e45897",
+      "actual_loaded_triangle_indices_sha256": "cc543c6edfa623cf271efadb349017c0f508a4aa664e757f62ac452f890306f3",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [],
+      "source_zero_area_triangle_count": 0,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.10491905191625917,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.10491904102686803,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.10491904243826866,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 4,
+      "geometry_name": "s50_link_2_1",
+      "physical_link": "s50_link_2",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2_collision_patch_1.obj",
+      "source_mesh_sha256": "0631e9a8f2e4d6976df207980d64708e908a0ae2f306265d74d2df355d916985",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2_collision_patch_1.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_2_1-actual-correspondence.npz",
+        "bytes": 14256,
+        "sha256": "65844c83d5be5551e2487b8236e3aa54035e92d7abaa72450bbdb2f468d5f1c2",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 167913,
+      "loaded_vertex_count": 167913,
+      "source_triangle_count": 335732,
+      "loaded_triangle_count": 335698,
+      "source_vertices_sha256": "a86b1dee351cfb62912732b1a9c815fd9d9dac8f8e5d3a598b06c3e26def3419",
+      "source_triangle_indices_sha256": "1e0fd6585243c94b782610deffeee1ab1c76f260daf9fe02bd561104d7776e3d",
+      "actual_loaded_vertices_sha256": "a1c03c14c0f4a467710cae6a8f48dde04b3540cc588f9a220de9a6409cbcdca0",
+      "actual_loaded_triangle_indices_sha256": "94fab5b27b7aa230e396ed131676a0eaaf9e7dd99620091676079b2cfd2d428d",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [
+        9090,
+        9587,
+        284924,
+        286444,
+        287973,
+        289855,
+        290714,
+        292357,
+        294162,
+        296370,
+        297350,
+        298781,
+        300727,
+        303105,
+        304263,
+        306916,
+        309153,
+        310431,
+        313146,
+        314114,
+        314807,
+        316105,
+        318183,
+        318854,
+        319526,
+        320195,
+        320867,
+        321538,
+        322208,
+        322881,
+        323551,
+        324224,
+        324895,
+        325564
+      ],
+      "source_zero_area_triangle_count": 34,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.2820621971528567,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.24375018394413894,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.2437501847743988,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 5,
+      "geometry_name": "s50_link_3_0",
+      "physical_link": "s50_link_3",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+      "source_mesh_sha256": "23c8a80412ab7074ad831552b60a5bf769afdde97649fabf58504c47fe89b7f4",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_3_0-actual-correspondence.npz",
+        "bytes": 3009108,
+        "sha256": "765ea19483065886aa827172c2750053e5e4ea196f065fb67062fc8f2b03d61e",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 60959,
+      "loaded_vertex_count": 60959,
+      "source_triangle_count": 121916,
+      "loaded_triangle_count": 121914,
+      "source_vertices_sha256": "a54df36c6647f737adc89e4f1fbf26693a648baf1ddf4f3e4f26143e0a2ee2f3",
+      "source_triangle_indices_sha256": "d0450a9646fd7bafb10c08a4e07a93cebb84be4dac139342c964f48cefe26915",
+      "actual_loaded_vertices_sha256": "40401ce6488d78a5fccffa4f1b32ba584be3bea370f886e6f3b7bbab33aa1946",
+      "actual_loaded_triangle_indices_sha256": "31887689f6266135125edcbc9268bc3857ab9dcb36a3e5406885120cd68bc1b0",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [
+        2897,
+        3891
+      ],
+      "source_zero_area_triangle_count": 2,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.13842518143843302,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.12845472949370418,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.12845472991466522,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 6,
+      "geometry_name": "s50_link_4_0",
+      "physical_link": "s50_link_4",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+      "source_mesh_sha256": "0a33f795b9a662d4ce3278881bcb4079a456ea3ac1b4307e2d5b94581736b44b",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_4_0-actual-correspondence.npz",
+        "bytes": 1122654,
+        "sha256": "b314a8d13163a3f34519238c2088d176f9baa3cd9575ae511c3920988ea12589",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 61128,
+      "loaded_vertex_count": 61128,
+      "source_triangle_count": 122252,
+      "loaded_triangle_count": 122250,
+      "source_vertices_sha256": "755bc6164f46e871817b3f8e6bfb8a775e7aef474c78841294f422e86b9ad0d9",
+      "source_triangle_indices_sha256": "ab6b1ad2b5309657684cc37c0d1b6b54c45d13578a2ae5c9d59989becc231e23",
+      "actual_loaded_vertices_sha256": "97658d792cb121a9e612a7fe686dc26386aa03ed561d57c1bb845048843c47cb",
+      "actual_loaded_triangle_indices_sha256": "8eb891e6aa1ac35c2c55a31043323afed9ded61c1fc693f1f671beebf5a38f5b",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [
+        2897,
+        3396
+      ],
+      "source_zero_area_triangle_count": 2,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.1384251751825278,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.12845473114141784,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.12845472991466522,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 7,
+      "geometry_name": "s50_link_5_0",
+      "physical_link": "s50_link_5",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+      "source_mesh_sha256": "47645d680356ea05a7a56822f623691f7be7313944af429710e00cbecb10dc74",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_5_0-actual-correspondence.npz",
+        "bytes": 1123790,
+        "sha256": "a01421a53b660872d01f8cdd44475b488115eb296111d36209a1992ddabdcaf3",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    },
+    {
+      "schema": "s50_loader_triangle_correspondence_v1",
+      "qualification_scope": "LOADER_POINT_AND_TRIANGLE_CORRESPONDENCE_ONLY",
+      "source_vertex_count": 13146,
+      "loaded_vertex_count": 13146,
+      "source_triangle_count": 26286,
+      "loaded_triangle_count": 26284,
+      "source_vertices_sha256": "23ae9e35fa06af3116e9f02d1c9ddb8c33fbdf2e79f30f8f9db9d5bb48df29ba",
+      "source_triangle_indices_sha256": "51c4a2e6549b51a9dc1efa9474bd04855a94fdf7917b8f81260d763a84379a77",
+      "actual_loaded_vertices_sha256": "146e75d5205735132234e3f166fc720075bcee7ff6b515a1001220dc8a4c8484",
+      "actual_loaded_triangle_indices_sha256": "24117217b2e3bcd9c6b61a5ec6b29fd897eb084d06866beaf3ba9d6d4251bfa8",
+      "coordinate_conversion": "UNEXPLAINED_COORDINATE_CHANGE",
+      "coordinate_conversion_proven": false,
+      "source_zero_area_triangle_indices": [
+        12137,
+        25844
+      ],
+      "source_zero_area_triangle_count": 2,
+      "actual_loaded_zero_area_triangle_count": 0,
+      "mesh_source_modified": false,
+      "geometry_inflation_m": 0.0,
+      "collision_coverage_qualified": false,
+      "mechanical_limits_evaluated": false,
+      "task_acceptance_evaluated": false,
+      "maximum_source_to_loaded_vertex_distance_m": 0.12390656952458565,
+      "maximum_source_to_loaded_coordinate_difference_m": 0.11800000035762769,
+      "float32_roundtrip_maximum_coordinate_difference_m": 0.11800000071525574,
+      "unmapped_indexwise_differences_are_not_geometric_errors": true,
+      "passed": false,
+      "status": "UNEXPLAINED_VERTEX_CONVERSION",
+      "removed_source_triangles": [],
+      "topology_correspondence_attempted": false,
+      "geometry_index": 8,
+      "geometry_name": "s50_link_6_0",
+      "physical_link": "s50_link_6",
+      "geometry_class": "BVHModelOBBRSS",
+      "source_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj",
+      "source_mesh_sha256": "3fba47bd6c749db84a3e06acf1886d86a33f66f3c36cc960f4bb1f2907f18402",
+      "actual_mesh_path": "/work-s50-mount-entry-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj",
+      "urdf_mesh_scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "geometry_placement": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "evidence_arrays": {
+        "path": "s50_link_6_0-actual-correspondence.npz",
+        "bytes": 184281,
+        "sha256": "132eb59d174fafc0d6ac9bc27250a9e4e4f5fa2b35a76931114ad99501b58e5f",
+        "contents": [
+          "actual_loaded_triangles",
+          "actual_loaded_vertices"
+        ],
+        "source_indices_zero_based": true
+      },
+      "source_coordinate_frame": "LINK_LOCAL_MESH_COORDINATES",
+      "actual_coordinate_frame": "ACTUAL_COAL_LOCAL_MESH_COORDINATES_NO_EXTRA_SCALE_OR_PLACEMENT"
+    }
+  ],
+  "collision_coverage_qualified": false,
+  "task_planning_performed": false,
+  "scene_modified": false,
+  "model_modified": false,
+  "all_selected_meshes_audited": true,
+  "entire_declared_robot_audited": true,
+  "all_selected_correspondence_passed": false,
+  "source_triangle_total": 1314722,
+  "actual_triangle_total": 1314666,
+  "removed_triangle_total": 0,
+  "source_zero_area_triangle_total": 56,
+  "elapsed_s": 29.164847880601883
+}

@@ -128,8 +128,10 @@ def cad_preview_audit(root=ROOT):
             controller_mapping_required_for_preview=False, velocity_revision_required_for_static_fk=False)
 
 
-def audit(config: Path, root: Path = ROOT) -> dict:
-    config = config.resolve()
+def audit(config: Path | None = None, root: Path = ROOT) -> dict:
+    from unloading_sim.s50_task_model import select_task_configuration
+    selection = select_task_configuration(config, root=root)
+    config = Path(selection['audit_config'])
     data = yaml.safe_load(config.read_text(encoding="utf-8"))
     if data.get("model_id") != "huayan_s50_2000":
         raise ValueError("S50_ENTRY_REQUIRES_EXACT_MODEL_ID")
@@ -137,10 +139,11 @@ def audit(config: Path, root: Path = ROOT) -> dict:
     replacement = build_replacement_layout(root=root)
     frozen = freeze_non_robot_scene(replacement)
     difference = compare_non_robot_scenes(freeze_non_robot_scene(reference), frozen)
-    missing = []
+    missing = list(selection['missing'])
     binding = None
     try:
-        binding = RobotModelBinding.from_config(config)
+        if selection['selected_task_config'] is not None:
+            binding = RobotModelBinding.from_config(config)
     except ModelNotReady as exc:
         missing.extend(exc.missing)
     except (OSError, ValueError, TypeError, ET.ParseError) as exc:
@@ -179,6 +182,7 @@ def audit(config: Path, root: Path = ROOT) -> dict:
     return dict(schema="s50_model_integration_admission_v1", baseline_commit=BASELINE_COMMIT,
         status="MODEL_DEFINITION_ADMISSIBLE_NOT_MOTION_VALIDATED" if ready else "MODEL_NOT_READY",
         replacement_complete=False, missing_critical_data=missing,
+        effective_config=str(config), task_config_selection=selection,
         config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),
         controller_limit_mapping=controller_mapping_audit(data),
         task_model_identity=task_identity,
@@ -211,8 +215,9 @@ def audit(config: Path, root: Path = ROOT) -> dict:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/robots/huayan_s50_2000.yaml")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_task_collision_20261111/admission.json")
+    parser.add_argument("--config", type=Path,
+        help="Generated task/model.yaml, or its generator input which resolves to the hash-bound generated model")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_mount_entry_20261111/admission.json")
     args = parser.parse_args(argv)
     report = audit(args.config)
     args.output.parent.mkdir(parents=True, exist_ok=True)

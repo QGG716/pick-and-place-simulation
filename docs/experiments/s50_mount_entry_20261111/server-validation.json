@@ -1,0 +1,25 @@
+{
+  "schema": "s50_server_validation_snapshot_v1",
+  "workdir": "/root/m710-gap-search-20261107/rootfs/work-s50-mount-entry-20261111-v1",
+  "exit_codes": {
+    "native-build": 0,
+    "mount": 0,
+    "collision": 0,
+    "loader": 2,
+    "loader-permutation": 2
+  },
+  "tested_source_sha256": {
+    "src/unloading_sim/mount_contact.py": "1123885636b50a7093bc0672778b73aa7c008bffa0173de93c4fa2ff0ae032a8",
+    "ros2/m710_moveit_backend/src/mount_contact.h": "b77c8ec9057bcce9a8703b59783230eebfc51597597e9a6320e4a3340c1d0fed",
+    "ros2/m710_moveit_backend/src/s50_mount_contact_probe.cpp": "e0b62f9a65faae7801c63feb315e4cf22ad41ef62ec3b469fecc39ce5b756a42",
+    "tools/build_s50_mount_contact_probe.py": "05cc00ce9c1225553ad2e392bf850615442f610da55b6b02f5cfbc0de3c5cdbc",
+    "src/unloading_sim/s50_compactness.py": "9bfb5fe06ac392c9fe86700b1fa3163edf5756df02190a921c095965fee8529d",
+    "src/unloading_sim/s50_collision_diagnostics.py": "9663bcd4e56e69db750274bed9a860f4610d4500f4be7e0845b19901d82c5e9c",
+    "tools/diagnose_s50_runtime_collision.py": "9a16ad860dce58d2b32881adaaa46479a138f467fa68dc591da700d68384bf71",
+    "src/unloading_sim/s50_loader_audit.py": "eaed113f88f8c3354885fe593ee6b7983a541b3ed9d2181e6843a72eb1c3832c",
+    "tools/audit_s50_loader_triangles.py": "eab6e2ec64714a50f0fb86e08d5cb113be5ee3ea2da41c64aba9c48e7fd17b83"
+  },
+  "full_raw_evidence_retained_on_server": true,
+  "formal_task_ik_run": false,
+  "formal_single_carton_plan_run": false
+}

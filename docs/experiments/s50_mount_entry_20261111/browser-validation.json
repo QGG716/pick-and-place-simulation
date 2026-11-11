@@ -1,0 +1,13 @@
+{
+  "status": "NOT_ACCEPTED_BROWSER_TOOL_STOPPED",
+  "date": "2026-11-11",
+  "browser": "Microsoft Edge",
+  "tool": "mcp__cua_repl",
+  "observed": [
+    "Browser access host unavailable",
+    "Edge window initially minimized",
+    "Current browser URL could not be determined with enough confidence; tool stopped computer use"
+  ],
+  "actual_viewer_browser_acceptance": false,
+  "no_browser_policy_bypass_attempted": true
+}

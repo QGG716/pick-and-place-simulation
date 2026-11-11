@@ -17,7 +17,7 @@ import numpy as np
 
 from .robot_model_binding import rigid_transform
 
-SCHEMA='source_bound_fixed_base_plane_v1'
+SCHEMA='source_bound_fixed_base_plane_v2'
 SOURCE_PATH='assets/robots/huayan_s50_2000/generated/mount_contact_source.json'
 NUMERIC_M=1e-10
 
@@ -109,6 +109,10 @@ def bind_mount_contact(robot,definition=None,root=None,*,world_from_physical_mou
 
     Source tessellation deviations require individual, source-hashed evidence;
     no caller-supplied general penetration tolerance is accepted.
+
+    ``world_from_physical_mount`` is the frozen installation reference. Its
+    tangent axes need not equal the arbitrary tangent axes of the CAD support
+    frame. The declared binding fixes the actual model base placement instead.
     """
     binding=robot.model_binding;binding.verify_source_unchanged()
     root=Path(root or Path(__file__).resolve().parents[2]).resolve()
@@ -210,10 +214,14 @@ def bind_mount_contact(robot,definition=None,root=None,*,world_from_physical_mou
     clocking=install.get('mount_clocking') or {}
     physical=install.get('physical_mount_frame') or {}
     formal=clocking.get('verified') is True and bool(clocking.get('source')) and physical.get('verified') is True and bool(physical.get('source'))
+    reference=rigid_transform(world_from_physical_mount,'world_from_installation_reference')
+    declared_base=rigid_transform(binding.mounting_from_base,'installation_reference_from_model_base')
     contract=dict(schema=SCHEMA,model_id=binding.model_id,base_link=binding.base_link,support_object='mount_plinth',
         model_binding=binding.identity(),definition_sha256=_sha(path),source_step_sha256=definition['source_step_sha256'],
-        expected_world_from_physical_mount=rigid_transform(world_from_physical_mount,'world_from_physical_mount').tolist(),
-        base_from_measured_mount=base_from_mount.tolist(),plane_point_base_m=point.tolist(),plane_up_base=up.tolist(),
+        expected_world_from_installation_reference=reference.tolist(),
+        declared_installation_reference_from_model_base=declared_base.tolist(),
+        expected_world_from_model_base=(reference @ declared_base).tolist(),
+        model_base_from_cad_support_frame=base_from_mount.tolist(),plane_point_base_m=point.tolist(),plane_up_base=up.tolist(),
         first_joint_axis_base=axis.tolist(),expected_plinth=_box(expected_plinth),base_mesh_sources=sources,
         source_contact_area_m2=area,source_support_face_indices=[f['face_index'] for f in plane['support_faces']],
         source_geometry_verified=source_ready,source_vertex_allowances=allowances,
@@ -258,8 +266,18 @@ def evaluate_mount_contact(contract,base_vertices,contact_vertices,contact_area_
             for v in (base_vertices,contact_vertices)):
         raise ValueError('MOUNT_MESH_VERTICES_MUST_BE_NONEMPTY_FINITE_N_BY_3')
     base=rigid_transform(world_from_base,'actual_world_from_base')
-    expected=rigid_transform(contract['expected_world_from_physical_mount'],'expected_mount')
-    mount=base @ rigid_transform(contract['base_from_measured_mount'],'base_from_mount')
+    if contract.get('schema')!=SCHEMA:raise ValueError('MOUNT_CONTACT_CONTRACT_SCHEMA_MISMATCH')
+    reference=rigid_transform(contract['expected_world_from_installation_reference'],'installation_reference')
+    declared_base=rigid_transform(contract['declared_installation_reference_from_model_base'],'declared_base_mapping')
+    expected=reference @ declared_base
+    if (not np.allclose(declared_base,contract['model_binding']['mounting_from_base'],atol=NUMERIC_M,rtol=0)
+            or not np.allclose(expected,contract['expected_world_from_model_base'],atol=NUMERIC_M,rtol=0)):
+        raise ValueError('MOUNT_DECLARED_MODEL_BASE_IDENTITY_MISMATCH')
+    cad_support=rigid_transform(contract['model_base_from_cad_support_frame'],'model_base_from_cad_support_frame')
+    if (not np.allclose(cad_support[:3,3],contract['plane_point_base_m'],atol=NUMERIC_M,rtol=0)
+            or not np.allclose(cad_support[:3,2],contract['plane_up_base'],atol=NUMERIC_M,rtol=0)):
+        raise ValueError('MOUNT_CAD_SUPPORT_FRAME_INCONSISTENT')
+    mount=base @ cad_support
     support_pose=rigid_transform(support.world_from_local,'support_pose')
     local_from_world=np.linalg.inv(support_pose)
     local_from_base=local_from_world @ base
@@ -281,14 +299,18 @@ def evaluate_mount_contact(contract,base_vertices,contact_vertices,contact_area_
         if mask.any():matched.append(dict(source_vertex_base_m=source.tolist(),matched_vertices=int(mask.sum()),
             observed_minimum_support_distance_m=float(gap[mask].min()),source_allowance_m=float(limits[mask].max())))
     expected_box=contract['expected_plinth']
-    normal=base[:3,:3] @ np.asarray(contract['plane_up_base'])
+    normal=base[:3,:3] @ _unit(contract['plane_up_base'],'measured_plane_up')
+    axis=base[:3,:3] @ _unit(contract['first_joint_axis_base'],'first_joint_axis_base')
     measured=_transform_points(local_from_base,np.asarray([contract['plane_point_base_m']]))[0]
     checks=dict(fixed_base_role=contract['base_link']==contract['model_binding']['base_link'],
         source_geometry_verified=contract.get('source_geometry_verified') is True,
         named_original_support=support.name==contract['support_object']=='mount_plinth' and support.category=='mount_structure' and not getattr(support,'solid',None),
         support_geometry_unchanged=np.allclose(support.world_from_local,expected_box['pose'],atol=NUMERIC_M,rtol=0)
             and np.allclose(2*support.half_extents,expected_box['size'],atol=NUMERIC_M,rtol=0),
-        mounting_axis_and_frame_unchanged=np.allclose(mount,expected,atol=NUMERIC_M,rtol=0),
+        declared_model_base_pose_unchanged=np.allclose(base,expected,atol=NUMERIC_M,rtol=0),
+        measured_axis_on_installation_reference=np.allclose(mount[:3,3],reference[:3,3],atol=NUMERIC_M,rtol=0)
+            and abs(float(axis@reference[:3,2]))>=1-1e-10,
+        measured_normal_matches_installation_reference=bool(float(normal@reference[:3,2])>=1-1e-10),
         opposed_support_normals=bool(float(normal@support_pose[:3,2])>=1-1e-10),
         measured_plane_is_support_top=abs(float(measured[2]-support.half_extents[2]))<=NUMERIC_M,
         full_contact_region_supported=len(patch)>=3 and bool(np.all(np.abs(patch[:,:2])<=support.half_extents[:2]+NUMERIC_M))
@@ -299,7 +321,9 @@ def evaluate_mount_contact(contract,base_vertices,contact_vertices,contact_area_
     return dict(schema=SCHEMA,status='QUALIFIED_FIXED_BASE_CONTACT' if passed else 'MOUNT_CONTACT_NOT_QUALIFIED',
         passed=passed,checks=checks,failures=[name for name,value in checks.items() if not value],
         allowed_pairs=[[contract['base_link'],contract['support_object']]] if passed else [],
-        actual_world_from_base=base.tolist(),actual_world_from_measured_mount=mount.tolist(),
+        actual_world_from_base=base.tolist(),actual_world_from_cad_support_frame=mount.tolist(),
+        world_from_installation_reference=reference.tolist(),expected_world_from_model_base=expected.tolist(),
+        cad_support_tangent_axes_are_not_installation_clocking=True,
         minimum_raw_mesh_support_distance_m=float(gap.min()),matched_source_deviations=matched,
         contact_area_m2=float(contact_area_m2),contact_region_support_local_bounds_m=[patch.min(axis=0).tolist(),patch.max(axis=0).tolist()],
         installation_verified=contract['installation_verified'],installation_scope=contract['installation_scope'],

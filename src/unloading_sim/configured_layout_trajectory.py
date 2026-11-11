@@ -417,6 +417,14 @@ def plan_single_carton_from_admission(admission, *, config, output,
     algorithm remains the existing native run_trial, with posture gates off.
     """
     config=Path(config).resolve();output=Path(output);root=Path(root).resolve()
+    selection=admission.get('task_config_selection')
+    if selection is not None:
+        from .s50_task_model import select_task_configuration
+        current_selection=select_task_configuration(config,root=root)
+        if any(current_selection.get(key)!=selection.get(key) for key in
+                ('audit_config','selected_task_config','task_definition_sha256')):
+            raise ValueError('S50_ADMISSION_TASK_CONFIGURATION_SELECTION_CHANGED')
+        config=Path(current_selection['audit_config'])
     if hashlib.sha256(config.read_bytes()).hexdigest()!=admission.get('config_sha256'):
         raise ValueError('S50_ADMISSION_CONFIG_CHANGED')
     gate=admission.get('geometric_planning') or {};missing=list(gate.get('missing', []))
@@ -424,6 +432,7 @@ def plan_single_carton_from_admission(admission, *, config, output,
     report=dict(schema='s50_native_single_carton_attempt_v1', status='NOT_RUN_MODEL_NOT_READY',
         complete=False, missing=sorted(set(missing)), implementation_gaps=[],
         single_carton_run_trial_connected=True, model_binding=admission.get('model_binding'),
+        effective_config=str(config), task_config_selection=selection,
         target=(admission.get('native_single_carton') or {}).get('target'),
         start_carton_count=len(admission.get('initial_carton_ids', [])), imported_completed_count=0,
         assumed_removed=[], seed=int(seed), native_worker_launched=False,
@@ -497,6 +506,12 @@ def plan_single_carton_from_admission(admission, *, config, output,
                 verification=json.loads((folder/'cycle-verification.json').read_text())
                 report.update(status='NATIVE_SINGLE_CARTON_PLANNED_NOT_EXECUTED',planning_complete=True,
                     cycle_verification=verification,plan_path=str(folder/'plan.json'))
+                from .s50_plan_compactness import measure_task_plan
+                compactness=measure_task_plan(context,plan,verification)
+                _save(output/'plan-compactness.json',compactness)
+                report['compactness']=dict(status=compactness['status'],path=str(output/'plan-compactness.json'),
+                    sample_count=len(compactness['samples']),failure=compactness.get('failure'),
+                    replaces_all_robot_safety_checks=False)
                 try:
                     trajectory=export_native_trajectory(plan,context.binding,verification,scene_context=dict(
                         environment_fingerprint=context.frozen['environment_fingerprint'],

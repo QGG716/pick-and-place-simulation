@@ -6,13 +6,30 @@ from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
 import numpy as np
+import yaml
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'src'))
 from unloading_sim.s50_cad_model import load_preview_robot
 from unloading_sim.robot_replacement_layout import frozen_baseline_layout
 from unloading_sim.mount_contact import bind_mount_contact,mount_contact_evidence,mount_contact_contract,use_actual_mesh_backend
 from unloading_sim.robot_native_binding import native_model_from_binding
+from unloading_sim.robot import URDFRobot
 
-def build(root=ROOT,*,with_coal=False,output=None):
+
+def write_synthetic_mapping_config(root,destination,mapping):
+    """Protocol fixture on real CAD geometry; never manufacturer installation data."""
+    source=Path(root)/'configs/robots/huayan_s50_2000_cad_preview.yaml'
+    data=yaml.safe_load(source.read_text(encoding='utf-8'))
+    for key in ('urdf_path','srdf_path','axes_zero_offsets_signs_source'):
+        data['kinematics'][key]=str((source.parent/data['kinematics'][key]).resolve())
+    data['generated_definition']=str((source.parent/data['generated_definition']).resolve())
+    data['kinematics']['mounting_from_base']=np.asarray(mapping).tolist()
+    data['synthetic_fixture']=dict(scope='SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY',
+        manufacturer_mapping=False,task_qualified=False,source='EXPLICIT_TEST_INPUT_NOT_S50_MECHANICAL_DATA')
+    destination=Path(destination);destination.parent.mkdir(parents=True,exist_ok=True)
+    destination.write_text(yaml.safe_dump(data,sort_keys=False),encoding='utf-8')
+    return destination
+
+def build(root=ROOT,*,with_coal=False,output=None,synthetic_mapping_cases=False):
     layout=frozen_baseline_layout(root);mount=layout.robot_base_transform()
     robot=load_preview_robot(root,world_from_mount=mount);binding=robot.model_binding
     support=next(box for box in layout.fixed_components() if box.name=='mount_plinth')
@@ -38,12 +55,44 @@ def build(root=ROOT,*,with_coal=False,output=None):
             diagnostic=diagnose_pose(backend,q,[support],mount,pose_id=case_id)
         else:diagnostic=None
         cpu.append(dict(case_id=case_id,mount_contact=mount_contact_evidence(robot,[support]),coal=diagnostic))
-    return dict(schema='s50_mount_contact_probe_input_v1',scope='CAD_SIMULATION_CONVENTION_ONLY_NOT_TASK_READY',cases=cases),cpu
+    if synthetic_mapping_cases:
+        if output is None:raise ValueError('SYNTHETIC_MAPPING_REQUIRES_EXPLICIT_OUTPUT_DIRECTORY')
+        # This deliberately nonzero mapping is solely a protocol test. It is
+        # written under the diagnostic output, never into a real robot config.
+        mapping=np.eye(4);mapping[:3,:3]=[[0.,-1.,0.],[1.,0.,0.],[0.,0.,1.]]
+        config=write_synthetic_mapping_config(root,Path(output)/'synthetic-yaw90-only.yaml',mapping)
+        robot=URDFRobot.from_config(config,mounting_world_transform=mount);binding=robot.model_binding
+        bind_mount_contact(robot,root=root,world_from_physical_mount=mount,expected_plinth=support)
+        contract=mount_contact_contract(robot);expected=mount @ binding.mounting_from_base
+        twist=np.eye(4);angle=.05;twist[:3,:3]=[[np.cos(angle),-np.sin(angle),0],[np.sin(angle),np.cos(angle),0],[0,0,1]]
+        changed_yaw=expected @ twist
+        shifted=expected.copy();shifted[0,3]+=.001
+        sunk=expected.copy();sunk[2,3]-=.001
+        for case_id,actual,q in [('synthetic_declared_yaw90',expected,[0.]*6),
+                ('synthetic_undeclared_extra_yaw',changed_yaw,[0.]*6),
+                ('synthetic_undeclared_shift_1mm',shifted,[0.]*6),
+                ('synthetic_undeclared_down_1mm',sunk,[0.]*6),
+                ('synthetic_mapped_active_link_probe',expected,[0.,2.4,0.,0.,0.,0.])]:
+            robot.base_transform=actual
+            urdf,srdf,_=native_model_from_binding(binding,actual,project_root=root)
+            request=dict(identity=dict(robot_model_binding=binding.identity(),fixed_base_contact_contract=contract),
+                world=[contract['expected_plinth']],planning_only=True,planning_mode='cold_from_scratch')
+            metadata=dict(scope='SYNTHETIC_INSTALLATION_MAPPING_PROTOCOL_ONLY',manufacturer_mapping=False,task_qualified=False)
+            cases.append(dict(case_id=case_id,urdf=ET.tostring(urdf,encoding='unicode'),srdf=ET.tostring(srdf,encoding='unicode'),
+                request=request,q_rad=q,synthetic_fixture=metadata))
+            if with_coal:
+                backend=PinocchioHppFclBackend.from_binding(binding,project_root=root,output_dir=Path(output)/case_id,world_from_base=actual)
+                use_actual_mesh_backend(robot,backend)
+                diagnostic=diagnose_pose(backend,q,[support],mount,pose_id=case_id)
+            else:diagnostic=None
+            cpu.append(dict(case_id=case_id,mount_contact=mount_contact_evidence(robot,[support]),coal=diagnostic,synthetic_fixture=metadata))
+    return dict(schema='s50_mount_contact_probe_input_v2',scope='CAD_SIMULATION_CONVENTION_ONLY_NOT_TASK_READY',cases=cases),cpu
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,default=ROOT/'outputs/s50_task_collision_20261111/mount')
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,default=ROOT/'outputs/s50_mount_entry_20261111/mount')
+    parser.add_argument('--synthetic-mapping-cases',action='store_true',help='Explicit protocol-only yaw90 mapping and undeclared-change fixtures; not S50 installation evidence')
     parser.add_argument('--coal',action='store_true');args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
-    payload,cpu=build(with_coal=args.coal,output=args.output)
+    payload,cpu=build(with_coal=args.coal,output=args.output,synthetic_mapping_cases=args.synthetic_mapping_cases)
     for name,value in [('native-input.json',payload),('python-coal-report.json',cpu)]:
         (args.output/name).write_text(json.dumps(value,indent=2,allow_nan=False)+'\n',encoding='utf-8')
     print(json.dumps({row['case_id']:row['mount_contact']['passed'] for row in cpu}))

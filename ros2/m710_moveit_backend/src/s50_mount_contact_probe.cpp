@@ -35,7 +35,8 @@ int main(int argc,char** argv) {
         pairs.push_back({{"pair",{name,box.id}},{"raw_intersects",measured.collision},{"raw_contact_count",measured.contact_count},
           {"permission_applies",m710::qualifiedConfiguredPlinthPair(state,request,name,box.id)}});
       }
-      output["cases"].push_back({{"case_id",row.at("case_id")},{"q_rad",row.at("q_rad")},{"mount_contact",evidence},{"raw_link_support_pairs",pairs}});
+      output["cases"].push_back({{"case_id",row.at("case_id")},{"q_rad",row.at("q_rad")},{"mount_contact",evidence},
+        {"synthetic_fixture",row.value("synthetic_fixture",J(nullptr))},{"raw_link_support_pairs",pairs}});
     }
     std::cout<<output.dump(2)<<std::endl;rclcpp::shutdown();return 0;
   } catch(const std::exception& error) {std::cerr<<error.what()<<std::endl;rclcpp::shutdown();return 2;}

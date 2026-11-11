@@ -1,0 +1,457 @@
+{
+  "schema": "s50_model_integration_admission_v1",
+  "baseline_commit": "a3f08cc2283138e5905b4cc9829cefd7b4aac6b7",
+  "status": "MODEL_NOT_READY",
+  "replacement_complete": false,
+  "missing_critical_data": [
+    "collision.coverage.NOT_VERIFIED",
+    "collision.owned_tool_exempt_robot_links",
+    "collision.reviewed_self_collision_pairs",
+    "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+    "installation.mount_clocking.NOT_VERIFIED",
+    "task.GENERATED_DEFINITION_FILE_MISSING",
+    "task.GENERATED_TASK_CONFIG_FILE_MISSING",
+    "tool_interface.flange_from_project_tool_mount",
+    "tool_interface.mounting_geometry_source",
+    "tool_interface.physical_connection.NOT_VERIFIED"
+  ],
+  "effective_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+  "task_config_selection": {
+    "schema": "s50_task_configuration_selection_v1",
+    "requested_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "requested_config_role": "generator_input",
+    "input_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "generated_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\assets\\robots\\huayan_s50_2000\\task\\model.yaml",
+    "selected_task_config": null,
+    "audit_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+    "status": "GENERATED_TASK_MODEL_NOT_READY",
+    "task_definition_sha256": null,
+    "missing": [
+      "task.GENERATED_TASK_CONFIG_FILE_MISSING"
+    ],
+    "generator_input_used_for_task_execution": false
+  },
+  "config_sha256": "b1d66d1fa66012649b23de0887d27a77d098137e2bf1369a94a1a73212cfc7b4",
+  "controller_limit_mapping": {
+    "ready": false,
+    "equation": "q_controller = sign * q_sim + offset_rad",
+    "axes": [
+      {
+        "axis": "J1",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J2",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -3.316125578789226,
+          0.17453292519943295
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J3",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -2.792526803190927,
+          2.792526803190927
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J4",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J5",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J6",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      }
+    ],
+    "converted_limits_rad": {},
+    "missing": [
+      "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+    ],
+    "display_ranges_are_not_mechanical_limits": true
+  },
+  "task_model_identity": {
+    "ready": false,
+    "status": "TASK_MODEL_NOT_READY",
+    "definition_sha256": null,
+    "missing": [
+      "task.GENERATED_DEFINITION_FILE_MISSING"
+    ]
+  },
+  "cad_joint_preview": {
+    "ready": true,
+    "status": "READY_CAD_KINEMATIC_PREVIEW_ONLY",
+    "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+    "active_joint_names": [
+      "s50_joint_1",
+      "s50_joint_2",
+      "s50_joint_3",
+      "s50_joint_4",
+      "s50_joint_5",
+      "s50_joint_6"
+    ],
+    "zero": "USER_AUTHORIZED_CAD_ASSEMBLY_SIMULATION_ZERO_NOT_CONTROLLER_ZERO",
+    "positive": "RIGHT_HAND_RULE_ABOUT_MEASURED_AXES",
+    "zero_flange_in_sim_mount": [
+      [
+        2.83276944882399e-16,
+        -9.860761315262648e-32,
+        -1.0,
+        -0.3884998016477048
+      ],
+      [
+        2.793326339602149e-47,
+        1.0,
+        -9.860761315262648e-32,
+        1.0286045786057191e-16
+      ],
+      [
+        1.0,
+        0.0,
+        2.83276944882399e-16,
+        2.283299999999991
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "assets": {
+      "status": "PASS",
+      "verified": [
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1_collision_patch_0.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2_collision_patch_1.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+        "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj"
+      ],
+      "materialized": [],
+      "definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036"
+    },
+    "controller_mapping_required_for_preview": false,
+    "velocity_revision_required_for_static_fk": false,
+    "display_ranges_are_mechanical_limits": false,
+    "formal_initial_state_solved": false,
+    "collision_qualified": false,
+    "missing": []
+  },
+  "time_parameterization": {
+    "ready": false,
+    "status": "NOT_READY",
+    "manufacturer_confirmed": false,
+    "version_conflict_unresolved": true,
+    "assumption": null,
+    "missing": [
+      "joint_velocity_version_conflict.verified_resolution_source",
+      "timing.INVALID_joint_acceleration_limits_rad_s2",
+      "timing.joint_acceleration_source.SOURCE_MISSING"
+    ],
+    "blocks_static_fk": false,
+    "blocks_geometric_search": false
+  },
+  "geometric_planning": {
+    "ready": false,
+    "status": "NOT_READY",
+    "missing": [
+      "collision.coverage.NOT_VERIFIED",
+      "collision.owned_tool_exempt_robot_links",
+      "collision.reviewed_self_collision_pairs",
+      "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+      "installation.mount_clocking.NOT_VERIFIED",
+      "task.GENERATED_DEFINITION_FILE_MISSING",
+      "task.GENERATED_TASK_CONFIG_FILE_MISSING",
+      "tool_interface.flange_from_project_tool_mount",
+      "tool_interface.mounting_geometry_source",
+      "tool_interface.physical_connection.NOT_VERIFIED"
+    ],
+    "speed_revision_conflict_is_not_a_geometry_blocker": true
+  },
+  "model_binding": null,
+  "cad": {
+    "path": "assets/robots/huayan_s50_2000/source/S50.STEP",
+    "sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+    "source_hash_verified": true,
+    "official_download_hash_equivalence_verified": false
+  },
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "after_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "parameters": {
+    "gap_m": 0.7000000000000003,
+    "mounting_surface_height_m": 0.9,
+    "world_from_physical_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mount_axis_to_chassis_front_m": 0.44999999999999996,
+    "minimum_belt_height_m": 0.55,
+    "maximum_belt_height_m": 1.5,
+    "initial_belt_height_m": 0.6,
+    "tool_extension_m": 0.2
+  },
+  "environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+  "full_scene_fingerprint": null,
+  "initial_carton_ids": [
+    "carton_l00_c00",
+    "carton_l00_c01",
+    "carton_l00_c02",
+    "carton_l00_c03",
+    "carton_l00_c04",
+    "carton_l01_c00",
+    "carton_l01_c01",
+    "carton_l01_c02",
+    "carton_l01_c03",
+    "carton_l01_c04",
+    "carton_l02_c00",
+    "carton_l02_c01",
+    "carton_l02_c02",
+    "carton_l02_c03",
+    "carton_l02_c04",
+    "carton_l03_c00",
+    "carton_l03_c01",
+    "carton_l03_c02",
+    "carton_l03_c03",
+    "carton_l03_c04",
+    "carton_l04_c00",
+    "carton_l04_c01",
+    "carton_l04_c02",
+    "carton_l04_c03",
+    "carton_l04_c04",
+    "carton_l05_c00",
+    "carton_l05_c01",
+    "carton_l05_c02",
+    "carton_l05_c03",
+    "carton_l05_c04",
+    "carton_l06_c00",
+    "carton_l06_c01",
+    "carton_l06_c02",
+    "carton_l06_c03",
+    "carton_l06_c04",
+    "carton_l07_c00",
+    "carton_l07_c01",
+    "carton_l07_c02",
+    "carton_l07_c03",
+    "carton_l07_c04"
+  ],
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "initial_q_rad": null,
+  "requested_contact_pose_world": [
+    [
+      -0.0,
+      0.0,
+      1.0,
+      -0.2
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0,
+      0.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0,
+      1.5
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "initial_ik": {
+    "status": "NOT_RUN",
+    "search_attempts": 0,
+    "reason": "MODEL_NOT_READY"
+  },
+  "initial_mesh_collision": {
+    "status": "NOT_RUN"
+  },
+  "native_single_carton": {
+    "status": "NOT_RUN",
+    "target": "carton_l07_c02",
+    "start_carton_count": 40,
+    "planning_attempts": 0,
+    "global_unreachable": false,
+    "reason": "MODEL_NOT_READY"
+  },
+  "native_worker_launched": false,
+  "dynamics": {
+    "status": "NOT_RUN",
+    "missing_data": [
+      "link_inertials",
+      "joint_effort_limits_nm",
+      "joint_acceleration_limits_rad_s2"
+    ],
+    "missing_dynamic_data_blocks_geometric_search": false
+  },
+  "payload": {
+    "rated_robot_payload_kg": 50.0,
+    "tool_mass_kg": 20.0,
+    "carton_mass_kg": 42.5,
+    "combined_mass_kg": 62.5,
+    "nominal_mass_exceeds_rating": true,
+    "qualification": "NOT_QUALIFIED",
+    "blocks_geometric_search": false
+  },
+  "measured_capability": {
+    "robot_belt_minimum_gap_m": null,
+    "elbow_envelope_m": null,
+    "wrist_envelope_m": null,
+    "target_reachable": null,
+    "reason": "NO_QUALIFIED_S50_MOTION_MODEL"
+  }
+}

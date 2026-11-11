@@ -1,0 +1,1196 @@
+{
+  "schema": "s50_adjacent_and_tool_contact_source_review_v1",
+  "source_diagnostic_extract": {
+    "path": "docs/experiments/s50_task_collision_20261111/viewer-diagnostics.json",
+    "sha256": "5ff77bee97c1835782d29868352eb78468fddc578c9aadf7e94b6a3105aa7fbd"
+  },
+  "source_full_reports": [
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/collision-complete/runtime-collision-report.json",
+      "sha256": "275330a67fafee451f344f34ff3ceba69705e643ad9303887ee83e7f0623a9eb",
+      "bytes": 32241228,
+      "pose_count": 16,
+      "pair_count": 21888
+    }
+  ],
+  "pose_count": 16,
+  "new_collision_exemptions": [],
+  "adjacent_pairs_auto_exempted": false,
+  "tool_installed": false,
+  "wrist_tool_exemptions": [],
+  "contact_manifold_scope": "CAPPED_RAW_COAL_CONTACT_SAMPLES_NOT_COMPLETE_MATING_SURFACE_OR_PHYSICAL_ALLOWANCE",
+  "same_body_patch_scope": "Patch and original mesh share one physical CAD body; overlap is not evidence of two physical links penetrating.",
+  "adjacent_axis_source": {
+    "path": "assets/robots/huayan_s50_2000/derived/interface_measurements.json",
+    "sha256": "98699bb9299053e7aeb8d412ceaafd05d5090eb00044e4ba46eb6daa48ebea73"
+  },
+  "axis_interfaces": [
+    {
+      "joint": "J1",
+      "parent_body": "base_s50",
+      "child_body": "j1_s50",
+      "matched_cylindrical_face_pair_count": 100,
+      "examples": [
+        {
+          "parent_face_index": 13,
+          "child_face_index": 30,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.221219960390584e-16,
+          "parallel_error": 4.200320983745349e-16
+        },
+        {
+          "parent_face_index": 13,
+          "child_face_index": 70,
+          "parent_radius_m": 0.16,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 7.659159601365912e-17,
+          "parallel_error": 4.200320983745349e-16
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    },
+    {
+      "joint": "J2",
+      "parent_body": "j1_s50",
+      "child_body": "j2_s50",
+      "matched_cylindrical_face_pair_count": 180,
+      "examples": [
+        {
+          "parent_face_index": 46,
+          "child_face_index": 7,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.1295,
+          "axis_offset_m": 1.8609854506612338e-07,
+          "parallel_error": 7.108045008102095e-16
+        },
+        {
+          "parent_face_index": 46,
+          "child_face_index": 88,
+          "parent_radius_m": 0.025,
+          "child_radius_m": 0.025,
+          "axis_offset_m": 1.860985449973268e-07,
+          "parallel_error": 7.108045008102095e-16
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    },
+    {
+      "joint": "J3",
+      "parent_body": "j2_s50",
+      "child_body": "j3_s50",
+      "matched_cylindrical_face_pair_count": 3,
+      "examples": [
+        {
+          "parent_face_index": 145,
+          "child_face_index": 338,
+          "parent_radius_m": 0.10550000000000004,
+          "child_radius_m": 0.010000000000000005,
+          "axis_offset_m": 3.202060718455045e-17,
+          "parallel_error": 2.2169926646435865e-16
+        },
+        {
+          "parent_face_index": 148,
+          "child_face_index": 338,
+          "parent_radius_m": 0.10400000000000001,
+          "child_radius_m": 0.010000000000000005,
+          "axis_offset_m": 9.739385412252826e-17,
+          "parallel_error": 1.4821206710406725e-16
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    },
+    {
+      "joint": "J4",
+      "parent_body": "j3_s50",
+      "child_body": "j4_s50",
+      "matched_cylindrical_face_pair_count": 1,
+      "examples": [
+        {
+          "parent_face_index": 330,
+          "child_face_index": 77,
+          "parent_radius_m": 0.059000000419978015,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 2.535243863682852e-16,
+          "parallel_error": 3.5394180770356783e-16
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    },
+    {
+      "joint": "J5",
+      "parent_body": "j4_s50",
+      "child_body": "j5_s50",
+      "matched_cylindrical_face_pair_count": 2,
+      "examples": [
+        {
+          "parent_face_index": 79,
+          "child_face_index": 77,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 1.958356065081972e-17,
+          "parallel_error": 6.245004513516506e-17
+        },
+        {
+          "parent_face_index": 81,
+          "child_face_index": 77,
+          "parent_radius_m": 0.055,
+          "child_radius_m": 0.055,
+          "axis_offset_m": 1.9581079687952355e-17,
+          "parallel_error": 6.245004513516506e-17
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    },
+    {
+      "joint": "J6",
+      "parent_body": "j5_s50",
+      "child_body": "j6_s50",
+      "matched_cylindrical_face_pair_count": 12,
+      "examples": [
+        {
+          "parent_face_index": 80,
+          "child_face_index": 0,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.058,
+          "axis_offset_m": 9.525600404450449e-17,
+          "parallel_error": 5.897552717360289e-16
+        },
+        {
+          "parent_face_index": 80,
+          "child_face_index": 4,
+          "parent_radius_m": 0.05900000000000001,
+          "child_radius_m": 0.05900000000000001,
+          "axis_offset_m": 7.417338316761713e-17,
+          "parallel_error": 5.897552717360289e-16
+        }
+      ],
+      "permission_qualified": false,
+      "reason": "Coaxial faces identify an axis; they do not define the full allowed contact surface under arbitrary configurations."
+    }
+  ],
+  "observed_groups": [
+    {
+      "relation": "SAME_RIGID_LINK",
+      "first_link": "s50_link_1",
+      "second_link": "s50_link_1",
+      "first_geometry": "s50_link_1_0",
+      "second_geometry": "s50_link_1_1",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 0.0,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              0.32969859808063456,
+              -0.03660194153728851,
+              0.9433764531189895
+            ],
+            "reported_penetration_depth_m": -4.4590630184201865e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              -0.2020069258548163,
+              -0.028636809126361122,
+              -0.9789653390543238
+            ],
+            "reported_penetration_depth_m": -3.297520408253687e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              0.3302868573832992,
+              -0.03688740572214152,
+              0.9431595364194513
+            ],
+            "reported_penetration_depth_m": -4.4553957038756965e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              -0.18501581822384042,
+              -0.03658826842710614,
+              -0.9820541968855226
+            ],
+            "reported_penetration_depth_m": -3.347749616109427e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              0.3140385301326769,
+              -0.03021941073711122,
+              0.9489291800797409
+            ],
+            "reported_penetration_depth_m": -6.748894318273568e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              -0.16874135321781752,
+              -0.042895131924475915,
+              -0.9847265424326703
+            ],
+            "reported_penetration_depth_m": -1.0476249386993464e-07
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              -0.16677478681920876,
+              -0.04345450262411132,
+              -0.9850369925455077
+            ],
+            "reported_penetration_depth_m": -3.9906392165635314e-08
+          },
+          {
+            "position_world_m": [
+              -1.73204213231802,
+              0.09748852774500844,
+              1.251693286317587
+            ],
+            "normal_world": [
+              0.4052475579262077,
+              -0.05156072397225152,
+              0.9127518329416283
+            ],
+            "reported_penetration_depth_m": -6.416373766722841e-09
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED",
+      "first_link": "s50_link_1",
+      "second_link": "s50_link_2",
+      "first_geometry": "s50_link_1_0",
+      "second_geometry": "s50_link_2_0",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 1.1920908704610156e-10,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.040500221214173,
+              0.07072746725595941,
+              1.0815587613750577
+            ],
+            "normal_world": [
+              -0.0008654438809451202,
+              -0.606271510386474,
+              -0.7952572581879355
+            ],
+            "reported_penetration_depth_m": -2.849050759270015e-05
+          },
+          {
+            "position_world_m": [
+              -2.040500180135437,
+              0.0725401490536633,
+              1.0801768466652653
+            ],
+            "normal_world": [
+              -0.0008654438809451202,
+              -0.606271510386474,
+              -0.7952572581879355
+            ],
+            "reported_penetration_depth_m": -2.849050759270015e-05
+          },
+          {
+            "position_world_m": [
+              -2.0405003514830637,
+              0.07432045769096979,
+              1.0788196297764385
+            ],
+            "normal_world": [
+              -0.0008654438809451202,
+              -0.606271510386474,
+              -0.7952572581879355
+            ],
+            "reported_penetration_depth_m": -1.4317279922420548e-05
+          },
+          {
+            "position_world_m": [
+              -2.0405001416136432,
+              0.07423997051066003,
+              1.0788809721256847
+            ],
+            "normal_world": [
+              -0.0008654438809451202,
+              -0.606271510386474,
+              -0.7952572581879355
+            ],
+            "reported_penetration_depth_m": -1.4317279922420548e-05
+          },
+          {
+            "position_world_m": [
+              -2.040500006139278,
+              0.09939933364279485,
+              1.0646530954164128
+            ],
+            "normal_world": [
+              -0.000762083336295616,
+              -0.3721892272924114,
+              -0.9281565591625512
+            ],
+            "reported_penetration_depth_m": -0.10401281920961995
+          },
+          {
+            "position_world_m": [
+              -2.040500218515854,
+              0.06519179797016794,
+              1.086125986019355
+            ],
+            "normal_world": [
+              -4.8770995978992926e-05,
+              -0.6486573545518703,
+              -0.7610805699839925
+            ],
+            "reported_penetration_depth_m": -3.0526193045492364e-05
+          },
+          {
+            "position_world_m": [
+              -2.0405001539539693,
+              0.06687942877600082,
+              1.0846876432601187
+            ],
+            "normal_world": [
+              -4.8770995978992926e-05,
+              -0.6486573545518703,
+              -0.7610805699839925
+            ],
+            "reported_penetration_depth_m": -3.0526193045492364e-05
+          },
+          {
+            "position_world_m": [
+              -2.040500460282396,
+              0.06872541368404406,
+              1.0831144030153301
+            ],
+            "normal_world": [
+              -4.8770995978992926e-05,
+              -0.6486573545518703,
+              -0.7610805699839925
+            ],
+            "reported_penetration_depth_m": -8.118489334110659e-06
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "SAME_RIGID_LINK",
+      "first_link": "s50_link_2",
+      "second_link": "s50_link_2",
+      "first_geometry": "s50_link_2_0",
+      "second_geometry": "s50_link_2_1",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 0.0,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              0.9856042905328409,
+              -0.04794106086408309,
+              0.16212907563568474
+            ],
+            "reported_penetration_depth_m": -4.983178204576763e-07
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              -0.9398589211998558,
+              -0.040694189639701624,
+              -0.33913005052724426
+            ],
+            "reported_penetration_depth_m": -3.7317510500606125e-07
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              0.9826751096051016,
+              -0.03891422128992157,
+              0.18120516643848955
+            ],
+            "reported_penetration_depth_m": -4.6027314849409726e-07
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              -0.9335164422951001,
+              -0.03919982278587587,
+              -0.3563852211557811
+            ],
+            "reported_penetration_depth_m": -6.955239491872924e-09
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              0.9875925888230949,
+              -0.06141690392372408,
+              0.14452972847868123
+            ],
+            "reported_penetration_depth_m": -1.5514201009304476e-06
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              -0.9311633961851496,
+              -0.03776876972739166,
+              -0.3626406618654578
+            ],
+            "reported_penetration_depth_m": -6.937707932183027e-09
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              0.9800916535086334,
+              -0.03435212934427185,
+              0.1955512258520193
+            ],
+            "reported_penetration_depth_m": -8.736236368617935e-07
+          },
+          {
+            "position_world_m": [
+              -2.252893286317587,
+              0.09748871028423312,
+              1.0653421323180199
+            ],
+            "normal_world": [
+              -0.9498999977530814,
+              -0.0300275692626014,
+              -0.31110824378803537
+            ],
+            "reported_penetration_depth_m": -9.548435349736537e-07
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED",
+      "first_link": "s50_link_2",
+      "second_link": "s50_link_3",
+      "first_geometry": "s50_link_2_0",
+      "second_geometry": "s50_link_3_0",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 1.1444090119994144e-09,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.13915308993309738,
+              2.0607757981300354
+            ],
+            "normal_world": [
+              -0.0,
+              0.4672612903242632,
+              0.8841192716848246
+            ],
+            "reported_penetration_depth_m": -0.07897507250087936
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.13591717984527352,
+              2.0626440461158753
+            ],
+            "normal_world": [
+              -0.0,
+              0.5938053445832414,
+              0.8046087327045227
+            ],
+            "reported_penetration_depth_m": -0.07901109306847898
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.13750018980354073,
+              2.0616493638038635
+            ],
+            "normal_world": [
+              -0.0,
+              0.5320363830478725,
+              0.8467214932392689
+            ],
+            "reported_penetration_depth_m": -0.078984462262124
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.1344129402190447,
+              2.063754182624817
+            ],
+            "normal_world": [
+              -0.0,
+              0.6522945254023167,
+              0.757965600888435
+            ],
+            "reported_penetration_depth_m": -0.07900799984957738
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.13299586959183218,
+              2.0649736936569214
+            ],
+            "normal_world": [
+              -0.0,
+              0.7071047885758999,
+              0.7071087737915801
+            ],
+            "reported_penetration_depth_m": -0.07897199949919687
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.1328840786460484,
+              2.065085483972659
+            ],
+            "normal_world": [
+              -0.0,
+              0.7071047885758999,
+              0.7071087737915801
+            ],
+            "reported_penetration_depth_m": -0.07897199949919687
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.13282134367472662,
+              2.0651482185904113
+            ],
+            "normal_world": [
+              -0.0,
+              0.7071047885758999,
+              0.7071087737915801
+            ],
+            "reported_penetration_depth_m": -0.0790119983061347
+          },
+          {
+            "position_world_m": [
+              -2.0702000017404556,
+              0.06545703003829317,
+              2.0227595374281044
+            ],
+            "normal_world": [
+              0.004372199328265298,
+              -0.798008192078522,
+              -0.6026307403780549
+            ],
+            "reported_penetration_depth_m": -5.7161677207029186e-05
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED",
+      "first_link": "s50_link_3",
+      "second_link": "s50_link_4",
+      "first_geometry": "s50_link_3_0",
+      "second_geometry": "s50_link_4_0",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 0.0,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.1136984218692483,
+              2.978314474579885
+            ],
+            "normal_world": [
+              0.0,
+              -0.5938126179588027,
+              -0.8046033648655174
+            ],
+            "reported_penetration_depth_m": -5.0826187033162196e-05
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.11421666725849149,
+              2.977931999605543
+            ],
+            "normal_world": [
+              0.0,
+              -0.5938126179588027,
+              -0.8046033648655174
+            ],
+            "reported_penetration_depth_m": -0.003997224306053216
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.11626175224948235,
+              2.9764226879055466
+            ],
+            "normal_world": [
+              0.0,
+              -0.5938126179588027,
+              -0.8046033648655174
+            ],
+            "reported_penetration_depth_m": -5.345912417282399e-05
+          },
+          {
+            "position_world_m": [
+              -2.031999797296566,
+              0.11577023230775124,
+              2.9767854389902713
+            ],
+            "normal_world": [
+              0.0,
+              -0.5938126179588027,
+              -0.8046033648655174
+            ],
+            "reported_penetration_depth_m": -0.003997191849465156
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.1149775067685655,
+              2.977370485546502
+            ],
+            "normal_world": [
+              0.0,
+              -0.5938126179588027,
+              -0.8046033648655174
+            ],
+            "reported_penetration_depth_m": -0.003997224306053216
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.12034743793013564,
+              2.973800383301198
+            ],
+            "normal_world": [
+              0.0,
+              -0.5320320640061741,
+              -0.8467242070883118
+            ],
+            "reported_penetration_depth_m": -4.792246155214258e-06
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.1189779648312142,
+              2.9746608802532406
+            ],
+            "normal_world": [
+              0.0,
+              -0.5320320640061741,
+              -0.8467242070883118
+            ],
+            "reported_penetration_depth_m": -0.003997181405582312
+          },
+          {
+            "position_world_m": [
+              -2.0319997972965655,
+              0.11777722659212245,
+              2.9754153540693036
+            ],
+            "normal_world": [
+              0.0,
+              -0.5320320640061741,
+              -0.8467242070883118
+            ],
+            "reported_penetration_depth_m": -0.003997189710511113
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED",
+      "first_link": "s50_link_4",
+      "second_link": "s50_link_5",
+      "first_geometry": "s50_link_4_0",
+      "second_geometry": "s50_link_5_0",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 0.0,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.1462256419474737,
+              0.10884564067223879,
+              3.1112999997913744
+            ],
+            "normal_world": [
+              -0.7071473561936584,
+              -0.7070629174621256,
+              0.0021557778796656244
+            ],
+            "reported_penetration_depth_m": -0.00399708313197255
+          },
+          {
+            "position_world_m": [
+              -2.1465187972135595,
+              0.10913883094745652,
+              3.111299999791375
+            ],
+            "normal_world": [
+              -0.7071473561936584,
+              -0.7070629174621256,
+              0.0021557778796656244
+            ],
+            "reported_penetration_depth_m": -4.220474618657601e-05
+          },
+          {
+            "position_world_m": [
+              -2.147560177232063,
+              0.11023023923506556,
+              3.1112999997913744
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.003997324165326539
+          },
+          {
+            "position_world_m": [
+              -2.147543580870281,
+              0.11021095166486364,
+              3.1112999997913744
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.00015832614743847313
+          },
+          {
+            "position_world_m": [
+              -2.1488158762532374,
+              0.11168955805091127,
+              3.1112999997913744
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.003997083885517488
+          },
+          {
+            "position_world_m": [
+              -2.147796535591074,
+              0.11050492464516071,
+              3.1112999997913744
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.003997324165326539
+          },
+          {
+            "position_world_m": [
+              -2.15003815828669,
+              0.11311004109629899,
+              3.111299999791374
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.00021574196970424673
+          },
+          {
+            "position_world_m": [
+              -2.15003815828669,
+              0.11311004109629899,
+              3.111299999791374
+            ],
+            "normal_world": [
+              -0.758007902230016,
+              -0.6522425192748426,
+              0.0019277465748643034
+            ],
+            "reported_penetration_depth_m": -0.003997083885517488
+          }
+        ]
+      },
+      "new_permission": false
+    },
+    {
+      "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED",
+      "first_link": "s50_link_5",
+      "second_link": "s50_link_6",
+      "first_geometry": "s50_link_5_0",
+      "second_geometry": "s50_link_6_0",
+      "observed_pose_ids": [
+        "cad_q0",
+        "axis_1_negative",
+        "axis_1_positive",
+        "axis_2_negative",
+        "axis_2_positive",
+        "axis_3_negative",
+        "axis_3_positive",
+        "axis_4_negative",
+        "axis_4_positive",
+        "axis_5_negative",
+        "axis_5_positive",
+        "axis_6_negative",
+        "axis_6_positive",
+        "coupled_a",
+        "coupled_b",
+        "mount_probe_j2_2p4"
+      ],
+      "observed_pose_count": 16,
+      "first_observation": {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_surface_distance_m": 0.0,
+        "contacts": [
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.11570805638018722,
+              3.1402992700585273
+            ],
+            "normal_world": [
+              -0.0,
+              -0.6522885328274554,
+              -0.7579707579727635
+            ],
+            "reported_penetration_depth_m": -0.044030020031641186
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.11570806039447522,
+              3.140299266857239
+            ],
+            "normal_world": [
+              -0.0,
+              -0.5938189671911365,
+              -0.8045986789723508
+            ],
+            "reported_penetration_depth_m": -0.0397428909565745
+          },
+          {
+            "position_world_m": [
+              -2.190499799067941,
+              0.11795593219241193,
+              3.138640267228836
+            ],
+            "normal_world": [
+              -0.0,
+              -0.5938189671911365,
+              -0.8045986789723508
+            ],
+            "reported_penetration_depth_m": -0.0397428909565745
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.12110865021499707,
+              3.1365428454280497
+            ],
+            "normal_world": [
+              0.0,
+              -0.5320337736882527,
+              -0.8467231328214891
+            ],
+            "reported_penetration_depth_m": -0.03554124021807748
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.12249999797375383,
+              3.1356685997981506
+            ],
+            "normal_world": [
+              -0.0,
+              -0.5320337736882527,
+              -0.8467231328214891
+            ],
+            "reported_penetration_depth_m": -0.03554124021807748
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.12410940321941125,
+              3.1348180039729563
+            ],
+            "normal_world": [
+              0.0,
+              -0.4672686716165204,
+              -0.8841153705969219
+            ],
+            "reported_penetration_depth_m": -0.03144789381555926
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.1261363878484753,
+              3.133746711190917
+            ],
+            "normal_world": [
+              -0.0,
+              -0.4672686716165204,
+              -0.8841153705969219
+            ],
+            "reported_penetration_depth_m": -0.03144789381555926
+          },
+          {
+            "position_world_m": [
+              -2.1904998000048517,
+              0.12740282587778917,
+              3.1331941688279157
+            ],
+            "normal_world": [
+              0.0,
+              -0.399892565275868,
+              -0.9165620198530408
+            ],
+            "reported_penetration_depth_m": -0.027486178640734882
+          }
+        ]
+      },
+      "new_permission": false
+    }
+  ],
+  "wrist_tool_reason": "No S50-specific mating transform or actual attached tool ownership exists; FANUC J5/J6 naming cannot authorize an S50 exemption.",
+  "conclusion": "KEEP_RAW_CONTACTS_AND_NO_AUTOMATIC_ADJACENCY_OR_WRIST_TOOL_EXEMPTION"
+}

@@ -110,13 +110,18 @@ def load_viewer_model(root, task_config=None):
     ensure_preview_assets(root)
     if task_config is None:
         return load_definition(root), load_preview_robot(root), None
-    binding = RobotModelBinding.from_config(task_config)
+    from unloading_sim.s50_task_model import select_task_configuration
+    selection = select_task_configuration(task_config, root=root)
+    if not selection['selected_task_config']:
+        raise ValueError('VIEWER_TASK_MODEL_NOT_READY:' + json.dumps(selection, ensure_ascii=False))
+    binding = RobotModelBinding.from_config(selection['selected_task_config'])
     source = (binding.config_path.parent / binding.data['generated_definition']).resolve()
     model = json.loads(source.read_text(encoding='utf-8'))
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     if model.get('schema') != 's50_task_model_v1' or digest != binding.identity().get('model_definition_sha256'):
         raise ValueError('VIEWER_REQUIRES_VERIFIED_GENERATED_TASK_MODEL')
     model['definition_sha256'] = digest
+    model['task_config_selection'] = selection
     # The view's FK root is the model base. Physical placement is applied once
     # by viewer_scene_context, rather than baked into both FK and mesh group.
     robot = URDFRobot.from_config(binding.config_path, mounting_world_transform=np.linalg.inv(binding.mounting_from_base))

@@ -17,9 +17,11 @@ from unloading_sim.s50_task_model import generate_task_model, INPUT_CONFIG, TASK
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config',type=Path,default=ROOT/INPUT_CONFIG)
-    parser.add_argument('--model-directory',type=Path,default=ROOT/TASK_DIRECTORY)
-    parser.add_argument('--output',type=Path,default=ROOT/'outputs/s50_task_collision_20261111/task-generation.json')
+    parser.add_argument('--config',type=Path,default=ROOT/INPUT_CONFIG,
+        help='Generator input only; the generated task/model.yaml is for audit/planning/viewer')
+    parser.add_argument('--model-directory',type=Path,
+        help='Optional separate output directory; otherwise follows input task_generation.generated_config')
+    parser.add_argument('--output',type=Path,default=ROOT/'outputs/s50_mount_entry_20261111/task-generation.json')
     args=parser.parse_args(argv)
     report=generate_task_model(args.config,root=ROOT,output_directory=args.model_directory)
     args.output.parent.mkdir(parents=True,exist_ok=True)

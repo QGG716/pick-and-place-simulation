@@ -242,20 +242,8 @@ def _world_geometry(backend,q):
 
 
 def _envelopes(geometry,world_from_mount):
-    inverse=np.linalg.inv(np.asarray(world_from_mount));groups={}
-    for name,links in [('elbow',['s50_link_2','s50_link_3']),('wrist',['s50_link_4','s50_link_5','s50_link_6']),
-                       ('all_robot',['s50_base',*[f's50_link_{i}' for i in range(1,7)]])]:
-        values=[]
-        for g in geometry:
-            if g['link'] in links:
-                if g['vertices'] is None:raise ValueError('DIAGNOSTIC_ENVELOPE_REQUIRES_ACTUAL_MESH_VERTICES')
-                values.append(transform_vertices(inverse@g['world'],g['vertices']))
-        v=np.concatenate(values)
-        groups[name]=dict(links=links,definition='EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER',
-            mount_frame_bounds_m=[v.min(0).tolist(),v.max(0).tolist()],
-            maximum_horizontal_radius_from_installation_axis_m=float(np.linalg.norm(v[:,:2],axis=1).max()),
-            mesh_vertex_count=len(v),source='ACTUAL_COAL_MESH_VERTICES')
-    return groups
+    from .s50_compactness import group_envelopes
+    return group_envelopes(geometry,world_from_mount)
 
 
 def diagnose_pose(backend,q,obstacles,world_from_sim_mount,*,pose_id,contact_limit=8,conveyor_height_m=None):
@@ -290,6 +278,11 @@ def diagnose_pose(backend,q,obstacles,world_from_sim_mount,*,pose_id,contact_lim
     belt=[p for p in env if p['second']['object']=='conveyor_transverse']
     frames=backend.named_link_frames(q)
     physical_names=['s50_base',*[f's50_link_{i}' for i in range(1,7)],'s50_flange']
+    from .s50_compactness import compactness_sample
+    compactness = compactness_sample(geometry,pairs,world_from_sim_mount,q_rad=q,pose_id=pose_id,
+        conveyor_height_m=conveyor_height_m,safety_evidence=dict(scope=SCOPE,
+            queried_pair_count=len(pairs),unknown_pair_count=sum(p['status']!='QUERIED' for p in pairs),
+            task_acceptance_evaluated=False)) if belt else None
     return dict(pose_id=pose_id,q_rad=q.tolist(),qualification_scope=SCOPE,conveyor_height_m=conveyor_height_m,
         link_frames_world={name:np.asarray(frames[name]).tolist() for name in physical_names},
         pairs=pairs,queried_pair_count=len(pairs),unknown_pair_count=sum(p['status']!='QUERIED' for p in pairs),
@@ -299,5 +292,6 @@ def diagnose_pose(backend,q,obstacles,world_from_sim_mount,*,pose_id,contact_lim
         minimum_distances=dict(all_environment=minimum(env),transverse_conveyor=minimum(belt),
             by_robot_link_transverse={g['link']:minimum([p for p in belt if p['first']['link']==g['link']]) for g in geometry}),
         elbow_wrist_envelope=_envelopes(geometry,world_from_sim_mount),
+        compactness=compactness,
         pair_filtering='NONE_ALL_SHAPE_PAIRS_INCLUDING_OWNED_PATCHES_AND_ADJACENT_JOINTS',
         tool_installed=False,task_acceptance_evaluated=False)

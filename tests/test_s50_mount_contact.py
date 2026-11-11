@@ -39,7 +39,7 @@ def test_real_mount_movement_never_uses_source_mesh_allowance(installed,delta):
     shifted=robot.base_transform.copy();shifted[:3,3]+=delta
     result=evaluate_mount_contact(bound.contract,bound.base_vertices,bound.contact_vertices,bound.contact_area_m2,shifted,plinth)
     assert not result['passed']
-    assert not result['checks']['mounting_axis_and_frame_unchanged']
+    assert not result['checks']['declared_model_base_pose_unchanged']
     assert not result['allowed_pairs']
 
 def test_new_unexplained_mesh_penetration_fails(installed):
@@ -117,3 +117,100 @@ def test_temporary_mesh_wrapper_is_not_a_geometry_change(installed):
         geometry_model=SimpleNamespace(geometryObjects=[TemporaryWrapper()]),_matrix=lambda x:x,
         _geometry_local_vertices=[bound.base_vertices])
     assert _backend_geometry_signature(backend)==_backend_geometry_signature(backend)
+
+
+@pytest.fixture
+def synthetic_mapped(installed,tmp_path):
+    from tools.build_s50_mount_contact_probe import write_synthetic_mapping_config
+    from unloading_sim.robot import URDFRobot
+    robot,parts,plinth,old=installed
+    mapping=np.eye(4);mapping[:3,:3]=[[0,-1,0],[1,0,0],[0,0,1]]
+    config=write_synthetic_mapping_config(ROOT,tmp_path/'SYNTHETIC_yaw90.yaml',mapping)
+    reference=np.asarray(old.contract['expected_world_from_installation_reference'])
+    mapped=URDFRobot.from_config(config,mounting_world_transform=reference)
+    bound=bind_mount_contact(mapped,root=ROOT,world_from_physical_mount=reference,expected_plinth=plinth)
+    return mapped,parts,plinth,bound,reference,mapping
+
+
+def test_declared_nonzero_mapping_does_not_lock_cad_tangent_axes(synthetic_mapped):
+    robot,parts,_,bound,reference,mapping=synthetic_mapped
+    evidence=mount_contact_evidence(robot,parts)
+    assert evidence['passed'],evidence
+    np.testing.assert_allclose(bound.contract['expected_world_from_model_base'],reference @ mapping,atol=1e-12)
+    measured=np.asarray(evidence['actual_world_from_cad_support_frame'])
+    assert not np.allclose(measured[:3,:2],reference[:3,:2])
+    np.testing.assert_allclose(measured[:3,3],reference[:3,3],atol=1e-12)
+    assert evidence['cad_support_tangent_axes_are_not_installation_clocking']
+    assert not evidence['installation_verified'] and evidence['active_links_exempted']==[]
+    assert qualified_mount_pairs(robot,parts)=={('s50_base','mount_plinth')}
+
+
+@pytest.mark.parametrize('change',['yaw','x','down'])
+def test_undeclared_changes_fail_under_declared_mapping(synthetic_mapped,change):
+    robot,_,plinth,bound,_,_=synthetic_mapped
+    actual=robot.base_transform.copy()
+    if change=='yaw':
+        c=np.cos(.05);s=np.sin(.05);actual[:3,:3]=actual[:3,:3] @ np.array([[c,-s,0],[s,c,0],[0,0,1]])
+    if change=='x':actual[0,3]+=.001
+    if change=='down':actual[2,3]-=.001
+    result=evaluate_mount_contact(bound.contract,bound.base_vertices,bound.contact_vertices,bound.contact_area_m2,actual,plinth)
+    assert not result['passed'] and not result['allowed_pairs']
+    assert not result['checks']['declared_model_base_pose_unchanged']
+    if change=='yaw':assert result['checks']['measured_axis_on_installation_reference']
+
+
+def test_declared_pose_is_bound_to_model_identity(synthetic_mapped):
+    robot,_,plinth,bound,_,_=synthetic_mapped
+    bad=deepcopy(bound.contract);bad['declared_installation_reference_from_model_base']=np.eye(4).tolist()
+    with pytest.raises(ValueError,match='DECLARED_MODEL_BASE_IDENTITY'):
+        evaluate_mount_contact(bad,bound.base_vertices,bound.contact_vertices,bound.contact_area_m2,robot.base_transform,plinth)
+
+
+def test_cad_support_frame_tangent_reparameterization_does_not_change_contact(installed):
+    robot,_,plinth,bound=installed
+    changed=deepcopy(bound.contract)
+    frame=np.asarray(changed['model_base_from_cad_support_frame']);frame[:3,:3]=[[0,-1,0],[1,0,0],[0,0,1]]
+    changed['model_base_from_cad_support_frame']=frame.tolist()
+    result=evaluate_mount_contact(changed,bound.base_vertices,bound.contact_vertices,bound.contact_area_m2,robot.base_transform,plinth)
+    assert result['passed']
+
+
+def test_synthetic_offset_model_base_and_cad_support_are_separate(installed):
+    """Analytical box fixture, no manufacturer mounting dimensions inferred."""
+    _,_,plinth,bound=installed
+    reference=np.asarray(bound.contract['expected_world_from_installation_reference'])
+    bm=np.eye(4);bm[:3,3]=[.03,-.02,.04]
+    yaw=np.eye(4);yaw[:3,:3]=[[0,-1,0],[1,0,0],[0,0,1]]
+    mapping=yaw @ np.linalg.inv(bm)
+    base=reference @ mapping
+    contract=deepcopy(bound.contract)
+    contract.update(model_id='analytical_mount_fixture_not_s50',base_link='fixture_base',
+        model_binding=dict(base_link='fixture_base',mounting_from_base=mapping.tolist()),
+        declared_installation_reference_from_model_base=mapping.tolist(),
+        expected_world_from_model_base=base.tolist(),model_base_from_cad_support_frame=bm.tolist(),
+        plane_point_base_m=bm[:3,3].tolist(),plane_up_base=[0,0,1],first_joint_axis_base=[0,0,1],source_vertex_allowances=[])
+    patch=np.array([[x,y,0] for x in (-.05,.05) for y in (-.05,.05)])+bm[:3,3]
+    vertices=np.vstack([patch,patch+[0,0,.1]])
+    result=evaluate_mount_contact(contract,vertices,patch,.01,base,plinth)
+    assert result['passed'],result
+    assert not np.allclose(base,reference)
+    np.testing.assert_allclose(np.asarray(result['actual_world_from_cad_support_frame'])[:3,3],reference[:3,3],atol=1e-12)
+    bad=deepcopy(contract);bad['first_joint_axis_base']=[1,0,0]
+    rejected=evaluate_mount_contact(bad,vertices,patch,.01,base,plinth)
+    assert not rejected['passed'] and not rejected['allowed_pairs']
+    bad=deepcopy(contract);bad['plane_up_base']=[1,0,0]
+    with pytest.raises(ValueError,match='CAD_SUPPORT_FRAME_INCONSISTENT'):
+        evaluate_mount_contact(bad,vertices,patch,.01,base,plinth)
+
+
+def test_declared_tilt_still_must_meet_support_geometry(synthetic_mapped):
+    robot,_,plinth,bound,reference,mapping=synthetic_mapped
+    angle=.05;tilt=np.eye(4);tilt[:3,:3]=[[1,0,0],[0,np.cos(angle),-np.sin(angle)],[0,np.sin(angle),np.cos(angle)]]
+    declared=mapping @ tilt;actual=reference @ declared
+    contract=deepcopy(bound.contract);contract['model_binding']['mounting_from_base']=declared.tolist()
+    contract['declared_installation_reference_from_model_base']=declared.tolist()
+    contract['expected_world_from_model_base']=actual.tolist()
+    result=evaluate_mount_contact(contract,bound.base_vertices,bound.contact_vertices,bound.contact_area_m2,actual,plinth)
+    assert result['checks']['declared_model_base_pose_unchanged']
+    assert not result['checks']['measured_normal_matches_installation_reference']
+    assert not result['passed']

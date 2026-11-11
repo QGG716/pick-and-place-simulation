@@ -13,7 +13,7 @@ inline ProcessJson fixedBaseContactEvidence(const moveit::core::RobotState& stat
   J result={{"passed",false},{"allowed_pairs",J::array()},{"active_links_exempted",J::array()}};
   try {
     const auto& identity=request.at("identity");const auto& c=identity.at("fixed_base_contact_contract");
-    if(c.at("schema")!="source_bound_fixed_base_plane_v1" || c.at("numerical_tolerance_m")!=eps ||
+    if(c.at("schema")!="source_bound_fixed_base_plane_v2" || c.at("numerical_tolerance_m")!=eps ||
        c.at("geometry_permission_scope")!="FIXED_BASE_SUPPORTING_SURFACE_ONLY" ||
        c.at("model_binding")!=identity.at("robot_model_binding"))throw std::runtime_error("MOUNT_IDENTITY_MISMATCH");
     const std::string base=c.at("base_link"),support=c.at("support_object");
@@ -31,15 +31,26 @@ inline ProcessJson fixedBaseContactEvidence(const moveit::core::RobotState& stat
     }
     if(!actual_box || actual_box->value("category","")!="mount_structure" || actual_box->contains("solid"))throw std::runtime_error("MOUNT_SUPPORT_MISSING_OR_INVALID");
     const auto box=processBox(*actual_box),expected_box=processBox(c.at("expected_plinth"));
-    const auto wb=state.getGlobalLinkTransform(base),bm=processTransform(c.at("base_from_measured_mount"));
-    const auto expected=processTransform(c.at("expected_world_from_physical_mount"));
+    const auto wb=state.getGlobalLinkTransform(base),bm=processTransform(c.at("model_base_from_cad_support_frame"));
+    const auto reference=processTransform(c.at("expected_world_from_installation_reference"));
+    const auto declared=processTransform(c.at("declared_installation_reference_from_model_base"));
+    const Eigen::Isometry3d expected=reference*declared,measured_frame=wb*bm;
+    if((declared.matrix()-processTransform(c.at("model_binding").at("mounting_from_base")).matrix()).cwiseAbs().maxCoeff()>eps ||
+        (expected.matrix()-processTransform(c.at("expected_world_from_model_base")).matrix()).cwiseAbs().maxCoeff()>eps)
+      throw std::runtime_error("MOUNT_DECLARED_MODEL_BASE_IDENTITY_MISMATCH");
     const auto lb=box.pose.inverse()*wb;
     auto vector=[](const J& v){if(v.size()!=3)throw std::runtime_error("MOUNT_VECTOR_SIZE");Eigen::Vector3d r(v[0].get<double>(),v[1].get<double>(),v[2].get<double>());if(!r.allFinite())throw std::runtime_error("MOUNT_VECTOR_FINITE");return r;};
     const auto point=vector(c.at("plane_point_base_m")),up=vector(c.at("plane_up_base"));
-    if(std::abs(up.norm()-1)>1e-8)throw std::runtime_error("MOUNT_NORMAL_INVALID");
+    const auto axis=vector(c.at("first_joint_axis_base"));
+    if(std::abs(up.norm()-1)>1e-8 || std::abs(axis.norm()-1)>1e-8)throw std::runtime_error("MOUNT_NORMAL_OR_AXIS_INVALID");
+    if((bm.translation()-point).cwiseAbs().maxCoeff()>eps || (bm.linear().col(2)-up).cwiseAbs().maxCoeff()>eps)
+      throw std::runtime_error("MOUNT_CAD_SUPPORT_FRAME_INCONSISTENT");
+    auto matrix=[](const Eigen::Isometry3d& t){J out=J::array();for(int r=0;r<4;++r){J row=J::array();for(int k=0;k<4;++k)row.push_back(t.matrix()(r,k));out.push_back(row);}return out;};
     J checks={{"source_geometry_verified",c.value("source_geometry_verified",false)},
       {"support_geometry_unchanged",(box.pose.matrix()-expected_box.pose.matrix()).cwiseAbs().maxCoeff()<=eps && (box.half-expected_box.half).cwiseAbs().maxCoeff()<=eps/2},
-      {"mounting_axis_and_frame_unchanged",(wb.matrix()*bm.matrix()-expected.matrix()).cwiseAbs().maxCoeff()<=eps},
+      {"declared_model_base_pose_unchanged",(wb.matrix()-expected.matrix()).cwiseAbs().maxCoeff()<=eps},
+      {"measured_axis_on_installation_reference",(measured_frame.translation()-reference.translation()).cwiseAbs().maxCoeff()<=eps && std::abs((wb.linear()*axis).dot(reference.linear().col(2)))>=1-eps},
+      {"measured_normal_matches_installation_reference",(wb.linear()*up).dot(reference.linear().col(2))>=1-eps},
       {"opposed_support_normals",(wb.linear()*up).dot(box.pose.linear().col(2))>=1-eps},
       {"measured_plane_is_support_top",std::abs((lb*point).z()-box.half.z())<=eps}};
     double minimum=std::numeric_limits<double>::infinity(),area=0;size_t patch_count=0,source_matches=0;
@@ -80,6 +91,10 @@ inline ProcessJson fixedBaseContactEvidence(const moveit::core::RobotState& stat
     result.update({{"passed",passed},{"checks",checks},{"failures",failures},{"minimum_raw_mesh_support_distance_m",minimum},
       {"contact_area_m2",area},{"contact_triangle_count",patch_count},{"matched_source_vertices",source_matches},
       {"installation_verified",c.at("installation_verified")},{"installation_scope",c.at("installation_scope")},
+      {"world_from_installation_reference",c.at("expected_world_from_installation_reference")},
+      {"expected_world_from_model_base",c.at("expected_world_from_model_base")},
+      {"actual_world_from_base",matrix(wb)},{"actual_world_from_cad_support_frame",matrix(measured_frame)},
+      {"cad_support_tangent_axes_are_not_installation_clocking",true},
       {"formal_task_readiness_not_implied",true},{"geometry_provider","ACTUAL_MOVEIT_COLLISION_MESH_VERTICES_AND_TRIANGLES"}});
     if(passed)result["allowed_pairs"].push_back({base,support});
   } catch(const std::exception& error) {result["failure"]=error.what();}
