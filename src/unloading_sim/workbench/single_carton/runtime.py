@@ -69,7 +69,17 @@ class TaskManager:
             (self.folder/'geometry.json').write_text(json.dumps(dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2))
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if rejected:raise ValueError('UNRESOLVED_DETECTED_NEIGHBOR_GEOMETRY:'+json.dumps(rejected,ensure_ascii=False))
+            if rejected:
+                labels=dict(BOX_THICKNESS_UNOBSERVED_SHOW_SIDE='已有可见面，后方厚度未测出，请露出侧面',
+                    BOX_ENVELOPE_CLIPPED_BY_IMAGE='箱体被画面边缘截断',
+                    BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE='侧面边界被前方物体遮挡',
+                    VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE='可见面边界不完整',
+                    MASK_MIXED_NEIGHBOR_OR_NONCUBOID='掩码可能混入邻箱或不是完整箱体')
+                reasons=[]
+                for x in rejected:
+                    dimensions=(np.asarray(x['evidence']['measured_face_size_m'])*1000).round(1).tolist() if x.get('evidence') else None
+                    reasons.append(f"编号 {x['detection_index']}：{labels.get(x['reason'],x['reason'])}"+(f'；已测面 {dimensions} mm' if dimensions else ''))
+                raise ValueError('不限制固定箱型；本次完整碰撞包络尚未确定：\n'+'\n'.join(reasons))
             if not self.boxes:raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY')
             self.phase='TARGET_READY';self.reason=''
         except Exception as e:self.reject(e);raise
@@ -77,7 +87,8 @@ class TaskManager:
     def prepare_plan(self,selected=None):
         self._enter()
         try:
-            if self.phase!='TARGET_READY' or self.observation is None:raise ValueError('PREPARE_FROZEN_OBSERVATION_FIRST')
+            if self.phase!='TARGET_READY' or self.observation is None:
+                raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并让箱子的正面、侧面和边界入镜'))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.phase='PLANNING';start=time.monotonic()
             self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set)

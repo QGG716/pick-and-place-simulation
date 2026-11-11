@@ -10,6 +10,21 @@ from ..detection import metric_points
 from .geometry import recover
 
 
+def carton_nms(boxes,scores,threshold=.98):
+    """Class-agnostic: 'box' and 'carton' can name the same physical object."""
+    boxes=np.asarray(boxes,float);scores=np.asarray(scores,float);keep=[]
+    for i in np.argsort(-scores,kind='stable'):
+        a=boxes[i];area=max(0,a[2]-a[0])*max(0,a[3]-a[1])
+        if area<=0 or not np.isfinite(a).all():continue
+        duplicate=False
+        for j in keep:
+            b=boxes[j];overlap=np.maximum(0,np.minimum(a[2:],b[2:])-np.maximum(a[:2],b[:2])).prod()
+            other=max(0,b[2]-b[0])*max(0,b[3]-b[1])
+            if overlap/(area+other-overlap) >= threshold:duplicate=True;break
+        if not duplicate:keep.append(int(i))
+    return keep
+
+
 class HuggingFaceGroundingSAM:
     def __init__(self, dino_directory, sam_directory, device='cpu', prompt='carton . box .',
                  box_threshold=.35, text_threshold=.30):
@@ -34,6 +49,7 @@ class HuggingFaceGroundingSAM:
             r=self.dino_processor.post_process_grounded_object_detection(outputs,inputs.input_ids,
                 box_threshold=self.box_threshold,text_threshold=self.text_threshold,target_sizes=[frame.rgb.shape[:2]])[0]
             boxes=r['boxes'].cpu().numpy();scores=r['scores'].cpu().numpy()
+            keep=carton_nms(boxes,scores);boxes=boxes[keep];scores=scores[keep];labels=[r['labels'][i] for i in keep]
             if not len(boxes):return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),(),(), 'HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE')
             if len(boxes)>20:raise ValueError('TOO_MANY_TARGETS_FOR_SINGLE_CARTON_OBSERVATION')
             inp=self.sam_processor(images=frame.rgb,input_boxes=[boxes.tolist()],return_tensors='pt').to(self.device)
@@ -44,7 +60,7 @@ class HuggingFaceGroundingSAM:
             items=tuple(dict(label=str(label),score=float(score),bbox_xyxy=box.tolist(),center_m=None,
                 frame_id='camera_optical',geometry_kind='SEGMENTATION_REQUIRES_CUBOID_RECOVERY',
                 sam_predicted_iou=float(out.iou_scores[0,i,int(choices[i])]))
-                for i,(label,score,box) in enumerate(zip(r['labels'],scores,boxes)))
+                for i,(label,score,box) in enumerate(zip(labels,scores,boxes)))
         return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),items,selected,'HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE')
 
 
@@ -115,13 +131,16 @@ def reconstruct(observation,result):
     f=observation.frame
     if result.source!=Source.LIVE or result.observation_id!=f.observation_id or len(result.masks)!=len(result.detections):
         raise ValueError('SAME_FRAME_REAL_SEGMENTATION_REQUIRED')
-    points=metric_points(f);boxes=[];rejected=[]
+    points=metric_points(f);boxes=[];rejected=[];seen=[]
     for i,(item,mask) in enumerate(zip(result.detections,result.masks)):
+        # Also handle old saved observations produced before detector NMS.
+        if any(np.count_nonzero(mask&previous)/max(1,np.count_nonzero(mask|previous))>=.95 for previous in seen):continue
+        seen.append(mask)
         try:
             box=recover(points,mask,observation.world_camera,rgb=f.rgb)
             box.update(id=f.observation_id+'-carton-'+str(i),detection_index=i,detection=item)
             boxes.append(box)
-        except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e)))
+        except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e),evidence=getattr(e,'evidence',None)))
     return boxes,rejected
 
 

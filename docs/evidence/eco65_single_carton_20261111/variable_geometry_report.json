@@ -1,0 +1,76 @@
+{
+  "schema": "ECO65_VARIABLE_MEASURED_CARTON_REGRESSION_V1",
+  "date": "2026-11-11",
+  "base_commit": "c15be468189b2a81ff77f8cbb967b78a179cb829",
+  "user_policy": "NO_FIXED_CARTON_SIZE_ONE_CREDIBLE_SEALING_FACE_SIDE_VISIBLE_FOR_AUTO_DIMENSIONS",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "235",
+    "time": "17.516",
+    "timestamp": "2026-11-11T20:30:22.756198+08:00",
+    "hostname": "JD"
+  },
+  "synthetic_numeric_sizes_m": [
+    [
+      0.24,
+      0.18,
+      0.12
+    ],
+    [
+      0.32,
+      0.21,
+      0.16
+    ],
+    [
+      0.12,
+      0.08,
+      0.06
+    ]
+  ],
+  "twelve_cup_surface_test_m": [
+    0.3,
+    0.22,
+    0.14
+  ],
+  "unknown_thickness": "REJECTED_WITH_MEASURED_FACE_EVIDENCE_NO_GUESSED_DEPTH",
+  "duplicate_detection": "NEAR_IDENTICAL_BOXES_AND_MASKS_DEDUPLICATED_DISTINCT_OVERLAPS_RETAINED",
+  "payload_bound": "ACTUAL_ATTACHED_CORNERS_NOT_FIXED_0_25_M",
+  "saved_real_observation": {
+    "source": "SAVED_REAL_OBSERVATION_OFFLINE_REANALYSIS",
+    "physical_execution": "NOT_RUN",
+    "results": [
+      {
+        "index": 0,
+        "status": "REJECTED",
+        "reason": "BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE",
+        "measured_face_mm": [
+          155.36829611683223,
+          179.45934186076116
+        ]
+      },
+      {
+        "index": 1,
+        "status": "REJECTED",
+        "reason": "BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+        "measured_face_mm": [
+          191.4656716443927,
+          144.05599543565395
+        ]
+      },
+      {
+        "index": 3,
+        "status": "REJECTED",
+        "reason": "VISIBLE_FACE_INSUFFICIENT_BOUNDARY_COVERAGE",
+        "measured_face_mm": null
+      }
+    ]
+  },
+  "physical_execution": "NOT_RUN",
+  "scope": "Geometry, UI, source isolation, fake devices and existing controlled-execution regressions; no hardware commands",
+  "hashes": {
+    "pytest_xml": "f210f72df4ef6d0de984b489923c183e6598debde5bf626a342a9281a71e8b6d"
+  }
+}

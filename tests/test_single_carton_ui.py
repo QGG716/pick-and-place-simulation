@@ -28,6 +28,8 @@ def test_single_carton_ui_starts_inert_and_rejects_preview_import(monkeypatch):
     try:
         root.update();assert '实机模式' in root.title()
         assert str(ui.execute_button.cget('state'))=='disabled'
+        assert str(ui.plan_button.cget('state'))=='disabled'
+        assert '箱型不限' in ui.details.get()
         with pytest.raises(ValueError,match='预览'):ui.execute_cycle()
         with pytest.raises(ValueError,match='不能导入执行'):ui.load_plan()
         assert service.process is None and not vacuum.connected and not backend.workers['camera'].device.connected

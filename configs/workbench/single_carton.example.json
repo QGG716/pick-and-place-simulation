@@ -54,5 +54,6 @@
     "box_threshold": 0.35,
     "text_threshold": 0.3
   },
-  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION"
+  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+  "geometry_mode": "MEASURE_VISIBLE_FACE_AND_SIDE_NO_SIZE_PRIOR"
 }

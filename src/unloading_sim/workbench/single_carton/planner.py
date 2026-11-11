@@ -90,7 +90,11 @@ class SinglePlanner(EmptyPlanner):
         (folder/(stage+'-native.json')).write_text(json.dumps(dict(request=req,result=result)))
         if result.get('status')!='SUCCESS' or result.get('native_output_status')!='PASS':
             raise ValueError(stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))))
-        prepared=prepare(result['points'],self.limits,scale,self.config['period_s'],self.reach_bound+.25)
+        payload_reach=0.
+        if context.get('attachment'):
+            a=context['attachment']
+            payload_reach=float(np.linalg.norm(corners(a['pose'],a['size']),axis=1).max())
+        prepared=prepare(result['points'],self.limits,scale,self.config['period_s'],self.reach_bound+payload_reach)
         progress(f"检查 {stage} 最终发送轨迹：{len(prepared['points'])} 点")
         checked=self.client.request(dict(context,op='validate',probe_path=prepared['collision_path']),timeout=600)
         (folder/(stage+'-sent-check.json')).write_text(json.dumps(checked))

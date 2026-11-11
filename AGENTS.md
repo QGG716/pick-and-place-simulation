@@ -1,5 +1,14 @@
 # November 11 physical single-carton cycle (current active override)
 
+The latest user removes the 150x100x100 mm restriction for real observed cartons:
+select by a credible visible face and actual CAD seal coverage, with dimensions
+measured automatically from visible face and side boundaries. The user confirmed
+that a side face can be shown. Never fabricate hidden thickness from one plane;
+keep full payload/neighbor collision, loaded return, mass and pressure checks.
+Deduplicate synonymous detections of the same carton. This supersedes the fixed
+carton requirement only in the real single-carton entry; historical offline scenes
+and existing assets stay unchanged. No automatic motion or valve writes in tests.
+
 The current user authorizes incremental development, commit and push on
 `feat/v0.6-eco65-ubuntu-real-integration`, including `f13cda3daa850fac97337f730f6717d697c86c7f`.
 The explicit `unloading_sim.workbench.single_carton` entry may execute ONE

@@ -78,11 +78,11 @@ class SingleWorkbench(Workbench):
         self.observe_button=self.button(row,'准备观测 / 锁定起始点',lambda:self.job('observe_done',self.manager.observe))
         ttk.Label(row,text='目标检测编号（空=自动选择）').pack(side='left',padx=5)
         self.target=tk.StringVar();ttk.Entry(row,textvariable=self.target,width=5).pack(side='left')
-        self.plan_button=self.button(row,'规划所选箱',self.plan_selected)
+        self.plan_button=self.button(row,'规划所选箱',self.plan_selected);self.plan_button.configure(state='disabled')
         self.preview_button=self.button(row,'查看完整轨迹预览',self.preview)
         self.execute_button=self.button(row,'执行单箱',self.execute_cycle);self.execute_button.configure(state='disabled')
         self.button(row,'停止（不自动释放）',self.stop_cycle)
-        self.details=tk.StringVar(value='相机在“观测与检测”页手动连接并开始采集。\n'+('\n'.join(issues(config)) or '现场配置已加载。'))
+        self.details=tk.StringVar(value='相机在“观测与检测”页手动连接并开始采集。\n箱型不限；根据可见面密封条件选箱，优先从正面与侧面自动测量尺寸。\n'+('\n'.join(issues(config)) or '现场配置已加载。'))
         ttk.Label(tab,textvariable=self.details,wraplength=1300).pack(fill='x',pady=8)
         self.bound_details=tk.StringVar(value='本次起始点、目标和释放位置：尚未锁定')
         ttk.Label(tab,textvariable=self.bound_details,wraplength=1300).pack(fill='x',pady=5)
@@ -161,6 +161,7 @@ class SingleWorkbench(Workbench):
                 stamp=replace(Stamp.receive(),received_monotonic_ns=int(obs.robot_sample['received_s']*1e9))
                 self.original_detection_joint=JointSample(str(obs.robot_sample['sequence']),obs.q_capture,stamp,obs.robot_sample,'CAPTURE_ASSOCIATED')
                 self.details.set('本次 q_start（度）：'+' '.join(f'{x:.3f}' for x in np.rad2deg(obs.q_start))+f'\n恢复 {len(boxes)} 个箱体；选择检测编号或留空自动选择。')
+                if boxes:self.details.set(self.details.get()+'\n实测尺寸（mm）：'+'；'.join(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist()) for b in boxes))
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+
                     '\n起始 TCP（m）：'+str(np.asarray(obs.world_tcp_start)[:3,3].round(5).tolist()))
                 self.draw_observation()
@@ -176,6 +177,7 @@ class SingleWorkbench(Workbench):
             elif kind=='feedback':self.last_status=value;self.feedback_pending=False
             elif kind=='result':self.details.set(json.dumps(value,ensure_ascii=False));self.execute_button.configure(state='disabled')
         m=self.manager;state=m.cycle.state if m.cycle else m.phase
+        self.plan_button.configure(state='normal' if m.phase=='TARGET_READY' and not m.active and not getattr(self,'job_pending',False) else 'disabled')
         self.task_status.set(f'实机单箱模式 · {LABELS.get(state,state)} · task_id {m.task_id or "—"}\n原因：{m.reason or (m.cycle.reason if m.cycle else "—")}')
         status=m.cycle.last_feedback if m.cycle and m.cycle.active else self.last_status
         status=status or {};q=status.get('actual_q');age=status.get('feedback_age_s');error=status.get('tracking_error_rad')

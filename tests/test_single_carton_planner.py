@@ -88,3 +88,15 @@ def test_unknown_requested_target_is_not_substituted(case):
     p,obs,box,folder,calls,opts=case
     with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE'):p.plan_cycle(obs,[box],folder,selected=999)
     assert not [c for c in calls if c.get('op')=='plan']
+
+
+def test_final_sample_collision_bound_includes_actual_large_payload_extent(case):
+    from unloading_sim.moveit2_backend import ResidentMoveItClient
+    p,obs,box,folder,calls,opts=case
+    p.client=ResidentMoveItClient()
+    pose=np.eye(4);pose[2,3]=.4
+    context={'q_start':[0.]*6,'stage':'detach',
+             'attachment':dict(pose=pose.tolist(),size=[.06,.08,.1])}
+    segment=p.checked_segment(context,[.03]*6,'detach',10.,folder,lambda *a:None)
+    assert segment['prepared']['collision_sampling']['reach_bound_m']==pytest.approx(1.452769256906871)
+    assert calls[-1]['op']=='validate' and calls[-1]['probe_path']

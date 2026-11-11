@@ -18,18 +18,18 @@ def plane(width=.15,height=.1,rotation=None):
     return padded,mask
 
 def test_one_face_center_is_half_thickness_behind_observed_plane():
-    p,m=plane();b=recover(p,m,np.eye(4))
+    p,m=plane();b=recover(p,m,np.eye(4),prior=(.15,.1,.1))
     np.testing.assert_allclose(np.array(b['pose'])[:3,3],[.02,-.01,.65],atol=.001)
     np.testing.assert_allclose(b['faces'][0]['normal'],[0,0,-1],atol=1e-6)
     assert len(b['corners_m'])==8 and len(b['observed_faces'])==1 and len(b['inferred_faces'])==5
     assert not b['quality']['hidden_extent_measured']
-    assert b['dimension_source'].startswith('150x100x100')
+    assert b['dimension_source'].startswith('EXPLICIT_DIMENSIONS')
 
 @pytest.mark.parametrize('euler',[(15,20,30),(-20,0,60),(0,-35,-10)])
 def test_oriented_visible_face_and_world_chain(euler):
     R=Rotation.from_euler('xyz',euler,degrees=True).as_matrix();p,m=plane(rotation=R)
     W=np.eye(4);W[:3,:3]=Rotation.from_euler('z',70,degrees=True).as_matrix();W[:3,3]=[.3,-.2,.1]
-    b=recover(p,m,W)
+    b=recover(p,m,W,prior=(.15,.1,.1))
     expected=transform(W,[[.02,-.01,.6]+R[:,2]*.05])[0]
     np.testing.assert_allclose(np.array(b['pose'])[:3,3],expected,atol=.002)
     np.testing.assert_allclose(b['faces'][0]['normal'],-W[:3,:3]@R[:,2],atol=.002)
@@ -41,14 +41,14 @@ def test_invalid_geometry_rejected_instead_of_fabricating_cuboid(case):
     if case=='insufficient':p[:]=np.nan
     if case=='background':p[15:50,15:-15,2]+=.18
     if case=='missing_boundary':m[:,:60]=False
-    with pytest.raises(ValueError):recover(p,m,np.eye(4))
+    with pytest.raises(ValueError):recover(p,m,np.eye(4),prior=(.15,.1,.1))
 
 @pytest.fixture(scope='module')
 def cad():
     return json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
 
 def test_all_cups_cannot_fit_but_confirmed_passive_valves_enable_six_cup_contact(cad):
-    p,m=plane();box=recover(p,m,np.eye(4));config=load(ROOT/'configs/workbench/single_carton.example.json')
+    p,m=plane();box=recover(p,m,np.eye(4),prior=(.15,.1,.1));config=load(ROOT/'configs/workbench/single_carton.example.json')
     topology=dict(config['topology'],uncovered_cups_self_close=False)
     with pytest.raises(ValueError,match='DO_NOT_FIT'):contact_candidates(box,cad,topology)
     candidates=contact_candidates(box,cad,config['topology']);c=candidates[0]
