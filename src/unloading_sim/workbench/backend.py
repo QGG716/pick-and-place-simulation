@@ -10,6 +10,10 @@ from .policy import ReadOnlyViolation, DisabledExecution, ObservationConfig, loa
 from .contracts import Source, compatible_observation_stamps
 
 
+class DeviceRequestRejected(RuntimeError):
+    """Invalid user request; the existing connection remains healthy."""
+
+
 class DeviceWorker:
     def __init__(self, name, device, interval=.1):
         self.name, self.device, self.interval = name, device, interval
@@ -70,6 +74,9 @@ class DeviceWorker:
                     active = self.device.connected and (self.name != "camera" or self.device.streaming)
                     if active and not self.stop.is_set():
                         self.emit("sample", self.device.read())
+                except DeviceRequestRejected as exc:
+                    # A request error is not evidence of a broken transport.
+                    self.emit("error", f"{type(exc).__name__}: {exc}")
                 except Exception as exc:
                     try:
                         self.device.disconnect()

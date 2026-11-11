@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 from ..ui import Workbench,load_mapping
-from ..backend import WorkbenchBackend
+from ..backend import WorkbenchBackend,DeviceRequestRejected
 from ..contracts import JointSample,Stamp
 from ..devices import D435iObserver,VacuumObserver
 from .planner import ROOT,EmptyPlanner,load_config
@@ -18,15 +18,49 @@ from .trajectory import Authority
 from .service import ExecutionService
 from .engine import TERMINAL
 
+
+def live_target_sample(sample, now=None, max_age_s=.1):
+    """Validate the sample at read time; never silently reuse an old target."""
+    if sample is None:
+        raise RuntimeError('没有机械臂实时数据，请先点击“连接受控会话（不运动）”。')
+    now=time.monotonic() if now is None else now
+    received=sample.get('received_s')
+    q=np.asarray(sample.get('q',[]),float)
+    if (sample.get('source')!='LIVE' or q.shape!=(6,) or not np.isfinite(q).all()
+            or not isinstance(received,(float,int)) or not np.isfinite(received)):
+        raise RuntimeError('机械臂实测反馈无效，未填入目标。')
+    age=now-received
+    if not 0<=age<=max_age_s:
+        raise RuntimeError(f'机械臂反馈已过期（{age*1000:.1f} ms），未填入目标。请检查连接；必要时先断开，再手动连接。')
+    return dict(target_degrees=' '.join(f'{x:.4f}' for x in np.rad2deg(q)),
+                feedback_age_s=age,received_s=received)
+
+
 class ManagedRobotView:
     """Observer facade over the SAME owner; no second SDK or state polling."""
-    def __init__(self,service,mapping):self.service=service;self.mapping=mapping;self.connected=False
+    def __init__(self,service,mapping):
+        self.service=service;self.mapping=mapping;self.connected=False
+        self.endpoint=None;self.capabilities=None;self.last_connection_error=''
     def connect(self,host,port):
-        result=self.service.connect(host,port);self.connected=True;return result
+        endpoint=(str(host),int(port));self.last_connection_error=''
+        if self.connected:
+            if endpoint!=self.endpoint:
+                self.last_connection_error=f'仍连接 {self.endpoint[0]}:{self.endpoint[1]}；切换地址前请先断开。'
+                raise DeviceRequestRejected(self.last_connection_error)
+            # DeviceWorker used to interpret ALREADY_CONNECTED as a transport
+            # failure and disconnect the working session on a repeated click.
+            return dict(self.capabilities,already_connected=True)
+        try:
+            result=self.service.connect(*endpoint)
+        except Exception as exc:
+            self.last_connection_error=str(exc)
+            raise
+        self.connected=True;self.endpoint=endpoint;self.capabilities=result
+        return result
     def disconnect(self):
         if self.connected:
             if self.service.process is not None:self.service.disconnect()
-            self.connected=False
+            self.connected=False;self.endpoint=None
     def read(self):
         s=self.service.snapshot()
         if s is None:raise RuntimeError('NO_LIVE_FEEDBACK')
@@ -45,6 +79,7 @@ class ControlledWorkbench(Workbench):
         self.service=backend.execution;self.package=None;self.task_id=None
         self.jobs=Queue();self.busy=False;self.closing=False;self.feedback_busy=False
         self.live_status={'state':'DISCONNECTED'};self.previewed=False;self.goal_generation=0
+        self.waiting_connection=False
         super().__init__(root,backend,snapshot=config['snapshot'],installation=config['installation'])
         root.title('ECO65-B · 单条低速空载轨迹 · 受控执行')
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
@@ -55,11 +90,14 @@ class ControlledWorkbench(Workbench):
         tab=ttk.Frame(self.tabs,padding=12);self.tabs.add(tab,text='受控执行');self.tabs.select(tab)
         self.execution_status=tk.StringVar(value='受控模式 · 未连接 · 无活动任务')
         ttk.Label(tab,textvariable=self.execution_status,wraplength=1250).pack(fill='x',pady=8)
+        connection=ttk.Frame(tab);connection.pack(fill='x',pady=(0,8))
+        self.button(connection,'连接受控会话（不运动）',self.connect_robot)
+        self.button(connection,'断开（活动任务先停止）',lambda:self.backend.command('robot','disconnect'))
         row=ttk.Frame(tab);row.pack(fill='x')
         self.goal=tk.StringVar();self.scale=tk.StringVar(value=str(config.get('time_scale',10.)))
         ttk.Label(row,text='目标 J1—J6（度，空格分隔）').pack(side='left')
         ttk.Entry(row,textvariable=self.goal,width=64).pack(side='left',padx=8)
-        self.button(row,'填入当前实测',self.fill_current)
+        self.fill_button=self.button(row,'填入当前实测',self.fill_current)
         row=ttk.Frame(tab);row.pack(fill='x',pady=10)
         ttk.Label(row,text='时间放大倍数（≥1，默认 10）').pack(side='left')
         ttk.Entry(row,textvariable=self.scale,width=8).pack(side='left',padx=8)
@@ -84,9 +122,20 @@ class ControlledWorkbench(Workbench):
     def _robot_controls(self,box):
         ttk.Entry(box,textvariable=self.robot_host,width=16).pack(side='left',padx=4)
         ttk.Entry(box,textvariable=self.robot_port,width=6).pack(side='left',padx=4)
-        self.button(box,'连接受控会话（不运动）',lambda:self.backend.command('robot','connect',self.robot_host.get(),int(self.robot_port.get())))
+        self.button(box,'连接受控会话（不运动）',self.connect_robot)
         self.button(box,'断开（活动任务先停止）',lambda:self.backend.command('robot','disconnect'))
         self.joints_text=tk.StringVar(value='未连接');ttk.Label(box,textvariable=self.joints_text,wraplength=800).pack(side='left')
+    def safe(self,function,*args):
+        try:return function(*args)
+        except Exception as exc:
+            message=f'{type(exc).__name__}: {exc}'
+            self.backend.log(message)
+            if hasattr(self,'notice'):self.notice.set(str(exc))
+            if hasattr(self,'summary'):self.summary.set(str(exc))
+    def connect_robot(self):
+        self.backend.command('robot','connect',self.robot_host.get(),int(self.robot_port.get()))
+        self.waiting_connection=True
+        self.summary.set('正在连接机械臂并检查实时反馈…')
     def invalidate(self,*_):
         self.package=None;self.previewed=False;self.goal_generation+=1
         self.planner.authority.invalidate()
@@ -99,9 +148,16 @@ class ControlledWorkbench(Workbench):
             except Exception as e:self.jobs.put((kind,None,str(e)))
         threading.Thread(target=run,daemon=True).start()
     def fill_current(self):
-        self.job('fill',lambda:self.service.snapshot())
+        def read():
+            try:sample=self.service.snapshot()
+            except RuntimeError as exc:
+                if str(exc)=='DISCONNECTED':raise RuntimeError('机械臂未连接，请先点击“连接受控会话（不运动）”。') from exc
+                raise
+            return live_target_sample(sample)
+        self.job('fill',read)
+        self.summary.set('正在读取当前实测关节…')
     def plan_empty(self):
-        if self.live_status['state'] not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('请先连接，并结束当前任务')
+        if not self.live_status.get('connected') or self.live_status['state'] not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('请先连接，并结束当前任务')
         q=np.deg2rad([float(v) for v in self.goal.get().split()]);scale=float(self.scale.get());self.invalidate()
         generation=self.goal_generation
         self.summary.set('正在读取实测起点、生成原生 MoveIt 轨迹并检查最终发送路径…')
@@ -169,7 +225,8 @@ class ControlledWorkbench(Workbench):
                 if kind=='close':self.closing=False
                 continue
             if kind=='fill':
-                if value:self.goal.set(' '.join(f'{x:.4f}' for x in np.rad2deg(value['q'])))
+                self.goal.set(value['target_degrees'])
+                self.summary.set(f"已填入当前实测 J1—J6（度）；读取时反馈年龄 {value['feedback_age_s']*1000:.1f} ms。可修改邻近目标后规划。")
             elif kind=='plan':
                 generation,package=value
                 if generation==self.goal_generation:
@@ -179,6 +236,12 @@ class ControlledWorkbench(Workbench):
             elif kind=='feedback':self.live_status=value
             elif kind=='close':
                 super().close();return
+        robot_worker=self.backend.workers['robot']
+        if self.waiting_connection and not robot_worker.busy:
+            self.waiting_connection=False
+            robot=robot_worker.device
+            if robot.last_connection_error:self.summary.set('连接请求未完成：'+robot.last_connection_error)
+            elif robot.connected:self.summary.set('机械臂已连接，可以点击“填入当前实测”。重复连接不会断开现有会话。')
         s=self.live_status
         caps=s.get('capabilities',{});tool=caps.get('submit_tool_frame',caps.get('rm_get_current_tool_frame',{}).get('value',{}))
         payload=tool.get('payload','—')
