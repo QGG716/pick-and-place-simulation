@@ -10,6 +10,24 @@ from .engine import Supervisor,MonitorConfig,TERMINAL
 from .transport import RealmanTransport,payload_matches
 
 
+def read_controller_payload(transport,mass):
+    """Called only by the owner while idle, never on the timed sending thread."""
+    code,tool=transport.sender.rm_get_current_tool_frame()
+    result=dict(sdk_code=code,tool=tool,matches=code==0 and payload_matches(tool,mass),
+                required_kg=mass,received_s=time.monotonic())
+    transport.capabilities['payload_check']=result
+    return result
+
+
+def payload_error(result):
+    if result['sdk_code']:
+        return f"CONTROLLER_TOOL_QUERY_FAILED: 工具负载读取失败，SDK 返回 {result['sdk_code']}；未发送运动。"
+    tool=result['tool'] if isinstance(result['tool'],dict) else {}
+    return (f"CONTROLLER_PAYLOAD_MUST_MATCH_1_5_KG: 控制器当前工具 {tool.get('name','—')} 的负载为 "
+            f"{tool.get('payload','未知')} kg，需要 {result['required_kg']:g} kg。请在控制器中选择/设置已确认的吸具负载，"
+            '然后点击“刷新工具负载（只读）”并重新规划。5 kg 是机械臂额定能力。未发送运动。')
+
+
 def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
     transport=RealmanTransport(mapping,config);transport.external_stop=stop_event;events=SimpleQueue();record_file=None
     def write_records():
@@ -58,6 +76,10 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     value=transport.connect(*arg)
                 elif op=='snapshot':value=transport.latest
                 elif op=='feedback':value=dict(engine.feedback(transport.latest),connected=transport.connected,capabilities=transport.capabilities)
+                elif op=='check_payload':
+                    if not transport.connected:raise RuntimeError('DISCONNECTED')
+                    if engine.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
+                    value=read_controller_payload(transport,config['tool_mass_kg'])
                 elif op=='submit':
                     ticket=arg.get('cancel_epoch');arg=arg.get('package',arg)
                     if not transport.connected:raise RuntimeError('DISCONNECTED')
@@ -73,11 +95,11 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                             stop_event.clear()
                     else:stop_event.clear()
                     # No active sender while this bounded TCP query occurs.
-                    code,tool=transport.sender.rm_get_current_tool_frame()
-                    transport.capabilities['submit_tool_frame']=tool
-                    if code or not payload_matches(tool,config['tool_mass_kg']):raise RuntimeError('CONTROLLER_PAYLOAD_MUST_MATCH_1_5_KG')
-                    if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
+                    payload=read_controller_payload(transport,config['tool_mass_kg'])
+                    transport.capabilities['submit_tool_frame']=payload['tool']
                     (task_dir/'controller.json').write_text(json.dumps(transport.capabilities,indent=2))
+                    if not payload['matches']:raise RuntimeError(payload_error(payload))
+                    if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                     events.put({'_open':str(task_dir/'events.jsonl')})
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                     value=engine.submit(arg['prepared'],transport.latest,task_id);active_package=arg
@@ -133,6 +155,7 @@ class ExecutionService:
     def connect(self,host,port):
         self.authority.invalidate();return self._call('connect',(host,port))
     def snapshot(self):return self._call('snapshot')
+    def check_payload(self):return self._call('check_payload')
     def submit(self,trajectory):
         # Source files rehashed here, immediately before the child rechecks start.
         ticket=self.cancel_epoch.value if hasattr(self,'cancel_epoch') else None

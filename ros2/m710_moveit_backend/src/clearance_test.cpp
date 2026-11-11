@@ -192,8 +192,40 @@ void rigidCartonCases(J& out) {
   try{m710::eco65RigidCartonPairs(bad);}catch(const std::exception&){rejected=true;}
   require(rejected,"RIGID_CARTON_ROBOT_WIDENING_REJECTED");out["rigid_carton_policy"]="PASS";
 }
+void controlledRepeatedPathCases(J& out) {
+  auto p=policy();p["schema"]="eco65_native_empty_clearance_v1";
+  p["source_policy"]={{"schema","eco65_pair_collision_policy_v1"},{"collision_margin_m",.002},
+    {"mesh_error_reserve_m",.0002},{"required_pair_clearance_m",.0024},
+    {"self_collision_clearance_m",.0024},{"contact_tolerance_m",.0004}};
+  J req={{"attachment",nullptr},{"allowed_pairs",J::array({J::array({"base_link","robot_mount_plate"})})},
+    {"identity",{{"policy_scope","CONTROLLED_EMPTY_NO_CONTACT"}}}};
+  auto s=scene(.02);J path={{0.},{.0001},{.0002},{.0002}};
+  m710::Clearance c(s,p,"optimized",nullptr,req);c.phase="output";
+  require(c.checkPath(s->getCurrentState(),path,.0005).is_null(),"CONTROLLED_PATH_VALID");
+  require(c.evidence()["counts"]["output"]["queries"]==5,"ALL_DISTINCT_STATES_CHECKED_ONCE");
+  require(c.evidence()["exact_repeated_path_states_reused"]==4,"ONLY_EXACT_REPEATS_REUSED");
+  c.checkPath(s->getCurrentState(),path,.0005);
+  require(c.evidence()["counts"]["output"]["queries"]==10,"NO_CROSS_REQUEST_REUSE");
+  m710::Clearance tiny(s,p,"optimized",nullptr,req);tiny.phase="output";
+  tiny.checkPath(s->getCurrentState(),J{{0.},{1e-9}},.0005);
+  require(tiny.evidence()["counts"]["output"]["queries"]==3,"NO_APPROXIMATE_STATE_REUSE");
+  m710::Clearance legacy(s,policy());legacy.phase="output";
+  legacy.checkPath(s->getCurrentState(),path,.0005);
+  require(legacy.evidence()["counts"]["output"]["queries"]==9,"LEGACY_SAMPLING_UNCHANGED");
+  require(legacy.evidence()["exact_repeated_path_states_reused"]==0,"LEGACY_REUSE_DISABLED");
+  auto changed=s->diff();changed->decoupleParent();changed->processCollisionObjectMsg(box("wall",0.));
+  m710::Clearance obstructed(changed,p,"optimized",nullptr,req);
+  require(!obstructed.checkPath(changed->getCurrentState(),path,.0005).is_null(),"SCENE_CHANGE_NOT_CACHED");
+  s->processCollisionObjectMsg(box("wall",.07));
+  m710::Clearance edge(s,p,"optimized",nullptr,req);auto state=s->getCurrentState();
+  for(double q:{-.1,.1}) {state.setJointGroupPositions("manipulator",std::vector<double>{q});state.update();require(edge.check(state),"CONTROLLED_FREE_ENDPOINTS");}
+  require(!edge.checkPath(s->getCurrentState(),J{{-.1},{.1}},.04).is_null(),"CONTROLLED_INTERIOR_COLLISION_RETAINED");
+  out["controlled_exact_repeat_reuse"]="PASS";
+}
+
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
+  controlledRepeatedPathCases(out);
   J pairPolicy={{"schema","eco65_pair_collision_policy_v5"},{"robot_tool_exemption",{
     {"schema","eco65_named_robot_tool_exemption_v1"},{"scope","EXACT_LINK_3_VS_PART_026_ONLY"},
     {"exempt_pairs",J::array({J::array({"link_3","part_026"})})},{"tool_semantic","conservative_rigid"},

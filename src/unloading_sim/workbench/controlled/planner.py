@@ -201,21 +201,26 @@ class EmptyPlanner:
         return dict(mass_kg=mass,com_flange_m=com.tolist(),inertia_com_flange_kg_m2=inertia.tolist(),mass_source='USER_CONFIRMED_1_5_KG',distribution_source='CAD_VOLUME_WEIGHTED_CENTROIDS_AND_BOUNDING_CUBOID_INERTIA_ESTIMATE_NOT_MEASURED',robot_rated_payload_kg=5.)
     def request(self,q,**kw):
         return dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],scene_fingerprint=self.scene_hash,world=self.world,allowed_pairs=[['base_link','robot_mount_plate']],attachment=None,clearance_policy=self.clearance,stage='residence',planning_only=False,seed=6518,**kw)
-    def plan(self,sample,goal,time_scale=10.):
+    def plan(self,sample,goal,time_scale=10.,progress=None):
+        progress=progress or (lambda message:None)
         q,goal=validate_live_goal(sample,goal)
+        progress('核对模型、工具、场景及版本')
         self.build();binding=self.binding();self.authority.invalidate()
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         directory=Path(self.config['record_root'])/('plan-'+uuid.uuid4().hex);directory.mkdir(parents=True,exist_ok=True)
         if self.client:self.client.close()
         self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(directory),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=directory/'moveit.log')
         try:
+            progress('启动原生规划器并导入完整场景')
             self.client.request(self.init)
+            progress('生成 MoveIt / Pilz 关节路径')
             result=self.client.request(self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
             (directory/'native-plan.json').write_text(json.dumps(result,indent=2))
             if result['status']!='SUCCESS' or result.get('native_output_status')!='PASS':raise ValueError('NATIVE_PLAN_REJECTED:'+str(result.get('failure',result['status'])))
             if len(result.get('points',[]))<2:
                 raise ValueError('原生规划器未生成可运动的时间轨迹（少于两个时间点）。请检查目标后重新规划；当前轨迹不可执行。')
             prepared=prepare(result['points'],self.limits,time_scale=time_scale,period=self.config['period_s'],reach_bound_m=self.reach_bound)
+            progress(f"检查最终发送路径碰撞：{len(prepared['points'])} 个发送点，{len(prepared['collision_path'])} 个路径点；计划运动 {prepared['send_duration_s']:.3f} s")
             checked=self.client.request(self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=600)
             (directory/'sent-path-check.json').write_text(json.dumps(checked,indent=2))
             if not checked.get('native_valid') or not checked.get('legacy_intersection_valid') or checked.get('path_failure') is not None:raise ValueError('SENT_PATH_COLLISION_REJECTED:'+str(checked.get('path_failure',checked.get('failure'))))

@@ -215,16 +215,18 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
     class FakeTransport:
         def __init__(self,mapping,config):
             self.connected=False;self.capabilities={};self.sender=self;self.stops=0;self.deletes=0;self.seq=0;self.q=[0.]*6;instances.append(self)
+            self.payload=1.5;self.tool_code=0;self.tool_queries=0;self.sent=0
         def connect(self,*args):self.connected=True;return self.capabilities
         @property
         def latest(self):
             if not self.connected:return None
             self.seq+=1
             return dict(source='LIVE',sequence=self.seq,received_s=time.monotonic(),q=self.q,velocity=[0.]*6,enabled=True,alarm=False)
-        def rm_get_current_tool_frame(self):return 0,dict(payload=1.5)
+        def rm_get_current_tool_frame(self):
+            self.tool_queries+=1;return self.tool_code,dict(name='Fake_tip',payload=self.payload)
         def arm(self):pass
         def check_limits(self,p):pass
-        def send(self,q):self.q=q;return 0
+        def send(self,q):self.sent+=1;self.q=q;return 0
         def request_stop(self):self.stops+=1
         def stop_result(self):return 0 if self.stops else None
         def disconnect(self):self.connected=False;self.deletes+=1
@@ -238,7 +240,22 @@ def test_worker_close_stops_own_task_then_disconnects_and_records(tmp_path,monke
         ident+=1;parent.send((ident,op,arg));assert parent.poll(3);_,ok,value=parent.recv();return ok,value
     try:
         assert call('connect',('fake',8080))[0]
+        for mass,code,reason in [(0.,0,'CONTROLLER_PAYLOAD_MUST_MATCH_1_5_KG'),(1.5,1,'CONTROLLER_TOOL_QUERY_FAILED')]:
+            instances[0].payload=mass;instances[0].tool_code=code
+            ok,check=call('check_payload');assert ok and not check['matches']
+            ok,why=call('submit',dict(prepared=prepare(points(),LIMITS,10)))
+            assert not ok and why.startswith(reason) and '未发送运动' in why
+            assert instances[0].sent==0 and instances[0].stops==0
+        rejected=list(tmp_path.glob('*/result.json'));assert len(rejected)==2
+        for p in rejected:
+            assert json.loads(p.read_text())['hardware_motion']=='NOT_STARTED'
+            assert 'payload_check' in json.loads((p.parent/'controller.json').read_text())
+        instances[0].payload=1.5;instances[0].tool_code=0
+        ok,check=call('check_payload');assert ok and check['matches']
         ok,task=call('submit',dict(prepared=prepare(points(),LIMITS,10)));assert ok
+        queries=instances[0].tool_queries
+        ok,why=call('check_payload');assert not ok and why=='TASK_ACTIVE_OR_STOP_UNCONFIRMED'
+        assert instances[0].tool_queries==queries  # No TCP tool query while sending.
         ok,why=call('close');assert not ok and why=='STOPPING_WAIT_FOR_FEEDBACK'
         deadline=time.monotonic()+2
         while time.monotonic()<deadline:

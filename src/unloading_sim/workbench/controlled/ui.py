@@ -15,7 +15,8 @@ from ..contracts import JointSample,Stamp
 from ..devices import D435iObserver,VacuumObserver
 from .planner import ROOT,EmptyPlanner,load_config
 from .trajectory import Authority
-from .service import ExecutionService
+from .service import ExecutionService,payload_error
+from .transport import payload_matches
 from .engine import TERMINAL
 
 
@@ -80,6 +81,7 @@ class ControlledWorkbench(Workbench):
         self.jobs=Queue();self.busy=False;self.closing=False;self.feedback_busy=False
         self.live_status={'state':'DISCONNECTED'};self.previewed=False;self.goal_generation=0
         self.waiting_connection=False
+        self.planning_progress=None
         super().__init__(root,backend,snapshot=config['snapshot'],installation=config['installation'])
         root.title('ECO65-B · 单条低速空载轨迹 · 受控执行')
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
@@ -93,6 +95,9 @@ class ControlledWorkbench(Workbench):
         connection=ttk.Frame(tab);connection.pack(fill='x',pady=(0,8))
         self.button(connection,'连接受控会话（不运动）',self.connect_robot)
         self.button(connection,'断开（活动任务先停止）',lambda:self.backend.command('robot','disconnect'))
+        self.payload_button=self.button(connection,'刷新工具负载（只读）',self.refresh_payload)
+        self.payload_label=ttk.Label(tab,text='工具负载：等待连接后读取',wraplength=1250)
+        self.payload_label.pack(fill='x',pady=(0,8))
         row=ttk.Frame(tab);row.pack(fill='x')
         self.goal=tk.StringVar();self.scale=tk.StringVar(value=str(config.get('time_scale',10.)))
         ttk.Label(row,text='目标 J1—J6（度，空格分隔）').pack(side='left')
@@ -139,6 +144,7 @@ class ControlledWorkbench(Workbench):
         self.summary.set('正在连接机械臂并检查实时反馈…')
     def invalidate(self,*_):
         self.package=None;self.previewed=False;self.goal_generation+=1
+        self.planning_progress=None
         self.planner.authority.invalidate()
         if hasattr(self,'execute_button'):self.execute_button.configure(state='disabled')
         if hasattr(self,'preview_button'):self.preview_button.configure(state='disabled')
@@ -164,11 +170,24 @@ class ControlledWorkbench(Workbench):
         q=np.deg2rad([float(v) for v in self.goal.get().split()]);scale=float(self.scale.get());self.invalidate()
         generation=self.goal_generation
         self.summary.set('正在读取实测起点、生成原生 MoveIt 轨迹并检查最终发送路径…')
-        self.job('plan',lambda:(generation,self.planner.plan(self.service.snapshot(),q,scale)))
+        self.job('plan',lambda:(generation,self.planner.plan(self.service.snapshot(),q,scale,
+            progress=lambda message:self.jobs.put(('plan_progress',(generation,message),None)))))
+    def controller_payload(self):
+        caps=self.live_status.get('capabilities',{})
+        if 'payload_check' in caps:return caps['payload_check']
+        tool=caps.get('submit_tool_frame',caps.get('rm_get_current_tool_frame',{}).get('value',{}))
+        mass=self.control_config.get('tool_mass_kg',1.5)
+        return dict(tool=tool,matches=payload_matches(tool,mass),required_kg=mass,sdk_code=0)
+    def refresh_payload(self):
+        if self.busy:raise RuntimeError('当前操作尚未完成')
+        if not self.live_status.get('connected'):raise RuntimeError('请先连接机械臂')
+        self.invalidate()
+        self.job('payload',self.service.check_payload)
+        self.summary.set('正在只读核对控制器当前工具负载…')
     def preview(self):
         if self.package is None:raise RuntimeError('请先完成规划')
         self.previewed=True;self.draw_plan();self.preview_point()
-        self.execute_button.configure(state='normal')
+        self.execute_button.configure(state='normal' if self.controller_payload()['matches'] else 'disabled')
     def draw_plan(self):
         pts=self.package['prepared']['points'];t=np.array([p['t'] for p in pts]);q=np.rad2deg([p['q'] for p in pts]);self.canvas.delete('all')
         width=max(900,self.canvas.winfo_width());height=max(230,self.canvas.winfo_height());lo=q.min()-1;hi=q.max()+1
@@ -220,10 +239,15 @@ class ControlledWorkbench(Workbench):
         while True:
             try:kind,value,error=self.jobs.get_nowait()
             except Empty:break
+            if kind=='plan_progress':
+                generation,message=value
+                if generation==self.goal_generation:self.planning_progress=(message,time.monotonic())
+                continue
             if kind=='feedback':self.feedback_busy=False
             else:self.busy=False
+            if kind=='plan':self.planning_progress=None
             if error:
-                label={'fill':'读取实测未完成','plan':'规划未完成','submit':'执行提交未完成','feedback':'实时反馈读取失败','close':'退出未完成'}.get(kind,kind)
+                label={'fill':'读取实测未完成','plan':'规划未完成','submit':'执行提交未完成','feedback':'实时反馈读取失败','payload':'负载核对未完成','close':'退出未完成'}.get(kind,kind)
                 message=f'{label}：{error}'
                 self.summary.set(message);self.backend.log(message)
                 if kind in ('submit','plan'):self.invalidate()
@@ -240,6 +264,9 @@ class ControlledWorkbench(Workbench):
                     self.summary.set(f"规划成功 · 原时长 {p['source_duration_s']:.3f} s · ×{p['time_scale']:g} 后 {p['send_duration_s']:.3f} s · 最终发送路径碰撞检查 PASS · 请预览")
             elif kind=='submit':self.task_id=value;self.summary.set('任务已提交；正在监测实际运动。')
             elif kind=='feedback':self.live_status=value
+            elif kind=='payload':
+                self.live_status.setdefault('capabilities',{})['payload_check']=value
+                self.summary.set('控制器吸具负载核对通过；请重新规划并预览。' if value['matches'] else payload_error(value))
             elif kind=='close':
                 super().close();return
         robot_worker=self.backend.workers['robot']
@@ -249,8 +276,19 @@ class ControlledWorkbench(Workbench):
             if robot.last_connection_error:self.summary.set('连接请求未完成：'+robot.last_connection_error)
             elif robot.connected:self.summary.set('机械臂已连接，可以点击“填入当前实测”。重复连接不会断开现有会话。')
         s=self.live_status
-        caps=s.get('capabilities',{});tool=caps.get('submit_tool_frame',caps.get('rm_get_current_tool_frame',{}).get('value',{}))
+        payload_check=self.controller_payload();tool=payload_check['tool']
+        if not isinstance(tool,dict):tool={}
         payload=tool.get('payload','—')
+        if not s.get('connected'):
+            self.payload_label.configure(text='工具负载：等待连接后读取')
+        elif payload_check['matches']:
+            self.payload_label.configure(text=f"最近读取工具 {tool.get('name','—')} · 吸具负载 {payload} kg，核对通过；提交前仍会重新读取。")
+        else:
+            self.payload_label.configure(text=f"执行未就绪：最近读取工具 {tool.get('name','—')} 负载 {payload} kg，需要 1.5 kg。请在控制器选择/设置已确认的吸具负载，再刷新工具负载。仍可规划和预览。")
+            self.execute_button.configure(state='disabled')
+        if self.planning_progress:
+            message,started=self.planning_progress
+            self.summary.set(f'{message} · 本阶段已用 {time.monotonic()-started:.1f} s（尚未运动）')
         self.execution_status.set(f"受控模式 · {'已连接' if s.get('connected') else '未连接'} · task_id={s.get('task_id') or '—'} · {s['state']} · {s.get('reason','')} · 最近读取工具负载 {payload} kg（需要 1.5 kg）")
         def fmt(x):return '—' if x is None else ' '.join(f'{v:.3f}' for v in np.rad2deg(x))
         age=s.get('feedback_age_s')

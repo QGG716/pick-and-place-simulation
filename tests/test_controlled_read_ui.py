@@ -15,6 +15,7 @@ from unloading_sim.workbench.ui import load_mapping
 class FakeService:
     def __init__(self):
         self.process=None;self.connected=False;self.calls=[];self.sample_mode='live'
+        self.payload=0.
     def connect(self,*endpoint):
         self.calls.append(('connect',endpoint));self.process=object();self.connected=True
         return {'test_only':True}
@@ -26,7 +27,11 @@ class FakeService:
         return dict(source='LIVE',sequence=1,received_s=time.monotonic()-(1 if self.sample_mode=='stale' else 0),
                     q=np.deg2rad([10,-20,30,-40,50,-60]).tolist(),received_utc_ns=time.time_ns())
     def feedback(self):
-        return dict(connected=self.connected,state='READY',task_id=None)
+        return dict(connected=self.connected,state='READY',task_id=None,
+                    capabilities=dict(rm_get_current_tool_frame=dict(value=dict(name='Fake_tip',payload=self.payload))))
+    def check_payload(self):
+        self.calls.append(('check_payload',))
+        return dict(tool=dict(name='Fake_tip',payload=self.payload),matches=self.payload==1.5,required_kg=1.5,sdk_code=0)
     def request_stop(self):self.calls.append(('stop_signal',))
     def close(self):self.process=None;self.connected=False
     def submit(self,*args):raise AssertionError('A read button must never submit motion')
@@ -110,6 +115,22 @@ def test_actual_read_button_reports_disconnection_then_fills_then_rejects_stale(
         assert '已填入当前实测' in ui.summary.get()
         assert str(ui.execute_button['state'])=='disabled'
         pump_until(lambda:ui.live_status.get('connected'))
+        ui.payload_button.invoke();pump_until(lambda:not ui.busy)
+        assert '负载为 0.0 kg，需要 1.5 kg' in ui.summary.get()
+        assert '执行未就绪' in str(ui.payload_label['text'])
+        def test_preview():
+            ui.package={'prepared':dict(points=[dict(t=0.,q=[0.]*6),dict(t=.5,q=[.01]*6)],period_s=.005,send_duration_s=.5)}
+            ui.preview_button.configure(state='normal');ui.preview_button.invoke()
+        test_preview();assert ui.previewed and str(ui.execute_button['state'])=='disabled'
+        service.payload=1.5;ui.payload_button.invoke();pump_until(lambda:not ui.busy)
+        assert '负载核对通过' in ui.summary.get() and ui.package is None
+        pump_until(lambda:ui.controller_payload()['matches'])
+        test_preview();assert str(ui.execute_button['state'])=='normal'
+        ui.invalidate()
+        ui.busy=True;ui.jobs.put(('plan_progress',(ui.goal_generation,'最终路径碰撞检查'),None))
+        ui.update_execution()
+        assert ui.busy and '本阶段已用' in ui.summary.get()
+        ui.busy=False;ui.invalidate()
         ui.plan_button.invoke();pump_until(lambda:not ui.busy)
         assert '规划未完成：目标与当前实测姿态基本相同' in ui.summary.get()
         assert 'INVALID_TIMED_TRAJECTORY' not in ui.summary.get()

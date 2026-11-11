@@ -219,11 +219,16 @@ public:
     }
     return finish(true);
   }
-  size_t dense_path_calls=0;
+  size_t dense_path_calls=0, exact_repeated_path_states_reused=0;
   Json checkPath(moveit::core::RobotState probe, const Json& path, double resolution) {
     ++dense_path_calls;
     if(!std::isfinite(resolution) || resolution<=0 || path.empty()) throw std::runtime_error("INVALID_CHECK_PATH");
     const size_t count=probe.getJointModelGroup(m710::nativeFrames().planning_group)->getVariableCount();
+    // One immutable scene/policy per call. Reuse only the immediately preceding
+    // successful check of an exactly equal joint vector, only in controlled empty
+    // mode. Keep every distinct endpoint/interior state and all legacy sampling.
+    const bool reuse=policy_.at("schema")=="eco65_native_empty_clearance_v1";
+    std::vector<double> previous;
     for(size_t edge=0;edge<std::max(size_t(1),path.size()-1);++edge) {
       auto a=path.at(edge).get<std::vector<double>>();auto b=path.at(std::min(edge+1,path.size()-1)).get<std::vector<double>>();
       if(a.size()!=count || b.size()!=count) throw std::runtime_error("INVALID_PATH_JOINT_COUNT");
@@ -232,8 +237,10 @@ public:
       const size_t samples=2*std::max({size_t(1),size_t(std::ceil(maximum/resolution)),size_t(std::ceil(4.*sum/.0025))});
       for(size_t k=0;k<=samples;++k) {
         const double fraction=double(k)/samples;auto q=a;for(size_t i=0;i<q.size();++i) q[i]+=fraction*(b[i]-a[i]);
+        if(reuse && q==previous && !nativeExpired(deadline_)) {++exact_repeated_path_states_reused;continue;}
         probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);probe.update();
         if(!check(probe)) {Json failure=last_failure;failure["edge"]=edge;failure["fraction"]=fraction;failure["q_rad"]=q;return failure;}
+        previous=q;
       }
     }
     return nullptr;
@@ -258,7 +265,7 @@ public:
         {"legacy_witness_checks",c.legacy_witness_checks},{"seconds",c.seconds},
         {"bookkeeping_s",c.bookkeeping_s},{"legacy_witness_s",c.witness_s}};
     }
-    Json result={{"dense_path_calls",dense_path_calls},{"counts",counts},{"rejected_examples",rejected_examples},
+    Json result={{"dense_path_calls",dense_path_calls},{"exact_repeated_path_states_reused",exact_repeated_path_states_reused},{"counts",counts},{"rejected_examples",rejected_examples},
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
     {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
     {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},
