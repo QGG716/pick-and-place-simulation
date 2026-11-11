@@ -1,0 +1,58 @@
+{
+  "schema": "eco65_physical_single_carton_v1",
+  "execution_config": "configs/workbench/controlled.example.json",
+  "camera_extrinsics": "configs/workbench/reference/active_extrinsics.json",
+  "carton_mass_kg": 2.0,
+  "controller_payload_kg": 3.5,
+  "controller_loaded_payload_basis": "PHYSICAL_TOOL_1_5_KG_PLUS_USER_CONFIRMED_CARTON_2_KG_REQUIRES_CONTROLLER_MATCH",
+  "serial_port": "/dev/ttyUSB0",
+  "record_root": "outputs/single_carton",
+  "time_scale": 10.0,
+  "topology": {
+    "mode": "COMMON_GRIPPER_VALVE",
+    "connected_cup_ids": [
+      "part_002_seal",
+      "part_004_seal",
+      "part_006_seal",
+      "part_008_seal",
+      "part_010_seal",
+      "part_012_seal",
+      "part_014_seal",
+      "part_016_seal",
+      "part_018_seal",
+      "part_020_seal",
+      "part_022_seal",
+      "part_024_seal"
+    ],
+    "physically_capped_cup_ids": [],
+    "field_basis": "USER_CONFIRMED_ALL_12_CONNECTED_COMMON_VALVE_AND_PASSIVE_SELF_CLOSING_2026_11_11",
+    "uncovered_cups_self_close": true
+  },
+  "vacuum": {
+    "grip_below_kpa": -60.0,
+    "hold_below_kpa": -30.0,
+    "release_above_kpa": -10.0,
+    "grip_dwell_s": 1.0,
+    "release_dwell_s": 1.0,
+    "grip_timeout_s": 3.0,
+    "release_timeout_s": 3.0,
+    "max_age_s": 3.0,
+    "establish_commands": [
+      18
+    ],
+    "release_commands": [
+      19
+    ],
+    "field_basis": "REFERENCE_F0353D7_STRATEGY_SCHEDULER_VACUUM_UI_USER_CONFIRMED_FIELD_CONFIGURATION",
+    "stability_basis": "USER_APPROVED_TWO_FRESH_HEARTBEATS_AT_LEAST_1_S_DWELL_3_S_TIMEOUT_2026_11_11"
+  },
+  "detector": {
+    "dino_directory": "models/huggingface/IDEA-Research/grounding-dino-base/12bdfa3120f3e7ec7b434d90674b3396eccf88eb",
+    "sam_directory": "models/huggingface/facebook/sam-vit-base/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+    "device": "cpu",
+    "prompt": "carton . box .",
+    "box_threshold": 0.35,
+    "text_threshold": 0.3
+  },
+  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION"
+}

@@ -86,7 +86,12 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     ticket=arg.get('cancel_epoch');arg=arg.get('package',arg)
                     if not transport.connected:raise RuntimeError('DISCONNECTED')
                     if engine.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
-                    task_id=uuid.uuid4().hex;task_dir=Path(config['record_root'])/task_id;task_dir.mkdir(parents=True)
+                    task_id=uuid.uuid4().hex;record_root=Path(config['record_root'])
+                    if arg.get('schema')=='eco65_single_carton_segment_v1':
+                        cycle_id=arg['binding']['physical_cycle']['task_id']
+                        if len(cycle_id)!=32 or any(x not in '0123456789abcdef' for x in cycle_id):raise ValueError('INVALID_CYCLE_TASK_ID')
+                        record_root=record_root/cycle_id/'motion'
+                    task_dir=record_root/task_id;task_dir.mkdir(parents=True)
                     attempt_dir,attempt_id=task_dir,task_id
                     (task_dir/'trajectory-package.json').write_text(json.dumps(arg,indent=2,allow_nan=False))
                     (task_dir/'task.json').write_text(json.dumps({'task_id':task_id,'directory':str(task_dir)}))
@@ -158,9 +163,19 @@ class ExecutionService:
         self.authority.invalidate();return self._call('connect',(host,port))
     def snapshot(self):return self._call('snapshot')
     def check_payload(self):return self._call('check_payload')
-    def submit(self,trajectory):
+    def submission_ticket(self):
+        return self.cancel_epoch.value if hasattr(self,'cancel_epoch') else None
+    def submit(self,trajectory,*,cancel_ticket=None):
         # Source files rehashed here, immediately before the child rechecks start.
-        ticket=self.cancel_epoch.value if hasattr(self,'cancel_epoch') else None
+        ticket=self.submission_ticket() if cancel_ticket is None else cancel_ticket
+        if trajectory.get('schema')=='eco65_single_carton_segment_v1':
+            from ..contracts import HOST_SESSION
+            observation=trajectory.get('binding',{}).get('physical_cycle',{}).get('observation',{})
+            stamp=observation.get('stamp',{})
+            if (stamp.get('source')!='LIVE' or stamp.get('host_session')!=HOST_SESSION or
+                    observation.get('robot_sample',{}).get('source')!='LIVE'):
+                self.authority.invalidate()
+                raise ValueError('SINGLE_CARTON_REPLAY_OR_FOREIGN_OBSERVATION_REJECTED')
         # Consume even rejected starts: an old preview can never be retried.
         self.authority.claim(trajectory,self.binding())
         task=self._call('submit',dict(package=trajectory,cancel_epoch=ticket));self._active_id=task;return task

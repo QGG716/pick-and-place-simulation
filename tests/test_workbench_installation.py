@@ -142,6 +142,8 @@ def test_actual_ui_fixed_installation_and_failed_replacements(tmp_path):
         assert all(not worker.device.connected for worker in backend.workers.values())
     finally:
         ui.close()
+        del ui,backend,root
+        __import__('gc').collect()
 
 
 @pytest.mark.skipif(not os.environ.get('DISPLAY'), reason='Actual Tk display required')
@@ -152,10 +154,13 @@ def test_scene_display_conversion_preserves_original_geometry_with_base_world(tm
     from unloading_sim.workbench.ui import Workbench, load_mapping
     model()
     world_scene = np.eye(4); world_scene[:3, 3] = [.32, -.1, .8]
-    snapshot = {'scene': {'base_position_m': [-.44, 0, .24], 'base_rpy_rad': [0, 0, np.pi], 'T_W_D': world_scene.tolist()}}
-    path = tmp_path / 'snapshot.json'; path.write_text(json.dumps(snapshot)); before = path.read_bytes()
+    # Coordinate display now shares the renderer's complete snapshot checks.
+    # The old three-field pseudo-snapshot was never valid scene evidence.
+    path = ROOT / 'outputs/workbench/scene_snapshot.json'
+    if not path.is_file(): pytest.skip('Pinned full scene assets unavailable')
+    before = path.read_bytes()
     backend = WorkbenchBackend(D435iObserver(), RobotObserver(load_mapping(ROOT / 'configs/workbench/joint_mapping.json')), VacuumObserver())
-    root = tk.Tk(); ui = Workbench(root, backend, snapshot=path, installation=installation_path(tmp_path))
+    root = tk.Tk(); ui = Workbench(root, backend, snapshot=path, installation=installation_path(tmp_path), snapshot_geometry_only=True)
     try:
         np.testing.assert_array_equal(ui.world_from_base, np.eye(4))
         np.testing.assert_allclose(ui.world_from_scene[:3, 3], [-.44, 0, -.24], atol=1e-12)
@@ -163,6 +168,8 @@ def test_scene_display_conversion_preserves_original_geometry_with_base_world(tm
         assert path.read_bytes() == before
     finally:
         ui.close()
+        del ui,backend,root
+        __import__('gc').collect()
 
 
 @pytest.mark.skipif(not os.environ.get('DISPLAY'), reason='Actual Tk display required')
@@ -190,3 +197,5 @@ def test_link1_ui_replay_camera_works_without_assuming_tool_tcp(tmp_path):
         assert all(not worker.device.connected for worker in backend.workers.values())
     finally:
         ui.close()
+        del ui,backend,root
+        __import__('gc').collect()

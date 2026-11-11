@@ -495,10 +495,12 @@ def test_disconnected_fake_sdk_then_bad_replay_does_not_restore_live(tmp_path):
         wait_until(lambda: 'query' in sdk.calls and b.workers['vacuum'].device.alarms)
         b.poll()
         assert b.sample_state(b.joint.stamp, 'robot') == 'LIVE_VALID'
+        previous_stamp = b.joint.stamp
         b.command('robot', 'disconnect'); b.command('vacuum', 'disconnect')
         wait_until(lambda: all(not w.device.connected and not w.busy for w in b.workers.values()))
         b.poll()
-        assert b.sample_state(b.joint.stamp, 'robot') == 'DISCONNECTED'
+        assert b.joint is None and not b.joint_history
+        assert b.sample_state(previous_stamp, 'robot') == 'DISCONNECTED'
         path = generate_demo(tmp_path/'fixture'); corrupt_replay(path, 'missing_npz')
         with pytest.raises(FileNotFoundError): b.load_replay(path)
         assert not b.replay_active and b.joint is None and not b.joint_history

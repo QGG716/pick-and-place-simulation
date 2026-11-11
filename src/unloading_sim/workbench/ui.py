@@ -33,10 +33,11 @@ def load_mapping(path):
 
 
 class Workbench:
-    def __init__(self, root, backend, *, snapshot=None, scene_input_root=None, detector_config=None, installation=None):
+    def __init__(self, root, backend, *, snapshot=None, scene_input_root=None, detector_config=None, installation=None, snapshot_geometry_only=False):
         self.root, self.backend = root, backend
         self.snapshot_path, self.detector_config = snapshot, detector_config
         self.scene_input_root = scene_input_root
+        self.snapshot_geometry_only = snapshot_geometry_only
         self.calibration = None
         self.installation = Installation.load(installation) if installation else None
         self.detecting = False
@@ -65,7 +66,8 @@ class Workbench:
         self.coordinate_basis = "Identity world=base_link; no installed scene loaded"
         if snapshot and Path(snapshot).is_file():
             from unloading_sim.geometry import rotation_matrix_from_rpy
-            self.snapshot = json.loads(Path(snapshot).read_text(encoding="utf-8"))
+            from .scene import load_snapshot
+            self.snapshot = load_snapshot(snapshot, scene_input_root, geometry_only=snapshot_geometry_only)
             scene = self.snapshot["scene"]
             self.world_from_base[:3, :3] = rotation_matrix_from_rpy(*scene.get("base_rpy_rad", [0., 0., 0.]))
             self.world_from_base[:3, 3] = scene["base_position_m"]
@@ -433,7 +435,7 @@ class Workbench:
             renderer = None
             try:
                 from .scene import SceneRenderer
-                renderer = SceneRenderer(self.snapshot_path, self.scene_input_root)
+                renderer = SceneRenderer(self.snapshot_path, self.scene_input_root, geometry_only=self.snapshot_geometry_only)
                 image = renderer.render(q, optical, tcp, azimuth=azimuth)
                 self.results.put(("scene", (generation, image, source)))
             except Exception as exc:

@@ -19,6 +19,7 @@ dev = ["pytest>=8.0"]
 viz = ["pybullet>=3.2"]
 pinocchio = ["pin>=3.0; platform_system != 'Windows'"]
 workbench = ["Pillow>=10", "opencv-python-headless>=4.8", "pyserial>=3.5", "scipy>=1.10"]
+workbench-perception = ["torch>=2.4,<3", "transformers==4.44.2", "safetensors>=0.4"]
 workbench-scene = ["mujoco>=3.3,<4", "trimesh>=4", "imageio>=2.30"]
 
 [project.scripts]
@@ -34,6 +35,7 @@ unloading-layer1-calibrate = "unloading_sim.calibration:main"
 unloading-layer1-realtime = "unloading_sim.realtime_planner:main"
 eco65-workbench = "unloading_sim.workbench.ui:main"
 eco65-workbench-controlled = "unloading_sim.workbench.controlled.ui:main"
+eco65-workbench-single-carton = "unloading_sim.workbench.single_carton.ui:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -1,0 +1,20 @@
+{
+  "schema": "arith_unloading_strategy_v1",
+  "grasp_face": "前面",
+  "place_mode": "固定点",
+  "vacuum_kpa": -60.0,
+  "vacuum_timeout_s": 2.0,
+  "retries": 1,
+  "pallet_rows": 3,
+  "pallet_columns": 2,
+  "pallet_layers": 2,
+  "pallet_pitch_m": [
+    0.4,
+    0.3,
+    0.25
+  ],
+  "lift_m": 0.15,
+  "extract_lift_m": 0.0,
+  "match_classes": true,
+  "max_distance_m": 0.8
+}

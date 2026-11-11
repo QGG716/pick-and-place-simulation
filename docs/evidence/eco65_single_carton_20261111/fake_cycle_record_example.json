@@ -1,0 +1,558 @@
+{
+  "schema": "FAKE_DEVICE_RECORD_EXAMPLE_NOT_EXECUTABLE",
+  "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "source": "FAKE_DEVICE",
+  "physical_acceptance": "NOT_RUN",
+  "note": "Synthetic illustrative data. No camera, SDK, serial port, real motion or real pressure was used. Motion goals here are test fixtures, not executable timed plans.",
+  "q_start": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "events": [
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "IDLE",
+      "state": "PLAN_READY",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "PLAN_READY",
+      "state": "PLAN_READY",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "PLAN_READY",
+      "state": "APPROACH",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "motion_task",
+      "cycle_task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "motion_task_id": "1",
+      "segment": 0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "1",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "APPROACH",
+      "state": "CONTACT",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "motion_task",
+      "cycle_task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "motion_task_id": "2",
+      "segment": 1
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "2",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "CONTACT",
+      "state": "ESTABLISH_VACUUM",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "2",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "2",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "ESTABLISH_VACUUM",
+      "state": "ATTACHMENT_CONFIRMED",
+      "elapsed_s": 1.1099999999999994,
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": -65,
+        "received_s": 11.11
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "ATTACHMENT_CONFIRMED",
+      "state": "DETACH",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "motion_task",
+      "cycle_task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "motion_task_id": "3",
+      "segment": 2
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "3",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "DETACH",
+      "state": "RETURN_LOADED",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "motion_task",
+      "cycle_task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "motion_task_id": "4",
+      "segment": 3
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "4",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "RETURN_LOADED",
+      "state": "RELEASE",
+      "elapsed_s": 0.0
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "4",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "robot_status",
+      "feedback": {
+        "task_id": "4",
+        "state": "SUCCEEDED",
+        "arrival_confirmed": true,
+        "stop_confirmed": false
+      }
+    },
+    {
+      "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "source": "FAKE_DEVICE",
+      "kind": "stage",
+      "previous": "RELEASE",
+      "state": "COMPLETE",
+      "elapsed_s": 1.1099999999999994,
+      "result": "FAKE_DEVICE_CYCLE_COMPLETE",
+      "release_pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": 0,
+        "received_s": 12.219999999999999
+      }
+    }
+  ],
+  "feedback": [
+    {
+      "monotonic_s": 10.0,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01,
+          0.01
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 10.0,
+        "sequence": 1,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": 0.0,
+        "received_s": 10.0
+      },
+      "stage": "APPROACH"
+    },
+    {
+      "monotonic_s": 10.0,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 10.0,
+        "sequence": 2,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": 0.0,
+        "received_s": 10.0
+      },
+      "stage": "CONTACT"
+    },
+    {
+      "monotonic_s": 10.1,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 10.1,
+        "sequence": 2,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": -65,
+        "received_s": 10.1
+      },
+      "stage": "ESTABLISH_VACUUM"
+    },
+    {
+      "monotonic_s": 11.11,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 11.11,
+        "sequence": 2,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": -65,
+        "received_s": 11.11
+      },
+      "stage": "ESTABLISH_VACUUM"
+    },
+    {
+      "monotonic_s": 11.11,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.03,
+          0.03,
+          0.03,
+          0.03,
+          0.03,
+          0.03
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 11.11,
+        "sequence": 3,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": -65,
+        "received_s": 11.11
+      },
+      "stage": "DETACH"
+    },
+    {
+      "monotonic_s": 11.11,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 11.11,
+        "sequence": 4,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": -65,
+        "received_s": 11.11
+      },
+      "stage": "RETURN_LOADED"
+    },
+    {
+      "monotonic_s": 11.209999999999999,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 11.209999999999999,
+        "sequence": 4,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": 0,
+        "received_s": 11.209999999999999
+      },
+      "stage": "RELEASE"
+    },
+    {
+      "monotonic_s": 12.219999999999999,
+      "robot": {
+        "source": "LIVE",
+        "q": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "velocity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "received_s": 12.219999999999999,
+        "sequence": 4,
+        "alarm": false,
+        "enabled": true
+      },
+      "pressure": {
+        "source": "LIVE",
+        "channel": "gripper",
+        "integrity": "CHECKED_BINARY",
+        "kpa": 0,
+        "received_s": 12.219999999999999
+      },
+      "stage": "RELEASE"
+    }
+  ],
+  "motion_goals": [
+    [
+      0.01,
+      0.01,
+      0.01,
+      0.01,
+      0.01,
+      0.01
+    ],
+    [
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      0.02
+    ],
+    [
+      0.03,
+      0.03,
+      0.03,
+      0.03,
+      0.03,
+      0.03
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  ],
+  "valve_commands": [
+    "grip",
+    "release"
+  ],
+  "final": {
+    "task_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "state": "COMPLETE",
+    "reason": "",
+    "holding": false,
+    "physical_result": "NOT_COMPLETE",
+    "robot": {
+      "task_id": "4",
+      "state": "SUCCEEDED",
+      "arrival_confirmed": true,
+      "stop_confirmed": false
+    },
+    "stage_elapsed_s": 0.0
+  }
+}

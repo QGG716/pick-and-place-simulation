@@ -163,3 +163,5 @@ def test_actual_read_button_reports_disconnection_then_fills_then_rejects_stale(
         assert not any(c[0]=='stop_signal' for c in service.calls)
     finally:
         ui._closed=True;backend.close();root.destroy()
+        del ui,backend,root
+        __import__('gc').collect()  # Tk variables must be finalized on the UI thread.

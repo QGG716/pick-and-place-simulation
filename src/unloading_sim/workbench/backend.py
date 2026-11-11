@@ -4,7 +4,8 @@ from __future__ import annotations
 from collections import deque
 from queue import Queue, Empty, Full
 import threading
-from time import monotonic
+from dataclasses import dataclass
+from time import monotonic, monotonic_ns
 
 from .policy import ReadOnlyViolation, DisabledExecution, ObservationConfig, load_config
 from .contracts import Source, compatible_observation_stamps
@@ -14,6 +15,12 @@ class DeviceRequestRejected(RuntimeError):
     """Invalid user request; the existing connection remains healthy."""
 
 
+@dataclass(frozen=True)
+class WorkerSample:
+    generation: int
+    value: object
+
+
 class DeviceWorker:
     def __init__(self, name, device, interval=.1):
         self.name, self.device, self.interval = name, device, interval
@@ -21,6 +28,7 @@ class DeviceWorker:
         self.events = Queue(maxsize=32)
         self.stop = threading.Event()
         self._pending = 0
+        self.generation = 0
         self._lock = threading.Lock()
         self.thread = threading.Thread(target=self._run, name="observe-"+name, daemon=True)
         self.thread.start()
@@ -32,6 +40,7 @@ class DeviceWorker:
         if self.stop.is_set():
             raise RuntimeError("Observation worker is closed")
         with self._lock:
+            self.generation += 1
             self._pending += 1
             try:
                 self.commands.put_nowait((action, args))
@@ -45,6 +54,8 @@ class DeviceWorker:
             return self._pending > 0
 
     def emit(self, kind, value):
+        if kind == 'sample' and not isinstance(value, WorkerSample):
+            value = WorkerSample(self.generation, value)
         try:
             self.events.put_nowait((kind, value))
         except Full:
@@ -73,7 +84,10 @@ class DeviceWorker:
                         self.emit("state", {"action": action, "value": value})
                     active = self.device.connected and (self.name != "camera" or self.device.streaming)
                     if active and not self.stop.is_set():
-                        self.emit("sample", self.device.read())
+                        generation = self.generation
+                        sample = self.device.read()
+                        if generation == self.generation:
+                            self.emit("sample", WorkerSample(generation, sample))
                 except DeviceRequestRejected as exc:
                     # A request error is not evidence of a broken transport.
                     self.emit("error", f"{type(exc).__name__}: {exc}")
@@ -115,6 +129,7 @@ class WorkbenchBackend:
         self.replay_exhausted = False
         self.observation_generation = 0
         self.manual_stationary = False
+        self.sample_cutoff = {name: monotonic_ns() for name in self.workers}
         self.log("READ_ONLY_STAGE_1; all devices disconnected; physical execution unavailable")
 
     def log(self, message):
@@ -131,8 +146,19 @@ class WorkbenchBackend:
             raise ReadOnlyViolation("Unknown observation device")
         if self.replay is not None:
             raise ReadOnlyViolation("Stop replay before connecting live devices")
-        self.manual_stationary = False
+        self.invalidate_device(device)
         self.workers[device].command(action, *args)
+
+    def invalidate_device(self, device):
+        self.observation_generation += 1
+        self.sample_cutoff[device] = monotonic_ns()
+        self.manual_stationary = False
+        self.detections = None
+        if device == 'camera': self.frame = None
+        if device == 'robot':
+            self.joint = None
+            self.joint_history.clear()
+        if device == 'vacuum': self.pressure = None
 
     def poll(self):
         changes = []
@@ -144,7 +170,15 @@ class WorkbenchBackend:
                     break
                 changes.append((name, kind, value))
                 if kind == "sample":
+                    if isinstance(value, WorkerSample):
+                        if value.generation != worker.generation:continue
+                        value = value.value
                     if self.replay is not None or not worker.device.connected:
+                        continue
+                    if name in {'camera', 'robot'} and (value is None or
+                            value.stamp.received_monotonic_ns < self.sample_cutoff[name]):
+                        continue
+                    if name == 'camera' and not worker.device.streaming:
                         continue
                     if name == "camera": self.frame = value
                     elif name == "robot":
@@ -157,7 +191,8 @@ class WorkbenchBackend:
                 else:
                     self.log(name + " " + kind + ": " + str(value))
                     if kind == "error" or value.get("action") in {"disconnect", "stop"}:
-                        self.manual_stationary = False
+                        if not (kind == 'error' and str(value).startswith('DeviceRequestRejected:')):
+                            self.invalidate_device(name)
         return changes
 
     def joint_for_frame(self, frame, max_skew_s=.1):

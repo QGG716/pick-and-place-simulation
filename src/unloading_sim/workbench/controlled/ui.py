@@ -107,7 +107,7 @@ class ControlledWorkbench(Workbench):
         self.waiting_connection=False
         self.planning_progress=None
         self.last_execution_transition=None
-        super().__init__(root,backend,snapshot=config['snapshot'],installation=config['installation'])
+        super().__init__(root,backend,snapshot=config['snapshot'],installation=config['installation'],snapshot_geometry_only=True)
         root.title('ECO65-B · 单条低速空载轨迹 · 受控执行')
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
         labels[0].configure(text='ECO65-B / 单条低速空载执行')

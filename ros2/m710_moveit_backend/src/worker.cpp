@@ -1449,6 +1449,10 @@ public:
     std::shared_ptr<m710::ProcessPolicy> process;
     if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior" || op=="eco65_transition") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
+      if(req.at("clearance_policy").at("schema")=="eco65_native_single_carton_clearance_v1" &&
+          (req.at("single_carton_contact").at("geometry")!=bound_process_geometry ||
+           identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON"))
+        throw std::runtime_error("SINGLE_CARTON_CAD_TOPOLOGY_BINDING_MISMATCH");
       if(req.at("clearance_policy").at("source_policy")!=bound_policy || req.at("clearance_policy").at("tool_links")!=bound_tools)
         throw std::runtime_error("EXECUTABLE_POLICY_MISMATCH");
       if(req.contains("process_policy") && op!="build_static_prior") {

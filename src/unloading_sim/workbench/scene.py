@@ -5,13 +5,39 @@ from pathlib import Path
 import numpy as np
 
 
-def load_snapshot(snapshot_path, input_root=None):
+def load_snapshot(snapshot_path, input_root=None, *, geometry_only=False):
     """A historical snapshot may use archived configs; runtime meshes still must match."""
     from unloading_sim.eco65.model import ROOT
     from unloading_sim.eco65.native_io import verify_snapshot, file_hash
     from unloading_sim.eco65.asset_paths import resolve_asset
-    snapshot = verify_snapshot(json.loads(Path(snapshot_path).read_text(encoding="utf-8")),
-                               root=Path(input_root) if input_root else ROOT)
+    raw = json.loads(Path(snapshot_path).read_text(encoding="utf-8"))
+    if geometry_only:
+        # Explicit physical modes reuse immutable geometry, not historical
+        # simulation calibration sessions or planner acceptance reports.
+        from unloading_sim.moveit2_backend import digest
+        from unloading_sim.eco65.native_scene import verify_scene
+        check = dict(raw); expected = check.pop('fingerprint')
+        if digest(check) != expected or raw['schema'] != 'eco65_native_snapshot_v1':
+            raise ValueError('SNAPSHOT_IDENTITY_INVALID')
+        verify_scene(raw['scene'])
+        model=raw['native_model']; identity=model['init']['identity']
+        if (identity['scene_fingerprint'] != raw['scene']['scene_fingerprint'] or
+                digest(model['init']['parameters']) != identity['model_tool_fingerprint'] or raw['tool'] != model['tool']):
+            raise ValueError('SNAPSHOT_MODEL_BINDING_INVALID')
+        historical_capture_only = {
+            'outputs/rear100_20261022/capture/observations/vision_observations.json',
+            'outputs/rear100_20261022/estimate/calibration.json',
+            'outputs/rear100_20261022/estimate/vision/detection.json',
+        }
+        for name,expected in raw['asset_sha256'].items():
+            # These three archived observation products are not referenced by
+            # any mesh, URDF or current field transform. Their original hashes
+            # remain in the immutable snapshot; they cannot authorize a task.
+            if name in historical_capture_only:continue
+            if file_hash(resolve_asset(ROOT,name)) != expected:raise ValueError('RUNTIME_SCENE_ASSET_CHANGED:'+name)
+        snapshot=raw
+    else:
+        snapshot = verify_snapshot(raw, root=Path(input_root) if input_root else ROOT)
     if input_root and Path(input_root).resolve() != ROOT.resolve():
         # Shared renderer reads current-repository geometry, never current config files.
         for name, expected in snapshot['asset_sha256'].items():
@@ -42,9 +68,9 @@ def display_scene(scene):
 
 
 class SceneRenderer:
-    def __init__(self, snapshot_path, input_root=None):
+    def __init__(self, snapshot_path, input_root=None, *, geometry_only=False):
         from unloading_sim.eco65.native_review_world import NativeSceneWorld
-        self.snapshot = load_snapshot(snapshot_path, input_root)
+        self.snapshot = load_snapshot(snapshot_path, input_root, geometry_only=geometry_only)
         self.world = NativeSceneWorld(self.snapshot["tool"], display_scene(self.snapshot["scene"]))
 
     def render(self, q, optical_frame=None, tool_frame=None, azimuth=-30):

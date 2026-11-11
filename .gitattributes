@@ -4005,3 +4005,7 @@ outputs/** -text
 "/res/M-710iD_70/ROBCAD_M-710iD_70_v01/ROBCAD_M-710iD_70_v01/m710id_70_v01.co/.gmnapx" filter=lfs diff=lfs merge=lfs -text
 "/res/上海皖泰吸具和机械臂末端的安装关系.png" filter=lfs diff=lfs merge=lfs -text
 "/res/上海皖泰真空吸盘三分区.STEP" filter=lfs diff=lfs merge=lfs -text
+
+# Preserve audited upstream calibration/strategy bytes, including CRLF.
+configs/workbench/reference/active_extrinsics.json -text whitespace=cr-at-eol
+configs/workbench/reference/strategy.json -text whitespace=cr-at-eol

@@ -99,15 +99,17 @@ def prepare(points, limits, time_scale=10., period=.005, reach_bound_m=10.):
 
 class Authority:
     """Preview JSON and historical planning flags cannot mint a live permit."""
-    def __init__(self): self.session=secrets.token_hex(24);self._plans={};self._lock=threading.RLock()
+    def __init__(self,schema='eco65_controlled_empty_package_v1'):
+        if schema not in {'eco65_controlled_empty_package_v1','eco65_single_carton_segment_v1'}:raise ValueError('UNSUPPORTED_EXECUTION_SCOPE')
+        self.schema=schema;self.session=secrets.token_hex(24);self._plans={};self._lock=threading.RLock()
     def register(self, prepared, binding, evidence):
         if evidence.get('native_plan')!='PASS' or evidence.get('sent_path_collision')!='PASS': raise ValueError('VALIDATION_REQUIRED')
-        package=dict(schema='eco65_controlled_empty_package_v1',session=self.session,
+        package=dict(schema=self.schema,session=self.session,
                      plan_id=secrets.token_hex(16),prepared=prepared,binding=binding,evidence=evidence)
         self._plans[package['plan_id']]=digest(package)
         return package
     def verify(self, package, binding):
-        if package.get('schema')!='eco65_controlled_empty_package_v1' or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=digest(package):
+        if package.get('schema')!=self.schema or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=digest(package):
             raise ValueError('UNTRUSTED_STALE_OR_PREVIEW_TRAJECTORY')
     def consume(self, package): self._plans.pop(package['plan_id'],None)
     def claim(self,package,binding):

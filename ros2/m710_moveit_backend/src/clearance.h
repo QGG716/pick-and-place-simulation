@@ -10,6 +10,7 @@
 #include "clearance_workspace.h"
 #include "eco65_collision_policy.h"
 #include "eco65_rigid_carton_policy.h"
+#include "eco65_single_carton.h"
 
 namespace m710 {
 using Json = nlohmann::json;
@@ -29,6 +30,7 @@ class Clearance {
   std::string mode_;
   bool eco65_=false;
   NativeDeadlinePtr deadline_;
+  std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
     double seconds=0,bookkeeping_s=0,witness_s=0;};
   std::map<std::string,Count> counts_;
@@ -40,7 +42,10 @@ public:
     : env_(scene->getCollisionEnvUnpadded()), acm_(scene->getAllowedCollisionMatrix()), policy_(policy), mode_(mode),deadline_(std::move(deadline)) {
     const bool process=policy.at("schema")=="m710_native_process_clearance_v1";
     eco65_=policy.at("schema")=="eco65_native_process_clearance_v1" ||
-      policy.at("schema")=="eco65_native_empty_clearance_v1";
+      policy.at("schema")=="eco65_native_empty_clearance_v1" ||
+      policy.at("schema")=="eco65_native_single_carton_clearance_v1";
+    if(policy.at("schema")=="eco65_native_single_carton_clearance_v1")
+      single_carton_=std::make_unique<SingleCartonContact>(request);
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||
@@ -176,6 +181,10 @@ public:
     if(!input.satisfiesBounds()) {last_failure={{"reason","JOINT_BOUNDS"}};return finish(false);}
     auto copying=Clock::now();
     auto state=input;state.updateCollisionBodyTransforms();
+    if(single_carton_) {
+      last_failure=single_carton_->check(state);
+      if(!last_failure.is_null())return finish(false);
+    }
     profile_["state_copy_update_s"]+=elapsed(copying);
     if(workspace_) {
       ClearanceWorkspace::Failure f;

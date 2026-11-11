@@ -1,0 +1,13 @@
+{
+  "repository": "zhangyong333/Unloading-Robot-Control-Platform",
+  "commit": "f0353d720374066528f258de6f4de24502408535",
+  "retrieval": "AUTHENTICATED_GITHUB_CONTENTS_API",
+  "user_field_confirmation": "USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION_AND_REFERENCE_CONFIGURATION",
+  "source_files": {
+    "active_extrinsics.json": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "unloading/strategy.json": "c5123132c2686ee015b11e36d934e2f260a55bfbb2ab5d7d20e531fda062bf2d",
+    "arith_dex_pkg/vacuum.py": "e0daaccaa747692e90ae310eaa0d1b6bfb85097c4c960bec30535475174360b0",
+    "arith_dex_pkg/vacuum_ui.py": "c0c73800e0dfc4166e178cb0dd5f532d84cecbdf1fb97e5cccc98ca25a5b6842",
+    "arith_dex_pkg/scheduler.py": "41e199821ec32bbe21315a1dfeaa880fe8826b4f1447bbb571fb835ff343a0c5"
+  }
+}

@@ -223,9 +223,49 @@ void controlledRepeatedPathCases(J& out) {
   out["controlled_exact_repeat_reuse"]="PASS";
 }
 
+void physicalSingleCartonCases(J& out) {
+  J I={{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
+  J pose={{1.,0.,0.,0.},{0.,0.,1.,-.05},{0.,-1.,0.,0.},{0.,0.,0.,1.}};
+  J g={{"connected_cup_ids",{"seal"}},{"topology",{{"uncovered_cups_self_close",true}}},
+       {"normal_cad",{0.,-1.,0.}},{"terminal_band_by_contour",{{"seal","tool"}}},
+       {"flange_from_contact_frame",I},
+       {"contours",J::array({{{"id","seal"},{"points_m",{{-.01,0.,-.01},{.01,0.,-.01},{.01,0.,.01},{-.01,0.,.01}}}}})}};
+  J target={{"id","target"},{"size",{.15,.1,.1}},{"pose",pose}};
+  J spec={{"geometry",g},{"target_id","target"},{"target_pose",pose},{"size_m",{.15,.1,.1}},
+    {"face",{{"center_m",{0.,0.,0.}},{"normal",{0.,1.,0.}},{"u",{1.,0.,0.}},{"v",{0.,0.,-1.}},{"size_m",{.15,.1}}}},
+    {"active_ids",{"seal"}},{"allow_contact",true},{"supports",J::array()}};
+  J req={{"identity",{{"policy_scope","PHYSICAL_SINGLE_CARTON"}}},{"single_carton_contact",spec},
+    {"attachment",nullptr},{"world",J::array({target})},
+    {"allowed_pairs",J::array({J::array({"base_link","robot_mount_plate"}),J::array({"target","tool"})})}};
+  auto rejects=[](const J& request) {bool bad=false;try{m710::SingleCartonContact c(request);}catch(const std::exception&){bad=true;}require(bad,"PHYSICAL_CONTACT_MUST_REJECT");};
+  auto old=m710::nativeFrames();m710::nativeFrames().flange_link="robot";
+  auto s=scene(.02);auto state=s->getCurrentState();m710::SingleCartonContact c(req);
+  require(c.check(state).is_null(),"PHYSICAL_SEAL_CONTACT_VALID");
+  state.setJointGroupPositions("manipulator",std::vector<double>{.08});state.update();
+  require(!c.check(state).is_null(),"PHYSICAL_EDGE_OVERHANG_REJECTED");
+  auto bad=req;bad["single_carton_contact"]["geometry"]["flange_from_contact_frame"][1][3]=-.001;
+  m710::SingleCartonContact penetration(bad);require(!penetration.check(s->getCurrentState()).is_null(),"PHYSICAL_CUP_PENETRATION_REJECTED");
+  bad=req;bad["allowed_pairs"].push_back({"target","robot"});rejects(bad);
+  bad=req;bad["single_carton_contact"]["active_ids"].push_back("seal");rejects(bad);
+  bad=req;bad["world"][0]["pose"][0][3]=.01;rejects(bad);
+  bad=req;bad["single_carton_contact"]["face"]["normal"]={0.,0.,1.};rejects(bad);
+  // Exact named support can contact the loaded box, never penetrate its top.
+  auto loaded=req;loaded["attachment"]={{"id","target"},{"size",{.15,.1,.1}},{"pose",pose},{"touch_links",{"tool"}}};
+  auto floorpose=I;floorpose[2][3]=-.055;
+  loaded["world"].push_back({{"id","support"},{"size",{1.,1.,.01}},{"pose",floorpose}});
+  loaded["single_carton_contact"]["supports"]=J::array({{{"id","support"},{"top_world_m",-.05}}});
+  loaded["allowed_pairs"].push_back({"target","support"});
+  m710::SingleCartonContact supporting(loaded);require(supporting.check(s->getCurrentState()).is_null(),"PHYSICAL_SUPPORT_CONTACT");
+  bad=loaded;bad["attachment"]["pose"][2][3]=-.001;m710::SingleCartonContact under(bad);
+  require(!under.check(s->getCurrentState()).is_null(),"PHYSICAL_PAYLOAD_SUPPORT_PENETRATION");
+  bad=loaded;bad["single_carton_contact"]["supports"][0]["top_world_m"]=-.1;rejects(bad);
+  m710::nativeFrames()=old;out["physical_single_carton_contact_and_loaded_support"]="PASS";
+}
+
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   controlledRepeatedPathCases(out);
+  physicalSingleCartonCases(out);
   J pairPolicy={{"schema","eco65_pair_collision_policy_v5"},{"robot_tool_exemption",{
     {"schema","eco65_named_robot_tool_exemption_v1"},{"scope","EXACT_LINK_3_VS_PART_026_ONLY"},
     {"exempt_pairs",J::array({J::array({"link_3","part_026"})})},{"tool_semantic","conservative_rigid"},

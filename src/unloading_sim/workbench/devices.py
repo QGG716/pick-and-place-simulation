@@ -226,7 +226,7 @@ class GaugeReading:
 
 def serial_reader(device):
     import serial
-    port = serial.Serial(port=None, baudrate=BAUD, bytesize=8, parity="N", stopbits=1, timeout=.05)
+    port = serial.Serial(port=None, baudrate=BAUD, bytesize=8, parity="N", stopbits=1, timeout=.05, exclusive=True)
     port.dtr = False
     port.rts = False
     port.port = device
@@ -297,5 +297,6 @@ class VacuumObserver:
     def disconnect(self):
         port, self._port = self._port, None
         self.connected = False
+        self.binary, self.debug, self.alarms = {}, {}, {}
         if port is not None:
             port.close()

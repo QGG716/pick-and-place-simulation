@@ -88,7 +88,8 @@ class EmptyPlanner:
         installation=Installation.load(self.track(self.config['installation']))
         if installation.camera_parent_frame!='link_1' or not np.allclose(installation.world_from_base,np.eye(4)):
             raise ValueError('CONFIRMED_INSTALLATION_CHANGED')
-        s=json.loads(self.track(self.config['snapshot']).read_text());self.source=s
+        from ..scene import load_snapshot
+        s=load_snapshot(self.track(self.config['snapshot']),geometry_only=True);self.source=s
         content=dict(s);expected=content.pop('fingerprint')
         if digest(content)!=expected:raise ValueError('SOURCE_GEOMETRY_SNAPSHOT_CHANGED')
         if installation.tool is None or not np.allclose(installation.tool.matrix,s['tool']['T_flange_tcp'],atol=1e-10,rtol=0):

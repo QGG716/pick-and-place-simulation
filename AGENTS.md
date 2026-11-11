@@ -1,3 +1,43 @@
+# November 11 physical single-carton cycle (current active override)
+
+The current user authorizes incremental development, commit and push on
+`feat/v0.6-eco65-ubuntu-real-integration`, including `f13cda3daa850fac97337f730f6717d697c86c7f`.
+The explicit `unloading_sim.workbench.single_carton` entry may execute ONE
+operator-started native-planned carton cycle and the verified vacuum protocol.
+This supersedes older empty-only/no-valve restrictions for this entry and the
+shared adapters needed by it. Default observation and replay remain read-only;
+retain RobotObserver's whitelist and the separate controlled-empty entry.
+Startup, import, connect, preparation, preview and development tests never move
+hardware or send suction/release commands. No legacy enable_hardware activation.
+
+User-confirmed field premises: connected functional devices and verified frames;
+camera on link_1, world=base, tool 1.5 kg, carton 2 kg, robot rating 5 kg. All
+12 cups share one valve and have passive self-closing check valves (explicitly
+confirmed this round). Never treat them as separately commanded cups: retain all
+geometry, require complete seal contours on the observed target for anticipated
+sealing cups, and verify actual gripper pressure before extraction. Preserve the
+original calibration file bytes/status; bind the user's field confirmation
+separately. No historical acceptance-report gate and no training-example fallback.
+
+The user explicitly deferred receiving-region qualification at q_start for this
+round. Still validate the complete loaded return and release collision envelope;
+record RECEIVER_QUALIFICATION_DEFERRED_BY_USER, never support certification.
+Freeze q_start once; never substitute HOME or redefine it during execution.
+The user approved at least two fresh pressure heartbeats spanning >=1 second,
+with 3-second grip and release timeouts. Reference thresholds are -60 kPa grip,
+-30 kPa holding-loss and -10 kPa release, using only the gripper channel. Keep
+pressure freshness explicit; do not interpolate fake high-rate measurements.
+
+Pure 5 ms CANFD transmission and the existing stop/feedback supervisor remain
+mandatory. Stop/fault/close must never automatically release a held load, return
+home, resume, retry a task or claim a stop without feedback. A release already
+explicitly initiated at the returned start is recorded separately. A stopped
+held-load task requires local handling. Only real complete evidence can yield
+PHYSICAL_CYCLE_COMPLETE; all fake/native-only/development evidence is NOT_RUN
+for physical acceptance. No conveyors, lift, multi-box scheduling, N+1 plans,
+visual servo, J1 direction or top-height constraints. Keep all Git LFS assets.
+See docs/eco65_single_carton.md for the implemented entry and record format.
+
 # November 11 ECO65-B controlled empty execution (active override)
 
 The explicit current user request authorizes development on
