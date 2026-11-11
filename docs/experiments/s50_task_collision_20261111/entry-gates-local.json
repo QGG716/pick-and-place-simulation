@@ -1,0 +1,136 @@
+{
+  "schema": "s50_task_entry_and_layout_actual_local_checks_v1",
+  "recorded_utc": "2026-11-11T02:20:14.665955+00:00",
+  "baseline_parent_commit": "7bd1392d5f3b122817ada116b00afddfb9c1d9cc",
+  "working_tree_changes_are_identified_by_source_hashes": true,
+  "system": "Windows-11-10.0.26200-SP0",
+  "python_executable": "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+  "python_version": "3.12.15",
+  "execution_scope": "LOCAL_ACTUAL_CLI_GATES_AND_FROZEN_GEOMETRY_COMPARISON_NO_IK_OR_NATIVE_PLANNING",
+  "actual_runs": [
+    {
+      "command": "python tools/build_s50_task_model.py --config configs/robots/huayan_s50_2000.yaml --output docs/experiments/s50_task_collision_20261111/task-generation-local.json",
+      "observed_process_exit_code": 2,
+      "report": "task-generation-local.json",
+      "status": "MODEL_NOT_READY",
+      "argv": [
+        "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+        "tools/build_s50_task_model.py",
+        "--config",
+        "configs/robots/huayan_s50_2000.yaml",
+        "--output",
+        "docs/experiments/s50_task_collision_20261111/task-generation-local.json"
+      ]
+    },
+    {
+      "command": "python tools/check_s50_integration.py --config configs/robots/huayan_s50_2000.yaml --output docs/experiments/s50_task_collision_20261111/admission-local.json",
+      "observed_process_exit_code": 2,
+      "report": "admission-local.json",
+      "status": "MODEL_NOT_READY",
+      "argv": [
+        "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+        "tools/check_s50_integration.py",
+        "--config",
+        "configs/robots/huayan_s50_2000.yaml",
+        "--output",
+        "docs/experiments/s50_task_collision_20261111/admission-local.json"
+      ]
+    },
+    {
+      "command": "python tools/plan_s50_single_carton.py --mode single-carton --config configs/robots/huayan_s50_2000.yaml --seed 50 --output outputs/s50_task_collision_20261111/formal-entry-gated",
+      "observed_process_exit_code": 2,
+      "report": "single-carton-gated-local.json",
+      "status": "NOT_RUN_MODEL_NOT_READY",
+      "argv": [
+        "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+        "tools/plan_s50_single_carton.py",
+        "--mode",
+        "single-carton",
+        "--config",
+        "configs/robots/huayan_s50_2000.yaml",
+        "--seed",
+        "50",
+        "--output",
+        "outputs/s50_task_collision_20261111/formal-entry-gated"
+      ]
+    },
+    {
+      "command": "python tools/freeze_robot_replacement_layout.py --output-dir outputs/s50_task_collision_20261111/layout-freeze",
+      "observed_process_exit_code": 0,
+      "report": "layout-freeze-local.json",
+      "status": "PASS",
+      "argv": [
+        "D:\\code\\eco65 pick and place\\.venv\\Scripts\\python.exe",
+        "tools/freeze_robot_replacement_layout.py",
+        "--output-dir",
+        "outputs/s50_task_collision_20261111/layout-freeze"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "tools/build_s50_task_model.py": "bde9cabddc576338387e233fa1eeb2898ec15bc739f0ba9942123786694fe972",
+    "tools/check_s50_integration.py": "1a7e0744ed03c6f0fc60eebae7be21ff30e89ac010f28a27ffa923aa3c509d97",
+    "tools/plan_s50_single_carton.py": "e2ecfe609590b4f7de7a6067d409554d1eb2ce67cffaa0a910fdc052a348e639",
+    "tools/freeze_robot_replacement_layout.py": "9bf97ee934c8ac08b7a49b9ba07233f74a44f57bb52b31efebd10130bf6cefdd",
+    "src/unloading_sim/s50_task_model.py": "fb0e11f68e4c45b7bf4d443ac7e61d5113e6a5f1cb62ec1dd2110618e763cedf",
+    "src/unloading_sim/robot_model_binding.py": "81034464a51f4bb582d65f37095f7f7f2e7aa680eba321aa855e717eb76f2e34",
+    "src/unloading_sim/configured_layout_trajectory.py": "29d02b145d31b0fb75f656baa9cfcc9ffcadfa2b7be952fcee266dcc7a4e6714",
+    "src/unloading_sim/robot_replacement_layout.py": "3fbe6cc72ae9ab050561e25dafb530f4016bc90a43d7bfe07a15c4be16052107",
+    "configs/robots/huayan_s50_2000.yaml": "092b33b9f2bfa162a79c7226543505cc6c4a527827ff350deaf88f99adbf6886"
+  },
+  "report_files": {
+    "task-generation-local.json": {
+      "bytes": 17882,
+      "sha256": "cc95f8b41143181576a92bdb21f83cf00a80827b8783a7adf3dc1ee16c36d1c8"
+    },
+    "admission-local.json": {
+      "bytes": 13390,
+      "sha256": "4841930135590bfb440a82d4b4097c95ef2009c970258e7e3957b79aef69c6d8"
+    },
+    "single-carton-gated-local.json": {
+      "bytes": 2264,
+      "sha256": "81932bf40d301ed8f3d7aca675a99c2b545a3f871b367319de5c67e45db9d577"
+    },
+    "layout-freeze-local.json": {
+      "bytes": 2869,
+      "sha256": "039c338a2a25f4e8e50c568a9a61131b85095da366a9c9437da02f00413489e3"
+    }
+  },
+  "checked_facts": {
+    "real_task_model_generated": false,
+    "assets_task_directory_exists": false,
+    "initial_ik_status": "NOT_RUN",
+    "initial_ik_attempts": 0,
+    "native_worker_launched": false,
+    "native_planning_attempts": 0,
+    "task_completion": false,
+    "global_unreachable": false,
+    "physical_execution": "NOT_RUN",
+    "initial_carton_count": 40,
+    "imported_completed_count": 0,
+    "non_robot_layout_difference": "PASS",
+    "raw_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "full_scene_fingerprint": null
+  },
+  "interpretation": "Missing controller/installation/tool/collision qualification data stopped admission before IK and native startup. No reachability result was produced; missing data is not structural unreachability.",
+  "layout_scope": "FANUC frozen environment versus S50 replacement environment definition; no qualified installed S50 task body was supplied. All non-robot entities, dimensions, poses, sampled mechanism travel and intrinsic tool geometry were compared; tool world motion excluded.",
+  "worker_command_supplied": false,
+  "worker_note": "The actual CLI stopped at geometric model admission before the optional worker-command check. No worker executable, remote connection, mock worker or IK attempt was used.",
+  "cross_drive_fix_verification": {
+    "status": "PASS",
+    "scope": "DEFAULT_WINDOWS_PYTEST_TEMP_ON_C_DRIVE_WITH_REAL_MODEL_ASSETS_ON_D_DRIVE",
+    "command": "python -m pytest tests/test_s50_task_model.py tests/test_s50_task_viewer_contract.py tests/test_moveit2_backend.py",
+    "basetemp_override": false,
+    "observed_by": "root agent actual command run",
+    "junit_path": "outputs/s50_task_collision_20261111/cross-drive-and-connector-tests.xml",
+    "junit_sha256": "aa9625d16c72b5d72b30ec7710663a72c1b471b83112b880e00b422bf6046189",
+    "counts": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "implementation": "Same-drive references stay relative. Windows cross-drive references use explicit absolute paths and generated documents declare LOCAL_ABSOLUTE_REFERENCES_NOT_PORTABLE. No assets copied.",
+    "child_default_temp_attempt": "The child agent default-temp run stopped in pytest setup with filesystem PermissionError before model code. This separate root-agent default-temp run exercised the real cross-drive generation and viewer contracts."
+  }
+}

@@ -148,6 +148,9 @@ def audit(config: Path, root: Path = ROOT) -> dict:
     # Source qualification is separate from syntactically valid URDF files.
     missing.extend(qualification_errors(data, binding))
     missing.extend(geometric_definition_errors(data))
+    from unloading_sim.s50_task_model import task_identity_audit
+    task_identity = task_identity_audit(config)
+    missing.extend(task_identity['missing'])
     mapped_limits = controller_mapping_audit(data)
     if binding is not None and mapped_limits['ready']:
         expected = np.asarray([mapped_limits['converted_limits_rad'][f'J{i}'] for i in range(1,7)])
@@ -178,6 +181,7 @@ def audit(config: Path, root: Path = ROOT) -> dict:
         replacement_complete=False, missing_critical_data=missing,
         config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),
         controller_limit_mapping=controller_mapping_audit(data),
+        task_model_identity=task_identity,
         cad_joint_preview=cad_preview_audit(root),
         time_parameterization=timing_audit(data),
         geometric_planning=dict(ready=ready, status='DEFINITION_ADMISSIBLE_NOT_MOTION_VALIDATED' if ready else 'NOT_READY',
@@ -208,7 +212,7 @@ def audit(config: Path, root: Path = ROOT) -> dict:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/robots/huayan_s50_2000.yaml")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_cad_motion_20261110/admission.json")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_task_collision_20261111/admission.json")
     args = parser.parse_args(argv)
     report = audit(args.config)
     args.output.parent.mkdir(parents=True, exist_ok=True)

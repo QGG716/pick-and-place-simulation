@@ -1,0 +1,231 @@
+{
+  "schema": "s50_independent_cross_platform_layout_comparison_v1",
+  "recorded_utc": "2026-11-11T02:25:10.390133+00:00",
+  "status": "GEOMETRY_EXACTLY_EQUAL_WITH_DERIVED_ANGLE_METADATA_DIFFERENCES",
+  "local_windows": {
+    "path": "outputs/s50_task_collision_20261111/layout-freeze/replacement-frozen-environment.json",
+    "bytes": 647173,
+    "file_sha256": "664e98473c1e2a8ab87c08d64e9b1bfb8ca983f491776fb04da199caea3a0245",
+    "raw_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "canonical_fingerprint_verified": true
+  },
+  "server_linux": {
+    "path": "outputs/s50_task_collision_20261111/frozen-environment-server.json",
+    "bytes": 618346,
+    "file_sha256": "34503cc4c199eeba908ce448d9bf8654c4ee15408214a5bb5d3dd8fd5cb43583",
+    "raw_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "canonical_fingerprint_verified": true
+  },
+  "raw_environment_fingerprints_equal": false,
+  "strict_production_comparison": {
+    "status": "NON_ROBOT_LAYOUT_CHANGED",
+    "passed": false,
+    "difference_count": 6,
+    "behavior_unchanged": true
+  },
+  "independent_comparison": {
+    "json_structure_and_leaf_types_compared": true,
+    "compared_leaf_counts": {
+      "str": 2320,
+      "float": 14721,
+      "NoneType": 629,
+      "int": 116,
+      "bool": 11
+    },
+    "explicit_metadata_only_absolute_tolerance_rad": 1e-12,
+    "relative_tolerance": 0,
+    "allowed_metadata_paths": [
+      "/height_samples/1/mechanism/stacks/0/angle_rad",
+      "/height_samples/1/mechanism/stacks/1/angle_rad",
+      "/height_samples/2/mechanism/stacks/0/angle_rad",
+      "/height_samples/2/mechanism/stacks/1/angle_rad",
+      "/height_samples/3/mechanism/stacks/0/angle_rad",
+      "/height_samples/3/mechanism/stacks/1/angle_rad"
+    ],
+    "maximum_observed_difference_rad": 1.1102230246251565e-16,
+    "differences": [
+      {
+        "path": "/height_samples/1/mechanism/stacks/0/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.17285956782310907,
+        "server": 0.17285956782310904,
+        "value_type": "float",
+        "absolute_difference_rad": 2.7755575615628914e-17,
+        "local_float_hex": "0x1.62043274cebd8p-3",
+        "server_float_hex": "0x1.62043274cebd7p-3",
+        "within_explicit_metadata_only_abs_tolerance": true
+      },
+      {
+        "path": "/height_samples/1/mechanism/stacks/1/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.17285956782310907,
+        "server": 0.17285956782310904,
+        "value_type": "float",
+        "absolute_difference_rad": 2.7755575615628914e-17,
+        "local_float_hex": "0x1.62043274cebd8p-3",
+        "server_float_hex": "0x1.62043274cebd7p-3",
+        "within_explicit_metadata_only_abs_tolerance": true
+      },
+      {
+        "path": "/height_samples/2/mechanism/stacks/0/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.33842304879759794,
+        "server": 0.338423048797598,
+        "value_type": "float",
+        "absolute_difference_rad": 5.551115123125783e-17,
+        "local_float_hex": "0x1.5a8b925b31745p-2",
+        "server_float_hex": "0x1.5a8b925b31746p-2",
+        "within_explicit_metadata_only_abs_tolerance": true
+      },
+      {
+        "path": "/height_samples/2/mechanism/stacks/1/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.33842304879759794,
+        "server": 0.338423048797598,
+        "value_type": "float",
+        "absolute_difference_rad": 5.551115123125783e-17,
+        "local_float_hex": "0x1.5a8b925b31745p-2",
+        "server_float_hex": "0x1.5a8b925b31746p-2",
+        "within_explicit_metadata_only_abs_tolerance": true
+      },
+      {
+        "path": "/height_samples/3/mechanism/stacks/0/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.5609608055180793,
+        "server": 0.5609608055180794,
+        "value_type": "float",
+        "absolute_difference_rad": 1.1102230246251565e-16,
+        "local_float_hex": "0x1.1f36413413706p-1",
+        "server_float_hex": "0x1.1f36413413707p-1",
+        "within_explicit_metadata_only_abs_tolerance": true
+      },
+      {
+        "path": "/height_samples/3/mechanism/stacks/1/angle_rad",
+        "kind": "VALUE_MISMATCH",
+        "local": 0.5609608055180793,
+        "server": 0.5609608055180794,
+        "value_type": "float",
+        "absolute_difference_rad": 1.1102230246251565e-16,
+        "local_float_hex": "0x1.1f36413413706p-1",
+        "server_float_hex": "0x1.1f36413413707p-1",
+        "within_explicit_metadata_only_abs_tolerance": true
+      }
+    ],
+    "all_other_fields_exactly_equal": true,
+    "integer_string_boolean_or_null_differences": 0
+  },
+  "frozen_geometry": {
+    "parameters_exactly_equal": true,
+    "parameters": {
+      "gap_m": 0.7000000000000003,
+      "mounting_surface_height_m": 0.9,
+      "world_from_physical_mount": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -1.85
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.14999999999999997
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.9
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mount_axis_to_chassis_front_m": 0.44999999999999996,
+      "minimum_belt_height_m": 0.55,
+      "maximum_belt_height_m": 1.5,
+      "initial_belt_height_m": 0.6,
+      "tool_extension_m": 0.2
+    },
+    "layout_fields_exactly_equal": true,
+    "tool_intrinsic_geometry_frames_and_source_hashes_exactly_equal": true,
+    "initial_cartons_dimensions_and_poses_exactly_equal": true,
+    "initial_carton_ids": [
+      "carton_l00_c00",
+      "carton_l00_c01",
+      "carton_l00_c02",
+      "carton_l00_c03",
+      "carton_l00_c04",
+      "carton_l01_c00",
+      "carton_l01_c01",
+      "carton_l01_c02",
+      "carton_l01_c03",
+      "carton_l01_c04",
+      "carton_l02_c00",
+      "carton_l02_c01",
+      "carton_l02_c02",
+      "carton_l02_c03",
+      "carton_l02_c04",
+      "carton_l03_c00",
+      "carton_l03_c01",
+      "carton_l03_c02",
+      "carton_l03_c03",
+      "carton_l03_c04",
+      "carton_l04_c00",
+      "carton_l04_c01",
+      "carton_l04_c02",
+      "carton_l04_c03",
+      "carton_l04_c04",
+      "carton_l05_c00",
+      "carton_l05_c01",
+      "carton_l05_c02",
+      "carton_l05_c03",
+      "carton_l05_c04",
+      "carton_l06_c00",
+      "carton_l06_c01",
+      "carton_l06_c02",
+      "carton_l06_c03",
+      "carton_l06_c04",
+      "carton_l07_c00",
+      "carton_l07_c01",
+      "carton_l07_c02",
+      "carton_l07_c03",
+      "carton_l07_c04"
+    ],
+    "initial_carton_count": 40,
+    "imported_completed_count": 0,
+    "heights": [
+      {
+        "height_m": 0.55,
+        "entity_count": 148,
+        "all_entity_records_exactly_equal": true
+      },
+      {
+        "height_m": 0.6,
+        "entity_count": 148,
+        "all_entity_records_exactly_equal": true
+      },
+      {
+        "height_m": 1.0,
+        "entity_count": 148,
+        "all_entity_records_exactly_equal": true
+      },
+      {
+        "height_m": 1.5,
+        "entity_count": 148,
+        "all_entity_records_exactly_equal": true
+      }
+    ],
+    "compared_entity_record_count": 592
+  },
+  "interpretation": "The six differences are only final floating-point bits of derived scissor angle_rad metadata. Every collider/entity record, dimension, pose, mechanism travel configuration, carton identity and intrinsic tool field is exactly equal after JSON parsing. This independent numeric assessment does not replace raw identity acceptance.",
+  "production_fingerprint_rules_modified": false,
+  "production_validators_modified": false,
+  "local_viewer_server_diagnostic_identity_override_allowed": false,
+  "delivery_action": "Generate viewer on the server with the server snapshot and original server raw fingerprint. Preserve both original fingerprints in evidence.",
+  "robot_motion_or_collision_qualification_claimed": false
+}

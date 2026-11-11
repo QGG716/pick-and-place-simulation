@@ -3,14 +3,22 @@ model: huayan_s50_2000
 model_id: huayan_s50_2000
 model_usage: installed_task_model_pending_qualification
 cad_preview_config: huayan_s50_2000_cad_preview.yaml
-model_revision: cad_simulation_chain_20261110_controller_mapping_pending
+model_revision: independent_task_generator_20261111_controller_mapping_pending
+generated_definition_schema: s50_task_model_v1
+generated_definition: ../../assets/robots/huayan_s50_2000/task/task_model.json
+task_generation:
+  source_cad_definition: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json
+  generated_config: ../../assets/robots/huayan_s50_2000/task/model.yaml
+  command: python tools/build_s50_task_model.py
+  mapping_reference_contract: Each verified axis source must name a local reference path, SHA256 and page/figure/pose locator. This config is the reviewed generator input; generated model.yaml is the independently bound task model.
 rated_payload_kg: 50.0
 reach_m: 2.0
 published_total_mass_kg: 156.0
 published_axis_count: 6
 published_axis_labels: [J1, J2, J3, J4, J5, J6]
 # These published limits are in controller coordinates, NOT yet converted to the CAD simulation zero.
-joint_position_limits_rad:
+joint_position_limits_rad: null
+published_controller_position_limits_rad:
   J1: [-6.283185307179586, 6.283185307179586]
   J2: [-3.316125578789226, 0.17453292519943295]
   J3: [-2.792526803190927, 2.792526803190927]
@@ -44,9 +52,9 @@ installation:
     scope: Physical support plane and axis intersection measured; no assertion of controller frame clocking.
   mount_clocking: {verified: false, source: null}
 kinematics:
-  # Shared true CAD geometry; its preview angle range is NOT admitted for task planning.
-  urdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.urdf
-  srdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.srdf
+  # Independent task documents only; never fall back to CAD preview ranges.
+  urdf_path: ../../assets/robots/huayan_s50_2000/task/s50_task.urdf
+  srdf_path: ../../assets/robots/huayan_s50_2000/task/s50_task.srdf
   active_joint_names: [s50_joint_1, s50_joint_2, s50_joint_3, s50_joint_4, s50_joint_5, s50_joint_6]
   joint_limit_keys: [J1, J2, J3, J4, J5, J6]
   base_link: s50_base

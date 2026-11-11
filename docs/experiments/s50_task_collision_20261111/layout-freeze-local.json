@@ -1,0 +1,91 @@
+{
+  "schema": "robot_replacement_layout_report_v1",
+  "baseline_commit": "a3f08cc2283138e5905b4cc9829cefd7b4aac6b7",
+  "baseline_sources": [
+    "docs/experiments/m710_gap700_front_working_20261110/README.md",
+    "docs/experiments/m710_gap700_front_working_20261110/front-working-search-launch.json",
+    "docs/experiments/m710_gap700_front_working_20261110/front-working-home-checked.json",
+    "src/unloading_sim/gap_search_layout.py"
+  ],
+  "model_id": "huayan_s50_2000",
+  "layout_status": "PASS",
+  "non_robot_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "after_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "model_status": "MODEL_NOT_READY",
+  "replacement_complete": false,
+  "parameters": {
+    "gap_m": 0.7000000000000003,
+    "mounting_surface_height_m": 0.9,
+    "world_from_physical_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mount_axis_to_chassis_front_m": 0.44999999999999996,
+    "minimum_belt_height_m": 0.55,
+    "maximum_belt_height_m": 1.5,
+    "initial_belt_height_m": 0.6,
+    "tool_extension_m": 0.2
+  },
+  "initial_carton_count": 40,
+  "imported_completed_count": 0,
+  "assumed_removed": [],
+  "configuration_identity": "f6fba7cef0de6c7626916d13e211764577f475f7d8a880a907348f30fd0283ae",
+  "full_scene_fingerprint": null,
+  "baseline_layout_fingerprint": "9e3a41389c49eed3075293613c55b0e784b53051842c769772e4ff78b64ec4d9",
+  "environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+  "qualification": {
+    "initial_ik": "NOT_RUN",
+    "initial_collision": "NOT_RUN",
+    "native_single_carton": "NOT_RUN",
+    "dynamics": "NOT_RUN",
+    "payload_qualification": "NOT_EVALUATED"
+  },
+  "notes": [
+    "只检查非机器人几何、机构行程和工具固有几何；不把布局相同当作模型接入成功。",
+    "未知安装坐标变换不默认为单位矩阵；不会加载 FANUC 代替 S50。",
+    "工具世界位姿不参与等值比较，真实安装面和安装轴线保持不变。"
+  ]
+}

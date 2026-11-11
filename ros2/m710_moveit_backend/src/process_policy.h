@@ -2,6 +2,7 @@
 #include "process_geometry.h"
 #include "clearance.h"
 #include "side_transfer.h"
+#include "mount_contact.h"
 
 namespace m710 {
 inline bool authorizedToolChassisPair(const Json& source,const std::string& target,
@@ -148,7 +149,7 @@ public:
       const bool assembly=(!qualified_only && ((a=="base_link" && b=="chassis") || (b=="base_link" && a=="chassis"))) ||
         authorizedRobotMountPair(source_,a,b) ||
         (scene->getRobotModel()->getLinkModel("base_link") && qualifiedSearchPlinthPair(request,search_mount,
-          state.getGlobalLinkTransform("base_link"),a,b));
+          state.getGlobalLinkTransform("base_link"),a,b)) || qualifiedConfiguredPlinthPair(state,request,a,b);
       const bool tool_mount=request.value("planning_only",false) && request.value("planning_mode","")=="cold_from_scratch" &&
         authorizedToolChassisPair(source_,target_id_,
           request.at("clearance_policy").value("tool_links",std::set<std::string>{}),a,b);

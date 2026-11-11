@@ -1,0 +1,26 @@
+{
+  "status": "SUPERSEDED_PARTIAL_ENVIRONMENT_DIAGNOSTICS",
+  "reason": "Old entry queried fixed_components plus cartons (49); 99 lift/rail entities omitted. Viewer entity-set gate rejected import. Full coupled scene rerun is required.",
+  "old_report_sha256": "f42919ab9cca1bd320ddc2b3bd839491ce6c911daab6dc840deb5fa96c7e3f10",
+  "old_obstacle_count": 49,
+  "required_obstacle_count": 148,
+  "poses": 16,
+  "old_queries": 7632,
+  "source_full_reports": [
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/collision/runtime-collision-report.json",
+      "sha256": "71fc3235f5f14477304f9e600fb42fab2e08eb2cbb497cc3e9f9871fe1a8ad98",
+      "bytes": 10529180,
+      "pose_count": 15,
+      "pair_count": 7155
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/active-plinth/runtime-collision-report.json",
+      "sha256": "6793ce4bbaef61f738d749b1fd8cd8fb7a704bf2f994ed5824cfa574755f319f",
+      "bytes": 772886,
+      "pose_count": 1,
+      "pair_count": 477
+    }
+  ],
+  "not_task_qualified": true
+}

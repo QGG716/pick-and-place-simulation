@@ -1,0 +1,617 @@
+{
+  "schema": "s50_viewer_independent_fk_validation_v1",
+  "status": "PASS",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "javascript_sha256": "90023635c88d42df7b2239339ee44e2d15ff3a7c02e2451652c1c99211a74f20",
+  "runtime": "JavaScript Number, independent Rodrigues and row-major multiplication",
+  "core_reference": "URDFRobot named_link_frames from real S50 link-local URDF",
+  "probes": [
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        -0.23,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0.23,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        -0.23,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0.23,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        -0.23,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0.23,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 5.551115123125783e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        -0.23,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0.23,
+        0,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        -0.23,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0.23,
+        0
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -0.23
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.23
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0.9772371524145205,
+        1.1344757375841803,
+        0.1628751646263651,
+        1.6097269268763836,
+        -0.8947659030979765,
+        0.4995393670507393
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        -1.4789113583317781,
+        0.18896386261632792,
+        -0.3319845576202536,
+        -0.7957162888662839,
+        1.6547198205116052,
+        -0.3491199300323433
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        -0.5832489500698375,
+        -1.2744662326191132,
+        -1.321043477533495,
+        1.6475495669554727,
+        0.26839441533440067,
+        1.3331148245219893
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 3.3306690738754696e-16
+    },
+    {
+      "q_rad": [
+        -1.6487273843434271,
+        0.33897549674826233,
+        -0.27123864926272856,
+        -0.4293149933999345,
+        0.7021309408928775,
+        -1.4912124528272632
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        -0.8982469337423846,
+        -0.8644076497468848,
+        -0.174724129372422,
+        -0.5723129840675909,
+        0.9239368216535115,
+        -0.09148450835229682
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        0.953415874249463,
+        -1.2754658831078178,
+        0.2680208858035087,
+        0.7029748022199345,
+        0.6240524817662629,
+        -1.5751111702426455
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 3.3306690738754696e-16
+    },
+    {
+      "q_rad": [
+        -1.0985923192221014,
+        0.3707564378585728,
+        -0.7847254790230127,
+        -0.1649672815950407,
+        1.340551254890016,
+        1.2326187960823025
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        -1.6878231571226918,
+        0.04775384750722034,
+        1.4602438661947146,
+        -0.5112201594219308,
+        -0.09437498650867826,
+        -0.44151767672232656
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        1.0364360968345896,
+        -0.20536781039631102,
+        1.375735865346874,
+        -1.0507175328206526,
+        -0.29094333790176385,
+        -0.27558850184049843
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 3.3306690738754696e-16
+    },
+    {
+      "q_rad": [
+        0.4489255796130618,
+        -0.002307755829243918,
+        -0.8340632622972184,
+        1.2143087207087604,
+        0.04064902063428599,
+        -0.9294000266720487
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        1.2278448546647247,
+        1.6585097027406623,
+        -1.6105559651984132,
+        -1.0224980972074451,
+        0.19195067062463478,
+        -0.42460074752068344
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 1.3877787807814457e-16
+    },
+    {
+      "q_rad": [
+        1.2605427490261214,
+        -0.2647186034455371,
+        0.014221327117744043,
+        -0.06059959744939136,
+        1.2549707341064227,
+        -0.21140502592315746
+      ],
+      "coordinate_scope": "sim_mount",
+      "max_matrix_error": 4.163336342344337e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        -0.23,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0.23,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        -0.23,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0.23,
+        0,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        -0.23,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0.23,
+        0,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        -0.23,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0.23,
+        0,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        -0.23,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0.23,
+        0
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -0.23
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.23
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.6510574630927586e-17
+    },
+    {
+      "q_rad": [
+        0.9772371524145205,
+        1.1344757375841803,
+        0.1628751646263651,
+        1.6097269268763836,
+        -0.8947659030979765,
+        0.4995393670507393
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        -1.4789113583317781,
+        0.18896386261632792,
+        -0.3319845576202536,
+        -0.7957162888662839,
+        1.6547198205116052,
+        -0.3491199300323433
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        -0.5832489500698375,
+        -1.2744662326191132,
+        -1.321043477533495,
+        1.6475495669554727,
+        0.26839441533440067,
+        1.3331148245219893
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 3.3306690738754696e-16
+    },
+    {
+      "q_rad": [
+        -1.6487273843434271,
+        0.33897549674826233,
+        -0.27123864926272856,
+        -0.4293149933999345,
+        0.7021309408928775,
+        -1.4912124528272632
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        -0.8982469337423846,
+        -0.8644076497468848,
+        -0.174724129372422,
+        -0.5723129840675909,
+        0.9239368216535115,
+        -0.09148450835229682
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        0.953415874249463,
+        -1.2754658831078178,
+        0.2680208858035087,
+        0.7029748022199345,
+        0.6240524817662629,
+        -1.5751111702426455
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 4.440892098500626e-16
+    },
+    {
+      "q_rad": [
+        -1.0985923192221014,
+        0.3707564378585728,
+        -0.7847254790230127,
+        -0.1649672815950407,
+        1.340551254890016,
+        1.2326187960823025
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 2.220446049250313e-16
+    },
+    {
+      "q_rad": [
+        -1.6878231571226918,
+        0.04775384750722034,
+        1.4602438661947146,
+        -0.5112201594219308,
+        -0.09437498650867826,
+        -0.44151767672232656
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        1.0364360968345896,
+        -0.20536781039631102,
+        1.375735865346874,
+        -1.0507175328206526,
+        -0.29094333790176385,
+        -0.27558850184049843
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 4.440892098500626e-16
+    },
+    {
+      "q_rad": [
+        0.4489255796130618,
+        -0.002307755829243918,
+        -0.8340632622972184,
+        1.2143087207087604,
+        0.04064902063428599,
+        -0.9294000266720487
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 1.1102230246251565e-16
+    },
+    {
+      "q_rad": [
+        1.2278448546647247,
+        1.6585097027406623,
+        -1.6105559651984132,
+        -1.0224980972074451,
+        0.19195067062463478,
+        -0.42460074752068344
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 1.3877787807814457e-16
+    },
+    {
+      "q_rad": [
+        1.2605427490261214,
+        -0.2647186034455371,
+        0.014221327117744043,
+        -0.06059959744939136,
+        1.2549707341064227,
+        -0.21140502592315746
+      ],
+      "coordinate_scope": "fixed_mount_translation",
+      "max_matrix_error": 4.163336342344337e-17
+    }
+  ],
+  "probe_count": 50,
+  "compared_frame_count": 400,
+  "max_matrix_error": 4.440892098500626e-16,
+  "controller_limits_verified": false,
+  "installation_qualified": false,
+  "collision_qualified": false,
+  "task_reachability_claimed": false
+}

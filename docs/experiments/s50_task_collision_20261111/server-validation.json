@@ -1,0 +1,4067 @@
+{
+  "schema": "s50_task_collision_server_verification_v1",
+  "base_commit": "7bd1392d5f3b122817ada116b00afddfb9c1d9cc",
+  "workspace": "/work-s50-task-collision-20261111-v1",
+  "qualification_scope": "CAD_DIAGNOSTIC_NOT_INSTALLED_TASK",
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "after_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "sources": [
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/mount_contact.py",
+      "bytes": 21867,
+      "sha256": "c1b76213043c0c35df0c30bf41fa81aee7642e63ec5e6f4535b4397f17305265"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/s50_task_model.py",
+      "bytes": 25335,
+      "sha256": "fb0e11f68e4c45b7bf4d443ac7e61d5113e6a5f1cb62ec1dd2110618e763cedf"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/s50_collision_diagnostics.py",
+      "bytes": 18569,
+      "sha256": "28a82b40d5c2c3ac064404538898efe6b5c623088bdd32934250c85375e065f7"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/configured_layout_trajectory.py",
+      "bytes": 35488,
+      "sha256": "29d02b145d31b0fb75f656baa9cfcc9ffcadfa2b7be952fcee266dcc7a4e6714"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/robot_model_binding.py",
+      "bytes": 13723,
+      "sha256": "81034464a51f4bb582d65f37095f7f7f2e7aa680eba321aa855e717eb76f2e34"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/moveit2_backend.py",
+      "bytes": 116516,
+      "sha256": "66fd3e71fc292e283e4bf3ef8570f7ef1fd7975a1a6321aa1c2f4043eb03146f"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/joint_search_layout.py",
+      "bytes": 8828,
+      "sha256": "d3c3d8ab418e93770c221b31af13bafd5a239bca5f32a043432d72a98053c339"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/ros2/m710_moveit_backend/src/mount_contact.h",
+      "bytes": 7268,
+      "sha256": "40603a4f3f1ee0a4772007d0ccf2a10c73d5d7177e19669ef80814edac457f55"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/ros2/m710_moveit_backend/src/process_policy.h",
+      "bytes": 24122,
+      "sha256": "f6f99d00ddb8669f3ad4d1217406a979c1ca486cbf951a0ef210ca9480f373fa"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/ros2/m710_moveit_backend/src/s50_mount_contact_probe.cpp",
+      "bytes": 3472,
+      "sha256": "ede381197ee745b09c70f1dac97fda307d40f0807c42cf25663a6f824db7836d"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/diagnose_s50_runtime_collision.py",
+      "bytes": 14389,
+      "sha256": "0cd4b51b752d870aeaedcc2fed901b32f61938f16b48fe08977d98c8b5dfcafe"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/build_s50_mount_contact_probe.py",
+      "bytes": 3483,
+      "sha256": "dccdb81c1e5d639e0cfdb59d2c3b09c098c5a4bcfe4e52e1fa0076cdc6e45093"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/extract_s50_diagnostic_view.py",
+      "bytes": 3488,
+      "sha256": "b6377172bca82f735f315a3c76b394b3444fae903f3d32fe9f6087914e10e8dc"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/export_s50_cad_motion_viewer.py",
+      "bytes": 14057,
+      "sha256": "70f3daf7d34a1cbda162a184426e25b98165af1dc9d331c864d8307dc9e45bcd"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/s50_viewer_diagnostics.py",
+      "bytes": 4896,
+      "sha256": "77395ca630689ca38dde56a90a821aa073d3669b50c38ac653faf75b10731e07"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/tools/s50_cad_motion_viewer.html",
+      "bytes": 24627,
+      "sha256": "cf6dc8d0a45306033a51d4bcfaf6b2ad6b37cbcc892a4e529f548e9c7ff597cf"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "/work-s50-task-collision-20261111-v1/build/moveit/m710_moveit_worker",
+      "bytes": 1803400,
+      "sha256": "ebeec0dd16bd1e44158359b5492a407ca386b1c5a657eb32616e7379cebba27d"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/build/moveit/s50_mount_contact_probe",
+      "bytes": 277888,
+      "sha256": "51ae8ee0844d40ecf19c19b3a1d9f4f9982e233caf605d1f023931a8d73a9993"
+    }
+  ],
+  "collision": {
+    "status": "DIAGNOSTIC_QUERIES_COMPLETED_NOT_TASK_QUALIFIED",
+    "pose_count": 16,
+    "environment_count": 148,
+    "box_count": 40,
+    "total_queries": 21888,
+    "unknown_queries": 0,
+    "full_report": {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/collision-complete/runtime-collision-report.json",
+      "bytes": 32241228,
+      "sha256": "275330a67fafee451f344f34ff3ceba69705e643ad9303887ee83e7f0623a9eb"
+    },
+    "elapsed_s": 191.2430523559451,
+    "coal_version": "3.0.3",
+    "pinocchio_version": "4.1.0",
+    "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "geometry_inventory": [
+      {
+        "name": "s50_base_0",
+        "link": "s50_base",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+        "source_vertex_count": 46063,
+        "source_triangle_count": 92180,
+        "coal_vertex_count": 46063,
+        "coal_triangle_count": 92164,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": false
+      },
+      {
+        "name": "s50_link_1_0",
+        "link": "s50_link_1",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "b92ba8ca4f4e76eaa0862cc577204715eb77d6645e5f307f7f81815568152c68",
+        "source_vertex_count": 168030,
+        "source_triangle_count": 335737,
+        "coal_vertex_count": 168030,
+        "coal_triangle_count": 335737,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": true
+      },
+      {
+        "name": "s50_link_1_1",
+        "link": "s50_link_1",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1_collision_patch_0.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "df4f988aaf780ffac77563a29f642f6a95924026272617ceef6d43513a6999b0",
+        "source_vertex_count": 1025,
+        "source_triangle_count": 1023,
+        "coal_vertex_count": 1025,
+        "coal_triangle_count": 1023,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": true
+      },
+      {
+        "name": "s50_link_2_0",
+        "link": "s50_link_2",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "e1fce1e6e867e4f1070b5c88efbcb0a0104eedf12c2c4ea69c095eba5af226bb",
+        "source_vertex_count": 139401,
+        "source_triangle_count": 278573,
+        "coal_vertex_count": 139401,
+        "coal_triangle_count": 278573,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": true
+      },
+      {
+        "name": "s50_link_2_1",
+        "link": "s50_link_2",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2_collision_patch_1.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "0631e9a8f2e4d6976df207980d64708e908a0ae2f306265d74d2df355d916985",
+        "source_vertex_count": 1025,
+        "source_triangle_count": 1023,
+        "coal_vertex_count": 1025,
+        "coal_triangle_count": 1023,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": true
+      },
+      {
+        "name": "s50_link_3_0",
+        "link": "s50_link_3",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "23c8a80412ab7074ad831552b60a5bf769afdde97649fabf58504c47fe89b7f4",
+        "source_vertex_count": 167913,
+        "source_triangle_count": 335732,
+        "coal_vertex_count": 167913,
+        "coal_triangle_count": 335698,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": false
+      },
+      {
+        "name": "s50_link_4_0",
+        "link": "s50_link_4",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "0a33f795b9a662d4ce3278881bcb4079a456ea3ac1b4307e2d5b94581736b44b",
+        "source_vertex_count": 60959,
+        "source_triangle_count": 121916,
+        "coal_vertex_count": 60959,
+        "coal_triangle_count": 121914,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": false
+      },
+      {
+        "name": "s50_link_5_0",
+        "link": "s50_link_5",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "47645d680356ea05a7a56822f623691f7be7313944af429710e00cbecb10dc74",
+        "source_vertex_count": 61128,
+        "source_triangle_count": 122252,
+        "coal_vertex_count": 61128,
+        "coal_triangle_count": 122250,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": false
+      },
+      {
+        "name": "s50_link_6_0",
+        "link": "s50_link_6",
+        "mesh_path": "/work-s50-task-collision-20261111-v1/assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj",
+        "geometry_class": "BVHModelOBBRSS",
+        "source_mesh_sha256": "3fba47bd6c749db84a3e06acf1886d86a33f66f3c36cc960f4bb1f2907f18402",
+        "source_vertex_count": 13146,
+        "source_triangle_count": 26286,
+        "coal_vertex_count": 13146,
+        "coal_triangle_count": 26284,
+        "reader_vertex_count_matches_source": true,
+        "reader_triangle_count_matches_source": false
+      }
+    ],
+    "obstacle_geometry_scope": "FULL_COUPLED_FROZEN_SCENE_WITH_DECLARED_SOLIDS",
+    "poses": [
+      {
+        "pose_id": "cad_q0",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.06045854091644251,
+                2.0422999967217352
+              ],
+              [
+                -0.17149979836944906,
+                0.06045854091644298,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.3920310493703718,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_1_negative",
+        "q_rad": [
+          -0.35,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4895622191260507,
+                -0.05618530066523056,
+                0.15380141394138336
+              ],
+              [
+                0.0017486985161500484,
+                0.277037932882756,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4941664452830056,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.382948244480228,
+                0.006986577196026356,
+                2.0422999967217352
+              ],
+              [
+                -0.14713934825284,
+                0.18545200321200406,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.3920310493703721,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4895622191260507,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.277037932882756,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4941664452830056,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_1_positive",
+        "q_rad": [
+          0.35,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4895602461833152,
+                -0.2770375829391506,
+                0.15380141394138336
+              ],
+              [
+                0.001748920896505814,
+                0.05618565060883604,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4941664452830055,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.382948244480228,
+                -0.18545200321200375,
+                2.0422999967217352
+              ],
+              [
+                -0.14714417935647706,
+                -0.007010163395028399,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.392031049370372,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4895602461833152,
+                -0.2770375829391506,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4941664452830055,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_2_negative",
+        "q_rad": [
+          0.0,
+          -0.35,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949890360679733,
+                0.1538037810688863
+              ],
+              [
+                -0.012999799939990009,
+                0.6919233843160233,
+                2.0736519441163646
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.7140144117440581,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                0.5540291595067068,
+                1.9216985403295435
+              ],
+              [
+                -0.17149979836944906,
+                0.7462771918108886,
+                2.2345489855415437
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8358726270691839,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.7462771918108886,
+                2.2345489855415437
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8358726270691839,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_2_positive",
+        "q_rad": [
+          0.0,
+          0.35,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.6919254629020046,
+                0.15380446612210003
+              ],
+              [
+                -0.012999799939990009,
+                0.12949206258849477,
+                2.0736483313372758
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.7140144120455736,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.746265441897115,
+                1.9216937092259068
+              ],
+              [
+                -0.17149979836944906,
+                -0.5540423943738617,
+                2.2345489855415437
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8358726270691834,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.746265441897115,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.2345489855415437
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8358726270691834,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_3_negative",
+        "q_rad": [
+          0.0,
+          0.0,
+          -0.35,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.3833153688887639,
+                2.128216566366507
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                0.24542114407944754,
+                1.9762631625796865
+              ],
+              [
+                -0.17149979836944906,
+                0.4376691763836293,
+                2.2891136077916867
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.5793398262680812,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.4376691763836293,
+                2.2891136077916867
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.5793398262680812,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_3_positive",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.35,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.38331742490944537,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.1282128259618522
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.4376574039045558,
+                1.9762582038504832
+              ],
+              [
+                -0.17149979836944906,
+                -0.24543435638130257,
+                2.28911348016612
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.5793398094933891,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.4376574039045558,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.28911348016612
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.5793398094933891,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_4_negative",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          -0.35,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.07741715292250347,
+                2.0333436896210952
+              ],
+              [
+                -0.17149979836944906,
+                0.11483087938167827,
+                2.3461941348330955
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4029213768936063,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3461941348330955
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_4_positive",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.35,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.11481912946790462,
+                2.033338858517458
+              ],
+              [
+                -0.17149979836944906,
+                0.07740391805534867,
+                2.346194134833095
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.4029213768936062,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.346194134833095
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_5_negative",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.35,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.39834756339143207,
+                -0.0774039180553482,
+                2.0422999967217352
+              ],
+              [
+                -0.16253866716404405,
+                0.09835602813288667,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.3983603946954041,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_5_positive",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.35,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.39834756339143207,
+                -0.09835602813288634,
+                2.0422999967217352
+              ],
+              [
+                -0.1625434982676811,
+                0.07741715292250394,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.3983603946954041,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3588310878157523
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_6_negative",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -0.35
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.06045854091644251,
+                2.0422999967217352
+              ],
+              [
+                -0.17149979836944906,
+                0.06045854091644298,
+                2.3558035598467857
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.39202902476641094,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3558035598467857
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "axis_6_positive",
+        "q_rad": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.35
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.12949980795383448,
+                0.15380141394138336
+              ],
+              [
+                -0.012999799939990009,
+                0.12950019538402563,
+                2.185299497413644
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -0.06045854091644251,
+                2.0422999967217352
+              ],
+              [
+                -0.17149979836944906,
+                0.06045854091644298,
+                2.3558035598467857
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.39202902476641094,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.162990003824234,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.3558035598467857
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.49416644528300513,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "coupled_a",
+        "q_rad": [
+          0.0,
+          0.7,
+          -1.1,
+          0.25,
+          0.4,
+          -0.3
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.6852949002181985,
+                0.15380802853864214
+              ],
+              [
+                -0.012999799939990009,
+                0.1294825058428608,
+                1.8993349381427453
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8141591932002096,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.3983269595319252,
+                -0.2921626620940768,
+                1.75140278918184
+              ],
+              [
+                -0.1618986818415717,
+                -0.11008353471496363,
+                2.072248620818778
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.46052676449673685,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -0.6852949002181985,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                2.072248620818778
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.8141591932002096,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "coupled_b",
+        "q_rad": [
+          0.4,
+          -0.55,
+          0.85,
+          -0.35,
+          -0.6,
+          0.2
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_ceiling",
+              "category": "trailer",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.6409219714033807,
+                -0.29583545736933126,
+                0.15380583044170243
+              ],
+              [
+                -0.07069593774128523,
+                0.46432735836312744,
+                2.0105151355843276
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.725550126288089,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4541580352116862,
+                0.0151424226244119,
+                1.8656734770941725
+              ],
+              [
+                -0.21949548874457336,
+                0.1679626159417526,
+                2.180200040876584
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.46320365692449533,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.6409219714033807,
+                -0.29583545736933126,
+                -5.400000304689456e-07
+              ],
+              [
+                0.1876000016927719,
+                0.46432735836312744,
+                2.180200040876584
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 0.725550126288089,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      },
+      {
+        "pose_id": "mount_probe_j2_2p4",
+        "q_rad": [
+          0.0,
+          2.4,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "queried_pairs": 1368,
+        "unknown_pairs": 0,
+        "intersections": [
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_1",
+              "geometry": "s50_link_1_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_1"
+            },
+            "relation": "SAME_RIGID_LINK"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_4",
+              "geometry": "s50_link_4_0"
+            },
+            "second": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_5",
+              "geometry": "s50_link_5_0"
+            },
+            "second": {
+              "link": "s50_link_6",
+              "geometry": "s50_link_6_0"
+            },
+            "relation": "ADJACENT_INTERFACE_NOT_EXEMPTED_OR_REVIEWED"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "object": "chassis",
+              "category": "chassis",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "chassis",
+              "category": "chassis",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "object": "conveyor_longitudinal",
+              "category": "conveyor",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "conveyor_longitudinal",
+              "category": "conveyor",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_base",
+              "geometry": "s50_base_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_2",
+              "geometry": "s50_link_2_0"
+            },
+            "second": {
+              "object": "mount_plinth",
+              "category": "mount_structure",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          },
+          {
+            "first": {
+              "link": "s50_link_3",
+              "geometry": "s50_link_3_0"
+            },
+            "second": {
+              "object": "trailer_floor",
+              "category": "floor",
+              "geometry": "frozen_obb",
+              "representation": "DECLARED_OBB_SOLID",
+              "is_bounding_proxy": false
+            },
+            "relation": "UNFILTERED_DIAGNOSTIC_PAIR"
+          }
+        ],
+        "transverse_conveyor": {
+          "first": {
+            "link": "s50_base",
+            "geometry": "s50_base_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "category": "conveyor",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "intersects": false,
+          "surface_distance_m": 0.4139108671303065,
+          "unsigned_separation_m": 0.4139108671303065,
+          "nearest_points_world": [
+            [
+              -1.6623999983072282,
+              0.15037038998561908,
+              0.9201069302856922
+            ],
+            [
+              -1.4000000000000004,
+              0.15037038998561897,
+              0.6
+            ]
+          ],
+          "nearest_points_valid": true
+        },
+        "elbow_wrist_envelope": {
+          "elbow": {
+            "links": [
+              "s50_link_2",
+              "s50_link_3"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -1.3043489561181127,
+                -1.1350959545970682
+              ],
+              [
+                -0.012999799939990009,
+                0.12949092589087183,
+                0.41279973691992694
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 1.3155147943611365,
+            "mesh_vertex_count": 308339,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "wrist": {
+            "links": [
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.38849979902510023,
+                -1.411410545406313,
+                -1.2519626771595793
+              ],
+              [
+                -0.17149979836944906,
+                -1.1535371669068955,
+                -0.9828344921025567
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 1.4599819292442453,
+            "mesh_vertex_count": 135233,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          },
+          "all_robot": {
+            "links": [
+              "s50_base",
+              "s50_link_1",
+              "s50_link_2",
+              "s50_link_3",
+              "s50_link_4",
+              "s50_link_5",
+              "s50_link_6"
+            ],
+            "definition": "EXPLICIT_LINK_UNION_NOT_MECHANICAL_JOINT_CENTER",
+            "mount_frame_bounds_m": [
+              [
+                -0.4845000059604643,
+                -1.411410545406313,
+                -1.2519626771595793
+              ],
+              [
+                0.1876000016927719,
+                0.162990003824234,
+                0.4333000059604645
+              ]
+            ],
+            "maximum_horizontal_radius_from_installation_axis_m": 1.4599819292442453,
+            "mesh_vertex_count": 658690,
+            "source": "ACTUAL_COAL_MESH_VERTICES"
+          }
+        }
+      }
+    ]
+  },
+  "mount_contact": {
+    "coal_report": {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount-cases-stable/mount-contact-cases.json",
+      "bytes": 516434,
+      "sha256": "46592e9c2ccc4038e860361d1142942de9096fe274fc3950ef24dcbba065230f"
+    },
+    "native_report": {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount/native-report.json",
+      "bytes": 8527,
+      "sha256": "7b4382898c8aebb270479a3dcdcef9e580ea3cbbb7cdb404a59bc9e3e53d131e"
+    },
+    "status": "THREE_MOUNT_CASES_RECORDED_NOT_TASK_QUALIFIED",
+    "normal_contact": true,
+    "real_penetration_rejected": true,
+    "actual_active_link_collision": "active_link_probe_j2_2.4",
+    "no_active_link_exemption": true,
+    "physical_installation_verified": false
+  },
+  "fk": {
+    "status": "PASS_PREVIEW_CORE_PINOCCHIO_NATIVE_FK_ONLY",
+    "poses": 15,
+    "pinocchio_max_error": 1.1102230246251565e-15,
+    "native_max_error": 4.440892098500626e-16
+  },
+  "targeted_tests": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "61",
+      "time": "7.690",
+      "timestamp": "2026-11-11T10:23:02.952142+08:00",
+      "hostname": "autodl-container-06474b8321-4591acde"
+    }
+  ],
+  "final_job_exit_codes": {
+    "build": 0,
+    "mount-stable": 0,
+    "native-fk": 0,
+    "fanuc-regression": 0,
+    "collision-complete": 0
+  },
+  "raw_logs": [
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/build.log",
+      "bytes": 4452,
+      "sha256": "ead80f4d4aeaefd816d697235a602e847adc9e6f30354e4abaf233db46ad0acb"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/native-mount.log",
+      "bytes": 5781,
+      "sha256": "3b211a1ec21f4a0c0f9efb0a1a0ddacb2e300c0f10813a1020e1b4d206fcf25d"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount-final.log",
+      "bytes": 787,
+      "sha256": "d361a749922d6613c257b96f8dd4913a98ce5e53c03673fae3aeb60742b86c2f"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount-stable.log",
+      "bytes": 784,
+      "sha256": "ba948a9496f10c9980957ed82f3b205784067765dddd2981ce4eaed4cc23f630"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/native-fk.log",
+      "bytes": 71,
+      "sha256": "704265945e6555b79fb7f45c7ad4995b556969a72a39a1f944d19e97265af7af"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/fanuc-regression.log",
+      "bytes": 338,
+      "sha256": "6cfa6248b007c4f8135559ebece8777e6a53ecff2bf65cf02c6562423f72cd60"
+    },
+    {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/collision-complete.log",
+      "bytes": 3253,
+      "sha256": "c814d16dfeb85ebd9cae35bd823a52b811a41b20c920fa2c4d01c52d3bec2fa3"
+    }
+  ],
+  "retained_implementation_failures": [
+    {
+      "job": "native-mount",
+      "exit": 134,
+      "reason": "Native gap regression was invoked without required fixture; corrected invocation in fanuc-regression passed"
+    },
+    {
+      "job": "mount-final",
+      "exit": 2,
+      "reason": "Temporary Boost wrapper identity incorrectly invalidated stable geometry; actual BVH content signature fixed it; mount-stable passed"
+    },
+    {
+      "job": "collision",
+      "exit": 0,
+      "reason": "Old diagnostic omitted coupled mechanisms and used belt OBB. Superseded by full148 declared-solid collision-complete, not task-qualified"
+    }
+  ],
+  "task_ik_attempts": 0,
+  "task_planning_attempts": 0,
+  "tool_installed": false,
+  "mechanical_limits_verified": false,
+  "installation_verified": false,
+  "dynamics_verified": false,
+  "full_40_search_run": false,
+  "isaac_run": false
+}

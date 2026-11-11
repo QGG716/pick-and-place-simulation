@@ -97,10 +97,9 @@ def qualified_mount_pairs(robot,obstacles):
     """Only the fixed base's nonpenetrating supporting plane; never J1 or tool."""
     binding = getattr(robot, 'model_binding', None)
     if binding is not None and binding.model_id != 'fanuc_m710id_70':
-        # The legacy dimensions below prove one FANUC support plane only.
-        # A replacement robot needs its own physical base-plane proof; absent
-        # that proof the mount remains a collision object, never an exception.
-        return set()
+        from .mount_contact import mount_contact_evidence
+        proof=mount_contact_evidence(robot,obstacles)
+        return {tuple(pair) for pair in proof['allowed_pairs']} if proof['passed'] else set()
     spec=getattr(robot,'joint_search_mount',None)
     if not spec or spec['mount_design']!='SOLID_PLINTH':return set()
     support=next((b for b in obstacles if b.name=='mount_plinth'),None)

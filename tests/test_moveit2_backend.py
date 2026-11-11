@@ -46,7 +46,13 @@ def test_authority_rejection_continues_ompl_and_deduplicates():
     c.native_evidence=[];c.native_verified=[];c.native_compliant=set();c.stack_carton_names=set()
     c.robot_state_validator=SimpleNamespace(base_support_obstacle_name='chassis',contact_target_name=None)
     c.native_tools=[]
-    c.collision_policy=SimpleNamespace(poc_pair_clearance=True,allows_stack_planning_contact=lambda _:False,compliant_cup_neighbor_contact_mode='ignore',to_mapping=lambda:{})
+    from unloading_sim.collision_policy import SimulationCollisionPolicy
+    c.collision_policy=SimulationCollisionPolicy(schema='m710_poc_pair_collision_policy_v4',
+        required_pair_clearance_m=.005,free_space_clearance_m=.0052,
+        boundary_mode='finite_frozen_scene_walls',compliant_cup_neighbor_contact_mode='ignore',
+        fixed_mount_contact_mode='qualified_planes_only')
+    c.robot=SimpleNamespace()  # No source-bound mounting permission in this protocol fixture.
+    c.planning_only=False
     c.budget=SimpleNamespace(stage_connection_attempts=2,receiver_runtime_clearance_reserve_m=.003,edge_resolution_rad=.04);c.flange_from_virtual_task_tcp=np.eye(4)
     c._deadline_reached=lambda:False;c._context_identity=lambda *a,**k:'fixed'
     def check(path,*a,**k):

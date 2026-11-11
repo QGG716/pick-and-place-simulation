@@ -1,0 +1,181 @@
+{
+  "schema": "s50_mount_contact_source_v1",
+  "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "source_base_mesh_path": "assets/robots/huayan_s50_2000/derived/base_s50_cad.obj",
+  "source_base_mesh_sha256": "4c7f384580f40a677d7e0a72ec188f018205f234e1b4f24154a3e31b1ed3d431",
+  "model_base_mesh_path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+  "model_base_mesh_sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+  "source_measurements_sha256": "98699bb9299053e7aeb8d412ceaafd05d5090eb00044e4ba46eb6daa48ebea73",
+  "support_y_CAD_m": -0.0030000000000000022,
+  "support_model_base_z_m": 0.0,
+  "support_face_indices": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    28
+  ],
+  "below_support_vertices": [
+    {
+      "source_obj_vertex_index": 14085,
+      "source_vertex_CAD_m": [
+        0.14679515,
+        -0.00300054,
+        0.05360862
+      ],
+      "source_underreach_m": 5.399999999976604e-07,
+      "source_face_index": 137,
+      "recreated_node_CAD_m": [
+        0.14679515142750504,
+        -0.003000541095599015,
+        0.053608621188616576
+      ],
+      "recreated_node_underreach_m": 5.410955990128169e-07,
+      "source_obj_rounding_error_m": 2.1565985192540913e-09,
+      "local_edge_evidence": [
+        {
+          "edge_index_in_face": 0,
+          "distance_to_recreated_node_m": 0.015726054726475702,
+          "edge_tolerance_m": 1.952430359357427e-07,
+          "nearest_edge_point_CAD_m": [
+            0.14,
+            -0.0029999999999999753,
+            0.039426424107606856
+          ]
+        },
+        {
+          "edge_index_in_face": 1,
+          "distance_to_recreated_node_m": 1.4059957129885115e-06,
+          "edge_tolerance_m": 5.550888241763058e-07,
+          "nearest_edge_point_CAD_m": [
+            0.14679624050526555,
+            -0.002999999999999973,
+            0.053607915533510145
+          ]
+        },
+        {
+          "edge_index_in_face": 2,
+          "distance_to_recreated_node_m": 0.0039712646075874755,
+          "edge_tolerance_m": 4.238732518654983e-10,
+          "nearest_edge_point_CAD_m": [
+            0.14901195715973395,
+            -0.002992699025971822,
+            0.056903564804367514
+          ]
+        },
+        {
+          "edge_index_in_face": 3,
+          "distance_to_recreated_node_m": 0.00019257153471651634,
+          "edge_tolerance_m": 9.381393107159686e-09,
+          "nearest_edge_point_CAD_m": [
+            0.14694844317037656,
+            -0.0029280216340649206,
+            0.05351737226944877
+          ]
+        },
+        {
+          "edge_index_in_face": 4,
+          "distance_to_recreated_node_m": 0.009927638536552135,
+          "edge_tolerance_m": 1e-10,
+          "nearest_edge_point_CAD_m": [
+            0.14180847955711012,
+            -0.001999999999999973,
+            0.04508277647472079
+          ]
+        }
+      ],
+      "qualified_edge_indices": [],
+      "within_local_edge_tolerance": false,
+      "distance_to_original_face_m": 1.4059957129885115e-06,
+      "nearest_original_face_point_CAD_m": [
+        0.14679624050526555,
+        -0.002999999999999973,
+        0.053607915533510145
+      ],
+      "recreated_node_distance_to_whole_base_m": 5.410955990421406e-07,
+      "source_obj_vertex_distance_to_whole_base_m": 5.400000000270744e-07,
+      "nearest_whole_base_point_for_source_vertex_CAD_m": [
+        0.14679515,
+        -0.002999999999999973,
+        0.05360862
+      ],
+      "support_face_distances": [
+        {
+          "face_index": 17,
+          "distance_m": 0.20745565495269597,
+          "nearest_point_CAD_m": [
+            0.03996909582218674,
+            -0.003000000000000007,
+            -0.12422850469661487
+          ]
+        },
+        {
+          "face_index": 18,
+          "distance_m": 0.08139276566205667,
+          "nearest_point_CAD_m": [
+            0.14000000000000007,
+            -0.0029999999999999814,
+            -0.02749999999999982
+          ]
+        },
+        {
+          "face_index": 19,
+          "distance_m": 5.400000000270744e-07,
+          "nearest_point_CAD_m": [
+            0.14679515,
+            -0.002999999999999973,
+            0.05360862
+          ]
+        },
+        {
+          "face_index": 20,
+          "distance_m": 0.1280584786964782,
+          "nearest_point_CAD_m": [
+            0.03996909582218485,
+            -0.002999999999999984,
+            0.12422850469661548
+          ]
+        },
+        {
+          "face_index": 21,
+          "distance_m": 0.23832885248778282,
+          "nearest_point_CAD_m": [
+            -0.0876004930303312,
+            -0.003000000000000008,
+            0.09672850469661408
+          ]
+        },
+        {
+          "face_index": 28,
+          "distance_m": 0.27846466298964945,
+          "nearest_point_CAD_m": [
+            -0.08760049303032977,
+            -0.0030000000000000256,
+            -0.09672850469661537
+          ]
+        }
+      ],
+      "model_base_vertex_index": 14085,
+      "model_base_vertex_m": [
+        0.14679515,
+        -0.05360862,
+        -5.399999999976604e-07
+      ],
+      "source_only_allowance_m": 5.399999999976604e-07
+    }
+  ],
+  "all_below_plane_vertices_accounted_for": true,
+  "source_file_modified": false,
+  "local_tolerance_qualification_passed": false,
+  "source_underreach_is_local_tessellation_artifact_not_physical_mount_translation": true,
+  "exact_base_lower_y_minus_support_m": -1.0000003039176142e-10,
+  "occt_confusion_precision_m": 1e-10,
+  "original_converter_linear_deflection_m": 0.0001,
+  "attribution_status": "CAD_SOURCE_TESSELLATION_ARTIFACT_REPRODUCED_NOT_EDGE_TOLERANCE_PERMISSION",
+  "additional_penetration_allowance_m": 0.0,
+  "arbitrary_base_penetration_allowed": false,
+  "whole_link_collision_exemption_allowed": false,
+  "method": "Original CAD face/node recreation and source-surface distances; reject global edge-tolerance shortcut; original mesh SHA fixed",
+  "scope": "Source evidence only; supporting footprint/contact and all other collisions require separate runtime proof"
+}

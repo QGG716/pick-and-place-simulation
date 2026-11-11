@@ -15,10 +15,12 @@ sys.path.insert(0, str(ROOT / 'src'))
 sys.path.insert(0, str(ROOT / 'tools'))
 from export_s50_model_viewer import build_data as static_scene_data, encode_payload, serialize_payload
 from unloading_sim.s50_cad_model import ensure_preview_assets, load_definition, load_preview_robot, read_obj
-from unloading_sim.robot_model_binding import rigid_transform
+from unloading_sim.robot_model_binding import RobotModelBinding, rigid_transform
+from unloading_sim.robot import URDFRobot
+from s50_viewer_diagnostics import diagnostic_data
 
 
-def viewer_scene_context(definition, root=ROOT, *, environment=None):
+def viewer_scene_context(definition, root=ROOT, *, environment=None, mounting_from_base=None):
     """Bind the FK root to this model's measured CAD frames and frozen world."""
     if environment is None:
         from unloading_sim.robot_replacement_layout import frozen_baseline_layout, freeze_non_robot_scene
@@ -32,8 +34,9 @@ def viewer_scene_context(definition, root=ROOT, *, environment=None):
     if not np.allclose(mount_from_base, np.eye(4), atol=1e-12, rtol=0):
         raise ValueError('VIEWER_FK_ROOT_REQUIRES_MODEL_BASE_AT_SIMULATION_MOUNT')
     mount = rigid_transform(environment['parameters']['world_from_physical_mount'], 'world_from_physical_mount')
+    actual_alignment = mount_from_base if mounting_from_base is None else rigid_transform(mounting_from_base, 'mounting_from_base')
     return dict(environment_fingerprint=environment['environment_fingerprint'],
-        world_from_physical_mount=mount.tolist(), world_from_model_base=(mount @ mount_from_base).tolist(),
+        world_from_physical_mount=mount.tolist(), world_from_model_base=(mount @ actual_alignment).tolist(),
         initial_carton_ids=environment['initial_carton_ids'])
 
 
@@ -88,6 +91,10 @@ def trajectory_data(path, definition, root=ROOT, *, expected_scene_context=None)
                 or timestamp < 0 or timestamp < previous):
             raise ValueError('INVALID_NATIVE_TRAJECTORY_POINT')
         previous = timestamp
+        if definition.get('schema') == 's50_task_model_v1':
+            limits = np.asarray([joint['position_limits_rad'] for joint in definition['joints']], dtype=float)
+            if np.any(q < limits[:,0]-1e-10) or np.any(q > limits[:,1]+1e-10):
+                raise ValueError('NATIVE_TRAJECTORY_OUTSIDE_VERIFIED_TASK_LIMITS')
     failure = data.get('failure_state')
     if failure is not None:
         q = np.asarray(failure.get('q_rad'), dtype=float)
@@ -99,13 +106,29 @@ def trajectory_data(path, definition, root=ROOT, *, expected_scene_context=None)
     return data
 
 
-def build_data(root=ROOT, trajectory=None):
-    root = Path(root).resolve()
+def load_viewer_model(root, task_config=None):
     ensure_preview_assets(root)
-    model = load_definition(root)
-    robot = load_preview_robot(root)
+    if task_config is None:
+        return load_definition(root), load_preview_robot(root), None
+    binding = RobotModelBinding.from_config(task_config)
+    source = (binding.config_path.parent / binding.data['generated_definition']).resolve()
+    model = json.loads(source.read_text(encoding='utf-8'))
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    if model.get('schema') != 's50_task_model_v1' or digest != binding.identity().get('model_definition_sha256'):
+        raise ValueError('VIEWER_REQUIRES_VERIFIED_GENERATED_TASK_MODEL')
+    model['definition_sha256'] = digest
+    # The view's FK root is the model base. Physical placement is applied once
+    # by viewer_scene_context, rather than baked into both FK and mesh group.
+    robot = URDFRobot.from_config(binding.config_path, mounting_world_transform=np.linalg.inv(binding.mounting_from_base))
+    return model, robot, binding
+
+
+def build_data(root=ROOT, trajectory=None, diagnostics=None, task_config=None):
+    root = Path(root).resolve()
+    model, robot, binding = load_viewer_model(root, task_config)
     data = static_scene_data(root=root)
-    context = viewer_scene_context(model, root, environment=data['environment'])
+    context = viewer_scene_context(model, root, environment=data['environment'],
+        mounting_from_base=None if binding is None else binding.mounting_from_base)
     # Display exactly the model's link-local visual meshes, not a substitute hull.
     parts = []
     for link in model['links']:
@@ -121,15 +144,24 @@ def build_data(root=ROOT, trajectory=None):
             float32_display_max_coordinate_error_m=float(np.max(np.abs(xyz.astype(float)-xyz64))),
             positions_b64=base64.b64encode(xyz.tobytes()).decode('ascii'),
             indices_b64=base64.b64encode(indices.tobytes()).decode('ascii')))
-    q = np.zeros(6)
-    data.update(schema='s50_articulated_cad_viewer_v1', model_status='CAD_PREVIEW_READY_FORMAL_PLANNING_NOT_VERIFIED',
+    ranges = np.asarray([[-np.pi, np.pi]]*6) if binding is None else binding.joint_limits
+    q = np.clip(np.zeros(6), ranges[:,0], ranges[:,1])
+    status = ('CAD_PREVIEW_READY_FORMAL_PLANNING_NOT_VERIFIED' if binding is None
+        else 'TASK_LIMIT_MODEL_LOADED_TASK_EXECUTION_NOT_QUALIFIED')
+    data.update(schema='s50_articulated_cad_viewer_v1', model_status=status,
         model_definition=model, articulated_model=model, local_parts=parts, joint_controls_enabled=True,
         joint_controls_disabled_reason=None, preview_q0_rad=q.tolist(),
-        preview_slider_ranges_rad=[[-float(np.pi), float(np.pi)]] * 6,
-        preview_range_semantics='DISPLAY_ONLY_NOT_MECHANICAL_LIMITS',
+        preview_slider_ranges_rad=ranges.tolist(),
+        preview_range_semantics='DISPLAY_ONLY_NOT_MECHANICAL_LIMITS' if binding is None else 'VERIFIED_CONTROLLER_TO_SIMULATION_LIMIT_MAPPING',
+        task_model_binding=None if binding is None else binding.identity(),
+        joint_ranges_verified=binding is not None,
         zero_core_frames={name: frame.tolist() for name, frame in robot.named_link_frames(q).items()},
         viewer_scene_context=context,
         playback=trajectory_data(trajectory, model, root, expected_scene_context=context),
+        diagnostics=diagnostic_data(diagnostics, model, robot, context, validate_scene_context,
+            expected_obstacles=next(row['entities'] for row in data['environment']['height_samples']
+                if abs(row['height_m']-data['environment']['parameters']['initial_belt_height_m'])<1e-12),
+            initial_height_m=data['environment']['parameters']['initial_belt_height_m']),
         frame_semantics=dict(zero='CAD_ASSEMBLY_REFERENCE_NOT_CONTROLLER_ZERO',
             positive='EXPLICIT_RIGHT_HAND_RULE_ABOUT_MEASURED_AXES',
             world_overlay='FIXED_MOUNT_POINT_WITH_SIMULATION_CLOCKING_CONVENTION_NOT_VERIFIED_INSTALLATION',
@@ -160,16 +192,21 @@ def write_viewer(output, data, root=ROOT):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT/'docs/experiments/s50_cad_motion_20261110/viewer.html')
+    parser.add_argument('--output', type=Path, default=ROOT/'docs/experiments/s50_task_collision_20261111/viewer.html')
     parser.add_argument('--trajectory-report', type=Path)
+    parser.add_argument('--diagnostics-report', type=Path)
+    parser.add_argument('--task-config', type=Path, help='Generated task/model.yaml; never the ungenerated input config')
     args = parser.parse_args(argv)
-    data = build_data(trajectory=args.trajectory_report)
+    data = build_data(trajectory=args.trajectory_report, diagnostics=args.diagnostics_report, task_config=args.task_config)
     write_viewer(args.output, data)
     report = dict(schema=data['schema'], html=str(args.output), model_definition_sha256=data['model_definition']['definition_sha256'],
         model_status=data['model_status'], joint_controls_enabled=True, zero_is_controller_zero=False,
-        slider_ranges_are_mechanical_limits=False, actual_trajectory_status=data['playback']['status'],
+        slider_ranges_are_mechanical_limits=data['joint_ranges_verified'], actual_trajectory_status=data['playback']['status'],
         playback_scope=data['playback']['playback_scope'], environment_playback=data['playback']['environment_playback'],
         trajectory_scene_context_verified=data['playback']['scene_context_verified'],
+        collision_diagnostic_pose_count=len(data['diagnostics']['poses']),
+        collision_diagnostic_report_sha256=data['diagnostics'].get('source_report_sha256'),
+        diagnostic_fk_crosscheck=data['diagnostics'].get('viewer_fk_crosscheck'),
         parts=[{k:v for k,v in p.items() if not k.endswith('_b64')} for p in data['local_parts']],
         float32_display_max_coordinate_error_m=max(p['float32_display_max_coordinate_error_m'] for p in data['local_parts']),
         layout_difference=data['layout_difference'], payload_sha256=hashlib.sha256(serialize_payload(data)).hexdigest(),

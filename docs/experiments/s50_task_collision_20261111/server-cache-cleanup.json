@@ -1,0 +1,65 @@
+{
+  "schema": "s50_authorized_server_cache_cleanup_v1",
+  "timestamp": "2026-11-11T02:09:36.779413+00:00",
+  "reason": "User requested server space cleanup; remove reproducible downloaded model/pip caches only",
+  "before": {
+    "/": {
+      "total": 32212254720,
+      "used": 29388845056,
+      "free": 2823409664
+    },
+    "/root/autodl-tmp": {
+      "total": 64424509440,
+      "used": 64424304640,
+      "free": 204800
+    }
+  },
+  "targets": [
+    {
+      "path": "/root/autodl-tmp/huggingface/models--IDEA-Research--grounding-dino-base",
+      "file_count": 8,
+      "apparent_bytes": 997261892,
+      "removed": true
+    },
+    {
+      "path": "/root/autodl-tmp/huggingface/models--Ruicheng--moge-2-vits-normal",
+      "file_count": 1,
+      "apparent_bytes": 140550416,
+      "removed": true
+    },
+    {
+      "path": "/root/autodl-tmp/huggingface/models--facebook--sam-vit-base",
+      "file_count": 3,
+      "apparent_bytes": 374986512,
+      "removed": true
+    },
+    {
+      "path": "/root/.cache/pip",
+      "file_count": 0,
+      "apparent_bytes": 0,
+      "removed": true
+    }
+  ],
+  "preserved": [
+    "FANUC workspaces and checkpoints",
+    "S50 sources and evidence",
+    "ECO65 outputs",
+    "installed Isaac/ROS/Pinocchio environments"
+  ],
+  "after": {
+    "/": {
+      "total": 32212254720,
+      "used": 29388849152,
+      "free": 2823405568
+    },
+    "/root/autodl-tmp": {
+      "total": 64424509440,
+      "used": 63082786816,
+      "free": 1341722624
+    }
+  },
+  "freed_bytes": {
+    "/": -4096,
+    "/root/autodl-tmp": 1341517824
+  }
+}

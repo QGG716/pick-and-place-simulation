@@ -1,0 +1,20 @@
+{
+  "schema": "s50_offline_viewer_delivery_validation_v1",
+  "browser_visual_validation": "NOT_COMPLETED_CUA_STOPPED_URL_CONFIDENCE_CHECK",
+  "browser_host_status": "UNAVAILABLE",
+  "stop_reason": "Computer Use could not determine current browser URL with sufficient confidence; no alternate UI automation attempted",
+  "html_sha256": "45d6b46ea66b1ecb2b60492ce1afbee644ffcab432d1f57f2193d23d4689a3ec",
+  "javascript_syntax": "PASS",
+  "compiled_script_count": 2,
+  "gzip_payload_decode": "PASS",
+  "actual_diagnostic_pose_count": 16,
+  "actual_diagnostic_javascript_fk_frames": 128,
+  "actual_diagnostic_javascript_fk_max_error": 8.881784197001252e-16,
+  "environment_entity_count": 148,
+  "initial_carton_count": 40,
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+  "diagnostic_source_report_sha256": "5ff77bee97c1835782d29868352eb78468fddc578c9aadf7e94b6a3105aa7fbd",
+  "actual_native_trajectory": "NOT_RUN",
+  "scope": "STATIC_ARTIFACT_AND_PURE_JS_FK_ONLY_NO_BROWSER_OR_WEBGL_EXECUTION"
+}

@@ -1,0 +1,603 @@
+{
+  "schema": "s50_task_model_generation_v1",
+  "status": "MODEL_NOT_READY",
+  "task_model_generated": false,
+  "task_definition_sha256": null,
+  "source_cad_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "source_assets": {
+    "status": "PASS",
+    "verified": [
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1_collision_patch_0.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2_collision_patch_1.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+      "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj"
+    ],
+    "materialized": [],
+    "definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036"
+  },
+  "input_config": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\configs\\robots\\huayan_s50_2000.yaml",
+  "input_config_sha256": "092b33b9f2bfa162a79c7226543505cc6c4a527827ff350deaf88f99adbf6886",
+  "output_directory": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\assets\\robots\\huayan_s50_2000\\task",
+  "missing": [
+    "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J1.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED",
+    "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J2.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED",
+    "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J3.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED",
+    "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J4.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED",
+    "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J5.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED",
+    "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+    "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+    "controller_mapping.J6.source[0].HASHED_LOCAL_REFERENCE_AND_LOCATOR_REQUIRED"
+  ],
+  "controller_limit_mapping": {
+    "ready": false,
+    "equation": "q_controller = sign * q_sim + offset_rad",
+    "axes": [
+      {
+        "axis": "J1",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J2",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -3.316125578789226,
+          0.17453292519943295
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J3",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -2.792526803190927,
+          2.792526803190927
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J4",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J5",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      },
+      {
+        "axis": "J6",
+        "verified": false,
+        "sign": null,
+        "offset_rad": null,
+        "source": null,
+        "controller_limits_rad": [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        "simulation_limits_rad": null,
+        "missing": [
+          "REFERENCE_NOT_VERIFIED",
+          "CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+        ]
+      }
+    ],
+    "converted_limits_rad": {},
+    "missing": [
+      "controller_mapping.J1.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J1.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J2.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J2.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J3.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J3.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J4.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J4.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J5.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J5.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE",
+      "controller_mapping.J6.REFERENCE_NOT_VERIFIED",
+      "controller_mapping.J6.CONTROLLER_SIGN_MUST_BE_PLUS_OR_MINUS_ONE"
+    ],
+    "display_ranges_are_not_mechanical_limits": true
+  },
+  "timing": {
+    "ready": false,
+    "status": "NOT_READY",
+    "manufacturer_confirmed": false,
+    "version_conflict_unresolved": true,
+    "assumption": null,
+    "missing": [
+      "joint_velocity_version_conflict.verified_resolution_source",
+      "timing.INVALID_joint_acceleration_limits_rad_s2",
+      "timing.joint_acceleration_source.SOURCE_MISSING"
+    ],
+    "blocks_static_fk": false,
+    "blocks_geometric_search": false
+  },
+  "physical_frame_derivations": {
+    "source_cad_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+    "CAD_from_simulation_mount": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        -0.0030000000000000022
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "simulation_mount_from_model_base": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "interpretation": "CAD_REFERENCE_COORDINATE_DERIVATION_NOT_INSTALLED_CLOCKING",
+    "physical_mount_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "measured_model_frames": {
+      "mount": {
+        "link": "s50_base",
+        "CAD_from_frame_zero": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            -0.0030000000000000022
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "origin": "MEASURED_SUPPORT_PLANE_AND_J1_AXIS_INTERSECTION",
+        "axes": "X=CAD+X; Y=CAD-Z; Z=CAD+Y",
+        "clocking_status": "SIMULATION_CONVENTION_NOT_MACHINE_VERIFIED",
+        "support_plane_source": {
+          "y_CAD_m": -0.0030000000000000022,
+          "up_CAD": [
+            0,
+            1,
+            0
+          ],
+          "axis_intersection_CAD_m": [
+            0,
+            -0.0030000000000000022,
+            0
+          ],
+          "support_faces": [
+            {
+              "face_index": 17,
+              "area_m2": 0.002655504837061522,
+              "surface_centroid_m": [
+                6.374726968398227e-16,
+                -0.0030000000000000152,
+                -0.14264192647611507
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            },
+            {
+              "face_index": 18,
+              "area_m2": 0.002320510365915363,
+              "surface_centroid_m": [
+                0.12003361244075963,
+                -0.0029999999999999892,
+                -0.07604583419272676
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            },
+            {
+              "face_index": 19,
+              "area_m2": 0.0023205100124620587,
+              "surface_centroid_m": [
+                0.12003361297680072,
+                -0.0029999999999999753,
+                0.07604583761737262
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            },
+            {
+              "face_index": 20,
+              "area_m2": 0.0026555048370615207,
+              "surface_centroid_m": [
+                -1.650421904376628e-15,
+                -0.0029999999999999892,
+                0.14264192647611504
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            },
+            {
+              "face_index": 21,
+              "area_m2": 0.0026555048370614644,
+              "surface_centroid_m": [
+                -0.12353153197306825,
+                -0.0030000000000000165,
+                0.07132096323805694
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            },
+            {
+              "face_index": 28,
+              "area_m2": 0.002655504837061521,
+              "surface_centroid_m": [
+                -0.12353153197306767,
+                -0.0030000000000000296,
+                -0.07132096323805764
+              ],
+              "origin_m": [
+                1.7524159889135272e-17,
+                -0.0030000000000000022,
+                3.5215830403972466e-17
+              ],
+              "normal": [
+                1.6729986545114403e-16,
+                -1.0,
+                9.180436958645251e-17
+              ]
+            }
+          ],
+          "interpretation": "Lowest parallel support surfaces of the base (not the recessed centre plane at Y=0). Mounting clocking and controller-base frame remain unverified."
+        }
+      },
+      "flange": {
+        "link": "s50_flange",
+        "CAD_from_frame_zero": [
+          [
+            3.0978751951332657e-16,
+            -9.860761315262648e-32,
+            -1.0,
+            -0.3884998016477048
+          ],
+          [
+            1.0,
+            0.0,
+            3.0978751951332657e-16,
+            2.2802999999999907
+          ],
+          [
+            -3.054740788368183e-47,
+            -1.0,
+            9.860761315262648e-32,
+            -1.0286044798081286e-16
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "origin": "MEASURED_DISTAL_J6_FACE_ORIGIN",
+        "z_axis": "MEASURED_OUTWARD_FACE_NORMAL",
+        "x_axis": "PROJECTION_OF_CAD+Y_ON_FLANGE_PLANE_SIMULATION_CLOCKING",
+        "source_face_index": 10,
+        "controller_tool0_verified": false
+      },
+      "controller_tool0": null,
+      "physical_tool_mount": null,
+      "virtual_tcp": null
+    },
+    "original_tool_intrinsic_frames": {
+      "T_tool_mount_reference_virtual_task_tcp": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.45
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_tool_mount_reference_uncompressed_cup_plane": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.4275
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "T_tool_mount_reference_nominal_compressed_contact": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.4175
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          -1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "tool_connector_extension_m": 0.2,
+    "actual_tool_contact_target_world": [
+      [
+        -0.0,
+        0.0,
+        1.0,
+        -0.2
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0,
+        1.5
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "world_from_task_model_base": null,
+    "flange_from_project_tool_mount": null,
+    "flange_from_tool_tcp": null,
+    "equations": {
+      "world_from_task_model_base": "world_from_physical_mount @ verified_mounting_from_base",
+      "flange_from_tool_tcp": "verified_flange_from_project_tool_mount @ T_tool_mount_reference_virtual_task_tcp"
+    },
+    "missing_references": [
+      {
+        "item": "controller_mapping.J1..J6",
+        "required": "For every axis: controller reading at the supplied CAD reference pose, plus a signed positive-jog reference showing parent and child orientation, or a manufacturer frame/zero/sign table tied to this S50 revision.",
+        "existing_manual": "S-series-mechanical.pdf PDF pages 25 and 33 give dimensions/range drawings, not a six-axis controller-angle reading for this CAD pose."
+      },
+      {
+        "item": "controller_mapping.J2",
+        "required": "A labelled S50 side view or recorded reference pose giving J2 controller angle and positive direction relative to CAD +X axis. The published [-190,10] degrees must not be attached directly to CAD q2=0."
+      },
+      {
+        "item": "controller_mapping.J3",
+        "required": "A labelled elbow reference giving J3 controller angle at the measured straight CAD arrangement and the positive relative rotation. Symmetric ±160 degrees alone does not determine zero or sign."
+      },
+      {
+        "item": "installation.mount_clocking",
+        "required": "Identify the installation +X direction on the S50 base through a labelled cable exit, dowel or bolt-pattern datum, and match it to the frozen physical installation orientation; PDF page 55 gives hole sizes, not this correspondence."
+      },
+      {
+        "item": "tool_interface.physical_connection",
+        "required": "Mating drawing or measured assembly identifying S50 flange plane, existing 200 mm extension/tool mounting plane, axial separation and bolt-pattern clocking; identify any actual adapter geometry. PDF page 56 flange dimensions alone do not establish this assembly."
+      }
+    ],
+    "physical_adapter_added": false,
+    "tool_connected": false
+  },
+  "installed_task_qualified": false,
+  "native_worker_launched": false,
+  "dynamics_qualified": false
+}

@@ -518,6 +518,9 @@ def model_request(connector, scene, *, asset_root=None, seed=71070, model_bindin
                       "native_POC_free_pair_clearance_search_and_edges_plus_existing_authority"))
     if binding is not None:
         identity['robot_model_binding'] = binding.identity()
+        from .mount_contact import mount_contact_contract
+        mount_contract=mount_contact_contract(connector.robot)
+        if mount_contract is not None:identity['fixed_base_contact_contract']=mount_contract
         identity['native_frame_roles'] = {key: value for key, value in native_roles.items() if key != 'urdf_parser_compatibility'}
         identity['native_urdf_parser_compatibility'] = native_roles['urdf_parser_compatibility']
         identity['dynamics_qualified'] = False

@@ -83,6 +83,8 @@ def build_configured_layout_trajectory_connector(*, lightweight_robot, tool_intr
         mesh = PinocchioHppFclBackend.from_binding(binding, output_dir=output_dir,
             project_root=project_root, world_from_base=lightweight_robot.base_transform,
             tip_from_tcp=lightweight_robot.tip_from_tcp)
+        from .mount_contact import use_actual_mesh_backend
+        use_actual_mesh_backend(lightweight_robot,mesh)
         for index, q in enumerate(binding.fk_probe_configurations()):
             errors = dict(
                 flange=float(np.max(np.abs(physical_flange_frame(mesh, q)-physical_flange_frame(lightweight_robot, q)))),
@@ -195,6 +197,9 @@ def make_configured_context(config, *, root, output, admission):
     if not difference['passed'] or intrinsic['environment_fingerprint'] != admission['environment_fingerprint']:
         raise ValueError('S50_ADMISSION_FROZEN_ENVIRONMENT_CHANGED')
     robot = layout.robot()
+    from .mount_contact import bind_mount_contact
+    bind_mount_contact(robot,root=root,world_from_physical_mount=layout.physical_mount_transform(),
+        expected_plinth=next(box for box in layout.fixed_components() if box.name=='mount_plinth'))
     policy = load_layout_motion_policy(root/'configs/validation/m710id70_proof_of_concept.yaml')
     frame = configured_tool_frames(binding, intrinsic['tool_intrinsic'])
     tool = ToolFrameContract(frame['virtual_task_tcp'], frame['uncompressed_cup_plane'],
@@ -332,6 +337,7 @@ def configured_scene(context, initial):
 
 def export_native_trajectory(plan, binding, verification, *, scene_context):
     """Export only a verified current-run native plan, never IK probe motion."""
+    binding.verify_source_unchanged()
     if verification.get('status') != 'PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED':
         raise ValueError('NATIVE_TRAJECTORY_REQUIRES_CYCLE_VERIFICATION')
     mount=rigid_transform(scene_context.get('world_from_physical_mount'),'trajectory.world_from_physical_mount')
@@ -344,6 +350,9 @@ def export_native_trajectory(plan, binding, verification, *, scene_context):
     declared = binding.data.get('generated_definition')
     if not declared: raise ValueError('TRAJECTORY_MODEL_DEFINITION_PATH_MISSING')
     definition = (binding.config_path.parent/declared).resolve()
+    if (binding.identity().get('model_definition_sha256') is not None and
+            binding.identity()['model_definition_sha256']!=hashlib.sha256(definition.read_bytes()).hexdigest()):
+        raise ValueError('TRAJECTORY_MODEL_DEFINITION_CHANGED')
     points=[]; elapsed=0.; native_stages=[]
     for stage in plan['stages']:
         data=stage.get('points', [])

@@ -133,3 +133,5 @@ docs/experiments/s50_cad_motion_20261110/** -text -whitespace
 tools/s50_kinematics.js text eol=lf
 tools/check_s50_viewer_fk.js text eol=lf
 tools/s50_cad_motion_viewer.html text eol=lf
+assets/robots/huayan_s50_2000/task/** -text -whitespace
+docs/experiments/s50_task_collision_20261111/** -text -whitespace

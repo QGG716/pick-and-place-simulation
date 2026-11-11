@@ -54,6 +54,11 @@ class RobotModelBinding:
         if not path.is_file():
             raise ModelNotReady(path.stem, ['config:FILE_MISSING'])
         data = yaml.safe_load(path.read_text(encoding='utf-8'))
+        if data.get('generated_definition_schema') == 's50_task_model_v1':
+            # Task and preview may share FK geometry while having different
+            # real position limits. Bind the exact generated definition too.
+            from .s50_task_model import verify_task_definition
+            verify_task_definition(path, data)
         model = data.get('model_id', data.get('model', path.stem))
         kin = data.get('kinematics') or {}; missing = []
         required = ('urdf_path', 'srdf_path', 'active_joint_names', 'base_link', 'flange_link', 'tip_link')
@@ -184,6 +189,16 @@ class RobotModelBinding:
 
     def _current_asset_hashes(self):
         files = {'config': self.config_path, 'urdf': self.urdf_path, 'srdf': self.srdf_path}
+        if self.data.get('generated_definition_schema') == 's50_task_model_v1':
+            import json
+            definition_path = (self.config_path.parent/self.data['generated_definition']).resolve()
+            definition = json.loads(definition_path.read_text(encoding='utf-8'))
+            files['task_definition'] = definition_path
+            files['task_source_input_config'] = (definition_path.parent/definition['source_input_config']['path']).resolve()
+            files['task_source_cad_definition'] = (definition_path.parent/definition['source_cad_definition_path']).resolve()
+            for label, entries in definition['mapping_reference_files'].items():
+                for index, entry in enumerate(entries):
+                    files[f'task_reference:{label}:{index}'] = (definition_path.parent/entry['path']).resolve()
         for mesh in ET.parse(self.urdf_path).getroot().iter('mesh'):
             uri = mesh.get('filename', '')
             files['mesh:'+uri] = self.resolve_mesh(uri)
@@ -200,12 +215,16 @@ class RobotModelBinding:
     def identity(self):
         # Identity describes the model actually loaded, not whatever mutable
         # files happen to exist later. Native construction revalidates sources.
-        return dict(model_id=self.model_id, config_sha256=self.source_asset_sha256['config'],
+        result = dict(model_id=self.model_id, config_sha256=self.source_asset_sha256['config'],
             urdf_sha256=self.source_asset_sha256['urdf'], srdf_sha256=self.source_asset_sha256['srdf'],
             mesh_sha256={key.removeprefix('mesh:'): value for key, value in self.source_asset_sha256.items() if key.startswith('mesh:')},
             active_joint_names=list(self.active_joint_names), base_link=self.base_link,
             flange_link=self.flange_link, tip_link=self.tip_link, mounting_from_base=self.mounting_from_base.tolist(),
             planning_group='manipulator', inertials_required=False, effort_limits_required=False)
+        if 'task_definition' in self.source_asset_sha256:
+            result.update(model_definition_schema='s50_task_model_v1',
+                model_definition_sha256=self.source_asset_sha256['task_definition'])
+        return result
 
     def fk_probe_configurations(self):
         low, high = self.joint_limits.T

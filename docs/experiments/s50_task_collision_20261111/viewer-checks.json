@@ -1,0 +1,110 @@
+{
+  "schema": "s50_articulated_cad_viewer_v1",
+  "html": "docs/experiments/s50_task_collision_20261111/viewer.html",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "model_status": "CAD_PREVIEW_READY_FORMAL_PLANNING_NOT_VERIFIED",
+  "joint_controls_enabled": true,
+  "zero_is_controller_zero": false,
+  "slider_ranges_are_mechanical_limits": false,
+  "actual_trajectory_status": "NOT_RUN",
+  "playback_scope": "robot_joint_only",
+  "environment_playback": "initial_scene_static_reference",
+  "trajectory_scene_context_verified": false,
+  "collision_diagnostic_pose_count": 16,
+  "collision_diagnostic_report_sha256": "5ff77bee97c1835782d29868352eb78468fddc578c9aadf7e94b6a3105aa7fbd",
+  "diagnostic_fk_crosscheck": "PASS_ALL_RECORDED_LINK_FRAMES",
+  "parts": [
+    {
+      "name": "s50_base",
+      "cad_body": "base_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+      "sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+      "vertices": 46063,
+      "triangles": 92180,
+      "float32_display_max_coordinate_error_m": 7.450065619973856e-09
+    },
+    {
+      "name": "s50_link_1",
+      "cad_body": "j1_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+      "sha256": "b92ba8ca4f4e76eaa0862cc577204715eb77d6645e5f307f7f81815568152c68",
+      "vertices": 168030,
+      "triangles": 335737,
+      "float32_display_max_coordinate_error_m": 7.450561556598956e-09
+    },
+    {
+      "name": "s50_link_2",
+      "cad_body": "j2_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+      "sha256": "e1fce1e6e867e4f1070b5c88efbcb0a0104eedf12c2c4ea69c095eba5af226bb",
+      "vertices": 139401,
+      "triangles": 278573,
+      "float32_display_max_coordinate_error_m": 5.960418691941527e-08
+    },
+    {
+      "name": "s50_link_3",
+      "cad_body": "j3_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+      "sha256": "23c8a80412ab7074ad831552b60a5bf769afdde97649fabf58504c47fe89b7f4",
+      "vertices": 167913,
+      "triangles": 335732,
+      "float32_display_max_coordinate_error_m": 5.958678284123664e-08
+    },
+    {
+      "name": "s50_link_4",
+      "cad_body": "j4_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+      "sha256": "0a33f795b9a662d4ce3278881bcb4079a456ea3ac1b4307e2d5b94581736b44b",
+      "vertices": 60959,
+      "triangles": 121916,
+      "float32_display_max_coordinate_error_m": 3.725118435937702e-09
+    },
+    {
+      "name": "s50_link_5",
+      "cad_body": "j5_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+      "sha256": "47645d680356ea05a7a56822f623691f7be7313944af429710e00cbecb10dc74",
+      "vertices": 61128,
+      "triangles": 122252,
+      "float32_display_max_coordinate_error_m": 3.7252076701133063e-09
+    },
+    {
+      "name": "s50_link_6",
+      "cad_body": "j6_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj",
+      "sha256": "3fba47bd6c749db84a3e06acf1886d86a33f66f3c36cc960f4bb1f2907f18402",
+      "vertices": 13146,
+      "triangles": 26286,
+      "float32_display_max_coordinate_error_m": 3.6899283628599733e-09
+    }
+  ],
+  "float32_display_max_coordinate_error_m": 5.960418691941527e-08,
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "after_environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1.0,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "payload_sha256": "5f35e47222c77ce3e4ad73b3ad116a1971905b38c093257ce3ca22b6cd47f447",
+  "html_sha256": "45d6b46ea66b1ecb2b60492ce1afbee644ffcab432d1f57f2193d23d4689a3ec",
+  "browser_visual_validation": "NOT_COMPLETED_CUA_STOPPED_URL_CONFIDENCE_CHECK",
+  "browser_validation_report": "browser-validation.json",
+  "actual_diagnostic_javascript_fk_max_error": 8.881784197001252e-16
+}

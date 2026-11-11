@@ -1,0 +1,49 @@
+{
+  "scope": "Targeted runs overlap; counts must not be added as unique tests",
+  "runs": [
+    {
+      "file": "outputs\\s50_task_collision_20261111\\targeted-local-tests.xml",
+      "sha256": "7c4a95edf55b9e2d1a4da635ef6905cd6b1cab29238a029fa3055fe304291a23",
+      "tests": 154,
+      "failures": 6,
+      "errors": 15,
+      "skipped": 0
+    },
+    {
+      "file": "outputs\\s50_task_collision_20261111\\cross-drive-and-connector-tests.xml",
+      "sha256": "aa9625d16c72b5d72b30ec7710663a72c1b471b83112b880e00b422bf6046189",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "outputs\\s50_task_collision_20261111\\final-local-tests.xml",
+      "sha256": "29588f5c1710debec9c3ac276219e3e5839ba27a197b2ed76e37f971a70e4bd3",
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "outputs\\s50_task_collision_20261111\\corrected-runtime-contract-tests.xml",
+      "sha256": "9c7fcf25fadc6f73715e3b2447adab74198ea1f60504b75629a3bde5084ee001",
+      "tests": 65,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "outputs\\s50_task_collision_20261111\\task-viewer-final-tests.xml",
+      "sha256": "65ea2fe251165d10172384e9e8668f7ece97d09a11e0a3d66894736aa1d1b765",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "retained_failures": {
+    "targeted-local-tests.xml": "Windows cross-drive relpath fixed; old protocol fixture updated to actual fail-closed policy",
+    "corrected-runtime-contract-tests.xml": "Task diagnostic fixture lacked solid definition; fixed fixture and added solid-removal rejection test; final 16 pass"
+  }
+}

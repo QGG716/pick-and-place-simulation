@@ -1,0 +1,611 @@
+{
+  "schema": "s50_mount_runtime_comparison_v1",
+  "qualification_scope": "CAD_DIAGNOSTIC_NOT_TASK",
+  "status": "THREE_MOUNT_CASE_OUTCOMES_AGREE",
+  "sources": {
+    "native": {
+      "path": "docs/experiments/s50_task_collision_20261111/native-mount-report.json",
+      "sha256": "7b4382898c8aebb270479a3dcdcef9e580ea3cbbb7cdb404a59bc9e3e53d131e"
+    },
+    "coal": {
+      "path": "docs/experiments/s50_task_collision_20261111/coal-mount-cases.json",
+      "sha256": "46592e9c2ccc4038e860361d1142942de9096fe274fc3950ef24dcbba065230f"
+    },
+    "mesh_audit": {
+      "path": "docs/experiments/s50_task_collision_20261111/mesh-surface-audit.json",
+      "sha256": "7b1504847b8a317f49257364f28482c16e17db88b4873b9768581ab4847aac19"
+    },
+    "source_mount": {
+      "path": "assets/robots/huayan_s50_2000/generated/mount_contact_source.json",
+      "sha256": "446fb43b1b51fa7738513a0686fd30d1273dcbce4f624123ff4312535619b689"
+    },
+    "native_input": {
+      "path": "outputs/s50_task_collision_20261111/mount/native-input.json",
+      "sha256": "3858a81c03f969b5e5ff999ee54dfbe8d0053bcf4576f8dff5b635a8cabe0159"
+    }
+  },
+  "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "base_mesh_sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+  "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+  "initial_carton_count": 40,
+  "world_from_physical_mount": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      -1.85
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.14999999999999997
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.9
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "tool_installed": false,
+  "installation_verified": false,
+  "task_planning_performed": false,
+  "whole_pose_acceptance_evaluated": false,
+  "fixed_base_contact_pass_is_not_whole_pose_pass": true,
+  "all_21_link_support_collision_booleans_agree": true,
+  "all_21_link_support_permissions_agree": true,
+  "active_link_support_collision_retained_without_permission": true,
+  "source_match_scope": "One hash-bound reproduced base mesh vertex 14085; source undershoot 0.54 micrometre. No additional physical installation penetration allowance.",
+  "mesh_audit_scope": {
+    "original_collision_mesh_count": 7,
+    "additive_patch_count": 2,
+    "previously_unmeshed_face_accounting_complete": true,
+    "collision_acceptance_qualified": false,
+    "geometry_inflation_m": 0.0
+  },
+  "cases": [
+    {
+      "case_id": "normal_contact",
+      "coal_pose_id": "source_mount_normal",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_installation_z_delta_m": 0.0,
+      "coal_fixed_base_contact_passed": true,
+      "native_fixed_base_contact_passed": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "matched_source_vertices": 1,
+      "coal_minimum_raw_base_support_distance_m": -5.4000003044119e-07,
+      "native_minimum_raw_base_support_distance_m": -5.4000003044119e-07,
+      "minimum_base_distance_absolute_difference_m": 0.0,
+      "coal_contact_area_m2": 0.01525877513740855,
+      "native_contact_area_m2": 0.015258774481966933,
+      "contact_area_absolute_difference_m2": 6.55441617647412e-10,
+      "link_support_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": true,
+          "native_raw_intersects": true,
+          "coal_permission_applies": true,
+          "native_permission_applies": true,
+          "coal_raw_surface_distances_m": [
+            0.0
+          ],
+          "coal_geometry_names": [
+            "s50_base_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.13930000619888303,
+            0.34869987772703165
+          ],
+          "coal_geometry_names": [
+            "s50_link_1_0",
+            "s50_link_1_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.15381536892437597,
+            0.16594732859290695
+          ],
+          "coal_geometry_names": [
+            "s50_link_2_0",
+            "s50_link_2_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            1.0793070386529056
+          ],
+          "coal_geometry_names": [
+            "s50_link_3_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.0422999967217343
+          ],
+          "coal_geometry_names": [
+            "s50_link_4_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.211300003099432
+          ],
+          "coal_geometry_names": [
+            "s50_link_5_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.2243010874270133
+          ],
+          "coal_geometry_names": [
+            "s50_link_6_0"
+          ]
+        }
+      ],
+      "installation_verified": false,
+      "whole_pose_accepted": false,
+      "whole_pose_acceptance_evaluated": false
+    },
+    {
+      "case_id": "real_base_penetration",
+      "coal_pose_id": "negative_fixture_base_down_1mm",
+      "q_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_installation_z_delta_m": -0.001,
+      "coal_fixed_base_contact_passed": false,
+      "native_fixed_base_contact_passed": false,
+      "allowed_pairs": [],
+      "failures": [
+        "mounting_axis_and_frame_unchanged",
+        "measured_plane_is_support_top",
+        "full_contact_region_supported",
+        "no_unexplained_base_penetration"
+      ],
+      "matched_source_vertices": 1,
+      "coal_minimum_raw_base_support_distance_m": -0.001000540000030442,
+      "native_minimum_raw_base_support_distance_m": -0.001000540000030442,
+      "minimum_base_distance_absolute_difference_m": 0.0,
+      "coal_contact_area_m2": 0.01525877513740855,
+      "native_contact_area_m2": 0.015258774481966933,
+      "contact_area_absolute_difference_m2": 6.55441617647412e-10,
+      "link_support_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": true,
+          "native_raw_intersects": true,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            -0.0004999999762512475
+          ],
+          "coal_geometry_names": [
+            "s50_base_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.13830000619888314,
+            0.34769987772703176
+          ],
+          "coal_geometry_names": [
+            "s50_link_1_0",
+            "s50_link_1_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.15281536895063025,
+            0.16501871011101238
+          ],
+          "coal_geometry_names": [
+            "s50_link_2_0",
+            "s50_link_2_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            1.078307038652906
+          ],
+          "coal_geometry_names": [
+            "s50_link_3_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.041299996721735
+          ],
+          "coal_geometry_names": [
+            "s50_link_4_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.210300003099432
+          ],
+          "coal_geometry_names": [
+            "s50_link_5_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            2.2233010879162793
+          ],
+          "coal_geometry_names": [
+            "s50_link_6_0"
+          ]
+        }
+      ],
+      "installation_verified": false,
+      "whole_pose_accepted": false,
+      "whole_pose_acceptance_evaluated": false
+    },
+    {
+      "case_id": "moving_link_plinth_probe",
+      "coal_pose_id": "active_link_probe_j2_2.4",
+      "q_rad": [
+        0.0,
+        2.4,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_installation_z_delta_m": 0.0,
+      "coal_fixed_base_contact_passed": true,
+      "native_fixed_base_contact_passed": true,
+      "allowed_pairs": [
+        [
+          "s50_base",
+          "mount_plinth"
+        ]
+      ],
+      "failures": [],
+      "matched_source_vertices": 1,
+      "coal_minimum_raw_base_support_distance_m": -5.4000003044119e-07,
+      "native_minimum_raw_base_support_distance_m": -5.4000003044119e-07,
+      "minimum_base_distance_absolute_difference_m": 0.0,
+      "coal_contact_area_m2": 0.01525877513740855,
+      "native_contact_area_m2": 0.015258774481966933,
+      "contact_area_absolute_difference_m2": 6.55441617647412e-10,
+      "link_support_comparison": [
+        {
+          "pair": [
+            "s50_base",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": true,
+          "native_raw_intersects": true,
+          "coal_permission_applies": true,
+          "native_permission_applies": true,
+          "coal_raw_surface_distances_m": [
+            0.0
+          ],
+          "coal_geometry_names": [
+            "s50_base_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_1",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.13930000619888303,
+            0.34869987772703165
+          ],
+          "coal_geometry_names": [
+            "s50_link_1_0",
+            "s50_link_1_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_2",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": true,
+          "native_raw_intersects": true,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            -0.007559197733439193,
+            0.3409479946693164
+          ],
+          "coal_geometry_names": [
+            "s50_link_2_0",
+            "s50_link_2_1"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_3",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            0.2384836514980821
+          ],
+          "coal_geometry_names": [
+            "s50_link_3_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_4",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            1.1531865221299422
+          ],
+          "coal_geometry_names": [
+            "s50_link_4_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_5",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            1.3187730005819698
+          ],
+          "coal_geometry_names": [
+            "s50_link_5_0"
+          ]
+        },
+        {
+          "pair": [
+            "s50_link_6",
+            "mount_plinth"
+          ],
+          "coal_raw_intersects": false,
+          "native_raw_intersects": false,
+          "coal_permission_applies": false,
+          "native_permission_applies": false,
+          "coal_raw_surface_distances_m": [
+            1.338277886814211
+          ],
+          "coal_geometry_names": [
+            "s50_link_6_0"
+          ]
+        }
+      ],
+      "installation_verified": false,
+      "whole_pose_accepted": false,
+      "whole_pose_acceptance_evaluated": false
+    }
+  ],
+  "retained_extra_coal_probe_ids": [
+    "active_link_probe_j2_2.0"
+  ],
+  "interpretation": [
+    "Both real backends report raw base/support intersection at normal mounting; only the qualified fixed-base/support pair is allowed.",
+    "Moving the diagnostic base down 1 mm fails unchanged-mount, plane, footprint-height and full-base half-space checks in both backends. The frozen task layout is not changed.",
+    "At simulation J2=2.4 rad both backends detect s50_link_2/mount_plinth collision, and neither grants it permission.",
+    "Coal negative raw min_distance is backend output, not a certified penetration-depth measurement. Native contact counts are capped; matching counts do not prove equal contact manifolds.",
+    "Small area differences reflect separate mesh loaders/numeric representation; source models and diagnostic outcomes match, but exact equality of all loaded vertices was not asserted here.",
+    "These probes do not check mechanical joint limits, tool installation, whole-scene or whole-pose acceptance, task readiness, dynamics or physical installation clocking."
+  ],
+  "final_execution_evidence": {
+    "server_validation": {
+      "path": "docs/experiments/s50_task_collision_20261111/server-validation.json",
+      "sha256": "500d595ef3d6171798b6c12f86912a45a4dcf64b7d7c9ab3c04254cbecaa501e"
+    },
+    "workspace": "/work-s50-task-collision-20261111-v1",
+    "base_commit": "7bd1392d5f3b122817ada116b00afddfb9c1d9cc",
+    "coal_final_report": {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount-cases-stable/mount-contact-cases.json",
+      "bytes": 516434,
+      "sha256": "46592e9c2ccc4038e860361d1142942de9096fe274fc3950ef24dcbba065230f"
+    },
+    "native_final_report": {
+      "path": "/work-s50-task-collision-20261111-v1/outputs/s50_task_collision_20261111/mount/native-report.json",
+      "bytes": 8527,
+      "sha256": "7b4382898c8aebb270479a3dcdcef9e580ea3cbbb7cdb404a59bc9e3e53d131e"
+    },
+    "relevant_source_versions": [
+      {
+        "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/mount_contact.py",
+        "bytes": 21867,
+        "sha256": "c1b76213043c0c35df0c30bf41fa81aee7642e63ec5e6f4535b4397f17305265",
+        "repository_path": "src/unloading_sim/mount_contact.py"
+      },
+      {
+        "path": "/work-s50-task-collision-20261111-v1/ros2/m710_moveit_backend/src/mount_contact.h",
+        "bytes": 7268,
+        "sha256": "40603a4f3f1ee0a4772007d0ccf2a10c73d5d7177e19669ef80814edac457f55",
+        "repository_path": "ros2/m710_moveit_backend/src/mount_contact.h"
+      },
+      {
+        "path": "/work-s50-task-collision-20261111-v1/ros2/m710_moveit_backend/src/s50_mount_contact_probe.cpp",
+        "bytes": 3472,
+        "sha256": "ede381197ee745b09c70f1dac97fda307d40f0807c42cf25663a6f824db7836d",
+        "repository_path": "ros2/m710_moveit_backend/src/s50_mount_contact_probe.cpp"
+      },
+      {
+        "path": "/work-s50-task-collision-20261111-v1/tools/build_s50_mount_contact_probe.py",
+        "bytes": 3483,
+        "sha256": "dccdb81c1e5d639e0cfdb59d2c3b09c098c5a4bcfe4e52e1fa0076cdc6e45093",
+        "repository_path": "tools/build_s50_mount_contact_probe.py"
+      },
+      {
+        "path": "/work-s50-task-collision-20261111-v1/src/unloading_sim/s50_collision_diagnostics.py",
+        "bytes": 18569,
+        "sha256": "28a82b40d5c2c3ac064404538898efe6b5c623088bdd32934250c85375e065f7",
+        "repository_path": "src/unloading_sim/s50_collision_diagnostics.py"
+      },
+      {
+        "path": "/work-s50-task-collision-20261111-v1/tools/diagnose_s50_runtime_collision.py",
+        "bytes": 14389,
+        "sha256": "0cd4b51b752d870aeaedcc2fed901b32f61938f16b48fe08977d98c8b5dfcafe",
+        "repository_path": "tools/diagnose_s50_runtime_collision.py"
+      }
+    ],
+    "local_relevant_source_hashes_match_server_manifest": true,
+    "native_probe_binary": {
+      "path": "/work-s50-task-collision-20261111-v1/build/moveit/s50_mount_contact_probe",
+      "bytes": 277888,
+      "sha256": "51ae8ee0844d40ecf19c19b3a1d9f4f9982e233caf605d1f023931a8d73a9993"
+    },
+    "final_job_exit_codes": {
+      "build": 0,
+      "mount-stable": 0
+    },
+    "retained_cache_failure": {
+      "job": "mount-final",
+      "exit": 2,
+      "reason": "Temporary Boost wrapper identity incorrectly invalidated stable geometry; actual BVH content signature fixed it; mount-stable passed"
+    },
+    "installation_verified": false,
+    "tool_installed": false,
+    "scope": "FIXED_BASE_CONTACT_DIAGNOSTIC_ONLY_NOT_FULL_POSE_OR_TASK_ACCEPTANCE"
+  }
+}
