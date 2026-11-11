@@ -294,7 +294,8 @@ def run_trial(args,original,built,state,target,option,folder,budget,seed):
         costs[label]=costs.get(label,0.)+call.get('round_trip_s',0.)
     result=dict(**row,complete=plan is not None,wall_s=wall,failure=detail.get('failure'),
         contact_complete=detail.get('contact_complete',False),region_samples=len(detail.get('region_attempts',[])),
-        physical_execution='NOT_RUN',implementation_failure=fatal,native_call_cost_s=costs)
+        physical_execution='NOT_RUN',implementation_failure=fatal,native_call_cost_s=costs,
+        native_worker_process_started=client is not None and getattr(client.client,'process',None) is not None)
     save(folder/'result.json',result)
     return plan,result
 

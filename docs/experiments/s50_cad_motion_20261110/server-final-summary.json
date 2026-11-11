@@ -1,0 +1,121 @@
+{
+  "schema": "s50_final_server_validation_v1",
+  "observed_at": "2026-11-10T13:00:38.122312+00:00",
+  "workspace_inside_chroot": "/work-s50-cad-motion-20261110-v1",
+  "source_patch_sha256": "8de036d1922f5c104730e729ce37b34542c49343d7f841912abbb83e7c0e5a07",
+  "runtime_manifest_sha256": "65cd0a1f5a2c6b6b0c6e290987084ebf8ca1c4cb07c6c6d92cdfd08954f20ad9",
+  "runtime_files_verified": 577,
+  "cpp_source_sha256": "cf61fdc9a9501bc0409ff50d944051f870e218f5439b0782ccdf96691f7503e9",
+  "native_worker_sha256": "0fbb1bd6211b68981c16c03dc3056d1db5ddc686470a78ab00d94cdf6d414015",
+  "native_build_exit_code": 0,
+  "commands": [
+    {
+      "check": "focused-tests",
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "/usr/bin/env",
+        "-C",
+        "/work-s50-cad-motion-20261110-v1",
+        "PYTHONPATH=src:tools",
+        "/opt/planning-venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_s50_cad_model.py",
+        "tests/test_s50_qualification.py",
+        "tests/test_s50_integration_admission.py",
+        "tests/test_s50_cad_motion_viewer.py",
+        "tests/test_configured_native_entry.py",
+        "tests/test_robot_model_binding.py",
+        "tests/test_joint_search_layout.py",
+        "tests/test_moveit2_tcp.py",
+        "tests/test_moveit2_native_cold.py",
+        "--junitxml=outputs/s50_cad_motion_20261110/server-final-tests.xml",
+        "--tb=short"
+      ],
+      "exit_code": 0
+    },
+    {
+      "check": "native-fk-final",
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "/usr/bin/env",
+        "-C",
+        "/work-s50-cad-motion-20261110-v1",
+        "PYTHONPATH=src:tools",
+        "/opt/planning-venv/bin/python",
+        "tools/plan_s50_single_carton.py",
+        "--mode",
+        "preview-fk",
+        "--output",
+        "outputs/s50_cad_motion_20261110/native-fk-final",
+        "--worker-command",
+        "/bin/bash /work-s50-cad-motion-20261110-v1/worker-fk.sh"
+      ],
+      "exit_code": 0
+    },
+    {
+      "check": "single-carton-final",
+      "command": [
+        "chroot",
+        "/root/m710-gap-search-20261107/rootfs",
+        "/usr/bin/env",
+        "-C",
+        "/work-s50-cad-motion-20261110-v1",
+        "PYTHONPATH=src:tools",
+        "/opt/planning-venv/bin/python",
+        "tools/plan_s50_single_carton.py",
+        "--mode",
+        "single-carton",
+        "--output",
+        "outputs/s50_cad_motion_20261110/single-carton-final"
+      ],
+      "exit_code": 2
+    }
+  ],
+  "focused_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "156",
+    "time": "46.575",
+    "timestamp": "2026-11-10T20:57:48.448644+08:00",
+    "hostname": "autodl-container-06474b8321-4591acde"
+  },
+  "fanuc_actual_pin_regression": {
+    "classname": "tests.test_configured_native_entry",
+    "name": "test_actual_fanuc_pin_configured_and_original_loaders_agree",
+    "time": "0.385",
+    "passed": true
+  },
+  "native_fk": {
+    "status": "PASS_PREVIEW_CORE_PINOCCHIO_NATIVE_FK_ONLY",
+    "report": "native-fk-final-report.json",
+    "report_sha256": "0ecd9c44a02cc5538dd38876e12e7582e62d72fad7eb286d70acae1dbba12776",
+    "probe_count": 15,
+    "pinocchio_max_matrix_error": 1.1102230246251565e-15,
+    "native_max_matrix_error": 4.440892098500626e-16,
+    "collision_geometry_objects": 9,
+    "motion_rejection": {
+      "status": "ERROR",
+      "detail": "CAD_PREVIEW_FK_ONLY_NO_MOTION"
+    }
+  },
+  "single_carton": {
+    "status": "NOT_RUN_MODEL_NOT_READY",
+    "native_worker_launched": false,
+    "planning_attempts": 0,
+    "initial_ik": "NOT_RUN",
+    "report_sha256": "d47937b4eb1dd61ec071760fe8d6e1ffdb38c7a06edfc2bd2d877b633d94fbfa",
+    "full40": 40
+  },
+  "fanuc_preserved": {
+    "pid": 5155,
+    "process_exists": true,
+    "process_state": "S"
+  },
+  "evidence_bundle_downloaded": false
+}

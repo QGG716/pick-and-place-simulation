@@ -23,3 +23,5 @@ tmp/
 
 # Reconstructed uncompressed meshes; authorized lossless carriers are tracked.
 assets/robots/huayan_s50_2000/derived/*_cad.obj
+# Materialized local meshes are reconstructed and hash-checked from .obj.gz.
+assets/robots/huayan_s50_2000/meshes/link-local/*.obj

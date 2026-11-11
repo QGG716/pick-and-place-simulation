@@ -1,13 +1,15 @@
 schema_version: robot_load_limits_v1
 model: huayan_s50_2000
 model_id: huayan_s50_2000
-model_revision: supplied_step_20250801_controller_mapping_pending_20261110
+model_usage: installed_task_model_pending_qualification
+cad_preview_config: huayan_s50_2000_cad_preview.yaml
+model_revision: cad_simulation_chain_20261110_controller_mapping_pending
 rated_payload_kg: 50.0
 reach_m: 2.0
 published_total_mass_kg: 156.0
 published_axis_count: 6
 published_axis_labels: [J1, J2, J3, J4, J5, J6]
-# Published axis labels are NOT a claim about unavailable URDF joint names.
+# These published limits are in controller coordinates, NOT yet converted to the CAD simulation zero.
 joint_position_limits_rad:
   J1: [-6.283185307179586, 6.283185307179586]
   J2: [-3.316125578789226, 0.17453292519943295]
@@ -25,25 +27,53 @@ joint_effort_limits_nm: null
 link_inertials: null
 joint_acceleration_limits_rad_s2: null
 joint_jerk_limits_rad_s3: null
+controller_mapping:
+  equation: q_controller = sign * q_sim + offset_rad
+  simulation_zero: supplied_CAD_assembly_reference
+  joints:
+    J1: {sign: null, offset_rad: null, verified: false, source: null}
+    J2: {sign: null, offset_rad: null, verified: false, source: null}
+    J3: {sign: null, offset_rad: null, verified: false, source: null}
+    J4: {sign: null, offset_rad: null, verified: false, source: null}
+    J5: {sign: null, offset_rad: null, verified: false, source: null}
+    J6: {sign: null, offset_rad: null, verified: false, source: null}
+installation:
+  physical_mount_frame:
+    verified: true
+    source: ../../assets/robots/huayan_s50_2000/derived/interface_measurements.json#support_plane
+    scope: Physical support plane and axis intersection measured; no assertion of controller frame clocking.
+  mount_clocking: {verified: false, source: null}
 kinematics:
-  urdf_path: null
-  srdf_path: null
-  active_joint_names: null
-  base_link: null
-  flange_link: null
-  tip_link: null
+  # Shared true CAD geometry; its preview angle range is NOT admitted for task planning.
+  urdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.urdf
+  srdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.srdf
+  active_joint_names: [s50_joint_1, s50_joint_2, s50_joint_3, s50_joint_4, s50_joint_5, s50_joint_6]
+  joint_limit_keys: [J1, J2, J3, J4, J5, J6]
+  base_link: s50_base
+  flange_link: s50_flange
+  tip_link: s50_flange
   mounting_from_base: null
-  package_map: {}
+  package_map:
+    huayan_s50_2000: ../../assets/robots/huayan_s50_2000
   planning_group: manipulator
-  zero_pose_reference: null
-  axes_zero_offsets_signs_source: null
+  zero_pose_reference: User-authorized supplied CAD assembly as simulation zero, not manufacturer controller zero.
+  axes_zero_offsets_signs_source: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json
 collision:
-  per_link_visual_collision_sources: null
+  coverage: {verified: false, source: null}
+  per_link_visual_collision_sources:
+    s50_base: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/0
+    s50_link_1: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/1
+    s50_link_2: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/2
+    s50_link_3: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/3
+    s50_link_4: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/4
+    s50_link_5: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/5
+    s50_link_6: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json#links/6
   capsule_radii_m: null
   capsule_self_exclusions: null
   reviewed_self_collision_pairs: null
   owned_tool_exempt_robot_links: null
 tool_interface:
+  physical_connection: {verified: false, source: null}
   flange_from_project_tool_mount: null
   mounting_geometry_source: null
   additional_physical_adapter: false
@@ -52,7 +82,7 @@ readiness:
   derive_from_required_fields: true
   historical_fanuc_model_fallback_allowed: false
   dynamics_data_missing_must_not_block_kinematics: true
-  note: Real seven-part CAD and six unoriented joint-axis lines are available. Controller zero/sign mapping, mount clocking, physical tool alignment and complete collision coverage remain unverified. CAD assembly posture is not asserted as controller zero.
+  note: Real CAD-derived movable six-axis preview is available independently. CAD assembly is an authorized simulation zero, with explicit right-hand signs. Controller limit mapping, physical mount clocking, tool alignment and full collision qualification remain separate unresolved conditions for task planning.
 source:
   manufacturer: Huayan Robotics
   requested_model: S50-2000

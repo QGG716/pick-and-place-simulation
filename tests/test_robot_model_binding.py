@@ -167,6 +167,8 @@ def test_owned_wrist_pairs_require_explicit_source_and_policy(fixture_config):
 
 def test_model_request_explicit_binding_no_fanuc_assets(fixture_config, tmp_path, monkeypatch):
     from unloading_sim import moveit2_backend, independent_cups
+    change_config(fixture_config, lambda data: data.update(joint_acceleration_limits_rad_s2=[.7]*6,
+        joint_velocity_limits_rad_s=[1.5]*6,joint_velocity_source='synthetic test',joint_acceleration_source='synthetic test'))
     robot = URDFRobot.from_config(fixture_config)
     policy = SimpleNamespace(wrist_tool_pairs=lambda _: set(), to_mapping=lambda: {})
     connector = SimpleNamespace(robot=robot, collision_policy=policy,

@@ -420,6 +420,8 @@ def model_request(connector, scene, *, asset_root=None, seed=71070, model_bindin
     if binding is not None:
         if not isinstance(binding, RobotModelBinding):
             binding = RobotModelBinding.from_config(binding)
+        if binding.data.get('model_usage') == 'cad_preview_fk_only':
+            raise ValueError('CAD_PREVIEW_MODEL_FORBIDS_MOTION_MODEL_REQUEST')
         robot_binding = getattr(connector.robot, 'model_binding', None)
         if robot_binding is None or robot_binding.identity() != binding.identity():
             raise ValueError('NATIVE_CORE_MODEL_BINDING_MISMATCH')
@@ -488,10 +490,18 @@ def model_request(connector, scene, *, asset_root=None, seed=71070, model_bindin
         "robot_description_planning.cartesian_limits.max_trans_acc": .4,
         "robot_description_planning.cartesian_limits.max_trans_dec": -.4,
         "robot_description_planning.cartesian_limits.max_rot_vel": .4}
-    for joint in names:
+    configured_timing = None
+    if binding is not None:
+        from .robot_native_binding import configured_native_timing
+        configured_timing = configured_native_timing(binding)
+    for index, joint in enumerate(names):
         # Conservative experiment acceleration, not an invented vendor limit.
         params[f"robot_description_planning.joint_limits.{joint}.has_acceleration_limits"] = True
-        params[f"robot_description_planning.joint_limits.{joint}.max_acceleration"] = .5
+        params[f"robot_description_planning.joint_limits.{joint}.max_acceleration"] = (
+            .5 if configured_timing is None else configured_timing['acceleration_rad_s2'][index])
+        if configured_timing is not None:
+            params[f"robot_description_planning.joint_limits.{joint}.has_velocity_limits"] = True
+            params[f"robot_description_planning.joint_limits.{joint}.max_velocity"] = configured_timing['velocity_rad_s'][index]
         # Humble Pilz derives deceleration=-acceleration. Do not predeclare
         # its extension parameters: 2.5.10 redeclares them internally.
     identity = dict(schema=SCHEMA,
@@ -511,6 +521,7 @@ def model_request(connector, scene, *, asset_root=None, seed=71070, model_bindin
         identity['native_frame_roles'] = {key: value for key, value in native_roles.items() if key != 'urdf_parser_compatibility'}
         identity['native_urdf_parser_compatibility'] = native_roles['urdf_parser_compatibility']
         identity['dynamics_qualified'] = False
+        identity['time_parameterization'] = configured_timing
         identity['scene_version'] = scene.snapshot.get('schema', 'configured_robot_scene')
     return dict(op="init", parameters=params, identity=identity, joint_names=names, seed=seed,
         collision_policy=connector.collision_policy.to_mapping(),tool_links=sorted(tool_names),

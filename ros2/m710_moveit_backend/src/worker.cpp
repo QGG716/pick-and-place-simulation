@@ -207,6 +207,7 @@ class Worker {
   bool bounded_preplace_ik_enabled=false;
   bool single_target_recovery_enabled=false;
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
+  bool fk_only=false;
   std::string planning_mode="cold_from_scratch";
   J static_prior_database=nullptr;
   std::string prior_placement_policy_sha256;
@@ -899,6 +900,15 @@ private:
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
+      const auto model_usage=req.value("model_usage",std::string("qualified_kinematic_planning"));
+      if(model_usage!="qualified_kinematic_planning" && model_usage!="cad_preview_fk_only")
+        throw std::runtime_error("UNKNOWN_MODEL_USAGE");
+      fk_only=model_usage=="cad_preview_fk_only";
+      if(fk_only && (!req.value("planning_only",false) ||
+          req.at("identity").value("model_usage",std::string())!="cad_preview_fk_only" ||
+          req.at("identity").value("motion_generation_allowed",true) ||
+          !req.at("tool_links").empty() || !req.value("process_geometry",J(nullptr)).is_null()))
+        throw std::runtime_error("FK_ONLY_MODEL_SCOPE_INVALID");
       planning_only=req.value("planning_only",false);
       receiver_binding=req.value("lifted_receiver_binding",J(nullptr));
       if(!receiver_binding.is_null()) {
@@ -951,7 +961,7 @@ private:
       const auto* group=model->getJointModelGroup("manipulator");
       if(!group) throw std::runtime_error("GROUP_UNAVAILABLE");
       names=group->getVariableNames(); if(names!=req.at("joint_names").get<std::vector<std::string>>()) throw std::runtime_error("JOINT_ORDER_MISMATCH");
-      for(const auto& name:{"pilz_industrial_motion_planner","ompl"}) {
+      if(!fk_only) for(const auto& name:{"pilz_industrial_motion_planner","ompl"}) {
         auto p=std::make_shared<planning_pipeline::PlanningPipeline>(model,node,name,"planning_plugin","request_adapters");
         if(!p->getPlannerManager()) throw std::runtime_error(std::string("PIPELINE_UNAVAILABLE:")+name);
         p->displayComputedMotionPlans(false); p->publishReceivedRequests(false);
@@ -968,6 +978,11 @@ private:
       bound_compliant=req.value("compliant_tool_links",J::array());bound_process_geometry=req.value("process_geometry",J(nullptr));
       base=std::make_shared<planning_scene::PlanningScene>(model);
       identity=req.at("identity");
+      if(fk_only) return {{"status","READY"},{"identity",identity},{"joint_names",names},
+        {"cold_start_s",seconds(begin)},{"planning_only",true},{"planning_mode",planning_mode},
+        {"model_usage","cad_preview_fk_only"},{"pipelines",J::array()},
+        {"capabilities",{{"native_fk",true},{"native_ik",false},{"motion_generation",false},
+                         {"collision_qualification",false},{"dynamics_qualified",false}}}};
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
@@ -983,6 +998,7 @@ private:
     if(op!="ik" && op!="fk") throw std::runtime_error("IK_INPUT_PROBE_NO_MOTION");
 #endif
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if(fk_only && op!="fk") throw std::runtime_error("CAD_PREVIEW_FK_ONLY_NO_MOTION");
     if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_receiver_state" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="ik" || op=="ik_batch") && req.value("planning_only",false)!=planning_only)
       throw std::runtime_error("PLANNING_ONLY_MODE_MISMATCH");
     if((op=="plan" || op=="diagnostic_connection" || (op=="check_start" || op=="check_receiver_state" || (op=="check_extraction_end" || op=="check_transit_end")) || op=="ik" || op=="ik_batch" || op=="load_static_prior" || op=="build_static_prior" || op.rfind("prior_",0)==0) &&

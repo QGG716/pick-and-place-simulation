@@ -1,0 +1,148 @@
+{
+  "schema": "s50_j1_void_overlap_v1",
+  "checks": [
+    {
+      "inner_shells": [
+        1,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        2,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        3,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        4,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        5,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        6,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        7,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        8,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        9,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        10,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        11,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        12,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        13,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    },
+    {
+      "inner_shells": [
+        14,
+        16
+      ],
+      "outer_plus_two_voids_valid": false,
+      "void_boundary_distance_m": 0.06413966135174394,
+      "void_bounds_m": [
+        [
+          [
+            -0.11950000010000005,
+            0.24769358812132986,
+            -0.0540000001000001
+          ],
+          [
+            -0.11549715745024004,
+            0.31290639296036227,
+            -0.03906928438246526
+          ]
+        ],
+        [
+          [
+            -0.11950000010000027,
+            0.17091891481223073,
+            -0.05918877555885249
+          ],
+          [
+            -0.11747236324204689,
+            0.1849048711294419,
+            -0.0511834933329419
+          ]
+        ]
+      ],
+      "boolean_common_done": true,
+      "common_volume_m3": 0.0,
+      "common_topology_valid": true,
+      "common_subshape_counts": {
+        "TopAbs_ShapeEnum.TopAbs_FACE": 0,
+        "TopAbs_ShapeEnum.TopAbs_EDGE": 0,
+        "TopAbs_ShapeEnum.TopAbs_VERTEX": 0
+      }
+    },
+    {
+      "inner_shells": [
+        15,
+        16
+      ],
+      "outer_plus_two_voids_valid": true
+    }
+  ],
+  "source_unchanged": true,
+  "no_collision_faces_deleted": true,
+  "conclusion": "Pair validity and exact Boolean intersection diagnose internal cavities; this script does not repair or qualify the complete source solid."
+}

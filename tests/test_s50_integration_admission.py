@@ -28,7 +28,10 @@ def test_supplied_cad_is_not_a_qualified_motion_model():
     assert report["initial_q_rad"] is None
     assert report["full_scene_fingerprint"] is None
     assert report["status"] == "MODEL_NOT_READY"
-    assert "kinematics.axes_zero_offsets_signs_source" in report["missing_critical_data"]
+    assert any(item.startswith('controller_mapping.J2.') for item in report['missing_critical_data'])
+    assert report['cad_joint_preview']['ready']
+    assert not report['geometric_planning']['ready']
+    assert not report['time_parameterization']['blocks_static_fk']
     assert not report["native_worker_launched"]
     assert report["native_single_carton"]["planning_attempts"] == 0
     assert report["native_single_carton"]["global_unreachable"] is False
@@ -69,7 +72,8 @@ def test_empty_evidence_and_invalid_tool_frame_do_not_qualify():
     assert 'kinematics.axes_zero_offsets_signs_source' in errors
     assert 'collision.per_link_visual_collision_sources' in errors
     assert 'tool_interface.INVALID_FLANGE_FROM_PROJECT_TOOL_MOUNT' in errors
-    assert 'joint_velocity_version_conflict.verified_resolution_source' in errors
+    assert 'joint_velocity_version_conflict.verified_resolution_source' not in errors
+    assert 'joint_velocity_version_conflict.verified_resolution_source' in admission.timing_audit(data)['missing']
     assert 'collision.reviewed_self_collision_pairs' not in errors  # Explicit empty exclusions are valid.
 
 

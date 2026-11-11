@@ -139,6 +139,54 @@ def _world_vertex_extrema(vertices, rotation, translation):
 class PinocchioHppFclBackend:
     """Fixed-base serial/tree robot using URDF collision meshes and Pinocchio FK."""
 
+    @classmethod
+    def from_binding(cls, binding, *, output_dir, project_root, world_from_base=None, tip_from_tcp=None):
+        """Load the same checked model as native, without FANUC frame defaults.
+
+        Parser compatibility edits are written only to the caller's isolated
+        output directory. The physical base transform is applied exactly once.
+        Binding/model usage metadata remain attached for downstream gates.
+        """
+        import hashlib
+        import xml.etree.ElementTree as ET
+        from .robot_native_binding import native_model_from_binding
+        from .robot_model_binding import rigid_transform
+        binding.verify_source_unchanged()
+        world = np.eye(4) if world_from_base is None else rigid_transform(world_from_base, 'world_from_base')
+        tip = np.eye(4) if tip_from_tcp is None else rigid_transform(tip_from_tcp, 'tip_from_tcp')
+        # An identity world->base in the transport model, then the external
+        # transform below: no double application of the installation pose.
+        xml, semantic, roles = native_model_from_binding(binding, np.eye(4), project_root=project_root)
+        # Pinocchio/Assimp accepts a filesystem path for meshes.
+        for mesh in xml.iter('mesh'):
+            mesh.set('filename', mesh.get('filename').removeprefix('file://'))
+        payload = ET.tostring(xml, encoding='utf-8')
+        folder = Path(output_dir); folder.mkdir(parents=True, exist_ok=True)
+        key = hashlib.sha256(payload).hexdigest()
+        urdf = folder/(key+'.urdf'); srdf = folder/(key+'.srdf')
+        for path, data in ((urdf, payload), (srdf, ET.tostring(semantic, encoding='utf-8'))):
+            if path.exists() and path.read_bytes() != data:
+                raise ValueError('PARSER_MODEL_OUTPUT_IDENTITY_CONFLICT')
+            if not path.exists(): path.write_bytes(data)
+        robot = cls(urdf, tip_frame=binding.tip_link, srdf_path=srdf,
+            base_transform=world, tip_from_tcp=tip, name=binding.model_id)
+        if tuple(robot.active_joint_names) != binding.active_joint_names:
+            raise ValueError('CONFIGURED_PINOCCHIO_JOINT_ORDER_MISMATCH')
+        if not np.allclose(robot.joint_limits, binding.joint_limits, atol=1e-10, rtol=0):
+            raise ValueError('CONFIGURED_PINOCCHIO_JOINT_LIMIT_MISMATCH')
+        robot.model_binding = binding
+        robot.model_usage = binding.data.get('model_usage', 'qualified_kinematic_planning')
+        robot.native_parser_compatibility = roles['urdf_parser_compatibility']
+        robot.joint_velocity_limits_rad_s = binding.joint_velocity_limits.copy()
+        radii = (binding.data.get('collision') or {}).get('capsule_radii_m')
+        robot.capsule_geometry_available = radii is not None
+        if radii is not None:
+            radii = np.asarray(radii, dtype=float)
+            if radii.shape != (6,) or not np.isfinite(radii).all() or np.any(radii <= 0):
+                raise ValueError('CONFIGURED_CAPSULE_RADII_INVALID')
+            robot.link_radii = radii.copy()
+        return robot
+
     def __init__(
         self,
         urdf_path: str | Path,
@@ -431,6 +479,8 @@ class PinocchioHppFclBackend:
             return dict(surface_gap_m=None,reason="SOFT_DISTANCE_UNAVAILABLE",detail=type(exc).__name__)
 
     def link_capsules(self, q: np.ndarray) -> list[Capsule]:
+        if getattr(self, 'capsule_geometry_available', True) is False:
+            raise ValueError('CAPSULE_PROXY_UNAVAILABLE_USE_QUALIFIED_MESH_BACKEND')
         frames = self.frames(q, include_tool=True)
         # Multi-DOF joints are rejected in __init__, so one non-universe joint
         # corresponds to each configured scalar DOF.

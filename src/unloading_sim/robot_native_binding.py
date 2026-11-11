@@ -5,6 +5,8 @@ source model uses a different name, this builder adds a collisionless frame at
 exactly that physical flange. It does not add a physical adapter or change TCP.
 """
 from pathlib import Path
+import hashlib
+import json
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -98,10 +100,14 @@ def native_model_from_binding(binding, world_from_base, *, project_root, asset_r
                 raise ModelNotReady(binding.model_id, ['MESH_OUTSIDE_RELOCATABLE_PROJECT_ROOT'])
             path = Path(asset_root) / path.relative_to(root)
         mesh.set('filename', 'file://'+str(path).replace('\\', '/'))
+    source_placeholders = (list(binding.active_joint_names)
+        if (binding.data.get('preview_only') or {}).get('urdf_effort_is_placeholder') is True else [])
+    unknown_effort = sorted(set(effort_placeholders) | set(source_placeholders))
     return urdf, srdf, dict(native_flange_link='flange', source_flange_link=binding.flange_link,
         source_flange_from_native_flange=np.eye(4).tolist(), physical_adapter_added=False,
         urdf_parser_compatibility=dict(effort_placeholder_joint_names=effort_placeholders,
-            placeholder_effort_nm=0., physical_effort_unknown_joint_names=effort_placeholders,
+            source_declared_effort_placeholder_joint_names=source_placeholders,
+            placeholder_effort_nm=0., physical_effort_unknown_joint_names=unknown_effort,
             purpose='URDF_PARSER_ONLY_FOR_KINEMATICS_AND_COLLISION', source_urdf_modified=False,
             known_effort_values_preserved=True, dynamics_qualified=False))
 
@@ -147,3 +153,49 @@ def configured_wrist_tool_pairs(binding, policy, owned_tool_names):
 def physical_flange_frame(robot, q):
     binding = getattr(robot, 'model_binding', None)
     return robot.named_link_frames(q)[binding.flange_link if binding is not None else 'flange']
+
+
+def native_fk_model_request(binding, *, world_from_base=None, project_root, asset_root=None, seed=50):
+    """A bare-model native FK protocol; cannot authorize IK or any motion.
+
+    In a CAD preview the caller's base is a declared simulation coordinate
+    convention, never a verified installation transform or controller zero.
+    """
+    world_from_base = np.eye(4) if world_from_base is None else world_from_base
+    urdf, srdf, roles = native_model_from_binding(binding, world_from_base,
+        project_root=project_root, asset_root=asset_root)
+    params = dict(robot_description=ET.tostring(urdf, encoding='unicode'),
+                  robot_description_semantic=ET.tostring(srdf, encoding='unicode'))
+    identity = dict(schema='configured_robot_fk_only_v1', model_usage='cad_preview_fk_only',
+        robot_model_binding=binding.identity(), native_frame_roles=roles,
+        world_from_base=rigid_transform(world_from_base, 'world_from_base').tolist(),
+        model_tool_fingerprint=hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest(),
+        controller_coordinate_verified=False, installation_alignment_verified=False,
+        tool_installed=False, motion_generation_allowed=False, dynamics_qualified=False)
+    return dict(op='init', parameters=params, identity=identity,
+        joint_names=list(binding.active_joint_names), seed=int(seed), model_usage='cad_preview_fk_only',
+        planning_only=True, planning_mode='cold_from_scratch', collision_policy={}, tool_links=[],
+        compliant_tool_links=[], process_geometry=None,
+        expected_collision_shapes={link.get('name'): len(link.findall('collision'))
+            for link in urdf.findall('link') if link.findall('collision')})
+
+
+def configured_native_timing(binding):
+    """Explicit finite timing only; no inherited FANUC acceleration defaults."""
+    from .s50_qualification import timing_audit
+    audit = timing_audit(binding.data)
+    if audit['ready'] is not True:
+        raise ModelNotReady(binding.model_id, audit['missing'])
+    assumption = binding.data.get('time_parameterization_assumption') or {}
+    acceleration = assumption.get('acceleration_rad_s2', binding.data.get('joint_acceleration_limits_rad_s2'))
+    velocity = assumption.get('velocity_rad_s', binding.joint_velocity_limits)
+    def values(raw, key):
+        if isinstance(raw, dict): raw = [raw.get(name) for name in binding.active_joint_names]
+        array = np.asarray(raw, dtype=float)
+        if array.shape != (6,) or not np.isfinite(array).all() or np.any(array <= 0):
+            raise ModelNotReady(binding.model_id, ['timing.INVALID_'+key])
+        return array
+    velocity = np.minimum(values(velocity,'velocity_rad_s'), binding.joint_velocity_limits)
+    acceleration = values(acceleration,'acceleration_rad_s2')
+    return dict(audit=audit, velocity_rad_s=velocity.tolist(), acceleration_rad_s2=acceleration.tolist(),
+        effective_velocity_rule='MIN_OF_EXPLICIT_TIMING_AND_BOUND_MODEL_VELOCITY', dynamics_qualified=False)

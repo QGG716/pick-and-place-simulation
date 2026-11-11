@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="huayan_s50_2000_cad_preview">
+  <group name="manipulator">
+    <chain base_link="s50_base" tip_link="s50_flange" />
+  </group>
+  <!--No broad self-collision exclusions inferred from display motion or missing controller metadata.-->
+</robot>

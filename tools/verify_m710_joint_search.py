@@ -29,6 +29,35 @@ def selected_branch(db,key):
     assert node['root']==initial;chain.reverse()
     return chain
 
+def verify_saved_native_stage_payloads(plan,calls,trace):
+    """Bind selected points to retained current-worker SUCCESS response data.
+
+    requests.json omits point arrays for size; search-trace.json retains the
+    exact response path in final_timed_path. Neither a matching terminal pose
+    nor the generated_during_task flag alone proves the interior points.
+    """
+    ids=[s['stage_id'] for s in plan['stages']]
+    assert len(ids)==len(set(ids)), 'DUPLICATE_SELECTED_NATIVE_STAGE_ID'
+    for stage in plan['stages']:
+        sid=stage['stage_id']
+        rows=[r for r in trace['attempts'] if r['request'].get('stage_id')==sid]
+        successes=[r for r in calls if r.get('op')=='plan' and r.get('stage_id')==sid and r.get('status')=='SUCCESS']
+        assert len(rows)==len(successes)==1, 'SELECTED_NATIVE_STAGE_RESPONSE_NOT_UNIQUE'
+        row=rows[0];request=row['request'];response=successes[0]['response']
+        assert request['identity']==trace['model']['identity'], 'SELECTED_NATIVE_MODEL_IDENTITY_CHANGED'
+        assert response.get('status')=='SUCCESS'
+        for key in ('task_id','stage_id','parent_stage_id'):
+            assert response.get(key)==request.get(key), 'SELECTED_NATIVE_TASK_OR_STAGE_MISMATCH'
+            assert row['response_identity'].get(key)==response.get(key), 'SAVED_RESPONSE_IDENTITY_MISMATCH'
+        assert row['response_identity'].get('request_id')==response.get('request_id'), 'SAVED_RESPONSE_REQUEST_MISMATCH'
+        assert stage['stage']==request['stage']
+        assert stage['parent_stage_id']==request['parent_stage_id']
+        for key in ('generation_source','terminal_q','pipeline_id','planner_id','external_axis'):
+            assert stage.get(key)==response.get(key), 'SELECTED_NATIVE_STAGE_PAYLOAD_MISMATCH:'+key
+        assert (stage.get('points') or [])==(row.get('final_timed_path') or []), 'SELECTED_NATIVE_POINTS_CHANGED'
+    return dict(status='PASS_SELECTED_STAGE_PAYLOADS_MATCH_CURRENT_NATIVE_RESPONSES',stage_count=len(ids))
+
+
 def verify_cycle(plan,folder,root,layout,built,*,read=None):
     read=read or (lambda name:json.loads((folder/name).read_text()))
     assert plan['batch_root']==root and plan['status']=='COUPLED_COMPLETE_CYCLE_PLANNED_NOT_EXECUTABLE'
@@ -43,13 +72,21 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
     assert contract['minimum_m']==limits['minimum_surface_height_world_m'] and contract['maximum_m']==limits['maximum_surface_height_world_m']
     assert plan['target_id'] not in root['completed'] and not plan['target_still_attached']
     calls=read('requests.json');trace=read('search-trace.json')
+    selected_payloads=verify_saved_native_stage_payloads(plan,calls,trace)
     requests={t['request']['stage_id']:t['request'] for t in trace['attempts']}
     responses={c['stage_id']:c['response'] for c in calls if c.get('op')=='plan' and c['status']=='SUCCESS'}
     assert not any('prior' in str(c.get('op','')) or c.get('pipeline_id')=='static_prior' for c in calls)
     import xml.etree.ElementTree as ET
     model=ET.fromstring(trace['model']['parameters']['robot_description'])
-    mount=next(j for j in model.findall('joint') if j.find('parent').get('link')=='world' and j.find('child').get('link')=='base_link')
+    robot_binding=getattr(built.robot,'model_binding',None)
+    base_link=robot_binding.base_link if robot_binding is not None else 'base_link'
+    mount=next(j for j in model.findall('joint') if j.find('parent').get('link')=='world' and j.find('child').get('link')==base_link)
     np.testing.assert_allclose(list(map(float,mount.find('origin').get('xyz').split())),layout.robot_base_transform()[:3,3],atol=1e-12,rtol=0)
+    if robot_binding is not None:
+        from unloading_sim.geometry import rotation_matrix_from_rpy
+        np.testing.assert_allclose(rotation_matrix_from_rpy(*map(float,mount.find('origin').get('rpy','0 0 0').split())),
+            layout.robot_base_transform()[:3,:3],atol=1e-12,rtol=0)
+        assert trace['model']['identity']['robot_model_binding']==robot_binding.identity()
     timing=plan['option'].get('outfeed_timing',WAIT_FIRST)
     extra=withdrawal_extra(plan['option'])
     assert timing in (WAIT_FIRST,WITHDRAW_FIRST,PARK_FIRST)
@@ -147,7 +184,8 @@ def verify_cycle(plan,folder,root,layout,built,*,read=None):
     assert full['passed'] and full==waiting['full_tool']
     final=message_box(expected_path['samples'][-1]['box'])
     assert max(final.corners()[:,0])< -3.2
-    return dict(status='PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED',native_stages=len(plan['stages']),outfeed_samples=len(expected_path['samples']))
+    return dict(status='PASS_CYCLE_NATIVE_PARENT_AND_WAIT_OUTFEED',native_stages=len(plan['stages']),outfeed_samples=len(expected_path['samples']),
+        selected_native_payloads=selected_payloads)
 
 def verify_search(run,key,require_complete=False):
     run=Path(run);db=json.loads((run/'checkpoint.json').read_text());record=db['layouts'][key]

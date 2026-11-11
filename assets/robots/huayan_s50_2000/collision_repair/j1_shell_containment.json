@@ -1,0 +1,871 @@
+{
+  "schema": "s50_j1_shell_containment_v1",
+  "source_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "principal_outer_shell": 0,
+  "principal_solid_valid": true,
+  "shells": [
+    {
+      "index": 0,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": 0.019405815237497008,
+      "bounds_m": [
+        [
+          -0.19050000010000012,
+          0.13629999990000005,
+          -0.12950000010000018
+        ],
+        [
+          0.1295000001,
+          0.4303000001000003,
+          0.12950000009999996
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.03239819693360681,
+        0.2806076006296611,
+        -1.0681111306293624e-05
+      ],
+      "principal_outer_shell": true
+    },
+    {
+      "index": 1,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.0822871303051828e-07,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.3517343528245535,
+          -0.04911221814839394
+        ],
+        [
+          -0.11730184288681376,
+          0.3681408451169387,
+          -0.03906928438246527
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11883726633614393,
+        0.3616811193470314,
+        -0.0443260594280765
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 6
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 2,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.0822991139551599e-07,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.351734343083338,
+          0.03906928438246493
+        ],
+        [
+          -0.11730184303934481,
+          0.3681409002832907,
+          0.04911226697029267
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.1188372675349374,
+        0.3616810547664163,
+        0.04432601779451725
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 6
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 3,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -6.10958508823282e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.3196690453916705,
+          0.04023701066686711
+        ],
+        [
+          -0.1033724420962343,
+          0.3576812833380712,
+          0.0773812833380709
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11475701736509358,
+        0.3397993487034157,
+        0.0624898985487966
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 4,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.8710429613782234e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.2659708218054541,
+          0.061872824331483875
+        ],
+        [
+          -0.08637242586784631,
+          0.29462960716019465,
+          0.09850000009999997
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10710670198499923,
+        0.2803000023848103,
+        0.0850866652536853
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 5,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.4820723636636946e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.29707944213573323,
+          0.055203703303140374
+        ],
+        [
+          -0.09013769108235357,
+          0.3295214026597767,
+          0.09452179770653676
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10951632389605391,
+        0.31226998431137387,
+        0.07898869771448004
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 6,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.4820720811545945e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.29707903321449214,
+          -0.0945217901576353
+        ],
+        [
+          -0.09013768945517125,
+          0.32952139758697724,
+          -0.055203659700235774
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10951632737709532,
+        0.31226998667469663,
+        -0.07898869506792228
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 7,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.871042963809227e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.26597039283980595,
+          -0.09850000010000018
+        ],
+        [
+          -0.08637242586784638,
+          0.2946291781945461,
+          -0.0618728243314839
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.1071067019772238,
+        0.2802999975018417,
+        -0.08508666524516897
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 8,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -6.10959325050447e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.31966856234336605,
+          -0.07738133398593998
+        ],
+        [
+          -0.10337241864899938,
+          0.3576812833380712,
+          -0.04023699150762953
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11475701633846135,
+        0.33979934401936995,
+        -0.06248989196717588
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 9,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.4820723339603479e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.2310785973402236,
+          -0.094521797706537
+        ],
+        [
+          -0.0901376910823544,
+          0.2635205578642693,
+          -0.05520370330314057
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10951632399285541,
+        0.2483300155861724,
+        -0.07898869783562659
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 10,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.482072039201037e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.23107860241302303,
+          0.055203659700235726
+        ],
+        [
+          -0.09013768945517114,
+          0.2635209667855081,
+          0.0945217901576351
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10951632751425744,
+        0.24833001307311708,
+        0.07898869523855855
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 11,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -3.0096580085431335e-06,
+      "bounds_m": [
+        [
+          -0.11991616390582086,
+          0.20291871663533861,
+          -0.07738128333807112
+        ],
+        [
+          -0.10725618965704754,
+          0.23955691741506063,
+          -0.05118349333294182
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11594819430589753,
+        0.21982659203862398,
+        -0.06593904676348772
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 15
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 12,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -3.0096757592668755e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.2029187166619291,
+          0.05118349333294179
+        ],
+        [
+          -0.10725616717310085,
+          0.23955690487273398,
+          0.07738133387309373
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11594820962370084,
+        0.21982658104553277,
+        0.06593898855412582
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 15
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 13,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.2857944282483934e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000246,
+          0.24769360703963786,
+          0.03906928438246463
+        ],
+        [
+          -0.1154971574263139,
+          0.3129064118786705,
+          0.054000000121412456
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11825575912106852,
+        0.2803000750251752,
+        0.047435225672822254
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 4
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 14,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.2858005464483901e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.24769358812132986,
+          -0.0540000001000001
+        ],
+        [
+          -0.11549715745024004,
+          0.31290639296036227,
+          -0.03906928438246526
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11825576377388487,
+        0.2803000765357414,
+        -0.04743518785519299
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 4
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 15,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -7.961073042434202e-08,
+      "bounds_m": [
+        [
+          -0.12021318100765092,
+          0.17091864705010543,
+          0.05118349333294181
+        ],
+        [
+          -0.11747235830080792,
+          0.18490486741703968,
+          0.059188766069239375
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11887786754624279,
+        0.17689107958011677,
+        0.055187685099240505
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 8
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 16,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -7.960918886347006e-08,
+      "bounds_m": [
+        [
+          -0.11950000010000027,
+          0.17091891481223073,
+          -0.05918877555885249
+        ],
+        [
+          -0.11747236324204689,
+          0.1849048711294419,
+          -0.0511834933329419
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11887787063407194,
+        0.17689109688164334,
+        -0.055187665760506134
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 8
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 17,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.1450204721993917e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.22094924298106175,
+          0.09401442720325545
+        ],
+        [
+          -0.06274702800043473,
+          0.252300687696703,
+          0.11749255947709147
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.09614481767232579,
+        0.2369176819294557,
+        0.10664093992223997
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 18,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.7493427098125532e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.2648294462734259,
+          0.10650948695474981
+        ],
+        [
+          -0.05287428669314611,
+          0.29577061206369615,
+          0.12300000009999987
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.08974222287814708,
+        0.2803000018574244,
+        0.11515905862601347
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 19,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -8.226406560105923e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.18500498505175986,
+          0.06644522990495608
+        ],
+        [
+          -0.09276347100135499,
+          0.21385467816657194,
+          0.09529495783240555
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.1099922148638346,
+        0.2003312231395076,
+        0.08298591054101058
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 20,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.145022621468472e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.3082992872038014,
+          0.09401441947917723
+        ],
+        [
+          -0.06274702829052761,
+          0.3396507873627732,
+          0.11749256767106092
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.09614479606743694,
+        0.32368231745615966,
+        0.10664094240860125
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 21,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -9.934249943574958e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.3467452046274118,
+          0.06644532564672377
+        ],
+        [
+          -0.08942953225425818,
+          0.3755949857229351,
+          0.09529495785716655
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10832549876381993,
+        0.3605008599494824,
+        0.08260557075975852
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 22,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -9.14224796743756e-07,
+      "bounds_m": [
+        [
+          -0.11950000010000003,
+          0.37431443408592563,
+          0.03906928438246492
+        ],
+        [
+          -0.11322599484808824,
+          0.39631710174347756,
+          0.059350808828624306
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11747707124181164,
+        0.3838587249252903,
+        0.05153928933847028
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 16
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 23,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -8.226400238155605e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.1850050195245123,
+          -0.09529495802648538
+        ],
+        [
+          -0.09276347096579789,
+          0.21385467435327826,
+          -0.06644532564672463
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10999221930925243,
+        0.20033122197479275,
+        -0.08298591331704051
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 24,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.14502255264793e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000006,
+          0.22094921263722778,
+          -0.11749256767106135
+        ],
+        [
+          -0.06274702829052752,
+          0.2523007127961996,
+          -0.09401441947917784
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.0961447966127974,
+        0.236917682175076,
+        -0.1066409424963876
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 25,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.7493427416656524e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000006,
+          0.2648293879363049,
+          -0.12300000010000005
+        ],
+        [
+          -0.05287428669314613,
+          0.2957705537265752,
+          -0.10650948695474995
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.08974222267108999,
+        0.2802999982308624,
+        -0.1151590585831173
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 26,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -2.1450202150816736e-05,
+      "bounds_m": [
+        [
+          -0.11950000010000006,
+          0.3082993123032981,
+          -0.11749255947709142
+        ],
+        [
+          -0.0627470280004358,
+          0.3396507570189393,
+          -0.09401442720325524
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.09614481970961546,
+        0.3236823182565377,
+        -0.10664094025044055
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 27,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -9.934270454459225e-06,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.3467453256467249,
+          -0.09529501580505394
+        ],
+        [
+          -0.08942953231026052,
+          0.37559501505528775,
+          -0.06644522272352715
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.10832547368620417,
+        0.36050085548627514,
+        -0.0826055802574745
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 24
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 28,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -9.142253829919828e-07,
+      "bounds_m": [
+        [
+          -0.11950000010000005,
+          0.3743144354198746,
+          -0.05935081206893729
+        ],
+        [
+          -0.11322599399930308,
+          0.3963170891901669,
+          -0.03906928438246532
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.11747706401235855,
+        0.3838587424838654,
+        -0.051539310719509186
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 16
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 29,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -1.8160674248516884e-05,
+      "bounds_m": [
+        [
+          -0.0671769146362416,
+          0.39829999990000003,
+          -0.10643285901076757
+        ],
+        [
+          0.07534429031599922,
+          0.4263000001000002,
+          0.10643285901491226
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.06409853422828088,
+        0.41115601201308005,
+        4.002517366751586e-08
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 39
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 30,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -3.4970774153587937e-06,
+      "bounds_m": [
+        [
+          -0.05481977597346978,
+          0.34623204738404145,
+          -0.1257828428124753
+        ],
+        [
+          0.12589456067929436,
+          0.394988914774552,
+          0.12578284281247468
+        ]
+      ],
+      "volume_centroid_m": [
+        0.05758076584949437,
+        0.3786813401939962,
+        -0.001324660126474921
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 12
+      },
+      "outside_vertex_samples_m": []
+    },
+    {
+      "index": 31,
+      "closed": true,
+      "shell_topology_valid": true,
+      "signed_volume_m3": -3.0268745363116524e-09,
+      "bounds_m": [
+        [
+          -0.12320383930940254,
+          0.40272432792758983,
+          -0.09909450033261868
+        ],
+        [
+          -0.07828275279107758,
+          0.4149033711841715,
+          0.0990946489311661
+        ]
+      ],
+      "volume_centroid_m": [
+        -0.12269127684958162,
+        0.4148357187123397,
+        -0.0017718388084561206
+      ],
+      "vertices_against_outer_solid": {
+        "TopAbs_State.TopAbs_IN": 2
+      },
+      "outside_vertex_samples_m": []
+    }
+  ],
+  "original_solid_valid": false,
+  "note": "Vertex membership is diagnostic, not a full geometric containment proof or a repair."
+}

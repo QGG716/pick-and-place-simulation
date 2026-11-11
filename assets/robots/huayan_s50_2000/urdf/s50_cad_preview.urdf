@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="huayan_s50_2000_cad_preview">
+  <!--CAD preview only: q0 is supplied CAD assembly; right-hand simulation axes; no controller mapping, hard limits, dynamics or tool qualification.-->
+  <link name="s50_base">
+    <visual name="base_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_base.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="base_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_base.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_1">
+    <visual name="j1_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_1.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j1_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_1.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <collision name="j1_s50_collision_1">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_1_collision_patch_0.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_2">
+    <visual name="j2_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_2.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j2_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_2.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <collision name="j2_s50_collision_1">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_2_collision_patch_1.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_3">
+    <visual name="j3_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_3.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j3_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_3.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_4">
+    <visual name="j4_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_4.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j4_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_4.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_5">
+    <visual name="j5_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_5.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j5_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_5.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_6">
+    <visual name="j6_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_6.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j6_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/link-local/s50_link_6.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_flange" />
+  <joint name="s50_joint_1" type="revolute">
+    <parent link="s50_base" />
+    <child link="s50_link_1" />
+    <origin xyz="-2.9871891993173851e-17 -9.2076525001304579e-18 0.28330000000000011" rpy="0 -0 0" />
+    <axis xyz="-1.6729986545114403e-16 9.1804369586452511e-17 1" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_joint_2" type="revolute">
+    <parent link="s50_link_1" />
+    <child link="s50_link_2" />
+    <origin xyz="-0.33449999999999996 7.2716032560591285e-17 0" rpy="0 -0 0" />
+    <axis xyz="1 1.3183898417423739e-16 3.1077133375357898e-17" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_joint_3" type="revolute">
+    <parent link="s50_link_2" />
+    <child link="s50_link_3" />
+    <origin xyz="0.33620000000000017 1.8609854489499798e-07 0.9000000000000089" rpy="0 -0 0" />
+    <axis xyz="1 -5.4386414540047418e-16 -1.5647597882003945e-16" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_joint_4" type="revolute">
+    <parent link="s50_link_3" />
+    <child link="s50_link_4" />
+    <origin xyz="-0.25569980164770467 -1.860985446010984e-07 0.94149999999998157" rpy="0 -0 0" />
+    <axis xyz="1 -4.9454015927933308e-16 -4.1858815815974558e-16" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_joint_5" type="revolute">
+    <parent link="s50_link_4" />
+    <child link="s50_link_5" />
+    <origin xyz="5.5511151231257827e-17 -2.5206860260892111e-16 0.15850000000000009" rpy="0 -0 0" />
+    <axis xyz="1.0390488085761018e-16 -6.2450045135165055e-17 1" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_joint_6" type="revolute">
+    <parent link="s50_link_5" />
+    <child link="s50_link_6" />
+    <origin xyz="-0.088000000000000356 7.2523459960687251e-17 0" rpy="0 -0 0" />
+    <axis xyz="1 -5.5265144498191236e-16 -1.0390488085760716e-16" />
+    <!--These finite ranges, velocity and zero effort are preview/parser fields, NOT physical limits or dynamics parameters.-->
+    <limit lower="-3.1415926535897931" upper="3.1415926535897931" velocity="1" effort="0" />
+  </joint>
+  <joint name="s50_link_6_to_flange" type="fixed">
+    <parent link="s50_link_6" />
+    <child link="s50_flange" />
+    <origin xyz="-0.046499999999999986 -7.5002360335090011e-17 0" rpy="0 -1.5707963267948963 9.8607613152626476e-32" />
+  </joint>
+</robot>

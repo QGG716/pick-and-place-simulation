@@ -138,13 +138,14 @@ class BatchState:
 
 
 def batch_scene(original,state,robot,layout):
+    from .robot_native_binding import physical_flange_frame
     mechanism=coupled_conveyor_state(layout,state.height,state.cartons)
     fixed=tuple(b for b in mechanism.boxes if b.category!='carton')
     snapshot=deepcopy(original.snapshot)
     snapshot['cartons']=[_obb_record(b) for b in state.cartons]
     snapshot['assembly']['fixed_components']=[_obb_record(b) for b in fixed]
     snapshot['robot'].update(q_rad=state.q.tolist(),tcp_pose_world=robot.fk(state.q).tolist(),
-        flange_pose_world=robot.named_link_frames(state.q)['flange'].tolist())
+        flange_pose_world=physical_flange_frame(robot,state.q).tolist())
     snapshot['robot'].pop('link_collision_obbs',None)
     snapshot['tool'].pop('rigid_collision_obbs',None);snapshot['tool'].pop('collision_obb',None)
     snapshot['tool']['task_tcp_pose_world']=robot.fk(state.q).tolist()

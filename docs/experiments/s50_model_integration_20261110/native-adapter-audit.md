@@ -2,7 +2,50 @@
 
 日期：2026-11-10。基线：`a3f08cc2283138e5905b4cc9829cefd7b4aac6b7`。
 
-本报告区分可复用接口的测试与真实 S50 的验证。当前官方标量规格和用户提供的 STEP 不足以核定六轴零位、正负方向及完整坐标映射；本次没有构造假 S50 URDF，没有将测试机器人、FANUC 或整机 STEP 当作可动的 S50。本报告的 native 测试是输入生成与协议检查，不是 MoveIt 实际规划成功记录。
+## 本轮继续实施：真实 CAD 六轴与实际 native FK
+
+用户授权 STEP 装配状态作为仿真零位、测得轴线按右手正向旋转后，已接入真实 S50 分连杆 CAD 的六关节 URDF。此仿真坐标约定不等于厂家控制器零位。`cad_preview_fk_only` 的角度区间只供预览；正式控制器映射、实际安装 clocking、吸具物理连接和碰撞资格仍分别检查。
+
+服务器独立目录 `/work-s50-cad-motion-20261110-v1` 的第一轮实际结果见 [`../s50_cad_motion_20261110/native-fk-report.json`](../s50_cad_motion_20261110/native-fk-report.json)：15 组姿态比较核心 URDF、Pinocchio/Coal 与 C++ MoveIt worker，最大矩阵误差分别为 `1.11e-15`、`4.44e-16`，加载 9 个真实碰撞几何对象。worker 实际拒绝 IK 请求，返回 `CAD_PREVIEW_FK_ONLY_NO_MOTION`。这是实际模型加载与 FK 验证；没有进行碰撞接受、初态求解、单箱运动或动力学验证。模型定义 SHA-256 为 `38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036`。
+
+本轮新增实际实现：
+
+- `PinocchioHppFclBackend.from_binding` 使用同一源 URDF/SRDF/网格；仅输出目录内副本补解析字段，世界基座变换只应用一次。没有胶囊来源时禁用胶囊接口，不猜半径。OBJ 几何由同一绑定解析；读取顶点边界只用于 broadphase，实际碰撞权威仍为 Coal 网格。
+- `native_fk_model_request` 和 C++ `cad_preview_fk_only` 会话只提供 FK；不初始化规划 pipeline，不允许 IK、碰撞资格或运动请求。未知 effort 的零值仅为 URDF parser 占位，源文件不变；源配置已声明的 effort 占位也记录为未知实际力矩。
+- `configured_layout_trajectory.make_configured_context` 从同一绑定读取实际 Coal 底座包络，建立新机器人完整指纹、冻结环境、原吸具及显式法兰连接。`build_configured_layout_trajectory_connector` 真正构建现有 exact validator/connector，核对 FK、Jacobian 与工具 frame。没有复制 FANUC 径向 reach 或大臂/小臂姿态限制。
+- `tools/plan_s50_single_carton.py --mode single-carton` 在 `geometric_planning.ready` 为真后执行独立、确定种子的初态 IK；严格检查限位、自碰撞、机器人/工具/环境。合格后才创建新 40 箱快照，再调用现有 `gap_search_recipes.candidate_options` 和 `plan_m710_joint_search.run_trial`。原高层 FRONT 抽离后直接释放、退出、返回与输送带升降流程保留。`front_arm_posture=none`，不使用旧 FANUC 初始 q。
+- native 数值资源只读取冻结实际 launch 的 `600/360/360/30/20` 秒配置；共享单箱候选总资源，不重置已消耗预算。可显式指定资源上限；不是新设业务截止时间。初态搜索另外记录全部有限种子、迭代上限、失败构型与未搜索数量。
+- S50 基座不继承 FANUC `base_link/mount_plinth` 接触例外；未核定实际安装面接触时，支座保持普通严格碰撞体，可能真实导致初态失败。未通过移动支座、重命名机器人或宽免碰撞消除此问题。
+- 原生时序从明确的速度/加速度资料或显式工程假设读取，记录来源与有效值，不给 S50 套用 FANUC 的默认加速度。时序资料缺失不阻断静态 FK 或初态几何检查，但阻断需要时序的 native 轨迹生成。
+- `verify_m710_joint_search.verify_cycle` 接受绑定的真实 base 角色，并逐段核对当前任务身份、保存的 native SUCCESS 响应及原始中间轨迹点；端点相同不能掩盖中间点替换。只有通过原生完整周期审查的轨迹才导出 `s50_native_joint_trajectory_v1`。文件带模型/场景身份、验证及 plan 哈希、当前任务 provenance；回放范围明确为 `robot_joint_only`，环境是 `initial_scene_static_reference`，不能冒充箱体/横带状态动画。
+
+当前正式入口实际运行结果为 `NOT_RUN_MODEL_NOT_READY`，在启动 worker/IK 前列出物理数据缺项。正式 context、初态、run_trial、轨迹导出调用链已接线，但 S50 正式安装/工具定义未齐，尚未实际跑过该完整单箱链路；测试中的人工 fixture 不作为其成功证据。不能写“机械臂替换完成”。
+
+最新本地聚焦测试：
+
+```powershell
+& 'D:/code/eco65 pick and place/.venv/Scripts/python.exe' -m pytest `
+  tests/test_configured_native_entry.py tests/test_robot_model_binding.py `
+  tests/test_joint_search_layout.py tests/test_moveit2_tcp.py `
+  tests/test_contact_simulation_policy.py --basetemp=outputs/pytest-s50-chain-final -q
+```
+
+结果：`57 passed, 1 skipped`。跳过项为本地未安装 Pinocchio 的真实 FANUC 新旧 Pin 加载器三姿态 FK/Jacobian/网格包络回归，供服务器同依赖环境执行。其余覆盖 preview 拒绝 motion、frame/TCP、缺 effort、明确时序、旧 FANUC native 默认、安装例外保持严格、初态碰撞失败保留、全新 40 箱 `run_trial` 调用接线、导出到 viewer 合同、中间轨迹点篡改拒绝。接线测试明确使用人工 fixture；不是 S50 规划成功。
+
+最终集成复核进一步覆盖 9 个相关测试模块：Windows 为 `155 passed, 1 skipped`（19.59 秒）；服务器为 `156 passed, 0 skipped`（46.58 秒）。服务器逐一核对 577 个同步文件 SHA 后运行，实际完成上述 FANUC 三合法姿态的核心/新旧 Pinocchio FK、Jacobian 和 7 个原碰撞网格包络一致性检查。这是共享加载接口回归，没有启动 FANUC 搜索。实际 native worker 二进制 SHA-256 为 `0fbb1bd6211b68981c16c03dc3056d1db5ddc686470a78ab00d94cdf6d414015`。汇总证据由 `s50_cad_motion_20261110/verification-summary.json` 记录。
+
+可复现入口（在独立工作目录，`PYTHONPATH=src:tools`）：
+
+```bash
+python tools/plan_s50_single_carton.py --mode preview-fk --output outputs/s50-preview-fk --worker-command '<独立编译的 worker 启动命令>'
+python tools/plan_s50_single_carton.py --mode single-carton --output outputs/s50-single-carton --worker-command '<独立编译的 worker 启动命令>'
+```
+
+正式入口失败时返回非零并保留 JSON。当前不启动全 40 箱搜索，不触碰 FANUC worker 或其检查点。
+
+## 第一轮历史记录（尚未获准 CAD 仿真坐标时）
+
+以下记录保留首轮范围：当时官方标量规格和用户 STEP 不足以核定厂家控制器零位、方向及完整坐标映射，因此只完成通用接口、合成 fixture 的协议测试，没有宣称真实 S50 原生规划成功。其“未完成”清单以本轮新增实现与实际结果为准。
 
 ## 已实现的接口
 

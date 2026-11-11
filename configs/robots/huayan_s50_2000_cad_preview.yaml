@@ -1,0 +1,61 @@
+schema_version: cad_preview_robot_binding_v1
+model: huayan_s50_2000_cad_preview
+model_id: huayan_s50_2000_cad_preview
+model_usage: cad_preview_fk_only
+model_revision: measured_S50_CAD_user_authorized_simulation_zero_v1
+kinematics:
+  urdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.urdf
+  srdf_path: ../../assets/robots/huayan_s50_2000/urdf/s50_cad_preview.srdf
+  active_joint_names:
+  - s50_joint_1
+  - s50_joint_2
+  - s50_joint_3
+  - s50_joint_4
+  - s50_joint_5
+  - s50_joint_6
+  base_link: s50_base
+  flange_link: s50_flange
+  tip_link: s50_flange
+  mounting_from_base:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+  planning_group: manipulator
+  zero_pose_reference: USER_AUTHORIZED_SUPPLIED_CAD_ASSEMBLY_NOT_CONTROLLER_ZERO
+  axes_zero_offsets_signs_source: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json
+  package_map: {}
+preview_only:
+  display_range_rad:
+  - -3.141592653589793
+  - 3.141592653589793
+  mechanical_limits: false
+  hardware_velocity_limits: false
+  urdf_effort_is_placeholder: true
+  controller_mapping_verified: false
+  installation_clocking_verified: false
+collision:
+  capsule_radii_m: null
+  capsule_self_exclusions: []
+  reviewed_self_collision_pairs: []
+tool_interface:
+  flange_from_project_tool_mount: null
+  additional_physical_adapter: false
+readiness:
+  cad_articulation_defined: true
+  operational_planning_ready: false
+  dynamics_verified: false
+generated_definition: ../../assets/robots/huayan_s50_2000/generated/cad_kinematic_model.json
+source_step_sha256: 7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3

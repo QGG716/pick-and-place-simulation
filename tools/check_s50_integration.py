@@ -18,6 +18,9 @@ import numpy as np
 import yaml
 from unloading_sim.robot_model_binding import ModelNotReady, RobotModelBinding, rigid_transform
 from unloading_sim.robot_native_binding import configured_wrist_tool_links
+from unloading_sim.s50_qualification import (
+    controller_mapping_audit, geometric_definition_errors, timing_audit,
+)
 from unloading_sim.robot_replacement_layout import (
     BASELINE_COMMIT, build_replacement_layout, compare_non_robot_scenes,
     freeze_non_robot_scene, frozen_baseline_layout,
@@ -62,9 +65,7 @@ def qualification_errors(data: dict, binding: RobotModelBinding | None) -> list[
     for field in ('reviewed_self_collision_pairs', 'owned_tool_exempt_robot_links'):
         if not isinstance(collision.get(field), list):
             missing.append('collision.'+field)
-    conflict = data.get('joint_velocity_version_conflict') or {}
-    if conflict and not _evidence_present(conflict.get('verified_resolution_source')):
-        missing.append('joint_velocity_version_conflict.verified_resolution_source')
+    # Velocity revisions belong to timing_audit, not static/geometric admission.
     if binding is None:
         return missing
     try:
@@ -101,6 +102,32 @@ def qualification_errors(data: dict, binding: RobotModelBinding | None) -> list[
     return missing
 
 
+def cad_preview_audit(root=ROOT):
+    """Load the real local model and evaluate FK, independent of task limits."""
+    try:
+        from unloading_sim.s50_cad_model import ensure_preview_assets, load_definition, load_preview_robot
+        materialized = ensure_preview_assets(root)
+        definition = load_definition(root)
+        robot = load_preview_robot(root)
+        frames = robot.named_link_frames(np.zeros(6))
+        if len(robot.active_joint_names) != 6 or not all(np.isfinite(frame).all() for frame in frames.values()):
+            raise ValueError('CAD_PREVIEW_FK_INVALID')
+        return dict(ready=True, status='READY_CAD_KINEMATIC_PREVIEW_ONLY',
+            model_definition_sha256=definition['definition_sha256'],
+            active_joint_names=list(robot.active_joint_names),
+            zero='USER_AUTHORIZED_CAD_ASSEMBLY_SIMULATION_ZERO_NOT_CONTROLLER_ZERO',
+            positive='RIGHT_HAND_RULE_ABOUT_MEASURED_AXES',
+            zero_flange_in_sim_mount=frames[definition['flange_link']].tolist(),
+            assets=materialized, controller_mapping_required_for_preview=False,
+            velocity_revision_required_for_static_fk=False,
+            display_ranges_are_mechanical_limits=False, formal_initial_state_solved=False,
+            collision_qualified=False, missing=[])
+    except (OSError, ValueError, TypeError, KeyError, ImportError) as exc:
+        return dict(ready=False, status='CAD_PREVIEW_NOT_READY',
+            missing=[type(exc).__name__ + ':' + str(exc)],
+            controller_mapping_required_for_preview=False, velocity_revision_required_for_static_fk=False)
+
+
 def audit(config: Path, root: Path = ROOT) -> dict:
     config = config.resolve()
     data = yaml.safe_load(config.read_text(encoding="utf-8"))
@@ -120,6 +147,12 @@ def audit(config: Path, root: Path = ROOT) -> dict:
         missing.append('model.INVALID_DEFINITION:'+type(exc).__name__+':'+str(exc))
     # Source qualification is separate from syntactically valid URDF files.
     missing.extend(qualification_errors(data, binding))
+    missing.extend(geometric_definition_errors(data))
+    mapped_limits = controller_mapping_audit(data)
+    if binding is not None and mapped_limits['ready']:
+        expected = np.asarray([mapped_limits['converted_limits_rad'][f'J{i}'] for i in range(1,7)])
+        if not np.allclose(binding.joint_limits, expected, atol=1e-10, rtol=0):
+            missing.append('controller_mapping.SIMULATION_URDF_LIMITS_DO_NOT_MATCH_VERIFIED_MAPPING')
     source_path = root / "assets/robots/huayan_s50_2000/sources.json"
     sources = json.loads(source_path.read_text(encoding="utf-8")) if source_path.is_file() else {}
     source = sources.get("user_supplied_cad", {})
@@ -144,6 +177,11 @@ def audit(config: Path, root: Path = ROOT) -> dict:
         status="MODEL_DEFINITION_ADMISSIBLE_NOT_MOTION_VALIDATED" if ready else "MODEL_NOT_READY",
         replacement_complete=False, missing_critical_data=missing,
         config_sha256=hashlib.sha256(config.read_bytes()).hexdigest(),
+        controller_limit_mapping=controller_mapping_audit(data),
+        cad_joint_preview=cad_preview_audit(root),
+        time_parameterization=timing_audit(data),
+        geometric_planning=dict(ready=ready, status='DEFINITION_ADMISSIBLE_NOT_MOTION_VALIDATED' if ready else 'NOT_READY',
+            missing=missing, speed_revision_conflict_is_not_a_geometry_blocker=True),
         model_binding=None if binding is None else binding.identity(),
         cad=dict(path=source.get("copied_path"), sha256=actual_sha, source_hash_verified=cad_verified,
                  official_download_hash_equivalence_verified=False),
@@ -170,7 +208,7 @@ def audit(config: Path, root: Path = ROOT) -> dict:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=ROOT / "configs/robots/huayan_s50_2000.yaml")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_model_integration/admission.json")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/s50_cad_motion_20261110/admission.json")
     args = parser.parse_args(argv)
     report = audit(args.config)
     args.output.parent.mkdir(parents=True, exist_ok=True)

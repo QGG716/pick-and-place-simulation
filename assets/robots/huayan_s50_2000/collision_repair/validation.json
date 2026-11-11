@@ -1,0 +1,46 @@
+{
+  "schema": "s50_collision_local_patch_validation_v1",
+  "patch_checks": [
+    {
+      "part": "j1_s50",
+      "patch_hash_matches": true,
+      "edge_identity_preserved": true,
+      "exact_bounds_unchanged": true,
+      "absolute_area_preserved_within_1e_15_m2": true,
+      "sampled_boundary_error_below_100_nm": true,
+      "nonzero_triangles": true
+    },
+    {
+      "part": "j2_s50",
+      "patch_hash_matches": true,
+      "edge_identity_preserved": true,
+      "exact_bounds_unchanged": true,
+      "absolute_area_preserved_within_1e_15_m2": true,
+      "sampled_boundary_error_below_100_nm": true,
+      "nonzero_triangles": true
+    }
+  ],
+  "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "historical_cad_audit_unchanged": true,
+  "all_seven_original_meshes_unchanged": true,
+  "python_scripts_compile": "PASS",
+  "local_patch_geometry": "PASS_AT_RECORDED_TESSELLATION_TOLERANCE",
+  "whole_j1_solid_topology": "RETAINED_INVALID_INTERNAL_SHELL_STRUCTURE",
+  "whole_j2_reversed_replacement": "PASS",
+  "scene_collision_or_belt_clearance": "NOT_ASSESSED_BY_THIS_LOCAL_AUDIT",
+  "whole_j1_shell_diagnostics": {
+    "shell_count": 32,
+    "all_shells_closed_and_individually_valid": true,
+    "principal_outer_solid_valid": true,
+    "outer_plus_individual_void_cases": 31,
+    "outer_plus_individual_void_passes": 31,
+    "problematic_inner_shell_pair": [
+      14,
+      16
+    ],
+    "exact_distance_m": 0.06413966135174394,
+    "boolean_intersection_empty": true,
+    "four_order_checks_all_remain_invalid": true,
+    "no_shell_discarded": true
+  }
+}

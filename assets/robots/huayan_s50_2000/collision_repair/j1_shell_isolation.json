@@ -1,0 +1,260 @@
+{
+  "schema": "s50_j1_shell_isolation_v1",
+  "incremental_additions": [
+    {
+      "added_shell": 0,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 1,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 2,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 3,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 4,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 5,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 6,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 7,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 8,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 9,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 10,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 11,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 12,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 13,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 14,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 15,
+      "solid_valid": true
+    },
+    {
+      "added_shell": 16,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 17,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 18,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 19,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 20,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 21,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 22,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 23,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 24,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 25,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 26,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 27,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 28,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 29,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 30,
+      "solid_valid": false
+    },
+    {
+      "added_shell": 31,
+      "solid_valid": false
+    }
+  ],
+  "individual_void_checks": [
+    {
+      "inner_shell": 1,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 2,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 3,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 4,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 5,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 6,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 7,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 8,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 9,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 10,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 11,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 12,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 13,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 14,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 15,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 16,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 17,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 18,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 19,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 20,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 21,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 22,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 23,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 24,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 25,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 26,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 27,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 28,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 29,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 30,
+      "outer_plus_this_void_valid": true
+    },
+    {
+      "inner_shell": 31,
+      "outer_plus_this_void_valid": true
+    }
+  ],
+  "caveat": "Only source topology is rebuilt for diagnosis. No shell is discarded in collision meshes or original data."
+}

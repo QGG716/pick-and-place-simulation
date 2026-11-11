@@ -1,0 +1,108 @@
+{
+  "schema": "s50_articulated_cad_viewer_v1",
+  "html": "D:\\code\\pick and place\\.codex-tools\\worktrees\\s50\\docs\\experiments\\s50_cad_motion_20261110\\viewer.html",
+  "model_definition_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "model_status": "CAD_PREVIEW_READY_FORMAL_PLANNING_NOT_VERIFIED",
+  "joint_controls_enabled": true,
+  "zero_is_controller_zero": false,
+  "slider_ranges_are_mechanical_limits": false,
+  "actual_trajectory_status": "NOT_RUN",
+  "playback_scope": "robot_joint_only",
+  "environment_playback": "initial_scene_static_reference",
+  "trajectory_scene_context_verified": false,
+  "parts": [
+    {
+      "name": "s50_base",
+      "cad_body": "base_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_base.obj",
+      "sha256": "813961e87d5f59bb74fb96a6a3f5652f8dabe48802a82abb2777d2221bd1a5b6",
+      "vertices": 46063,
+      "triangles": 92180,
+      "float32_display_max_coordinate_error_m": 7.450065619973856e-9
+    },
+    {
+      "name": "s50_link_1",
+      "cad_body": "j1_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_1.obj",
+      "sha256": "b92ba8ca4f4e76eaa0862cc577204715eb77d6645e5f307f7f81815568152c68",
+      "vertices": 168030,
+      "triangles": 335737,
+      "float32_display_max_coordinate_error_m": 7.450561556598956e-9
+    },
+    {
+      "name": "s50_link_2",
+      "cad_body": "j2_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_2.obj",
+      "sha256": "e1fce1e6e867e4f1070b5c88efbcb0a0104eedf12c2c4ea69c095eba5af226bb",
+      "vertices": 139401,
+      "triangles": 278573,
+      "float32_display_max_coordinate_error_m": 5.960418691941527e-8
+    },
+    {
+      "name": "s50_link_3",
+      "cad_body": "j3_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_3.obj",
+      "sha256": "23c8a80412ab7074ad831552b60a5bf769afdde97649fabf58504c47fe89b7f4",
+      "vertices": 167913,
+      "triangles": 335732,
+      "float32_display_max_coordinate_error_m": 5.958678284123664e-8
+    },
+    {
+      "name": "s50_link_4",
+      "cad_body": "j4_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_4.obj",
+      "sha256": "0a33f795b9a662d4ce3278881bcb4079a456ea3ac1b4307e2d5b94581736b44b",
+      "vertices": 60959,
+      "triangles": 121916,
+      "float32_display_max_coordinate_error_m": 3.725118435937702e-9
+    },
+    {
+      "name": "s50_link_5",
+      "cad_body": "j5_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_5.obj",
+      "sha256": "47645d680356ea05a7a56822f623691f7be7313944af429710e00cbecb10dc74",
+      "vertices": 61128,
+      "triangles": 122252,
+      "float32_display_max_coordinate_error_m": 3.7252076701133063e-9
+    },
+    {
+      "name": "s50_link_6",
+      "cad_body": "j6_s50",
+      "path": "assets/robots/huayan_s50_2000/meshes/link-local/s50_link_6.obj",
+      "sha256": "3fba47bd6c749db84a3e06acf1886d86a33f66f3c36cc960f4bb1f2907f18402",
+      "vertices": 13146,
+      "triangles": 26286,
+      "float32_display_max_coordinate_error_m": 3.6899283628599733e-9
+    }
+  ],
+  "float32_display_max_coordinate_error_m": 5.960418691941527e-8,
+  "layout_difference": {
+    "status": "PASS",
+    "passed": true,
+    "differences": [],
+    "before_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "after_environment_fingerprint": "a315bcfc14f3bdadc61b589fea7cf39010a47c56362a33f55ecbc6f3ec9bc1a1",
+    "sampled_heights_m": [
+      0.55,
+      0.6,
+      1,
+      1.5
+    ],
+    "checked_entities_per_height": [
+      148,
+      148,
+      148,
+      148
+    ],
+    "initial_carton_count": 40,
+    "model_readiness_evaluated": false,
+    "tool_world_pose_compared": false,
+    "scope": "NON_ROBOT_GEOMETRY_STROKE_AND_INTRINSIC_TOOL_ONLY"
+  },
+  "payload_sha256": "612c42bbb2c6a8e15fb45be4993afc23b67c1c2c9c3ecbbcc95b2eba31077cf9",
+  "html_sha256": "a38000f68a6c3ead5acd46ff492f402d88d2ab56a8689ac4b2b15f17b0e2971b",
+  "browser_visual_validation": "NOT_COMPLETED_CUA_STOPPED_URL_CONFIDENCE_CHECK",
+  "browser_detail": "Browser access host unavailable; CUA stopped because current browser URL could not be confirmed. No browser interaction continued after stop.",
+  "javascript_syntax": "PASS_IN_NODE_VM",
+  "independent_fk_report": "viewer-fk-validation.json"
+}
