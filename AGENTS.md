@@ -28,6 +28,15 @@ sealing cups, and verify actual gripper pressure before extraction. Preserve the
 original calibration file bytes/status; bind the user's field confirmation
 separately. No historical acceptance-report gate and no training-example fallback.
 
+For confirmed passive self-closing cups, distinguish sealing IDs from permitted
+target-lip contact IDs. Nonsealing terminal lips may meet this same target face
+only under the existing 0.4 mm plane-penetration and 0.01 rad normal guards;
+they do not count as seals. Bind exact source CAD lip IDs, retain rigid inserts
+and all other collision pairs, and recheck sealed coverage/gap in the fixed
+loaded attachment. Approach stages have no target contact permission.
+Actual measured contact FK must also check every permitted lip for penetration
+before establishing vacuum and throughout the pressure-confirmation dwell.
+
 The user explicitly deferred receiving-region qualification at q_start for this
 round. Still validate the complete loaded return and release collision envelope;
 record RECEIVER_QUALIFICATION_DEFERRED_BY_USER, never support certification.

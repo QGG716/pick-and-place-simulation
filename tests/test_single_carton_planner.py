@@ -34,15 +34,17 @@ def case(tmp_path,monkeypatch):
     p.contact_geometry=dict(terminal_band_by_contour={s['id']:s['component']+'_lip' for s in tool['seals']})
     p.init=dict(identity=dict(flange_from_task_tcp=tool['T_flange_tcp']))
     p.clearance={};p.limits=Limits((-3.,)*6,(3.,)*6,(.1,)*6,(.2,)*6);p.reach_bound=1.
-    calls=[];options=dict(reject_return=False)
+    calls=[];options=dict(reject_return=False,reject_loaded_start=False)
     class Native:
         def __init__(self,*args,**kwargs):pass
         def request(self,r,**kwargs):
             calls.append(deepcopy(r))
             if r==p.init:return dict(status='READY')
             if r['op']=='validate':
-                valid=not(options['reject_return'] and r['stage']=='return' and 'probe_path' in r)
-                return dict(native_valid=valid,legacy_intersection_valid=valid,path_failure=None if valid else {'reason':'PAYLOAD_NEIGHBOR_COLLISION'})
+                valid=not((options['reject_return'] and r['stage']=='return' and 'probe_path' in r) or
+                          (options['reject_loaded_start'] and r['stage']=='return' and 'probe_path' not in r))
+                failure=None if valid else {'reason':'PAYLOAD_NEIGHBOR_COLLISION'}
+                return dict(native_valid=valid,legacy_intersection_valid=valid,path_failure=failure,failure=failure)
             stage=r['stage'];qgoal=r.get('q_goal',[dict(approach=.01,contact=.02,detach=.03)[stage]]*6) if stage!='return' else r['q_goal']
             return dict(status='SUCCESS',native_output_status='PASS',points=[dict(t=0.,q=r['q_start'],v=[0.]*6,a=[0.]*6),dict(t=1.,q=qgoal,v=[0.]*6,a=[0.]*6)])
         def close(self):pass
@@ -67,7 +69,14 @@ def test_full_loaded_chain_validated_before_any_permit(case):
     assert {w['id'] for w in motions[0]['world']}=={'wall',box['id']}
     assert motions[0]['allowed_pairs']==[['base_link','robot_mount_plate']]
     assert all(pair[1].endswith('_lip') for pair in motions[1]['allowed_pairs'][1:])
-    assert len(motions[1]['allowed_pairs'])==7
+    assert len(motions[1]['allowed_pairs'])==13  # mount + all 12 terminal lips, never rigid cups
+    spec=motions[1]['single_carton_contact']
+    assert len(spec['active_ids'])==6 and len(spec['target_lip_contact_ids'])==12
+    lips=[p.contact_geometry['terminal_band_by_contour'][i] for i in spec['target_lip_contact_ids']]
+    assert motions[1]['allowed_pairs'][1:]==[[box['id'],lip] for lip in lips]
+    assert motions[2]['attachment']['touch_links']==lips
+    recorded=json.loads(next(folder.glob('*/loaded-start-check.json')).read_text())
+    assert recorded['result']['native_valid'] and recorded['request']['stage']=='return'
     assert len(p.authority._plans)==4
     assert len([c for c in calls if c.get('op')=='validate' and 'probe_path' in c])==4
     inertia=np.asarray(plan['binding']['physical_cycle']['payload_mass_properties']['inertia_box_kg_m2'])
@@ -82,12 +91,26 @@ def test_loaded_return_collision_rejects_whole_task_without_any_permit(case,monk
     with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE'):p.plan_cycle(obs,[box],folder)
     assert p.authority._plans=={} and not (folder/'complete-plan.json').exists()
     assert any(c.get('stage')=='return' and c.get('attachment') for c in calls)
+    failures=json.loads((folder/'planning-failures.json').read_text())
+    assert failures[0]['candidate']==0 and 'PAYLOAD_NEIGHBOR_COLLISION' in failures[0]['reason']
 
 
 def test_unknown_requested_target_is_not_substituted(case):
     p,obs,box,folder,calls,opts=case
     with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE'):p.plan_cycle(obs,[box],folder,selected=999)
     assert not [c for c in calls if c.get('op')=='plan']
+
+
+def test_loaded_start_rejections_are_recorded_and_summarized_without_motion_plans(case):
+    p,obs,box,folder,calls,opts=case;opts['reject_loaded_start']=True
+    with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE') as error:
+        p.plan_cycle(obs,[box],folder)
+    assert 'LOADED_Q_START_COLLISION × 32' in str(error.value)
+    assert len(str(error.value))<1000 and 'PAYLOAD_NEIGHBOR_COLLISION' in str(error.value)
+    failures=json.loads((folder/'planning-failures.json').read_text())
+    assert len(failures)==32 and {f['candidate'] for f in failures}==set(range(32))
+    assert len(list(folder.glob('*/loaded-start-check.json')))==32
+    assert not [c for c in calls if c.get('op')=='plan'] and p.authority._plans=={}
 
 
 def test_final_sample_collision_bound_includes_actual_large_payload_extent(case):

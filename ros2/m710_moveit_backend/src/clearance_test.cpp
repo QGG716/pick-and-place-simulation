@@ -259,6 +259,41 @@ void physicalSingleCartonCases(J& out) {
   bad=loaded;bad["attachment"]["pose"][2][3]=-.001;m710::SingleCartonContact under(bad);
   require(!under.check(s->getCurrentState()).is_null(),"PHYSICAL_PAYLOAD_SUPPORT_PENETRATION");
   bad=loaded;bad["single_carton_contact"]["supports"][0]["top_world_m"]=-.1;rejects(bad);
+  // A passive, nonsealing ring crosses the target edge. Its terminal skirt
+  // can touch the target plane, but contributes no anticipated seal.
+  auto passive=req;
+  auto& pg=passive["single_carton_contact"]["geometry"];
+  pg["connected_cup_ids"].push_back("edge");pg["terminal_band_by_contour"]["edge"]="passive_lip";
+  pg["contours"].push_back({{"id","edge"},{"points_m",{{.06,0.,-.01},{.09,0.,-.01},{.09,0.,.01},{.06,0.,.01}}}});
+  passive["single_carton_contact"]["target_lip_contact_ids"]={"seal","edge"};
+  passive["allowed_pairs"].push_back({"target","passive_lip"});
+  m710::SingleCartonContact edge(passive);require(edge.check(s->getCurrentState()).is_null(),"PASSIVE_EDGE_LIP_CONTACT_ALLOWED");
+  bad=passive;bad["single_carton_contact"]["active_ids"].push_back("edge");
+  m710::SingleCartonContact falseSeal(bad);require(!falseSeal.check(s->getCurrentState()).is_null(),"PASSIVE_EDGE_IS_NOT_SEAL");
+  bad=passive;bad["single_carton_contact"]["geometry"]["contours"][1]["points_m"][0][1]=-.001;
+  m710::SingleCartonContact edgeUnder(bad);require(!edgeUnder.check(s->getCurrentState()).is_null(),"PASSIVE_EDGE_CANNOT_PENETRATE");
+  bad=passive;bad["single_carton_contact"]["geometry"]["topology"]["uncovered_cups_self_close"]=false;rejects(bad);
+  bad=passive;bad["allowed_pairs"].push_back({"neighbor","passive_lip"});rejects(bad);
+  bad=passive;bad["allowed_pairs"].push_back({"target","rigid_insert"});rejects(bad);
+  bad=passive;bad["single_carton_contact"]["target_lip_contact_ids"].push_back("unknown");rejects(bad);
+  bad=passive;bad["single_carton_contact"]["target_lip_contact_ids"].push_back("edge");rejects(bad);
+  bad=passive;bad["single_carton_contact"]["target_lip_contact_ids"]={"edge"};rejects(bad);
+  bad=passive;bad["single_carton_contact"]["allow_contact"]=false;rejects(bad); // no approach exemption
+  auto pload=passive;pload["single_carton_contact"]["allow_contact"]=false;
+  pload["attachment"]={{"id","target"},{"size",{.15,.1,.1}},{"pose",pose},{"touch_links",{"tool","passive_lip"}}};
+  m710::SingleCartonContact held(pload);require(held.check(s->getCurrentState()).is_null(),"LOADED_PASSIVE_EDGE_CONTACT");
+  bad=pload;bad["attachment"]["touch_links"].push_back("robot");rejects(bad);
+  bad=pload;bad["single_carton_contact"]["active_ids"].push_back("edge");
+  m710::SingleCartonContact badLoadedSeal(bad);require(!badLoadedSeal.check(s->getCurrentState()).is_null(),"LOADED_ACTIVE_EDGE_REJECTED");
+  bad=pload;bad["attachment"]["pose"][1][3]=-.051;
+  m710::SingleCartonContact gap(bad);require(!gap.check(s->getCurrentState()).is_null(),"LOADED_ATTACHMENT_GAP_REJECTED");
+  bad=pload;bad["attachment"]["pose"][1][3]=-.049;
+  m710::SingleCartonContact loadedUnder(bad);require(!loadedUnder.check(s->getCurrentState()).is_null(),"LOADED_ATTACHMENT_PENETRATION_REJECTED");
+  bad=pload;bad["attachment"]["pose"][0][3]=.08;
+  m710::SingleCartonContact slide(bad);require(!slide.check(s->getCurrentState()).is_null(),"LOADED_ATTACHMENT_SLIDE_REJECTED");
+  bad=pload;bad["single_carton_contact"]["geometry"]["contours"][1]["points_m"][0][1]=-.001;
+  m710::SingleCartonContact loadedEdgeUnder(bad);require(!loadedEdgeUnder.check(s->getCurrentState()).is_null(),"LOADED_PASSIVE_EDGE_PENETRATION_REJECTED");
+  out["physical_passive_lip_contact_and_loaded_seal_guards"]="PASS";
   m710::nativeFrames()=old;out["physical_single_carton_contact_and_loaded_support"]="PASS";
 }
 

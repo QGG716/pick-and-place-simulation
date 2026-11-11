@@ -288,6 +288,12 @@ def contact_candidates(box, tool, topology, *, margin_m=.003, precontact_m=.03):
                 candidates.append(dict(tcp_pose=T.tolist(),precontact_pose=pre.tolist(),face=face,
                     active_ids=list(sealing),seal_check=evidence,rings_tcp={k:p.tolist() for k,p in sealing.items()},
                     suction_normal_tcp=normal.tolist(),pneumatic_mode='COMMON_VALVE_PASSIVE_SELF_CLOSING' if passive else 'COMMON_VALVE_ALL_SEAL',
+                    # All connected terminal lips can meet the same target plane.
+                    # Only complete supported rings count as anticipated seals;
+                    # passive edge contact is never an independent cup command.
+                    target_lip_contact_ids=ids,
+                    target_lip_rings_tcp={k:p.tolist() for k,p in rings.items()},
+                    passive_lip_contact_ids=[i for i in ids if i not in sealing],
                     commanded_cup_ids=ids,expected_passively_closed_ids=[i for i in ids if i not in sealing]))
     if not candidates: raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE')
     return sorted(candidates,key=lambda c:-len(c["active_ids"]))[:32]
@@ -304,3 +310,22 @@ def seal_check(tcp, face, rings_tcp, suction_normal_tcp, margin=.003, max_gap=.0
                 observed_surface_covered=covered,minimum_edge_margin_m=float(np.min(np.asarray(face['size_m'])/2-abs(uv))),
                 maximum_gap_m=float(np.max(abs(gaps))),normal_error_rad=angle,
                 connected_cup_ids=list(rings_tcp))
+
+
+def candidate_contact_check(tcp,candidate):
+    """Actual FK: seal coverage plus nonpenetration of every permitted lip.
+
+    A small tilt can leave central sealing cups valid but push a passive edge
+    lip through the plane. The native path guard and actual-feedback guard must
+    both include those nonsealing lips, without counting them as suction seals.
+    """
+    face=candidate['face']
+    check=seal_check(tcp,face,candidate['rings_tcp'],candidate['suction_normal_tcp'])
+    rings=candidate['target_lip_rings_tcp']
+    if set(rings)!=set(candidate['target_lip_contact_ids']):raise ValueError('CONTACT_LIP_GEOMETRY_MISMATCH')
+    p=transform(tcp,np.concatenate(list(rings.values())))-np.asarray(face['center_m'])
+    gaps=p@np.asarray(face['normal'])
+    valid=bool(np.isfinite(gaps).all() and np.min(gaps)>=-.0004)
+    check['terminal_lip_contact']=dict(valid=valid,minimum_plane_gap_m=float(np.min(gaps)),ids=list(rings))
+    check['valid']=check['valid'] and valid
+    return check

@@ -1,0 +1,94 @@
+{
+  "schema": "eco65_passive_lip_fix_report_v1",
+  "baseline_commit": "349f20d8dcb9ab5303ae6fa2ab828d7c4c17312f",
+  "physical_execution": "NOT_RUN",
+  "execution_authority_registered": false,
+  "source_task_id": "3d6d3d0e77a04f649d44e93bb1e66aad",
+  "input_sha256": {
+    "observation.json": "12464a8633f97c99291d4b2aa0bd42b5f4f287b56723df411a7526be3f041d90",
+    "geometry.json": "017d1bf821980553dbd11321d9c23d0523fcb472c416e0f9213f03ba3607728b"
+  },
+  "observed_box_size_m": [
+    0.16790881834681443,
+    0.10648844731537684,
+    0.11749038638166698
+  ],
+  "original_failure": {
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "part_002_lip",
+      "80831fc2-73ae-4c94-a841-5e43e16e0199-carton-0"
+    ],
+    "query_range_m": 0.0034,
+    "query_scope": "self_including_robot_tool_and_payload",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.0024,
+    "surface_distance_m": 7.292819721168991e-08
+  },
+  "corrected_loaded_start": {
+    "passed": 32,
+    "total": 32,
+    "scope": "FIXED_LOADED_Q_START_ONLY_NOT_COMPLETE_PLAN"
+  },
+  "approach_goals": {
+    "total": 32,
+    "valid_single_seed_ik_and_collision": [
+      7,
+      8,
+      9,
+      10,
+      13,
+      31
+    ],
+    "failed_seed_is_not_unreachability_proof": true
+  },
+  "approach_search": [
+    {
+      "candidate": 0,
+      "status": "REJECTED",
+      "reason": "approach:NATIVE_REJECTED:SEARCH_EXHAUSTED"
+    },
+    {
+      "candidate": 7,
+      "status": "REJECTED",
+      "reason": "approach:NATIVE_REJECTED:SEARCH_EXHAUSTED"
+    },
+    {
+      "candidate": 7,
+      "goal_mode": "NATIVE_IK_JOINT_GOAL_SAME_TCP_POSE",
+      "status": "REJECTED",
+      "reason": "approach:NATIVE_REJECTED:SEARCH_EXHAUSTED"
+    }
+  ],
+  "remaining": "Representative approach searches exhausted; no complete executable plan or physical cycle established.",
+  "offline_native_records": [
+    "outputs/single_carton_development/passive-record-3d6d3d0e",
+    "outputs/single_carton_development/passive-goals-3d6d3d0e",
+    "outputs/single_carton_development/passive-cycle-c7-3d6d3d0e",
+    "outputs/single_carton_development/passive-cycle-c7-jointgoal-3d6d3d0e"
+  ],
+  "python_directed_tests": {
+    "passed": 237,
+    "failed": 0,
+    "skipped": 0,
+    "duration_s": 20.52
+  },
+  "native_checks": {
+    "optimized": {
+      "physical_passive_lip_contact_and_loaded_seal_guards": "PASS",
+      "physical_single_carton_contact_and_loaded_support": "PASS"
+    },
+    "reference": {
+      "physical_passive_lip_contact_and_loaded_seal_guards": "PASS",
+      "physical_single_carton_contact_and_loaded_support": "PASS"
+    }
+  },
+  "worker_sha256": "67a033d3e72d82781562da8d96f829163cdfbaec2ab71f1cdc066d1514d0d77b",
+  "changes": [
+    "Separate complete sealing rings from exact connected terminal-lip contact pairs.",
+    "Keep all 12 cups and rigid/non-target collision geometry; nonpassive topology cannot grant partial seal permission.",
+    "Check loaded attachment gap, coverage, normal and lip-plane penetration.",
+    "Check every permitted terminal lip at actual feedback FK before vacuum and during grip dwell.",
+    "Persist each loaded-start check and all candidate failures; summarize repeated reasons in the GUI."
+  ]
+}

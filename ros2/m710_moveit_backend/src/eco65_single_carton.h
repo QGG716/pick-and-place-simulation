@@ -8,7 +8,7 @@ namespace m710 {
 class SingleCartonContact {
   using J=nlohmann::json;
   J spec_; Eigen::Isometry3d target_, flange_cad_;
-  std::vector<Eigen::Vector3d> rings_, corners_;
+  std::vector<Eigen::Vector3d> rings_, sealing_rings_, corners_;
   Eigen::Vector3d normal_,u_,v_,center_,half_;
   bool loaded_,contact_;
   static Eigen::Vector3d vec(const J& j) {
@@ -47,17 +47,30 @@ class SingleCartonContact {
     J allowed=J::array({J::array({"base_link","robot_mount_plate"})});J lips=J::array();
     const auto ids=spec_.at("active_ids");
     const auto connected=g.at("connected_cup_ids");
+    // Legacy requests retain their exact sealing-only permission. The new
+    // passive policy explicitly binds every permitted lip to connected CAD.
+    const auto contact_ids=spec_.value("target_lip_contact_ids",ids);
     std::set<std::string> unique;
     for(const auto& id:ids)if(!unique.insert(id.get<std::string>()).second)throw std::runtime_error("SINGLE_CARTON_DUPLICATE_CUP");
     if(!g.at("topology").value("uncovered_cups_self_close",false) && ids!=connected)throw std::runtime_error("SINGLE_CARTON_UNVERIFIED_INDEPENDENT_CUPS");
     for(const auto& id:ids)if(std::find(connected.begin(),connected.end(),id)==connected.end())throw std::runtime_error("SINGLE_CARTON_UNKNOWN_CONNECTED_CUP");
     if(ids.empty())throw std::runtime_error("SINGLE_CARTON_EMPTY_CUPS");
-    for(const auto& id:ids) {
+    unique.clear();
+    for(const auto& id:contact_ids) {
+      if(!unique.insert(id.get<std::string>()).second)throw std::runtime_error("SINGLE_CARTON_DUPLICATE_CONTACT_CUP");
+      if(std::find(connected.begin(),connected.end(),id)==connected.end())throw std::runtime_error("SINGLE_CARTON_UNKNOWN_CONTACT_CUP");
+    }
+    for(const auto& id:ids)if(std::find(contact_ids.begin(),contact_ids.end(),id)==contact_ids.end())throw std::runtime_error("SINGLE_CARTON_SEAL_WITHOUT_CONTACT");
+    if(!g.at("topology").value("uncovered_cups_self_close",false) && contact_ids!=ids)
+      throw std::runtime_error("SINGLE_CARTON_UNVERIFIED_PASSIVE_CONTACT");
+    for(const auto& id:contact_ids) {
       const auto lip=g.at("terminal_band_by_contour").at(id.get<std::string>());lips.push_back(lip);
       if(contact_||loaded_)allowed.push_back(J::array({target,lip}));
       bool found=false;
       for(const auto& c:g.at("contours"))if(c.at("id")==id) {
-        for(const auto& p:c.at("points_m"))rings_.push_back(vec(p));found=true;
+        if(c.at("points_m").size()<3)throw std::runtime_error("SINGLE_CARTON_EMPTY_CAD_SEAL");
+        bool sealing=std::find(ids.begin(),ids.end(),id)!=ids.end();
+        for(const auto& p:c.at("points_m")) {rings_.push_back(vec(p));if(sealing)sealing_rings_.push_back(vec(p));}found=true;
       }
       if(!found)throw std::runtime_error("SINGLE_CARTON_UNKNOWN_CAD_SEAL");
     }
@@ -85,6 +98,19 @@ class SingleCartonContact {
     const auto flange=s.getGlobalLinkTransform(nativeFrames().flange_link);
     if(loaded_) {
       auto box=flange*target_;
+      // Fixed flange->payload attachment must keep the anticipated seals on
+      // the original +Z box face at every loaded state, not merely at grasp.
+      Eigen::Isometry3d T=target_.inverse()*flange_cad_;
+      if((T.linear()*vec(spec_.at("geometry").at("normal_cad"))).z()>-std::cos(.01))
+        return {{"reason","SINGLE_CARTON_CONTACT_NORMAL_MISALIGNED"}};
+      for(const auto& p:rings_)if((T*p).z()<half_.z()-.0004)
+        return {{"reason","SINGLE_CARTON_SEAL_PLANE_PENETRATION"}};
+      for(const auto& p:sealing_rings_) {
+        Eigen::Vector3d d=T*p;
+        if(std::abs(d.z()-half_.z())>.0004)return {{"reason","SINGLE_CARTON_LOADED_SEAL_GAP"}};
+        if(std::abs(d.x())>half_.x()-.003 || std::abs(d.y())>half_.y()-.003)
+          return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
+      }
       for(const auto& support:spec_.at("supports"))for(const auto& p:corners_)
         if((box*p).z()<double(support.at("top_world_m"))-.0004)
           return {{"reason","SINGLE_CARTON_PAYLOAD_SUPPORT_PENETRATION"},{"support",support.at("id")}};
@@ -95,6 +121,9 @@ class SingleCartonContact {
       for(const auto& p:rings_) {
         Eigen::Vector3d d=T*p-center_;double gap=d.dot(normal_);
         if(gap<-.0004)return {{"reason","SINGLE_CARTON_SEAL_PLANE_PENETRATION"}};
+      }
+      for(const auto& p:sealing_rings_) {
+        Eigen::Vector3d d=T*p-center_;double gap=d.dot(normal_);
         if(gap<.0024 && (std::abs(d.dot(u_))>double(size[0])/2-.003 || std::abs(d.dot(v_))>double(size[1])/2-.003))
           return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
       }

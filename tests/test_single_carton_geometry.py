@@ -54,6 +54,9 @@ def test_all_cups_cannot_fit_but_confirmed_passive_valves_enable_six_cup_contact
     candidates=contact_candidates(box,cad,config['topology']);c=candidates[0]
     assert len(c['active_ids'])==6
     assert len(c['commanded_cup_ids'])==12 and len(c['expected_passively_closed_ids'])==6
+    assert c['target_lip_contact_ids']==c['commanded_cup_ids']
+    assert set(c['passive_lip_contact_ids'])==set(c['target_lip_contact_ids'])-set(c['active_ids'])
+    assert set(c['rings_tcp'])==set(c['active_ids'])  # passive contact never becomes a seal
     assert c['pneumatic_mode']=='COMMON_VALVE_PASSIVE_SELF_CLOSING'
     assert c['seal_check']['minimum_edge_margin_m']>=.003
     assert seal_check(c['tcp_pose'],c['face'],c['rings_tcp'],c['suction_normal_tcp'])['valid']
@@ -74,6 +77,28 @@ def test_current_field_parameters_and_source_bytes():
     assert hashlib.sha256(Path(c['camera_extrinsics']).read_bytes()).hexdigest()=='73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7'
     raw=json.loads(Path(c['camera_extrinsics']).read_bytes());assert raw['status']=='SOLVED_REQUIRES_VALIDATION' # retained historical evidence
     c['vacuum']['release_dwell_s']=None;assert 'vacuum.release_dwell_s' in issues(c)
+
+
+def test_actual_feedback_rejects_passive_edge_penetration_even_when_active_seal_is_valid():
+    from types import SimpleNamespace
+    from unloading_sim.workbench.single_carton.geometry import candidate_contact_check
+    from unloading_sim.workbench.single_carton.runtime import TaskManager
+    face=dict(center_m=[0.,0.,0.],normal=[0.,0.,1.],u=[1.,0.,0.],v=[0.,1.,0.],size_m=[.15,.1])
+    seal=[[-.01,-.01,0.],[.01,-.01,0.],[.01,.01,0.],[-.01,.01,0.]]
+    edge=[[.06,-.01,0.],[.09,-.01,0.],[.09,.01,0.],[.06,.01,0.]]
+    candidate=dict(face=face,rings_tcp={'seal':seal},suction_normal_tcp=[0.,0.,-1.],
+                   target_lip_rings_tcp={'seal':seal,'passive':edge},target_lip_contact_ids=['seal','passive'])
+    T=np.eye(4)
+    assert candidate_contact_check(T,candidate)['valid']
+    T[:3,:3]=Rotation.from_euler('y',.009).as_matrix()
+    assert seal_check(T,face,{'seal':seal},[0.,0.,-1.])['valid']
+    actual=candidate_contact_check(T,candidate)
+    assert not actual['valid'] and actual['terminal_lip_contact']['minimum_plane_gap_m']<-.0008
+    manager=TaskManager.__new__(TaskManager);manager.model=SimpleNamespace(tcp=lambda q:T)
+    events=[];manager.journal=lambda **event:events.append(event)
+    with pytest.raises(ValueError,match='ACTUAL_CONTACT_POSE_NOT_SEALED'):
+        manager.check_contact(np.zeros(6),{'candidate':candidate})
+    assert not events[0]['seal']['terminal_lip_contact']['valid']
 
 @pytest.mark.parametrize('value',[None,0.,3.,6.,float('nan')])
 def test_loaded_payload_missing_or_empty_test_setting_rejected(value):

@@ -1,12 +1,13 @@
 """Full physical single-carton native MTC/Pilz/OMPL plan before any actuation."""
 from copy import deepcopy
+from collections import Counter
 from pathlib import Path
 import json
 import numpy as np
 from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
-from .geometry import corners,contact_candidates,seal_check,transform
+from .geometry import corners,contact_candidates,candidate_contact_check,transform
 
 
 class SinglePlanner(EmptyPlanner):
@@ -65,14 +66,16 @@ class SinglePlanner(EmptyPlanner):
         return float(T[2,3]+abs(T[2,:3])@(np.asarray(obj['size'])/2))
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         loaded=attachment is not None;contact=stage=='contact'
-        lips=[self.contact_geometry['terminal_band_by_contour'][i] for i in candidate['active_ids']]
+        contact_ids=candidate['target_lip_contact_ids']
+        lips=[self.contact_geometry['terminal_band_by_contour'][i] for i in contact_ids]
         pairs=[['base_link','robot_mount_plate']]
         if contact or loaded:pairs += [[box['id'],lip] for lip in lips]
         pairs += [[box['id'],s['id']] for s in supports]
         attached=None if not loaded else dict(id=box['id'],size=box['size_m'],pose=attachment.tolist(),touch_links=lips)
         policy=dict(self.clearance,stage=stage,target_id=box['id'],payload_id=box['id'] if loaded else '')
         spec=dict(geometry=self.contact_geometry,target_id=box['id'],size_m=box['size_m'],target_pose=box['pose'],
-                  face=candidate['face'],active_ids=candidate['active_ids'],allow_contact=contact,supports=list(supports))
+                  face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
+                  allow_contact=contact,supports=list(supports))
         return dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],
             scene_fingerprint=digest(world),world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
@@ -130,12 +133,13 @@ class SinglePlanner(EmptyPlanner):
                         release_supports=[dict(id=o['id'],top_world_m=self.object_top(o)) for o in world if o['id'] in release['region']['ids']]
                         start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
                         endcheck=self.client.request(dict(start_loaded,op='validate'),timeout=120)
+                        (sub/'loaded-start-check.json').write_text(json.dumps(dict(request=start_loaded,result=endcheck)))
                         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):raise ValueError('LOADED_Q_START_COLLISION:'+str(endcheck.get('failure')))
                         approach=self.checked_segment(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',self.site['time_scale'],sub,progress)
                         qpre=approach['prepared']['points'][-1]['q']
                         contact=self.checked_segment(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',self.site['time_scale'],sub,progress,True)
                         qc=contact['prepared']['points'][-1]['q'];actual=self.coordinate_model.tcp(qc)
-                        seal=seal_check(actual,candidate['face'],candidate['rings_tcp'],candidate['suction_normal_tcp'])
+                        seal=candidate_contact_check(actual,candidate)
                         if not seal['valid']:raise ValueError('ACTUAL_NATIVE_CONTACT_FK_SEAL_REJECTED')
                         actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
                         attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
@@ -167,5 +171,11 @@ class SinglePlanner(EmptyPlanner):
                             duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                         (folder/'complete-plan.json').write_text(json.dumps(plan));return plan
                     except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)))
-            raise ValueError('NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN:'+json.dumps(failures,ensure_ascii=False))
+            # Keep every concrete failure on disk; one task-status label must
+            # not grow into 32 copies of the full native collision JSON.
+            (folder/'planning-failures.json').write_text(json.dumps(failures,ensure_ascii=False,indent=2))
+            counts=Counter(f['reason'].split(':',1)[0] for f in failures)
+            summary='；'.join(f'{reason} × {count}' for reason,count in counts.items())
+            first=failures[0]['reason'][:600] if failures else '没有符合所选编号的目标'
+            raise ValueError(f'NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: {summary}；首项：{first}；详情：planning-failures.json')
         finally:self.client.close();self.client=None

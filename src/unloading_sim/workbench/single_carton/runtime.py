@@ -9,7 +9,7 @@ import uuid
 import numpy as np
 from .config import issues
 from .cycle import Cycle,TERMINAL
-from .geometry import seal_check
+from .geometry import candidate_contact_check
 from .perception import HuggingFaceGroundingSAM,freeze,reconstruct,unchanged
 
 
@@ -123,7 +123,7 @@ class TaskManager:
             raise
         finally:self.busy=False
     def check_contact(self,q,plan):
-        c=plan['candidate'];check=seal_check(self.model.tcp(q),c['face'],c['rings_tcp'],c['suction_normal_tcp'])
+        check=candidate_contact_check(self.model.tcp(q),plan['candidate'])
         self.journal(kind='actual_contact_fk',q_actual=q.tolist(),seal=check)
         if not check['valid']:raise ValueError('ACTUAL_CONTACT_POSE_NOT_SEALED')
     def check_release(self,q,plan):
