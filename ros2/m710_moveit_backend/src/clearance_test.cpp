@@ -223,6 +223,30 @@ void controlledRepeatedPathCases(J& out) {
   out["controlled_exact_repeat_reuse"]="PASS";
 }
 
+void conservativeBoundsCases(J& out) {
+  auto shape=std::make_shared<fcl::Boxd>(2.,.02,.04);
+  Eigen::Isometry3d T=Eigen::Isometry3d::Identity();
+  T.linear()=Eigen::AngleAxisd(M_PI/4,Eigen::Vector3d::UnitZ()).toRotationMatrix();
+  fcl::CollisionObjectd object(shape,T);auto bound=m710::conservativeWorldBounds(object);
+  require(std::abs(bound.max_.x()-.714177848998413)<1e-10 &&
+          std::abs(bound.max_.y()-.714177848998413)<1e-10 &&
+          std::abs(bound.max_.z()-.02)<1e-10,"ROTATED_LONG_SOLID_BOUND_NUMERIC");
+  require(object.getAABB().max_.z()>1.,"FCL_RADIUS_CUBE_BASELINE");
+  // Literal local corner extents remain enclosed for 200 deterministic poses.
+  for(int k=0;k<200;++k) {
+    T.linear()=(Eigen::AngleAxisd(k*.137,Eigen::Vector3d::UnitX())*
+      Eigen::AngleAxisd(k*.113,Eigen::Vector3d::UnitY())*
+      Eigen::AngleAxisd(k*.071,Eigen::Vector3d::UnitZ())).toRotationMatrix();
+    T.translation()=Eigen::Vector3d(k*.03,-k*.02,k*.01);object.setTransform(T);
+    bound=m710::conservativeWorldBounds(object);
+    for(double x:{-1.,1.})for(double y:{-.01,.01})for(double z:{-.02,.02}) {
+      Eigen::Vector3d p=T*Eigen::Vector3d(x,y,z);
+      require((p.array()>=bound.min_.array()).all()&&(p.array()<=bound.max_.array()).all(),"BOUNDS_MUST_CONTAIN_ALL_CORNERS");
+    }
+  }
+  out["conservative_rotated_local_bounds"]="PASS";
+}
+
 void physicalSingleCartonCases(J& out) {
   J I={{1.,0.,0.,0.},{0.,1.,0.,0.},{0.,0.,1.,0.},{0.,0.,0.,1.}};
   J pose={{1.,0.,0.,0.},{0.,0.,1.,-.05},{0.,-1.,0.,0.},{0.,0.,0.,1.}};
@@ -300,6 +324,7 @@ void physicalSingleCartonCases(J& out) {
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   controlledRepeatedPathCases(out);
+  conservativeBoundsCases(out);
   physicalSingleCartonCases(out);
   J pairPolicy={{"schema","eco65_pair_collision_policy_v5"},{"robot_tool_exemption",{
     {"schema","eco65_named_robot_tool_exemption_v1"},{"scope","EXACT_LINK_3_VS_PART_026_ONLY"},

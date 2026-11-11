@@ -37,6 +37,14 @@ loaded attachment. Approach stages have no target contact permission.
 Actual measured contact FK must also check every permitted lip for penetration
 before establishing vacuum and throughout the pressure-confirmation dwell.
 
+Physical single-carton planning uses the existing bounded RRTConnect adapter,
+with the same monotonic deadline inside search extensions and clearance loops.
+Keep solver-budget exhaustion distinct from IPC timeout and physical infeasibility.
+Persist each request before dispatch and retain each Pilz/OMPL attempt separately.
+Conservative transformed local AABBs may prune far collision pairs; preserve
+original FCL solids, pair rules, margins, search density and final sent-path audit.
+This deadline adapter does not enable J1 direction constraints or simulation modes.
+
 The user explicitly deferred receiving-region qualification at q_start for this
 round. Still validate the complete loaded return and release collision envelope;
 record RECEIVER_QUALIFICATION_DEFERRED_BY_USER, never support certification.

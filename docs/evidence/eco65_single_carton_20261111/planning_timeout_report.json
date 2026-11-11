@@ -1,0 +1,208 @@
+{
+  "schema": "eco65_single_carton_timeout_diagnosis_v1",
+  "baseline_commit": "667738d2e0b4bd2c4327aa77ef5439c42771e36c",
+  "task_id": "7ccdb15e54904c2fbc92025dcc7615d3",
+  "physical_execution": "NOT_RUN",
+  "execution_permits_registered": 0,
+  "source_sha256": {
+    "result.json": "90dc625b5fecd6e42720e80c0c3418c86e56bf2b9cd8df46eea0c851443e5cdf",
+    "events.jsonl": "61277242136873cdbc1e368383fd1565f1268ab0c54f0bfbe5569032a8fb9a86",
+    "moveit.log": "ee1b1426cc613d8388ae7fd0304599149daf8c75e7ab275e947c154eeb1f6b36",
+    "observation.json": "8f0fadee2454c7385dca7846c403fdc8a793c42aff8ed838a35ce45c74a67104",
+    "geometry.json": "fb75fe009a82aeb9e10144ca145b60c012cbc2c86bffb6b3f8765527f0ef1fb9"
+  },
+  "original": {
+    "perception_s": 12.358059170997876,
+    "loaded_q_start_check_s": 0.382241964,
+    "pilz_s": 16.059008484,
+    "ompl_before_termination_s": 119.680931514,
+    "error": "MOVEIT2_REQUEST_TIMEOUT",
+    "collision_pair": [
+      "part_026",
+      "link_3"
+    ],
+    "invalid_pilz_state_indices": [
+      228,
+      310
+    ],
+    "pilz_state_count": 459
+  },
+  "diagnosis": [
+    "Physical entry did not pass the existing native deadline to clearance or long RRT CONNECT loops; the 25-second MTC budget could be exceeded until the 120-second IPC watchdog.",
+    "FCL rotation radius cubes inflated broad-phase candidate sets. Conservative transformed local bounds retain the same FCL geometry and pair thresholds.",
+    "Only the post-fallback result was saved; IPC timeout discarded the pending request and prior Pilz result. Each attempt is now saved before dispatch."
+  ],
+  "broad_phase_comparison": {
+    "loose": {
+      "states": 48,
+      "custom_clearance_s": 0.7892576929999999,
+      "total_batch_s": 1.447646764,
+      "narrow_calls": 457368
+    },
+    "tight": {
+      "states": 48,
+      "custom_clearance_s": 0.082827293,
+      "total_batch_s": 0.70320596,
+      "narrow_calls": 2097
+    }
+  },
+  "identical_verdicts_legacy_results_and_first_failures": true,
+  "fixed_same_candidate": {
+    "status": "NATIVE_SOLVER_BUDGET_EXHAUSTED",
+    "mtc_plan_s": 25.003966431,
+    "native_output_check_s": null,
+    "request_wall_s": 25.354193575,
+    "absolute_solver_deadline": {
+      "budget_s": 25.0,
+      "expired_on_return": true,
+      "scope": "SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS",
+      "single_fcl_call_preemption": "NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"
+    },
+    "failure": null,
+    "point_count": 0
+  },
+  "deadline_and_resident_reuse": {
+    "status": "NATIVE_SOLVER_BUDGET_EXHAUSTED",
+    "elapsed_s": 0.76121223,
+    "next_request_valid": true
+  },
+  "search_trace": {
+    "status": "Timeout",
+    "planner_data_vertices": 35,
+    "planner_data_edges": 33,
+    "total_extensions": 34,
+    "total_extension_custom_checks": 1606,
+    "absolute_deadline_expired": true,
+    "truncated": false
+  },
+  "trace_path_unchanged_on_off": true,
+  "trace_note": "33 accepted extensions and one expired extension; timeout is not an infeasibility proof. Trace is diagnostic, not hardware evidence.",
+  "single_seed_valid_ik_candidate_indices": [
+    10,
+    11,
+    25,
+    31
+  ],
+  "spacing_experiment": {
+    "search_fraction": 0.0005,
+    "status": "NATIVE_SOLVER_BUDGET_EXHAUSTED",
+    "adopted": false,
+    "production_fraction": 5e-05,
+    "final_dense_check_resolution_rad": 0.0005
+  },
+  "tests": {
+    "python_passed": 241,
+    "python_failed": 0,
+    "python_skipped": 0,
+    "python_s": 21.55,
+    "native_rotated_bound_poses": 200,
+    "native_modes": [
+      "optimized",
+      "reference"
+    ],
+    "native_deadline": "PASS",
+    "trace_on_off_equivalence": "PASS",
+    "latest_binary_deadline_and_resident_validation": "PASS"
+  },
+  "versions_and_capabilities": {
+    "budget": {
+      "remaining_on_return_s": 86398.172756848,
+      "request_budget_s": 86400.0,
+      "return_reserve_s": 5.0
+    },
+    "capabilities": {
+      "bounded_single_carton_planning": true,
+      "max_task_sessions": 8,
+      "max_task_stages_per_session": 4096,
+      "native_ik": true,
+      "native_ik_batch": false,
+      "native_task_session": true,
+      "process_geometry_bound": false,
+      "process_policy_schema": "m710_native_process_v1",
+      "semantic_place_event": false,
+      "static_prior_graph": false
+    },
+    "cold_start_s": 1.82721498,
+    "context_reused": false,
+    "evaluation_profile": "strict",
+    "identity": {
+      "base_link": "base_link",
+      "flange_from_task_tcp": [
+        [
+          0.9999977397207271,
+          0.002126159315938315,
+          0.0,
+          3.236667849973998e-17
+        ],
+        [
+          -0.002126159315938315,
+          0.9999977397207271,
+          0.0,
+          -7.007726458344294e-18
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.14275043380451888
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "flange_link": "link_6",
+      "model_tool_fingerprint": "88fb2294f43c651a51fd42e177d564ee782f92c19b6804f442a564bfe9c240d6",
+      "planning_group": "eco65_arm",
+      "policy_fingerprint": "abf4c879e033817e9d8753f8d2826537298744fd93748fbb301ead8b71203c72",
+      "policy_scope": "PHYSICAL_SINGLE_CARTON",
+      "robot_id": "realman_eco65",
+      "robot_variant": "ECO65-B",
+      "scene_fingerprint": "ede4c808d0a2dfefefc0ea1796bec71647f170b4d5c8da600a72f1bd64c221b4",
+      "schema": "eco65_physical_single_carton_model_v1",
+      "task_tcp_fingerprint": "9e330d423f56830bc312a56074bfc9b4ec152b1bb8d93c12de21c2169c0427cd",
+      "task_tcp_link": "eco65_task_tcp"
+    },
+    "joint_names": [
+      "joint_1",
+      "joint_2",
+      "joint_3",
+      "joint_4",
+      "joint_5",
+      "joint_6"
+    ],
+    "pipelines": [
+      "pilz_industrial_motion_planner",
+      "ompl"
+    ],
+    "planning_mode": "cold_from_scratch",
+    "planning_only": false,
+    "request_id": "1",
+    "request_wall_s": 1.827244971,
+    "seed": 6518,
+    "status": "READY",
+    "versions": {
+      "moveit": "2.5.10",
+      "mtc": "0.1.3",
+      "pilz": "2.5.10"
+    },
+    "transport_and_worker_s": 2.3441560860010213
+  },
+  "worker_sha256": "e105e17b82ab009bbd48fc1e4a1dc147a2f0bb48af0c49f955918df0616ee2a4",
+  "runtime_limits": {
+    "solver_s": 25.0,
+    "native_request_s": 110.0,
+    "ipc_s": 120.0,
+    "final_sent_audit_native_s": 590.0,
+    "final_sent_audit_ipc_s": 600.0
+  },
+  "remaining": "No complete executable four-stage plan and no physical grasp cycle in this diagnosis. No geometry, gap, search-density or final-validation reduction.",
+  "local_records": [
+    "outputs/single_carton_development/timeout-7ccdb15e-baseline",
+    "outputs/single_carton_development/timeout-7ccdb15e-fixed",
+    "outputs/single_carton_development/timeout-7ccdb15e-trace",
+    "outputs/single_carton_development/timeout-7ccdb15e-search-spacing"
+  ]
+}

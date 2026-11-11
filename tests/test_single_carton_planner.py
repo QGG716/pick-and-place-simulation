@@ -34,12 +34,12 @@ def case(tmp_path,monkeypatch):
     p.contact_geometry=dict(terminal_band_by_contour={s['id']:s['component']+'_lip' for s in tool['seals']})
     p.init=dict(identity=dict(flange_from_task_tcp=tool['T_flange_tcp']))
     p.clearance={};p.limits=Limits((-3.,)*6,(3.,)*6,(.1,)*6,(.2,)*6);p.reach_bound=1.
-    calls=[];options=dict(reject_return=False,reject_loaded_start=False)
+    calls=[];options=dict(reject_return=False,reject_loaded_start=False,legacy_worker=False)
     class Native:
         def __init__(self,*args,**kwargs):pass
         def request(self,r,**kwargs):
             calls.append(deepcopy(r))
-            if r==p.init:return dict(status='READY')
+            if r==p.init:return dict(status='READY',capabilities={'bounded_single_carton_planning':not options['legacy_worker']})
             if r['op']=='validate':
                 valid=not((options['reject_return'] and r['stage']=='return' and 'probe_path' in r) or
                           (options['reject_loaded_start'] and r['stage']=='return' and 'probe_path' not in r))
@@ -123,3 +123,47 @@ def test_final_sample_collision_bound_includes_actual_large_payload_extent(case)
     segment=p.checked_segment(context,[.03]*6,'detach',10.,folder,lambda *a:None)
     assert segment['prepared']['collision_sampling']['reach_bound_m']==pytest.approx(1.452769256906871)
     assert calls[-1]['op']=='validate' and calls[-1]['probe_path']
+
+
+def test_old_worker_cannot_silently_use_unbounded_physical_planning(case):
+    p,obs,box,folder,calls,opts=case;opts['legacy_worker']=True
+    with pytest.raises(ValueError,match='NATIVE_WORKER_UPDATE_REQUIRED'):
+        p.plan_cycle(obs,[box],folder)
+    assert not [r for r in calls if r.get('op')=='plan'] and p.authority._plans=={}
+
+
+def test_bounded_solver_failure_keeps_both_attempts_and_does_not_issue_permit(case):
+    p,obs,box,folder,calls,opts=case
+    progress=[];cancel=lambda:False
+    class Native:
+        def request(self,req,**kwargs):
+            name='pilz' if req['pipeline_id']=='pilz_industrial_motion_planner' else 'ompl'
+            record=json.loads((folder/f'approach-{name}-native.json').read_text())
+            assert record['status']=='PENDING' and record['request']==req
+            assert req['request_budget_s']==110. and kwargs['timeout']==120.
+            assert kwargs['cancelled'] is cancel
+            return dict(status='NATIVE_PLANNING_FAILED' if name=='pilz' else 'NATIVE_SOLVER_BUDGET_EXHAUSTED')
+    p.client=Native()
+    with pytest.raises(ValueError,match='NATIVE_SOLVER_BUDGET_EXHAUSTED'):
+        p.checked_segment({'q_start':[0.]*6},[.1]*6,'approach',10.,folder,progress.append,cancelled=cancel)
+    for name in ('pilz','ompl'):
+        record=json.loads((folder/f'approach-{name}-native.json').read_text())
+        assert record['status']=='REPLIED' and record['elapsed_s']>=0
+    assert any('避让路径' in msg for msg in progress) and p.authority._plans=={}
+
+
+@pytest.mark.parametrize('reason',['MOVEIT2_REQUEST_TIMEOUT','CANCELLED'])
+def test_request_failure_retains_input_elapsed_and_stage_without_retry(case,reason):
+    p,obs,box,folder,calls,opts=case
+    class Native:
+        count=0
+        def request(self,req,**kwargs):
+            self.count+=1
+            raise RuntimeError(reason)
+    p.client=Native()
+    with pytest.raises(RuntimeError,match='approach-pilz:'+reason):
+        p.checked_segment({'q_start':[0.]*6},[.1]*6,'approach',10.,folder,lambda _:None)
+    record=json.loads((folder/'approach-pilz-native.json').read_text())
+    assert record['status']=='REQUEST_FAILED' and record['error']==reason
+    assert record['request']['q_goal']==[.1]*6 and record['elapsed_s']>=0
+    assert p.client.count==1 and p.authority._plans=={}

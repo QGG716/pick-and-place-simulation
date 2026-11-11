@@ -9,6 +9,16 @@
 #include "native_deadline.h"
 
 namespace m710 {
+// FCL 0.7 computeAABB expands every rotated shape to a radius cube. Transform
+// the local enclosing box instead: all original geometry remains inside this
+// conservative bound. Used only to reject far pairs, never as collision shape.
+inline fcl::AABBd conservativeWorldBounds(const fcl::CollisionObjectd& object) {
+  const auto& local=object.collisionGeometry()->aabb_local;
+  const Eigen::Vector3d center=object.getTransform()*((local.min_+local.max_)*.5);
+  Eigen::Vector3d extent=object.getRotation().cwiseAbs()*((local.max_-local.min_)*.5);
+  extent.array()+=1e-12*(1.+center.cwiseAbs().maxCoeff()+extent.maxCoeff());
+  return fcl::AABBd(center-extent,center+extent);
+}
 // Reuse MoveIt's unpadded FCL assets. Mutable objects and the world snapshot are
 // owned by one candidate; Clearance serializes access (including OMPL threads).
 class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
@@ -21,6 +31,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     BodyType type;
     const moveit::core::LinkModel* link=nullptr;
     size_t shape=0;
+    fcl::AABBd bounds;
     std::set<std::string> touch;
   };
   struct Pair {size_t a,b;double limit;bool self;};
@@ -32,6 +43,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   std::vector<BoundsNode> tree_;
   std::vector<int> pair_index_,all_pair_indices_;
   bool hierarchical_=false;
+  bool tight_bounds_=false;
   double maximum_band_=0.;
   double search_payload_reserve_=0.;
   NativeDeadlinePtr deadline_;
@@ -42,10 +54,10 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     if(last-first==1)tree_[index].body=int(ids[first]);
     else {
       Eigen::Vector3d lo=Eigen::Vector3d::Constant(std::numeric_limits<double>::infinity()),hi=-lo;
-      for(size_t k=first;k<last;++k) {const auto& b=bodies_[ids[k]].object->getAABB();lo=lo.cwiseMin(b.min_);hi=hi.cwiseMax(b.max_);}
+      for(size_t k=first;k<last;++k) {const auto& b=bodies_[ids[k]].bounds;lo=lo.cwiseMin(b.min_);hi=hi.cwiseMax(b.max_);}
       Eigen::Index axis;(hi-lo).maxCoeff(&axis);const size_t middle=(first+last)/2;
       std::nth_element(ids.begin()+first,ids.begin()+middle,ids.begin()+last,[&](size_t a,size_t b) {
-        const auto& x=bodies_[a].object->getAABB();const auto& y=bodies_[b].object->getAABB();
+        const auto& x=bodies_[a].bounds;const auto& y=bodies_[b].bounds;
         return x.min_[axis]+x.max_[axis]<y.min_[axis]+y.max_[axis];
       });
       const int left=buildTree(ids,first,middle),right=buildTree(ids,middle,last);
@@ -55,12 +67,12 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   }
   void refitTree(int index) {
     auto& n=tree_[index];
-    if(n.body>=0) {const auto& b=bodies_[n.body].object->getAABB();n.lo=b.min_;n.hi=b.max_;return;}
+    if(n.body>=0) {const auto& b=bodies_[n.body].bounds;n.lo=b.min_;n.hi=b.max_;return;}
     refitTree(n.left);refitTree(n.right);
     n.lo=tree_[n.left].lo.cwiseMin(tree_[n.right].lo);n.hi=tree_[n.left].hi.cwiseMax(tree_[n.right].hi);
   }
   void nearPairs(size_t a,int index,std::vector<int>& candidates,size_t& visited) const {
-    ++visited;const auto& n=tree_[index];const auto& bounds=bodies_[a].object->getAABB();
+    ++visited;const auto& n=tree_[index];const auto& bounds=bodies_[a].bounds;
     const Eigen::Vector3d separation=(bounds.min_-n.hi).cwiseMax(n.lo-bounds.max_).cwiseMax(0.);
     // Every descendant AABB lies inside this refitted node. This cutoff is
     // wider than every eligible pair's narrow-query band, never an allowance.
@@ -82,9 +94,10 @@ public:
   ClearanceWorkspace(const collision_detection::CollisionEnvFCL& env,
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
-      bool explicit_convex_meshes=false,double search_payload_reserve=0.,NativeDeadlinePtr deadline={})
+      bool explicit_convex_meshes=false,double search_payload_reserve=0.,NativeDeadlinePtr deadline={},bool tight_bounds=false)
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
       search_payload_reserve_(search_payload_reserve),deadline_(std::move(deadline)) {
+    tight_bounds_=tight_bounds && !std::getenv("ECO65_DIAGNOSTIC_LOOSE_BOUNDS");
     const auto t=Clock::now();context_.updateCollisionBodyTransforms();context_.getAttachedBodies(attached_);
     constructFCLObjectRobot(context_,robot_);
     auto add=[&](const collision_detection::FCLCollisionObjectPtr& o) {
@@ -112,6 +125,7 @@ public:
         }
         }
       }
+      b.bounds=tight_bounds_?conservativeWorldBounds(*b.object):b.object->getAABB();
       bodies_.push_back(std::move(b));
     };
     for(const auto& o:robot_.collision_objects_) add(o);
@@ -169,13 +183,14 @@ public:
         state.getAttachedBody(b.name)->getGlobalCollisionBodyTransforms().at(b.shape);
       if(!transform.matrix().allFinite()) throw std::runtime_error("INVALID_FCL_TRANSFORM");
       b.object->setTransform(collision_detection::transform2fcl(transform));b.object->computeAABB();
+      b.bounds=tight_bounds_?conservativeWorldBounds(*b.object):b.object->getAABB();
     }
     // A body AABB is identical for all of its pairs in this state. Validate it
     // once, and time the broad phase as a batch rather than reading the clock
     // twice for each of hundreds of thousands of pairs. The eligible pairs,
     // AABB distance cutoff and actual FCL narrow queries remain unchanged.
     for(const auto& body:bodies_) {
-      const auto& bounds=body.object->getAABB();
+      const auto& bounds=body.bounds;
       if(!bounds.min_.allFinite() || !bounds.max_.allFinite())
         throw std::runtime_error("UNKNOWN_FCL_AABB");
     }
@@ -201,7 +216,7 @@ public:
       // away from the observed payload/neighbor clearance boundary.
       const bool payload=a.type==collision_detection::BodyTypes::ROBOT_ATTACHED || b.type==collision_detection::BodyTypes::ROBOT_ATTACHED;
       const double limit=p.limit+((phase=="search" && payload)?search_payload_reserve_:0.);
-      const auto& ab=a.object->getAABB();const auto& bb=b.object->getAABB();
+      const auto& ab=a.bounds;const auto& bb=b.bounds;
       // Per-pair query band is wider than the acceptance threshold. This is
       // conservative broad phase, not padding or a new numerical tolerance.
       const double lower=ab.distance(bb);
@@ -222,5 +237,6 @@ public:
     }
     finish_broad();return true;
   }
+  bool tightBounds() const {return tight_bounds_;}
 };
 }

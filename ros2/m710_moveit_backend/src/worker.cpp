@@ -1159,8 +1159,16 @@ public:
       static bool seeded=false;static uint32_t process_seed=0;
       if(!seeded) {ompl::RNG::setSeed(seed);process_seed=seed;seeded=true;}
       else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
+      const bool physical_single=req.at("identity").value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
+      if(physical_single && (planning_only || req.at("identity").value("robot_variant",std::string())!="ECO65-B"))
+        throw std::runtime_error("PHYSICAL_SINGLE_CARTON_SCOPE_INVALID");
       std::vector<rclcpp::Parameter> params;
       for(auto it=req.at("parameters").begin(); it!=req.at("parameters").end(); ++it) {
+        if(physical_single && it.key()=="ompl.planning_plugin") {
+          // Same seeded RRTConnect, with the existing request deadline checked
+          // inside long CONNECT loops. No trace, J1 constraint or prior path.
+          params.emplace_back(it.key(),std::string("m710/RecordedOMPLPlanner"));continue;
+        }
         if((req.value("search_trace_enabled",false)||directed_j1||
             !req.value("continuous_task_mode",std::string()).empty()) && it.key()=="ompl.planning_plugin") {
           if(!planning_only || planning_mode!="cold_from_scratch")throw std::runtime_error("SEARCH_TRACE_SCOPE_INVALID");
@@ -1231,7 +1239,7 @@ public:
       identity=req.at("identity");
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
-              {"capabilities",{{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+              {"capabilities",{{"bounded_single_carton_planning",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1476,7 +1484,7 @@ public:
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       if(req.value("require_native_motion",false) && (op=="plan" || op=="diagnostic_connection") && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),
-        cycle_binding?native_deadline:nullptr,req);
+        (cycle_binding || identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON")?native_deadline:nullptr,req);
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
@@ -1622,11 +1630,34 @@ public:
       std::map<std::string,double> joints;for(size_t i=0;i<names.size();++i) joints[names[i]]=goal[i];motion->setGoal(joints);
     }
     auto* motion_stage=motion.get();
-    task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search"; task.plan(1);double plan_s=seconds(planning);
+    task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search";
+    const bool bounded_single=identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
+    const double solve_budget=req.at("allowed_planning_time_s");
+    if(!std::isfinite(solve_budget)||solve_budget<=0)throw std::runtime_error("INVALID_SOLVE_BUDGET");
+    std::shared_ptr<m710::SearchTrace> single_trace;
+    if(bounded_single && pipeline=="ompl" && req.value("search_trace",false)) {
+      single_trace=std::make_shared<m710::SearchTrace>();single_trace->event_limit=2000;single_trace->sample_limit=4000;
+      m710::active_search_trace=single_trace;
+    }
+    struct SingleSolveReset {
+      m710::NativeDeadlinePtr deadline;Clock::time_point end;
+      ~SingleSolveReset(){if(deadline){deadline->set(end);m710::active_native_deadline.reset();m710::active_search_trace.reset();}}
+    } single_reset{bounded_single?native_deadline:nullptr,request_deadline};
+    if(bounded_single) {
+      native_deadline->set(std::min(request_deadline,planning+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
+      m710::active_native_deadline=native_deadline;
+    }
+    task.plan(1);double plan_s=seconds(planning);
+    const bool solve_expired=bounded_single&&native_deadline->expired();
+    if(bounded_single){native_deadline->set(request_deadline);m710::active_native_deadline.reset();}
     J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
       {"scene_import_s",import_s},{"scene_updated",changed},{"mtc_plan_s",plan_s},{"world_count",scene->getWorld()->size()},
       {"attached_id",attached_id},{"task_tcp_identity",identity.at("task_tcp_fingerprint")},{"interpolated_link",req.contains("goal_pose")?identity.at("task_tcp_link"):J(nullptr)},
       {"resident_seed",seed},{"request_seed",req.at("seed")},{"authoritative_status","NOT_RUN"},{"clearance",clearance->evidence()}};
+    if(bounded_single)out["absolute_solver_deadline"]={{"budget_s",solve_budget},{"expired_on_return",solve_expired},
+      {"scope","SAME_REQUEST_CLOCK_VALIDITY_PAIR_LOOPS_AND_RRT_EXTENSIONS"},{"single_fcl_call_preemption","NOT_AVAILABLE_CHECKED_BEFORE_AND_AFTER"}};
+    if(single_trace)out["search_trace"]={{"scope","DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"},{"planners",single_trace->planners}};
+    if(solve_expired){out["status"]="NATIVE_SOLVER_BUDGET_EXHAUSTED";return out;}
     if(task.solutions().empty()) {
       if(pipeline=="pilz_industrial_motion_planner") out["status"]="NATIVE_PLANNING_FAILED";
       std::ostringstream why; task.explainFailure(why);out["detail"]=why.str(); J failures=J::array();for(const auto& failure:motion_stage->failures()) failures.push_back(failure->comment());out["failure_comments"]=failures;

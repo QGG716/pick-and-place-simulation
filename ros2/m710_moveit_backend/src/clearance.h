@@ -135,7 +135,7 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_));
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
@@ -256,7 +256,7 @@ public:
   }
   Json workspaceEvidence() const {
     if(!workspace_) return nullptr;
-    Json result={{"prepared_objects",workspace_->stats.prepared_objects},{"eligible_pairs",workspace_->stats.eligible_pairs},
+    Json result={{"tight_transformed_local_bounds",workspace_->tightBounds()},{"prepared_objects",workspace_->stats.prepared_objects},{"eligible_pairs",workspace_->stats.eligible_pairs},
       {"exempt_pairs",workspace_->stats.exempt_pairs},{"prepare_s",workspace_->stats.prepare_s},{"geometry_prepare_s",workspace_->stats.geometry_prepare_s},{"pair_filter_s",workspace_->stats.pair_filter_s},{"phases",Json::object()}};
     for(const auto& entry:workspace_->phases) {const auto& s=entry.second;
       result["phases"][entry.first]={{"queries",s.queries},{"aabb_tests",s.aabb_tests},{"aabb_skips",s.aabb_skips},

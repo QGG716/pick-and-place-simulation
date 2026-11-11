@@ -3,6 +3,7 @@ from copy import deepcopy
 from collections import Counter
 from pathlib import Path
 import json
+import time
 import numpy as np
 from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
@@ -79,17 +80,33 @@ class SinglePlanner(EmptyPlanner):
         return dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],
             scene_fingerprint=digest(world),world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
-    def checked_segment(self,context,goal,stage,scale,folder,progress,linear=False):
+    def native_call(self,request,folder,name,timeout,cancelled=None):
+        # Persist before dispatch: a timed-out worker cannot return its request
+        # or profiling data. Keep every Pilz/OMPL attempt instead of overwriting.
+        request=dict(request,request_budget_s=timeout-10.)
+        path=folder/(name+'-native.json');started=time.monotonic()
+        record=dict(request=request,status='PENDING',ipc_timeout_s=timeout)
+        path.write_text(json.dumps(record))
+        try:
+            result=self.client.request(request,timeout=timeout,cancelled=cancelled)
+            record.update(status='REPLIED',result=result,elapsed_s=time.monotonic()-started)
+            return result
+        except Exception as error:
+            record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
+            raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
+        finally:path.write_text(json.dumps(record))
+    def checked_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None):
         progress('原生规划 '+stage)
         req=dict(context,op='plan',pipeline_id='pilz_industrial_motion_planner',planner_id='LIN' if linear else 'PTP',
                  velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=25.)
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
-        result=self.client.request(req,timeout=120)
+        result=self.native_call(req,folder,stage+'-pilz',120,cancelled)
         if result.get('status')!='SUCCESS' and not linear:
             # A new native search, with the identical loaded scene, never reverse playback.
             req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault')
-            result=self.client.request(req,timeout=120)
+            progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（25 秒预算）')
+            result=self.native_call(req,folder,stage+'-ompl',120,cancelled)
         (folder/(stage+'-native.json')).write_text(json.dumps(dict(request=req,result=result)))
         if result.get('status')!='SUCCESS' or result.get('native_output_status')!='PASS':
             raise ValueError(stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))))
@@ -99,7 +116,7 @@ class SinglePlanner(EmptyPlanner):
             payload_reach=float(np.linalg.norm(corners(a['pose'],a['size']),axis=1).max())
         prepared=prepare(result['points'],self.limits,scale,self.config['period_s'],self.reach_bound+payload_reach)
         progress(f"检查 {stage} 最终发送轨迹：{len(prepared['points'])} 点")
-        checked=self.client.request(dict(context,op='validate',probe_path=prepared['collision_path']),timeout=600)
+        checked=self.native_call(dict(context,op='validate',probe_path=prepared['collision_path']),folder,stage+'-sent',600,cancelled)
         (folder/(stage+'-sent-check.json')).write_text(json.dumps(checked))
         if not checked.get('native_valid') or not checked.get('legacy_intersection_valid') or checked.get('path_failure') is not None:
             raise ValueError(stage+':SENT_PATH_REJECTED:'+str(checked.get('path_failure',checked.get('failure'))))
@@ -117,7 +134,9 @@ class SinglePlanner(EmptyPlanner):
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
         try:
-            self.client.request(self.init)
+            ready=self.client.request(self.init)
+            if not ready.get('capabilities',{}).get('bounded_single_carton_planning'):
+                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
                 try: candidates=contact_candidates(box,self.source['tool'],self.site['topology'])
@@ -125,6 +144,7 @@ class SinglePlanner(EmptyPlanner):
                 for i,candidate in enumerate(candidates):
                     if cancelled():raise ValueError('CANCELLED')
                     sub=folder/(box['id']+'-'+str(i));sub.mkdir()
+                    progress(f'候选 {i+1}/{len(candidates)}：检查带载返回起点')
                     try:
                         tcp=rigid(candidate['tcp_pose']);flange=tcp@np.linalg.inv(self.coordinate_model.tool.matrix)
                         attachment=np.linalg.inv(flange)@rigid(box['pose'])
@@ -132,12 +152,12 @@ class SinglePlanner(EmptyPlanner):
                         # Full loaded endpoint is checked before any approach planning.
                         release_supports=[dict(id=o['id'],top_world_m=self.object_top(o)) for o in world if o['id'] in release['region']['ids']]
                         start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
-                        endcheck=self.client.request(dict(start_loaded,op='validate'),timeout=120)
+                        endcheck=self.native_call(dict(start_loaded,op='validate'),sub,'loaded-start',120,cancelled)
                         (sub/'loaded-start-check.json').write_text(json.dumps(dict(request=start_loaded,result=endcheck)))
                         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):raise ValueError('LOADED_Q_START_COLLISION:'+str(endcheck.get('failure')))
-                        approach=self.checked_segment(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',self.site['time_scale'],sub,progress)
+                        approach=self.checked_segment(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',self.site['time_scale'],sub,progress,cancelled=cancelled)
                         qpre=approach['prepared']['points'][-1]['q']
-                        contact=self.checked_segment(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',self.site['time_scale'],sub,progress,True)
+                        contact=self.checked_segment(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',self.site['time_scale'],sub,progress,True,cancelled)
                         qc=contact['prepared']['points'][-1]['q'];actual=self.coordinate_model.tcp(qc)
                         seal=candidate_contact_check(actual,candidate)
                         if not seal['valid']:raise ValueError('ACTUAL_NATIVE_CONTACT_FK_SEAL_REJECTED')
@@ -154,9 +174,9 @@ class SinglePlanner(EmptyPlanner):
                         outward=np.asarray(candidate['face']['normal']);detach=actual.copy()
                         detach[:3,3]+=outward*(max(box['size_m'])+.01)
                         detach[2,3]+=max(0.,.01-(detach[2,3]-actual[2,3]))
-                        extraction=self.checked_segment(self.context(qc,world,box,candidate,'detach',attachment,original),detach,'detach',self.site['time_scale'],sub,progress,True)
+                        extraction=self.checked_segment(self.context(qc,world,box,candidate,'detach',attachment,original),detach,'detach',self.site['time_scale'],sub,progress,True,cancelled)
                         qe=extraction['prepared']['points'][-1]['q']
-                        returning=self.checked_segment(self.context(qe,world,box,candidate,'return',attachment,release_supports),q,'return',self.site['time_scale'],sub,progress)
+                        returning=self.checked_segment(self.context(qe,world,box,candidate,'return',attachment,release_supports),q,'return',self.site['time_scale'],sub,progress,cancelled=cancelled)
                         if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
                         self.cycle_binding=dict(task_id=folder.name,observation=observation.metadata(),target=box,world=digest(world),candidate=candidate,
                             attachment=attachment.tolist(),release=release,expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED')
