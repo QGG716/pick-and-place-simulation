@@ -16,6 +16,7 @@ class FakeService:
     def __init__(self):
         self.process=None;self.connected=False;self.calls=[];self.sample_mode='live'
         self.payload=0.
+        self.task_feedback={}
     def connect(self,*endpoint):
         self.calls.append(('connect',endpoint));self.process=object();self.connected=True
         return {'test_only':True}
@@ -27,8 +28,9 @@ class FakeService:
         return dict(source='LIVE',sequence=1,received_s=time.monotonic()-(1 if self.sample_mode=='stale' else 0),
                     q=np.deg2rad([10,-20,30,-40,50,-60]).tolist(),received_utc_ns=time.time_ns())
     def feedback(self):
-        return dict(connected=self.connected,state='READY',task_id=None,
-                    capabilities=dict(rm_get_current_tool_frame=dict(value=dict(name='Fake_tip',payload=self.payload))))
+        value=dict(connected=self.connected,state='READY',task_id=None,
+                   capabilities=dict(rm_get_current_tool_frame=dict(value=dict(name='Fake_tip',payload=self.payload))))
+        value.update(self.task_feedback);return value
     def check_payload(self):
         self.calls.append(('check_payload',))
         return dict(tool=dict(name='Fake_tip',payload=self.payload),matches=self.payload==1.5,required_kg=1.5,sdk_code=0)
@@ -146,6 +148,18 @@ def test_actual_read_button_reports_disconnection_then_fills_then_rejects_stale(
         assert '没有机械臂实时数据' in ui.summary.get()
         ui.busy=True;ui.fill_button.invoke()
         assert '当前操作尚未完成' in ui.summary.get()  # Error visible on execution page.
+        ui.busy=False;service.sample_mode='live'
+        service.task_feedback=dict(task_id='fake-task',state='EXECUTING',sent_points=10,total_points=10)
+        pump_until(lambda:'轨迹已发完' in ui.summary.get())
+        assert '尚未报告成功' in ui.summary.get()
+        service.task_feedback.update(state='SUCCEEDED',arrival_confirmed=True,
+            start_q=np.deg2rad([0,14.415,0,0,0,0]).tolist(),actual_q=np.deg2rad([0,16.414,0,0,0,0]).tolist())
+        pump_until(lambda:'执行完成' in ui.summary.get())
+        assert 'J2：14.415° → 16.414°' in ui.summary.get()
+        ui.fill_button.invoke();pump_until(lambda:not ui.busy)
+        end=time.monotonic()+.3
+        while time.monotonic()<end:root.update();time.sleep(.01)
+        assert '已填入当前实测' in ui.summary.get()  # Old terminal heartbeats do not overwrite a new read.
         assert not any(c[0]=='stop_signal' for c in service.calls)
     finally:
         ui._closed=True;backend.close();root.destroy()

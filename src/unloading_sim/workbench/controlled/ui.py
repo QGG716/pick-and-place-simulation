@@ -37,6 +37,30 @@ def live_target_sample(sample, now=None, max_age_s=.1):
                 feedback_age_s=age,received_s=received)
 
 
+def execution_message(status):
+    """Report measured task state, never turn 'all points sent' into success."""
+    if not status.get('task_id'):return None
+    state=status['state'];sent=status.get('sent_points',0);total=status.get('total_points',0)
+    reason=status.get('reason') or '未提供原因'
+    if state=='SUCCEEDED':
+        if not status.get('arrival_confirmed'):return '任务状态异常：成功标记缺少实测到位确认。'
+        detail=''
+        start=np.asarray(status.get('start_q',[]),float);actual=np.asarray(status.get('actual_q',[]),float)
+        if start.shape==(6,) and actual.shape==(6,) and np.isfinite(start).all() and np.isfinite(actual).all():
+            delta=np.rad2deg(actual-start);j=int(np.argmax(abs(delta)))
+            detail=f' 实测 J{j+1}：{np.rad2deg(start[j]):.3f}° → {np.rad2deg(actual[j]):.3f}°（变化 {delta[j]:+.3f}°）。'
+        return f'执行完成：已通过真实反馈确认到位及持续低速。{detail} 发送 {sent}/{total}。'
+    if state=='PREPARING':return '任务准备中：等待发送时刻。'
+    if state=='EXECUTING':
+        if total and sent>=total:return '轨迹已发完，正在等待真实反馈确认到位；尚未报告成功。'
+        return f'执行中：已发送 {sent}/{total} 个轨迹点，持续读取真实关节反馈。'
+    if state=='STOPPING':return f'正在软件停止，等待真实反馈确认。原因：{reason}'
+    if state=='CANCELLED':return '任务已取消：已通过真实反馈确认停止。' if status.get('stop_confirmed') else '任务已取消，但停止尚未确认。'
+    if state=='FAILED':return f"任务失败：{reason}；{'已确认停止' if status.get('stop_confirmed') else '停止尚未确认'}。"
+    if state=='STOP_UNCONFIRMED':return f'停止未确认：{reason}。禁止自动续跑，请现场检查。'
+    return None
+
+
 class ManagedRobotView:
     """Observer facade over the SAME owner; no second SDK or state polling."""
     def __init__(self,service,mapping):
@@ -82,6 +106,7 @@ class ControlledWorkbench(Workbench):
         self.live_status={'state':'DISCONNECTED'};self.previewed=False;self.goal_generation=0
         self.waiting_connection=False
         self.planning_progress=None
+        self.last_execution_transition=None
         super().__init__(root,backend,snapshot=config['snapshot'],installation=config['installation'])
         root.title('ECO65-B · 单条低速空载轨迹 · 受控执行')
         labels=[w for w in root.winfo_children() if isinstance(w,ttk.Label)]
@@ -206,6 +231,7 @@ class ControlledWorkbench(Workbench):
         if self.package is None or not self.previewed:raise RuntimeError('当前轨迹未预览或已失效，请重新规划')
         package=self.package;self.execute_button.configure(state='disabled');self.package=None;self.previewed=False
         self.job('submit',lambda:self.service.submit(package))
+        self.summary.set('正在核对实测起点、工具负载及轨迹版本，然后提交这一条任务…')
     def stop_task(self):
         self.service.request_stop();self.summary.set('已请求软件停止；等待真实反馈确认。')
     def render_preview(self):
@@ -262,8 +288,19 @@ class ControlledWorkbench(Workbench):
                     self.package=package;p=package['prepared']
                     self.preview_button.configure(state='normal')
                     self.summary.set(f"规划成功 · 原时长 {p['source_duration_s']:.3f} s · ×{p['time_scale']:g} 后 {p['send_duration_s']:.3f} s · 最终发送路径碰撞检查 PASS · 请预览")
-            elif kind=='submit':self.task_id=value;self.summary.set('任务已提交；正在监测实际运动。')
-            elif kind=='feedback':self.live_status=value
+            elif kind=='submit':
+                self.task_id=value
+                message=execution_message(self.live_status) if self.live_status.get('task_id')==value else None
+                self.summary.set(message or '任务已提交，等待真实执行反馈。')
+            elif kind=='feedback':
+                self.live_status=value
+                transition=(value.get('task_id'),value['state'],value.get('reason'))
+                changed=transition!=self.last_execution_transition
+                self.last_execution_transition=transition
+                message=execution_message(value)
+                if message and (changed or value['state'] in {'PREPARING','EXECUTING','STOPPING'}):
+                    self.summary.set(message)
+                    if changed:self.backend.log(f"task {value['task_id']}: {message}")
             elif kind=='payload':
                 self.live_status.setdefault('capabilities',{})['payload_check']=value
                 self.summary.set('控制器负载核对通过；请重新规划并预览。' if value['matches'] else payload_error(value))

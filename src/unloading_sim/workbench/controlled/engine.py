@@ -28,6 +28,7 @@ class Supervisor:
         self.io,self.clock,self.record,self.c=io,clock,record,config
         self.state='READY';self.task_id=None;self.reason='';self.last_seq=None
         self.start_time=None;self.last_send=None;self.last_feedback=None
+        self.start_q=None
         self.command=None;self.actual=None;self.error=None;self.index=0
         self.stable_since=None;self.excess_since=None;self.stop_time=None
         self.stop_target=None;self.stop_ack=False;self.stop_reply_seen=False;self.sent=False
@@ -42,6 +43,7 @@ class Supervisor:
         if not self.stationary(sample):raise ValueError('START_NOT_STATIONARY')
         self.io.arm() if hasattr(self.io,'arm') else None
         self.task_id=task_id or uuid.uuid4().hex;self.prepared=prepared;self.index=0
+        self.start_q=list(sample['q'])
         self.state='PREPARING';self.reason='';self.stable_since=self.excess_since=self.last_send=None
         self.last_seq=None;self.stop_time=None;self.stop_ack=False;self.stop_reply_seen=False;self.sent=False
         self.start_time=self.clock()+prepared['period_s']*2
@@ -125,6 +127,7 @@ class Supervisor:
     def feedback(self,sample):
         goal=self.prepared['points'][-1]['q'] if hasattr(self,'prepared') else None
         return dict(task_id=self.task_id,state=self.state,reason=self.reason,command_q=self.command,
+                    start_q=self.start_q,
                     goal_q=goal,goal_error_rad=None if goal is None or sample is None else (np.asarray(sample['q'])-goal).tolist(),
                     actual_q=None if sample is None else sample['q'],tracking_error_rad=self.error,
                     feedback_age_s=None if sample is None else self.clock()-sample['received_s'],
