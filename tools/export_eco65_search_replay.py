@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from time import perf_counter
 import xml.etree.ElementTree as ET
+from urllib.parse import unquote
 import numpy as np
 import trimesh
 from unloading_sim.eco65.model import ROOT, load_json, robot_for
@@ -26,7 +27,9 @@ def export_model(snapshot):
              indices_b64=base64.b64encode(faces.tobytes()).decode(),triangles=len(faces))
         return key
     def load_mesh(name):
-        name=str(name).removeprefix('file://')
+        name=str(name)
+        if name.startswith('file://'):
+            name=unquote(name.removeprefix('file://'))
         if name.startswith('/work-eco65-20261015/'):name=name.split('/work-eco65-20261015/',1)[1]
         p=Path(name);p=p if p.is_absolute() else ROOT/p
         return trimesh.load(p,force='mesh',process=False)

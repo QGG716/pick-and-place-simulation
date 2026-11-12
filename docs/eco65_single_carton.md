@@ -162,3 +162,37 @@ GroundingDINO 与 SAM 的实际本地权重均完成加载和前向计算检查�
 每个候选目录新增 `approach-pilz-native.json`、`approach-ompl-native.json` 等分阶段文件，在请求发出之前先保存输入和 `PENDING`，随后写入回复、错误、耗时和超时值；超时也保留原请求。软件内请求预算为 110 s、IPC 兜底为 120 s，最终发送路径检查分别为 590/600 s；求解阶段仍单独受 25 s 内部预算限制，任一检查失败都不会签发执行许可。停止规划请求传递到在途 native 调用。界面显示候选序号和直连/避让阶段，避免仅剩一个无上下文错误码。旧 native worker 不支持此能力时明确要求更新。
 
 本轮定向测试 **241 passed，0 failed，0 skipped**；原生保守外包盒的 200 个旋转/平移数值用例、原接触/碰撞回归、长边内部截止时间均通过。详见 `docs/evidence/eco65_single_carton_20261111/planning_timeout_report.json`。更新并重启工作台后重新准备观测；本轮开发诊断未驱动机械臂或真空系统。
+
+## 已保存任务的三维诊断查看器
+
+仅显示记录，不连接设备，也不生成或注册执行许可。导出器复用原生请求的
+机器人/工具模型和完整环境碰撞几何，保留全部 12 个吸盘；箱体、接触面和
+相机坐标来自同次冻结观测。候选接触姿态的半透明吸具只是目标示意，
+搜索节点不是连续运动轨迹。
+
+```bash
+.venv/bin/python tools/export_eco65_physical_diagnostic_viewer.py \
+  --record outputs/single_carton/7ccdb15e54904c2fbc92025dcc7615d3 \
+  --diagnostic outputs/single_carton_development/timeout-7ccdb15e-trace \
+  --output outputs/single_carton_development/viewer-7ccdb15e-20261112/index.html
+.venv/bin/python -m http.server 8765 --bind 127.0.0.1 \
+  --directory outputs/single_carton_development/viewer-7ccdb15e-20261112
+```
+
+本机打开 `http://127.0.0.1:8765/`。先选择“吸具 / 肘部间隙不足”或
+“支架 / 连杆间隙不足”，点击“问题局部”会放大并单独显示对应的粉红色
+部件；点击“整体”恢复完整模型。左键旋转、滚轮缩放、右键平移。
+工作台/厢体/传送带、碰撞线框、候选吸具和搜索树可以分别显示。
+“实测起点”是保存的 q_start，不是当前在线反馈。
+
+这份记录的两个拒绝样本分别为 `part_028 ↔ link_3`（1.784 mm）和
+`eco65_mast_mast_part_019 ↔ link_2`（2.079 mm），要求均为 2.4 mm。
+这是离线间隙检查，不是实机发生碰撞的证据。原 Pilz 日志报告的
+`part_026 ↔ link_3` 没有保存对应关节样本或接触点，查看器只说明日志结论，
+不伪造原轨迹、姿态或最近接触点。输出 HTML 和来源 SHA-256 清单留在忽略的
+outputs 目录；HTML 包含本地模型，不需要外部脚本或网络服务。
+
+浏览器定向核对：4 组保存姿态的全部模型连杆/TCP 与 Python 正向运动学一致，
+最大矩阵元素误差约 1.2e-16；采集相机变换误差约 1.1e-16。
+78 个可视零件、715 个机器人/工具碰撞形状、917 个世界物体均导出。
+姿态切换、搜索节点、图层及局部放大经过浏览器检查。实机执行仍为 **NOT_RUN**。
