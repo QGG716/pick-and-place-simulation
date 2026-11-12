@@ -25,6 +25,7 @@ tmp/
 # Large assets use explicit Git LFS rules; transfer caches remain under outputs/.
 .firecrawl/
 .venv-workbench/
+.venv-workbench-cuda/
 .tmp-eco65-*.log
 
 # Local credentials must never be included with asset publication.

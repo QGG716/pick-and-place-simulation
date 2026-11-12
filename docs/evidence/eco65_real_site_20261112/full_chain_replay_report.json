@@ -1,0 +1,177 @@
+{
+  "schema": "eco65_full_chain_offline_replay_report_v1",
+  "date": "2026-11-12",
+  "scope": "OFFLINE_REPLAY_OF_SAVED_FIELD_RECORD_bb88010f_NOT_EXECUTABLE_NOT_PHYSICAL_ACCEPTANCE",
+  "record": "outputs/single_carton/bb88010f39ae4abdbccfeac31472d687",
+  "source_record_unchanged": true,
+  "hardware_execution": "NOT_RUN",
+  "physical_result": "NOT_RUN",
+  "permits_issued": 0,
+  "tool": "tools/replay_single_carton_record.py",
+  "perception": {
+    "prior_size_m": [
+      0.17,
+      0.128,
+      0.101
+    ],
+    "boxes": [
+      {
+        "id": "2f7959aa-7416-490d-a4e7-af96eaa30478-carton-0",
+        "size_m": [
+          0.1998778977717542,
+          0.15083592914813715,
+          0.10900000000000001
+        ],
+        "nominal_size_m": [
+          0.17,
+          0.128,
+          0.101
+        ],
+        "observed_patch_m": [
+          0.17398657559161723,
+          0.12875305839487333
+        ],
+        "support_plane": {
+          "top_world_m": 0.3369984224844931,
+          "noise_m": 0.001778357367703255,
+          "points": 9874,
+          "patch_bottom_world_m": 0.3417290364167537,
+          "vertical_face_axis": 1,
+          "basis": "OBSERVED_HORIZONTAL_RGBD_SURFACE_AT_VISIBLE_FACE_BOTTOM_EDGE",
+          "applied": true,
+          "resting_height_m": 0.13111059613043763,
+          "prior_height_error_m": 0.003110596130437626,
+          "allowed_error_m": 0.016335072103109763,
+          "assumption": "CARTON_RESTS_ON_OBSERVED_SUPPORT_HEIGHT_CONSISTENT_WITHIN_TOLERANCE",
+          "envelope_removed_below_support_m": 0.013939514359049138
+        }
+      }
+    ],
+    "rejected": []
+  },
+  "scene": {
+    "objects": {
+      "workspace_boundary": 6,
+      "observed": 29,
+      "observed_support": 1
+    },
+    "unknown_policy": "USER_CONFIRMED_CLEAR",
+    "camera_facing_rule": "USER_CONFIRMED_CLEAR_ONLY_CAMERA_SIDE_TO_MEASURED_EXTENT_FAR_SIDE_FULL_CELL",
+    "camera_facing_measured_extent_runs": 10,
+    "observed_supports": [
+      "rgbd_support_2f7959aa-7416-490d-a4e7-af96eaa30478-carton-0"
+    ]
+  },
+  "planning": {
+    "planning_s": 1314.56,
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 18
+    },
+    "complete_plan": {
+      "candidate_index": 11,
+      "endpoint_screen": "CLEAR",
+      "active_seal_ids": [
+        "part_014_seal",
+        "part_016_seal",
+        "part_018_seal",
+        "part_020_seal",
+        "part_022_seal",
+        "part_024_seal"
+      ],
+      "seal_check": {
+        "valid": true,
+        "maximum_gap_m": 7.1763454045058994e-09,
+        "minimum_edge_margin_m": 0.021319739024051924,
+        "normal_error_rad": 7.884953353001449e-08
+      },
+      "terminal_lip_min_gap_m": -7.1762863068883105e-09,
+      "release_status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+      "support_confirmed": false,
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 8205,
+          "send_duration_s": 41.02,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25
+          }
+        },
+        {
+          "stage": "contact",
+          "points": 682,
+          "send_duration_s": 3.4050000000000002,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0
+          }
+        },
+        {
+          "stage": "detach",
+          "points": 1103,
+          "send_duration_s": 5.51,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0
+          }
+        },
+        {
+          "stage": "return",
+          "points": 7929,
+          "send_duration_s": 39.64,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25
+          }
+        }
+      ],
+      "total_motion_s": 89.58
+    }
+  },
+  "gpu_perception": {
+    "device": "NVIDIA GeForce RTX 3050 Ti Laptop GPU 4 GB",
+    "environment": ".venv-workbench-cuda torch 2.5.1+cu124",
+    "dino_gpu_s": [
+      1.399,
+      0.808,
+      0.802
+    ],
+    "sam_gpu_fp16_s": [
+      0.621,
+      0.331,
+      0.318
+    ],
+    "sam_fp32_gpu": "CUDA_OUT_OF_MEMORY_ON_4_GB",
+    "sam_cpu_2_threads_under_load_s": 20.73,
+    "mask_iou_fp16_vs_field_cpu": 0.9998,
+    "status": "MEASURED_OFFLINE_NOT_ENABLED_IN_FIELD_CONFIG"
+  }
+}

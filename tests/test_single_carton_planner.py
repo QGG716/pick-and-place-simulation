@@ -42,11 +42,18 @@ def case(tmp_path,monkeypatch):
         def request(self,r,**kwargs):
             calls.append(deepcopy(r))
             if r==p.init:return dict(status='READY',capabilities={'bounded_single_carton_planning':not options['legacy_worker']})
+            if r['op']=='ik':return options.get('ik',lambda r:dict(status='NATIVE_IK_FAILED'))(r)
+            if r['op']=='validate' and 'validate' in options and 'probe_path' not in r:
+                hooked=options['validate'](r)
+                if hooked is not None:return hooked
             if r['op']=='validate':
                 valid=not((options['reject_return'] and r['stage']=='return' and 'probe_path' in r) or
                           (options['reject_loaded_start'] and r['stage']=='return' and 'probe_path' not in r))
                 failure=None if valid else {'reason':'PAYLOAD_NEIGHBOR_COLLISION'}
                 return dict(native_valid=valid,legacy_intersection_valid=valid,path_failure=failure,failure=failure)
+            if 'plan' in options:
+                hooked=options['plan'](r)
+                if hooked is not None:return hooked
             stage=r['stage'];qgoal=r.get('q_goal',[dict(approach=.01,contact=.02,detach=.03)[stage]]*6) if stage!='return' else r['q_goal']
             return dict(status='SUCCESS',native_output_status='PASS',points=[dict(t=0.,q=r['q_start'],v=[0.]*6,a=[0.]*6),dict(t=1.,q=qgoal,v=[0.]*6,a=[0.]*6)])
         def close(self):pass
@@ -266,3 +273,140 @@ def test_request_failure_retains_input_elapsed_and_stage_without_retry(case,reas
     assert record['status']=='REQUEST_FAILED' and record['error']==reason
     assert record['request']['q_goal']==[.1]*6 and record['elapsed_s']>=0
     assert p.client.count==1 and p.authority._plans=={}
+
+
+def test_lin_failure_retries_slower_native_profiles_and_records_each_attempt(case):
+    p,obs,box,folder,calls,opts=case
+    attempts=[]
+    class Native:
+        def request(self,req,**kwargs):
+            if req['op']=='validate':return dict(native_valid=True,legacy_intersection_valid=True,path_failure=None,failure=None)
+            assert req['pipeline_id']=='pilz_industrial_motion_planner' and req['planner_id']=='LIN'
+            attempts.append((req['velocity_scale'],req['acceleration_scale']))
+            if req['velocity_scale']>.25:return dict(status='NATIVE_PLANNING_FAILED')
+            return dict(status='SUCCESS',native_output_status='PASS',points=[dict(t=0.,q=[0.]*6,v=[0.]*6,a=[0.]*6),dict(t=1.,q=[.02]*6,v=[0.]*6,a=[0.]*6)])
+    p.client=Native();progress=[]
+    segment=p.checked_segment({'q_start':[0.]*6,'stage':'contact'},np.eye(4),'contact',10.,folder,progress.append,True)
+    assert attempts==[(1.,1.),(.5,.5),(.25,.25)]
+    assert segment['evidence']['planner']==dict(pipeline_id='pilz_industrial_motion_planner',planner_id='LIN',
+        velocity_scale=.25,acceleration_scale=.25,goal='POSE',configured_time_scale=10.,send_time_scale=10.)
+    for name in ('contact-pilz','contact-pilz-s0.5','contact-pilz-s0.25'):
+        assert json.loads((folder/f'{name}-native.json').read_text())['status']=='REPLIED'
+    assert not (folder/'contact-ompl-native.json').exists() and p.authority._plans=={}
+    assert sum('重新原生规划' in m for m in progress)==2
+
+
+def test_lin_never_falls_back_to_free_space_search(case):
+    p,obs,box,folder,calls,opts=case
+    class Native:
+        def request(self,req,**kwargs):
+            assert req['planner_id']=='LIN'
+            return dict(status='NATIVE_PLANNING_FAILED')
+    p.client=Native()
+    with pytest.raises(ValueError,match='contact:NATIVE_REJECTED'):
+        p.checked_segment({'q_start':[0.]*6,'stage':'contact'},np.eye(4),'contact',10.,folder,lambda _:None,True)
+    assert not list(folder.glob('*ompl*'))
+
+
+def test_endpoint_screen_skips_blocked_tool_and_plans_clear_candidate_first(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates;cands=real(box,p.source['tool'],p.site['topology'])[:3]
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:deepcopy(cands))
+    p.clearance={'tool_links':['part_000']}
+    poses={json.dumps(np.round(c[k],9).tolist()):i for i,c in enumerate(cands) for k in ('precontact_pose','tcp_pose')}
+    def index(r):return poses[json.dumps(np.round(r['goal_pose'],9).tolist())]
+    solution=lambda i:[.011+i/1000]*6  # small moves within the 0.1 rad/s limit at time_scale 1
+    def ik(r):
+        i=index(r)
+        if i==1:return dict(status='NATIVE_IK_FAILED')
+        return dict(status='SUCCESS',q=solution(i))
+    def validate(r):
+        if r['stage']=='return':return None
+        if r['q_start']==solution(0):
+            failure=dict(reason='INTERSECTION_OR_CONTACT',pair=['part_000','wall'],surface_distance_m=-1.)
+            return dict(native_valid=False,legacy_intersection_valid=False,failure=failure,path_failure=None)
+        return dict(native_valid=True,legacy_intersection_valid=True,failure=None,path_failure=None)
+    opts['ik']=ik;opts['validate']=validate
+    p.coordinate_model.tcp=lambda q:np.asarray(cands[2]['tcp_pose']) if q[0]>.01 else np.eye(4)
+    progress=[]
+    plan=p.plan_cycle(obs,[box],folder,progress.append)
+    assert plan['candidate_index']==2 and plan['endpoint_screen']=='CLEAR'
+    motions=[c for c in calls if c.get('op')=='plan']
+    # Blocked candidate 0 never reaches path search; CLEAR candidate 2 goes
+    # before the non-conclusive candidate 1 and uses its checked joint goal.
+    assert motions[0]['stage']=='approach' and motions[0]['q_goal']==solution(2) and 'goal_pose' not in motions[0]
+    assert len(motions)==4 and len(p.authority._plans)==4
+    screen=json.loads((folder/(box['id']+'-0')/'endpoint-precheck.json').read_text())
+    assert screen[0]['conclusion']=='TOOL_OR_PAYLOAD_POSE_BLOCKED'
+    assert json.loads((folder/(box['id']+'-1')/'endpoint-precheck.json').read_text())[0]['conclusion']=='IK_NOT_FOUND_NOT_CONCLUSIVE'
+    assert [s['conclusion'] for s in json.loads((folder/(box['id']+'-2')/'endpoint-precheck.json').read_text())]==['PASS']*3
+    assert any('1 个候选终态全部通过，1 个逆解未定论，1 个已排除' in m for m in progress)
+    assert plan['segments'][0]['package']['evidence']['planner']['goal']=='JOINT'
+
+
+def test_ik_seeds_are_deterministic_current_task_solutions_within_limits(case):
+    p,obs,box,folder,calls,opts=case
+    seeds=p.ik_seeds([0.]*6,[[.1]*6,[.2,.2,.2,.2,.2,2.9]])
+    assert seeds[0]==[0.]*6 and seeds[1]==[.2,.2,.2,.2,.2,2.9]
+    assert all(-3<=x[5]<=3 for x in seeds) and len(seeds)==len({tuple(np.round(x,12)) for x in seeds})
+    assert [.1]*5+[.1+np.pi/2] in [list(np.round(x,12)) for x in seeds] or any(np.allclose(x,[.1]*5+[.1+np.pi/2]) for x in seeds)
+
+
+def test_detach_falls_back_to_lift_profiles_when_outward_line_is_blocked(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    candidate=real(box,p.source['tool'],p.site['topology'])[0]
+    tcp=np.asarray(candidate['tcp_pose']);normal=np.asarray(candidate['face']['normal'])
+    seen=[]
+    def plan(r):
+        if r['stage']!='detach':return None
+        goal=np.asarray(r['goal_pose'])[:3,3]-tcp[:3,3];seen.append(goal.round(6).tolist())
+        if goal@normal>.1:return dict(status="NATIVE_PLANNING_FAILED")  # straight outward line blocked
+        return None
+    opts['plan']=plan
+    result=p.plan_cycle(obs,[box],folder)
+    detach=result['segments'][2]
+    assert detach['stage']=='detach' and detach['package']['evidence']['detach_profile']=='DIAGONAL_45'
+    rejected=detach['package']['evidence']['rejected_detach_profiles']
+    assert [r['profile'] for r in rejected]==['OUTWARD'] and 'NATIVE_REJECTED' in rejected[0]['reason']
+    # Outward attempt at full and three slower LIN profiles, then one 45-degree plan.
+    assert len(seen)==5
+    np.testing.assert_allclose(seen[-1],normal*.04+np.array([0,0,.04]),atol=1e-6)
+    sub=next(folder.glob('*-0'))
+    assert (sub/'detach-pilz-native.json').is_file() and (sub/'detach-diagonal_45-pilz-native.json').is_file()
+    assert (sub/'detach-diagonal_45-sent-check.json').is_file() and len(p.authority._plans)==4
+
+
+def test_all_detach_profiles_rejected_issues_no_permit(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    opts['plan']=lambda r:dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='detach' else None
+    with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: detach × 1'):p.plan_cycle(obs,[box],folder)
+    assert p.authority._plans=={} and not (folder/'complete-plan.json').exists()
+    reason=json.loads((folder/'planning-failures.json').read_text())[0]['reason']
+    assert 'ALL_PROFILES_REJECTED' in reason and all(name in reason for name in ('OUTWARD','DIAGONAL_45','LIFT_FIRST'))
+
+
+# Quintic rest-to-rest peaks: speed 1.875*d/T (limit 0.1), acceleration 5.7735*d/T^2 (limit 0.2).
+@pytest.mark.parametrize('delta,expected',[(.02,1.),(.05,1.25),(.1,2.),(.2,None)])
+def test_send_scale_slows_only_as_needed_to_keep_interpolated_limits(case,delta,expected):
+    p,obs,box,folder,calls,opts=case
+    class Native:
+        def request(self,req,**kwargs):
+            if req['op']=='validate':return dict(native_valid=True,legacy_intersection_valid=True,path_failure=None,failure=None)
+            return dict(status='SUCCESS',native_output_status='PASS',points=[dict(t=0.,q=[0.]*6,v=[0.]*6,a=[0.]*6),dict(t=1.,q=[delta]*6,v=[0.]*6,a=[0.]*6)])
+    p.client=Native();progress=[]
+    if expected is None:
+        with pytest.raises(ValueError,match='INTERPOLATION_LIMIT'):
+            p.checked_segment({'q_start':[0.]*6,'stage':'approach'},[delta]*6,'approach',1.,folder,progress.append)
+        assert not (folder/'approach-sent-native.json').exists()
+        return
+    segment=p.checked_segment({'q_start':[0.]*6,'stage':'approach'},[delta]*6,'approach',1.,folder,progress.append)
+    assert segment['prepared']['time_scale']==expected
+    assert segment['evidence']['planner']['configured_time_scale']==1. and segment['evidence']['planner']['send_time_scale']==expected
+    q=np.asarray([x['q'] for x in segment['prepared']['points']]);dt=segment['prepared']['period_s']
+    assert (np.abs(np.diff(q,axis=0))/dt).max()<=.1+1e-9 and (np.abs(np.diff(q,2,axis=0))/dt**2).max()<=.2+1e-6
+    from unloading_sim.workbench.single_carton.planner import SEND_SLOWDOWN_STEPS
+    assert sum('插值后超出关节限值' in m for m in progress)==SEND_SLOWDOWN_STEPS.index(expected)

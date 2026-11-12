@@ -67,6 +67,9 @@ def test_current_receiver_deferral_is_visible_without_requesting_fake_measuremen
 
 def test_closing_result_window_hides_only_and_uses_original_image(ui):
     w,errors=ui;root=w.root;window=w.result_windows['detection'];root.update()
+    # The periodic task refresh republishes the live (empty) vision output and
+    # would race this injected packet; stop it so only explicit calls apply.
+    for ident in root.tk.call('after','info'):root.after_cancel(ident)
     f=exposure(7);result=Model().detect_boxes(f);packet=VisionPacket(0,f,None,result,overlay(f,result,False))
     window.update(packet,'检测完成','');root.update()
     image_id=window.item;before=geometry(window.canvas)

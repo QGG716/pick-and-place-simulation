@@ -203,7 +203,8 @@ class SingleWorkbench(Workbench):
             xy=np.c_[20+(w-40)*t/t[-1],h-25-(h-60)*(q[:,j]-lo)/(hi-lo)][::max(1,len(t)//900)]
             self.canvas.create_line(*xy.ravel(),fill=color,width=2)
         for t0,name in marks:self.canvas.create_text(30+(w-80)*t0/offset,15,text=name,fill='#fff',anchor='nw')
-        self.preview_label.set(f'规划预览：4 段运动总时长 {offset:.2f} s；真空等待另计。低速时间缩放 ×{self.config_single["time_scale"]:g}')
+        scales='/'.join(f"{s['package']['prepared']['time_scale']:g}" for s in plan['segments'])
+        self.preview_label.set(f'规划预览：4 段运动总时长 {offset:.2f} s；真空等待另计。各段发送时间缩放 ×{scales}（1 = 原生规划速度）')
         self.previewed=True;self.execute_button.configure(state='normal');self.draw_observation()
     def execute_cycle(self):
         if not self.previewed:raise ValueError('请先查看本次完整轨迹预览')

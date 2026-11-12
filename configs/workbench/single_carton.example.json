@@ -7,7 +7,7 @@
   "controller_loaded_payload_basis": "PHYSICAL_TOOL_1_5_KG_PLUS_USER_CONFIRMED_CARTON_2_KG_REQUIRES_CONTROLLER_MATCH",
   "serial_port": "/dev/ttyUSB0",
   "record_root": "outputs/single_carton",
-  "time_scale": 10.0,
+  "time_scale": 1.0,
   "topology": {
     "mode": "COMMON_GRIPPER_VALVE",
     "connected_cup_ids": [
@@ -73,10 +73,11 @@
   "site_scene": "configs/workbench/real_site.example.json",
   "geometry": {
     "prior_size_m": [
-      0.15,
-      0.1,
-      0.1
+      0.17,
+      0.128,
+      0.101
     ],
-    "dimension_tolerance_m": 0.008
+    "dimension_tolerance_m": 0.008,
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT"
   }
 }

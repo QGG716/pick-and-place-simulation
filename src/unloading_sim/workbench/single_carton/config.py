@@ -32,6 +32,11 @@ def issues(c):
     if (not isinstance(prior,list) or len(prior)!=3 or
             any(not isinstance(x,(int,float)) or not math.isfinite(x) or not .005<x<=2 for x in prior)):
         errors.append('geometry.prior_size_m：明确的现场箱型尺寸先验，单位 m')
+    # The prior bounds hidden thickness in the collision envelope, so its
+    # source must be recorded explicitly (tape measurement or RGB-D task id).
+    basis=geometry.get('prior_measurement_basis')
+    if not isinstance(basis,str) or not basis.strip():
+        errors.append('geometry.prior_measurement_basis：填写箱型尺寸来源（卷尺实测或 RGB-D 实测任务编号）')
     tol=geometry.get('dimension_tolerance_m')
     if not isinstance(tol,(int,float)) or not math.isfinite(tol) or not 0<=tol<=.03:
         errors.append('geometry.dimension_tolerance_m：尺寸先验误差界，0 至 0.03 m')

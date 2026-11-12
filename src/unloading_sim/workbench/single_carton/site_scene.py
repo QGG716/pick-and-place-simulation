@@ -3,6 +3,15 @@
 Unknown voxels are occupied unless explicitly cleared by the user's field
 confirmation. Neither that policy nor measured clear volumes erase observed
 obstacles. No simulation world is imported.
+
+Near a reconstructed target, coarse grid cells are not allowed to manufacture
+volume that was never measured: the target's own observed plane (including
+pixels SAM missed at its border) belongs to the target envelope, mixed depth
+pixels at the target's depth breaks are sensor artefacts, and remaining real
+points use their measured extent instead of a whole 40 mm cell. The surface
+observed directly below a target becomes one explicit support object whose
+top is bound to the envelope bottom, so the existing detach-only payload/support
+rule can apply; it never exempts robot or tool links.
 """
 from itertools import product
 import json
@@ -12,6 +21,19 @@ import numpy as np
 from ..coordinates import rigid
 from ..detection import metric_points
 from .geometry import transform
+
+# Target-local scene rules (metres / pixels). Plane band is several times the
+# recorded RANSAC RMS; the pixel band only reaches SAM border misses.
+TARGET_PLANE_BAND_M=.004
+TARGET_PIXEL_BAND_PX=15
+ENVELOPE_CONTAINMENT_M=.002
+FLYING_DEPTH_JUMP_M=.012
+NEAR_TARGET_M=.06
+MEASURED_EXTENT_PAD_M=.003
+SUPPORT_BELOW_M=.015
+SUPPORT_ABOVE_M=.004
+SUPPORT_MIN_POINTS=30
+SUPPORT_MIN_THICKNESS_M=.005
 
 
 def user_cleared_unknown(c):
@@ -60,6 +82,87 @@ def _box(ident,lo,hi,category):
     return dict(id=ident,pose=T.tolist(),size=(hi-lo).tolist(),category=category)
 
 
+def _envelope_local(box,points):
+    return transform(np.linalg.inv(np.asarray(box['pose'],float)),points.reshape(-1,3)).reshape(points.shape)
+
+
+def _target_claims(box,mask,valid,world_points,jump):
+    """Pixels owned by one target, and mixed pixels at its depth breaks.
+
+    Owned: inside the full conservative envelope and either in the SAM mask, on
+    the target's own observed plane, or on a side plane through a visible patch
+    edge, within a small image band around the mask. Other points (neighbors,
+    supports, occluders) are retained.
+    Flying: depth-discontinuous pixels in the band; a real obstacle keeps its
+    depth-continuous interior pixels and therefore its voxel.
+    """
+    half=np.asarray(box['size_m'],float)/2
+    contained=np.all(abs(_envelope_local(box,world_points))<=half+ENVELOPE_CONTAINMENT_M,axis=-1)
+    kernel=np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,np.uint8)
+    band=cv2.dilate(mask.astype(np.uint8),kernel).astype(bool)
+    observed=[f for f in box['faces'] if f.get('observed')]
+    on_plane=np.zeros(valid.shape,bool);on_side=np.zeros(valid.shape,bool)
+    for face in observed:
+        offset=world_points-np.asarray(face['center_m'])
+        distance=offset@np.asarray(face['normal'])
+        on_plane |= abs(distance)<=TARGET_PLANE_BAND_M
+        # The carton's own side faces: perpendicular planes through the visible
+        # patch edges, behind the face, within the other patch extent.
+        coords=[offset@np.asarray(face[a]) for a in ('u','v')];half_patch=np.asarray(face['size_m'])/2
+        for i in range(2):
+            along=abs(coords[1-i])<=half_patch[1-i]+TARGET_PLANE_BAND_M
+            on_side |= along&(distance<=TARGET_PLANE_BAND_M)&(abs(abs(coords[i])-half_patch[i])<=TARGET_PLANE_BAND_M)
+    # The target's own plane may bulge a few millimetres past the fitted face
+    # (cardboard) or continue past SAM's border; both stay within the band.
+    loose=np.all(abs(_envelope_local(box,world_points))<=half+TARGET_PLANE_BAND_M,axis=-1)
+    in_mask=valid&mask&contained
+    surface=valid&band&loose&on_plane&~in_mask
+    side=valid&band&contained&on_side&~in_mask&~surface
+    flying=valid&band&jump&~in_mask&~surface&~side
+    return in_mask|surface|side,flying,dict(mask_points_claimed=int(in_mask.sum()),
+        border_surface_points_claimed=int(surface.sum()),side_face_points_claimed=int(side.sum()),
+        flying_points_removed=int(flying.sum()))
+
+
+def _support_below(box,observed):
+    """Observed surface directly under a target with a horizontal bottom.
+
+    Returns (object, selected_point_mask, evidence) or (None, None, evidence).
+    Its top equals the envelope bottom exactly so the native detach rule binds it.
+    """
+    T=np.asarray(box['pose'],float);R=T[:3,:3];half=np.asarray(box['size_m'],float)/2
+    vertical=int(np.argmax(abs(R[2])))
+    if abs(R[2,vertical])<np.cos(np.deg2rad(10)) or not len(observed):
+        return None,None,dict(support='NONE_NO_HORIZONTAL_BOTTOM_OR_POINTS')
+    # Same bottom value the planner uses to bind detach supports.
+    bottom=float(np.asarray(box['corners_m'],float)[:,2].min())
+    horizontal=[i for i in range(3) if i!=vertical]
+    local=(observed-T[:3,3])@R
+    near=np.all(abs(local[:,horizontal])<=half[horizontal]+NEAR_TARGET_M,axis=1)
+    height=observed[:,2]
+    # A plane measured during reconstruction (which already bounded the
+    # envelope bottom) sets the window; its top noise band is absorbed.
+    plane=(box.get('quality') or {}).get('observed_support_plane')
+    level=plane['top_world_m'] if plane else bottom
+    above=max(SUPPORT_ABOVE_M,4*plane['noise_m']) if plane else SUPPORT_ABOVE_M
+    selected=near&(height>=level-SUPPORT_BELOW_M)&(height<=level+above)
+    if selected.sum()<SUPPORT_MIN_POINTS:
+        return None,None,dict(support='NONE_INSUFFICIENT_SUPPORT_POINTS',support_points=int(selected.sum()))
+    axis=R[:,horizontal[0]].copy();axis[2]=0;axis/=np.linalg.norm(axis)
+    frame=np.column_stack((axis,np.cross([0.,0.,1.],axis),[0.,0.,1.]))
+    planar=(observed[selected]-T[:3,3])@frame
+    lo=planar[:,:2].min(0)-MEASURED_EXTENT_PAD_M;hi=planar[:,:2].max(0)+MEASURED_EXTENT_PAD_M
+    lowest=float(height[selected].min())-MEASURED_EXTENT_PAD_M
+    thickness=max(bottom-lowest,SUPPORT_MIN_THICKNESS_M)
+    pose=np.eye(4);pose[:3,:3]=frame
+    pose[:3,3]=T[:3,3]+frame[:,:2]@((lo+hi)/2);pose[2,3]=bottom-thickness/2
+    obj=dict(id='rgbd_support_'+box['id'],pose=pose.tolist(),size=[*(hi-lo).tolist(),thickness],category='observed_support')
+    return obj,selected,dict(support=obj['id'],support_points=int(selected.sum()),
+        points_above_envelope_bottom_clipped=int((height[selected]>bottom).sum()),
+        top_world_m=bottom,measured_plane_top_world_m=plane['top_world_m'] if plane else None,
+        basis='OBSERVED_RGBD_SURFACE_BELOW_TARGET_TOP_BOUND_TO_ENVELOPE_BOTTOM')
+
+
 def _project(points,k):
     from ..reference.camera_geometry import ProjectionInfo,opencv_brown_coefficients
     info=ProjectionInfo('realsense',k['width'],k['height'],k['fx'],k['fy'],k['ppx'],k['ppy'],
@@ -95,18 +198,20 @@ def build_scene(observation,result,boxes,config,self_filter=None):
     for region in config.get('measured_clear_regions',[]):
         a,b=np.asarray(region['bounds_m'])
         free |= np.all(centers-cell/2>=a,axis=1)&np.all(centers+cell/2<=b,axis=1)
-    # Every valid depth outside reconstructed target masks remains an obstacle,
+    # Every valid depth not owned by a reconstructed target remains an obstacle,
     # including unreconstructed detections and unlabelled tables/floors/objects.
+    # A failed/unexplained depth outside the full envelope stays an obstacle even
+    # if SAM labelled it as the target; off-plane depth inside it also stays.
     points=metric_points(frame);valid=np.isfinite(points).all(-1)&(depth>.1)&(depth<3.)
-    claimed=np.zeros(valid.shape,bool)
     world_points=transform(W,points.reshape(-1,3)).reshape(points.shape)
+    z=np.where(valid,depth,0.).astype(np.float32);square=np.ones((3,3),np.uint8)
+    jump=(cv2.dilate(z,square)-cv2.erode(z,square))>FLYING_DEPTH_JUMP_M
+    claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
-        local=transform(np.linalg.inv(box['pose']),world_points.reshape(-1,3)).reshape(points.shape)
-        # A failed/unexplained depth outside the reconstructed full envelope
-        # remains an obstacle even if SAM labelled it as the target.
-        contained=np.all(abs(local)<=np.asarray(box['size_m'])/2+.002,axis=-1)
-        claimed |= result.masks[box['detection_index']] & contained
-    observed=transform(W,points[valid & ~claimed])
+        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),valid,world_points,jump)
+        claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
+    flying&=~claimed
+    observed=world_points[valid&~claimed&~flying]
     removed_self=0
     if self_filter is not None:
         owned=self_filter.contains(observed,observation.q_capture)
@@ -120,16 +225,36 @@ def build_scene(observation,result,boxes,config,self_filter=None):
         observed=observed[~np.all(abs(local)<=np.asarray(fixed['size_m'])/2+1e-9,axis=1)]
     indices=np.floor((observed-lo)/cell).astype(int)
     inside=np.all(indices>=0,axis=1)&np.all(indices<shape,axis=1)
-    indices=indices[inside]
+    observed=observed[inside];indices=indices[inside]
     occupancy=(~free).reshape(tuple(shape));measured=np.zeros_like(occupancy)
     if len(indices):measured[tuple(indices.T)]=True
     occupancy |= measured
     # User-confirmed blind clearance affects ONLY unobserved cells. Real depth
     # obstacles, fixed measurements, target envelopes and boundaries remain.
     unknown=occupancy & ~measured
-    grids=[('observed',measured)]
-    if not cleared_unknown:grids.append(('unknown',unknown))
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
+    # Supports are explicit objects; their points leave the voxel cloud but the
+    # cells stay measured, so they never turn into unknown space.
+    represented=np.zeros(len(observed),bool);supports=[]
+    for box,record in zip(boxes,evidence):
+        support,selected,info=_support_below(box,observed[~represented]) if len(observed) else (None,None,dict(support='NONE_NO_POINTS'))
+        record.update(info)
+        if support is not None:
+            keep=np.flatnonzero(~represented);represented[keep[selected]]=True
+            world.append(support);supports.append(support['id'])
+    near=np.zeros(len(observed),bool)
+    for box in boxes:
+        half=np.asarray(box['size_m'],float)/2
+        near|=np.all(abs(transform(np.linalg.inv(np.asarray(box['pose'],float)),observed))<=half+NEAR_TARGET_M,axis=1)
+    cells=np.prod(shape);linear=np.ravel_multi_index(indices.T,tuple(shape)) if len(indices) else np.zeros(0,int)
+    rest=~represented;emit=np.zeros(cells,bool);emit[linear[rest]]=True
+    tight=np.zeros(cells,bool);tight[linear[rest&near]]=True
+    low=np.full((cells,3),np.inf);high=np.full((cells,3),-np.inf)
+    np.minimum.at(low,linear[rest],observed[rest]);np.maximum.at(high,linear[rest],observed[rest])
+    emit=emit.reshape(tuple(shape));tight=tight.reshape(tuple(shape))
+    low=low.reshape(*shape,3);high=high.reshape(*shape,3);tight_runs=0;camera_side_runs=0;camera_origin=W[:3,3]
+    grids=[('observed',emit)]
+    if not cleared_unknown:grids.append(('unknown',unknown))
     for ix in range(shape[0]):
         for iy in range(shape[1]):
             # Merge consecutive occupied cells along Z with identical ownership.
@@ -137,6 +262,20 @@ def build_scene(observation,result,boxes,config,self_filter=None):
                 row=grid[ix,iy];edges=np.diff(np.r_[False,row,False].astype(int))
                 for a,b in zip(np.flatnonzero(edges==1),np.flatnonzero(edges==-1)):
                     lower=lo+np.array([ix,iy,a])*cell;upper=lo+np.array([ix+1,iy+1,b])*cell
+                    if kind=='observed' and tight[ix,iy,a:b].any():
+                        # Near a target: measured extent only, never the whole cell.
+                        lower=np.maximum(lower,low[ix,iy,a:b].min(0)-MEASURED_EXTENT_PAD_M)
+                        upper=np.minimum(upper,high[ix,iy,a:b].max(0)+MEASURED_EXTENT_PAD_M);tight_runs+=1
+                    elif kind=='observed' and cleared_unknown:
+                        # Camera-facing sides only: between the camera and the
+                        # first measured return lies ray-traversed space or space
+                        # the user confirmed clear; no surface was measured there.
+                        # The far side (object interior) keeps the whole cell.
+                        near_side=low[ix,iy,a:b].min(0)-MEASURED_EXTENT_PAD_M;far_side=high[ix,iy,a:b].max(0)+MEASURED_EXTENT_PAD_M
+                        before=(lower.copy(),upper.copy())
+                        lower=np.where(camera_origin<lower,np.maximum(lower,near_side),lower)
+                        upper=np.where(camera_origin>upper,np.minimum(upper,far_side),upper)
+                        camera_side_runs+=int(np.any(lower!=before[0]) or np.any(upper!=before[1]))
                     world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}',lower,upper,kind))
     # Finite boundary walls keep paths inside the region actually classified.
     for axis in range(3):
@@ -150,6 +289,11 @@ def build_scene(observation,result,boxes,config,self_filter=None):
         user_confirmed_clear_unknown_voxels=int(unknown.sum()) if cleared_unknown else 0,
         unknown_clearance_basis=config.get('unknown_clearance_basis') if cleared_unknown else None,
         unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
-        observed_voxels=int(measured.sum()),measured_clear_regions=config.get('measured_clear_regions',[]),
+        observed_voxels=int(measured.sum()),target_local_scene=evidence,observed_supports=supports,
+        near_target_measured_extent_runs=tight_runs,camera_facing_measured_extent_runs=camera_side_runs,
+        camera_facing_rule='USER_CONFIRMED_CLEAR_ONLY_CAMERA_SIDE_TO_MEASURED_EXTENT_FAR_SIDE_FULL_CELL' if cleared_unknown else 'NOT_APPLIED_OCCUPIED_POLICY_FULL_CELLS',target_local_rules=dict(plane_band_m=TARGET_PLANE_BAND_M,
+            pixel_band_px=TARGET_PIXEL_BAND_PX,flying_depth_jump_m=FLYING_DEPTH_JUMP_M,near_target_m=NEAR_TARGET_M,
+            measured_extent_pad_m=MEASURED_EXTENT_PAD_M,support_window_m=[-SUPPORT_BELOW_M,SUPPORT_ABOVE_M]),
+        measured_clear_regions=config.get('measured_clear_regions',[]),
         self_returns_removed=removed_self,self_filter_pose='q_capture',
         imported_simulation_objects=0,hardware_execution='NOT_RUN')

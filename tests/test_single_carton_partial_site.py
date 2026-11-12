@@ -79,7 +79,14 @@ def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
 def test_default_real_site_uses_explicit_user_clearance_without_simulation_furniture():
     c=load(ROOT/'configs/workbench/single_carton.example.json')
     assert c['camera']['width']==640 and c['camera']['height']==480 and c['camera']['fps']==30
-    assert c['geometry']['prior_size_m']==[.15,.1,.1]
+    # Field-measured carton, never the simulation's 150 x 100 x 100 mm.
+    assert c['geometry']['prior_size_m']==[.17,.128,.101]
+    assert '7ccdb15e' in c['geometry']['prior_measurement_basis']
+    from unloading_sim.workbench.single_carton.config import issues
+    assert issues(c)==[]
+    for basis in (None,'','  '):
+        broken=dict(c,geometry=dict(c['geometry'],prior_measurement_basis=basis))
+        assert any(e.startswith('geometry.prior_measurement_basis') for e in issues(broken))
     assert c['release_policy']=='USER_DEFERRED_RECEIVER_QUALIFICATION'
     assert c['receiver_qualification_basis']
     p=SinglePlanner(c,None,None,None)
@@ -117,7 +124,25 @@ def test_user_clearance_omits_only_unknown_and_preserves_observed_fixed_and_boun
     occupied=build_scene(obs,result,[],c)
     c.update(unknown_policy='USER_CONFIRMED_CLEAR',unknown_clearance_basis='SYNTHETIC_TEST_USER_CONFIRMATION')
     cleared=build_scene(obs,result,[],c)
-    assert cleared['world']==[o for o in occupied['world'] if o['category']!='unknown']
+    kept=[o for o in occupied['world'] if o['category']!='unknown']
+    assert [o['id'] for o in cleared['world']]==[o['id'] for o in kept]
+    assert [o for o in cleared['world'] if o['category']!='observed']==[o for o in kept if o['category']!='observed']
+    # Observed cells shrink only on their camera-facing side to the measured
+    # extent (+3 mm); they stay inside the original cell and cover every point.
+    def bounds(o):
+        c=np.asarray(o['pose'])[:3,3];h=np.asarray(o['size'])/2;return c-h,c+h
+    for a,b in zip(cleared['world'],kept):
+        if a['category']!='observed':continue
+        (alo,ahi),(blo,bhi)=bounds(a),bounds(b)
+        assert np.all(alo>=blo-1e-12) and np.all(ahi<=bhi+1e-12)
+    from unloading_sim.workbench.detection import metric_points
+    points=metric_points(obs.frame);depth=obs.frame.depth*obs.frame.depth_scale_m
+    world=transform(np.asarray(obs.world_camera),points[(depth>.1)&(depth<3.)].reshape(-1,3))
+    lo,hi=np.asarray(c['workspace_bounds_m'])
+    world=world[np.all((world>=lo)&(world<hi),axis=1)]
+    boxes=[bounds(o) for o in cleared['world'] if o['category']=='observed']
+    assert len(world) and all(any(np.all(p>=a-1e-9) and np.all(p<=b+1e-9) for a,b in boxes) for p in world)
+    assert cleared['camera_facing_measured_extent_runs']>0 and occupied['camera_facing_measured_extent_runs']==0
     assert cleared['observed_voxels']==occupied['observed_voxels']>0
     assert cleared['unknown_voxels']==occupied['unknown_voxels']>0
     assert cleared['unknown_collision_voxels']==0

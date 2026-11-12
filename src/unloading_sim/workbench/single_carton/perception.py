@@ -188,17 +188,22 @@ def reconstruct(observation,result,geometry=None):
     f=observation.frame
     if result.source!=Source.LIVE or result.observation_id!=f.observation_id or len(result.masks)!=len(result.detections):
         raise ValueError('SAME_FRAME_REAL_SEGMENTATION_REQUIRED')
+    return recover_boxes(f,observation.world_camera,result.detections,result.masks,geometry)
+
+
+def recover_boxes(f,world_camera,detections,masks,geometry=None):
+    """Recover boxes from one frame's masks; callers own the frame provenance."""
     points=metric_points(f);boxes=[];rejected=[];seen=[]
-    for i,(item,mask) in enumerate(zip(result.detections,result.masks)):
+    for i,(item,mask) in enumerate(zip(detections,masks)):
         # Also handle old saved observations produced before detector NMS.
         if any(np.count_nonzero(mask&previous)/max(1,np.count_nonzero(mask|previous))>=.95 for previous in seen):continue
         seen.append(mask)
         try:
             if geometry and geometry.get('prior_size_m'):
                 from .partial_geometry import recover_partial
-                box=recover_partial(points,mask,observation.world_camera,rgb=f.rgb,
+                box=recover_partial(points,mask,world_camera,rgb=f.rgb,
                     prior=geometry['prior_size_m'],dimension_tolerance_m=geometry.get('dimension_tolerance_m',.008))
-            else:box=recover(points,mask,observation.world_camera,rgb=f.rgb)
+            else:box=recover(points,mask,world_camera,rgb=f.rgb)
             box.update(id=f.observation_id+'-carton-'+str(i),detection_index=i,detection=item)
             boxes.append(box)
         except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e),evidence=getattr(e,'evidence',None)))

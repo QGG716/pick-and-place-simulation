@@ -103,8 +103,15 @@ class TaskManager:
                     dimensions=(np.asarray(x['evidence']['measured_face_size_m'])*1000).round(1).tolist() if x.get('evidence') else None
                     reasons.append(f"编号 {x['detection_index']}：{labels.get(x['reason'],x['reason'])}"+(f'；已测面 {dimensions} mm' if dimensions else ''))
                 raise ValueError('不限制固定箱型；本次完整碰撞包络尚未确定：\n'+'\n'.join(reasons))
-            if not self.boxes:raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(
-                f"{r['detection_index']}: {r['reason']}" for r in rejected))
+            if not self.boxes:
+                def explain(r):
+                    e=r.get('evidence') or {}
+                    if r['reason'].startswith('DIMENSION_PRIOR_CONFLICT') and e.get('observed_patch_m'):
+                        seen=(np.asarray(e['observed_patch_m'])*1000).round(1).tolist();prior=(np.asarray(e['prior_m'])*1000).round(1).tolist()
+                        return (f"{r['detection_index']}: {r['reason']}（可见面实测 {seen} mm 大于箱型先验 {prior} mm 的任一面；"
+                                '请在“现场配置”中把 geometry.prior_size_m 改为实际纸箱尺寸并重启）')
+                    return f"{r['detection_index']}: {r['reason']}"
+                raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
             self.phase='TARGET_READY';self.reason=''
         except Exception as e:self.reject(e);raise
         finally:self.busy=False
