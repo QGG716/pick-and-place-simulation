@@ -79,7 +79,9 @@ class TaskManager:
             if self.config.get('site'):
                 from .site_scene import build_scene
                 from .self_filter import RobotSelfFilter
-                self.progress('构建同帧现场碰撞场景：保留邻物、固定测量和未知区域')
+                clear=self.config['site']['unknown_policy']=='USER_CONFIRMED_CLEAR'
+                self.progress('构建同帧现场碰撞场景：保留邻物及实测障碍；'+
+                              ('未观测区域采用用户已清空确认' if clear else '未知区域保留为障碍'))
                 self.planner.build()
                 if self.self_filter is None:
                     self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)

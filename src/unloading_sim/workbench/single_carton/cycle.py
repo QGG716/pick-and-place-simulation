@@ -123,4 +123,5 @@ class Cycle:
     def status(self):
         return dict(task_id=self.task_id,state=self.state,reason=self.reason,holding=self.vacuum.holding,
                     physical_result='PHYSICAL_CYCLE_COMPLETE' if self.physical_complete else 'NOT_COMPLETE',
+                    receiver_qualification=(self.plan or {}).get('release',{}).get('status'),support_confirmed=False,
                     robot=self.last_feedback,stage_elapsed_s=self.clock()-self.entered)

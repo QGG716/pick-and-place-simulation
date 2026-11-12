@@ -14,9 +14,10 @@
     ]
   ],
   "voxel_m": 0.04,
-  "unknown_policy": "OCCUPIED",
+  "unknown_policy": "USER_CONFIRMED_CLEAR",
+  "unknown_clearance_basis": "USER_CONFIRMED_ALL_UNOBSERVED_REGIONS_CLEARED_NO_UNKNOWN_COLLISION_CHECK_2026_11_12",
   "fixed_obstacles": [],
   "measured_clear_regions": [],
   "receiver": null,
-  "note": "现场环境尚无测量记录，不能编造桌面和盲区。RGB-D 自动生成局部障碍；填入真实固定障碍、已测空旷区及 q_start 承接面。此文件不导入任何仿真设备。"
+  "note": "用户本轮明确确认全部未观测区域已清空：不再把未知体素加入碰撞场景，记录用户现场确认而非传感器实测。RGB-D 观测障碍、固定障碍、邻箱、全部机器人/吸具和完整附着箱体仍检查碰撞。本轮用户延期承接区资格核验，receiver 可为空；完整带载回程和释放碰撞检查仍保留。此文件不导入任何仿真设备。"
 }

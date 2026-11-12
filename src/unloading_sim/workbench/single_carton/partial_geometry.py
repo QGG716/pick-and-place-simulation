@@ -64,7 +64,10 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
     if sv[1]/np.sqrt(len(support))<.004:raise ValueError('LOCAL_PLANE_NORMAL_UNRELIABLE')
     ref=vh[0]-n*(vh[0]@n);ref/=np.linalg.norm(ref);other=np.cross(n,ref)
     xy=np.c_[(support-center)@ref,(support-center)@other]
-    rect=cv2.boxPoints(cv2.minAreaRect(xy.astype('float32')));edge=rect[1]-rect[0]
+    # OpenCV returns float32 corners. Normalize their direction in float64;
+    # float32 lengths inject scale into an otherwise rigid measured frame and
+    # violate native SE(3) validation. Never repair calibration/input transforms.
+    rect=cv2.boxPoints(cv2.minAreaRect(xy.astype('float32'))).astype(float);edge=rect[1]-rect[0]
     x=(ref*edge[0]+other*edge[1])/np.linalg.norm(edge);y=np.cross(n,x)
     R=np.column_stack((x,y,n));local=(support-center)@R
     low,high=local[:,:2].min(0),local[:,:2].max(0)

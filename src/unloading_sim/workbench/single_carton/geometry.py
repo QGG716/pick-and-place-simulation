@@ -103,7 +103,7 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         _, _, vh = np.linalg.svd(main['support']-main['center'], full_matrices=False)
         u = vh[0]; v = np.cross(n,u)
         xy = np.c_[(main['support']-main['center'])@u,(main['support']-main['center'])@v]
-        rect = cv2.boxPoints(cv2.minAreaRect(xy.astype('float32'))); edge = rect[1]-rect[0]
+        rect = cv2.boxPoints(cv2.minAreaRect(xy.astype('float32'))).astype(float); edge = rect[1]-rect[0]
         x = (u*edge[0]+v*edge[1])/np.linalg.norm(edge)
     else:
         x = side['normal']-n*(side['normal']@n); x /= np.linalg.norm(x)
@@ -208,7 +208,7 @@ def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
     # plane samples so erosion does not silently shrink the measured boundary.
     lo,hi = np.quantile(xy,[.005,.995],axis=0)
     xy = xy[np.all((xy>=lo)&(xy<=hi),axis=1)]
-    rect = cv2.boxPoints(cv2.minAreaRect(xy.astype(np.float32)))
+    rect = cv2.boxPoints(cv2.minAreaRect(xy.astype(np.float32))).astype(float)
     edges = np.roll(rect,-1,axis=0)-rect
     a = edges[0]; b = edges[1]; measured = np.array([np.linalg.norm(a),np.linalg.norm(b)])
     x = (u*a[0]+v*a[1])/measured[0]; y = np.cross(n,x)

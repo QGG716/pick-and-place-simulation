@@ -58,6 +58,13 @@ def test_status_numeric_paths_and_long_errors_never_shift_widgets(ui):
     assert not errors
 
 
+def test_current_receiver_deferral_is_visible_without_requesting_fake_measurements(ui):
+    w,errors=ui
+    assert '资格核验已按用户要求延期' in w.details.get() and '支撑未确认' in w.details.get()
+    assert '规划前请填写' not in w.details.get() and not errors
+    assert '未观测区域：用户已确认清空' in w.details.get()
+
+
 def test_closing_result_window_hides_only_and_uses_original_image(ui):
     w,errors=ui;root=w.root;window=w.result_windows['detection'];root.update()
     f=exposure(7);result=Model().detect_boxes(f);packet=VisionPacket(0,f,None,result,overlay(f,result,False))

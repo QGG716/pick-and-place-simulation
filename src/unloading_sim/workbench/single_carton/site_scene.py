@@ -1,7 +1,8 @@
 """Task-local RGB-D collision scene in confirmed base coordinates.
 
-Unknown voxels are occupied. A measured clear volume can supply blind workspace
-coverage, but never erase observed obstacles. No simulation world is imported.
+Unknown voxels are occupied unless explicitly cleared by the user's field
+confirmation. Neither that policy nor measured clear volumes erase observed
+obstacles. No simulation world is imported.
 """
 from itertools import product
 import json
@@ -13,6 +14,16 @@ from ..detection import metric_points
 from .geometry import transform
 
 
+def user_cleared_unknown(c):
+    policy=c.get('unknown_policy')
+    if policy=='OCCUPIED':return False
+    if policy=='USER_CONFIRMED_CLEAR':
+        basis=c.get('unknown_clearance_basis')
+        if isinstance(basis,str) and basis.strip():return True
+        raise ValueError('UNKNOWN_CLEARANCE_FIELD_BASIS_REQUIRED')
+    raise ValueError('UNKNOWN_SPACE_POLICY_INVALID')
+
+
 def load_site(path):
     c=json.loads(Path(path).read_text())
     if c.get('schema')!='eco65_real_site_v1' or c.get('frame')!='base_link':
@@ -22,7 +33,7 @@ def load_site(path):
     if (lo.shape!=(3,) or not np.isfinite([lo,hi]).all() or np.any(hi<=lo)
             or not .005<=cell<=.08 or np.prod(np.ceil((hi-lo)/cell))>300000):
         raise ValueError('INVALID_BOUNDED_SITE_WORKSPACE')
-    if c.get('unknown_policy')!='OCCUPIED':raise ValueError('UNKNOWN_SPACE_MUST_REMAIN_OCCUPIED')
+    user_cleared_unknown(c)
     ids=set()
     for b in c.get('fixed_obstacles',[]):
         if b['id'] in ids or not b.get('measurement_basis'):raise ValueError('SITE_OBSTACLE_ID_OR_MEASUREMENT_REQUIRED')
@@ -60,6 +71,7 @@ def _project(points,k):
 
 
 def build_scene(observation,result,boxes,config,self_filter=None):
+    cleared_unknown=user_cleared_unknown(config)
     frame=observation.frame
     if result.observation_id!=frame.observation_id:raise ValueError('SCENE_FRAME_MISMATCH')
     lo,hi=np.asarray(config['workspace_bounds_m'],float);cell=config['voxel_m']
@@ -112,13 +124,16 @@ def build_scene(observation,result,boxes,config,self_filter=None):
     occupancy=(~free).reshape(tuple(shape));measured=np.zeros_like(occupancy)
     if len(indices):measured[tuple(indices.T)]=True
     occupancy |= measured
-    # Unknown target interiors are not declared free. Only explicit measured
-    # clear workspace or observed free rays can remove that unknown occupancy.
+    # User-confirmed blind clearance affects ONLY unobserved cells. Real depth
+    # obstacles, fixed measurements, target envelopes and boundaries remain.
+    unknown=occupancy & ~measured
+    grids=[('observed',measured)]
+    if not cleared_unknown:grids.append(('unknown',unknown))
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
     for ix in range(shape[0]):
         for iy in range(shape[1]):
             # Merge consecutive occupied cells along Z with identical ownership.
-            for kind,grid in [('observed',measured),('unknown',occupancy & ~measured)]:
+            for kind,grid in grids:
                 row=grid[ix,iy];edges=np.diff(np.r_[False,row,False].astype(int))
                 for a,b in zip(np.flatnonzero(edges==1),np.flatnonzero(edges==-1)):
                     lower=lo+np.array([ix,iy,a])*cell;upper=lo+np.array([ix+1,iy+1,b])*cell
@@ -130,7 +145,11 @@ def build_scene(observation,result,boxes,config,self_filter=None):
             world.append(_box(f'site_boundary_{axis}_{sign}',a,b,'workspace_boundary'))
     return dict(schema='eco65_real_rgbd_scene_v1',frame='base_link',world=world,
         observation_id=frame.observation_id,q_capture=list(observation.q_capture),T_base_camera=W.tolist(),
-        unknown_policy='OCCUPIED',unknown_voxels=int((occupancy & ~measured).sum()),
+        unknown_policy=config['unknown_policy'],unknown_voxels=int(unknown.sum()),
+        unknown_collision_voxels=0 if cleared_unknown else int(unknown.sum()),
+        user_confirmed_clear_unknown_voxels=int(unknown.sum()) if cleared_unknown else 0,
+        unknown_clearance_basis=config.get('unknown_clearance_basis') if cleared_unknown else None,
+        unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
         observed_voxels=int(measured.sum()),measured_clear_regions=config.get('measured_clear_regions',[]),
         self_returns_removed=removed_self,self_filter_pose='q_capture',
         imported_simulation_objects=0,hardware_execution='NOT_RUN')

@@ -55,14 +55,37 @@ def test_prior_conflict_and_insufficient_patch_have_specific_reasons():
     with pytest.raises(ValueError,match='INSUFFICIENT_INTERIOR_DEPTH'):recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])
 
 
-def test_default_real_site_has_no_simulation_furniture_or_free_unknown_space():
+def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
+    from scipy.spatial.transform import Rotation
+    p,m=plane(width=.24,height=.18)
+    rotation=Rotation.from_euler('xyz',[14,-21,31],degrees=True).as_matrix()
+    p=p@rotation.T
+    box=recover_partial(p,m,np.eye(4),prior=[.24,.18,.12])
+    config=load(ROOT/'configs/workbench/single_carton.example.json')
+    tool=json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
+    candidates=contact_candidates(box,tool,config['topology'])
+    matrices=[box['pose'],box['uncertainty']['reference_pose']]
+    for c in candidates:
+        matrices.extend([c['tcp_pose'],c['precontact_pose'],np.linalg.inv(c['tcp_pose'])@box['pose']])
+    for T in matrices:
+        R=np.asarray(T)[:3,:3]
+        assert np.linalg.norm(R.T@R-np.eye(3))<1e-12
+        assert abs(np.linalg.det(R)-1)<1e-12
+    invalid=np.eye(4);invalid[0,0]=1.01
+    with pytest.raises(ValueError,match='INVALID_RIGID_TRANSFORM'):
+        recover_partial(p,m,invalid,prior=[.24,.18,.12])
+
+
+def test_default_real_site_uses_explicit_user_clearance_without_simulation_furniture():
     c=load(ROOT/'configs/workbench/single_carton.example.json')
     assert c['camera']['width']==640 and c['camera']['height']==480 and c['camera']['fps']==30
     assert c['geometry']['prior_size_m']==[.15,.1,.1]
-    assert c['release_policy']=='MEASURED_SITE_RECEIVER_REQUIRED'
+    assert c['release_policy']=='USER_DEFERRED_RECEIVER_QUALIFICATION'
+    assert c['receiver_qualification_basis']
     p=SinglePlanner(c,None,None,None)
     assert p.build_world({'scene':{'obstacles':['old-trailer','old-conveyor']}})==[]
-    assert c['site']['unknown_policy']=='OCCUPIED' and c['site']['measured_clear_regions']==[]
+    assert c['site']['unknown_policy']=='USER_CONFIRMED_CLEAR' and c['site']['unknown_clearance_basis']
+    assert c['site']['measured_clear_regions']==[]
     with pytest.raises(ValueError,match='SITE_RECEIVER_NOT_CONFIGURED'):p.receiver()
 
 
@@ -86,6 +109,33 @@ def test_measured_blind_clearance_never_erases_observed_obstacle():
     c=small_site();c['measured_clear_regions']=[dict(bounds_m=[[-1,-1,-1],[1,1,1]],measurement_basis='SYNTHETIC_TEST_ONLY')]
     scene=build_scene(obs,result,[],c)
     assert scene['unknown_voxels']==0 and scene['observed_voxels']>0
+
+
+def test_user_clearance_omits_only_unknown_and_preserves_observed_fixed_and_boundary_objects():
+    obs=observation();result=DetectionResult(obs.frame.observation_id,obs.frame.stamp.source,1,())
+    c=small_site();c['fixed_obstacles']=[dict(id='measured-bracket',pose=np.eye(4).tolist(),size_m=[.01,.02,.03])]
+    occupied=build_scene(obs,result,[],c)
+    c.update(unknown_policy='USER_CONFIRMED_CLEAR',unknown_clearance_basis='SYNTHETIC_TEST_USER_CONFIRMATION')
+    cleared=build_scene(obs,result,[],c)
+    assert cleared['world']==[o for o in occupied['world'] if o['category']!='unknown']
+    assert cleared['observed_voxels']==occupied['observed_voxels']>0
+    assert cleared['unknown_voxels']==occupied['unknown_voxels']>0
+    assert cleared['unknown_collision_voxels']==0
+    assert cleared['user_confirmed_clear_unknown_voxels']==occupied['unknown_voxels']
+    assert cleared['unknown_clearance_evidence']=='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION'
+    assert {o['category'] for o in cleared['world']}>={'observed','measured_fixed','workspace_boundary'}
+
+
+@pytest.mark.parametrize('policy,basis,reason',[
+    ('USER_CONFIRMED_CLEAR',None,'FIELD_BASIS_REQUIRED'),('USER_CONFIRMED_CLEAR','','FIELD_BASIS_REQUIRED'),
+    ('FREE',None,'POLICY_INVALID')])
+def test_unknown_clearance_needs_explicit_field_basis(policy,basis,reason,tmp_path):
+    c=json.loads((ROOT/'configs/workbench/real_site.example.json').read_text())
+    c.update(unknown_policy=policy,unknown_clearance_basis=basis)
+    path=tmp_path/'site.json';path.write_text(json.dumps(c))
+    with pytest.raises(ValueError,match=reason):load_site(path)
+    obs=observation();result=DetectionResult(obs.frame.observation_id,obs.frame.stamp.source,1,())
+    with pytest.raises(ValueError,match=reason):build_scene(obs,result,[],c)
 
 
 def test_unreconstructed_neighbor_mask_stays_in_environment():
@@ -144,6 +194,7 @@ def test_execute_recheck_does_not_dilute_small_obstacle_in_unchanged_background(
 
 def test_release_requires_real_support_and_all_geometry_hypotheses():
     c=load(ROOT/'configs/workbench/single_carton.example.json')
+    c['release_policy']='MEASURED_SITE_RECEIVER_REQUIRED'
     c['site']['receiver']=dict(support_ids=['actual_table'],bounds_m=[[-.15,-.15,0.],[.15,.15,.049]],
                                margin_m=.003,measurement_basis='SYNTHETIC_TEST_ONLY')
     model=SimpleNamespace(world_from_base=np.eye(4),frames=lambda q:{'link_6':np.eye(4)})

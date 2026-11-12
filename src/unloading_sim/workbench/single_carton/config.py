@@ -10,10 +10,23 @@ REQUIRED_VACUUM=('grip_below_kpa','release_above_kpa','hold_below_kpa',
                 'max_age_s','establish_commands','release_commands','field_basis')
 
 
+def release_policy_evidence(c):
+    policy=c.get('release_policy')
+    if policy=='MEASURED_SITE_RECEIVER_REQUIRED':
+        return dict(policy=policy,qualification_deferred=False,basis='MEASURED_SITE_GEOMETRY_REQUIRED')
+    if policy=='USER_DEFERRED_RECEIVER_QUALIFICATION':
+        basis=c.get('receiver_qualification_basis')
+        if not isinstance(basis,str) or not basis.strip():
+            raise ValueError('RECEIVER_DEFERRAL_BASIS_REQUIRED: 延期承接区资格核验须保留用户明确要求的依据')
+        return dict(policy=policy,qualification_deferred=True,basis=basis,
+                    status='RECEIVER_QUALIFICATION_DEFERRED_BY_USER',support_confirmed=False)
+    raise ValueError('INVALID_RELEASE_POLICY: 必须明确选择实测承接检查或用户已要求的资格核验延期策略')
+
+
 def issues(c):
     errors=[]
-    if c.get('site') and c.get('release_policy')!='MEASURED_SITE_RECEIVER_REQUIRED':
-        errors.append('release_policy：真实现场入口必须检查本次 q_start 的现场承接区域')
+    try:release_policy_evidence(c)
+    except ValueError as e:errors.append('release_policy：'+str(e))
     geometry=c.get('geometry',{})
     prior=geometry.get('prior_size_m')
     if (not isinstance(prior,list) or len(prior)!=3 or

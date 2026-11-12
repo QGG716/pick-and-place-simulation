@@ -26,12 +26,24 @@ All active seals must fit depth-supported CAD contours with edge margin; retain
 passive common-valve semantics, every rigid solid and the measured pressure gates.
 
 Use the separate base_link real-site scene: frozen RGB-D, measured fixed boxes,
-and explicit measured blind clearance. Unknown space is occupied; no simulated
-trailer/conveyors/lift/box stack/base placement enters physical collision scenes.
-The source snapshot supplies robot/tool/camera hardware geometry only. q_start
-receiving geometry is now checked against measured site support, superseding the
-November 11 deferral. Unknown receiving data is not invented. Every uncertainty
-envelope must pass the complete loaded return and release checks before motion.
+and explicit blind-clearance evidence. The latest user explicitly confirms all
+unobserved regions have been cleared and requests no collision checks for those
+regions. Use USER_CONFIRMED_CLEAR with the source of that field confirmation;
+omit unknown-only voxel colliders, record that this is not sensor-observed free
+space, and retain observed obstacles, fixed boxes, neighbors, workspace bounds,
+all robot/tool solids and the complete attached carton collision geometry.
+Retain OCCUPIED as an explicit alternative, never silently infer clearance.
+No simulated trailer/conveyors/lift/box stack/base placement enters real scenes.
+The source snapshot supplies robot/tool/camera hardware geometry only. Honor the
+user's explicit current AGENTS instruction deferring q_start receiving-region
+qualification for this round: record RECEIVER_QUALIFICATION_DEFERRED_BY_USER,
+never support certification. Keep the deferral explicit in configuration with
+its user-instruction basis; do not invent receiver bounds or support IDs. Every
+uncertainty envelope must pass the complete loaded return and release collision
+checks before motion. Deferred qualification grants no environment contact
+exemption; unknown-region clearance above is a separate user confirmation.
+Retain the explicitly selected
+measured-receiver policy for future use without silently falling back.
 
 Keep pure 5 ms CANFD, feedback-based transitions and independent stop/pressure
 supervision. Closing a result window is display-only. Fault/stop/close never

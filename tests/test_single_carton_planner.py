@@ -110,6 +110,78 @@ def test_current_real_site_scene_flows_through_all_four_native_stages(case):
             assert r['site_workspace_bounds_m']==[[-2.,-2.,-2.],[2.,2.,2.]]
     assert plan['segments'][-1]['package']['prepared']['points'][-1]['q']==pytest.approx(obs.q_start,abs=1e-12)
 
+
+@pytest.mark.parametrize('failure',[None,'loaded_start','loaded_return'])
+def test_user_deferred_real_site_keeps_full_world_and_loaded_checks(case,monkeypatch,failure):
+    p,obs,box,folder,calls,opts=case
+    p.site['site']=dict(workspace_bounds_m=[[-2.,-2.,-2.],[2.,2.,2.]],receiver=None)
+    obs.frame.observation_id='frozen-site-frame'
+    world=[dict(id=ident,size=[.1,.2,.3],pose=np.eye(4).tolist(),category=kind)
+           for ident,kind in [('neighbor','carton'),('blind-region','unknown'),('actual-table','measured_fixed')]]
+    scene=dict(observation_id=obs.frame.observation_id,world=world,imported_simulation_objects=0)
+    def no_receiver():raise AssertionError('No receiver measurement may be invented for the deferred policy')
+    p.receiver=no_receiver
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    opts['reject_loaded_start']=failure=='loaded_start';opts['reject_return']=failure=='loaded_return'
+    if failure:
+        with pytest.raises(ValueError,match='PAYLOAD_NEIGHBOR_COLLISION'):p.plan_cycle(obs,[box],folder,scene=scene)
+        assert not p.authority._plans and not (folder/'complete-plan.json').exists()
+    else:
+        plan=p.plan_cycle(obs,[box],folder,scene=scene)
+        assert plan['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
+        assert plan['release']['support_confirmed'] is False and plan['release']['region']['ids']==[]
+        assert plan['release']['qualification']['basis']==p.site['receiver_qualification_basis']
+        assert plan['release']['q_return']==list(obs.q_start)
+        assert plan['binding']['physical_cycle']['site_scene']==scene
+        assert len(p.authority._plans)==4
+        assert len([r for r in calls if r.get('op')=='validate' and 'probe_path' in r])==4
+    checked=[r for r in calls if r.get('op') in {'plan','validate'}]
+    assert checked
+    for r in checked:
+        assert {o['id'] for o in r['world']}=={'neighbor','blind-region','actual-table',box['id']}
+        assert not any(pair[1] in {'neighbor','blind-region','actual-table'} for pair in r['allowed_pairs'])
+        if r['stage']=='return':
+            assert r['attachment']['size']==box['size_m'] and r['single_carton_contact']['supports']==[]
+    assert scene['world']==world
+    if failure=='loaded_start':assert not [r for r in calls if r.get('op')=='plan']
+
+
+def test_explicit_measured_receiver_failure_is_once_before_native_candidates(case):
+    p,obs,box,folder,calls,opts=case
+    p.site['release_policy']='MEASURED_SITE_RECEIVER_REQUIRED';p.site['site']={'receiver':None}
+    p.receiver=lambda:SinglePlanner.receiver(p)
+    with pytest.raises(ValueError,match='SITE_RECEIVER_NOT_CONFIGURED') as error:p.plan_cycle(obs,[box],folder)
+    assert 'NO_COMPLETE_FEASIBLE' not in str(error.value) and calls==[] and not p.authority._plans
+
+
+@pytest.mark.parametrize('policy,basis,expected',[
+    ('USER_DEFERRED_RECEIVER_QUALIFICATION','', 'RECEIVER_DEFERRAL_BASIS_REQUIRED'),
+    ('UNKNOWN',None,'INVALID_RELEASE_POLICY'),(None,None,'INVALID_RELEASE_POLICY')])
+def test_receiver_deferral_is_explicit_not_a_missing_configuration_fallback(case,policy,basis,expected):
+    from unloading_sim.workbench.single_carton.config import issues
+    p,obs,box,folder,calls,opts=case
+    p.site['release_policy']=policy;p.site['receiver_qualification_basis']=basis
+    assert any(expected in error for error in issues(p.site))
+    with pytest.raises(ValueError,match=expected):p.plan_cycle(obs,[box],folder)
+    assert calls==[] and not p.authority._plans
+
+
+@pytest.mark.parametrize('category',['unknown','observed'])
+def test_native_unknown_region_is_distinguished_from_observed_collision(category):
+    T=np.eye(4);T[:3,3]=[-.06,-.06,.59]
+    world=[dict(id='region',category=category,size=[.04,.04,1.48],pose=T.tolist())]
+    before=deepcopy(world)
+    result={'native_valid':False,'failure':dict(reason='CLEARANCE_INSUFFICIENT',pair=['base_link','region'],
+        surface_distance_m=.0016305,required_pair_clearance_m=.0024)}
+    text=SinglePlanner.loaded_start_failure(result,world)
+    if category=='unknown':
+        assert text.startswith('LOADED_Q_START_UNKNOWN_SPACE') and 'base_link' in text
+        assert '[[-0.08, -0.08, -0.15], [-0.04, -0.04, 1.33]]' in text
+        assert '现场测量' in text and '尚不能确认' in text
+    else:assert text.startswith('LOADED_Q_START_COLLISION')
+    assert world==before and result['native_valid'] is False
+
 def test_loaded_return_collision_rejects_whole_task_without_any_permit(case,monkeypatch):
     p,obs,box,folder,calls,opts=case;opts['reject_return']=True
     # One concrete candidate keeps this directed failure test bounded.

@@ -84,8 +84,13 @@ class SingleWorkbench(Workbench):
         self.preview_button=self.button(row,'查看完整轨迹预览',self.preview)
         self.execute_button=self.button(row,'执行单箱',self.execute_cycle);self.execute_button.configure(state='disabled')
         self.button(row,'停止（不自动释放）',self.stop_cycle)
-        self.details=StableStringVar(value='启动后自动连接三类设备，640×480@30fps；检测和分割持续运行。\n支持部分出画面与遮挡；尺寸先验可配置，完整不确定包络参与碰撞。\n'+('\n'.join(issues(config)) or ('现场承接区待填写；观察正常，规划前请填写现场 receiver。' if not config.get('site',{}).get('receiver') else '现场配置已加载。')))
-        fixed_text(tab,self.details,height=3,pady=4)
+        receiver_notice=('本轮承接区资格核验已按用户要求延期；仍检查完整带箱回程及释放包络，支撑未确认。'
+            if config.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION' else
+            ('实测承接策略：规划前请填写现场 receiver。' if not config.get('site',{}).get('receiver') else '实测承接策略：已加载现场 receiver。'))
+        receiver_notice+='\n'+('未观测区域：用户已确认清空；实测障碍与完整箱体仍检查碰撞。'
+            if config.get('site',{}).get('unknown_policy')=='USER_CONFIRMED_CLEAR' else '未观测区域：按占用处理。')
+        self.details=StableStringVar(value='启动后自动连接三类设备，640×480@30fps；检测和分割持续运行。\n支持部分出画面与遮挡；尺寸先验可配置，完整不确定包络参与碰撞。\n'+('\n'.join(issues(config)) or receiver_notice))
+        fixed_text(tab,self.details,height=4,pady=4)
         self.bound_details=StableStringVar(value='本次起始点、目标和释放位置：尚未锁定')
         fixed_text(tab,self.bound_details,height=4,pady=4)
         self.health=StableStringVar();fixed_text(tab,self.health,height=4)
@@ -267,7 +272,9 @@ class SingleWorkbench(Workbench):
                 self.draw_observation()
                 self.notice.set(self.details.get())
             elif kind=='plan':
-                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+'\n返回同一组 q_start；释放包络已检查。承接区域按现场配置检查。')
+                qualification=('承接区资格核验延期；支撑未确认。' if value['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
+                               else '承接区域按现场实测配置检查；不代表传感器证实支撑。')
+                self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+'\n返回同一组 q_start；释放包络已检查。'+qualification)
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(value['q_start']).round(3).tolist())+
                     '\n目标 '+value['target']['id']+' · 接触 TCP（m） '+str(np.asarray(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+
                     '\n释放箱心（m） '+str(np.asarray(value['release']['pose'])[:3,3].round(5).tolist())+
@@ -343,7 +350,9 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,default=ROOT/'configs/workbench/single_carton.example.json');p.add_argument('--ui-smoke',action='store_true');p.add_argument('--check-config',action='store_true');args=p.parse_args()
     config=load(args.config)
     if args.check_config:
-        print(json.dumps(dict(issues=issues(config),receiver_configured=bool(config.get('site',{}).get('receiver')),unknown_space_policy=config.get('site',{}).get('unknown_policy'),hardware_execution='NOT_RUN'),ensure_ascii=False,indent=2));return
+        print(json.dumps(dict(issues=issues(config),release_policy=config.get('release_policy'),
+            receiver_qualification_deferred=config.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION',
+            receiver_configured=bool(config.get('site',{}).get('receiver')),unknown_space_policy=config.get('site',{}).get('unknown_policy'),hardware_execution='NOT_RUN'),ensure_ascii=False,indent=2));return
     installation=Installation.load(config['execution']['installation']);model=CoordinateModel(URDF,URDF_SHA,installation.world_from_base,installation.tool)
     calibration=Extrinsics.load(config['camera_extrinsics']) if config.get('camera_extrinsics') else None
     if calibration:installation.check_camera(calibration)

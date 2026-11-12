@@ -52,6 +52,8 @@ def attached():
 
 def test_complete_requires_real_arrival_and_two_new_pressure_samples():
     c,t,r,v,events,plan=make()
+    plan['release']=dict(status='RECEIVER_QUALIFICATION_DEFERRED_BY_USER',support_confirmed=False)
+    c.ready('one-box',plan)
     assert r.calls==[] and v.commands==[]
     c.start();r.state='SUCCEEDED';c.tick();assert c.state=='APPROACH' # receipt is not arrival
     r.finish();c.tick();r.finish();c.tick();assert v.commands==['grip']
@@ -63,6 +65,8 @@ def test_complete_requires_real_arrival_and_two_new_pressure_samples():
     t.step(1.01);c.tick();assert c.state=='COMPLETE' and not v.holding
     assert not c.physical_complete and c.status()['physical_result']!='PHYSICAL_CYCLE_COMPLETE'
     assert events[-1]['result']=='FAKE_DEVICE_CYCLE_COMPLETE'
+    assert c.status()['receiver_qualification']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
+    assert c.status()['support_confirmed'] is False
 
 @pytest.mark.parametrize('fault',['pressure_loss','pressure_stale','alarm','robot_stale','sdk_failed'])
 def test_loaded_fault_never_releases_or_returns_blindly(fault):

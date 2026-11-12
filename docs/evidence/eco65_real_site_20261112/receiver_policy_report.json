@@ -1,0 +1,178 @@
+{
+  "schema": "eco65_deferred_receiver_real_site_validation_v1",
+  "parent_commit": "5357309a86fc9ea8bd46fbf9a478ef773a0e3466",
+  "source_task": "4cde3b86824046f99bc8085d419deb83",
+  "physical_cycle": "NOT_RUN",
+  "hardware_commands": "NOT_SENT",
+  "execution_permits": 0,
+  "complete_path": "NOT_RUN",
+  "policy": {
+    "mode": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+    "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+    "support_confirmed": false,
+    "authority": "Explicit receiving-region deferral in current user-provided AGENTS instructions",
+    "receiver_missing_is_not_a_planning_gate": true,
+    "measured_receiver_policy_preserved": true,
+    "no_environment_contact_exemption": true,
+    "loaded_endpoint_and_all_sent_paths_required": true,
+    "unknown_space": "USER_CONFIRMED_CLEAR",
+    "unknown_clearance_authority": "Latest user: 未观测区域都已清空，无需检查碰撞",
+    "known_obstacle_collision_checks_retained": true
+  },
+  "original_failure": {
+    "reason": "SITE_RECEIVER_NOT_CONFIGURED",
+    "candidates": 32,
+    "failed_before_native_loaded_endpoint": true
+  },
+  "capture_fix_field_evidence": {
+    "stationary": true,
+    "window_s": 0.4049512209894601,
+    "samples": 36,
+    "max_gap_s": 0.019997007999336347,
+    "range_deg": 0.006000000000009805,
+    "speed_deg_s": 0.03,
+    "speed_source": "MEASURED_UDP_SPEED",
+    "elapsed_s": 0.40397192400996573,
+    "waiting": "已锁定",
+    "frame_age_s": 0.045999422,
+    "pair_skew_s": 0.003831331996480003,
+    "rgb_number": 1182,
+    "depth_number": 1180
+  },
+  "tests": {
+    "passed": 217,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 63.966,
+    "record": "receiver_policy_pytest.xml",
+    "scope": "Fake IO, native request contracts, geometry numerics, UI, cycle/pressure/stop and frame regressions",
+    "final_ui_recheck": {
+      "passed": 8,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 2.152,
+      "record": "receiver_policy_ui_pytest.xml"
+    }
+  },
+  "original_task_sha256": {
+    "observation.json": "74ca01e8a4dc5ae46786f2de8f4af0fe376454d02b01daf0948b5438b2fe8ef1",
+    "geometry.json": "9935ddb8e10a029a77fbe7f6e68b18bc3cf60371d9092b6dec7ca8d3c5539826",
+    "site-scene.json": "bcfcbea0fd8d73b4f797a5bd2367ff6997b4fc5ca0b30725f2d95d7ca2b4a0af",
+    "result.json": "e82d2167bc182eff50cf83cfc69224eff998db48b3c099505cce23eeb85f1ff7",
+    "planning-failures.json": "eebb9d2389fd70d265fecacc6992ee4aa7ab4ff84777838519710b99388ac7ae",
+    "observation.npz": "4b7ca7636cc1a1b64f3edaf52016c9355f69d851892541961d54319bb8a09cdf",
+    "segmentation.npz": "5f09ed36a3c3670d2d3b8a5d8c3d013750e94780d9a676541e3976c50c10d960"
+  },
+  "offline_diagnostic_sha256": {
+    "result.json": "6c7b325913fdbe2a67762ecf94102087ff4074d2c872e0125177ff5490535a40",
+    "candidate-000-loaded-start-native.json": "948f1f9eb3a514ae2e216d6d26f8bdf092a3ded216ce7d3341eeddbc62b50b7b",
+    "recomputed/result.json": "2c9b5aa0239154f39717b480b2f052e5ac279e9801e78106446a24d1936d5ab8",
+    "recomputed/geometry-recomputed.json": "177eada99f1b5540cc2c71c69d2adf6432dfaba18bb073ded9c6ccfe97604dca",
+    "user-cleared/result.json": "2c228df36503412c0fc5b76536e5f48c010ee2b99680dddb9b8ce146cdf3518b",
+    "user-cleared/site-scene-recomputed.json": "2677b80c807ed2503001173967a1e77417af9864a30bfecaec8e036b527b1c72",
+    "user-cleared/representative-path-result.json": "4b6dad266967c6e3c3c0b6d19af04a604d202540c891c8ff18a20b4eddbcb7fe"
+  },
+  "source_sha256": {
+    "src/unloading_sim/workbench/single_carton/config.py": "1299ada07bd9692bef626971f3a04fcb2261fc16e72ff55c27e1192d11cceef2",
+    "src/unloading_sim/workbench/single_carton/cycle.py": "def1154e353d392a5b97f14d3df70e08ab84bf684e83cca280e167ce77e1799a",
+    "src/unloading_sim/workbench/single_carton/geometry.py": "f0f41e15d32027a91e8b9713c08ab314edc8e911a44573ac0028d4c04ad22a65",
+    "src/unloading_sim/workbench/single_carton/partial_geometry.py": "706549dcb8aa15446e9be253c93c293354c598b51e7cb3a27eaaf192573232ee",
+    "src/unloading_sim/workbench/single_carton/planner.py": "2f01204b31c413a233521380688c780b2261b3a62a5eb94185bfc3115ce9fd3e",
+    "src/unloading_sim/workbench/single_carton/ui.py": "4faee21a79d2eb608a13f7ef1c0472c2030919410c7fd5e06a88d0c4e3be52d3",
+    "configs/workbench/single_carton.example.json": "3f7af254e6761d3851e29674b15298b4090e46eb78aa838ebde6aea60502412c",
+    "configs/workbench/real_site.example.json": "8cc8b6c9dfc8bea6f8aefae00b3e9944c564cbce3e8b7ad899e75a0e526dad95",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "c7ab398f9fb2ab927c09b95a1014253725f1a0202ed29d1cefc8f9b0aa3713ba",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "58074396832ca37d82045353c5f18e70ecb2063506e65f445d4af18709edce98"
+  },
+  "occupied_baseline_diagnostics": {
+    "scope": "SAVED_OBSERVATION_OFFLINE_NATIVE_ENDPOINT_ONLY",
+    "original_precision_failure": "INVALID_TRANSFORM",
+    "same_rgbd_mask_reconstruction": [
+      {
+        "id": "e5af52c5-a940-44cf-9942-e0812648daec-carton-0",
+        "old_rotation_orthogonality_error": 2.037224215964705e-08,
+        "recomputed_rotation_orthogonality_error": 1.511814976909148e-15,
+        "max_corner_change_m": 5.262558444574239e-11,
+        "original_size_m": [
+          0.18917820158610124,
+          0.13438735493523907,
+          0.10800000000000001
+        ],
+        "recomputed_size_m": [
+          0.18917820284135597,
+          0.13438735586486694,
+          0.10800000000000001
+        ]
+      }
+    ],
+    "candidates": 32,
+    "deferred_release_checks_passed": 32,
+    "loaded_endpoints_passed": 0,
+    "failure_counts": {
+      "CLEARANCE_INSUFFICIENT": 32
+    },
+    "first_failure": {
+      "numerical_gap_tolerance_m": 1e-09,
+      "pair": [
+        "base_link",
+        "rgbd_unknown_18_18_0"
+      ],
+      "query_range_m": 0.0034,
+      "query_scope": "robot_tool_payload_to_world",
+      "reason": "CLEARANCE_INSUFFICIENT",
+      "required_pair_clearance_m": 0.0024,
+      "surface_distance_m": 0.0016305088555347569
+    },
+    "unknown_region_bounds_base_m": [
+      [
+        -0.08,
+        -0.08,
+        -0.15
+      ],
+      [
+        -0.04,
+        -0.04,
+        1.33
+      ]
+    ],
+    "interpretation": "Conservative unobserved space; not proof of a physical obstacle collision.",
+    "scene": {
+      "observation_id": "e5af52c5-a940-44cf-9942-e0812648daec",
+      "imported_simulation_objects": 0,
+      "world_objects": 1751,
+      "unknown_voxels": 59024,
+      "observed_voxels": 75,
+      "categories": {
+        "unknown": 1705,
+        "observed": 40,
+        "workspace_boundary": 6
+      }
+    },
+    "saved_world_retained_without_obstacle_removal": true,
+    "source_files_unchanged": true
+  },
+  "current_native_diagnostics": {
+    "scope": "OFFLINE_SAVED_RGBD_RECONSTRUCTION_ENDPOINTS_AND_ONE_REPRESENTATIVE_PATH",
+    "user_cleared_unknown_policy": {
+      "policy": "USER_CONFIRMED_CLEAR",
+      "basis": "USER_CONFIRMED_ALL_UNOBSERVED_REGIONS_CLEARED_NO_UNKNOWN_COLLISION_CHECK_2026_11_12",
+      "original_unknown_voxels": 59024,
+      "unknown_collision_voxels": 0,
+      "original_observed_fixed_and_boundary_objects_preserved_exactly": true,
+      "omitted_unknown_objects": 1705,
+      "remaining_world_objects": 46
+    },
+    "candidates": 32,
+    "loaded_endpoints_passed": 32,
+    "representative_full_path": {
+      "status": "REJECTED",
+      "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED",
+      "scope": "FIRST_ENDPOINT_PASSING_CANDIDATE_ONLY_NOT_ALL_CANDIDATES"
+    },
+    "other_candidate_paths": "NOT_RUN_IN_THIS_OFFLINE_DIAGNOSTIC",
+    "complete_executable_plan": "NOT_GENERATED",
+    "execution_permits": 0,
+    "source_files_unchanged": true
+  }
+}

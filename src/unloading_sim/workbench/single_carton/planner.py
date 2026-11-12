@@ -9,6 +9,7 @@ from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform
+from .config import release_policy_evidence
 
 
 class SinglePlanner(EmptyPlanner):
@@ -59,14 +60,18 @@ class SinglePlanner(EmptyPlanner):
         vertices=transform(np.linalg.inv(B),vertices)
         return dict(ids=s['support_ids'],lower=vertices.min(0).tolist(),upper=vertices.max(0).tolist(),margin=s['margin_m'],source='BOUND_CURRENT_SCENE_RECEIVING_REGION')
     def release_check(self,q_start,flange_box,box,world):
+        qualification=release_policy_evidence(self.site)
         flange=self.coordinate_model.frames(q_start)['link_6']
         pose=self.coordinate_model.world_from_base@flange@flange_box
         vertices=corners(pose,box['size_m'])
-        if self.site.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION':
-            if self.site.get('site'):raise ValueError('REAL_SITE_RECEIVER_CANNOT_BE_DEFERRED')
+        if qualification['qualification_deferred']:
+            # This defers support qualification only. Empty support IDs grant
+            # no receiver contact exemption; native loaded endpoint and all
+            # four sent-path checks still use the complete unchanged world.
             return dict(status='RECEIVER_QUALIFICATION_DEFERRED_BY_USER',pose=pose.tolist(),corners_m=vertices.tolist(),
                         region=dict(ids=[]),q_return=list(q_start),support_confirmed=False,
-                        basis='SAME_LOCKED_Q_START_COLLISION_CHECKED_RECEIVING_NOT_QUALIFIED')
+                        qualification=qualification,
+                        basis='SAME_LOCKED_Q_START_RECEIVING_NOT_QUALIFIED_COLLISION_CHECKS_REQUIRED')
         region=self.receiver();lo=np.asarray(region['lower']);hi=np.asarray(region['upper']);margin=region['margin']
         support_contains_region=False
         for ident in region['ids']:
@@ -96,6 +101,17 @@ class SinglePlanner(EmptyPlanner):
         T=np.asarray(obj['pose'])
         if 'convex_mesh' in obj:return float(transform(T,obj['convex_mesh']['vertices'])[:,2].max())
         return float(T[2,3]+abs(T[2,:3])@(np.asarray(obj['size'])/2))
+    @staticmethod
+    def loaded_start_failure(result,world):
+        failure=result.get('failure');pair=failure.get('pair',[]) if isinstance(failure,dict) else []
+        unknown=next((o for o in world if o.get('category')=='unknown' and o['id'] in pair),None)
+        if unknown is not None:
+            vertices=corners(unknown['pose'],unknown['size'])
+            bounds=np.array([vertices.min(0),vertices.max(0)]).round(4).tolist()
+            return ('LOADED_Q_START_UNKNOWN_SPACE: 带载起点与未观测区域间隙不足，尚不能确认通道空旷；'+
+                    ' ↔ '.join(pair)+f'；该区域 base_link 范围（m）{bounds}；'+
+                    '请补充对应盲区的实际观测或现场测量，不能直接清空未知障碍；原生诊断：'+str(failure))
+        return 'LOADED_Q_START_COLLISION:'+str(failure)
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         loaded=attachment is not None;contact=stage=='contact'
         contact_ids=candidate['target_lip_contact_ids']
@@ -161,7 +177,12 @@ class SinglePlanner(EmptyPlanner):
         if (observation.frame.stamp.source!=Source.LIVE or observation.frame.stamp.host_session!=HOST_SESSION or
                 observation.robot_sample.get('source')!='LIVE'):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
-        self.build();self.authority.invalidate();self.cycle_binding=None
+        self.authority.invalidate();self.cycle_binding=None
+        qualification=release_policy_evidence(self.site)
+        self.build()
+        # A global configuration failure is not 32 independent infeasible
+        # grasps. Retain the explicit measured policy without silently deferring.
+        if not qualification['qualification_deferred']:self.receiver()
         if self.site.get('site') and scene is None:raise ValueError('FROZEN_REAL_SITE_SCENE_REQUIRED')
         world=deepcopy(scene['world']) if scene else [deepcopy(x) for x in self.world if x.get('category')!='carton']
         if scene and scene['observation_id']!=observation.frame.observation_id:raise ValueError('REAL_SCENE_CAPTURE_MISMATCH')
@@ -192,7 +213,8 @@ class SinglePlanner(EmptyPlanner):
                         start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
                         endcheck=self.native_call(dict(start_loaded,op='validate'),sub,'loaded-start',120,cancelled)
                         (sub/'loaded-start-check.json').write_text(json.dumps(dict(request=start_loaded,result=endcheck)))
-                        if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):raise ValueError('LOADED_Q_START_COLLISION:'+str(endcheck.get('failure')))
+                        if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):
+                            raise ValueError(self.loaded_start_failure(endcheck,world))
                         approach=self.checked_segment(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',self.site['time_scale'],sub,progress,cancelled=cancelled)
                         qpre=approach['prepared']['points'][-1]['q']
                         contact=self.checked_segment(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',self.site['time_scale'],sub,progress,True,cancelled)

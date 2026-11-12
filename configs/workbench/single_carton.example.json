@@ -55,7 +55,8 @@
     "text_threshold": 0.3,
     "cpu_threads": 2
   },
-  "release_policy": "MEASURED_SITE_RECEIVER_REQUIRED",
+  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+  "receiver_qualification_basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
   "geometry_mode": "OBSERVED_PATCH_WITH_CONFIGURABLE_PRIOR_AND_CONSERVATIVE_ENVELOPE",
   "device_config": "outputs/workbench/stage1.local.json",
   "robot_network": {
