@@ -1,0 +1,54 @@
+{
+  "schema": "eco65_saved_network_startup_validation_v1",
+  "parent_commit": "1e1d457a6de54d7fa5c01340f4213f02e2a07842",
+  "physical_cycle": "NOT_RUN",
+  "motion_commands": "NOT_SENT",
+  "valve_commands": "NOT_SENT",
+  "tests": {
+    "passed": 92,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 4.83,
+    "record": "network_pytest.xml"
+  },
+  "inert_ui_smoke": "PASS",
+  "network_constructor_inert": true,
+  "initial_failure": {
+    "interface": "eno1",
+    "carrier": true,
+    "ipv4_address": null,
+    "incorrect_route_interface": "wlp0s20f3",
+    "tcp": "TIMEOUT"
+  },
+  "recovery": {
+    "saved_profile": "ECO65-robot-eno1",
+    "interface": "eno1",
+    "local_ipv4": "192.168.1.100/24",
+    "controller": "192.168.1.19:8080",
+    "tcp": "PASS",
+    "read_only_state": "SIX_JOINTS_RECEIVED_ERR_0",
+    "existing_workbench_ui": "ROBOT_DATA_VALID",
+    "observed_feedback_age_s": 0.05,
+    "observed_udp_p95_s": 0.005081,
+    "observed_udp_max_s": 0.005175
+  },
+  "network_profile_recheck": {
+    "status": "READY",
+    "already_active": true,
+    "reactivated": false
+  },
+  "independent_owner_probe": "ROBOT_ALREADY_OWNED_EXISTING_SESSION_PRESERVED",
+  "notes": [
+    "Network and feedback recovery only; no physical grasp or stop trial.",
+    "Current running UI predates this patch; startup restore applies after reopening.",
+    "Saved NetworkManager profile properties and Wi-Fi configuration were not rewritten."
+  ],
+  "source_sha256": {
+    "src/unloading_sim/workbench/single_carton/network.py": "eded26c5e59feceb38736feee9b760d547b7a23b9cc2bca829778e657ebd4924",
+    "src/unloading_sim/workbench/single_carton/config.py": "3f6951379e8099f0a3343bc1471d0210e749a6cc8176e78b89a0b96a5f539c07",
+    "src/unloading_sim/workbench/single_carton/live.py": "5bbadc7ef77ea7ca65c0a579e17985a89439ff568631d7b628bd1d78bdb50b8b",
+    "src/unloading_sim/workbench/single_carton/ui.py": "640e9fff0bae174c6b35e5a1ef0f581f766df83a55a15fa7f39b864cfa6f1934",
+    "configs/workbench/single_carton.example.json": "c5698065e6e141556b705f3eb028efc6cc343bf6babf8442d775da4db2fa9e5b",
+    "tests/test_single_carton_network.py": "75b9706d3443ec1923047a35574162147d692ea77d80183f33a723d3afc0c1fa"
+  }
+}

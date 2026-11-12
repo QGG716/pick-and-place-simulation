@@ -69,6 +69,7 @@ def load(path):
         c['execution']['host']=device.get('robot_host',c['execution']['host'])
         c['execution']['port']=device.get('robot_port',c['execution']['port'])
         c['serial_port']=device.get('serial_port',c['serial_port'])
+        c['robot_network']=device.get('robot_network',c.get('robot_network',{}))
         c.setdefault('camera',{})['serial']=device.get('camera_serial',c.get('camera',{}).get('serial',''))
     if c.get('site_scene'):
         from .site_scene import load_site

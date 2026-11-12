@@ -7,6 +7,10 @@ D435i, robot and vacuum transports asynchronously after the UI appears. Default
 capture is 640x480@30fps, with no silent fallback or ambiguous camera selection.
 Connection, capture and inference never authorize motion or valve commands.
 Only the operator's single-carton execute button starts the physical cycle.
+Before robot TCP connection, its background worker restores the explicitly
+saved NetworkManager wired profile and checks the actual route. Reuse an active
+profile without restarting it; do not create profiles, guess IPs, change the
+default route, or interrupt an unrelated network. Failures stay in the device UI.
 
 Continuous detection and same-frame SAM segmentation use one model owner and
 bounded latest-frame scheduling. Independent result windows may be hidden

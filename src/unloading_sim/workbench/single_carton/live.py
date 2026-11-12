@@ -13,6 +13,7 @@ from .perception import HuggingFaceGroundingSAM
 def connection_error(error):
     message=str(error)
     explanations={
+        'ROBOT_NETWORK_':'已保存的机器人网络配置未就绪，请检查网络名称、网卡和系统网络权限',
         'ROBOT_ALREADY_OWNED':'机械臂已被其他工作台占用，请先按原会话流程结束操作',
         'SERIAL_IN_USE':'串口已被其他程序占用，请先结束原会话',
         'PermissionError':'当前账户没有设备访问权限，请检查串口权限',

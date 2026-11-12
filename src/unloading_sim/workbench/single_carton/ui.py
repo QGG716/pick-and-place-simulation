@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 from PIL import Image,ImageTk
 from ..ui import Workbench,load_mapping,ROOT
-from ..controlled.ui import ManagedRobotView
+from .network import NetworkedRobotView
 from ..stable_ui import StableStringVar, fixed_text, constrain_labels
 from .live import SingleBackend, LiveVision
 from .result_window import ResultWindow
@@ -229,8 +229,10 @@ class SingleWorkbench(Workbench):
             self.backend.detections=segmentation.result
         labels={'camera':'相机','robot':'机械臂','vacuum':'真空'}
         self.device_summary.set(' | '.join(labels[k]+'：'+self.backend.device_state(k) for k in labels))
+        network=getattr(self.backend.workers['robot'].device,'network',None)
         self.device_details.set('\n'.join(labels[k]+' · '+self.backend.endpoints[k]+' · '+
-            ('通信已连接' if self.backend.workers[k].device.connected else '通信未连接')+' · '+self.backend.device_state(k)+' · '+self.backend.device_errors[k] for k in labels))
+            ('通信已连接' if self.backend.workers[k].device.connected else '通信未连接')+' · '+self.backend.device_state(k)+' · '+
+            ((network.status+' · ') if k=='robot' and network else '')+self.backend.device_errors[k] for k in labels))
         while True:
             try:kind,value=self.jobs.get_nowait()
             except Empty:break
@@ -324,7 +326,7 @@ def main():
     if calibration:installation.check_camera(calibration)
     mapping=load_mapping(config['execution']['mapping']);authority=Authority('eco65_single_carton_segment_v1');planner=SinglePlanner(config,mapping,authority,model)
     service=ExecutionService(mapping,config['execution'],authority,planner.binding);vacuum=VacuumOwner(config['vacuum'])
-    backend=SingleBackend(D435iObserver(),ManagedRobotView(service,mapping),VacuumView(vacuum),service)
+    backend=SingleBackend(D435iObserver(),NetworkedRobotView(service,mapping,config.get('robot_network',{})),VacuumView(vacuum),service)
     root=tk.Tk();ui=SingleWorkbench(root,backend,planner,service,vacuum,config,model,calibration,auto_start=not args.ui_smoke)
     if args.ui_smoke:root.after(700,ui.close)
     root.mainloop()

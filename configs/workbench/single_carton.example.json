@@ -58,6 +58,11 @@
   "release_policy": "MEASURED_SITE_RECEIVER_REQUIRED",
   "geometry_mode": "OBSERVED_PATCH_WITH_CONFIGURABLE_PRIOR_AND_CONSERVATIVE_ENVELOPE",
   "device_config": "outputs/workbench/stage1.local.json",
+  "robot_network": {
+    "manager": "NetworkManager",
+    "connection": "ECO65-robot-eno1",
+    "interface": "eno1"
+  },
   "camera": {
     "serial": "",
     "width": 640,
