@@ -52,8 +52,25 @@
     "device": "cpu",
     "prompt": "carton . box .",
     "box_threshold": 0.35,
-    "text_threshold": 0.3
+    "text_threshold": 0.3,
+    "cpu_threads": 2
   },
-  "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
-  "geometry_mode": "MEASURE_VISIBLE_FACE_AND_SIDE_NO_SIZE_PRIOR"
+  "release_policy": "MEASURED_SITE_RECEIVER_REQUIRED",
+  "geometry_mode": "OBSERVED_PATCH_WITH_CONFIGURABLE_PRIOR_AND_CONSERVATIVE_ENVELOPE",
+  "device_config": "outputs/workbench/stage1.local.json",
+  "camera": {
+    "serial": "",
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "site_scene": "configs/workbench/real_site.example.json",
+  "geometry": {
+    "prior_size_m": [
+      0.15,
+      0.1,
+      0.1
+    ],
+    "dimension_tolerance_m": 0.008
+  }
 }

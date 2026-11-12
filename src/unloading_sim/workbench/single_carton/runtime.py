@@ -10,7 +10,7 @@ import numpy as np
 from .config import issues
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check
-from .perception import HuggingFaceGroundingSAM,freeze,reconstruct,unchanged
+from .perception import HuggingFaceGroundingSAM,freeze,reconstruct,unchanged,target_unchanged
 
 
 class Journal:
@@ -35,6 +35,7 @@ class TaskManager:
         self.backend,self.service,self.vacuum,self.planner=backend,service,vacuum,planner
         self.model,self.calibration,self.config,self.notify=model,calibration,config,notify
         self.detector=None;self.cycle=None;self.observation=None;self.plan=None;self.boxes=[];self.result=None
+        self.scene=None;self.self_filter=None
         self.task_id=None;self.folder=None;self.journal=None;self.phase='IDLE';self.reason=''
         self.stop_event=threading.Event();self.closing=threading.Event();self.busy=False;self.lock=threading.Lock()
         self.thread=threading.Thread(target=self._monitor,daemon=True,name='single-carton-supervisor');self.thread.start()
@@ -61,15 +62,29 @@ class TaskManager:
             self.observation=freeze(self.backend,self.service,self.model,self.calibration,cancelled=self.stop_event.is_set)
             self.save_observation(self.observation,'observation')
             self.progress('加载本地 GroundingDINO / SAM 并执行真实推理')
-            if self.detector is None:self.detector=HuggingFaceGroundingSAM(**self.config['detector'])
-            self.result=self.detector.detect(self.observation.frame)
+            vision=getattr(self.backend,'vision',None)
+            if vision:
+                self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,self.stop_event.is_set)
+            else:
+                if self.detector is None:self.detector=HuggingFaceGroundingSAM(**self.config['detector'])
+                self.result=self.detector.detect(self.observation.frame)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-            self.boxes,rejected=reconstruct(self.observation,self.result)
+            self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
+            if self.config.get('site'):
+                from .site_scene import build_scene
+                from .self_filter import RobotSelfFilter
+                self.progress('构建同帧现场碰撞场景：保留邻物、固定测量和未知区域')
+                self.planner.build()
+                if self.self_filter is None:
+                    self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
+                self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter)
+                if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+                (self.folder/'site-scene.json').write_text(json.dumps(self.scene))
             np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
             (self.folder/'geometry.json').write_text(json.dumps(dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2))
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if rejected:
+            if rejected and not self.config.get('site'):
                 labels=dict(BOX_THICKNESS_UNOBSERVED_SHOW_SIDE='已有可见面，后方厚度未测出，请露出侧面',
                     BOX_ENVELOPE_CLIPPED_BY_IMAGE='箱体被画面边缘截断',
                     BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE='侧面边界被前方物体遮挡',
@@ -80,7 +95,8 @@ class TaskManager:
                     dimensions=(np.asarray(x['evidence']['measured_face_size_m'])*1000).round(1).tolist() if x.get('evidence') else None
                     reasons.append(f"编号 {x['detection_index']}：{labels.get(x['reason'],x['reason'])}"+(f'；已测面 {dimensions} mm' if dimensions else ''))
                 raise ValueError('不限制固定箱型；本次完整碰撞包络尚未确定：\n'+'\n'.join(reasons))
-            if not self.boxes:raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY')
+            if not self.boxes:raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(
+                f"{r['detection_index']}: {r['reason']}" for r in rejected))
             self.phase='TARGET_READY';self.reason=''
         except Exception as e:self.reject(e);raise
         finally:self.busy=False
@@ -88,10 +104,10 @@ class TaskManager:
         self._enter()
         try:
             if self.phase!='TARGET_READY' or self.observation is None:
-                raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并让箱子的正面、侧面和边界入镜'))
+                raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并提供足够密封的实测可见面'))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.phase='PLANNING';start=time.monotonic()
-            self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set)
+            self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,scene=self.scene)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
             self.cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],self.journal,self.check_contact,self.check_release,physical_io=True)
             self.cycle.ready(self.task_id,self.plan);self.phase='PLAN_READY'
@@ -109,9 +125,7 @@ class TaskManager:
             # Target-local check prevents a small target movement being diluted
             # by unchanged background pixels in the whole-view scene test.
             mask=self.result.masks[self.plan['target']['detection_index']]
-            a=self.observation.frame;b=current.frame;valid=mask&(a.depth>0)&(b.depth>0)
-            changed=abs(a.depth.astype(float)-b.depth)*a.depth_scale_m>.004
-            if valid.sum()<120 or changed[valid].mean()>.05:raise ValueError('LOCKED_TARGET_CHANGED_REPLAN')
+            target_unchanged(self.observation,current,mask)
             self.save_observation(current,'pre_execute_observation');self.journal(kind='pre_execute_recheck',evidence=check)
             self.planner.binding()
             if self.stop_event.is_set():raise ValueError('CANCELLED')
@@ -127,7 +141,7 @@ class TaskManager:
         self.journal(kind='actual_contact_fk',q_actual=q.tolist(),seal=check)
         if not check['valid']:raise ValueError('ACTUAL_CONTACT_POSE_NOT_SEALED')
     def check_release(self,q,plan):
-        b=plan['binding']['physical_cycle'];result=self.planner.release_check(q,np.asarray(b['attachment']),plan['target'],[])
+        b=plan['binding']['physical_cycle'];result=self.planner.release_check(q,np.asarray(b['attachment']),plan['target'],b.get('release_world',[]))
         self.journal(kind='actual_return_release_pose',q_actual=q.tolist(),check=result)
     def reject(self,error):
         self.reason=str(error);self.phase='FAILED';self.planner.authority.invalidate()
@@ -136,11 +150,16 @@ class TaskManager:
         self.notify('error',self.reason)
     def stop(self):
         self.stop_event.set();self.service.request_stop();self.planner.authority.invalidate();self.vacuum.inhibit()
-        if self.cycle:self.cycle.stop(cancelled=True)
+        # A Cycle tick may currently hold its lock across an IPC read. Signal
+        # immediately; the independent supervisor performs the locked transition.
+        # Tk must not wait for either this lock or inference completion.
+        if self.cycle:self.cycle.stop_requested.set()
     def _monitor(self):
         saved=None
         while not self.closing.wait(.02):
             c=self.cycle
+            if c and self.stop_event.is_set() and c.state not in TERMINAL|{'STOPPING'}:
+                c.stop(cancelled=True)
             if c and c.active and not self.busy:
                 if self.observation.generation!=self.backend.observation_generation:c.stop('CONNECTION_OR_CONFIG_CHANGED')
                 if self.journal.error:c.stop('LOG_WRITE_FAILED:'+self.journal.error)

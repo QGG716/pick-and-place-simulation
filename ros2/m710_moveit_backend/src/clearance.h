@@ -45,7 +45,7 @@ public:
       policy.at("schema")=="eco65_native_empty_clearance_v1" ||
       policy.at("schema")=="eco65_native_single_carton_clearance_v1";
     if(policy.at("schema")=="eco65_native_single_carton_clearance_v1")
-      single_carton_=std::make_unique<SingleCartonContact>(request);
+      single_carton_=std::make_unique<SingleCartonContact>(request,deadline_);
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||

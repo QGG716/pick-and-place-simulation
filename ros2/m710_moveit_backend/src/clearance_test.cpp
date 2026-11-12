@@ -318,6 +318,25 @@ void physicalSingleCartonCases(J& out) {
   bad=pload;bad["single_carton_contact"]["geometry"]["contours"][1]["points_m"][0][1]=-.001;
   m710::SingleCartonContact loadedEdgeUnder(bad);require(!loadedEdgeUnder.check(s->getCurrentState()).is_null(),"LOADED_PASSIVE_EDGE_PENETRATION_REJECTED");
   out["physical_passive_lip_contact_and_loaded_seal_guards"]="PASS";
+  // A small observed patch may lie on a much larger uncertain payload bound.
+  // Only the observed rectangle counts as a seal, including while attached.
+  auto partial=req;
+  partial["single_carton_contact"]["geometry_uncertainty"]={{"kind","BOUNDED_CUBOID_UNION"}};
+  partial["single_carton_contact"]["size_m"]={.3,.2,.1};partial["world"][0]["size"]={.3,.2,.1};
+  m710::SingleCartonContact patch(partial);require(patch.check(s->getCurrentState()).is_null(),"PARTIAL_OBSERVED_PATCH_ACCEPTED");
+  state.setJointGroupPositions("manipulator",std::vector<double>{.08});state.update();
+  require(!patch.check(state).is_null(),"INFERRED_ENVELOPE_IS_NOT_SEAL_SUPPORT");
+  auto partial_loaded=partial;partial_loaded["attachment"]={{"id","target"},{"size",{.3,.2,.1}},{"pose",pose},{"touch_links",{"tool"}}};
+  m710::SingleCartonContact held_patch(partial_loaded);require(held_patch.check(s->getCurrentState()).is_null(),"PARTIAL_LOADED_PATCH_VALID");
+  bad=partial_loaded;bad["attachment"]["pose"][0][3]=.08;
+  m710::SingleCartonContact shifted_patch(bad);require(!shifted_patch.check(s->getCurrentState()).is_null(),"PARTIAL_LOADED_SLIDE_REJECTED");
+  bad=partial;bad["single_carton_contact"]["face"]["center_m"][1]=-.001;rejects(bad);
+  bad=partial;bad["single_carton_contact"].erase("geometry_uncertainty");rejects(bad);
+  partial["site_workspace_bounds_m"]={{-1.,-1.,-1.},{1.,1.,1.}};
+  m710::SingleCartonContact site_inside(partial);require(site_inside.check(s->getCurrentState()).is_null(),"SITE_WORKSPACE_ACCEPTED");
+  partial["site_workspace_bounds_m"]={{.5,.5,.5},{1.,1.,1.}};
+  m710::SingleCartonContact site_outside(partial);require(!site_outside.check(s->getCurrentState()).is_null(),"UNOBSERVED_OUTSIDE_WORKSPACE_REJECTED");
+  out["partial_observed_patch_and_complete_uncertainty_envelope"]="PASS";
   m710::nativeFrames()=old;out["physical_single_carton_contact_and_loaded_support"]="PASS";
 }
 

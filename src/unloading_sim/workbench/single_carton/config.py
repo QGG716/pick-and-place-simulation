@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import math
+import hashlib
 from ..controlled.planner import ROOT,load_config as load_execution
 
 REQUIRED_VACUUM=('grip_below_kpa','release_above_kpa','hold_below_kpa',
@@ -11,6 +12,16 @@ REQUIRED_VACUUM=('grip_below_kpa','release_above_kpa','hold_below_kpa',
 
 def issues(c):
     errors=[]
+    if c.get('site') and c.get('release_policy')!='MEASURED_SITE_RECEIVER_REQUIRED':
+        errors.append('release_policy：真实现场入口必须检查本次 q_start 的现场承接区域')
+    geometry=c.get('geometry',{})
+    prior=geometry.get('prior_size_m')
+    if (not isinstance(prior,list) or len(prior)!=3 or
+            any(not isinstance(x,(int,float)) or not math.isfinite(x) or not .005<x<=2 for x in prior)):
+        errors.append('geometry.prior_size_m：明确的现场箱型尺寸先验，单位 m')
+    tol=geometry.get('dimension_tolerance_m')
+    if not isinstance(tol,(int,float)) or not math.isfinite(tol) or not 0<=tol<=.03:
+        errors.append('geometry.dimension_tolerance_m：尺寸先验误差界，0 至 0.03 m')
     if not c.get('camera_extrinsics'):errors.append('camera_extrinsics：现场 link_1 外参路径')
     elif 'training_extrinsics.example' in str(c['camera_extrinsics']):errors.append('训练外参示例不能用于实机任务')
     mass=c.get('carton_mass_kg')
@@ -46,14 +57,27 @@ def issues(c):
 def load(path):
     path=Path(path).resolve();c=json.loads(path.read_text())
     if c.get('schema')!='eco65_physical_single_carton_v1':raise ValueError('EXPLICIT_SINGLE_CARTON_CONFIG_REQUIRED')
+    if not c.get('site_scene'):raise ValueError('REAL_SITE_SCENE_REQUIRED_USE_CURRENT_SINGLE_CARTON_CONFIG')
     c['config_path']=str(path)
-    for k in ('execution_config','camera_extrinsics','record_root'):
+    for k in ('execution_config','camera_extrinsics','record_root','site_scene','device_config'):
         if c.get(k):c[k]=str((ROOT/c[k]).resolve())
     for k in ('dino_directory','sam_directory'):c['detector'][k]=str((ROOT/c['detector'][k]).resolve())
     c['execution']=load_execution(c['execution_config'])
     c['execution']['record_root']=c['record_root']
+    if c.get('device_config') and Path(c['device_config']).is_file():
+        device=json.loads(Path(c['device_config']).read_text())
+        c['execution']['host']=device.get('robot_host',c['execution']['host'])
+        c['execution']['port']=device.get('robot_port',c['execution']['port'])
+        c['serial_port']=device.get('serial_port',c['serial_port'])
+        c.setdefault('camera',{})['serial']=device.get('camera_serial',c.get('camera',{}).get('serial',''))
+    if c.get('site_scene'):
+        from .site_scene import load_site
+        c['site']=load_site(c['site_scene'])
     # Preserve separate measured tool mass and the user-requested controller setting.
     # A loaded task needs its own explicit basis; an empty-test basis does not qualify.
     c['execution']['controller_payload_kg']=c.get('controller_payload_kg')
     c['execution']['controller_payload_basis']=c.get('controller_loaded_payload_basis')
+    paths=[c['config_path'],c['execution_config'],c['site_scene'],c['camera_extrinsics'],
+           c['execution']['installation'],c['execution']['mapping'],c.get('device_config')]
+    c['loaded_file_sha256']={p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if p and Path(p).is_file()}
     return c

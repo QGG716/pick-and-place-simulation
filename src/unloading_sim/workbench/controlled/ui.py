@@ -88,7 +88,7 @@ class ManagedRobotView:
             self.connected=False;self.endpoint=None
     def read(self):
         s=self.service.snapshot()
-        if s is None:raise RuntimeError('NO_LIVE_FEEDBACK')
+        if s is None:return None  # connected transport can still be awaiting first UDP sample
         stamp=replace(Stamp.receive(),received_monotonic_ns=int(s['received_s']*1e9),received_utc_ns=s.get('received_utc_ns',0))
         return JointSample(str(s['sequence']),tuple(s['q']),stamp,s,self.mapping.mapping_id)
 

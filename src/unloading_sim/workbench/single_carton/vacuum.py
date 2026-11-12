@@ -32,7 +32,7 @@ class VacuumOwner:
         self.connected=False;self.task_id=None;self.holding=False;self.inhibited=True
         self.stop_event=threading.Event();self.lock=threading.RLock();self.thread=None
         self.record=lambda **kw:None;self.on_fault=lambda reason:None;self.monitor_holding=False
-        self.last_error='';self.sequence=0
+        self.last_error='';self.sequence=0;self.min_received_s=0.
     def connect(self,path):
         with self.lock:
             if self.connected:raise RuntimeError('VACUUM_ALREADY_CONNECTED')
@@ -62,6 +62,7 @@ class VacuumOwner:
         sample=self.observer.gauges().get(1)
         if not self.connected or sample is None or sample.integrity!='CHECKED_BINARY':raise ValueError('FRESH_CHECKED_GRIPPER_PRESSURE_REQUIRED')
         received=sample.stamp.received_monotonic_ns/1e9
+        if received<self.min_received_s:raise ValueError('GRIPPER_PRESSURE_FROM_PREVIOUS_SESSION')
         if not 0<=self.clock()-received<=self.config['max_age_s']:raise ValueError('GRIPPER_PRESSURE_STALE')
         if self.observer.alarms:raise ValueError('VACUUM_BOARD_ALARM')
         return dict(kpa=sample.kpa,received_s=received,source='LIVE',integrity=sample.integrity,channel='gripper')

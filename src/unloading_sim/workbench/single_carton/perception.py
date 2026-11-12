@@ -27,10 +27,12 @@ def carton_nms(boxes,scores,threshold=.98):
 
 class HuggingFaceGroundingSAM:
     def __init__(self, dino_directory, sam_directory, device='cpu', prompt='carton . box .',
-                 box_threshold=.35, text_threshold=.30):
+                 box_threshold=.35, text_threshold=.30, cpu_threads=2):
         import torch
         from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection, SamModel, SamProcessor
         self.torch=torch;self.device=device;self.prompt=prompt
+        if type(cpu_threads)!=int or not 1<=cpu_threads<=8:raise ValueError('INVALID_INFERENCE_CPU_THREAD_BUDGET')
+        torch.set_num_threads(cpu_threads)
         self.box_threshold=box_threshold;self.text_threshold=text_threshold
         for path, kind in ((dino_directory,'grounding-dino'),(sam_directory,'sam')):
             p=Path(path)
@@ -41,7 +43,7 @@ class HuggingFaceGroundingSAM:
         self.dino=AutoModelForZeroShotObjectDetection.from_pretrained(dino_directory,local_files_only=True).to(device).eval()
         self.sam_processor=SamProcessor.from_pretrained(sam_directory,local_files_only=True)
         self.sam=SamModel.from_pretrained(sam_directory,local_files_only=True).to(device).eval()
-    def detect(self,frame):
+    def detect_boxes(self,frame):
         torch=self.torch
         with torch.inference_mode():
             inputs=self.dino_processor(images=frame.rgb,text=self.prompt,return_tensors='pt').to(self.device)
@@ -50,18 +52,26 @@ class HuggingFaceGroundingSAM:
                 box_threshold=self.box_threshold,text_threshold=self.text_threshold,target_sizes=[frame.rgb.shape[:2]])[0]
             boxes=r['boxes'].cpu().numpy();scores=r['scores'].cpu().numpy()
             keep=carton_nms(boxes,scores);boxes=boxes[keep];scores=scores[keep];labels=[r['labels'][i] for i in keep]
-            if not len(boxes):return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),(),(), 'HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE')
             if len(boxes)>20:raise ValueError('TOO_MANY_TARGETS_FOR_SINGLE_CARTON_OBSERVATION')
-            inp=self.sam_processor(images=frame.rgb,input_boxes=[boxes.tolist()],return_tensors='pt').to(self.device)
+            items=tuple(dict(label=str(label),score=float(score),bbox_xyxy=box.tolist(),center_m=None,
+                frame_id='camera_optical',geometry_kind='DETECTION_ONLY') for label,score,box in zip(labels,scores,boxes))
+        return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),items,(), 'HF_GROUNDING_DINO_ACTUAL_INFERENCE')
+    def segment(self,frame,detection):
+        if detection.observation_id!=frame.observation_id:raise ValueError('SAM_FRAME_MISMATCH')
+        if not detection.detections:return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),(),(), 'HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE')
+        torch=self.torch;boxes=[item['bbox_xyxy'] for item in detection.detections]
+        with torch.inference_mode():
+            inp=self.sam_processor(images=frame.rgb,input_boxes=[boxes],return_tensors='pt').to(self.device)
             out=self.sam(**inp,multimask_output=True)
             masks=self.sam_processor.image_processor.post_process_masks(out.pred_masks.cpu(),inp['original_sizes'].cpu(),inp['reshaped_input_sizes'].cpu())[0]
             choices=out.iou_scores[0].argmax(-1).cpu().numpy()
             selected=tuple(masks[i,int(j)].numpy().astype(bool) for i,j in enumerate(choices))
-            items=tuple(dict(label=str(label),score=float(score),bbox_xyxy=box.tolist(),center_m=None,
-                frame_id='camera_optical',geometry_kind='SEGMENTATION_REQUIRES_CUBOID_RECOVERY',
+            items=tuple(dict(item,geometry_kind='SEGMENTATION_REQUIRES_CUBOID_RECOVERY',
                 sam_predicted_iou=float(out.iou_scores[0,i,int(choices[i])]))
-                for i,(label,score,box) in enumerate(zip(labels,scores,boxes)))
+                for i,item in enumerate(detection.detections))
         return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),items,selected,'HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE')
+    def detect(self,frame):
+        return self.segment(frame,self.detect_boxes(frame))
 
 
 @dataclass(frozen=True)
@@ -127,7 +137,7 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
     raise ValueError('NO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS')
 
 
-def reconstruct(observation,result):
+def reconstruct(observation,result,geometry=None):
     f=observation.frame
     if result.source!=Source.LIVE or result.observation_id!=f.observation_id or len(result.masks)!=len(result.detections):
         raise ValueError('SAME_FRAME_REAL_SEGMENTATION_REQUIRED')
@@ -137,7 +147,11 @@ def reconstruct(observation,result):
         if any(np.count_nonzero(mask&previous)/max(1,np.count_nonzero(mask|previous))>=.95 for previous in seen):continue
         seen.append(mask)
         try:
-            box=recover(points,mask,observation.world_camera,rgb=f.rgb)
+            if geometry and geometry.get('prior_size_m'):
+                from .partial_geometry import recover_partial
+                box=recover_partial(points,mask,observation.world_camera,rgb=f.rgb,
+                    prior=geometry['prior_size_m'],dimension_tolerance_m=geometry.get('dimension_tolerance_m',.008))
+            else:box=recover(points,mask,observation.world_camera,rgb=f.rgb)
             box.update(id=f.observation_id+'-carton-'+str(i),detection_index=i,detection=item)
             boxes.append(box)
         except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e),evidence=getattr(e,'evidence',None)))
@@ -153,8 +167,32 @@ def unchanged(original,current,*,max_joint_rad=np.deg2rad(.01)):
     # The view is stopped at the same q; compare scene depth directly, including
     # surrounding geometry. Never freshen the old exposure timestamp.
     good=(a.depth>0)&(b.depth>0)
+    lost=(a.depth>0)&(b.depth==0)
+    if lost.sum()/max(1,(a.depth>0).sum())>.01:raise ValueError('SCENE_DEPTH_COVERAGE_LOST_REPLAN')
     if np.mean(good)<.5:raise ValueError('SCENE_RECHECK_INSUFFICIENT_DEPTH')
     change=(abs(a.depth.astype(float)-b.depth)*a.depth_scale_m>.005)&good
     if change.sum()/good.sum()>.01:raise ValueError('TARGET_OR_SCENE_CHANGED_REPLAN')
+    # A small newly introduced obstacle must not be diluted by a large stable
+    # background. Ignore isolated depth speckles, but reject coherent local
+    # changes (including newly missing depth) independently of image fraction.
+    import cv2
+    _,_,stats,_=cv2.connectedComponentsWithStats((change|lost).astype('uint8'),connectivity=8)
+    local_changed=int(stats[1:,cv2.CC_STAT_AREA].max()) if len(stats)>1 else 0
+    if local_changed>=9:raise ValueError('LOCAL_SCENE_CHANGED_REPLAN')
     return dict(status='PASS',original_observation_id=a.observation_id,new_observation_id=b.observation_id,
-                changed_depth_fraction=float(change.sum()/good.sum()),original_stamp=asdict(a.stamp),new_stamp=asdict(b.stamp))
+                changed_depth_fraction=float(change.sum()/good.sum()),max_local_changed_pixels=local_changed,
+                original_stamp=asdict(a.stamp),new_stamp=asdict(b.stamp))
+
+
+def target_unchanged(original,current,mask):
+    a,b=original.frame,current.frame
+    valid=mask&(a.depth>0)&(b.depth>0)
+    if valid.sum()<120 or valid.sum()/max(1,(mask&(a.depth>0)).sum())<.95:
+        raise ValueError('LOCKED_TARGET_DEPTH_COVERAGE_LOST_REPLAN')
+    changed=abs(a.depth.astype(float)*a.depth_scale_m-b.depth.astype(float)*b.depth_scale_m)>.004
+    # Colour changes also invalidate a replacement carton at the same depth.
+    # This conservative check can reject lighting changes; it never asserts ID
+    # from a fresh mask or updates the frozen plan in place.
+    appearance=np.mean(abs(a.rgb.astype(float)-b.rgb.astype(float)),axis=-1)>35
+    if changed[valid].mean()>.05 or appearance[valid].mean()>.10:
+        raise ValueError('LOCKED_TARGET_CHANGED_REPLAN')

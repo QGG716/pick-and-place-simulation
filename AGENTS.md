@@ -1,4 +1,42 @@
-# November 11 physical single-carton cycle (current active override)
+# November 12 real-site continuous single-carton entry (current active override)
+
+Work from the actual latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration`;
+preserve prior commits and LFS assets. The user authorizes development, commit
+and push. The explicit single-carton UI automatically connects the configured
+D435i, robot and vacuum transports asynchronously after the UI appears. Default
+capture is 640x480@30fps, with no silent fallback or ambiguous camera selection.
+Connection, capture and inference never authorize motion or valve commands.
+Only the operator's single-carton execute button starts the physical cycle.
+
+Continuous detection and same-frame SAM segmentation use one model owner and
+bounded latest-frame scheduling. Independent result windows may be hidden
+without affecting inference or execution. Task observations, q_capture and
+q_start remain immutable; every session transition revokes old observations.
+The default read-only and controlled-empty entries retain their separate scopes.
+
+For real tasks, configurable carton priors (default 150x100x100 mm) may constrain
+partially observed geometry. Do not reject image/occlusion boundaries alone or
+present inferred thickness as measured. Keep credible observed contact patches,
+finite pose/size ambiguity and the full conservative payload envelope separate.
+All active seals must fit depth-supported CAD contours with edge margin; retain
+passive common-valve semantics, every rigid solid and the measured pressure gates.
+
+Use the separate base_link real-site scene: frozen RGB-D, measured fixed boxes,
+and explicit measured blind clearance. Unknown space is occupied; no simulated
+trailer/conveyors/lift/box stack/base placement enters physical collision scenes.
+The source snapshot supplies robot/tool/camera hardware geometry only. q_start
+receiving geometry is now checked against measured site support, superseding the
+November 11 deferral. Unknown receiving data is not invented. Every uncertainty
+envelope must pass the complete loaded return and release checks before motion.
+
+Keep pure 5 ms CANFD, feedback-based transitions and independent stop/pressure
+supervision. Closing a result window is display-only. Fault/stop/close never
+releases a held load. Development tests use fake IO or inert smoke mode; only a
+real operator-started complete cycle can satisfy physical acceptance. Preserve
+original calibration bytes/status and bind field confirmation separately.
+See `docs/eco65_real_site.md` for current startup, configuration and acceptance.
+
+# November 11 physical single-carton cycle (historical where superseded above)
 
 The latest user removes the 150x100x100 mm restriction for real observed cartons:
 select by a credible visible face and actual CAD seal coverage, with dimensions

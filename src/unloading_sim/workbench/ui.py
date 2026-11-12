@@ -14,6 +14,7 @@ from tkinter.scrolledtext import ScrolledText
 import numpy as np
 from PIL import Image, ImageTk, ImageDraw
 
+from .stable_ui import StableStringVar, fixed_text, constrain_labels, append_log
 from .backend import WorkbenchBackend
 from .contracts import Source, static_pair
 from .coordinates import CoordinateModel, Extrinsics, Installation, JointMapping, ToolFrame, rigid
@@ -113,7 +114,8 @@ class Workbench:
         self.logbox = tk.Text(root, height=6, bg=BG, fg=MUTED, font=("DejaVu Sans Mono", 9), wrap="word", state="disabled")
         self.logbox.pack(side="bottom", fill="x", padx=12, pady=8)
         tabs.pack(fill="both", expand=True, padx=12)
-        self._log_text = ""
+        self._log_rows = (); self._coordinate_content = None
+        constrain_labels(root)
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.after(80, self.refresh)
 
@@ -130,12 +132,12 @@ class Workbench:
         return widget
 
     def _build_observe(self):
-        self.notice = tk.StringVar(value="未连接设备 · 数据来源等待输入")
-        self.camera_serial = tk.StringVar()
-        self.robot_host = tk.StringVar(value="192.168.1.18")
-        self.robot_port = tk.StringVar(value="8080")
-        self.serial_port = tk.StringVar(value="/dev/ttyUSB0")
-        self.profile_text = tk.StringVar()
+        self.notice = StableStringVar(value="未连接设备 · 数据来源等待输入")
+        self.camera_serial = StableStringVar()
+        self.robot_host = StableStringVar(value="192.168.1.18")
+        self.robot_port = StableStringVar(value="8080")
+        self.serial_port = StableStringVar(value="/dev/ttyUSB0")
+        self.profile_text = StableStringVar()
         self.profiles = {}
         for title, build in (("D435i 相机", self._camera_controls), ("ECO65-B 实测关节", self._robot_controls),
                              ("真空板 · 115200 / 8N1", self._vacuum_controls)):
@@ -150,22 +152,23 @@ class Workbench:
         self.button(toolbar, "开始检测", self.start_detection)
         self.button(toolbar, "停止检测", self.stop_detection)
         self.button(toolbar, "导入连接配置", self.choose_config)
-        ttk.Label(self.observe, textvariable=self.notice, foreground="#ffd17b", wraplength=1300).pack(fill="x")
+        fixed_text(self.observe, self.notice, height=2)
         pictures = ttk.Frame(self.observe)
         pictures.pack(fill="both", expand=True, pady=8)
         self.images = {}
         for col, (key, title) in enumerate((("rgb", "实时 / 回放 RGB"), ("depth", "对齐 RGB 的深度"), ("detection", "原始检测与分割 · 非当前画面跟踪层"))):
-            pictures.columnconfigure(col, weight=1)
+            pictures.columnconfigure(col, weight=1, uniform="images")
             pane = ttk.LabelFrame(pictures, text=title, padding=4)
             pane.grid(row=0, column=col, sticky="nsew", padx=3)
-            label = ttk.Label(pane, text="无观测数据", anchor="center")
+            pane.pack_propagate(False)
+            label = ttk.Label(pane, text="无观测数据", anchor="center", width=1)
             label.pack(fill="both", expand=True)
             self.images[key] = label
         pictures.rowconfigure(0, weight=1)
-        self.metadata = tk.StringVar(value="曝光时间未知时明确保留 UNKNOWN；主机接收时间不代表曝光时间。")
-        ttk.Label(self.observe, textvariable=self.metadata, wraplength=1320, foreground=MUTED).pack(fill="x")
-        self.detection_status = tk.StringVar(value="NO DETECTION")
-        ttk.Label(self.observe, textvariable=self.detection_status, foreground="#ffd17b", wraplength=1320).pack(fill="x")
+        self.metadata = StableStringVar(value="曝光时间未知时明确保留 UNKNOWN；主机接收时间不代表曝光时间。")
+        fixed_text(self.observe, self.metadata, height=3)
+        self.detection_status = StableStringVar(value="NO DETECTION")
+        ttk.Label(self.observe, textvariable=self.detection_status, foreground="#ffd17b", width=1).pack(fill="x")
         self.detection_list = ttk.Treeview(self.observe, columns=("label", "score", "xyz", "observation"), show="headings", height=3)
         for key, text, width in (("label", "检测目标", 180), ("score", "置信度", 80), ("xyz", "原始 camera_optical 坐标 / m", 280), ("observation", "原始观测 ID / 来源", 400)):
             self.detection_list.heading(key, text=text)
@@ -181,7 +184,7 @@ class Workbench:
         self.button(box, "开始采集", lambda: self.backend.command("camera", "start", self.profiles[self.profile_text.get()]))
         self.button(box, "停止采集", lambda: self.backend.command("camera", "stop"))
         self.button(box, "断开", lambda: self.backend.command("camera", "disconnect"))
-        self.camera_status = tk.StringVar(value="DISCONNECTED")
+        self.camera_status = StableStringVar(value="DISCONNECTED")
         ttk.Label(box, textvariable=self.camera_status, foreground=CYAN).pack(side="right")
 
     def _robot_controls(self, box):
@@ -189,15 +192,15 @@ class Workbench:
         ttk.Entry(box, textvariable=self.robot_port, width=6).pack(side="left", padx=4)
         self.button(box, "只读连接", lambda: self.backend.command("robot", "connect", self.robot_host.get(), int(self.robot_port.get())))
         self.button(box, "断开", lambda: self.backend.command("robot", "disconnect"))
-        self.joints_text = tk.StringVar(value="J1 —  J2 —  J3 —  J4 —  J5 —  J6 —  | DISCONNECTED")
-        ttk.Label(box, textvariable=self.joints_text, font=("DejaVu Sans Mono", 9), wraplength=850).pack(side="left", padx=10)
+        self.joints_text = StableStringVar(value="J1 —  J2 —  J3 —  J4 —  J5 —  J6 —  | DISCONNECTED")
+        ttk.Label(box, textvariable=self.joints_text, font=("DejaVu Sans Mono", 9), width=1).pack(side="left", padx=10, fill="x", expand=True)
 
     def _vacuum_controls(self, box):
         ttk.Entry(box, textvariable=self.serial_port, width=20).pack(side="left", padx=4)
         self.button(box, "只读串口连接", lambda: self.backend.command("vacuum", "connect", self.serial_port.get()))
         self.button(box, "断开", lambda: self.backend.command("vacuum", "disconnect"))
-        self.pressure_text = tk.StringVar(value="吸具 —  储气罐 —  真空泵 —  压缩机 —  | DISCONNECTED")
-        ttk.Label(box, textvariable=self.pressure_text, font=("DejaVu Sans Mono", 9), wraplength=880).pack(side="left", padx=10)
+        self.pressure_text = StableStringVar(value="吸具 —  储气罐 —  真空泵 —  压缩机 —  | DISCONNECTED")
+        ttk.Label(box, textvariable=self.pressure_text, font=("DejaVu Sans Mono", 9), width=1).pack(side="left", padx=10, fill="x", expand=True)
 
     def _build_coordinates(self):
         bar = ttk.Frame(self.coords)
@@ -206,7 +209,7 @@ class Workbench:
         if self.installation:
             self.button(bar, "加载实测工具 TCP", self.choose_tool)
         current_tool = self.model.tool if self.model else (self.tools[-1] if self.tools else None)
-        self.tool_name = tk.StringVar(value=current_tool.name if current_tool else "正式吸具：TCP 待标定")
+        self.tool_name = StableStringVar(value=current_tool.name if current_tool else "正式吸具：TCP 待标定")
         combo = ttk.Combobox(bar, textvariable=self.tool_name, values=[t.name for t in self.tools], state="readonly", width=30)
         self.tool_combo = combo
         combo.pack(side="left", padx=10)
@@ -214,22 +217,22 @@ class Workbench:
         self.stationary = tk.BooleanVar(value=False)
         ttk.Checkbutton(bar, text="人工确认当前设备静止（非自动检测）", variable=self.stationary,
                         command=self.confirm_stationary).pack(side="left")
-        self.calibration_text = tk.StringVar(value="未加载相机外参；相机坐标不得用于宣称真实定位精度。")
-        ttk.Label(self.coords, textvariable=self.calibration_text, foreground="#ffd17b", wraplength=1280).pack(fill="x", pady=12)
-        self.pairing_text = tk.StringVar(value="未配对")
-        ttk.Label(self.coords, textvariable=self.pairing_text, wraplength=1250).pack(fill="x", pady=6)
+        self.calibration_text = StableStringVar(value="未加载相机外参；相机坐标不得用于宣称真实定位精度。")
+        fixed_text(self.coords, self.calibration_text, height=3, pady=6)
+        self.pairing_text = StableStringVar(value="未配对")
+        ttk.Label(self.coords, textvariable=self.pairing_text, width=1).pack(fill="x", pady=6)
         chain = ("外部固定相机：T_world_camera = T_base_camera（与机器人关节角无关）；吸具 TCP 需要实测标定。"
                  if self.installation and self.installation.camera_parent_frame == "base_link"
                  else "T_world_camera = T_world_base × T_base_link1(q_capture) × T_link1_camera")
-        self.camera_chain_text = tk.StringVar(value=chain)
+        self.camera_chain_text = StableStringVar(value=chain)
         ttk.Label(self.coords, textvariable=self.camera_chain_text, foreground=CYAN).pack(anchor="w", pady=10)
         self.coordinate_text = ScrolledText(self.coords, height=16, bg=BG, fg=TEXT, font=("DejaVu Sans Mono", 11), wrap="word", state="disabled")
         self.coordinate_text.pack(fill="both", expand=True)
         scene_bar = ttk.Frame(self.coords)
         scene_bar.pack(fill="x", pady=10)
-        self.pose_source = tk.StringVar(value="SIMULATED")
+        self.pose_source = StableStringVar(value="SIMULATED")
         ttk.Combobox(scene_bar, textvariable=self.pose_source, values=["SIMULATED", "MEASURED_OR_REPLAY", "PLANNED_PREVIEW"], width=24, state="readonly").pack(side="left")
-        self.scene_view = tk.StringVar(value="前方斜视")
+        self.scene_view = StableStringVar(value="前方斜视")
         ttk.Combobox(scene_bar, textvariable=self.scene_view, values=["前方斜视", "前视", "左侧", "右侧", "后视"], width=10, state="readonly").pack(side="left", padx=4)
         self.button(scene_bar, "查看完整场景", self.open_scene)
         self.button(scene_bar, "加载规划轨迹预览", self.load_plan)
@@ -546,7 +549,7 @@ class Workbench:
             self.detection_list.delete(*self.detection_list.get_children())
             self.images["detection"].configure(image="", text="NO DETECTION")
         elif self.original_detection_frame:
-            self.detection_status.set("Detection " + ("RUNNING" if self.detecting else "STOPPED / historical output")
+            self.detection_status.set("Detection " + ("RUNNING" if self.detecting or hasattr(self,"live_vision") else "STOPPED / historical output")
                 + " · " + result.observation_id + " · " + result.source.value + " · "
                 + self.stamp_text(self.original_detection_frame.stamp, "camera"))
         if result is not None and result is not self._shown_detection:
@@ -600,15 +603,14 @@ class Workbench:
                             details += "\n" + item['label'] + " base_m=" + str(np.round((transforms['T_base_camera']@point)[:3],5))
                             details += " world_m=" + str(np.round((transforms['T_world_camera']@point)[:3],5))
                 except ValueError as exc: details += "\n" + str(exc)
-        scroll_position = self.coordinate_text.yview()[0]
-        self.coordinate_text.configure(state="normal")
-        self.coordinate_text.delete("1.0", "end"); self.coordinate_text.insert("end", details)
-        self.coordinate_text.configure(state="disabled")
-        self.coordinate_text.yview_moveto(scroll_position)
-        log = "\n".join(b.logs)
-        if log != self._log_text:
-            self._log_text = log
-            self.logbox.configure(state="normal"); self.logbox.delete("1.0", "end"); self.logbox.insert("end", log); self.logbox.see("end"); self.logbox.configure(state="disabled")
+        if details != self._coordinate_content:
+            self._coordinate_content = details
+            scroll_position = self.coordinate_text.yview()[0]
+            self.coordinate_text.configure(state="normal")
+            self.coordinate_text.delete("1.0", "end"); self.coordinate_text.insert("end", details)
+            self.coordinate_text.configure(state="disabled")
+            self.coordinate_text.yview_moveto(scroll_position)
+        self._log_rows = append_log(self.logbox, b.logs, self._log_rows)
         if schedule:
             self.root.after(100, self.refresh)
 

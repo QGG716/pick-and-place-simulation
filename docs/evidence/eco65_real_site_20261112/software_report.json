@@ -1,0 +1,126 @@
+{
+  "schema": "eco65_real_site_software_validation_v1",
+  "recorded_utc": "2026-11-12T04:55:45.169847+00:00",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "development_start_head": "a731120f783b11ee5b5270f5e6b8efb777b46899",
+  "commit_parent": "a251015be4070d9caeaa239a343ca1237f430fc7",
+  "requested_ancestor_retained": "f13cda3daa850fac97337f730f6717d697c86c7f",
+  "scope": "SOFTWARE_ONLY_NO_HARDWARE_MOTION_OR_VALVE_COMMANDS",
+  "physical_result": "NOT_RUN",
+  "python_tests": {
+    "passed": 271,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 37.589,
+    "record": "pytest.xml",
+    "command": "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py"
+  },
+  "native": {
+    "compiled_worker_and_clearance_tests": "PASS",
+    "optimized": "native_optimized.json",
+    "reference": "native_reference.json",
+    "component": "native_component.json",
+    "component_points": 491,
+    "physical_result": "NOT_RUN",
+    "component_scope": "SYNTHETIC_FIXED_POSTURE_SHORT_PTP_NOT_FULL_FOUR_STAGE_CYCLE"
+  },
+  "ui": {
+    "inert_smoke": "PASS",
+    "tk_geometry_long_text_negative_numbers_long_paths": "PASS",
+    "independent_windows_hide_reopen": "PASS",
+    "fake_three_device_autostart_and_independent_failure": "PASS",
+    "real_device_connection": "NOT_RUN",
+    "session_change_disables_old_plan": "PASS"
+  },
+  "real_weights_api": {
+    "record": "model_api.json",
+    "input": "SYNTHETIC_IMAGE",
+    "dino_detected": 0,
+    "sam_box": "EXPLICIT_SYNTHETIC_API_TEST_BOX_NOT_DETECTOR_OUTPUT",
+    "not_recognition_quality_evidence": true
+  },
+  "model_scene": {
+    "record": "model_scene.json",
+    "source_robot_tool_collision_shapes": 715,
+    "physical_cups": 12,
+    "simulation_world_objects_imported": 0
+  },
+  "preserved_calibration": {
+    "path": "configs/workbench/reference/active_extrinsics.json",
+    "sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "historical_status_unchanged": true
+  },
+  "default_site": {
+    "frame": "base_link",
+    "unknown_policy": "OCCUPIED",
+    "receiver_configured": false,
+    "fixed_obstacles": [],
+    "measured_clear_regions": [],
+    "required_field_input": "Measured receiving support and any motion-relevant blind workspace geometry; no fabricated simulation furniture"
+  },
+  "directed_coverage": [
+    "one_current_plus_one_latest_frame",
+    "detector_published_before_SAM",
+    "matching_RGBD_frame_boxes_masks",
+    "model_initialized_once",
+    "invalidated_inflight_results_on_session_change",
+    "nonblocking_cancel_during_SAM",
+    "stop_signal_without_waiting_for_cycle_lock",
+    "partial_out_of_frame",
+    "foreground_occlusion",
+    "depth_holes",
+    "configurable_size_prior_conflict",
+    "CAD_seal_supported_by_observed_surface",
+    "full_continuous_uncertainty_envelope",
+    "measured_real_site_support_and_all_bottom_hypotheses",
+    "frozen_real_site_context_through_all_four_stages_with_fake_native_transport",
+    "small_local_scene_change_replans",
+    "original_feedback_pressure_loaded_return_stop_regressions"
+  ],
+  "pending_field_acceptance": [
+    "actual_auto_connection_of_three_devices_at_640x480_30fps",
+    "real_continuous_detection_segmentation_quality",
+    "partially_visible_real_carton_complete_pick_loaded_return_release",
+    "loaded_low_speed_stop_with_actual_feedback"
+  ],
+  "field_trial_note": "Local inventory showed D435i and /dev/ttyUSB0; an existing Python session owned the serial device. That session was not taken over. No operator-started field cycle was run.",
+  "source_sha256": {
+    "configs/workbench/real_site.example.json": "239f9c5b02b82997309d13bfc43b57cfc9660bd012366674e83b10182204959f",
+    "configs/workbench/single_carton.example.json": "79bfb7424871839934de4ee5685ce49faa201f01399107cbde6a58d1b9a0755f",
+    "ros2/m710_moveit_backend/src/clearance.h": "175f5337d95ce7481688a7b0186cf839e8904f33a993f00abb28caf837a6f0cb",
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "5616fe6861fcc9fce81a39197154589221b7cd0c1c3ef401abaa1c6607609a54",
+    "ros2/m710_moveit_backend/src/eco65_single_carton.h": "97794e7eadcf21a8320f2eb79ce223b51bcacc019beb8e70e1a9f10e5b537494",
+    "ros2/m710_moveit_backend/src/worker.cpp": "0454623c7a5842f35e754f6f0f4ecd093b1b369fe3ab674b23a7cc20515d592d",
+    "src/unloading_sim/workbench/controlled/planner.py": "75818a6a4328b9b6c78495b5387edc5f3cd1f4a2663693afc6132ba803052061",
+    "src/unloading_sim/workbench/controlled/ui.py": "5969df8fe07a2c2816feca5cc4785dac4f0030faf3afd1c0f2aea84ae641c152",
+    "src/unloading_sim/workbench/devices.py": "5eeffa12db50919d22c0c1de001fe438664a7bfb9f009d7ff86d75286caaaca1",
+    "src/unloading_sim/workbench/single_carton/config.py": "786f4138a0ab1514efd3395ec24199a985eecc17e4c7fd9ccbbeb914344382da",
+    "src/unloading_sim/workbench/single_carton/geometry.py": "e56a1423b10579fc068b063ba31e5b3fe933f1147752fe22bd49257d8da494ca",
+    "src/unloading_sim/workbench/single_carton/live.py": "b3db8236b40972d6589aa80090363b5d13f2ab6f5e22882ba4e924801983343f",
+    "src/unloading_sim/workbench/single_carton/partial_geometry.py": "89f8bebd40c2db7605f17baacbaf08118bd24c8415146f1b949c5795b5766c36",
+    "src/unloading_sim/workbench/single_carton/perception.py": "d98dea091e228f2d1e2e4988f33b37e3511931fa12bbb6070189a00e93954522",
+    "src/unloading_sim/workbench/single_carton/planner.py": "60dd74204c5929945cf8a99a666952889534012267b25c725ed0783f00633cc5",
+    "src/unloading_sim/workbench/single_carton/result_window.py": "7567698f62bfd3cb42c685f6e2e0b68cfae4a089ca44447c0fd5554a81788b95",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "ec6a7c5de317f3cd0a99e4da067aaa20c393f23d76d070ee3722d779bc69ddae",
+    "src/unloading_sim/workbench/single_carton/self_filter.py": "81800f6f3856f4675fdb8310cc3e3078c6571099268c58ac58c396c7605010bb",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "075a1a761185bb599040d5a7cb5b4afa72dfa3dcdcddaa2025e6094a292f2584",
+    "src/unloading_sim/workbench/single_carton/ui.py": "b8540ad88f6e59f8fc24e68789604ba3ffb1a612bcc92b1ee473f470c397bb8f",
+    "src/unloading_sim/workbench/single_carton/vacuum.py": "b6f1b4dc30508ce50f88e6bb59d6018351b9187461667476406611a8f8385863",
+    "src/unloading_sim/workbench/stable_ui.py": "bf59d62834ca063d5bb16fdc9ea5a0fd4d55fcbbe2e6664081c694a12410b1d5",
+    "src/unloading_sim/workbench/ui.py": "7157c4a9a3094bc07356f01e9cf2d0605eaf039c2bf0cc81543785765c1c9983",
+    "tests/test_single_carton_live.py": "ff6c164401b9ca881cfbc1ed88e139ff633efc5a57a7c8ec9a189a182510cf7e",
+    "tests/test_single_carton_partial_site.py": "cd02bbd307036bd767c1e662a2409bef833610e37ad667525cadd83cb125c19c",
+    "tests/test_single_carton_planner.py": "cfc6fe585fe2e3192057370cd0efba6fe563acee32c9d7ce0d17d7e42a4ae6eb",
+    "tests/test_single_carton_stable_ui.py": "f58a1c0eb93dd9c8f5212d728f40bb485f096869246a6d42cdc720c32e50ad5a",
+    "tests/test_single_carton_ui.py": "50d241fc0c3ed715ca42f539809cace483876946ace80f2b901f2af72a6f3bdf"
+  },
+  "evidence_sha256": {
+    "model_api.json": "7f3859f626d36a21a0f33a3a905188b9ed2df3633b60796feb806e72e53962b0",
+    "model_scene.json": "fb96a5daad2752c2cab452a23603621842b326e02a620bba5b56f495a85d4979",
+    "native_component.json": "1d77982b405d59aa64dd3c3d689f4bdd0d69be228b3389f3695680c5f473454c",
+    "native_optimized.json": "07307cd000590eaf2038ba8ac680a029c6192f4fcbb7306623fdb93e22e3bc62",
+    "native_reference.json": "4e19a706f204e85f38c20cb6da1315411acb8acef26c05615efbb0ad61c3a357",
+    "pytest.xml": "f5521e583980844387ba4bb8f73f033205f4e57a5ff706f2e07d94670ee7aae9"
+  }
+}

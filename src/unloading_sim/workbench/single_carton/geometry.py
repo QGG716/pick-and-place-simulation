@@ -306,6 +306,12 @@ def seal_check(tcp, face, rings_tcp, suction_normal_tcp, margin=.003, max_gap=.0
     angle=float(np.arccos(np.clip(-n@(np.asarray(tcp)[:3,:3]@suction_normal_tcp),-1,1)))
     if support_tree is None and face.get('support_points_uv_m'): support_tree=cKDTree(face['support_points_uv_m'])
     covered=support_tree is None or bool(np.max(support_tree.query(uv)[0])<=face['support_radius_m'])
+    if support_tree is not None and face.get('check_observed_margin'):
+        # Test a band around the actual CAD contour, including concave holes
+        # and occlusion boundaries. Rectangle area is not seal evidence.
+        angles=np.arange(16)*2*np.pi/16
+        band=uv[:,None,:]+margin*np.c_[np.cos(angles),np.sin(angles)][None,:,:]
+        covered=covered and bool(np.max(support_tree.query(band.reshape(-1,2))[0])<=face['support_radius_m'])
     return dict(valid=bool(covered and np.all(abs(uv)<=half+1e-9) and np.max(abs(gaps))<=max_gap and angle<=.01),
                 observed_surface_covered=covered,minimum_edge_margin_m=float(np.min(np.asarray(face['size_m'])/2-abs(uv))),
                 maximum_gap_m=float(np.max(abs(gaps))),normal_error_rad=angle,

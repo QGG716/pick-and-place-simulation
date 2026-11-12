@@ -15,6 +15,8 @@ ROOT=Path(__file__).resolve().parents[1]
 @pytest.fixture
 def case(tmp_path,monkeypatch):
     config=load(ROOT/'configs/workbench/single_carton.example.json')
+    # Retained pre-site native chain fixture explicitly uses its historical policy.
+    config.pop('site');config['release_policy']='USER_DEFERRED_RECEIVER_QUALIFICATION'
     tool=json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
     T=np.eye(4);T[:3,3]=[.4,0,.4]
     box=dict(id='real-observation-box-0',detection_index=0,pose=T.tolist(),size_m=[.15,.1,.1],corners_m=corners(T,[.15,.1,.1]).tolist(),
@@ -82,6 +84,31 @@ def test_full_loaded_chain_validated_before_any_permit(case):
     inertia=np.asarray(plan['binding']['physical_cycle']['payload_mass_properties']['inertia_box_kg_m2'])
     np.testing.assert_allclose(np.diag(inertia),[.0033333333333333,.0054166666666667,.0054166666666667],atol=1e-12)
     assert plan['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
+
+
+def test_current_real_site_scene_flows_through_all_four_native_stages(case):
+    p,obs,box,folder,calls,opts=case
+    candidate=contact_candidates(box,p.source['tool'],p.site['topology'])[0]
+    flange=np.asarray(candidate['tcp_pose'])@np.linalg.inv(p.coordinate_model.tool.matrix)
+    attachment=np.linalg.inv(flange)@np.asarray(box['pose'])
+    returned=p.coordinate_model.frames(obs.q_start)['link_6']@attachment
+    bounds=corners(returned,box['size_m']);lo=bounds.min(0);hi=bounds.max(0)
+    top=float(lo[2]);support=np.eye(4);support[:3,3]=[(lo[0]+hi[0])/2,(lo[1]+hi[1])/2,top-.02]
+    table=dict(id='field_measured_table',size=[hi[0]-lo[0]+.1,hi[1]-lo[1]+.1,.04],pose=support.tolist(),category='measured_fixed')
+    p.site['release_policy']='MEASURED_SITE_RECEIVER_REQUIRED'
+    p.site['site']=dict(workspace_bounds_m=[[-2.,-2.,-2.],[2.,2.,2.]],receiver=dict(
+        support_ids=[table['id']],bounds_m=[[lo[0]-.01,lo[1]-.01,top-.04],[hi[0]+.01,hi[1]+.01,top]],
+        margin_m=.003,measurement_basis='SYNTHETIC_REAL_SITE_ADAPTER_TEST'))
+    p.receiver=lambda:SinglePlanner.receiver(p)
+    obs.frame.observation_id='frozen-current-exposure'
+    scene=dict(observation_id=obs.frame.observation_id,world=[table],imported_simulation_objects=0)
+    plan=p.plan_cycle(obs,[box],folder,scene=scene)
+    assert plan['release']['status']=='PASS' and plan['binding']['physical_cycle']['site_scene']==scene
+    for r in calls:
+        if r.get('op') in {'plan','validate'}:
+            assert {o['id'] for o in r['world']}=={box['id'],table['id']}
+            assert r['site_workspace_bounds_m']==[[-2.,-2.,-2.],[2.,2.,2.]]
+    assert plan['segments'][-1]['package']['prepared']['points'][-1]['q']==pytest.approx(obs.q_start,abs=1e-12)
 
 def test_loaded_return_collision_rejects_whole_task_without_any_permit(case,monkeypatch):
     p,obs,box,folder,calls,opts=case;opts['reject_return']=True

@@ -132,7 +132,8 @@ class D435iObserver:
         matches = [d for d in devices if "d435i" in d.get_info(rs.camera_info.name).casefold()
                    and (not serial or d.get_info(rs.camera_info.serial_number) == serial)]
         if len(matches) != 1:
-            raise RuntimeError("Select one connected D435i by serial; no compatible device or ambiguous selection")
+            available=[d.get_info(rs.camera_info.serial_number) for d in devices if 'd435i' in d.get_info(rs.camera_info.name).casefold()]
+            raise RuntimeError('未找到指定 D435i' if not available else '多台 D435i 或序列号不匹配；请配置选择：'+', '.join(available))
         d = matches[0]
         self.serial, self.name = d.get_info(rs.camera_info.serial_number), d.get_info(rs.camera_info.name)
         color, depth = set(), set()

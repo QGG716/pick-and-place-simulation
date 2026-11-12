@@ -1,0 +1,12 @@
+{
+  "hardware_execution": "NOT_RUN",
+  "world_objects_at_model_build": 0,
+  "original_collision_shapes": 715,
+  "cup_count": 12,
+  "self_filter_solids": 715,
+  "probe_points_inside": [
+    true,
+    false
+  ],
+  "seconds": 6.665991539994138
+}

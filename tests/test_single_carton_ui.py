@@ -24,12 +24,14 @@ def test_single_carton_ui_starts_inert_and_rejects_preview_import(monkeypatch):
     mapping=load_mapping(c['execution']['mapping']);authority=Authority('eco65_single_carton_segment_v1')
     planner=SinglePlanner(c,mapping,authority,model);service=ExecutionService(mapping,c['execution'],authority,planner.binding)
     vacuum=VacuumOwner(c['vacuum'],open_port=forbidden);backend=SingleBackend(D435iObserver(),ManagedRobotView(service,mapping),VacuumView(vacuum),service)
-    root=tk.Tk();ui=SingleWorkbench(root,backend,planner,service,vacuum,c,model,Extrinsics.load(c['camera_extrinsics']))
+    root=tk.Tk();ui=SingleWorkbench(root,backend,planner,service,vacuum,c,model,Extrinsics.load(c['camera_extrinsics']),auto_start=False)
     try:
         root.update();assert '实机模式' in root.title()
         assert str(ui.execute_button.cget('state'))=='disabled'
         assert str(ui.plan_button.cget('state'))=='disabled'
-        assert '箱型不限' in ui.details.get()
+        assert '尺寸先验可配置' in ui.details.get()
+        assert set(ui.result_windows)=={'detection','segmentation'}
+        assert ui.snapshot is None
         with pytest.raises(ValueError,match='预览'):ui.execute_cycle()
         with pytest.raises(ValueError,match='不能导入执行'):ui.load_plan()
         assert service.process is None and not vacuum.connected and not backend.workers['camera'].device.connected

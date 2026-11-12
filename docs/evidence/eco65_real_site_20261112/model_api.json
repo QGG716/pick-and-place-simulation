@@ -1,0 +1,13 @@
+{
+  "scope": "REAL_WEIGHTS_SYNTHETIC_INPUT_API_CHECK",
+  "physical_result": "NOT_RUN",
+  "detected": 0,
+  "sam_masks": [
+    [
+      240,
+      320
+    ]
+  ],
+  "same_frame": true,
+  "elapsed_s": 18.48582296598761
+}

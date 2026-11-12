@@ -139,14 +139,7 @@ class EmptyPlanner:
         for n in names:
             for quantity,value in [('velocity',.10),('acceleration',.20)]:
                 params[f'robot_description_planning.joint_limits.{n}.max_{quantity}']=value
-        from unloading_sim.eco65.native_scene import world_objects
-        from unloading_sim.geometry import rotation_matrix_from_rpy
-        scene=s['scene'];D_base=np.eye(4);D_base[:3,:3]=rotation_matrix_from_rpy(*scene['base_rpy_rad']);D_base[:3,3]=scene['base_position_m']
-        base_D=np.linalg.inv(D_base);world=world_objects(scene)
-        for b in scene['boxes']:
-            if b['size_m']!=[.15,.1,.1]:raise ValueError('CARTON_DIMENSIONS_CHANGED')
-            pose=np.eye(4);pose[:3,3]=b['pose'];world.append(dict(id=b['id'],size=b['size_m'],pose=pose.tolist(),category='carton'))
-        for obj in world:obj['pose']=(base_D@np.asarray(obj['pose'])).tolist()
+        world=self.build_world(s)
         self.world=world;self.scene_hash=digest(world);self.model_hash=digest(dict(parameters=params,policy=POLICY,mass=self.mass))
         oldid=old['identity'];identity={k:oldid[k] for k in ('robot_id','robot_variant','planning_group','base_link','flange_link','task_tcp_link','flange_from_task_tcp','task_tcp_fingerprint')}
         identity.update(schema='eco65_controlled_empty_model_v1',model_tool_fingerprint=self.model_hash,scene_fingerprint=self.scene_hash,policy_fingerprint=digest(POLICY),policy_scope='CONTROLLED_EMPTY_NO_CONTACT')
@@ -155,6 +148,17 @@ class EmptyPlanner:
         self.track(ROOT/'install/moveit/lib/m710_moveit_backend/m710_moveit_worker')
         for name in ('planner.py','trajectory.py','engine.py','transport.py','service.py','ui.py'):self.track(Path(__file__).parent/name)
         self.ready=True
+    def build_world(self,s):
+        from unloading_sim.eco65.native_scene import world_objects
+        from unloading_sim.geometry import rotation_matrix_from_rpy
+        scene=s['scene'];D_base=np.eye(4);D_base[:3,:3]=rotation_matrix_from_rpy(*scene['base_rpy_rad']);D_base[:3,3]=scene['base_position_m']
+        base_D=np.linalg.inv(D_base);world=world_objects(scene)
+        for b in scene['boxes']:
+            if b['size_m']!=[.15,.1,.1]:raise ValueError('CARTON_DIMENSIONS_CHANGED')
+            pose=np.eye(4);pose[:3,3]=b['pose'];world.append(dict(id=b['id'],size=b['size_m'],pose=pose.tolist(),category='carton'))
+        for obj in world:obj['pose']=(base_D@np.asarray(obj['pose'])).tolist()
+        return world
+
     @staticmethod
     def model_reach_bound(urdf):
         """Triangle inequality over every ancestor translation and collision vertex.
