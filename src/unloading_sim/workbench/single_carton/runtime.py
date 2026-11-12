@@ -51,24 +51,30 @@ class TaskManager:
         np.savez_compressed(self.folder/(name+'.npz'),rgb=observation.frame.rgb,depth=observation.frame.depth)
     def observe(self):
         self._enter();self.stop_event.clear();self.planner.authority.invalidate();self.plan=None;self.cycle=None
-        if self.journal:self.journal.close()
-        self.task_id=uuid.uuid4().hex;self.folder=Path(self.config['record_root'])/self.task_id;self.folder.mkdir(parents=True)
-        self.journal=Journal(self.folder,self.task_id)
-        (self.folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,physical_result='NOT_RUN')))
+        self.observation=None;self.result=None;self.boxes=[];self.scene=None;self.reason=''
         try:
+            if self.journal:self.journal.close()
+            self.journal=None;self.folder=None
+            self.task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/self.task_id;folder.mkdir(parents=True)
+            self.folder=folder;self.journal=Journal(folder,self.task_id)
+            (folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,physical_result='NOT_RUN')))
             missing=issues(self.config)
             if missing:raise ValueError('缺少现场参数：\n'+'\n'.join(missing))
             self.phase='OBSERVING';started=time.monotonic();self.progress('等待机械臂停稳，锁定 q_start 与同帧 RGB-D')
-            self.observation=freeze(self.backend,self.service,self.model,self.calibration,cancelled=self.stop_event.is_set)
+            self.observation=freeze(self.backend,self.service,self.model,self.calibration,
+                                    cancelled=self.stop_event.is_set,progress=self.progress)
+            self.notify('capture',self.observation)
             self.save_observation(self.observation,'observation')
-            self.progress('加载本地 GroundingDINO / SAM 并执行真实推理')
+            self.progress('q_start 与原始 RGB-D 已锁定；等待本次冻结帧的检测 / 分割')
             vision=getattr(self.backend,'vision',None)
             if vision:
-                self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,self.stop_event.is_set)
+                self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,
+                                              self.stop_event.is_set,progress=self.progress)
             else:
                 if self.detector is None:self.detector=HuggingFaceGroundingSAM(**self.config['detector'])
                 self.result=self.detector.detect(self.observation.frame)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
             self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
             if self.config.get('site'):
                 from .site_scene import build_scene
@@ -120,7 +126,8 @@ class TaskManager:
         try:
             if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
             self.progress('停稳重新取景：核对目标、场景、起点及版本')
-            current=freeze(self.backend,self.service,self.model,self.calibration,cancelled=self.stop_event.is_set)
+            current=freeze(self.backend,self.service,self.model,self.calibration,
+                           cancelled=self.stop_event.is_set,progress=self.progress)
             check=unchanged(self.observation,current)
             # Target-local check prevents a small target movement being diluted
             # by unchanged background pixels in the whole-view scene test.
@@ -145,8 +152,9 @@ class TaskManager:
         self.journal(kind='actual_return_release_pose',q_actual=q.tolist(),check=result)
     def reject(self,error):
         self.reason=str(error);self.phase='FAILED';self.planner.authority.invalidate()
-        if self.journal:self.journal(kind='rejected',reason=self.reason,physical_result='NOT_RUN')
-        if self.folder:(self.folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,state='REJECTED',reason=self.reason,physical_result='NOT_RUN'),indent=2))
+        evidence=getattr(error,'evidence',None)
+        if self.journal:self.journal(kind='rejected',reason=self.reason,evidence=evidence,physical_result='NOT_RUN')
+        if self.folder:(self.folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,state='REJECTED',reason=self.reason,evidence=evidence,physical_result='NOT_RUN'),indent=2))
         self.notify('error',self.reason)
     def stop(self):
         self.stop_event.set();self.service.request_stop();self.planner.authority.invalidate();self.vacuum.inhibit()

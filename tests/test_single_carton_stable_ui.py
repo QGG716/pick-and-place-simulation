@@ -94,12 +94,56 @@ def test_ui_autostart_is_nonblocking_and_failure_is_visible(ui):
 
 
 def test_session_change_disables_old_plan_and_labels_it_invalid(ui):
+    from dataclasses import replace
+    from test_single_carton_observation import observation
     w,errors=ui
     w.manager.phase='PLAN_READY';w.manager.plan=object()
-    w.manager.observation=SimpleNamespace(generation=w.backend.observation_generation-1)
+    w.manager.observation=replace(observation(),generation=w.backend.observation_generation-1)
     w.previewed=True;w.execute_button.configure(state='normal')
     w.update_task();w.root.update_idletasks()
     assert not w.previewed and str(w.execute_button.cget('state'))=='disabled'
     assert '观测会话已失效' in w.task_status.get()
     with pytest.raises(ValueError,match='观测会话已失效'):w.preview()
+    assert not errors
+
+
+def test_prepare_click_immediately_acknowledges_and_displays_failure_without_modal(ui):
+    import threading
+    w,errors=ui;entered=threading.Event();finish=threading.Event()
+    def prepare():
+        entered.set();finish.wait(2)
+        w.jobs.put(('progress','等待配对 · 45/30 ms'))
+        raise ValueError('准备观测未完成：RGB-D 与关节配对差超过 30 ms')
+    w.manager.observe=prepare;w.root.update()
+    before={str(x):geometry(x) for x in widgets(w.root)}
+    try:
+        start=time.monotonic();w.observe_button.invoke()
+        assert time.monotonic()-start<.1 and entered.wait(.5)
+        assert w.job_pending and '已受理' in w.details.get() and '已受理' in w.notice.get()
+        assert str(w.observe_button['state'])=='disabled'
+        w.update_task();assert '已用' in w.task_status.get()
+        finish.set();end=time.monotonic()+2
+        while w.job_pending and time.monotonic()<end:w.root.update();time.sleep(.005)
+        assert not w.job_pending and str(w.observe_button['state'])=='normal'
+        assert '配对差超过 30 ms' in w.details.get() and '配对差超过 30 ms' in w.notice.get()
+        assert not w.previewed and str(w.execute_button['state'])=='disabled'
+        w.root.update_idletasks()
+        assert before=={str(x):geometry(x) for x in widgets(w.root)}
+        assert not errors
+    finally:finish.set()
+
+
+def test_capture_displays_raw_frame_before_sam_and_never_overlays_old_result(ui):
+    from dataclasses import replace
+    from PIL import ImageTk
+    import numpy as np
+    from test_single_carton_observation import observation
+    w,errors=ui;w.root.update();obs=replace(observation(exposure(77)),generation=w.backend.observation_generation)
+    w.manager.observation=obs;w.manager.result=None
+    w.jobs.put(('capture',obs));w.update_task();w.root.update_idletasks()
+    assert '#77/77' in w.bound_details.get() and 'frozen' in w._photos
+    assert np.array_equal(np.asarray(ImageTk.getimage(w._photos['frozen']))[:,:,:3],obs.frame.rgb)
+    w.manager.result=Model().detect_boxes(exposure(1));w.manager.boxes=[{'invalid':'must not draw'}]
+    w.draw_observation()
+    assert np.array_equal(np.asarray(ImageTk.getimage(w._photos['frozen']))[:,:,:3],obs.frame.rgb)
     assert not errors

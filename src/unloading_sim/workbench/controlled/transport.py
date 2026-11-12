@@ -152,7 +152,8 @@ class RealmanTransport:
                 q=self.mapping.apply(degrees*.001,self.mapping.source_names)
                 velocity=None
                 speed=np.asarray(j.get('joint_speed',[]),float)
-                if speed.shape==(6,) and np.isfinite(speed).all():
+                measured_speed=speed.shape==(6,) and np.isfinite(speed).all()
+                if measured_speed:
                     velocity=(np.deg2rad(speed*.01)[list(self.mapping.source_indices)]*self.mapping.signs).tolist()
                 if previous is not None and .001<=now-previous['received_s']<=.05:
                     if velocity is None:velocity=((q-np.asarray(previous['q']))/(now-previous['received_s'])).tolist()
@@ -161,7 +162,7 @@ class RealmanTransport:
                 self.sequence+=1
                 sample=dict(source='LIVE',sequence=self.sequence,received_s=now,q=q.tolist(),velocity=velocity,
                             received_utc_ns=sec*10**9+nsec,
-                            controller_sample_time='UNKNOWN',velocity_source='MEASURED_UDP_SPEED' if speed.shape==(6,) else 'FINITE_DIFFERENCE_OF_ACTUAL_UDP_SAMPLES',
+                            controller_sample_time='UNKNOWN',velocity_source='MEASURED_UDP_SPEED' if measured_speed else 'FINITE_DIFFERENCE_OF_ACTUAL_UDP_SAMPLES',
                             enabled=all(x==1 for x in j['joint_en_flag']),
                             alarm=controller_has_alarm(data),raw=data)
                 self.latest=sample;previous=sample

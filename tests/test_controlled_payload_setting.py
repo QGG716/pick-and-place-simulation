@@ -57,3 +57,19 @@ def test_real_udp_receiver_uses_error_codes_not_list_truthiness(system,joints,al
 def test_unknown_error_payload_is_not_accepted_as_no_alarm(system,joints):
     with pytest.raises(ValueError,match='INVALID_CONTROLLER_ERROR_CODES'):
         controller_has_alarm(dict(err=system,joint_status=dict(joint_err_code=joints)))
+
+
+@pytest.mark.parametrize('speed,source',[([0]*6,'MEASURED_UDP_SPEED'),
+    ([float('nan')]*6,'FINITE_DIFFERENCE_OF_ACTUAL_UDP_SAMPLES'),([], 'FINITE_DIFFERENCE_OF_ACTUAL_UDP_SAMPLES')])
+def test_invalid_udp_speed_is_never_labeled_measured(speed,source):
+    transport=RealmanTransport(load_mapping(ROOT/'configs/workbench/joint_mapping.json'),{})
+    transport.host='127.0.0.1'
+    packet=dict(state='realtime_arm_joint_state',err=[0],
+        joint_status=dict(joint_err_code=[0]*6,joint_en_flag=[1]*6,joint_position=[0]*6,joint_speed=speed))
+    class FakeSocket:
+        def recvmsg(self,*args):
+            transport._halt.set();sec,nsec=divmod(time.time_ns(),10**9)
+            return json.dumps(packet).encode(),[(socket.SOL_SOCKET,35,struct.pack('qq',sec,nsec))],0,('127.0.0.1',8089)
+    transport.sock=FakeSocket();transport._receive()
+    assert transport.latest['velocity_source']==source
+    if source!='MEASURED_UDP_SPEED':assert transport.latest['velocity'] is None

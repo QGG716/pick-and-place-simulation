@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from queue import Queue,Empty
 import threading
+import time
 import tkinter as tk
 from tkinter import ttk
 import cv2
@@ -53,7 +54,7 @@ class SingleWorkbench(Workbench):
     def __init__(self,root,backend,planner,service,vacuum,config,model,calibration,*,auto_start=True):
         self.jobs=Queue();self.config_single=config;self.previewed=False;self.closing_single=False;self.feedback_pending=False
         self.service=service;self.planner=planner;self.last_status={}
-        self.restart_required=False
+        self.restart_required=False;self.job_pending=False;self.job_started=0.;self.job_label=''
         super().__init__(root,backend,installation=config['execution']['installation'])
         self.model=model;self.calibration=calibration
         self.manager=TaskManager(backend,service,vacuum,planner,model,calibration,config,lambda k,v:self.jobs.put((k,v)))
@@ -66,7 +67,7 @@ class SingleWorkbench(Workbench):
         labels[0].configure(text='ECO65-B / 视觉单箱抓取并返回释放')
         labels[1].configure(text='自动连接与持续视觉；仅执行按钮启动运动。吸具 1.5 kg + 箱子 2 kg；统一阀门、被动止回吸盘。软件停止不是硬件急停。')
         self.calibration_text.set('现场确认：link_1 相机；world=base。加载参考原文件，历史标定状态原样保留。')
-        tab=ttk.Frame(self.tabs,padding=10);self.tabs.add(tab,text='视觉单箱任务');self.tabs.select(tab)
+        tab=ttk.Frame(self.tabs,padding=10);self.task_tab=tab;self.tabs.add(tab,text='视觉单箱任务');self.tabs.select(tab)
         self.task_status=StableStringVar(value='待机 · 设备未连接 · 实机执行 NOT_RUN')
         fixed_text(tab,self.task_status,height=2,pady=4)
         row=ttk.Frame(tab);row.pack(fill='x')
@@ -165,7 +166,17 @@ class SingleWorkbench(Workbench):
         self.previewed=False;self.execute_button.configure(state='disabled')
         # UI reservation happens before thread startup to reject double-clicks.
         if getattr(self,'job_pending',False):raise ValueError('操作尚未完成')
-        self.job_pending=True
+        self.job_pending=True;self.job_started=time.monotonic()
+        self.job_label={'observe_done':'准备观测 / 锁定起始点','plan_done':'完整路径规划',
+                        'execute_done':'执行前复核','payload':'读取控制器负载'}.get(kind,kind)
+        self.observe_button.configure(state='disabled');self.plan_button.configure(state='disabled')
+        self.tabs.select(self.task_tab)
+        message='已受理：'+self.job_label+' · 正在后台处理'
+        self.task_status.set(message);self.details.set(message);self.notice.set(message)
+        if kind=='observe_done':
+            self.frozen_image.configure(image='',text='正在取景；锁定后先显示原始冻结帧，再更新同帧分割与几何')
+            self._photos.pop('frozen',None)
+            self.bound_details.set('正在等待停稳取景；本次起始点尚未锁定')
         def run():
             try:self.jobs.put((kind,fn()))
             except Exception as e:self.jobs.put(('error',str(e)))
@@ -197,22 +208,24 @@ class SingleWorkbench(Workbench):
         self.details.set('已请求软件停止。保持阀门状态，继续核对实际停止反馈；不会自动返回或释放。')
     def draw_observation(self):
         m=self.manager
-        if m.observation is None or m.result is None:return
-        f=m.observation.frame;pixels=f.rgb.copy()
-        for i,mask in enumerate(m.result.masks):
+        obs,result,boxes,plan=m.observation,m.result,m.boxes,m.plan
+        if obs is None:return
+        f=obs.frame;pixels=f.rgb.copy()
+        matched=result is not None and result.observation_id==f.observation_id
+        for i,mask in enumerate(result.masks if matched else ()):
             pixels[mask]=(pixels[mask]*.65+np.array([30,180,250])*.35).astype('uint8')
-            b=m.result.detections[i]['bbox_xyxy'];x,y=int(b[0]),int(b[1]);cv2.putText(pixels,str(i),(x,y),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,220,50),2)
-        camera_world=np.linalg.inv(np.asarray(m.observation.world_camera))
-        for box in m.boxes:
+            b=result.detections[i]['bbox_xyxy'];x,y=int(b[0]),int(b[1]);cv2.putText(pixels,str(i),(x,y),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,220,50),2)
+        camera_world=np.linalg.inv(np.asarray(obs.world_camera))
+        for box in boxes if matched else ():
             p=transform(camera_world,box['corners_m'])
             if np.any(p[:,2]<=0):continue
             uv=project_camera(p,f.intrinsics).astype(int)
-            selected=m.plan is not None and box['id']==m.plan['target']['id'];color=(255,200,20) if selected else (60,255,120)
+            selected=plan is not None and box['id']==plan['target']['id'];color=(255,200,20) if selected else (60,255,120)
             for a in range(8):
                 for b in range(a+1,8):
                     if (a^b) in (1,2,4):cv2.line(pixels,tuple(uv[a]),tuple(uv[b]),color,2)
             if selected:
-                face=m.plan['candidate']['face'];c=np.asarray(face['center_m']);p=transform(camera_world,[c,c+.04*np.asarray(face['normal'])]);uv=project_camera(p,f.intrinsics).astype(int)
+                face=plan['candidate']['face'];c=np.asarray(face['center_m']);p=transform(camera_world,[c,c+.04*np.asarray(face['normal'])]);uv=project_camera(p,f.intrinsics).astype(int)
                 cv2.arrowedLine(pixels,tuple(uv[0]),tuple(uv[1]),(255,70,60),3)
         im=Image.fromarray(pixels);im.thumbnail((max(1,self.frozen_image.winfo_width()),max(1,self.frozen_image.winfo_height())))
         photo=ImageTk.PhotoImage(im);self._photos['frozen']=photo;self.frozen_image.configure(image=photo,text='')
@@ -237,8 +250,14 @@ class SingleWorkbench(Workbench):
             try:kind,value=self.jobs.get_nowait()
             except Empty:break
             if kind=='job_finished':self.job_pending=False
-            elif kind=='progress':self.details.set(value)
-            elif kind=='error':self.details.set(value);self.backend.log(value)
+            elif kind=='progress':self.details.set(value);self.notice.set(value)
+            elif kind=='error':self.details.set(value);self.notice.set(value);self.backend.log(value)
+            elif kind=='capture':
+                self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(value.q_start).round(3).tolist())+
+                    '\n采集 q_capture（°）：'+str(np.rad2deg(value.q_capture).round(3).tolist())+
+                    f'\n本次 RGB/depth #{value.frame.rgb_number}/{value.frame.depth_number} · 等待同帧检测 / 分割'+
+                    '\n起始 TCP（m）：'+str(np.asarray(value.world_tcp_start)[:3,3].round(5).tolist()))
+                self.draw_observation()
             elif kind=='observation':
                 obs,result,boxes=value
                 self.details.set('本次 q_start（度）：'+' '.join(f'{x:.3f}' for x in np.rad2deg(obs.q_start))+f'\n恢复 {len(boxes)} 个箱体；选择检测编号或留空自动选择。')
@@ -246,6 +265,7 @@ class SingleWorkbench(Workbench):
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+
                     '\n起始 TCP（m）：'+str(np.asarray(obs.world_tcp_start)[:3,3].round(5).tolist()))
                 self.draw_observation()
+                self.notice.set(self.details.get())
             elif kind=='plan':
                 self.details.set('目标：'+value['target']['id']+'\n接触 TCP（m）：'+str(np.array(value['candidate']['tcp_pose'])[:3,3].round(5).tolist())+'\n返回同一组 q_start；释放包络已检查。承接区域按现场配置检查。')
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(value['q_start']).round(3).tolist())+
@@ -264,8 +284,11 @@ class SingleWorkbench(Workbench):
         if stale:
             self.previewed=False;self.execute_button.configure(state='disabled')
         self.plan_button.configure(state='normal' if m.phase=='TARGET_READY' and not stale and not m.active and not getattr(self,'job_pending',False) else 'disabled')
+        self.observe_button.configure(state='disabled' if self.job_pending or m.active or m.vacuum.holding or
+                                      (m.cycle and m.cycle.state=='STOP_UNCONFIRMED') else 'normal')
         state_text='观测会话已失效，请重新准备任务' if stale and not m.active else LABELS.get(state,state)
-        self.task_status.set(f'实机单箱模式 · {state_text} · task_id {m.task_id or "—"}\n原因：{m.reason or (m.cycle.reason if m.cycle else "—")}')
+        elapsed=f' · {self.job_label} 已用 {time.monotonic()-self.job_started:.1f} s' if self.job_pending else ''
+        self.task_status.set(f'实机单箱模式 · {state_text}{elapsed} · task_id {m.task_id or "—"}\n原因：{m.reason or (m.cycle.reason if m.cycle else "—")}')
         status=m.cycle.last_feedback if m.cycle and m.cycle.active else self.last_status
         status=status or {};q=status.get('actual_q');age=status.get('feedback_age_s');error=status.get('tracking_error_rad')
         joint=self.backend.joint

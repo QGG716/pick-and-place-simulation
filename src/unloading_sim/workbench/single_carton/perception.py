@@ -84,6 +84,7 @@ class Observation:
     generation: int
     world_camera: tuple
     world_tcp_start: tuple
+    capture_checks: dict | None = None
 
     def metadata(self):
         f=self.frame
@@ -93,6 +94,7 @@ class Observation:
             q_start=self.q_start,q_capture=self.q_capture,robot_sample=self.robot_sample,
             stationary_samples=self.stationary_samples,generation=self.generation,
             T_world_camera=self.world_camera,T_world_tcp_start=self.world_tcp_start,
+            capture_checks=self.capture_checks,
             association='HOST_RECEIPT_PROXIMITY_WITH_MEASURED_STATIONARY_WINDOW_NOT_HARDWARE_TRIGGER')
 
 
@@ -105,36 +107,81 @@ def validate_robot(sample,now,max_age=.1):
     return q
 
 
-def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=monotonic,sleep=time.sleep):
+class CaptureRejected(ValueError):
+    def __init__(self,reason,evidence):
+        super().__init__(reason);self.evidence=dict(evidence)
+
+
+def stationary_checks(history):
+    """Use controller-measured speed when present, retaining the position bound.
+
+    Differentiating quantized encoder positions at irregular RPC intervals can
+    invent speed spikes on a stationary robot. Missing measured speed still
+    uses the conservative finite-difference check, never an assumed zero.
+    """
+    if len(history)<2:return dict(stationary=False,window_s=0.,samples=len(history))
+    values=np.asarray([h['q'] for h in history]);times=np.array([h['received_s'] for h in history])
+    dt=np.diff(times)
+    if np.any(dt<=0):raise ValueError('NONMONOTONIC_STATIONARY_FEEDBACK')
+    measured=all(h.get('velocity_source')=='MEASURED_UDP_SPEED' and
+        np.asarray(h.get('velocity')).shape==(6,) and np.isfinite(h['velocity']).all() for h in history)
+    speed=float(np.max(abs(np.asarray([h['velocity'] for h in history])))) if measured else float(np.max(abs(np.diff(values,axis=0)/dt[:,None])))
+    spread=float(np.max(np.ptp(values,axis=0)));window=float(times[-1]-times[0]);gap=float(dt.max())
+    return dict(stationary=bool(window>=.4 and gap<=.1 and spread<=np.deg2rad(.02) and speed<=np.deg2rad(.5)),
+        window_s=window,samples=len(history),max_gap_s=gap,range_deg=float(np.rad2deg(spread)),
+        speed_deg_s=float(np.rad2deg(speed)),speed_source='MEASURED_UDP_SPEED' if measured else 'FINITE_DIFFERENCE_OF_ACTUAL_SAMPLES')
+
+
+def capture_status(d):
+    def value(key,scale=1):return '—' if d.get(key) is None else f'{d[key]*scale:.1f}'
+    return (f"准备取景 {d.get('elapsed_s',0):.1f}/4.0 s · {d.get('waiting','等待数据')}\n"
+            f"停稳窗口 {d.get('window_s',0):.3f}/0.400 s · 位置范围 {d.get('range_deg',0):.4f}/0.0200° · "
+            f"速度 {d.get('speed_deg_s',0):.3f}/0.500°/s ({d.get('speed_source','等待反馈')})\n"
+            f"RGB-D 年龄 {value('frame_age_s',1000)}/100 ms · 关节配对差 {value('pair_skew_s',1000)}/30 ms")
+
+
+def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=monotonic,sleep=time.sleep,progress=lambda _:None):
     if calibration is None or calibration.parent_frame!='link_1':raise ValueError('FIELD_LINK1_CAMERA_CALIBRATION_REQUIRED')
-    generation=backend.observation_generation;start=clock();history=[];last=None
+    generation=backend.observation_generation;start=clock();history=[];last=None;reported=-1.
+    diagnostic=dict(waiting='等待新反馈')
     while clock()-start<4:
         if cancelled():raise ValueError('CANCELLED')
         sample=service.snapshot();now=clock();q=validate_robot(sample,now)
         if sample['sequence']!=last:
             history.append(dict(sample));last=sample['sequence']
         history=[h for h in history if sample['received_s']-h['received_s']<=.55]
-        if history and sample['received_s']-history[0]['received_s']>=.4:
-            values=np.asarray([h['q'] for h in history]);times=np.array([h['received_s'] for h in history])
-            speed=np.max(abs(np.diff(values,axis=0)/np.diff(times)[:,None]))
-            if np.max(np.ptp(values,axis=0))<=np.deg2rad(.02) and speed<=np.deg2rad(.5):
-                frame=backend.frame
-                if frame is not None and backend.sample_state(frame.stamp,'camera')=='LIVE_VALID' and frame.stamp.host_session==HOST_SESSION:
-                    if frame.stamp.source!=Source.LIVE:raise ValueError('REAL_OBSERVATION_REQUIRED')
-                    rt,dt=frame.rgb_device_time,frame.depth_device_time
-                    if (not frame.device_id or frame.rgb_number is None or frame.depth_number is None or
-                            rt.value_ms is None or dt.value_ms is None or rt.domain!=dt.domain or
-                            abs(rt.value_ms-dt.value_ms)>1000/float(frame.stream.get('fps',30))+1):
-                        raise ValueError('UNTRACEABLE_OR_UNPAIRED_RGB_DEPTH_FRAMESET')
-                    age=(monotonic_ns()-frame.stamp.received_monotonic_ns)/1e9
-                    paired=min(history,key=lambda h:abs(h['received_s']-frame.stamp.received_monotonic_ns/1e9))
-                    if age<=.10 and abs(paired['received_s']-frame.stamp.received_monotonic_ns/1e9)<=.03:
-                        if generation!=backend.observation_generation:raise ValueError('CONNECTION_CHANGED_DURING_CAPTURE')
-                        capture=tuple(paired['q']);T=model.camera(capture,calibration)['T_world_camera']
-                        return Observation(frame,tuple(q),capture,dict(paired),tuple(history),generation,
-                            tuple(map(tuple,T)),tuple(map(tuple,model.tcp(q))))
+        diagnostic=dict(stationary_checks(history),elapsed_s=clock()-start,waiting='等待连续停稳反馈')
+        if diagnostic['stationary']:
+            diagnostic['waiting']='等待本会话新 RGB-D'
+            frame=backend.frame
+            if frame is not None and backend.sample_state(frame.stamp,'camera')=='LIVE_VALID' and frame.stamp.host_session==HOST_SESSION:
+                if frame.stamp.source!=Source.LIVE:raise ValueError('REAL_OBSERVATION_REQUIRED')
+                rt,dt=frame.rgb_device_time,frame.depth_device_time
+                if (not frame.device_id or frame.rgb_number is None or frame.depth_number is None or
+                        rt.value_ms is None or dt.value_ms is None or rt.domain!=dt.domain or
+                        abs(rt.value_ms-dt.value_ms)>1000/float(frame.stream.get('fps',30))+1):
+                    raise ValueError('UNTRACEABLE_OR_UNPAIRED_RGB_DEPTH_FRAMESET')
+                age=(monotonic_ns()-frame.stamp.received_monotonic_ns)/1e9
+                paired=min(history,key=lambda h:abs(h['received_s']-frame.stamp.received_monotonic_ns/1e9))
+                skew=abs(paired['received_s']-frame.stamp.received_monotonic_ns/1e9)
+                diagnostic.update(frame_age_s=age,pair_skew_s=skew,waiting='等待帧年龄及关节配对达标',
+                                  rgb_number=frame.rgb_number,depth_number=frame.depth_number)
+                if not 0<=age<=.10:diagnostic['waiting']='RGB-D 年龄不合格'
+                elif skew>.03:diagnostic['waiting']='RGB-D 与关节配对差超过 30 ms'
+                else:
+                    if generation!=backend.observation_generation:raise ValueError('CONNECTION_CHANGED_DURING_CAPTURE')
+                    capture=tuple(paired['q']);T=model.camera(capture,calibration)['T_world_camera']
+                    return Observation(frame,tuple(q),capture,dict(paired),tuple(history),generation,
+                        tuple(map(tuple,T)),tuple(map(tuple,model.tcp(q))),dict(diagnostic,waiting='已锁定'))
+        elif diagnostic.get('range_deg',0)>.02:diagnostic['waiting']='关节位置变化超过 0.02°'
+        elif diagnostic.get('speed_deg_s',0)>.5:diagnostic['waiting']='关节速度超过 0.5°/s'
+        elif diagnostic.get('max_gap_s',0)>.1:diagnostic['waiting']='连续关节反馈间隔超过 100 ms'
+        if clock()-reported>=.25:
+            progress(capture_status(diagnostic));reported=clock()
         sleep(.01)
-    raise ValueError('NO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS')
+    diagnostic['elapsed_s']=clock()-start
+    raise CaptureRejected('准备观测未完成（停稳取景超时）：\n'+capture_status(diagnostic)+
+                          '\nNO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS',diagnostic)
 
 
 def reconstruct(observation,result,geometry=None):

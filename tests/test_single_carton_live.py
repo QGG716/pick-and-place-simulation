@@ -63,14 +63,15 @@ def test_reconnect_discards_inflight_results_without_reloading_models():
 
 
 def test_frozen_task_frame_cannot_be_replaced_and_cancel_does_not_wait_gpu():
-    model=Model();model.gate.clear();v=LiveVision({},factory=lambda **_:model);v.start();cancel=threading.Event();errors=[]
+    model=Model();model.gate.clear();v=LiveVision({},factory=lambda **_:model);v.start();cancel=threading.Event();errors=[];progress=[]
     v.offer(exposure(1),None,0);until(lambda:v.current is not None)
     def task():
-        try:v.infer_frozen(exposure(55),0,cancel.is_set)
+        try:v.infer_frozen(exposure(55),0,cancel.is_set,progress=progress.append)
         except ValueError as e:errors.append(str(e))
     thread=threading.Thread(target=task);thread.start();until(lambda:v.task_waiter is not None)
     for i in range(60,80):v.offer(exposure(i),None,0)
     assert v.pending[0].rgb_number==55
+    assert progress and '等待当前帧推理结束' in progress[0] and '#55/55' in progress[0]
     start=time.monotonic();cancel.set();thread.join(.2)
     assert not thread.is_alive() and time.monotonic()-start<.2 and errors==['CANCELLED']
     assert not model.gate.is_set()

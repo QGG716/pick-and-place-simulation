@@ -1,0 +1,80 @@
+{
+  "schema": "eco65_stopped_capture_feedback_validation_v1",
+  "parent_commit": "c3d4900e3de720a898cd88a790d71e312abc84ed",
+  "physical_cycle": "NOT_RUN",
+  "updated_live_capture": "NOT_RUN",
+  "motion_commands": "NOT_SENT",
+  "valve_commands": "NOT_SENT",
+  "observed_failures": [
+    {
+      "task_id": "aa813060eb2946249eba69aa317a1b48",
+      "reason": "NO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS",
+      "physical_result": "NOT_RUN",
+      "file_sha256": "8e8b84f404a496632c99545a771ae33a7753c612c9bf44b87f62683da81b3c5d"
+    },
+    {
+      "task_id": "e452a72a79724a7cbf717bd3a8682d46",
+      "reason": "NO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS",
+      "physical_result": "NOT_RUN",
+      "file_sha256": "f20ab68eb208e2037756b62166980677a602292812b0d3e6d20097530c7b73bc"
+    }
+  ],
+  "diagnosis": {
+    "confirmed": "Preparation entered the worker and timed out before reconstruction; old rejection merged all capture gates.",
+    "limitation": "Exact old subgate cannot be proven: previous build did not retain stationary/frame/pair measurements.",
+    "corrected_risk": "Finite differences of quantized joint positions over irregular short intervals can spuriously exceed the stationary speed threshold."
+  },
+  "readonly_tcp": {
+    "scope": "READ_ONLY_TCP_STATUS_NOT_UDP_OR_CAMERA_ACCEPTANCE",
+    "samples": 120,
+    "duration_s": 2.9890598219935782,
+    "joint_range_deg": [
+      0.0040000000000048885,
+      0.006000000000000227,
+      0.007000000000005002,
+      0.005999999999996675,
+      0.006000000000000227,
+      0.006000000000000227
+    ],
+    "interval_s": [
+      0.01882491800643038,
+      0.031071760997292586
+    ],
+    "source_sha256": "ac276ff4b5383b13c12f7493626c441b70e063ba40ba4cbd7e4f148efea0e84e",
+    "all_error_zero": true
+  },
+  "thresholds": {
+    "capture_timeout_s": 4,
+    "stationary_window_s": 0.4,
+    "max_joint_range_deg": 0.02,
+    "max_speed_deg_s": 0.5,
+    "max_sample_gap_s": 0.1,
+    "max_frame_age_s": 0.1,
+    "max_pair_skew_s": 0.03,
+    "position_and_original_timestamps_preserved": true
+  },
+  "tests": {
+    "passed": 219,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 49.366,
+    "record": "capture_feedback_pytest.xml"
+  },
+  "ui": {
+    "pixel_geometry_regression": "PASS",
+    "instant_click_acknowledgement": "PASS",
+    "raw_frozen_frame_before_sam": "PASS",
+    "old_mask_on_new_frame": "REJECTED",
+    "fixed_details_visual_inspection": "PASS",
+    "evidence_type": "FAKE_DEVICES_ONLY"
+  },
+  "source_sha256": {
+    "src/unloading_sim/workbench/controlled/transport.py": "a98e2a34114f63321e2ce74365941279b538c5eab3b2d831315cf4bdc2852ea9",
+    "src/unloading_sim/workbench/single_carton/perception.py": "aa0ef4f0815c63685c6bd455426122cb03dbab22a1ec39898e86dd0d4e2f4dba",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "4d1075e8d1ae66c97e4aa47b5d3cb5158bf1d0e7c3b58e20c95afb74c7b6415c",
+    "src/unloading_sim/workbench/single_carton/ui.py": "705ba0d4248b7e5b10641f7550ef3283f6710f149cfe3a0b81b44ffa5d78ab89",
+    "src/unloading_sim/workbench/single_carton/live.py": "5b973a66b78eec223c265c2df88f8dd2cafed60478666534c253776bd9e20a91"
+  },
+  "existing_process": "Preserved the running pre-patch workbench and SDK owner; reopen to apply code."
+}

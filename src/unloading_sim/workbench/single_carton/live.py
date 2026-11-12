@@ -92,8 +92,8 @@ class LiveVision:
                 self.dropped+=1;return
             if self.pending:self.dropped+=1
             self.pending=(frame,joint,generation,None);self.condition.notify_all()
-    def infer_frozen(self,frame,generation,cancelled=lambda:False):
-        waiter={'done':False}
+    def infer_frozen(self,frame,generation,cancelled=lambda:False,*,progress=lambda _:None):
+        waiter={'done':False};started=time.monotonic();reported=-1.
         with self.condition:
             if generation!=self.generation:raise ValueError('OBSERVATION_INVALIDATED')
             if self.task_waiter:raise ValueError('VISION_TASK_ALREADY_PENDING')
@@ -103,6 +103,13 @@ class LiveVision:
                 while not waiter['done']:
                     if cancelled() or self.closed:raise ValueError('CANCELLED')
                     if self.error:raise RuntimeError(self.error)
+                    now=time.monotonic()
+                    if now-reported>=.25:
+                        stage=self.status if self.current and self.current[3] is waiter else '等待当前帧推理结束后处理已锁定帧'
+                        progress(f'起始点已锁定 · 本次 RGB/depth #{frame.rgb_number}/{frame.depth_number}\n'+
+                                 f'{stage} · 等待/处理 {now-started:.1f} s\n'+
+                                 '复用同一模型；任务图像与关节保持冻结，实时结果不替换任务数据')
+                        reported=now
                     self.condition.wait(.02)
                 if 'error' in waiter:raise ValueError(waiter['error'])
                 return waiter['result']
