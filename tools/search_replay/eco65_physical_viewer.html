@@ -11,13 +11,22 @@
 <section><h2>本次目标箱</h2><div id="boxInfo" class="card"></div></section>
 <details><summary>记录来源与显示范围</summary><p id="original"></p><p>模型、全部 12 个吸盘、固定相机支架及环境来自本次原生请求。箱体保持本次冻结观测位置。world 与机器人 base 重合；相机随 link_1 转动。轴颜色：X 红、Y 绿、Z 蓝。</p><p>搜索树是 TCP 位置的投影；节点顺序不是执行轨迹。未保存最近接触点，因此不补画接触点。此页面没有设备连接或运动功能。</p></details><pre id="error"></pre>
 </aside><div id="view"><div id="loading">正在加载完整模型与诊断记录…</div><div id="hud"><div id="poseName"></div><div class="muted" id="poseSub"></div></div><div id="legend"><span><i class="dot" style="background:#ff516b"></i>违反间隙规则的部件</span><span><i class="dot" style="background:#e3b076"></i>本次观测箱体</span><span><i class="dot" style="background:#70e1ba"></i>吸取面 / 完整密封圈</span><span><i class="dot" style="background:#ffa74b"></i>候选接触吸具</span></div></div></main>
-<script>/*__VENDOR__*/</script><script>
+<script>
+function showViewerError(message){
+  const loading=document.getElementById('loading');
+  loading.style.display='block';loading.style.pointerEvents='auto';
+  loading.textContent='三维显示未能启动：'+message+'。请用本机 Firefox 打开此 HTML 文件。';
+  document.getElementById('error').textContent=message;
+}
+window.addEventListener('error',event=>showViewerError(event.message||'页面加载异常'));
+window.addEventListener('unhandledrejection',event=>showViewerError(String(event.reason)));
+</script><script>/*__VENDOR__*/</script><script>
 const DATA=/*__DATA__*/;window.DIAGNOSTIC_DATA=DATA;
 const $=id=>document.getElementById(id),T=THREE,model=DATA.model,view=$('view');
 const matrix=a=>new T.Matrix4().set(...a.flat()),position=m=>new T.Vector3().setFromMatrixPosition(m);
 const scene=new T.Scene();scene.background=new T.Color('#101820');
 const camera=new T.PerspectiveCamera(42,1,.003,40);camera.up.set(0,0,1);
-const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));view.prepend(renderer.domElement);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));view.prepend(renderer.domElement);renderer.domElement.addEventListener('webglcontextlost',()=>showViewerError('浏览器三维渲染连接中断，请重新打开页面'));
 const controls=new T.OrbitControls(camera,renderer.domElement);controls.enableDamping=false;
 scene.add(new T.HemisphereLight(0xeaf6ff,0x334757,.8));const sun=new T.DirectionalLight(0xffffff,.9);sun.position.set(-2,-3,5);scene.add(sun);
 const grid=new T.GridHelper(2,20,0x385365,0x203340);grid.rotation.x=Math.PI/2;grid.material.transparent=true;grid.material.opacity=.4;scene.add(grid,new T.AxesHelper(.13));
