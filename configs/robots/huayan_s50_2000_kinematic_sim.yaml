@@ -1,0 +1,42 @@
+schema: s50_kinematic_sim_v1
+scope: USER_AUTHORIZED_KINEMATIC_SIMULATION_NOT_CONTROLLER_OR_DYNAMICS
+source_urdf: assets/robots/huayan_s50_2000/urdf/s50_cad_preview.urdf
+joint_ranges_deg: [[-360, 360], [-100, 100], [-160, 160], [-360, 360], [-360, 360], [-360, 360]]
+installation_reference_from_model_base:
+  - [0, -1, 0, 0]
+  - [1, 0, 0, 0]
+  - [0, 0, 1, 0]
+  - [0, 0, 0, 1]
+installation_convention: Fixed +90deg mapping; CAD J2 +X axis maps to world +Y, positive J2 tilts upper arm toward world +X. No base search.
+flange_from_original_tool_mount:
+  - [0, 0, -1, 0]
+  - [0, 1, 0, 0]
+  - [1, 0, 0, 0]
+  - [0, 0, 0, 1]
+tool_connection: Ideal coaxial flush rigid connection; tool mount +X = flange +Z; tool mount +Y = flange +Y; inherited 200mm extension counted once.
+timing:
+  joint_velocity_rad_s: 0.35
+  joint_acceleration_rad_s2: 0.5
+  cartesian_step_m: 0.025
+  # Uniform edge subdivision before cubic shaping; actual checked increments
+  # are bounded by 1.5 times this reference, and are reported separately.
+  joint_check_step_rad: 0.035
+  belt_velocity_m_s: 0.15
+  outfeed_velocity_m_s: 0.25
+  source: CONSERVATIVE_ENGINEERING_ANIMATION_ASSUMPTION_NOT_MANUFACTURER
+seed: 50
+target: carton_l07_c02
+collision:
+  minimum_gap_m: 0.0
+  scope: Basic sampled intersection avoidance; no certified engineering clearance.
+  contact_tolerance_m: 0.000002
+  allowed_installation_pair: [s50_base, mount_plinth]
+  adjacent_design_interfaces: [[s50_base, s50_link_1], [s50_link_1, s50_link_2], [s50_link_2, s50_link_3], [s50_link_3, s50_link_4], [s50_link_4, s50_link_5], [s50_link_5, s50_link_6]]
+  owned_tool_interface_links: [s50_link_6]
+  flexible_cup_neighbor_mode: ignore
+qualification:
+  controller_mapping_verified: false
+  real_installation_verified: false
+  physical_adapter_verified: false
+  collision_certified: false
+  dynamics_verified: false

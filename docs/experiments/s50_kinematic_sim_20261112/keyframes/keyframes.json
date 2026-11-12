@@ -1,0 +1,72 @@
+[
+  {
+    "phase": "home",
+    "sample_index": 0,
+    "q_rad": [
+      0.09548763939081775,
+      0.4568839036273903,
+      1.8751594263298974,
+      -2.332059945895834,
+      1.4753083924369492,
+      1.5770768954225604e-06
+    ],
+    "file": "home.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "withdraw",
+    "sample_index": 231,
+    "q_rad": [
+      0.1788663139302647,
+      -0.42777412941493737,
+      1.8822195911925068,
+      -1.4544461784513039,
+      1.3919302981863564,
+      1.2961594560189836e-07
+    ],
+    "file": "withdraw.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "transfer",
+    "sample_index": 1036,
+    "q_rad": [
+      0.9986190134452297,
+      -1.3292360821139617,
+      1.7486048457544994,
+      -3.5606711292774516,
+      -0.5715882863664019,
+      3.141177715654921
+    ],
+    "file": "transfer.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "exit",
+    "sample_index": 1107,
+    "q_rad": [
+      0.8109894036451155,
+      -1.3410543061974072,
+      1.7325199108677225,
+      -3.532830492234992,
+      -0.7592176166248531,
+      3.141256648667817
+    ],
+    "file": "exit.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "closest_belt",
+    "sample_index": 1297,
+    "q_rad": [
+      1.0764573406515483,
+      -0.6722344411449538,
+      1.6038488176569088,
+      -2.323527075661527,
+      -0.13270681603569306,
+      1.2753379592932257
+    ],
+    "file": "closest_belt.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  }
+]

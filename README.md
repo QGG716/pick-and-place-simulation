@@ -1,4 +1,12 @@
-# 当前结论：横带剪叉缩宽仍未消除 J2 干涉（2026-10-20）
+# S50：完整单箱运动学仿真已跑通（2026-11-12）
+
+在冻结的 700 mm 间距、900 mm 安装面、原工具及完整 40 箱场景中，真实 S50 CAD 六轴模型完成 `carton_l07_c02` 的接近、吸取、抽离、转运、释放、退出、出料和返回，剩余 39 箱。采用本轮授权的临时运动学范围、理想刚性工具连接及名义落带；不是实机控制或动力学验收。
+
+[离线完整回放](docs/experiments/s50_kinematic_sim_20261112/viewer.html) · [实际结果与启动命令](docs/experiments/s50_kinematic_sim_20261112/README.md) · [收拢关键帧](docs/experiments/s50_kinematic_sim_20261112/keyframes/transfer.png) · [临时参数和 TODO](docs/experiments/s50_kinematic_sim_20261112/TODO.md)
+
+在已有 Linux Pinocchio/Coal 环境运行 `python tools/run_s50_kinematic_sim.py --output outputs/s50_kinematic_sim`，会实际求解并生成单文件查看器。浏览器验收因工具无法识别 Edge 网址而未完成；核心、Pinocchio 和独立查看器 FK 已核对。
+
+# 历史：横带剪叉缩宽仍未消除 J2 干涉（2026-10-20）
 
 沿用 0.60 m 纵带，将横带剪叉 X 中心距从 460 mm 缩至 300 mm、260 mm，含支脚总宽从 560 mm 降至 400 mm、360 mm。固定上一轮失败构型对比，两档均保留原来 40 个请求中的 J2／剪叉净空失败。260 mm 配置重新原生规划，32 次数值 IK 成功，但 144 个目标请求全部被净空检查拒绝；本轮 **0/1、37→37 箱**，未物理执行，不能判断全局无解。
 

@@ -1,0 +1,443 @@
+{
+  "sample_index": 1297,
+  "source_report_sha256": "d9f1cf13ec6591ccbd6014fb2a505ddee10f6c58f474c79a16dcbb40667ed12c",
+  "compactness": {
+    "schema": "s50_component_compactness_sample_v1",
+    "pose_id": "park",
+    "phase": "park",
+    "q_rad": [
+      1.0764573406515483,
+      -0.6722344411449538,
+      1.6038488176569088,
+      -2.323527075661527,
+      -0.13270681603569306,
+      1.2753379592932257
+    ],
+    "conveyor_height_m": 1.3,
+    "world_from_installation_reference": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -1.85
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.14999999999999997
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.9
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "groups": {
+      "all_robot": {
+        "envelope": {
+          "links": [
+            "s50_base",
+            "s50_link_1",
+            "s50_link_2",
+            "s50_link_3",
+            "s50_link_4",
+            "s50_link_5",
+            "s50_link_6"
+          ],
+          "definition": "EXPLICIT_LINK_UNION_NOT_JOINT_CENTER",
+          "mount_frame_bounds_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064,
+              -5.400000304689456e-07
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548,
+              1.6441467556259985
+            ]
+          ],
+          "horizontal_bounds_xy_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548
+            ]
+          ],
+          "horizontal_span_xy_m": [
+            0.6935806753807722,
+            1.0038431056279418
+          ],
+          "maximum_horizontal_radius_from_installation_axis_m": 0.7981642710246875,
+          "mesh_vertex_count": 658690,
+          "source": "ACTUAL_COAL_MESH_VERTICES"
+        },
+        "queried_shape_pairs": 9,
+        "expected_shape_pairs": 9,
+        "all_component_pairs_known": true,
+        "status": "MEASURED_AT_RECORDED_CONFIGURATION",
+        "minimum_unsigned_separation_m": 0.010325068216837714,
+        "any_intersection": false,
+        "nearest_observed_pair": {
+          "kind": "robot_environment",
+          "first": {
+            "link": "s50_link_2",
+            "geometry": "s50_link_2_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "status": "QUERIED",
+          "intersects": false,
+          "surface_distance_m": 0.010325068216837714,
+          "unsigned_separation_m": 0.010325068216837714,
+          "nearest_points_world": [
+            [
+              -1.397999405803194,
+              -0.010714598536158117,
+              1.2775731786370566
+            ],
+            [
+              -1.3892809252680094,
+              -0.010714598536158082,
+              1.283104465181791
+            ]
+          ],
+          "nearest_points_valid": true,
+          "contacts": [],
+          "reported_contact_count": 0,
+          "contact_limit": 8,
+          "contacts_truncated": false,
+          "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+          "nearest_point_segment_length_m": 0.010325068216837758,
+          "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+        },
+        "q_rad": [
+          1.0764573406515483,
+          -0.6722344411449538,
+          1.6038488176569088,
+          -2.323527075661527,
+          -0.13270681603569306,
+          1.2753379592932257
+        ],
+        "pose_id": "park",
+        "phase": "park",
+        "conveyor_height_m": 1.3
+      },
+      "active_links": {
+        "envelope": {
+          "links": [
+            "s50_link_1",
+            "s50_link_2",
+            "s50_link_3",
+            "s50_link_4",
+            "s50_link_5",
+            "s50_link_6"
+          ],
+          "definition": "EXPLICIT_LINK_UNION_NOT_JOINT_CENTER",
+          "mount_frame_bounds_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064,
+              0.13930000619888305
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548,
+              1.6441467556259985
+            ]
+          ],
+          "horizontal_bounds_xy_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548
+            ]
+          ],
+          "horizontal_span_xy_m": [
+            0.6935806753807722,
+            1.0038431056279418
+          ],
+          "maximum_horizontal_radius_from_installation_axis_m": 0.7981642710246875,
+          "mesh_vertex_count": 612627,
+          "source": "ACTUAL_COAL_MESH_VERTICES"
+        },
+        "queried_shape_pairs": 8,
+        "expected_shape_pairs": 8,
+        "all_component_pairs_known": true,
+        "status": "MEASURED_AT_RECORDED_CONFIGURATION",
+        "minimum_unsigned_separation_m": 0.010325068216837714,
+        "any_intersection": false,
+        "nearest_observed_pair": {
+          "kind": "robot_environment",
+          "first": {
+            "link": "s50_link_2",
+            "geometry": "s50_link_2_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "status": "QUERIED",
+          "intersects": false,
+          "surface_distance_m": 0.010325068216837714,
+          "unsigned_separation_m": 0.010325068216837714,
+          "nearest_points_world": [
+            [
+              -1.397999405803194,
+              -0.010714598536158117,
+              1.2775731786370566
+            ],
+            [
+              -1.3892809252680094,
+              -0.010714598536158082,
+              1.283104465181791
+            ]
+          ],
+          "nearest_points_valid": true,
+          "contacts": [],
+          "reported_contact_count": 0,
+          "contact_limit": 8,
+          "contacts_truncated": false,
+          "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+          "nearest_point_segment_length_m": 0.010325068216837758,
+          "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+        },
+        "q_rad": [
+          1.0764573406515483,
+          -0.6722344411449538,
+          1.6038488176569088,
+          -2.323527075661527,
+          -0.13270681603569306,
+          1.2753379592932257
+        ],
+        "pose_id": "park",
+        "phase": "park",
+        "conveyor_height_m": 1.3
+      },
+      "elbow": {
+        "envelope": {
+          "links": [
+            "s50_link_2",
+            "s50_link_3"
+          ],
+          "definition": "EXPLICIT_LINK_UNION_NOT_JOINT_CENTER",
+          "mount_frame_bounds_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064,
+              0.1538138953846732
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548,
+              1.60961624212294
+            ]
+          ],
+          "horizontal_bounds_xy_m": [
+            [
+              -0.21818979605122873,
+              -0.7940477738123064
+            ],
+            [
+              0.47539087932954344,
+              0.20979533181563548
+            ]
+          ],
+          "horizontal_span_xy_m": [
+            0.6935806753807722,
+            1.0038431056279418
+          ],
+          "maximum_horizontal_radius_from_installation_axis_m": 0.7981642710246875,
+          "mesh_vertex_count": 308339,
+          "source": "ACTUAL_COAL_MESH_VERTICES"
+        },
+        "queried_shape_pairs": 3,
+        "expected_shape_pairs": 3,
+        "all_component_pairs_known": true,
+        "status": "MEASURED_AT_RECORDED_CONFIGURATION",
+        "minimum_unsigned_separation_m": 0.010325068216837714,
+        "any_intersection": false,
+        "nearest_observed_pair": {
+          "kind": "robot_environment",
+          "first": {
+            "link": "s50_link_2",
+            "geometry": "s50_link_2_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "status": "QUERIED",
+          "intersects": false,
+          "surface_distance_m": 0.010325068216837714,
+          "unsigned_separation_m": 0.010325068216837714,
+          "nearest_points_world": [
+            [
+              -1.397999405803194,
+              -0.010714598536158117,
+              1.2775731786370566
+            ],
+            [
+              -1.3892809252680094,
+              -0.010714598536158082,
+              1.283104465181791
+            ]
+          ],
+          "nearest_points_valid": true,
+          "contacts": [],
+          "reported_contact_count": 0,
+          "contact_limit": 8,
+          "contacts_truncated": false,
+          "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+          "nearest_point_segment_length_m": 0.010325068216837758,
+          "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+        },
+        "q_rad": [
+          1.0764573406515483,
+          -0.6722344411449538,
+          1.6038488176569088,
+          -2.323527075661527,
+          -0.13270681603569306,
+          1.2753379592932257
+        ],
+        "pose_id": "park",
+        "phase": "park",
+        "conveyor_height_m": 1.3
+      },
+      "wrist": {
+        "envelope": {
+          "links": [
+            "s50_link_4",
+            "s50_link_5",
+            "s50_link_6"
+          ],
+          "definition": "EXPLICIT_LINK_UNION_NOT_JOINT_CENTER",
+          "mount_frame_bounds_m": [
+            [
+              0.1492573888388893,
+              -0.19901495004855613,
+              1.4798921880243683
+            ],
+            [
+              0.39918775330480594,
+              0.14424511900788306,
+              1.6441467556259985
+            ]
+          ],
+          "horizontal_bounds_xy_m": [
+            [
+              0.1492573888388893,
+              -0.19901495004855613
+            ],
+            [
+              0.39918775330480594,
+              0.14424511900788306
+            ]
+          ],
+          "horizontal_span_xy_m": [
+            0.24993036446591663,
+            0.3432600690564392
+          ],
+          "maximum_horizontal_radius_from_installation_axis_m": 0.409223952194008,
+          "mesh_vertex_count": 135233,
+          "source": "ACTUAL_COAL_MESH_VERTICES"
+        },
+        "queried_shape_pairs": 3,
+        "expected_shape_pairs": 3,
+        "all_component_pairs_known": true,
+        "status": "MEASURED_AT_RECORDED_CONFIGURATION",
+        "minimum_unsigned_separation_m": 1.085235499725687,
+        "any_intersection": false,
+        "nearest_observed_pair": {
+          "kind": "robot_environment",
+          "first": {
+            "link": "s50_link_4",
+            "geometry": "s50_link_4_0"
+          },
+          "second": {
+            "object": "conveyor_transverse",
+            "geometry": "frozen_convex_solid",
+            "representation": "DECLARED_CONVEX_SOLID_FACE_TRIANGULATION",
+            "is_bounding_proxy": false,
+            "solid_sha256": "507c9838f7c2f505c6d968d1a852190c669307c31d939dfe2dde40ad3b6deba8",
+            "vertex_count": 8,
+            "triangle_count": 12
+          },
+          "status": "QUERIED",
+          "intersects": false,
+          "surface_distance_m": 1.085235499725687,
+          "unsigned_separation_m": 1.085235499725687,
+          "nearest_points_world": [
+            [
+              -1.5037328791627,
+              0.24604220812830685,
+              2.3802664391924235
+            ],
+            [
+              -1.4000000000000001,
+              0.24604220812830702,
+              1.3
+            ]
+          ],
+          "nearest_points_valid": true,
+          "contacts": [],
+          "reported_contact_count": 0,
+          "contact_limit": 8,
+          "contacts_truncated": false,
+          "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+          "nearest_point_segment_length_m": 1.0852354997256868,
+          "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+        },
+        "q_rad": [
+          1.0764573406515483,
+          -0.6722344411449538,
+          1.6038488176569088,
+          -2.323527075661527,
+          -0.13270681603569306,
+          1.2753379592932257
+        ],
+        "pose_id": "park",
+        "phase": "park",
+        "conveyor_height_m": 1.3
+      }
+    },
+    "scope": "MEASURED_GEOMETRY_REPORT_ONLY",
+    "safety_evidence": {
+      "scope": "SAMPLED_KINEMATIC_SIMULATION_NOT_CERTIFIED"
+    },
+    "replaces_all_robot_safety_checks": false,
+    "mechanical_limit_qualification_implied": false,
+    "tool_geometry_included": false
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "samples": 2259,
+  "core_to_viewer_fk_max_matrix_error": 8.881784197001252e-16,
+  "attached_box_max_matrix_error": 1.1102230246251565e-15,
+  "browser_acceptance": "NOT_RUN_BROWSER_URL_POLICY_STOP",
+  "scope": "INDEPENDENT_JAVASCRIPT_FK_AND_ATTACHMENT_MATH_ONLY"
+}

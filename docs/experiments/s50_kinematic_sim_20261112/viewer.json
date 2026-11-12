@@ -1,0 +1,45 @@
+{
+  "status": "COMPLETED_KINEMATIC_SINGLE_CARTON",
+  "sample_count": 2259,
+  "model_fk_source": "SAME_CAD_DEFINITION",
+  "source_report_sha256": "d9f1cf13ec6591ccbd6014fb2a505ddee10f6c58f474c79a16dcbb40667ed12c",
+  "html_sha256": "4fa14731b5fcf9f0c9f55d75c1838437fea5e5825477f161b2d326723ced1bb9",
+  "full_task_state": true,
+  "robot_joint_count": 6,
+  "carton_initial_count": 40,
+  "tool_connected": true,
+  "browser_acceptance": "NOT_RUN_BROWSER_URL_POLICY_STOP",
+  "script_syntax": "PASS",
+  "embedded_current_cycle_and_model": "PASS",
+  "independent_fk_report": "viewer-fk-check.json",
+  "closest_belt_sample_index": 1297,
+  "offline_payload_files": [
+    {
+      "path": "viewer.data-00.js",
+      "bytes": 4000092,
+      "sha256": "340d35d64137ed160b5f484a738fc68823f47a6bf5b09ba0a364270bda5949a1"
+    },
+    {
+      "path": "viewer.data-01.js",
+      "bytes": 4000092,
+      "sha256": "00bd2b38a7f4facfb242b9e7e542b8ae7145d374ed7d0a999bdbe5d20d5f82c4"
+    },
+    {
+      "path": "viewer.data-02.js",
+      "bytes": 4000092,
+      "sha256": "c30583c8f586e0dba34f92b47569f9d67e9339d153938757c84c83c24d8bbfc0"
+    },
+    {
+      "path": "viewer.data-03.js",
+      "bytes": 4000092,
+      "sha256": "ae5eec76c9975729da89a715cc89a45696efefe4490a5e6f25e39a1922b3c696"
+    },
+    {
+      "path": "viewer.data-04.js",
+      "bytes": 3228356,
+      "sha256": "bbd99ac07676913df856c40ce2cc1eca94b2887042b0a6de3584a3c46df272b7"
+    }
+  ],
+  "lossless_payload_reassembly": "PASS",
+  "original_single_file_sha256": "e9c96f43805bc35dbb526b84d5d59838f3ad416bfad47b17484fcef20a25d45c"
+}
