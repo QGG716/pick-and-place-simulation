@@ -738,3 +738,23 @@ def test_dead_worker_is_never_given_a_request():
     alive=N(process=N(poll=lambda:None));dead=N(process=N(poll=lambda:-15));fake=N()
     p.client=alive;p.pool=[dead,fake]
     assert p.checkers()==[alive,fake]
+
+
+@pytest.mark.parametrize('disabled',[False,True])
+def test_start_check_policy_is_bound_into_plan_and_first_segment_only(case,monkeypatch,disabled):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    if disabled:p.site.update(start_joint_check='DISABLED_BY_USER',start_joint_check_basis='SYNTHETIC_USER_INSTRUCTION')
+    else:p.site.pop('start_joint_check',None);p.site.pop('start_joint_check_basis',None)
+    plan=p.plan_cycle(obs,[box],folder)
+    assert plan['start_joint_check']['enabled'] is (not disabled)
+    first=plan['segments'][0]['package']['prepared']
+    assert ('start_joint_check' in first)==disabled
+    assert all('start_joint_check' not in s['package']['prepared'] for s in plan['segments'][1:])
+    # The waiver is part of the registered package: altering it breaks the claim.
+    package=plan['segments'][0]['package']
+    p.authority.verify(package,package['binding'])
+    if disabled:
+        tampered=deepcopy(package);tampered['prepared']['start_joint_check']['basis']='OTHER'
+        with pytest.raises(ValueError,match='UNTRUSTED'):p.authority.verify(tampered,tampered['binding'])

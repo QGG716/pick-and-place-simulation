@@ -12,6 +12,8 @@
   "parallel_candidate_lanes": 7,
   "pre_execute_visual_recheck": "DISABLED_BY_USER",
   "pre_execute_visual_recheck_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_PRE_EXECUTE_RECHECK_AFTER_TASK_6b648ffcdb35403cb9d992e2ed8554be_TARGET_OR_SCENE_CHANGED_REPLAN_STATIC_SCENE_DEPTH_NOISE_41_PERCENT_PIXELS_OVER_5_MM",
+  "start_joint_check": "DISABLED_BY_USER",
+  "start_joint_check_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_START_JOINT_CHECK_AFTER_TASK_71ce26a3e9cf458e906b065bcb8275e7_START_CHANGED_REPLAN_STATIONARY_ENCODER_JITTER_UP_TO_0_006_DEG_VS_0_01_DEG_LIMIT",
   "topology": {
     "mode": "COMMON_GRIPPER_VALVE",
     "connected_cup_ids": [

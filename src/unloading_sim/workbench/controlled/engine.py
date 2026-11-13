@@ -82,9 +82,12 @@ class Supervisor:
         # the arrival tolerance of it. Any other start must match measured q.
         continuing=(self.state=='SUCCEEDED' and self.hold_command is not None and
                     np.max(abs(first-np.asarray(self.hold_command,float)))<=CONTINUATION_RAD)
+        waived=(not continuing and isinstance(prepared.get('start_joint_check'),dict) and
+                prepared['start_joint_check'].get('status')=='START_JOINT_CHECK_DISABLED_BY_USER' and
+                bool(prepared['start_joint_check'].get('basis')))
         limit=self.c.arrival_rad if continuing else self.c.start_rad
         start_error=float(np.max(abs(np.asarray(sample['q'])-first)))
-        if start_error>limit:raise ValueError('START_CHANGED_REPLAN_REQUIRED')
+        if start_error>limit and not waived:raise ValueError('START_CHANGED_REPLAN_REQUIRED')
         if not self.stationary(sample):raise ValueError('START_NOT_STATIONARY')
         self.io.arm() if hasattr(self.io,'arm') else None
         self.task_id=task_id or uuid.uuid4().hex;self.prepared=prepared;self.index=0
@@ -93,7 +96,9 @@ class Supervisor:
         self.last_seq=None;self.stop_time=None;self.stop_ack=False;self.stop_reply_seen=False;self.sent=False
         self.start_time=self.clock()+prepared['period_s']*2
         self.emit('accepted',monitor=asdict(self.c),start_feedback=sample,start_error_rad=start_error,start_limit_rad=limit,
-                  start_rule='CONTINUES_HELD_COMMAND_OF_PREVIOUS_SUCCEEDED_SEGMENT' if continuing else 'MEASURED_STATIONARY_START')
+                  start_rule='CONTINUES_HELD_COMMAND_OF_PREVIOUS_SUCCEEDED_SEGMENT' if continuing else
+                  'USER_DISABLED_START_JOINT_CHECK' if waived else 'MEASURED_STATIONARY_START',
+                  start_joint_check=prepared.get('start_joint_check'))
         self.state='EXECUTING';return self.task_id
     def stationary(self,s):
         v=s.get('velocity')

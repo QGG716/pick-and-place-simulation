@@ -60,12 +60,32 @@ def pre_execute_visual_recheck(c):
     raise ValueError('PRE_EXECUTE_RECHECK_POLICY_INVALID: ENABLED、TARGET_ONLY 或 DISABLED_BY_USER')
 
 
+def start_joint_check(c):
+    """Whether the cycle compares fresh live joints with the frozen q_start.
+
+    ENABLED (default when absent): within 0.01 deg, else START_CHANGED_REPLAN.
+    DISABLED_BY_USER needs a recorded basis; the live sample must still be
+    fresh, enabled, alarm-free and stationary, and every later segment keeps
+    the arrival / tracking / feedback / stop supervision.
+    """
+    value=c.get('start_joint_check','ENABLED')
+    if value=='ENABLED':return dict(enabled=True)
+    if value=='DISABLED_BY_USER':
+        basis=c.get('start_joint_check_basis')
+        if not isinstance(basis,str) or not basis.strip():
+            raise ValueError('START_JOINT_CHECK_DISABLE_BASIS_REQUIRED: 取消起点核对须记录用户要求的依据')
+        return dict(enabled=False,status='START_JOINT_CHECK_DISABLED_BY_USER',basis=basis)
+    raise ValueError('START_JOINT_CHECK_POLICY_INVALID: ENABLED 或 DISABLED_BY_USER')
+
+
 def issues(c):
     errors=[]
     try:release_policy_evidence(c)
     except ValueError as e:errors.append('release_policy：'+str(e))
     try:pre_execute_visual_recheck(c)
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
+    try:start_joint_check(c)
+    except ValueError as e:errors.append('start_joint_check：'+str(e))
     geometry=c.get('geometry',{})
     prior=geometry.get('prior_size_m')
     if (not isinstance(prior,list) or len(prior)!=3 or

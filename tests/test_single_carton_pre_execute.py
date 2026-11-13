@@ -110,3 +110,75 @@ def test_target_only_still_rejects_a_moved_start_or_target(tmp_path, monkeypatch
     monkeypatch.setattr(runtime, 'target_unchanged', fail if failure.startswith('LOCKED') else (lambda a, b, mask: None))
     with pytest.raises(ValueError, match=failure): TaskManager.execute(m)
     assert started == [] and m.rejected
+
+
+# --- Start joint check ---------------------------------------------------------
+import numpy as np
+from unloading_sim.workbench.controlled.engine import MonitorConfig
+from unloading_sim.workbench.single_carton.config import start_joint_check
+from test_single_carton_cycle import make
+from test_single_carton_review_fixes import segment
+from test_controlled_execution import Harness
+
+WAIVER = dict(enabled=False, status='START_JOINT_CHECK_DISABLED_BY_USER', basis='SYNTHETIC_USER_INSTRUCTION')
+
+
+def test_cycle_start_check_is_enforced_by_default_and_recorded():
+    c, t, r, v, records, plan = make(); r.q = [np.deg2rad(.02)]+[0.]*5
+    with pytest.raises(ValueError, match='START_CHANGED_REPLAN'): c.start()
+    assert not r.calls
+    check = next(e for e in records if e['kind'] == 'start_joint_check')
+    assert check['limit_deg'] == .01 and check['max_difference_deg'] == pytest.approx(.02)
+
+
+def test_cycle_start_check_disabled_by_user_starts_and_records_the_difference():
+    c, t, r, v, records, plan = make(); plan['start_joint_check'] = WAIVER; c.ready('one-box', plan)
+    r.q = [np.deg2rad(.02)]+[0.]*5
+    c.start(); assert len(r.calls) == 1 and c.state == 'APPROACH'
+    check = next(e for e in records if e['kind'] == 'start_joint_check')
+    assert check['limit_deg'] is None and check['policy']['basis'] == 'SYNTHETIC_USER_INSTRUCTION'
+
+
+@pytest.mark.parametrize('field', ['alarm', 'stale'])
+def test_disabled_start_check_still_needs_fresh_alarm_free_feedback(field):
+    c, t, r, v, records, plan = make(); plan['start_joint_check'] = WAIVER; c.ready('one-box', plan)
+    if field == 'alarm': r.alarm = True
+    else: r.age = 1.
+    with pytest.raises(ValueError, match='LIVE_ROBOT_STALE_DISCONNECTED_OR_FAULT'): c.start()
+    assert not r.calls
+
+
+def test_engine_waives_only_a_package_bound_user_disabled_start_check():
+    h = Harness(); first = 0.; rest = [first+np.deg2rad(.02)]*6
+    with pytest.raises(ValueError, match='START_CHANGED_REPLAN_REQUIRED'): h.engine.submit(segment(first), h.sample(rest))
+    for bad in (dict(WAIVER, basis=''), dict(WAIVER, status='SOMETHING_ELSE'), 'DISABLED'):
+        prepared = segment(first); prepared['start_joint_check'] = bad
+        with pytest.raises(ValueError, match='START_CHANGED_REPLAN_REQUIRED'): h.engine.submit(prepared, h.sample(rest))
+    prepared = segment(first); prepared['start_joint_check'] = WAIVER
+    assert h.engine.submit(prepared, h.sample(rest))
+    accepted = [e for e in h.logs if e['kind'] == 'accepted'][-1]
+    assert accepted['start_rule'] == 'USER_DISABLED_START_JOINT_CHECK' and accepted['start_joint_check'] == WAIVER
+    assert accepted['start_error_rad'] == pytest.approx(np.deg2rad(.02))
+
+
+def test_waived_start_still_requires_a_stationary_robot():
+    h = Harness(); prepared = segment(0.); prepared['start_joint_check'] = WAIVER
+    sample = h.sample([np.deg2rad(.02)]*6); sample['velocity'] = [np.deg2rad(1.)]*6
+    with pytest.raises(ValueError, match='START_NOT_STATIONARY'): h.engine.submit(prepared, sample)
+
+
+@pytest.mark.parametrize('value,basis,ok', [(None, None, True), ('ENABLED', None, True), ('DISABLED_BY_USER', 'x', True),
+                                            ('DISABLED_BY_USER', '', False), ('OFF', 'x', False)])
+def test_start_check_policy_values_are_explicit(value, basis, ok):
+    c = {} if value is None else dict(start_joint_check=value)
+    if basis is not None: c['start_joint_check_basis'] = basis
+    if ok: assert start_joint_check(c)['enabled'] == (value != 'DISABLED_BY_USER')
+    else:
+        with pytest.raises(ValueError, match='START_JOINT_CHECK'): start_joint_check(c)
+
+
+def test_field_config_disables_start_check_with_the_user_instruction_on_record():
+    c = load(ROOT/'configs/workbench/single_carton.example.json')
+    policy = start_joint_check(c)
+    assert policy['enabled'] is False and '71ce26a3e9cf458e906b065bcb8275e7' in policy['basis']
+    assert MonitorConfig().start_rad == pytest.approx(np.deg2rad(.01))  # controlled-empty default unchanged

@@ -47,7 +47,11 @@ class Cycle:
             if self.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY_OR_TASK_ACTIVE')
             if digest(self.plan)!=self.plan_hash:raise ValueError('PLAN_CHANGED')
             q=validate_robot(self.robot.snapshot(),self.clock())
-            if np.max(abs(q-self.plan['q_start']))>np.deg2rad(.01):
+            start_error=float(np.rad2deg(np.max(abs(q-self.plan['q_start']))))
+            policy=self.plan.get('start_joint_check') or dict(enabled=True)
+            self.record(kind='start_joint_check',q_live=q.tolist(),q_start=list(self.plan['q_start']),
+                        max_difference_deg=start_error,limit_deg=.01 if policy['enabled'] else None,policy=policy)
+            if policy['enabled'] and start_error>.01:
                 self.transition('FAILED',reason='START_CHANGED_REPLAN');raise ValueError('START_CHANGED_REPLAN')
             self.vacuum.claim(self.task_id,self.record,lambda r:self.stop(r))
             self.cancelled=False;self.reason=''

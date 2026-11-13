@@ -11,7 +11,7 @@ from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
-from .config import release_policy_evidence
+from .config import release_policy_evidence,start_joint_check
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1)
@@ -755,8 +755,12 @@ class SinglePlanner(EmptyPlanner):
                 # a deferred worker waypoint check is never accepted on its own.
                 if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
                 native_checks=sorted({s['evidence']['planner'].get('native_output_check','PASS') for s in segments})
+                # A user-disabled start check is bound into the first segment's
+                # package (and therefore its digest), never applied implicitly.
+                start_policy=start_joint_check(self.site)
+                if not start_policy['enabled']:segments[0]['prepared']['start_joint_check']=start_policy
                 for segment in segments:segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
-                plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,
+                plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,start_joint_check=start_policy,
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,
