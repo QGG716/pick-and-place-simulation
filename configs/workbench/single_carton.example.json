@@ -53,7 +53,19 @@
     "prompt": "carton . box .",
     "box_threshold": 0.35,
     "text_threshold": 0.3,
-    "cpu_threads": 2
+    "cpu_threads": 2,
+    "backend": "remote_ssh",
+    "remote_config": "outputs/workbench/remote_detector.local.json",
+    "remote": {
+      "python": "/root/eco65-gpu-infer-venv/bin/python",
+      "workdir": "/root/autodl-tmp/eco65-gpu-inference/code",
+      "model_root": "/root/autodl-tmp/eco65-gpu-inference",
+      "device": "cuda:0",
+      "request_timeout_s": 20.0,
+      "connect_timeout_s": 240.0,
+      "log_dir": "outputs/workbench/remote_detector",
+      "basis": "USER_REQUESTED_2026_11_13_FIELD_DETECTION_ON_GPU_SERVER_HOST_DETAILS_IN_IGNORED_LOCAL_FILE"
+    }
   },
   "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
   "receiver_qualification_basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",

@@ -353,7 +353,8 @@ def main():
     if args.check_config:
         print(json.dumps(dict(issues=issues(config),release_policy=config.get('release_policy'),
             receiver_qualification_deferred=config.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION',
-            receiver_configured=bool(config.get('site',{}).get('receiver')),unknown_space_policy=config.get('site',{}).get('unknown_policy'),hardware_execution='NOT_RUN'),ensure_ascii=False,indent=2));return
+            receiver_configured=bool(config.get('site',{}).get('receiver')),unknown_space_policy=config.get('site',{}).get('unknown_policy'),detector_backend=config['detector'].get('backend','local'),
+            detector_remote_configured=bool((config['detector'].get('remote') or {}).get('host')),hardware_execution='NOT_RUN'),ensure_ascii=False,indent=2));return
     installation=Installation.load(config['execution']['installation']);model=CoordinateModel(URDF,URDF_SHA,installation.world_from_base,installation.tool)
     calibration=Extrinsics.load(config['camera_extrinsics']) if config.get('camera_extrinsics') else None
     if calibration:installation.check_camera(calibration)

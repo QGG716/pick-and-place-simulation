@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from ..controlled.ui import ControlledBackend
 from ..devices import StreamProfile
-from .perception import HuggingFaceGroundingSAM
+from .perception import make_detector
 
 
 def connection_error(error):
@@ -64,13 +64,13 @@ class LiveVision:
     live offers resume as soon as it is consumed. Cancellation never joins GPU.
     Results are two replaceable slots, not an ever-growing UI event queue.
     """
-    def __init__(self, config, factory=HuggingFaceGroundingSAM):
+    def __init__(self, config, factory=make_detector):
         self.config=config;self.factory=factory;self.model=None
         self.condition=threading.Condition();self.generation=0;self.pending=None
         self.current=None;self.task_waiter=None;self.closed=False;self.thread=None
         self.outputs={};self.status='等待相机';self.error='';self.dropped=0
         self.stage_status={'detection':'等待相机','segmentation':'等待相机'}
-        self.last_offer=None;self.completed=0
+        self.last_offer=None;self.completed=0;self.backend_text=''
     def start(self):
         with self.condition:
             if self.thread:return
@@ -134,7 +134,8 @@ class LiveVision:
             frame,joint,generation,waiter=job
             try:
                 if self.model is None:
-                    self.status='正在加载本地模型';self.model=self.factory(**self.config)
+                    self.status=getattr(self.factory,'loading_status','正在加载本地模型');self.model=self.factory(**self.config)
+                    self.backend_text=getattr(self.model,'description','')
                 self.status='检测处理中'
                 self.stage_status['detection']='检测处理中';self.stage_status['segmentation']='等待同帧检测'
                 detected=self.model.detect_boxes(frame)
@@ -149,7 +150,7 @@ class LiveVision:
                 with self.condition:
                     if waiter and generation==self.generation:
                         waiter.update(done=True,result=segmented)
-                    self.completed+=1;self.status='持续运行 · 等待最新帧'
+                    self.completed+=1;self.status='持续运行 · 等待最新帧'+(' · '+self.backend_text if self.backend_text else '')
                     self.stage_status['segmentation']='分割已完成 · 持续运行'
             except Exception as exc:
                 with self.condition:
@@ -162,6 +163,8 @@ class LiveVision:
         with self.condition:
             self.closed=True;self.pending=None;self.outputs.clear();self.condition.notify_all()
         # GPU work owns no hardware/Tk handles and may finish in the background.
+        # A remote session is closed off the caller's thread, never awaited.
+        if hasattr(self.model,'close'):threading.Thread(target=self.model.close,daemon=True,name='detector-close').start()
 
 
 class SingleBackend(ControlledBackend):

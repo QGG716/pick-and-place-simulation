@@ -41,7 +41,8 @@ cmake --install build/moveit --prefix "$PWD/install/moveit"
 | 真实现场 | `site_scene`，默认 `configs/workbench/real_site.example.json` |
 | 本轮承接策略 | 单箱配置 `release_policy=USER_DEFERRED_RECEIVER_QUALIFICATION` 及 `receiver_qualification_basis`；延期不改变环境碰撞检查 |
 | 本轮未观测区域 | 现场配置 `unknown_policy=USER_CONFIRMED_CLEAR` 及 `unknown_clearance_basis`；按用户“未观测区域都已清空”确认，不生成未知体素障碍，实测障碍仍保留 |
-| 本地模型 | 原 `detector.dino_directory / sam_directory`，HF config/safetensors；初始化一次，默认 CPU 2 线程，可配置已有 CUDA 设备 |
+| 检测模型 | `detector.dino_directory / sam_directory`，HF config/safetensors；初始化一次。`detector.backend` 选 `local`（本机 CPU 2 线程或本机 CUDA）或 `remote_ssh`（远程 GPU 服务器，2026-11-13 起默认），两者之间不静默切换 |
+| 远程 GPU 连接 | 主机、端口、用户、密钥写在被忽略的 `outputs/workbench/remote_detector.local.json`（`detector.remote_config`），不进仓库；Python、目录、设备、超时在单箱配置 `detector.remote` |
 | 记录 | `outputs/single_carton/<task_id>/` |
 
 界面“现场配置”可编辑、滚动和复制单箱、现场、连接 JSON；保存后要求重启，不在活动任务或持箱时应用。建议将现场配置另存到忽略的 `outputs/workbench/real_site.local.json`，并修改单箱配置的 `site_scene`。所有数值用米、弧度、秒、千克；界面关节以固定精度度数显示。
@@ -275,3 +276,32 @@ float32 归一化引入了约 2.04e-8 的旋转正交误差，超过原生 1e-8 
 定向回归 **328 passed**，原生 optimized/reference 碰撞检查 PASS。实机冻结观测、规划、执行及抓放仍 **NOT_RUN**：
 需要重启工作台加载新代码，重新准备观测、规划、预览，由操作者点击“执行单箱”。
 报告见 `full_chain_replay_report.json` 和 `full_chain_pytest.xml`。
+
+### 2026-11-13：现场检测切到远程 GPU 服务器
+
+按用户要求，单箱配置的 `detector.backend` 改为 `remote_ssh`：Grounding DINO + SAM 在 GPU 服务器
+（RTX 4090 49 GB）上运行，现场电脑只负责采集、几何恢复、场景、规划与执行。LiveVision 仍是唯一的模型持有者，
+调度方式（当前帧 + 一个最新待处理帧）、冻结帧推理、同帧掩码绑定均不变；推理结果不授权任何运动或阀门命令。
+
+- **连接**：SSH 密钥认证，严格校验主机密钥，不在服务器开放端口。主机、端口、用户、密钥写在被忽略的
+  `outputs/workbench/remote_detector.local.json`，仓库只保存 Python、目录、设备与超时。
+- **一致性**：本机和服务器共用 `hf_detector_core.py`（推理逻辑与原本地实现相同）。每次连接都上传核心与服务端脚本，
+  服务器报告的两份代码 SHA-256 以及全部模型文件 SHA-256 必须与现场电脑一致，否则拒绝推理。
+  图像以无损 PNG 上传并校验摘要，掩码以位压缩 npz 返回、禁止 pickle，形状、数量、数值逐项检查。
+- **故障**：单次请求超过 `request_timeout_s`（20 s）、连接断开、服务端崩溃或结果格式错误时直接报错，
+  检测窗口显示故障，“重试模型”会重新连接并重新校验；**不静默回退**到本机 CPU 或其他后端。
+- **服务器环境**：`/root/eco65-gpu-infer-venv`，按 `tools/remote_detector/closure.txt` 离线 `--require-hashes` 安装，
+  版本与现场 `.venv-workbench-cuda` 完全一致（torch 2.5.1+cu124、transformers 4.44.2）。部署步骤见 `tools/remote_detector/README.md`。
+
+用保存的现场帧 bb88010f 自检（`tools/remote_detector/selftest.py`，**不是现场验收**）：连接、校验、加载 6.5 s；
+之后每帧检测往返约 0.30 s、分割约 0.18 s（服务器内推理约 0.19 s / 0.11 s）。检测框与现场 CPU 结果相差 0.01 像素、
+分数 0.4652 对 0.4656，掩码 IoU 1.0。此前现场 CPU 的同一任务感知约 65 s；切换后现场电脑 CPU 不再被持续推理占用，
+对原生规划耗时也有利。
+
+`tools/replay_single_carton_record.py --detector config` 可在保存记录上用当前配置的后端重新检测分割，再跑几何、场景和规划。
+
+用远程 GPU 重新检测分割后，在同一保存记录上跑完整离线链路（`--detector config`，**不可执行、不是实机验收**）：
+检测 + 分割约 1.1 s（含首帧预热），几何 + 场景约 20.8 s，规划约 17 min（上一轮本机 CPU 同时推理时约 22 min）。
+恢复的箱体包络、候选编号（候选 11，6 杯密封）、四段规划器、发送缩放和时长都与上一轮相同，四段原生规划及最终发送路径检查全部 PASS，
+运动总时长约 90 s。定向回归 **335 passed**。现场实际取景、规划、执行仍 **NOT_RUN**。
+报告见 `gpu_detector_selftest.json`、`gpu_full_chain_replay_report.json` 和 `gpu_detector_pytest.xml`。

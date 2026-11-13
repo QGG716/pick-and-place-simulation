@@ -1,0 +1,91 @@
+{
+  "scope": "REMOTE_GPU_DETECTOR_SELFTEST_ON_SAVED_FIELD_FRAME_NOT_FIELD_ACCEPTANCE",
+  "record": "bb88010f39ae4abdbccfeac31472d687",
+  "backend": "remote_ssh",
+  "connect_verify_load_s": 6.54,
+  "server": {
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.5.1+cu124",
+    "cuda": "12.4",
+    "transformers": "4.44.2",
+    "python": "3.10.12",
+    "model_files_verified": true,
+    "core_sha256": "8105e8068837f6862d27af74af9cd01ef2014b80a57687e5908ac7e8664084c2",
+    "server_sha256": "55c956334f70ee5108cec4a2e954d0887261af59ed52f820db86d6b827c779ba",
+    "load_s": 3.9649304216727614
+  },
+  "runs": [
+    {
+      "detect_round_trip_s": 1.314,
+      "segment_round_trip_s": 0.239,
+      "server_detect_s": 1.001,
+      "server_segment_s": 0.163
+    },
+    {
+      "detect_round_trip_s": 0.45,
+      "segment_round_trip_s": 0.177,
+      "server_detect_s": 0.198,
+      "server_segment_s": 0.108
+    },
+    {
+      "detect_round_trip_s": 0.309,
+      "segment_round_trip_s": 0.181,
+      "server_detect_s": 0.187,
+      "server_segment_s": 0.11
+    },
+    {
+      "detect_round_trip_s": 0.3,
+      "segment_round_trip_s": 0.193,
+      "server_detect_s": 0.181,
+      "server_segment_s": 0.12
+    },
+    {
+      "detect_round_trip_s": 0.305,
+      "segment_round_trip_s": 0.349,
+      "server_detect_s": 0.186,
+      "server_segment_s": 0.174
+    }
+  ],
+  "provenance": "HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE_REMOTE_SSH_GPU",
+  "detections": [
+    {
+      "label": "carton",
+      "score": 0.4652,
+      "bbox_xyxy": [
+        105.58,
+        99.74,
+        420.27,
+        350.71
+      ]
+    }
+  ],
+  "field_cpu_detections": [
+    {
+      "label": "carton",
+      "score": 0.4656,
+      "bbox_xyxy": [
+        105.58,
+        99.73,
+        420.26,
+        350.72
+      ]
+    }
+  ],
+  "mask_iou_vs_field_cpu": [
+    1.0
+  ],
+  "hardware_execution": "NOT_RUN",
+  "deployment": {
+    "server_gpu": "NVIDIA GeForce RTX 4090 49 GB",
+    "remote_venv": "/root/eco65-gpu-infer-venv offline --require-hashes, 39 packages, pip check clean",
+    "model_upload": "rsync 1.3 GB in 236 s; remote SHA-256 equal to field PC",
+    "connection": "SSH key auth, StrictHostKeyChecking=yes, host details in ignored outputs/workbench/remote_detector.local.json (not in this report)",
+    "field_pc_local_gpu_reference": {
+      "device": "RTX 3050 Ti 4 GB",
+      "dino_s": 0.8,
+      "sam_fp16_s": 0.32,
+      "sam_fp32": "CUDA_OUT_OF_MEMORY"
+    },
+    "field_cpu_reference_task_perception_s": 65.0
+  }
+}

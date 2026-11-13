@@ -10,7 +10,7 @@ import numpy as np
 from .config import issues
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check
-from .perception import HuggingFaceGroundingSAM,freeze,reconstruct,unchanged,target_unchanged
+from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged
 
 
 class Journal:
@@ -71,7 +71,7 @@ class TaskManager:
                 self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,
                                               self.stop_event.is_set,progress=self.progress)
             else:
-                if self.detector is None:self.detector=HuggingFaceGroundingSAM(**self.config['detector'])
+                if self.detector is None:self.detector=make_detector(**self.config['detector'])
                 self.result=self.detector.detect(self.observation.frame)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')

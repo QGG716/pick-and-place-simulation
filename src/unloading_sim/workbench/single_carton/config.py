@@ -40,6 +40,11 @@ def issues(c):
     tol=geometry.get('dimension_tolerance_m')
     if not isinstance(tol,(int,float)) or not math.isfinite(tol) or not 0<=tol<=.03:
         errors.append('geometry.dimension_tolerance_m：尺寸先验误差界，0 至 0.03 m')
+    detector=c.get('detector',{});backend=detector.get('backend','local')
+    if backend=='remote_ssh':
+        from .remote_detector import remote_config_issues
+        errors += remote_config_issues(detector.get('remote'))
+    elif backend!='local':errors.append('detector.backend：local 或 remote_ssh')
     if not c.get('camera_extrinsics'):errors.append('camera_extrinsics：现场 link_1 外参路径')
     elif 'training_extrinsics.example' in str(c['camera_extrinsics']):errors.append('训练外参示例不能用于实机任务')
     mass=c.get('carton_mass_kg')
@@ -89,6 +94,13 @@ def load(path):
         c['serial_port']=device.get('serial_port',c['serial_port'])
         c['robot_network']=device.get('robot_network',c.get('robot_network',{}))
         c.setdefault('camera',{})['serial']=device.get('camera_serial',c.get('camera',{}).get('serial',''))
+    # Remote GPU host/port/user/key live in a separate ignored local file, so
+    # connection details never enter the repository or the robot device config.
+    remote_file=c['detector'].get('remote_config')
+    if remote_file:
+        remote_file=c['detector']['remote_config']=str((ROOT/remote_file).resolve())
+        if Path(remote_file).is_file():
+            c['detector']['remote']=dict(c['detector'].get('remote') or {},**json.loads(Path(remote_file).read_text()))
     if c.get('site_scene'):
         from .site_scene import load_site
         c['site']=load_site(c['site_scene'])

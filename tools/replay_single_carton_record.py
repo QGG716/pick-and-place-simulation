@@ -2,7 +2,10 @@
 
 Re-runs box recovery, the frozen real-site scene and the two-phase native
 search (the same SinglePlanner.search_box used by the workbench) on the
-record's original RGB-D, SAM masks, q_capture and q_start.
+record's original RGB-D, SAM masks, q_capture and q_start. With
+--detector config, detection and SAM are re-run on the saved RGB with the
+configured backend (local or the remote GPU server) and compared with the
+record's own masks.
 
 Development diagnostic only: no device import or connection, no permit is
 registered, no motion or valve command exists in this path. A complete plan
@@ -42,6 +45,9 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('--candidates', help='comma-separated candidate indices (default: all)')
     parser.add_argument('--scene-only', action='store_true', help='rebuild geometry and scene, no native planning')
+    parser.add_argument('--detector', choices=('saved', 'config'), default='saved',
+                        help="saved: the record's own SAM masks; config: re-run detection + SAM on the saved RGB "
+                             "with the configured backend (e.g. the remote GPU server)")
     args = parser.parse_args()
     record = Path(args.record)
     if not record.is_dir(): record = ROOT/'outputs/single_carton'/args.record
@@ -58,7 +64,27 @@ def main():
     old = json.loads((record/'geometry.json').read_text()) if (record/'geometry.json').is_file() else {}
     detections = old.get('detections') or [dict(label='saved-mask')]*len(masks)
     frame = SimpleNamespace(observation_id=obs['observation_id'], rgb=arrays['rgb'], depth=arrays['depth'],
-                            intrinsics=obs['intrinsics'], depth_scale_m=obs['depth_scale_m'])
+                            intrinsics=obs['intrinsics'], depth_scale_m=obs['depth_scale_m'],
+                            stamp=SimpleNamespace(source='SAVED_RECORD_OFFLINE_REPLAY'))
+    detection_report = None
+    if args.detector == 'config':
+        from unloading_sim.workbench.single_carton.perception import make_detector
+        loading = time.monotonic(); model = make_detector(**config['detector']); load_s = time.monotonic()-loading
+        try:
+            inferring = time.monotonic(); boxes_only = model.detect_boxes(frame); detect_s = time.monotonic()-inferring
+            segmenting = time.monotonic(); result = model.segment(frame, boxes_only); segment_s = time.monotonic()-segmenting
+        finally:
+            if hasattr(model, 'close'): model.close()
+        field = [saved[f'mask_{i}'] for i in range(len(saved.files))]
+        def iou(a, b): return float((a & b).sum()/max(1, (a | b).sum()))
+        detection_report = dict(backend=config['detector'].get('backend', 'local'), description=getattr(model, 'description', ''),
+            model_load_and_verify_s=round(load_s, 2), detect_s=round(detect_s, 3), segment_s=round(segment_s, 3),
+            remote=getattr(model, 'info', None), provenance=result.provenance,
+            detections=[dict(label=d['label'], score=d['score'], bbox_xyxy=d['bbox_xyxy'], inference=d.get('inference')) for d in result.detections],
+            field_detections=[dict(label=d['label'], score=d['score'], bbox_xyxy=d['bbox_xyxy']) for d in old.get('detections', [])],
+            mask_iou_vs_field_record=[max((iou(m, f) for f in field), default=0.) for m in result.masks])
+        print(json.dumps(dict(detection={k: v for k, v in detection_report.items() if k != 'remote'}), ensure_ascii=False, default=str), flush=True)
+        detections, masks = result.detections, tuple(result.masks)
     started = time.monotonic()
     boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
     installation = Installation.load(config['execution']['installation'])
@@ -79,7 +105,7 @@ def main():
                               support_plane=b['quality'].get('observed_support_plane')) for b in boxes],
                   rejected=rejected, scene={k: v for k, v in scene.items() if k != 'world'},
                   scene_objects={c: sum(o['category'] == c for o in scene['world']) for c in {o['category'] for o in scene['world']}},
-                  perception_and_scene_s=round(time.monotonic()-started, 2))
+                  perception_and_scene_s=round(time.monotonic()-started, 2), detector=args.detector, detection=detection_report)
     print(json.dumps(dict(boxes=report['boxes'], rejected=rejected, scene_objects=report['scene_objects']), ensure_ascii=False))
     failures = []; found = None
     try:

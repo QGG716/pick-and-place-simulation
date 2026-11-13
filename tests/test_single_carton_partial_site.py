@@ -83,7 +83,9 @@ def test_default_real_site_uses_explicit_user_clearance_without_simulation_furni
     assert c['geometry']['prior_size_m']==[.17,.128,.101]
     assert '7ccdb15e' in c['geometry']['prior_measurement_basis']
     from unloading_sim.workbench.single_carton.config import issues
-    assert issues(c)==[]
+    # Remote GPU connection fields come from an ignored local file; geometry
+    # and every other field-safety parameter must be complete in the example.
+    assert [e for e in issues(c) if not e.startswith('detector.remote')]==[]
     for basis in (None,'','  '):
         broken=dict(c,geometry=dict(c['geometry'],prior_measurement_basis=basis))
         assert any(e.startswith('geometry.prior_measurement_basis') for e in issues(broken))
