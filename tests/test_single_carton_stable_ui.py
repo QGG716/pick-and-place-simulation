@@ -13,11 +13,13 @@ from unloading_sim.workbench.coordinates import Installation,CoordinateModel,Ext
 from unloading_sim.workbench.ui import URDF,URDF_SHA
 from unloading_sim.workbench.stable_ui import StableStringVar,append_log
 from test_single_carton_live import Camera,Device,Model,exposure
+from eco65_test_inputs import use_committed_installation,use_synthetic_remote_detector
 
 
 @pytest.fixture
-def ui():
-    c=load(Path('configs/workbench/single_carton.example.json'))
+def ui(tmp_path):
+    # Field-PC-only inputs (installation, remote GPU login) come from committed stand-ins.
+    c=use_synthetic_remote_detector(use_committed_installation(load(Path('configs/workbench/single_carton.example.json'))),tmp_path)
     install=Installation.load(c['execution']['installation'])
     model=CoordinateModel(URDF,URDF_SHA,install.world_from_base,install.tool)
     service=SimpleNamespace(process=None,request_stop=lambda:None,close=lambda:None,check_payload=lambda:{})

@@ -36,23 +36,53 @@ class StopChannel:
     Gen-3 JSON set_arm_stop is the documented counterpart of rm_set_arm_stop.
     Connect sends nothing. No generic command method is exposed.
     """
+    # Whole-reply deadline per request (documented 0.5 s), not per recv call.
+    REPLY_TIMEOUT_S=.5
     def __init__(self,host,port):
-        self.socket=socket.create_connection((host,int(port)),timeout=1.)
-        self.socket.settimeout(.25);self.reply=None
+        self.address=(host,int(port));self.reply=None;self.discarded_bytes=0;self.reconnects=0
+        self.socket=socket.create_connection(self.address,timeout=1.)
+    def _drain(self):
+        """Drop bytes received before this request: they answer an earlier one."""
+        self.socket.settimeout(0.)
+        try:
+            while True:
+                chunk=self.socket.recv(4096)
+                if not chunk:raise OSError('STOP_CHANNEL_CLOSED')
+                self.discarded_bytes+=len(chunk)
+        except (BlockingIOError,InterruptedError,socket.timeout):pass
     def stop(self):
-        self.socket.sendall(b'{"command":"set_arm_stop"}\r\n')
-        data=b'';deadline=time.monotonic()+.5
-        while time.monotonic()<deadline and len(data)<8192:
-            chunk=self.socket.recv(4096)
-            if not chunk:raise OSError('STOP_CHANNEL_CLOSED')
-            data+=chunk
-            while b'\n' in data:
-                line,data=data.split(b'\n',1);reply=json.loads(line)
-                if reply.get('command')=='set_arm_stop':
-                    self.reply=reply
-                    return 0 if reply.get('arm_stop') is True else 1
-        raise TimeoutError('STOP_REPLY_TIMEOUT')
-    def close(self):self.socket.close()
+        # The protocol reply has no request id. A request that failed or timed
+        # out closes this socket, so its late reply can never confirm a later
+        # stop; the next request uses a fresh connection.
+        try:
+            if self.socket is None:
+                self.socket=socket.create_connection(self.address,timeout=1.);self.reconnects+=1
+            self._drain()
+            self.socket.settimeout(self.REPLY_TIMEOUT_S)
+            self.socket.sendall(b'{"command":"set_arm_stop"}\r\n')
+            data=b'';deadline=time.monotonic()+self.REPLY_TIMEOUT_S
+            while len(data)<8192:
+                remaining=deadline-time.monotonic()
+                if remaining<=0:break
+                self.socket.settimeout(remaining)
+                try:chunk=self.socket.recv(4096)
+                except socket.timeout:break
+                if not chunk:raise OSError('STOP_CHANNEL_CLOSED')
+                data+=chunk
+                while b'\n' in data:
+                    line,data=data.split(b'\n',1);reply=json.loads(line)
+                    if reply.get('command')=='set_arm_stop':
+                        self.reply=reply
+                        return 0 if reply.get('arm_stop') is True else 1
+            raise TimeoutError('STOP_REPLY_TIMEOUT')
+        except Exception:
+            self._discard();raise
+    def _discard(self):
+        sock,self.socket=self.socket,None
+        if sock is not None:
+            try:sock.close()
+            except OSError:pass
+    def close(self):self._discard()
 
 class RealmanTransport:
     def __init__(self, mapping, config, sdk_factory=None):

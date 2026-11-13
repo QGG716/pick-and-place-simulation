@@ -3,6 +3,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 from unloading_sim.workbench.single_carton.cycle import Cycle
+from unloading_sim.workbench.controlled.engine import SubmissionRejected
 
 class Clock:
     def __init__(self):self.t=10.
@@ -132,3 +133,30 @@ def test_monitor_ages_sample_after_snapshot_rpc_returns():
         return original()
     r.snapshot=delayed;c.tick()
     assert c.state=='APPROACH' and not c.reason
+
+
+def test_first_segment_refused_before_motion_fails_cleanly_without_stop_latch():
+    c,t,r,v,events,_=make()
+    def refuse(package,**kwargs):raise SubmissionRejected('CONTROLLER_PAYLOAD_MUST_MATCH_3_5_KG')
+    r.submit=refuse
+    with pytest.raises(ValueError,match='PAYLOAD'):c.start()
+    assert c.state=='FAILED' and not c.active and c.status()['hardware_motion']=='NOT_STARTED'
+    assert v.task_id is None and v.inhibited and not v.holding and v.commands==[]
+    t.step(2.5);c.tick();assert c.state=='FAILED'
+    assert not any(e.get('state') in ('STOPPING','STOP_UNCONFIRMED') for e in events)
+    assert [e['segment'] for e in events if e.get('kind')=='motion_rejected_before_start']==[0]
+
+def test_unknown_submit_outcome_still_requires_stop_feedback():
+    c,t,r,v,_,_=make()
+    def lost(package,**kwargs):raise RuntimeError('EXECUTION_PROCESS_TIMEOUT_STOP_STATUS_UNKNOWN')
+    r.submit=lost
+    with pytest.raises(RuntimeError):c.start()
+    assert c.state=='STOPPING';t.step(2.1);c.tick();assert c.state=='STOP_UNCONFIRMED'
+
+def test_later_segment_refusal_keeps_load_and_confirms_stationary_stop():
+    c,t,r,v,_,_=attached()
+    def refuse(package,**kwargs):raise SubmissionRejected('START_NOT_STATIONARY')
+    r.finish();r.submit=refuse;c.tick()
+    assert c.state=='STOPPING' and v.holding and v.commands==['grip']
+    c.tick();assert c.state=='FAILED' and v.holding and v.commands==['grip']
+    assert c.status()['hardware_motion']=='SUBMITTED'

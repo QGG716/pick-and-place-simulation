@@ -8,6 +8,7 @@ from unloading_sim.workbench.single_carton import perception, runtime
 from unloading_sim.workbench.single_carton.config import load
 from unloading_sim.workbench.controlled.trajectory import Authority
 from test_single_carton_observation import frame, observation
+from eco65_test_inputs import use_synthetic_remote_detector
 
 
 def samples():
@@ -85,7 +86,7 @@ def test_freeze_reports_exact_wait_condition_and_preserves_original_clock(monkey
 
 
 def test_task_clears_previous_observation_shows_capture_before_inference_and_records_failure(monkeypatch,tmp_path):
-    config=load(__import__('pathlib').Path('configs/workbench/single_carton.example.json'))
+    config=use_synthetic_remote_detector(load(__import__('pathlib').Path('configs/workbench/single_carton.example.json')),tmp_path)
     config['record_root']=str(tmp_path);config.pop('site',None)
     notifications=[];obs=observation();evidence=dict(waiting='测试配对超限',pair_skew_s=.045)
     manager=None

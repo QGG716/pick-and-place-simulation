@@ -175,6 +175,7 @@ class SingleBackend(ControlledBackend):
         self.states={k:'已断开' for k in self.workers};self.endpoints={k:'' for k in self.workers}
         self.ui_events=deque(maxlen=32);self.pump_stop=threading.Event()
         self.auto_profile=StreamProfile(640,480,30);self.auto_camera=False
+        self.pump_errors=0
         self.logs.clear();self.log('实机单箱：自动观测；运动与阀门仅由执行按钮启动')
     def start_observation(self,vision):
         self.vision=vision;vision.invalidate(self.observation_generation);vision.start()
@@ -195,45 +196,59 @@ class SingleBackend(ControlledBackend):
         cutoff=time.monotonic_ns()
         self.frame=self.joint=self.pressure=self.detections=None;self.joint_history.clear()
         self.sample_cutoff={name:cutoff for name in self.workers}
-        owner=getattr(self.workers['vacuum'].device,'owner',None)
-        if owner is not None:owner.min_received_s=cutoff/1e9
+        # A camera transition revokes observations (and the task monitor stops
+        # any running cycle), but it says nothing about the vacuum link: keep
+        # its current gripper pressure valid, so a load that may still be held
+        # after that stop stays continuously pressure-monitored.
+        if device!='camera':
+            owner=getattr(self.workers['vacuum'].device,'owner',None)
+            if owner is not None:owner.min_received_s=cutoff/1e9
         if self.vision:self.vision.invalidate(self.observation_generation)
     def sample_state(self,stamp,device):
         if stamp.received_monotonic_ns<self.sample_cutoff[device]:return 'WAITING_CURRENT_SESSION'
         return super().sample_state(stamp,device)
     def _pump(self):
-        previous={k:False for k in self.workers};last_frame=None
+        state=dict(previous={k:False for k in self.workers},last_frame=None)
         while not self.pump_stop.wait(.005):
-            events=super().poll()
-            for name,kind,value in events:
-                if kind=='sample':continue
-                self.ui_events.append((name,kind,value))
-                if kind=='error':
-                    self.device_errors[name]=connection_error(value);self.states[name]='连接失败'
-                elif kind=='state':
-                    action=value['action']
-                    self.states[name]='已连接' if action in {'connect','start'} else '已断开'
-                    if name=='camera' and action=='connect' and self.auto_camera:
-                        if self.auto_profile not in value['value']:
-                            p=self.auto_profile
-                            self.device_errors[name]=f'{p.width}×{p.height}@{p.fps}fps 无可用 RGB-D 配对；请在相机配置中选择设备或明确修改采集配置'
-                            self.states[name]='连接失败';self.log(self.device_errors[name])
-                        else:
-                            # Use the same lifecycle invalidation as a manual restart.
-                            try:self.command('camera','start',self.auto_profile)
-                            except Exception as e:
-                                self.device_errors[name]=str(e);self.states[name]='连接失败'
-            for name,w in self.workers.items():
-                connected=w.device.connected
-                if previous[name] and not connected:
-                    self.invalidate_device(name)
-                    self.states[name]='已断开'
-                    if name=='vacuum':self.device_errors[name]=connection_error(w.device.owner.last_error)
-                previous[name]=connected
-            frame=self.frame
-            if self.vision and frame is not None and frame is not last_frame:
-                last_frame=frame
-                self.vision.offer(frame,self.joint_for_frame(frame),self.observation_generation)
+            # One malformed event or display failure must not end device
+            # supervision; the error is logged and the next cycle continues.
+            try:self._pump_once(state)
+            except Exception as e:
+                self.pump_errors+=1
+                try:self.log(f'设备事件处理异常（已继续）：{type(e).__name__}: {e}')
+                except Exception:pass
+    def _pump_once(self,state):
+        previous=state['previous']
+        events=super().poll()
+        for name,kind,value in events:
+            if kind=='sample':continue
+            self.ui_events.append((name,kind,value))
+            if kind=='error':
+                self.device_errors[name]=connection_error(value);self.states[name]='连接失败'
+            elif kind=='state':
+                action=value['action']
+                self.states[name]='已连接' if action in {'connect','start'} else '已断开'
+                if name=='camera' and action=='connect' and self.auto_camera:
+                    if self.auto_profile not in value['value']:
+                        p=self.auto_profile
+                        self.device_errors[name]=f'{p.width}×{p.height}@{p.fps}fps 无可用 RGB-D 配对；请在相机配置中选择设备或明确修改采集配置'
+                        self.states[name]='连接失败';self.log(self.device_errors[name])
+                    else:
+                        # Use the same lifecycle invalidation as a manual restart.
+                        try:self.command('camera','start',self.auto_profile)
+                        except Exception as e:
+                            self.device_errors[name]=str(e);self.states[name]='连接失败'
+        for name,w in self.workers.items():
+            connected=w.device.connected
+            if previous[name] and not connected:
+                self.invalidate_device(name)
+                self.states[name]='已断开'
+                if name=='vacuum':self.device_errors[name]=connection_error(w.device.owner.last_error)
+            previous[name]=connected
+        frame=self.frame
+        if self.vision and frame is not None and frame is not state['last_frame']:
+            state['last_frame']=frame
+            self.vision.offer(frame,self.joint_for_frame(frame),self.observation_generation)
     def poll(self):
         if self.pump is None:return super().poll()
         events=[]

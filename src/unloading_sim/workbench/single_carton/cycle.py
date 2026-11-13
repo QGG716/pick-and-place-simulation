@@ -2,11 +2,16 @@
 import threading
 from time import monotonic
 import numpy as np
+from ..controlled.engine import SubmissionRejected,MonitorConfig
 from ..controlled.trajectory import digest
 from .perception import validate_robot
 
 TERMINAL={'COMPLETE','FAILED','CANCELLED','STOP_UNCONFIRMED'}
 MOVEMENTS=('APPROACH','CONTACT','DETACH','RETURN_LOADED')
+# The motion supervisor already proved arrival within this bound (field files
+# may only tighten it). The loaded rest error at q_start is judged by the same
+# bound; 0.01 degree applies only to the measured stationary first start.
+AT_START_RAD=MonitorConfig().arrival_rad
 
 
 class Cycle:
@@ -19,6 +24,9 @@ class Cycle:
         self.stop_requested=threading.Event()
         self.physical_io=physical_io
         self.vacuum_after_s=0.
+        self.hardware_motion='NOT_STARTED'
+        # Operator-cycle release at the returned start, kept apart from any stop.
+        self.release_attempted=False;self.release_sent=False
     @property
     def active(self):return self.state not in TERMINAL|{'IDLE','PLAN_READY'}
     def transition(self,state,**details):
@@ -31,7 +39,8 @@ class Cycle:
             if [s['stage'] for s in plan['segments']]!=['approach','contact','detach','return']:raise ValueError('INVALID_STAGE_CHAIN')
             if np.max(abs(np.asarray(plan['segments'][-1]['package']['prepared']['points'][-1]['q'])-plan['q_start']))>1e-7:raise ValueError('RETURN_NOT_Q_START')
             self.task_id=task_id;self.plan=plan;self.plan_hash=digest(plan);self.physical_complete=False
-            self.stop_requested.clear()
+            self.stop_requested.clear();self.hardware_motion='NOT_STARTED'
+            self.release_attempted=False;self.release_sent=False
             self.transition('PLAN_READY')
     def start(self):
         with self.lock:
@@ -48,7 +57,19 @@ class Cycle:
         ticket=self.robot.submission_ticket()
         if self.state=='STOPPING' or self.stop_requested.is_set():raise ValueError('STOPPING')
         self.transition(MOVEMENTS[index])
-        self.motion_id=self.robot.submit(self.plan['segments'][index]['package'],cancel_ticket=ticket)
+        try:self.motion_id=self.robot.submit(self.plan['segments'][index]['package'],cancel_ticket=ticket)
+        except SubmissionRejected as e:
+            self.record(kind='motion_rejected_before_start',cycle_task_id=self.task_id,segment=index,
+                        reason=str(e),segment_motion='NOT_STARTED')
+            if index==0:
+                # The first segment was refused before acceptance: this cycle sent
+                # no point and wrote no valve, so no stop is awaiting feedback.
+                # Later segments still prove stationarity through STOPPING.
+                self.stop_requested.set();self.vacuum.inhibit();self.vacuum.unclaim()
+                self.reason=str(e);self.transition('FAILED',reason=self.reason,hardware_motion='NOT_STARTED',
+                                                   valve_commands_sent=False,stop_feedback_required=False)
+            raise
+        self.hardware_motion='SUBMITTED'
         self.record(kind='motion_task',cycle_task_id=self.task_id,motion_task_id=self.motion_id,segment=index)
     def stop(self,reason='OPERATOR_SOFTWARE_STOP',cancelled=False):
         # Signal first, without waiting for a status RPC or the coordinator lock.
@@ -58,7 +79,8 @@ class Cycle:
             if self.state in {'IDLE','PLAN_READY'}:
                 self.cancelled=cancelled;self.reason=reason;self.transition('CANCELLED' if cancelled else 'FAILED',reason=reason);return
             self.cancelled=cancelled;self.reason=reason;self.transition('STOPPING',reason=reason,load_may_be_held=self.vacuum.holding,
-                valve_state_not_changed_by_stop=True,automatic_release_sent=False)
+                valve_state_not_changed_by_stop=True,automatic_release_sent=False,
+                cycle_release_command_attempted=self.release_attempted,cycle_release_command_sent=self.release_sent)
     def tick(self):
         if self.state in TERMINAL|{'IDLE','PLAN_READY'}:return
         now=self.clock()
@@ -95,14 +117,16 @@ class Cycle:
                     self.vacuum_after_s=self.clock()
                 elif self.state=='DETACH':self._motion(3)
                 else:
-                    if np.max(abs(q-self.plan['q_start']))>np.deg2rad(.01):raise ValueError('RETURN_START_NOT_CONFIRMED')
+                    if np.max(abs(q-self.plan['q_start']))>AT_START_RAD:raise ValueError('RETURN_START_NOT_CONFIRMED')
                     self.release_check(q,self.plan)
-                    self.transition('RELEASE');self.vacuum.release(self.task_id)
+                    self.transition('RELEASE');self.release_attempted=True
+                    self.vacuum.release(self.task_id);self.release_sent=True
+                    self.record(kind='cycle_release_command_sent',cycle_task_id=self.task_id,q_actual=q.tolist())
                     self.vacuum_after_s=self.clock()
             elif self.state in {'ESTABLISH_VACUUM','RELEASE'}:
                 gripping=self.state=='ESTABLISH_VACUUM';prefix='grip' if gripping else 'release'
                 if gripping:self.contact_check(q,self.plan)
-                elif np.max(abs(q-self.plan['q_start']))>np.deg2rad(.01):raise ValueError('ROBOT_MOVED_DURING_RELEASE')
+                elif np.max(abs(q-self.plan['q_start']))>AT_START_RAD:raise ValueError('ROBOT_MOVED_DURING_RELEASE')
                 if now-self.entered>self.config[prefix+'_timeout_s']:raise ValueError(prefix.upper()+'_PRESSURE_TIMEOUT')
                 if pressure['received_s']<=self.vacuum_after_s or pressure['received_s']==self.last_pressure:return
                 self.last_pressure=pressure['received_s']
@@ -122,6 +146,8 @@ class Cycle:
             else:self.stop(str(e))
     def status(self):
         return dict(task_id=self.task_id,state=self.state,reason=self.reason,holding=self.vacuum.holding,
+                    hardware_motion=self.hardware_motion,cycle_release_command_attempted=self.release_attempted,
+                    cycle_release_command_sent=self.release_sent,
                     physical_result='PHYSICAL_CYCLE_COMPLETE' if self.physical_complete else 'NOT_COMPLETE',
                     receiver_qualification=(self.plan or {}).get('release',{}).get('status'),support_confirmed=False,
                     robot=self.last_feedback,stage_elapsed_s=self.clock()-self.entered)

@@ -85,7 +85,13 @@ class TaskManager:
                 self.planner.build()
                 if self.self_filter is None:
                     self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
-                self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter)
+                # Ray depth behind an unreconstructed neighbour's visible surface:
+                # the prior's space diagonal plus its tolerance bounds any carton.
+                geometry=self.config.get('geometry') or {}
+                neighbor_depth=(float(np.linalg.norm(geometry['prior_size_m']))+float(geometry.get('dimension_tolerance_m',0.))
+                                if geometry.get('prior_size_m') else None)
+                self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
+                                       neighbor_depth_m=neighbor_depth)
                 if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
                 (self.folder/'site-scene.json').write_text(json.dumps(self.scene))
             np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
@@ -134,6 +140,10 @@ class TaskManager:
         self._enter()
         try:
             if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
+            # No cycle starts without its task record or with a revoked observation.
+            if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
+                raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
+            if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.progress('停稳重新取景：核对目标、场景、起点及版本')
             current=freeze(self.backend,self.service,self.model,self.calibration,
                            cancelled=self.stop_event.is_set,progress=self.progress)
@@ -145,6 +155,7 @@ class TaskManager:
             self.save_observation(current,'pre_execute_observation');self.journal(kind='pre_execute_recheck',evidence=check)
             self.planner.binding()
             if self.stop_event.is_set():raise ValueError('CANCELLED')
+            if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.cycle.start();self.phase=self.cycle.state
         except Exception as e:
             self.planner.authority.invalidate()
@@ -172,21 +183,45 @@ class TaskManager:
         # Tk must not wait for either this lock or inference completion.
         if self.cycle:self.cycle.stop_requested.set()
     def _monitor(self):
-        saved=None
+        # This thread is the cycle's only ticker: it must survive any error.
+        # A failure stops an active cycle (never releasing a load) and the next
+        # iteration keeps ticking so the stop can still be confirmed or latched.
+        saved=[None];last_error=None
         while not self.closing.wait(.02):
-            c=self.cycle
-            if c and self.stop_event.is_set() and c.state not in TERMINAL|{'STOPPING'}:
-                c.stop(cancelled=True)
-            if c and c.active and not self.busy:
-                if self.observation.generation!=self.backend.observation_generation:c.stop('CONNECTION_OR_CONFIG_CHANGED')
-                if self.journal.error:c.stop('LOG_WRITE_FAILED:'+self.journal.error)
-                c.tick();self.phase=c.state;self.reason=c.reason
-            if c and c.state in TERMINAL and saved!=(self.task_id,c.state):
-                saved=(self.task_id,c.state);status=c.status()
+            try:self._monitor_once(saved);last_error=None
+            except Exception as e:
+                message=f'SUPERVISOR_ERROR:{type(e).__name__}:{e}'
                 try:
-                    (self.folder/'result.json').write_text(json.dumps(status,indent=2))
-                    self.notify('result',status)
-                except Exception as e:c.stop('RESULT_WRITE_FAILED:'+str(e))
+                    c=self.cycle
+                    if c and c.state not in TERMINAL:c.stop(message)
+                except Exception:pass
+                if message!=last_error:
+                    last_error=message
+                    try:self.notify('error','任务监视线程异常（已停止当前循环并继续监视）：'+message)
+                    except Exception:pass
+    def _monitor_once(self,saved):
+        c=self.cycle
+        if c and self.stop_event.is_set() and c.state not in TERMINAL|{'STOPPING'}:
+            c.stop(cancelled=True)
+        if c and c.active and not self.busy:
+            try:
+                # Any session transition, camera included, stops the cycle
+                # (user confirmed 2026-11-13 that a camera fault aborts loaded
+                # motion too). The stop never releases a held load.
+                if self.observation.generation!=self.backend.observation_generation:
+                    c.stop('CONNECTION_OR_CONFIG_CHANGED')
+                if self.journal.error:c.stop('LOG_WRITE_FAILED:'+self.journal.error)
+            except Exception as e:c.stop(f'SUPERVISOR_ERROR:{type(e).__name__}:{e}')
+            c.tick();self.phase=c.state;self.reason=c.reason
+        self._save_result(c,saved)
+    def _save_result(self,c,saved):
+        """Write each terminal cycle state once; saved[0] holds the last written key."""
+        if c and c.state in TERMINAL and saved[0]!=(self.task_id,c.state):
+            saved[0]=(self.task_id,c.state);status=c.status()
+            try:
+                (self.folder/'result.json').write_text(json.dumps(status,indent=2))
+                self.notify('result',status)
+            except Exception as e:c.stop('RESULT_WRITE_FAILED:'+str(e))
     def close(self):
         self.stop()
         if self.cycle and (self.cycle.active or self.cycle.state=='STOP_UNCONFIRMED'):raise ValueError('等待实测停止确认，连接暂时保留')

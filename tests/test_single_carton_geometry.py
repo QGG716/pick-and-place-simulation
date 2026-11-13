@@ -6,6 +6,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 from unloading_sim.workbench.single_carton.geometry import recover,corners,contact_candidates,seal_check,transform
 from unloading_sim.workbench.single_carton.config import load,issues
+from eco65_test_inputs import use_synthetic_remote_detector
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -65,8 +66,9 @@ def test_all_cups_cannot_fit_but_confirmed_passive_valves_enable_six_cup_contact
     tilted=np.array(c['tcp_pose']);tilted[:3,:3]=tilted[:3,:3]@Rotation.from_euler('x',5,degrees=True).as_matrix()
     assert not seal_check(tilted,c['face'],c['rings_tcp'],c['suction_normal_tcp'])['valid']
 
-def test_current_field_parameters_and_source_bytes():
-    c=load(ROOT/'configs/workbench/single_carton.example.json');assert issues(c)==[]
+def test_current_field_parameters_and_source_bytes(tmp_path):
+    # Remote GPU host/user/key exist only in the field PC's ignored local file.
+    c=use_synthetic_remote_detector(load(ROOT/'configs/workbench/single_carton.example.json'),tmp_path);assert issues(c)==[]
     assert c['carton_mass_kg']==2 and c['execution']['tool_mass_kg']==1.5
     assert c['execution']['controller_payload_kg']==3.5
     assert c['vacuum']['establish_commands']==[0x12] and c['vacuum']['release_commands']==[0x13]

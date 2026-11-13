@@ -82,8 +82,10 @@ class SingleWorkbench(Workbench):
         self.target=StableStringVar();ttk.Entry(row,textvariable=self.target,width=5).pack(side='left')
         self.plan_button=self.button(row,'规划所选箱',self.plan_selected);self.plan_button.configure(state='disabled')
         self.preview_button=self.button(row,'查看完整轨迹预览',self.preview)
+        self.preview_mode='joints';self.preview_data=None;self.view_angles=[np.deg2rad(-60.),np.deg2rad(25.)];self._drag=None
+        self.view_button=self.button(row,'切换为三维 TCP',self.toggle_preview_view)
         self.execute_button=self.button(row,'执行单箱',self.execute_cycle);self.execute_button.configure(state='disabled')
-        self.button(row,'停止（不自动释放）',self.stop_cycle)
+        # The only stop control is the always-visible top-bar button (and Esc).
         receiver_notice=('本轮承接区资格核验已按用户要求延期；仍检查完整带箱回程及释放包络，支撑未确认。'
             if config.get('release_policy')=='USER_DEFERRED_RECEIVER_QUALIFICATION' else
             ('实测承接策略：规划前请填写现场 receiver。' if not config.get('site',{}).get('receiver') else '实测承接策略：已加载现场 receiver。'))
@@ -98,8 +100,15 @@ class SingleWorkbench(Workbench):
         ttk.Label(tab,textvariable=self.preview_label,width=1).pack(side='bottom',fill='x')
         visual=ttk.Frame(tab);visual.pack(fill='both',expand=True,pady=8)
         frozen=ttk.Frame(visual,width=520,height=390);frozen.pack(side='left',fill='y');frozen.pack_propagate(False)
-        self.frozen_image=ttk.Label(frozen,text='本次冻结观测、长方体与选中面',width=1);self.frozen_image.pack(fill='both',expand=True)
+        # Centered image with no padding: click mapping relies on a symmetric offset.
+        self.frozen_image=ttk.Label(frozen,text='本次冻结观测、长方体与选中面',width=1,anchor='center',padding=0);self.frozen_image.pack(fill='both',expand=True)
+        self._frozen_view=None
+        self.frozen_image.bind('<Button-1>',lambda e:self.safe(self.pick_target,e))
         self.canvas=tk.Canvas(visual,width=650,height=260,bg='#142333',highlightthickness=0);self.canvas.pack(side='right',fill='both',expand=True)
+        self.canvas.bind('<Configure>',lambda _:self.render_preview())
+        self.canvas.bind('<ButtonPress-1>',self._drag_start)
+        self.canvas.bind('<B1-Motion>',self._drag_move)
+        self.target.trace_add('write',lambda *_:self.draw_observation())
         self.live_vision=LiveVision(config['detector'])
         self.result_windows={stage:ResultWindow(root,stage) for stage in ('detection','segmentation')}
         def adjust_controls(parent):
@@ -111,13 +120,29 @@ class SingleWorkbench(Workbench):
                     elif title=='开始检测':child.configure(text='重试视觉',command=self.live_vision.retry)
                     elif title=='连接 / 查询配置':child.configure(text='重试相机',command=lambda:self.safe(self.retry_device,'camera'))
                     elif title=='查看完整场景':child.configure(text='历史仿真查看器（独立）')
+                    # This entry's robot link is the execution session and the
+                    # serial owner writes valves during a cycle: not read-only.
+                    elif title=='只读连接':child.configure(text='连接机械臂（连接本身不运动）')
+                    elif title=='只读串口连接':child.configure(text='连接真空板（连接本身不写阀门）')
                 adjust_controls(child)
         adjust_controls(self.observe)
         for child in self.coords.winfo_children():
             if isinstance(child,ttk.Label) and 'NativeSceneWorld' in str(child.cget('text')):
                 child.configure(text='当前实机坐标采用 base_link。历史仿真查看器请通过独立只读入口打开；不进入实机碰撞场景。',width=1)
         self.frozen_image.bind('<Configure>',lambda _:self.draw_observation())
-        livebar=ttk.Frame(root);livebar.pack(side='top',fill='x',before=self.tabs,padx=12)
+        livebar=ttk.Frame(root);livebar.pack(side='top',fill='x',before=self.tabs,padx=12);self.livebar=livebar
+        style=ttk.Style(root)
+        style.configure('Stop.TButton',background='#c62828',foreground='#ffffff',bordercolor='#ff8a80',
+                        lightcolor='#d84040',darkcolor='#a01818',font=('DejaVu Sans',11,'bold'),padding=(14,6))
+        style.map('Stop.TButton',background=[('disabled','#4a2626'),('pressed','#8e0000'),('active','#e53935')],
+                  foreground=[('disabled','#b89a9a')],lightcolor=[('pressed','#8e0000'),('active','#ef5350')],
+                  darkcolor=[('pressed','#8e0000'),('active','#c62828')])
+        # Always visible on every tab. Stopping is always safe: it never
+        # releases a held load, returns home or resumes.
+        self.stop_button=ttk.Button(livebar,text='■ 停止（Esc · 不自动释放）',style='Stop.TButton',
+                                    command=lambda:self.safe(self.stop_cycle))
+        self.stop_button.pack(side='right',padx=(8,0))
+        root.bind_all('<Escape>',lambda _:self.safe(self.stop_cycle))
         self.device_summary=StableStringVar(value='相机：已断开 | 机械臂：已断开 | 真空：已断开')
         ttk.Label(livebar,textvariable=self.device_summary,width=1).pack(side='left',fill='x',expand=True)
         self.button(livebar,'检测窗口',self.result_windows['detection'].open)
@@ -125,6 +150,10 @@ class SingleWorkbench(Workbench):
         self.button(livebar,'重试模型',self.live_vision.retry)
         self.device_details=StableStringVar()
         fixed_text(root,self.device_details,height=3,before=self.tabs,padx=12)
+        # Full-width alarm, packed only while the condition holds.
+        self.alarm_banner=tk.Label(root,text='',bg='#b71c1c',fg='#ffffff',font=('DejaVu Sans',12,'bold'),
+                                   anchor='w',justify='left',width=1,padx=12,pady=6)
+        self.banner_state=None
         constrain_labels(root)
         if auto_start:root.after_idle(self.autostart)
         root.after(100,self.update_task)
@@ -195,19 +224,135 @@ class SingleWorkbench(Workbench):
         if plan is None or self.manager.phase!='PLAN_READY':raise ValueError('请先生成完整计划')
         if self.manager.observation.generation!=self.backend.observation_generation:
             raise ValueError('观测会话已失效，请重新准备任务')
-        self.canvas.delete('all');offset=0.;times=[];joints=[];marks=[]
+        offset=0.;times=[];joints=[];marks=[];segments=[];tcp_error=None
         for s in plan['segments']:
             p=s['package']['prepared'];times.extend(offset+x['t'] for x in p['points']);joints.extend(x['q'] for x in p['points']);marks.append((offset,s['stage']));offset+=p['send_duration_s']
-        t=np.asarray(times);q=np.rad2deg(joints);w=max(self.canvas.winfo_width(),600);h=max(self.canvas.winfo_height(),250);lo=q.min()-1;hi=q.max()+1
-        for j,color in enumerate(('#ffbf69','#66dce6','#9be564','#df80ff','#ff7080','#ffffff')):
-            xy=np.c_[20+(w-40)*t/t[-1],h-25-(h-60)*(q[:,j]-lo)/(hi-lo)][::max(1,len(t)//900)]
-            self.canvas.create_line(*xy.ravel(),fill=color,width=2)
-        for t0,name in marks:self.canvas.create_text(30+(w-80)*t0/offset,15,text=name,fill='#fff',anchor='nw')
+            # Planned TCP path from the same sent points (downsampled to <=~200 per segment).
+            points=p['points'];step=max(1,int(np.ceil(len(points)/200)));index=list(range(0,len(points),step))
+            if index[-1]!=len(points)-1:index.append(len(points)-1)
+            try:xyz=np.array([np.asarray(self.model.tcp(np.asarray(points[i]['q'],float)))[:3,3] for i in index])
+            except Exception as e:xyz=None;tcp_error=tcp_error or f'{type(e).__name__}: {e}'
+            segments.append(dict(stage=s['stage'],xyz=xyz))
+        target_id=plan.get('target',{}).get('id')
+        boxes=[(np.asarray(b['corners_m'],float),b.get('id')==target_id) for b in self.manager.boxes if 'corners_m' in b]
+        self.preview_data=dict(plan=plan,times=np.asarray(times),joints=np.rad2deg(joints),marks=marks,total=offset,
+                               segments=segments,boxes=boxes,tcp_error=tcp_error)
+        self.render_preview()
         scales='/'.join(f"{s['package']['prepared']['time_scale']:g}" for s in plan['segments'])
         self.preview_label.set(f'规划预览：4 段运动总时长 {offset:.2f} s；真空等待另计。各段发送时间缩放 ×{scales}（1 = 原生规划速度）')
-        self.previewed=True;self.execute_button.configure(state='normal');self.draw_observation()
+        # update_task enables execution only when every execution condition holds.
+        self.previewed=True;self.draw_observation()
+    def toggle_preview_view(self):
+        self.preview_mode='3d' if self.preview_mode=='joints' else 'joints'
+        self.view_button.configure(text='切换为关节曲线' if self.preview_mode=='3d' else '切换为三维 TCP')
+        self.render_preview()
+    def render_preview(self):
+        c=self.canvas;c.delete('all');data=self.preview_data
+        if data is None:return
+        if data['plan'] is not self.manager.plan:
+            c.create_text(12,12,anchor='nw',fill='#a3b6c6',text='轨迹预览已过期：计划已变化，请重新查看完整轨迹预览');return
+        if self.preview_mode=='3d':self._draw_tcp_3d(data)
+        else:self._draw_joint_curves(data)
+    def _draw_joint_curves(self,data):
+        c=self.canvas;t=data['times'];q=data['joints'];offset=data['total']
+        w=max(c.winfo_width(),600);h=max(c.winfo_height(),250);lo=q.min()-1;hi=q.max()+1
+        for j,color in enumerate(('#ffbf69','#66dce6','#9be564','#df80ff','#ff7080','#ffffff')):
+            xy=np.c_[20+(w-40)*t/t[-1],h-25-(h-60)*(q[:,j]-lo)/(hi-lo)][::max(1,len(t)//900)]
+            c.create_line(*xy.ravel(),fill=color,width=2)
+        for t0,name in data['marks']:c.create_text(30+(w-80)*t0/offset,15,text=name,fill='#fff',anchor='nw')
+    SEGMENT_COLORS=('#ffbf69','#66dce6','#9be564','#ff7080')
+    def _view_basis(self):
+        az,el=self.view_angles
+        right=np.array([-np.sin(az),np.cos(az),0.])
+        up=np.array([-np.sin(el)*np.cos(az),-np.sin(el)*np.sin(az),np.cos(el)])
+        return right,up
+    def _draw_tcp_3d(self,data):
+        """Orthographic view of the planned base_link TCP path; not robot feedback."""
+        c=self.canvas;w=max(c.winfo_width(),600);h=max(c.winfo_height(),250)
+        title='三维 TCP 预览 · 规划结果，不是机器人反馈 · base_link（m）· 拖动旋转'
+        if data['tcp_error'] or any(s['xyz'] is None or not len(s['xyz']) for s in data['segments']):
+            c.create_text(12,12,anchor='nw',fill='#ff8a80',text='三维 TCP 预览不可用：'+str(data['tcp_error']));return
+        right,up=self._view_basis()
+        paths=[s['xyz'] for s in data['segments']]
+        cloud=np.vstack(paths+[b for b,_ in data['boxes']]+[np.zeros((1,3))])
+        span=float(np.max(np.ptp(cloud,axis=0)));axis_len=max(.05,.15*span)
+        cloud=np.vstack([cloud,np.eye(3)*axis_len])
+        uv=np.c_[cloud@right,cloud@up];lo=uv.min(0);hi=uv.max(0);size=np.maximum(hi-lo,1e-6);mid=(lo+hi)/2
+        margin=40;scale=min((w-2*margin)/size[0],(h-2*margin-20)/size[1])
+        def screen(p):
+            p=np.atleast_2d(np.asarray(p,float));s=np.c_[p@right,p@up]
+            return np.c_[w/2+(s[:,0]-mid[0])*scale,h/2+10-(s[:,1]-mid[1])*scale]
+        origin=screen(np.zeros(3))[0]
+        for k,(name,color) in enumerate((('X','#ff5252'),('Y','#69f0ae'),('Z','#448aff'))):
+            end=screen(np.eye(3)[k]*axis_len)[0]
+            c.create_line(*origin,*end,fill=color,width=2,arrow='last');c.create_text(*end,text=name,fill=color,anchor='sw')
+        c.create_text(*origin,text='base',fill='#a3b6c6',anchor='ne')
+        for corners,selected in data['boxes']:
+            xy=screen(corners)
+            for a in range(8):
+                for b in range(a+1,8):
+                    if (a^b) in (1,2,4):c.create_line(*xy[a],*xy[b],fill='#ffc814' if selected else '#5f8a74',width=2 if selected else 1)
+        # Short segments overlap on screen, so names go in a legend and each
+        # segment end gets a dot of its color instead of an on-path label.
+        for k,(s,color) in enumerate(zip(data['segments'],self.SEGMENT_COLORS)):
+            xy=screen(s['xyz'])
+            if len(xy)>1:c.create_line(*xy.ravel(),fill=color,width=2)
+            end=xy[-1];c.create_oval(end[0]-3,end[1]-3,end[0]+3,end[1]+3,fill=color,outline='')
+            y=34+16*k;c.create_rectangle(14,y-4,32,y+4,fill=color,outline='')
+            c.create_text(38,y,text=s['stage'],fill=color,anchor='w')
+        start=screen(paths[0][0])[0];c.create_oval(start[0]-5,start[1]-5,start[0]+5,start[1]+5,outline='#ffffff',width=2)
+        c.create_text(start[0]+8,start[1]+8,text='q_start',fill='#ffffff',anchor='nw')
+        c.create_text(12,10,anchor='nw',fill='#e2edf5',text=title)
+        c.create_text(w-12,h-10,anchor='se',fill='#a3b6c6',
+                      text=f'方位 {np.rad2deg(self.view_angles[0]):.0f}° · 俯仰 {np.rad2deg(self.view_angles[1]):.0f}° · 黄色线框=目标箱包络')
+    def _drag_start(self,event):self._drag=(event.x,event.y,*self.view_angles)
+    def _drag_move(self,event):
+        if self.preview_mode!='3d' or self._drag is None:return
+        x0,y0,az,el=self._drag
+        self.view_angles=[az-(event.x-x0)*.01,float(np.clip(el+(event.y-y0)*.01,-np.pi/2+.05,np.pi/2-.05))]
+        self.render_preview()
+    def pick_target(self,event):
+        """Choose the target by clicking a recovered box on the frozen frame."""
+        m=self.manager
+        if self.job_pending or m.active:raise ValueError('有任务或操作进行中，不能更改目标')
+        if m.phase!='TARGET_READY' or m.observation is None:raise ValueError('请先完成观测；目标就绪后再在冻结帧上点选箱体')
+        if m.observation.generation!=self.backend.observation_generation:raise ValueError('观测会话已失效，请重新准备任务')
+        view=self._frozen_view;result=m.result;f=m.observation.frame
+        if view is None or view['observation_id']!=f.observation_id or result is None or result.observation_id!=f.observation_id:
+            raise ValueError('冻结帧与本次检测结果尚未显示，请稍候再点选')
+        (W,H),(w,h)=view['source'],view['shown']
+        # The image is centered in the label; undo the offset, then the thumbnail scale.
+        ox=(self.frozen_image.winfo_width()-w)/2;oy=(self.frozen_image.winfo_height()-h)/2
+        u=int(np.floor((event.x-ox)*W/w));v=int(np.floor((event.y-oy)*H/h))
+        if not (0<=u<W and 0<=v<H):raise ValueError('点击位置不在冻结帧图像内')
+        hits=[i for i,mask in enumerate(result.masks) if np.asarray(mask)[v,u]]
+        recovered={b.get('detection_index') for b in m.boxes}
+        usable=[i for i in hits if i in recovered]
+        if not hits:raise ValueError(f'该位置（像素 {u},{v}）没有检测到箱体；请点在箱体的分割区域内')
+        if not usable:raise ValueError('检测编号 '+'/'.join(map(str,hits))+' 未恢复为可信箱体几何，不能作为目标；请选择带线框的箱体')
+        if len(usable)>1:raise ValueError('该位置有多个箱体掩码重叠（编号 '+'/'.join(map(str,usable))+'），请点在不重叠处或在编号框中输入')
+        self.target.set(str(usable[0]))
+        self.notice.set(f'已选择目标：检测编号 {usable[0]}（像素 {u},{v}）；点击“规划所选箱”开始规划')
+        return usable[0]
+    def update_banner(self):
+        m=self.manager;c=m.cycle
+        if c is not None and c.state=='STOP_UNCONFIRMED':
+            text=('⚠\u00a0停止未确认：未收到机械臂实测停止反馈。软件停止不是硬件急停，如有危险请立即按现场急停。'
+                  '系统不会自动释放、回原点或重试；连接保持，请现场确认机械臂状态并处置。')
+            if m.vacuum.holding:text+='\n吸具可能仍持箱，阀门保持当前状态。'
+        elif m.vacuum.holding and not m.active:
+            text=('⚠\u00a0吸具可能仍持箱：任务已停止，阀门保持当前状态，不会自动释放。'
+                  '软件停止不是硬件急停；请现场确认并人工处置箱体后再继续。')
+        else:text=None
+        if text==self.banner_state:return
+        self.banner_state=text
+        if text is None:self.alarm_banner.pack_forget();return
+        self.alarm_banner.configure(text=text,wraplength=max(200,self.root.winfo_width()-60))
+        if not self.alarm_banner.winfo_manager():self.alarm_banner.pack(fill='x',after=self.livebar,padx=12,pady=(4,0))
     def execute_cycle(self):
         if not self.previewed:raise ValueError('请先查看本次完整轨迹预览')
+        blockers=getattr(self,'execute_blockers',['执行条件尚未刷新'])
+        if blockers:raise ValueError('尚未满足执行条件：'+'、'.join(blockers))
         self.job('execute_done',self.manager.execute)
     def stop_cycle(self):
         self.manager.stop();self.previewed=False;self.execute_button.configure(state='disabled')
@@ -218,25 +363,54 @@ class SingleWorkbench(Workbench):
         if obs is None:return
         f=obs.frame;pixels=f.rgb.copy()
         matched=result is not None and result.observation_id==f.observation_id
+        # Highlight the planned target, or before planning the operator's pick.
+        # Plan fields are read only for a matched result, as before.
+        picked=None
+        if not matched:pass
+        elif plan is not None:picked=plan['target'].get('detection_index')
+        else:
+            text=self.target.get().strip();picked=int(text) if text.isdigit() else None
         for i,mask in enumerate(result.masks if matched else ()):
-            pixels[mask]=(pixels[mask]*.65+np.array([30,180,250])*.35).astype('uint8')
+            chosen=i==picked
+            tint=np.array([255,150,20]) if chosen else np.array([30,180,250])
+            pixels[mask]=(pixels[mask]*(.45 if chosen else .65)+tint*(.55 if chosen else .35)).astype('uint8')
+            if chosen:
+                contours,_=cv2.findContours(np.asarray(mask).astype('uint8'),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+                cv2.drawContours(pixels,contours,-1,(255,240,60),2)
             b=result.detections[i]['bbox_xyxy'];x,y=int(b[0]),int(b[1]);cv2.putText(pixels,str(i),(x,y),cv2.FONT_HERSHEY_SIMPLEX,.7,(255,220,50),2)
         camera_world=np.linalg.inv(np.asarray(obs.world_camera))
         for box in boxes if matched else ():
             p=transform(camera_world,box['corners_m'])
             if np.any(p[:,2]<=0):continue
             uv=project_camera(p,f.intrinsics).astype(int)
-            selected=plan is not None and box['id']==plan['target']['id'];color=(255,200,20) if selected else (60,255,120)
+            selected=(box['id']==plan['target']['id']) if plan is not None else box.get('detection_index')==picked
+            color=(255,200,20) if selected else (60,255,120)
             for a in range(8):
                 for b in range(a+1,8):
                     if (a^b) in (1,2,4):cv2.line(pixels,tuple(uv[a]),tuple(uv[b]),color,2)
-            if selected:
+            if selected and plan is not None:
                 face=plan['candidate']['face'];c=np.asarray(face['center_m']);p=transform(camera_world,[c,c+.04*np.asarray(face['normal'])]);uv=project_camera(p,f.intrinsics).astype(int)
                 cv2.arrowedLine(pixels,tuple(uv[0]),tuple(uv[1]),(255,70,60),3)
         im=Image.fromarray(pixels);im.thumbnail((max(1,self.frozen_image.winfo_width()),max(1,self.frozen_image.winfo_height())))
+        # Retained for click mapping: source size and the displayed thumbnail size.
+        self._frozen_view=dict(observation_id=f.observation_id,source=(pixels.shape[1],pixels.shape[0]),shown=(im.width,im.height))
         photo=ImageTk.PhotoImage(im);self._photos['frozen']=photo;self.frozen_image.configure(image=photo,text='')
     def update_task(self):
+        """Periodic Tk callback: an exception must never stop the refresh loop."""
         if self._closed:return
+        try:self._update_task_once()
+        except Exception as exc:
+            message=f'ERROR 任务界面刷新 {type(exc).__name__}: {exc}'
+            if message!=getattr(self,'_task_refresh_error',None):
+                self._task_refresh_error=message
+                try:self.backend.log(message);self.notice.set(message)
+                except Exception:pass
+        else:self._task_refresh_error=None
+        finally:
+            # close_done destroys the root and sets _closed: no reschedule then.
+            if not self._closed:self.root.after(100,self.update_task)
+    def _update_task_once(self):
+        self.update_banner()
         outputs,vision_status,vision_error=self.live_vision.snapshot()
         for stage,window in self.result_windows.items():
             packet=outputs.get(stage)
@@ -310,16 +484,28 @@ class SingleWorkbench(Workbench):
         def numbers(values):return '—' if values is None else ' '.join(f'{x:+09.3f}' for x in np.rad2deg(values))
         capabilities=self.last_status.get('capabilities',{})
         payload_ok=capabilities.get('payload_check',{}).get('matches',capabilities.get('payload_agrees',False))
-        executable=bool(joint and joint.raw.get('enabled') and not joint.raw.get('alarm') and
-                        self.backend.device_state('robot')=='数据有效' and self.backend.device_state('vacuum')=='数据有效' and
-                        payload_ok and m.phase=='PLAN_READY' and self.previewed and m.observation is not None and
-                        m.observation.generation==self.backend.observation_generation)
-        self.health.set(f"执行准备：{'待执行前复核' if executable else '尚未满足执行条件'} · 实测 ° {numbers(q)}\n指令 ° {numbers(command)} · 本段目标 ° {numbers(goal)}\n跟踪误差 ° {numbers(error)} · 反馈年龄 {format(age,'.3f') if isinstance(age,(int,float)) else '—'} s · 吸具 {pressure}\n控制器报警：{alarm}")
+        # The execute button follows these conditions; preview alone never enables it.
+        blockers=[]
+        if not (joint and joint.raw.get('enabled')):blockers.append('机械臂未使能')
+        if joint and joint.raw.get('alarm'):blockers.append('控制器报警')
+        if self.backend.device_state('robot')!='数据有效':blockers.append('机械臂数据无效')
+        if self.backend.device_state('vacuum')!='数据有效':blockers.append('真空数据无效')
+        if not payload_ok:blockers.append('控制器负载未核对一致（点“刷新控制器负载（只读）”）')
+        if m.phase!='PLAN_READY' or m.observation is None or stale:blockers.append('无有效计划')
+        elif not self.previewed:blockers.append('未查看完整轨迹预览')
+        if self.job_pending or m.active:blockers.append('操作进行中')
+        self.execute_blockers=blockers
+        self.execute_button.configure(state='disabled' if blockers else 'normal')
+        readiness='待执行前复核' if not blockers else '尚未满足执行条件：'+'、'.join(blockers)
+        self.health.set(f"执行准备：{readiness} · 实测 ° {numbers(q)}\n指令 ° {numbers(command)} · 本段目标 ° {numbers(goal)}\n跟踪误差 ° {numbers(error)} · 反馈年龄 {format(age,'.3f') if isinstance(age,(int,float)) else '—'} s · 吸具 {pressure}\n控制器报警：{alarm}")
         if self.service.process is not None and not self.feedback_pending and not m.active:
             self.feedback_pending=True
-            def read():self.jobs.put(('feedback',self.service.feedback()))
+            def read():
+                # Never leave feedback_pending latched by a failed read.
+                try:value=self.service.feedback()
+                except Exception as e:self.jobs.put(('error','机械臂状态读取失败：'+str(e)));value=self.last_status
+                self.jobs.put(('feedback',value))
             threading.Thread(target=read,daemon=True).start()
-        self.root.after(100,self.update_task)
     def choose_tool(self):raise ValueError('实机工具由本次配置绑定；更改后重启并重新准备任务')
     def change_tool(self):raise ValueError('实机模式不能切换工具参考')
     def choose_calibration(self):raise ValueError('实机外参由现场配置绑定；更改配置后重新启动')

@@ -1,0 +1,88 @@
+{
+  "schema": "eco65_workbench_installation_v1",
+  "world": {
+    "parent_frame": "world",
+    "child_frame": "base_link",
+    "unit": "m",
+    "definition": "world_equals_robot_base",
+    "matrix": [
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "camera": {
+    "mount": "link_1",
+    "parent_frame": "link_1",
+    "child_frame": "camera_optical",
+    "status": "MOUNT_CONFIRMED_EXTRINSICS_REQUIRE_VALIDATION"
+  },
+  "tool": {
+    "name": "正式吸具 CAD参考 TCP（未实测）",
+    "parent_frame": "link_6",
+    "unit": "m",
+    "matrix": [
+      [
+        0.9999977397207271,
+        0.002126159315938315,
+        0.0,
+        3.236667849973998e-17
+      ],
+      [
+        -0.002126159315938315,
+        0.9999977397207271,
+        0.0,
+        -7.007726458344294e-18
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.14275043380451888
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "status": "CAD_REFERENCE_ONLY; SIMULATION_MOUNT_ASSUMPTION; 实机TCP及安装角未验证",
+    "source": "configs/local/eco65_desktop/tool.json; verified source STEP SHA-256 aa8d820d56fe3853b1b052e0c76dd77e666abd562427f4dff1b07ef1d6f6cf6c",
+    "evidence": {
+      "tool_config_sha256": "ee7ac50c1e0d5a9caa1c39ab73e43aa565b4ce4c80a1a990a6fd2462a733dbb7",
+      "step_sha256": "aa8d820d56fe3853b1b052e0c76dd77e666abd562427f4dff1b07ef1d6f6cf6c",
+      "physical_tcp_verified": false,
+      "hardware_indexing": "NOT_VERIFIED",
+      "independent_control_verified": false,
+      "purpose": "READ_ONLY_REFERENCE_DISPLAY"
+    }
+  },
+  "confirmation": {
+    "date": "2026-11-11",
+    "source": "User corrected camera mounting to link_1; formal suction tool; world origin at robot base. World axes aligned with base by definition.",
+    "supersedes": "Earlier external-fixed camera description",
+    "physical_calibration_completed": false
+  }
+}

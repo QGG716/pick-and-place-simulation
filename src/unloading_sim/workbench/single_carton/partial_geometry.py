@@ -159,12 +159,21 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
     steps=36;half_step=np.pi/(2*steps);hypotheses=[];vertices=[]
     dimensions=sorted(set(permutations(map(float,size_prior))))
     all_local=(p[continuous]-face_center)@R
+    # Patch extents only depend on its convex hull. Along a yaw they change by
+    # at most 2*radius per radian, so with sample spacing s the nearest sample
+    # overstates the best achievable fit by at most radius*s.
+    hull=uv[cv2.convexHull(uv.astype('float32'),returnPoints=False).ravel()]
+    deltas=np.linspace(-half_step,half_step,11)
+    fit_sampling=float(np.max(np.linalg.norm(hull,axis=1)))*(deltas[1]-deltas[0])
     for angle in np.arange(steps)*np.pi/steps:
         rot=np.array([[np.cos(angle),-np.sin(angle)],[np.sin(angle),np.cos(angle)]])
         if side is not None:
             side_xy=side['normal']@R[:,:2]
             if np.max(abs(side_xy@rot))<np.cos(np.deg2rad(10)+half_step):continue
         projected=uv@rot
+        # Patch extents at yaws sampled across this cell, for the face-fit test.
+        cell_extents=np.array([np.ptp(hull@np.array([[np.cos(a),-np.sin(a)],[np.sin(a),np.cos(a)]]),axis=0)
+                               for a in angle+deltas])
         for dims in dimensions:
             dims=np.asarray(dims)
             # In this yaw cell's frame, every admissible cuboid (each size within
@@ -177,6 +186,14 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
             # A visible patch cannot exceed the face it belongs to (174 mm is not
             # a 150 mm face even with an 8 mm tolerance).
             if np.any(np.ptp(projected,axis=0)>2*H):continue
+            # H also carries the other side's rotation growth (needed for the
+            # envelope), which let a 118 mm patch pass as a 100 mm face. Keep the
+            # cell only if at some yaw inside it one face of at most
+            # dims+tolerance+edge noise contains the whole patch. This never
+            # drops a cell that holds an admissible cuboid, so the envelope
+            # still covers every one; it only rejects mask bleed beyond that.
+            face_limit=dims[:2]+dimension_tolerance_m+PATCH_EDGE_NOISE_M+fit_sampling
+            if not np.any(np.all(cell_extents<=face_limit,axis=1)):continue
             minimum=projected.max(0)-H
             maximum=projected.min(0)+H
             for edge in edges:

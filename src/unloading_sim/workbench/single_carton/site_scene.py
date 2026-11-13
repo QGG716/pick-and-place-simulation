@@ -173,7 +173,7 @@ def _project(points,k):
     return uv.reshape(-1,2)
 
 
-def build_scene(observation,result,boxes,config,self_filter=None):
+def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None):
     cleared_unknown=user_cleared_unknown(config)
     frame=observation.frame
     if result.observation_id!=frame.observation_id:raise ValueError('SCENE_FRAME_MISMATCH')
@@ -232,6 +232,31 @@ def build_scene(observation,result,boxes,config,self_filter=None):
     # User-confirmed blind clearance affects ONLY unobserved cells. Real depth
     # obstacles, fixed measurements, target envelopes and boundaries remain.
     unknown=occupancy & ~measured
+    # A detected but unreconstructed neighbour is evidence of a carton, so the
+    # volume hidden behind its visible surface is not "unobserved clear space".
+    # Under user-confirmed clearance, keep (full cells) each of its unclaimed
+    # depth rays extended by one conservative carton depth. Reconstructed target
+    # envelopes, robot-owned cells and sensor-proven free cells are excluded.
+    shadow=np.zeros(tuple(shape),bool);unreconstructed=[]
+    if cleared_unknown and neighbor_depth_m:
+        reconstructed={b['detection_index'] for b in boxes}
+        unreconstructed=[i for i in range(len(result.masks)) if i not in reconstructed]
+        pick=np.zeros(valid.shape,bool)
+        for i in unreconstructed:pick|=np.asarray(result.masks[i],bool)
+        surface=points[pick&valid&~claimed&~flying]
+        if self_filter is not None and len(surface):
+            surface=surface[~self_filter.contains(transform(W,surface),observation.q_capture)]
+        if len(surface):
+            rays=surface/np.linalg.norm(surface,axis=1,keepdims=True)
+            steps=np.arange(cell/2,float(neighbor_depth_m)+cell/2,cell/2)
+            samples=transform(W,(surface[:,None,:]+rays[:,None,:]*steps[None,:,None]).reshape(-1,3))
+            for box in boxes:
+                half=np.asarray(box['size_m'],float)/2
+                samples=samples[~np.all(abs(transform(np.linalg.inv(np.asarray(box['pose'],float)),samples))<=half,axis=1)]
+            cells_hit=np.floor((samples-lo)/cell).astype(int)
+            cells_hit=cells_hit[np.all(cells_hit>=0,axis=1)&np.all(cells_hit<shape,axis=1)]
+            if len(cells_hit):shadow[tuple(cells_hit.T)]=True
+        shadow&=unknown
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
@@ -255,6 +280,7 @@ def build_scene(observation,result,boxes,config,self_filter=None):
     low=low.reshape(*shape,3);high=high.reshape(*shape,3);tight_runs=0;camera_side_runs=0;camera_origin=W[:3,3]
     grids=[('observed',emit)]
     if not cleared_unknown:grids.append(('unknown',unknown))
+    else:grids.append(('neighbor_shadow',shadow))
     for ix in range(shape[0]):
         for iy in range(shape[1]):
             # Merge consecutive occupied cells along Z with identical ownership.
@@ -286,7 +312,9 @@ def build_scene(observation,result,boxes,config,self_filter=None):
         observation_id=frame.observation_id,q_capture=list(observation.q_capture),T_base_camera=W.tolist(),
         unknown_policy=config['unknown_policy'],unknown_voxels=int(unknown.sum()),
         unknown_collision_voxels=0 if cleared_unknown else int(unknown.sum()),
-        user_confirmed_clear_unknown_voxels=int(unknown.sum()) if cleared_unknown else 0,
+        user_confirmed_clear_unknown_voxels=int((unknown&~shadow).sum()) if cleared_unknown else 0,
+        unreconstructed_detections=unreconstructed,neighbor_shadow_voxels=int(shadow.sum()),
+        neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
         unknown_clearance_basis=config.get('unknown_clearance_basis') if cleared_unknown else None,
         unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
         observed_voxels=int(measured.sum()),target_local_scene=evidence,observed_supports=supports,

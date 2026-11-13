@@ -95,7 +95,16 @@ class Workbench:
         style = ttk.Style(root)
         style.theme_use("clam")
         style.configure(".", background=PANEL, foreground=TEXT, font=("DejaVu Sans", 10))
-        style.configure("TButton", padding=(9, 6), background="#264358")
+        style.configure("TButton", padding=(9, 6), background="#264358", foreground=TEXT,
+                        bordercolor="#3d6580", lightcolor="#2f526a", darkcolor="#1d3446")
+        # clam's defaults make disabled/hover buttons light grey, i.e. brighter
+        # than the enabled dark buttons and unreadable with light text.
+        style.map("TButton",
+                  background=[("disabled", "#18222d"), ("pressed", "#1c3344"), ("active", "#35627c")],
+                  foreground=[("disabled", "#5d6f7f")],
+                  bordercolor=[("disabled", "#24313d")],
+                  lightcolor=[("disabled", "#18222d"), ("pressed", "#1c3344"), ("active", "#3f7090")],
+                  darkcolor=[("disabled", "#18222d"), ("pressed", "#1c3344"), ("active", "#2b5068")])
         style.configure("TEntry", fieldbackground="#203346", foreground=TEXT)
         style.configure("TCombobox", fieldbackground="#203346", foreground=TEXT)
         style.map("TCombobox", fieldbackground=[("readonly", "#203346")])
@@ -459,6 +468,25 @@ class Workbench:
 
     def refresh(self, schedule=True):
         if self._closed: return
+        try:
+            self._refresh_once()
+        except Exception as exc:
+            # Direct callers keep the exception; the periodic loop must survive it.
+            if not schedule: raise
+            message = f"ERROR 界面刷新 {type(exc).__name__}: {exc}"
+            if message != getattr(self, "_refresh_error", None):
+                self._refresh_error = message
+                try:
+                    self.backend.log(message); self.notice.set(message)
+                except Exception:
+                    pass
+        else:
+            self._refresh_error = None
+        finally:
+            if schedule and not self._closed:
+                self.root.after(100, self.refresh)
+
+    def _refresh_once(self):
         b = self.backend
         self._sync_observations()
         for name, kind, value in b.poll():
@@ -611,8 +639,6 @@ class Workbench:
             self.coordinate_text.configure(state="disabled")
             self.coordinate_text.yview_moveto(scroll_position)
         self._log_rows = append_log(self.logbox, b.logs, self._log_rows)
-        if schedule:
-            self.root.after(100, self.refresh)
 
     def close(self):
         self._closed = True

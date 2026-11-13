@@ -55,6 +55,16 @@ def test_prior_conflict_and_insufficient_patch_have_specific_reasons():
     with pytest.raises(ValueError,match='INSUFFICIENT_INTERIOR_DEPTH'):recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])
 
 
+def test_prior_fit_rejects_mask_bleed_beyond_tolerance_on_either_face_axis():
+    # Within the 8 mm tolerance (+3 mm edge noise) on either axis: accepted.
+    for width,height in [(.15,.1),(.158,.1),(.15,.108)]:
+        p,m=plane(width=width,height=height);recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])
+    # Yaw-cell growth of the other side must not widen the face-size test.
+    for width,height in [(.15,.118),(.166,.1)]:
+        p,m=plane(width=width,height=height)
+        with pytest.raises(ValueError,match='DIMENSION_PRIOR_CONFLICT'):recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])
+
+
 def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
     from scipy.spatial.transform import Rotation
     p,m=plane(width=.24,height=.18)

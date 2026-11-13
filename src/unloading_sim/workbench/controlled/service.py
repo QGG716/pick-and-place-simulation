@@ -3,10 +3,11 @@ import json
 import multiprocessing as mp
 from pathlib import Path
 from queue import SimpleQueue
+import signal
 import threading
 import time
 import uuid
-from .engine import Supervisor,MonitorConfig,TERMINAL
+from .engine import Supervisor,MonitorConfig,TERMINAL,SubmissionRejected
 from .transport import RealmanTransport,payload_matches
 from .trajectory import expected_controller_payload
 
@@ -37,11 +38,13 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
         while True:
             msg=events.get()
             if msg is None:return
-            if '_open' in msg:
+            if '_file' in msg:
+                # Opened synchronously by the submit path before the engine
+                # accepts the package; a failure there rejects the submit.
                 try:
                     if record_file:record_file.close()
-                    record_file=open(msg['_open'],'a',buffering=1)
-                except Exception:engine.stop('LOG_OPEN_FAILED')
+                except Exception:pass
+                record_file=msg['_file']
             elif record_file:
                 try:
                     record_file.write(json.dumps(msg,allow_nan=False)+'\n')
@@ -67,15 +70,18 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
         while True:
             if stop_event.is_set():
                 engine.cancel()
-            # Independent watchdog still requests stop if a vendor call stalls.
+            # Independent watchdog still requests stop if a vendor call stalls,
+            # and latches STOP_UNCONFIRMED when the stop timeout passes while
+            # the timed thread cannot run tick() itself.
             if engine.state=='EXECUTING' and time.monotonic()-last_tick>.02:engine.stop('SEND_THREAD_STALLED')
+            if engine.state=='STOPPING' and time.monotonic()-last_tick>.02:engine.expire_stalled_stop()
             if not pipe.poll(.01):continue
             ident,op,arg=pipe.recv()
             attempt_dir=None;attempt_id=None
             try:
                 if op=='connect':
                     if engine.state=='STOP_UNCONFIRMED':raise RuntimeError('STOP_UNCONFIRMED_REQUIRES_LOCAL_INTERVENTION')
-                    value=transport.connect(*arg)
+                    engine.reset_continuity();value=transport.connect(*arg)
                 elif op=='snapshot':value=transport.latest
                 elif op=='feedback':value=dict(engine.feedback(transport.latest),connected=transport.connected,capabilities=transport.capabilities)
                 elif op=='check_payload':
@@ -107,7 +113,10 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     (task_dir/'controller.json').write_text(json.dumps(transport.capabilities,indent=2))
                     if not payload['matches']:raise RuntimeError(payload_error(payload))
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
-                    events.put({'_open':str(task_dir/'events.jsonl')})
+                    # A task without its event record never starts.
+                    try:handle=open(task_dir/'events.jsonl','a',buffering=1)
+                    except OSError as error:raise RuntimeError('LOG_OPEN_FAILED_NO_MOTION:'+str(error)) from error
+                    events.put({'_file':handle})
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                     value=engine.submit(arg['prepared'],transport.latest,task_id);active_package=arg
                 elif op=='cancel':
@@ -117,7 +126,7 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     if engine.state not in TERMINAL|{'READY'}:
                         engine.cancel();raise RuntimeError('STOPPING_WAIT_FOR_FEEDBACK')
                     if engine.state=='STOP_UNCONFIRMED':raise RuntimeError('STOP_UNCONFIRMED_KEEP_CONNECTION_AND_USE_LOCAL_STOP')
-                    transport.disconnect();value=None
+                    engine.reset_continuity();transport.disconnect();value=None
                     if op=='close':pipe.send((ident,True,value));break
                 else:raise ValueError('UNKNOWN_OPERATION')
                 pipe.send((ident,True,value))
@@ -125,8 +134,13 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                 if attempt_dir is not None and engine.task_id!=attempt_id:
                     (attempt_dir/'result.json').write_text(json.dumps(dict(task_id=attempt_id,state='REJECTED',reason=str(e),hardware_motion='NOT_STARTED')))
                 pipe.send((ident,False,str(e)))
-    except (EOFError,BrokenPipeError):
-        engine.cancel()
+    except (EOFError,BrokenPipeError,KeyboardInterrupt) as e:
+        if isinstance(e,KeyboardInterrupt):
+            # Terminal Ctrl-C reaches the whole process group. Stop the active
+            # segment and wait for feedback; a repeated Ctrl-C must not skip it.
+            signal.signal(signal.SIGINT,signal.SIG_IGN)
+            engine.stop('TERMINAL_INTERRUPT_SOFTWARE_STOP',True)
+        else:engine.cancel()
         deadline=time.monotonic()+engine.c.stop_timeout_s+.2
         while engine.state not in TERMINAL|{'READY'} and time.monotonic()<deadline:time.sleep(.01)
     finally:
@@ -153,11 +167,16 @@ class ExecutionService:
                 self.process=ctx.Process(target=worker,args=(child,self.mapping,self.config,self.stop_event,self.cancel_epoch),daemon=False);self.process.start();child.close()
             self._id+=1;ident=self._id;self.pipe.send((ident,op,arg))
             if not self.pipe.poll(10):
-                self.stop_event.set();self._poisoned=True;self.authority.invalidate()
+                # Advance the cancel epoch too: a submit still inside its
+                # pre-motion checks compares the epoch and would otherwise
+                # clear a bare stop flag and start after this timeout.
+                self._poisoned=True;self.request_stop();self.authority.invalidate()
                 raise RuntimeError('EXECUTION_PROCESS_TIMEOUT_STOP_STATUS_UNKNOWN')
             got,ok,value=self.pipe.recv()
             if got!=ident:raise RuntimeError('IPC_SEQUENCE_ERROR')
-            if not ok:raise RuntimeError(value)
+            # An explicit submit reply of failure is raised before engine
+            # acceptance in the child: nothing was sent for that package.
+            if not ok:raise (SubmissionRejected if op=='submit' else RuntimeError)(value)
             return value
     def connect(self,host,port):
         self.authority.invalidate();return self._call('connect',(host,port))
@@ -175,9 +194,10 @@ class ExecutionService:
             if (stamp.get('source')!='LIVE' or stamp.get('host_session')!=HOST_SESSION or
                     observation.get('robot_sample',{}).get('source')!='LIVE'):
                 self.authority.invalidate()
-                raise ValueError('SINGLE_CARTON_REPLAY_OR_FOREIGN_OBSERVATION_REJECTED')
+                raise SubmissionRejected('SINGLE_CARTON_REPLAY_OR_FOREIGN_OBSERVATION_REJECTED')
         # Consume even rejected starts: an old preview can never be retried.
-        self.authority.claim(trajectory,self.binding())
+        try:self.authority.claim(trajectory,self.binding())
+        except Exception as e:raise SubmissionRejected(str(e)) from e
         task=self._call('submit',dict(package=trajectory,cancel_epoch=ticket));self._active_id=task;return task
     def feedback(self,task_id=None):
         try:self._cache=self._call('feedback')

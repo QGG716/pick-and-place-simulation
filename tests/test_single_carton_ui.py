@@ -12,11 +12,12 @@ from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.devices import D435iObserver
 from unloading_sim.workbench.ui import load_mapping,URDF,URDF_SHA
 from unloading_sim.workbench.coordinates import Installation,CoordinateModel,Extrinsics
+from eco65_test_inputs import use_committed_installation
 
 ROOT=Path(__file__).resolve().parents[1]
 
 def test_single_carton_ui_starts_inert_and_rejects_preview_import(monkeypatch):
-    c=load(ROOT/'configs/workbench/single_carton.example.json')
+    c=use_committed_installation(load(ROOT/'configs/workbench/single_carton.example.json'))
     if not Path(c['execution']['snapshot']).exists():pytest.skip('Local model assets unavailable')
     def forbidden(*args,**kwargs):raise AssertionError('TEST_MUST_NOT_OPEN_HARDWARE')
     monkeypatch.setattr('unloading_sim.workbench.devices.realman_sdk',forbidden)

@@ -57,6 +57,9 @@ def load_config(path):
     if controller_mass!=c['tool_mass_kg'] and not (controller_mass==3. and c.get('controller_payload_basis')=='USER_REQUESTED_EMPTY_TEST_3_KG'):
         raise ValueError('CONTROLLER_TEST_PAYLOAD_REQUIRES_EXPLICIT_FIELD_SETTING')
     if c.get('field_confirmation')!='USER_CONFIRMED_DEVICES_COORDINATES_CALIBRATION':raise ValueError('FIELD_CONTEXT_MISSING')
+    # A field file may tighten, never loosen, the reviewed execution monitor.
+    from .engine import field_monitor_config
+    field_monitor_config(c.get('monitor',{}))
     for k in ('snapshot','installation','mapping','record_root'):
         c[k]=str((ROOT/c[k]).resolve())
     c['config_path']=str(path)

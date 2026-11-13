@@ -21,6 +21,30 @@ class WorkerSample:
     value: object
 
 
+class SampleHistory(deque):
+    """Bounded history appended by the device pump and read by task threads.
+
+    Iteration returns a snapshot taken under the same lock as every mutation,
+    so a concurrent append can no longer raise "deque mutated during iteration".
+    """
+    def __init__(self, maxlen):
+        super().__init__(maxlen=maxlen)
+        self._lock = threading.Lock()
+
+    def append(self, value):
+        with self._lock:
+            super().append(value)
+
+    def clear(self):
+        with self._lock:
+            super().clear()
+
+    def __iter__(self):
+        with self._lock:
+            items = list(deque.__iter__(self))
+        return iter(items)
+
+
 class DeviceWorker:
     def __init__(self, name, device, interval=.1):
         self.name, self.device, self.interval = name, device, interval
@@ -123,7 +147,7 @@ class WorkbenchBackend:
                         "vacuum": DeviceWorker("vacuum", vacuum, .01)}
         self.logs = deque(maxlen=300)
         self.frame = self.joint = self.pressure = self.detections = None
-        self.joint_history = deque(maxlen=128)
+        self.joint_history = SampleHistory(maxlen=128)
         self.replay = None
         self.replay_active = False
         self.replay_exhausted = False

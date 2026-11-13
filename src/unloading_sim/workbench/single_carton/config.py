@@ -23,6 +23,13 @@ def release_policy_evidence(c):
     raise ValueError('INVALID_RELEASE_POLICY: 必须明确选择实测承接检查或用户已要求的资格核验延期策略')
 
 
+# Pressure gate approved on 2026-11-11 (two fresh heartbeats over >= 1 s, 3 s
+# grip/release timeouts) and the reviewed freshness bound of the example file.
+VACUUM_MIN_DWELL_S=1.
+VACUUM_MAX_TIMEOUT_S=3.
+VACUUM_MAX_AGE_S=3.
+
+
 def issues(c):
     errors=[]
     try:release_policy_evidence(c)
@@ -80,6 +87,16 @@ def issues(c):
             for seq in ('establish_commands','release_commands'):
                 if not all(type(x)==int and x in {0x12,0x13,0x51,0x52,0x53,0x54,0x55,0x56} for x in vacuum[seq]):raise ValueError()
         except (ValueError,TypeError):errors.append('真空压力、时间或阀门指令参数非法')
+        else:
+            # User-approved pressure gate: a file may only tighten these.
+            try:
+                looser=[k for k in ('grip_dwell_s','release_dwell_s') if vacuum[k]<VACUUM_MIN_DWELL_S]
+                looser+=[k for k in ('grip_timeout_s','release_timeout_s') if vacuum[k]>VACUUM_MAX_TIMEOUT_S]
+                looser+=['max_age_s'] if vacuum['max_age_s']>VACUUM_MAX_AGE_S else []
+            except TypeError:looser=['vacuum']
+            if looser:
+                errors.append('vacuum：'+'、'.join(looser)+f' 比用户批准值宽松；停留须 ≥ {VACUUM_MIN_DWELL_S:g} s，'
+                              f'抓取/释放超时须 ≤ {VACUUM_MAX_TIMEOUT_S:g} s，压力数据年龄须 ≤ {VACUUM_MAX_AGE_S:g} s（只能收紧）')
     return errors
 
 

@@ -12,6 +12,7 @@ from unloading_sim.workbench.controlled.transport import RealmanTransport
 from unloading_sim.workbench.controlled.service import ExecutionService
 from unloading_sim.workbench.ui import load_mapping
 from unloading_sim.workbench.controlled.planner import ROOT,load_config,EmptyPlanner
+from eco65_test_inputs import use_committed_installation
 
 LIMITS=Limits((-3.,)*6,(3.,)*6,(.2,)*6,(1.,)*6)
 
@@ -194,11 +195,15 @@ def test_sdk_boundary_exact_canfd_no_filter_and_stop_guard():
 
 def test_stop_channel_has_only_fixed_stop_command_and_parses_split_reply(monkeypatch):
     from unloading_sim.workbench.controlled.transport import StopChannel
+    import socket
     class Socket:
-        def __init__(self):self.sent=[];self.replies=[b'{"command":"set_arm_',b'stop","arm_stop":true}\r\n'];self.closed=False
-        def settimeout(self,x):pass
-        def sendall(self,b):self.sent.append(b)
-        def recv(self,n):return self.replies.pop(0)
+        # A reply exists only after the request was sent, as on a real socket.
+        def __init__(self):self.sent=[];self.replies=[];self.closed=False;self.timeout=None
+        def settimeout(self,x):self.timeout=x
+        def sendall(self,b):self.sent.append(b);self.replies+=[b'{"command":"set_arm_',b'stop","arm_stop":true}\r\n']
+        def recv(self,n):
+            if self.replies:return self.replies.pop(0)
+            raise BlockingIOError() if self.timeout==0 else socket.timeout()
         def close(self):self.closed=True
     sock=Socket();monkeypatch.setattr('socket.create_connection',lambda *a,**k:sock)
     channel=StopChannel('fake',8080);assert not sock.sent
@@ -301,7 +306,7 @@ def test_controller_limits_do_not_widen_native_limits():
 @pytest.mark.real_eco65_asset
 def test_full_geometry_and_mass_are_preserved_without_simulation_exemptions():
     import xml.etree.ElementTree as E
-    c=load_config(ROOT/'configs/workbench/controlled.example.json')
+    c=use_committed_installation(load_config(ROOT/'configs/workbench/controlled.example.json'))
     if not Path(c['snapshot']).is_file():pytest.skip('local full-geometry source unavailable')
     p=EmptyPlanner(c,load_mapping(c['mapping']),Authority());p.build()
     source=p.source['native_model']['init'];old=E.fromstring(source['parameters']['robot_description']);new=E.fromstring(p.init['parameters']['robot_description'])
@@ -365,3 +370,41 @@ def test_nonfinite_or_zero_payload_cannot_pass():
     assert payload_matches({'payload':1.5},1.5)
     for value in (float('nan'),float('inf'),0.,5.,None,'invalid'):
         assert not payload_matches({'payload':value},1.5)
+
+
+def test_child_refusal_of_submit_is_definitive_but_timeout_is_not():
+    from unloading_sim.workbench.controlled.engine import SubmissionRejected
+    class Pipe:
+        def __init__(self,reply):self.reply=reply
+        def send(self,message):self.sent=message
+        def poll(self,timeout):return self.reply is not None
+        def recv(self):return (self.sent[0],*self.reply)
+    service=ExecutionService(None,{},Authority(),lambda:{});service.process=object();service.stop_event=threading.Event()
+    service.pipe=Pipe((False,'CONTROLLER_PAYLOAD_MUST_MATCH_3_5_KG'))
+    with pytest.raises(SubmissionRejected,match='PAYLOAD'):service._call('submit',{})
+    with pytest.raises(RuntimeError) as other:service._call('feedback')
+    assert not isinstance(other.value,SubmissionRejected)
+    service.pipe=Pipe(None)
+    with pytest.raises(RuntimeError,match='TIMEOUT') as unknown:service._call('submit',{})
+    assert not isinstance(unknown.value,SubmissionRejected) and service._poisoned and service.stop_event.is_set()
+
+
+def test_terminal_interrupt_in_execution_process_requests_stop_and_waits(monkeypatch):
+    from unloading_sim.workbench.controlled import service as module
+    calls=[]
+    class Transport:
+        def __init__(self,*args):self.latest=None;self.connected=False;self.capabilities={}
+        def disconnect(self):calls.append('disconnect')
+    class Engine:
+        c=MonitorConfig()
+        def __init__(self,*args):self.state='EXECUTING';self.task_id='task'
+        def tick(self,sample):pass
+        def cancel(self):calls.append('cancel')
+        def stop(self,reason,cancelled=False):calls.append(('stop',reason,cancelled));self.state='CANCELLED'
+    class Pipe:
+        def poll(self,timeout):raise KeyboardInterrupt
+    monkeypatch.setattr(module,'RealmanTransport',Transport);monkeypatch.setattr(module,'Supervisor',Engine)
+    monkeypatch.setattr(module.signal,'signal',lambda *args:calls.append(('signal',)+args))
+    module.worker(Pipe(),None,{},threading.Event())
+    assert ('signal',module.signal.SIGINT,module.signal.SIG_IGN) in calls
+    assert ('stop','TERMINAL_INTERRUPT_SOFTWARE_STOP',True) in calls and calls[-1]=='disconnect'
