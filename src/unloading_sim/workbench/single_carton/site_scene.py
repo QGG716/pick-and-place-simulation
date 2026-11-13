@@ -20,7 +20,7 @@ import cv2
 import numpy as np
 from ..coordinates import rigid
 from ..detection import metric_points
-from .geometry import transform
+from .geometry import transform, obb_overlap_depth
 
 # Target-local scene rules (metres / pixels). Plane band is several times the
 # recorded RANSAC RMS; the pixel band only reaches SAM border misses.
@@ -34,6 +34,11 @@ SUPPORT_BELOW_M=.015
 SUPPORT_ABOVE_M=.004
 SUPPORT_MIN_POINTS=30
 SUPPORT_MIN_THICKNESS_M=.005
+# A near-target run whose measured-extent box still overlaps a target
+# envelope is re-emitted as boxes over these sub-cells, each covering only
+# its own measured points (+ pad), so one 4 cm cell's L-shaped point set no
+# longer fills the empty corner that reaches into the envelope.
+NEAR_TARGET_SUBCELL_M=.01
 
 
 def user_cleared_unknown(c):
@@ -46,6 +51,24 @@ def user_cleared_unknown(c):
     raise ValueError('UNKNOWN_SPACE_POLICY_INVALID')
 
 
+def target_envelope_points_assigned(c):
+    """Whether unclaimed measured points inside a target's own envelope join the target.
+
+    OBSTACLE (default) keeps them as world obstacles. TARGET_USER_CONFIRMED
+    assigns them to the target only with a recorded field basis: the user has
+    confirmed such points as false obstacles (e.g. box-edge pixels just outside
+    the SAM mask). Points outside the envelope are never affected.
+    """
+    policy=c.get('target_envelope_points','OBSTACLE')
+    if policy=='OBSTACLE':return False
+    if policy=='TARGET_USER_CONFIRMED':
+        basis=c.get('target_envelope_points_basis');margin=c.get('target_envelope_points_margin_m',0.)
+        if not isinstance(basis,str) or not basis.strip():raise ValueError('TARGET_ENVELOPE_POINTS_FIELD_BASIS_REQUIRED')
+        if not isinstance(margin,(int,float)) or not 0<=margin<=.02:raise ValueError('TARGET_ENVELOPE_POINTS_MARGIN_INVALID')
+        return True
+    raise ValueError('TARGET_ENVELOPE_POINTS_POLICY_INVALID')
+
+
 def load_site(path):
     c=json.loads(Path(path).read_text())
     if c.get('schema')!='eco65_real_site_v1' or c.get('frame')!='base_link':
@@ -55,7 +78,7 @@ def load_site(path):
     if (lo.shape!=(3,) or not np.isfinite([lo,hi]).all() or np.any(hi<=lo)
             or not .005<=cell<=.08 or np.prod(np.ceil((hi-lo)/cell))>300000):
         raise ValueError('INVALID_BOUNDED_SITE_WORKSPACE')
-    user_cleared_unknown(c)
+    user_cleared_unknown(c);target_envelope_points_assigned(c)
     ids=set()
     for b in c.get('fixed_obstacles',[]):
         if b['id'] in ids or not b.get('measurement_basis'):raise ValueError('SITE_OBSTACLE_ID_OR_MEASUREMENT_REQUIRED')
@@ -211,6 +234,19 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),valid,world_points,jump)
         claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
     flying&=~claimed
+    assign_envelope=target_envelope_points_assigned(config)
+    if assign_envelope:
+        # User-confirmed: what is left inside a target's own full envelope is
+        # that target (edge pixels SAM missed), not a separate world solid.
+        margin=float(config.get('target_envelope_points_margin_m',0.))
+        for box,record in zip(boxes,evidence):
+            half=np.asarray(box['size_m'],float)/2+margin
+            # The margin never reaches below the envelope bottom: the surface the
+            # target stands on stays a measured support, never part of the target.
+            bottom=float(np.asarray(box['corners_m'],float)[:,2].min())
+            inside=(valid&~claimed&~flying&(world_points[...,2]>=bottom)&
+                    np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
+            claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     observed=world_points[valid&~claimed&~flying]
     removed_self=0
     if self_filter is not None:
@@ -276,6 +312,15 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     tight=np.zeros(cells,bool);tight[linear[rest&near]]=True
     low=np.full((cells,3),np.inf);high=np.full((cells,3),-np.inf)
     np.minimum.at(low,linear[rest],observed[rest]);np.maximum.at(high,linear[rest],observed[rest])
+    # Points of every near-target cell, for sub-cell refinement below.
+    cell_points={}
+    if len(linear):
+        chosen=np.flatnonzero(rest&tight[linear])
+        chosen=chosen[np.argsort(linear[chosen],kind='stable')]
+        keys,starts=np.unique(linear[chosen],return_index=True)
+        for key,group in zip(keys,np.split(chosen,starts[1:])):cell_points[int(key)]=observed[group]
+    envelopes=[(np.asarray(b['pose'],float),np.asarray(b['size_m'],float)/2) for b in boxes]
+    refined_runs=0;refined_boxes=0
     emit=emit.reshape(tuple(shape));tight=tight.reshape(tuple(shape))
     low=low.reshape(*shape,3);high=high.reshape(*shape,3);tight_runs=0;camera_side_runs=0;camera_origin=W[:3,3]
     grids=[('observed',emit)]
@@ -292,6 +337,17 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                         # Near a target: measured extent only, never the whole cell.
                         lower=np.maximum(lower,low[ix,iy,a:b].min(0)-MEASURED_EXTENT_PAD_M)
                         upper=np.minimum(upper,high[ix,iy,a:b].max(0)+MEASURED_EXTENT_PAD_M);tight_runs+=1
+                        run=np.eye(4);run[:3,3]=(lower+upper)/2
+                        if any(obb_overlap_depth(run,(upper-lower)/2,T,h)>0 for T,h in envelopes):
+                            pts=np.concatenate([cell_points[k] for k in (np.ravel_multi_index((ix,iy,z),tuple(shape)) for z in range(a,b)) if k in cell_points])
+                            groups=np.floor((pts-lower)/NEAR_TARGET_SUBCELL_M).astype(int)
+                            _,which=np.unique(groups,axis=0,return_inverse=True);which=which.ravel()
+                            for j in range(which.max()+1):
+                                member=pts[which==j]
+                                world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}_s{j}',np.maximum(lower,member.min(0)-MEASURED_EXTENT_PAD_M),
+                                                  np.minimum(upper,member.max(0)+MEASURED_EXTENT_PAD_M),kind))
+                            refined_runs+=1;refined_boxes+=which.max()+1
+                            continue
                     elif kind=='observed' and cleared_unknown:
                         # Camera-facing sides only: between the camera and the
                         # first measured return lies ray-traversed space or space
@@ -315,10 +371,15 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         user_confirmed_clear_unknown_voxels=int((unknown&~shadow).sum()) if cleared_unknown else 0,
         unreconstructed_detections=unreconstructed,neighbor_shadow_voxels=int(shadow.sum()),
         neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
+        target_envelope_points=config.get('target_envelope_points','OBSTACLE'),
+        target_envelope_points_basis=config.get('target_envelope_points_basis') if assign_envelope else None,
+        target_envelope_points_margin_m=float(config.get('target_envelope_points_margin_m',0.)) if assign_envelope else None,
+        target_envelope_points_evidence='USER_FIELD_CONFIRMATION_FALSE_OBSTACLES_NOT_SENSOR_OBSERVATION' if assign_envelope else None,
         unknown_clearance_basis=config.get('unknown_clearance_basis') if cleared_unknown else None,
         unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
         observed_voxels=int(measured.sum()),target_local_scene=evidence,observed_supports=supports,
-        near_target_measured_extent_runs=tight_runs,camera_facing_measured_extent_runs=camera_side_runs,
+        near_target_measured_extent_runs=tight_runs,near_target_refined_runs=refined_runs,near_target_refined_boxes=refined_boxes,
+        near_target_subcell_m=NEAR_TARGET_SUBCELL_M,camera_facing_measured_extent_runs=camera_side_runs,
         camera_facing_rule='USER_CONFIRMED_CLEAR_ONLY_CAMERA_SIDE_TO_MEASURED_EXTENT_FAR_SIDE_FULL_CELL' if cleared_unknown else 'NOT_APPLIED_OCCUPIED_POLICY_FULL_CELLS',target_local_rules=dict(plane_band_m=TARGET_PLANE_BAND_M,
             pixel_band_px=TARGET_PIXEL_BAND_PX,flying_depth_jump_m=FLYING_DEPTH_JUMP_M,near_target_m=NEAR_TARGET_M,
             measured_extent_pad_m=MEASURED_EXTENT_PAD_M,support_window_m=[-SUPPORT_BELOW_M,SUPPORT_ABOVE_M]),

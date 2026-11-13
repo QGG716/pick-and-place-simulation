@@ -1,0 +1,92 @@
+{
+  "schema": "eco65_user_confirmed_false_obstacle_report_v1",
+  "date": "2026-11-13",
+  "scope": "OFFLINE_REPLAY_TASK_1980356201804419a9e66e4063b9d732_NOT_EXECUTABLE_NOT_PHYSICAL_ACCEPTANCE",
+  "hardware_execution": "NOT_RUN",
+  "field_result_before": "TARGET_PAYLOAD_INTERSECTS_AT_REST: rgbd_observed_6_15_11 18.7 mm (4 objects)",
+  "diagnosis": {
+    "points_inside_envelope": 72,
+    "per_object": {
+      "rgbd_observed_6_15_11": [
+        345,
+        10
+      ],
+      "rgbd_observed_6_20_11": [
+        2728,
+        48
+      ],
+      "rgbd_observed_6_20_14": [
+        6,
+        6
+      ],
+      "rgbd_observed_7_19_12": [
+        5,
+        5
+      ]
+    },
+    "note": "[generating points, of which inside the envelope]; inside points lie 2-5 px outside the SAM mask at the box bottom corners and right edge, 0-10 mm above the tray top (6 at ~80 mm); 4 cm cell boxes joined them with tray-pocket points below, inflating the overlap"
+  },
+  "user_decision": "objects beside the box are false detections; root cause to be investigated later; run the full flow first",
+  "policy": {
+    "target_envelope_points": "TARGET_USER_CONFIRMED",
+    "margin_m": 0.008,
+    "below_envelope_bottom": "never assigned (support stays measured)",
+    "default_elsewhere": "OBSTACLE",
+    "points_assigned": 504
+  },
+  "near_target_subcell_refinement": {
+    "subcell_m": 0.01,
+    "refined_runs": 0
+  },
+  "planning": {
+    "planning_s": 250.83,
+    "candidate": 7,
+    "lanes": 7,
+    "detach_profile": "DIAGONAL_45",
+    "active_seals": 6,
+    "seal_valid": true,
+    "release": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+    "segments": [
+      {
+        "stage": "approach",
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "points": 6427,
+        "send_duration_s": 32.13,
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "contact",
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "detach",
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "points": 2456,
+        "send_duration_s": 12.275,
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "return",
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "points": 6380,
+        "send_duration_s": 31.895,
+        "sent_path_collision": "PASS"
+      }
+    ],
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 19,
+      "approach": 2,
+      "INTERPOLATION_LIMIT": 1
+    }
+  },
+  "source_record_unchanged": true,
+  "permits_issued": 0,
+  "directed_tests": "405 passed"
+}

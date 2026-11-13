@@ -335,3 +335,22 @@ def candidate_contact_check(tcp,candidate):
     check['terminal_lip_contact']=dict(valid=valid,minimum_plane_gap_m=float(np.min(gaps)),ids=list(rings))
     check['valid']=check['valid'] and valid
     return check
+
+
+def obb_overlap_depth(Ta,half_a,Tb,half_b):
+    """Separating-axis test for two oriented boxes.
+
+    Returns the smallest overlap along all 15 candidate axes: positive is a
+    certain penetration of at least that depth, zero or negative is touching
+    or separated.
+    """
+    Ta=np.asarray(Ta,float);Tb=np.asarray(Tb,float);Ra=Ta[:3,:3];Rb=Tb[:3,:3]
+    half_a=np.asarray(half_a,float);half_b=np.asarray(half_b,float);t=Tb[:3,3]-Ta[:3,3]
+    axes=[Ra[:,i] for i in range(3)]+[Rb[:,i] for i in range(3)]+[np.cross(Ra[:,i],Rb[:,j]) for i in range(3) for j in range(3)]
+    depth=np.inf
+    for axis in axes:
+        length=np.linalg.norm(axis)
+        if length<1e-9:continue
+        axis=axis/length
+        depth=min(depth,np.abs(Ra.T@axis)@half_a+np.abs(Rb.T@axis)@half_b-abs(axis@t))
+    return float(depth)

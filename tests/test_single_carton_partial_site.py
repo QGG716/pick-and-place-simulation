@@ -248,3 +248,81 @@ def test_release_requires_real_support_and_all_geometry_hypotheses():
     with pytest.raises(ValueError,match='GEOMETRY_UNCERTAINTY_AFFECTS_RECEIVER'):p.release_check(np.zeros(6),T,uncertain,world)
     c['site']['receiver']['bounds_m'][0][0]=-.5
     with pytest.raises(ValueError,match='REGION_NOT_COVERED'):p.release_check(np.zeros(6),T,box,world)
+
+
+def envelope_scene_case():
+    """Flat depth at 0.50 m; a target envelope that the unmasked depth enters.
+
+    World = camera (T = I). Envelope x 0..60 mm, y -40..40 mm, z 490..550 mm;
+    SAM missed every pixel, so with the default policy the points inside the
+    envelope are world obstacles. Six columns just beyond +x lie within 8 mm.
+    """
+    f=frame();shape=(40,60);depth=np.full(shape,500,np.uint16)
+    f=replace(f,intrinsics=dict(width=60,height=40,fx=200,fy=200,ppx=30,ppy=20,model='SYNTHETIC_PINHOLE',coeffs=[0]*5),
+              rgb=np.zeros((*shape,3),np.uint8),depth=depth)
+    obs=observation(f);mask=np.zeros(shape,bool)
+    T=np.eye(4);T[:3,3]=[.03,0.,.52];size=[.06,.08,.06]
+    from unloading_sim.workbench.single_carton.geometry import corners
+    face=dict(observed=True,center_m=[.03,0.,.49],normal=[0.,0.,-1.],u=[1.,0.,0.],v=[0.,-1.,0.],size_m=[.04,.06])
+    box=dict(id='target',detection_index=0,pose=T.tolist(),size_m=size,corners_m=corners(T,size).tolist(),faces=[face],quality={})
+    result=DetectionResult(f.observation_id,f.stamp.source,1,({'label':'carton','score':.9,'frame_id':'camera_optical'},),(mask,))
+    site=dict(workspace_bounds_m=[[-.08,-.08,.45],[.12,.08,.6]],voxel_m=.04,unknown_policy='USER_CONFIRMED_CLEAR',
+              unknown_clearance_basis='SYNTHETIC_TEST',fixed_obstacles=[],measured_clear_regions=[])
+    return obs,result,box,site
+
+
+def covered(world,points):
+    boxes=[(np.asarray(o['pose'])[:3,3],np.asarray(o['size'])/2) for o in world if o['category']=='observed']
+    return all(any(np.all(abs(p-c)<=h+1e-9) for c,h in boxes) for p in points)
+
+
+def test_points_inside_target_envelope_stay_obstacles_by_default():
+    obs,result,box,site=envelope_scene_case()
+    scene=build_scene(obs,result,[box],site)
+    assert scene['target_envelope_points']=='OBSTACLE' and scene['target_envelope_points_basis'] is None
+    assert 'envelope_points_assigned_user_confirmed' not in scene['target_local_scene'][0]
+    world=scene['world']+[dict(id='target',pose=box['pose'],size=box['size_m'],category='carton')]
+    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json'),None,None,None).payload_rest_check(world,box)
+    assert rest['intersections'] and all(h['category']=='observed' for h in rest['intersections'])
+    # Near-target refinement never drops a measured point.
+    assert scene['near_target_refined_runs']>0
+    from unloading_sim.workbench.detection import metric_points
+    assert covered(scene['world'],metric_points(obs.frame).reshape(-1,3))
+
+
+@pytest.mark.parametrize('margin',[0.,.008])
+def test_user_confirmed_policy_assigns_only_points_in_envelope_plus_margin(margin):
+    obs,result,box,site=envelope_scene_case()
+    site.update(target_envelope_points='TARGET_USER_CONFIRMED',target_envelope_points_basis='SYNTHETIC_USER_CONFIRMATION',
+                target_envelope_points_margin_m=margin)
+    scene=build_scene(obs,result,[box],site)
+    from unloading_sim.workbench.detection import metric_points
+    p=metric_points(obs.frame).reshape(-1,3);half=np.asarray(box['size_m'])/2+margin
+    expected=np.all(abs(p-np.asarray(box['pose'])[:3,3])<=half,axis=1)&(p[:,2]>=.49)
+    assert scene['target_local_scene'][0]['envelope_points_assigned_user_confirmed']==int(expected.sum())>0
+    assert scene['target_envelope_points_evidence']=='USER_FIELD_CONFIRMATION_FALSE_OBSTACLES_NOT_SENSOR_OBSERVATION'
+    assert scene['target_envelope_points_margin_m']==margin
+    # Every point outside the assigned region is still covered by an obstacle box.
+    assert covered(scene['world'],p[~expected])
+    world=scene['world']+[dict(id='target',pose=box['pose'],size=box['size_m'],category='carton')]
+    rest=SinglePlanner(load(ROOT/'configs/workbench/single_carton.example.json'),None,None,None).payload_rest_check(world,box)
+    assert rest['intersections']==[]
+    if margin:assert int(expected.sum())>int((np.all(abs(p-np.asarray(box['pose'])[:3,3])<=half-margin,axis=1)&(p[:,2]>=.49)).sum())
+
+
+@pytest.mark.parametrize('update,reason',[
+    (dict(target_envelope_points='TARGET_USER_CONFIRMED'),'FIELD_BASIS_REQUIRED'),
+    (dict(target_envelope_points='TARGET_USER_CONFIRMED',target_envelope_points_basis=' '),'FIELD_BASIS_REQUIRED'),
+    (dict(target_envelope_points='TARGET_USER_CONFIRMED',target_envelope_points_basis='x',target_envelope_points_margin_m=.05),'MARGIN_INVALID'),
+    (dict(target_envelope_points='IGNORE'),'POLICY_INVALID')])
+def test_target_envelope_policy_needs_explicit_basis_and_bounded_margin(update,reason,tmp_path):
+    c=json.loads((ROOT/'configs/workbench/real_site.example.json').read_text())
+    for k in ('target_envelope_points','target_envelope_points_basis','target_envelope_points_margin_m'):c.pop(k,None)
+    c.update(update);path=tmp_path/'site.json';path.write_text(json.dumps(c))
+    with pytest.raises(ValueError,match=reason):load_site(path)
+
+
+def test_default_site_records_the_user_confirmed_false_obstacle_basis():
+    c=load_site(ROOT/'configs/workbench/real_site.example.json')
+    assert c['target_envelope_points']=='TARGET_USER_CONFIRMED' and c['target_envelope_points_margin_m']==.008
+    assert '1980356201804419a9e66e4063b9d732' in c['target_envelope_points_basis']

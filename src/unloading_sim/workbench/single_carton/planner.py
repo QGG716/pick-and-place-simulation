@@ -10,7 +10,7 @@ import numpy as np
 from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
-from .geometry import corners,contact_candidates,candidate_contact_check,transform
+from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
 from .config import release_policy_evidence
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
@@ -59,24 +59,6 @@ class SegmentRejected(ValueError):
     def __init__(self,stage,message,result=None):
         super().__init__(message);self.stage=stage;self.native_result=result
 
-
-def obb_overlap_depth(Ta,half_a,Tb,half_b):
-    """Separating-axis test for two oriented boxes.
-
-    Returns the smallest overlap along all 15 candidate axes: positive is a
-    certain penetration of at least that depth, zero or negative is touching
-    or separated.
-    """
-    Ta=np.asarray(Ta,float);Tb=np.asarray(Tb,float);Ra=Ta[:3,:3];Rb=Tb[:3,:3]
-    half_a=np.asarray(half_a,float);half_b=np.asarray(half_b,float);t=Tb[:3,3]-Ta[:3,3]
-    axes=[Ra[:,i] for i in range(3)]+[Rb[:,i] for i in range(3)]+[np.cross(Ra[:,i],Rb[:,j]) for i in range(3) for j in range(3)]
-    depth=np.inf
-    for axis in axes:
-        length=np.linalg.norm(axis)
-        if length<1e-9:continue
-        axis=axis/length
-        depth=min(depth,np.abs(Ra.T@axis)@half_a+np.abs(Rb.T@axis)@half_b-abs(axis@t))
-    return float(depth)
 
 class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
