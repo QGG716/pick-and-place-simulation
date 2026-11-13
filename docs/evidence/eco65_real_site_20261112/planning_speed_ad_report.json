@@ -1,0 +1,332 @@
+{
+  "schema": "eco65_planning_speed_ad_report_v1",
+  "date": "2026-11-13",
+  "scope": "OFFLINE_REPLAY_PLANNING_SPEED_A_TO_D_NOT_EXECUTABLE_NOT_PHYSICAL_ACCEPTANCE",
+  "changes": {
+    "A": "candidate-independent payload rest check before native planning; payload/world failure at detach stops the target",
+    "B": "native IK from q_start, own solutions and 64 fixed seeds; up to 3 branches closest to q_start checked",
+    "C": "all four segments planned before any final dense sent-path check; approach and return planned concurrently",
+    "D": "final sent-path check split into contiguous chunks over 1+native_check_workers resident workers; every state still checked"
+  },
+  "checks_unchanged": "no clearance, margin, sampling density, contact or seal rule changed; same native worker binary",
+  "bb88010f": {
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "task_id": "bb88010f39ae4abdbccfeac31472d687",
+    "hardware_execution": "NOT_RUN",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "planning_s": 695.47,
+    "perception_and_scene_s": 22.75,
+    "source_record_unchanged": true,
+    "native_check_pool": [
+      {
+        "index": 0,
+        "state": "READY"
+      },
+      {
+        "index": 1,
+        "state": "READY"
+      },
+      {
+        "index": 2,
+        "state": "READY"
+      },
+      {
+        "index": 3,
+        "state": "READY"
+      },
+      {
+        "index": 4,
+        "state": "READY"
+      },
+      {
+        "index": 5,
+        "state": "READY"
+      }
+    ],
+    "complete_plan": {
+      "status": "COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE",
+      "candidate_index": 18,
+      "endpoint_screen": "CLEAR",
+      "active_seal_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_014_seal",
+        "part_016_seal"
+      ],
+      "detach_profile": "DIAGONAL_45",
+      "seal_check": {
+        "valid": true,
+        "observed_surface_covered": true,
+        "minimum_edge_margin_m": 0.0213197396648004,
+        "maximum_gap_m": 5.32158768782028e-09,
+        "normal_error_rad": 7.598131170262078e-08,
+        "connected_cup_ids": [
+          "part_008_seal",
+          "part_010_seal",
+          "part_014_seal",
+          "part_016_seal"
+        ],
+        "terminal_lip_contact": {
+          "valid": true,
+          "minimum_plane_gap_m": -5.3467705357116886e-09,
+          "ids": [
+            "part_002_seal",
+            "part_004_seal",
+            "part_006_seal",
+            "part_008_seal",
+            "part_010_seal",
+            "part_012_seal",
+            "part_014_seal",
+            "part_016_seal",
+            "part_018_seal",
+            "part_020_seal",
+            "part_022_seal",
+            "part_024_seal"
+          ]
+        }
+      },
+      "release": {
+        "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+        "pose": [
+          [
+            -0.16618069987627368,
+            -0.9840815051696712,
+            0.06298861938181939,
+            0.0072447523206529765
+          ],
+          [
+            0.981982415882177,
+            -0.15932161680914703,
+            0.10162262206577347,
+            -0.3496513552449838
+          ],
+          [
+            -0.08996949420128779,
+            0.07874143509179433,
+            0.9928269116582461,
+            0.2941718617643637
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "corners_m": [
+          [
+            0.09463722112998035,
+            -0.4413123665628519,
+            0.24311573299899575
+          ],
+          [
+            0.10150298064259866,
+            -0.4302355007576826,
+            0.3513338663697446
+          ],
+          [
+            -0.053797627059784324,
+            -0.46534379066764303,
+            0.25499277052352426
+          ],
+          [
+            -0.046931867547166016,
+            -0.4542669248624737,
+            0.36321090389427313
+          ],
+          [
+            0.06142137218847197,
+            -0.2450357856274939,
+            0.2251328196344543
+          ],
+          [
+            0.06828713170109027,
+            -0.23395891982232458,
+            0.3333509530052032
+          ],
+          [
+            -0.08701347600129272,
+            -0.26906720973228504,
+            0.23700985715898285
+          ],
+          [
+            -0.08014771648867441,
+            -0.25799034392711573,
+            0.3452279905297317
+          ]
+        ],
+        "region": {
+          "ids": []
+        },
+        "q_return": [
+          1.5112456927168503,
+          0.27872908154349446,
+          -1.207802748965116,
+          -0.536165146212658,
+          1.5139334997649214,
+          1.346294625110866
+        ],
+        "support_confirmed": false,
+        "qualification": {
+          "policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+          "qualification_deferred": true,
+          "basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
+          "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+          "support_confirmed": false
+        },
+        "basis": "SAME_LOCKED_Q_START_RECEIVING_NOT_QUALIFIED_COLLISION_CHECKS_REQUIRED"
+      },
+      "segments": [
+        {
+          "stage": "approach",
+          "points": 6439,
+          "send_duration_s": 32.19,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25
+          },
+          "parallel_checkers": 7,
+          "sent_check_wall_s": 73.22154092902201
+        },
+        {
+          "stage": "contact",
+          "points": 682,
+          "send_duration_s": 3.4050000000000002,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.25,
+            "acceleration_scale": 0.25,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0
+          },
+          "parallel_checkers": 4,
+          "sent_check_wall_s": 4.162025266996352
+        },
+        {
+          "stage": "detach",
+          "points": 2456,
+          "send_duration_s": 12.275,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "LIN",
+            "velocity_scale": 0.1,
+            "acceleration_scale": 0.1,
+            "goal": "POSE",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 2.0
+          },
+          "parallel_checkers": 7,
+          "sent_check_wall_s": 7.144427048013313
+        },
+        {
+          "stage": "return",
+          "points": 6391,
+          "send_duration_s": 31.95,
+          "native_plan": "PASS",
+          "sent_path_collision": "PASS",
+          "planner": {
+            "pipeline_id": "pilz_industrial_motion_planner",
+            "planner_id": "PTP",
+            "velocity_scale": 1.0,
+            "acceleration_scale": 1.0,
+            "goal": "JOINT",
+            "configured_time_scale": 1.0,
+            "send_time_scale": 1.25
+          },
+          "parallel_checkers": 7,
+          "sent_check_wall_s": 91.65783703999477
+        }
+      ]
+    },
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 21,
+      "detach": 3,
+      "INTERPOLATION_LIMIT": 2,
+      "approach": 3
+    }
+  },
+  "task_2814e675": {
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "task_id": "2814e675a9cc41fa838257de1b844bad",
+    "hardware_execution": "NOT_RUN",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "planning_s": 0.14,
+    "perception_and_scene_s": 19.6,
+    "source_record_unchanged": true,
+    "native_check_pool": [
+      {
+        "index": 0,
+        "state": "STARTING"
+      },
+      {
+        "index": 1,
+        "state": "STARTING"
+      },
+      {
+        "index": 2,
+        "state": "STARTING"
+      },
+      {
+        "index": 3,
+        "state": "STARTING"
+      },
+      {
+        "index": 4,
+        "state": "STARTING"
+      },
+      {
+        "index": 5,
+        "state": "STARTING"
+      }
+    ],
+    "failure": "TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 rgbd_observed_6_15_11 相交 20.5 mm（共 4 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划",
+    "evidence": {
+      "intersections": [
+        {
+          "id": "rgbd_observed_6_15_11",
+          "category": "observed",
+          "overlap_depth_m": 0.02046302913617576
+        },
+        {
+          "id": "rgbd_observed_6_20_11",
+          "category": "observed",
+          "overlap_depth_m": 0.017411402847075083
+        },
+        {
+          "id": "rgbd_observed_7_20_12",
+          "category": "observed",
+          "overlap_depth_m": 0.01003561052349379
+        },
+        {
+          "id": "rgbd_observed_7_15_11",
+          "category": "observed",
+          "overlap_depth_m": 0.009181903705152844
+        }
+      ],
+      "outside_workspace": false,
+      "supports": [
+        "rgbd_support_ba9b8d52-423b-4f8f-8e76-14108f2b8fbc-carton-0"
+      ]
+    }
+  },
+  "before": {
+    "bb88010f_successful_replay_planning_s": 1017.33,
+    "task_2814e675_field_planning_s": 1388,
+    "note": "before = previous code on the same saved records (remote GPU detection)"
+  }
+}

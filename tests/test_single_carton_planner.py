@@ -87,7 +87,17 @@ def test_full_loaded_chain_validated_before_any_permit(case):
     recorded=json.loads(next(folder.glob('*/loaded-start-check.json')).read_text())
     assert recorded['result']['native_valid'] and recorded['request']['stage']=='return'
     assert len(p.authority._plans)==4
-    assert len([c for c in calls if c.get('op')=='validate' and 'probe_path' in c])==4
+    # Every segment's exact sent path is checked; long paths are split into
+    # contiguous chunks that share boundary states and cover it exactly.
+    probes=[c for c in calls if c.get('op')=='validate' and 'probe_path' in c]
+    assert {c['stage'] for c in probes}=={'approach','contact','detach','return'}
+    for segment in plan['segments']:
+        path=segment['package']['prepared']['collision_path']
+        # Chunks run concurrently; order them by their place in the path.
+        chunks=sorted((c['probe_path'] for c in probes if c['stage']==segment['stage']),key=lambda c:path.index(c[0]))
+        assert chunks[0][0]==path[0] and chunks[-1][-1]==path[-1]
+        assert all(a[-1]==b[0] for a,b in zip(chunks,chunks[1:]))
+        assert sum(len(c) for c in chunks)-(len(chunks)-1)==len(path)
     inertia=np.asarray(plan['binding']['physical_cycle']['payload_mass_properties']['inertia_box_kg_m2'])
     np.testing.assert_allclose(np.diag(inertia),[.0033333333333333,.0054166666666667,.0054166666666667],atol=1e-12)
     assert plan['release']['status']=='RECEIVER_QUALIFICATION_DEFERRED_BY_USER'
@@ -142,7 +152,7 @@ def test_user_deferred_real_site_keeps_full_world_and_loaded_checks(case,monkeyp
         assert plan['release']['q_return']==list(obs.q_start)
         assert plan['binding']['physical_cycle']['site_scene']==scene
         assert len(p.authority._plans)==4
-        assert len([r for r in calls if r.get('op')=='validate' and 'probe_path' in r])==4
+        assert {r['stage'] for r in calls if r.get('op')=='validate' and 'probe_path' in r}=={'approach','contact','detach','return'}
     checked=[r for r in calls if r.get('op') in {'plan','validate'}]
     assert checked
     for r in checked:
@@ -333,8 +343,11 @@ def test_endpoint_screen_skips_blocked_tool_and_plans_clear_candidate_first(case
     assert plan['candidate_index']==2 and plan['endpoint_screen']=='CLEAR'
     motions=[c for c in calls if c.get('op')=='plan']
     # Blocked candidate 0 never reaches path search; CLEAR candidate 2 goes
-    # before the non-conclusive candidate 1 and uses its checked joint goal.
-    assert motions[0]['stage']=='approach' and motions[0]['q_goal']==solution(2) and 'goal_pose' not in motions[0]
+    # before the non-conclusive candidate 1. Its contact chain is planned from
+    # the checked approach configuration first, then approach and return.
+    assert [m['stage'] for m in motions[:2]]==['contact','detach'] and motions[0]['q_start']==solution(2)
+    approach=next(m for m in motions if m['stage']=='approach')
+    assert approach['q_goal']==solution(2) and 'goal_pose' not in approach
     assert len(motions)==4 and len(p.authority._plans)==4
     screen=json.loads((folder/(box['id']+'-0')/'endpoint-precheck.json').read_text())
     assert screen[0]['conclusion']=='TOOL_OR_PAYLOAD_POSE_BLOCKED'
@@ -383,7 +396,7 @@ def test_all_detach_profiles_rejected_issues_no_permit(case,monkeypatch):
     real=contact_candidates
     monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
     opts['plan']=lambda r:dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='detach' else None
-    with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: detach × 1'):p.plan_cycle(obs,[box],folder)
+    with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: detach:ALL_PROFILES_REJECTED × 1'):p.plan_cycle(obs,[box],folder)
     assert p.authority._plans=={} and not (folder/'complete-plan.json').exists()
     reason=json.loads((folder/'planning-failures.json').read_text())[0]['reason']
     assert 'ALL_PROFILES_REJECTED' in reason and all(name in reason for name in ('OUTWARD','DIAGONAL_45','LIFT_FIRST'))
@@ -410,3 +423,162 @@ def test_send_scale_slows_only_as_needed_to_keep_interpolated_limits(case,delta,
     assert (np.abs(np.diff(q,axis=0))/dt).max()<=.1+1e-9 and (np.abs(np.diff(q,2,axis=0))/dt**2).max()<=.2+1e-6
     from unloading_sim.workbench.single_carton.planner import SEND_SLOWDOWN_STEPS
     assert sum('插值后超出关节限值' in m for m in progress)==SEND_SLOWDOWN_STEPS.index(expected)
+
+
+def test_obb_overlap_depth_literal_cases():
+    from unloading_sim.workbench.single_carton.planner import obb_overlap_depth
+    A=np.eye(4);B=np.eye(4);B[0,3]=.098
+    assert obb_overlap_depth(A,[.05,.05,.05],B,[.05,.05,.05])==pytest.approx(.002)
+    B[0,3]=.101
+    assert obb_overlap_depth(A,[.05,.05,.05],B,[.05,.05,.05])==pytest.approx(-.001)
+    # A 45-degree box whose corner reaches 0.05*sqrt(2) along x.
+    c=np.cos(np.pi/4);R=np.eye(4);R[:2,:2]=[[c,-c],[c,c]];R[0,3]=.05*np.sqrt(2)+.05-.003
+    assert obb_overlap_depth(A,[.05,.05,.05],R,[.05,.05,.05])==pytest.approx(.003)
+
+
+def wall_near(box,dx,size=(.02,.3,.3)):
+    """A world box whose -x face is dx inside (+) or outside (-) the target's +x face."""
+    T=np.asarray(box['pose']).copy();T[0,3]+=np.asarray(box['size_m'])[0]/2+size[0]/2-dx
+    return dict(id='measured-post',pose=T.tolist(),size=list(size),category='observed')
+
+
+def test_payload_intersecting_world_at_rest_rejects_target_before_any_native_planning(case):
+    p,obs,box,folder,calls,opts=case
+    p.world=[wall_near(box,.005)]
+    with pytest.raises(ValueError,match='TARGET_PAYLOAD_INTERSECTS_AT_REST × 1') as error:p.plan_cycle(obs,[box],folder)
+    assert 'measured-post 相交 5.0 mm' in str(error.value)
+    assert not [c for c in calls if c.get('op') in {'ik','plan','validate'}] and not p.authority._plans
+    rest=json.loads((folder/(box['id']+'-payload-rest-check.json')).read_text())
+    assert rest['intersections'][0]['id']=='measured-post'
+
+
+@pytest.mark.parametrize('dx',[.0005,-.001])
+def test_shallow_or_clear_rest_geometry_is_left_to_native_checks(case,dx):
+    p,obs,box,folder,calls,opts=case
+    # A measured support exactly under the box is a support, never an intersection.
+    S=np.asarray(box['pose']).copy();S[2,3]=np.asarray(box['corners_m'])[:,2].min()-.01
+    world=[wall_near(box,dx),dict(id='support',pose=S.tolist(),size=[.4,.4,.02],category='observed_support')]
+    rest=p.payload_rest_check(world+[dict(id=box['id'],pose=box['pose'],size=box['size_m'],category='carton')],box)
+    assert rest['intersections']==[] and rest['supports']==['support'] and rest['outside_workspace'] is False
+
+
+def test_payload_world_block_at_detach_endpoint_stops_every_candidate(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates;cands=real(box,p.source['tool'],p.site['topology'])[:4]
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:deepcopy(cands))
+    opts['ik']=lambda r:dict(status='SUCCESS',q=[.02]*6)
+    def validate(r):
+        if r['stage']=='detach' and r.get('attachment'):
+            failure=dict(reason='INTERSECTION_OR_CONTACT',pair=[box['id'],'wall'],surface_distance_m=-1.,required_pair_clearance_m=.0024)
+            return dict(native_valid=False,legacy_intersection_valid=False,failure=failure,path_failure=None)
+    opts['validate']=validate;progress=[]
+    with pytest.raises(ValueError,match='TARGET_PAYLOAD_BLOCKED_AT_REST') as error:p.plan_cycle(obs,[box],folder,progress.append)
+    assert '× 1；' in str(error.value) and '本目标所有候选都无法脱离' in str(error.value)
+    # Only the first candidate was screened; no path was ever planned.
+    assert sorted(d.name for d in folder.iterdir() if d.is_dir())==[box['id']+'-0']
+    assert not [c for c in calls if c.get('op')=='plan'] and not p.authority._plans
+
+
+def test_payload_world_shortfall_within_ik_tolerance_stays_candidate_level(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates;cands=real(box,p.source['tool'],p.site['topology'])[:2]
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:deepcopy(cands))
+    opts['ik']=lambda r:dict(status='SUCCESS',q=[.02]*6)
+    def validate(r):
+        if r['stage']=='detach' and r.get('attachment'):
+            failure=dict(reason='CLEARANCE_INSUFFICIENT',pair=['wall',box['id']],surface_distance_m=.00235,required_pair_clearance_m=.0024)
+            return dict(native_valid=False,legacy_intersection_valid=False,failure=failure,path_failure=None)
+    opts['validate']=validate
+    with pytest.raises(ValueError,match='ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED × 2'):p.plan_cycle(obs,[box],folder)
+    assert len([d for d in folder.iterdir() if d.is_dir()])==2
+
+
+def test_multi_seed_ik_finds_other_branches_and_prefers_the_closest(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    far,near=[.5]*6,[.011]*6
+    def ik(r):
+        if r['q_start']==[0.]*6:return dict(status='NATIVE_IK_FAILED')  # the capture pose seed alone fails
+        return dict(status='SUCCESS',q=far if r['q_start'][0]>0 else near)
+    opts['ik']=ik
+    p.coordinate_model.tcp=lambda q:np.asarray(real(box,p.source['tool'],p.site['topology'])[0]['tcp_pose']) if q[0]>.01 else np.eye(4)
+    plan=p.plan_cycle(obs,[box],folder)
+    assert plan['endpoint_screen']=='CLEAR'
+    record=json.loads((folder/(box['id']+'-0')/'approach-endpoint-ik-native.json').read_text())
+    assert record['status']=='REPLIED' and len(record['seeds'])==len(record['replies'])>=65
+    assert record['replies'][0]['status']=='NATIVE_IK_FAILED' and record['distinct_solutions']==[near,far]
+    approach=next(c for c in calls if c.get('op')=='plan' and c['stage']=='approach')
+    assert approach['q_goal']==near
+
+
+def test_infeasible_detach_never_pays_for_dense_sent_checks(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    opts['plan']=lambda r:dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='detach' else None
+    with pytest.raises(ValueError,match='detach:ALL_PROFILES_REJECTED × 1'):p.plan_cycle(obs,[box],folder)
+    assert {c['stage'] for c in calls if c.get('op')=='plan'}=={'approach','contact','detach'}
+    assert not [c for c in calls if c.get('op')=='validate' and 'probe_path' in c]
+
+
+class Checker:
+    def __init__(self,name,log,fail_at=None):self.name=name;self.log=log;self.fail_at=fail_at
+    def request(self,r,**kwargs):
+        path=r['probe_path'];self.log.append((self.name,path[0][0],path[-1][0],len(path)))
+        bad=self.fail_at is not None and path[0][0]<=self.fail_at<=path[-1][0]
+        failure=dict(reason='CLEARANCE_INSUFFICIENT',edge=int(round((self.fail_at-path[0][0])*1000)) if bad else 0)
+        return dict(native_valid=True,legacy_intersection_valid=True,path_failure=failure if bad else None,failure=None)
+
+
+@pytest.mark.parametrize('fail_at',[None,1.3])
+def test_sent_check_splits_exactly_across_checkers_and_reports_global_edge(case,fail_at):
+    from unloading_sim.workbench.single_carton.planner import SegmentRejected
+    p,obs,box,folder,calls,opts=case;log=[]
+    p.client=Checker('main',log,fail_at);p.pool=[Checker(f'pool{k}',log,fail_at) for k in range(5)]
+    path=[[k/1000]+[0.]*5 for k in range(2001)]
+    segment=dict(stage='approach',record='approach',context={'q_start':[0.]*6},planner={},native_result={},
+                 prepared=dict(collision_path=path,points=path[::100]))
+    if fail_at is not None:
+        with pytest.raises(SegmentRejected,match='SENT_PATH_REJECTED') as error:p.sent_check(segment,folder,lambda _:None)
+        assert error.value.native_result['path_failure']['edge_in_path']==1300 and error.value.stage=='approach'
+    else:
+        p.sent_check(segment,folder,lambda _:None)
+        assert segment['evidence']['collision_result']['parallel_checkers']==4
+    # 2000 edges, at least 500 states per chunk: 4 contiguous chunks on 4 different checkers.
+    chunks=sorted(log,key=lambda x:x[1])
+    assert len(chunks)==4 and len({c[0] for c in chunks})==4
+    assert chunks[0][1]==0 and chunks[-1][2]==2. and all(a[2]==b[1] for a,b in zip(chunks,chunks[1:]))
+    assert sum(c[3] for c in chunks)-3==len(path)
+    checked=json.loads((folder/'approach-sent-check.json').read_text())
+    assert [c['states'] for c in checked['chunks']]==[[0,500],[500,1000],[1000,1500],[1500,2000]]
+
+
+def test_screened_candidate_plans_approach_and_return_on_two_workers(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    opts['ik']=lambda r:dict(status='SUCCESS',q=[.011]*6)
+    p.coordinate_model.tcp=lambda q:np.asarray(real(box,p.source['tool'],p.site['topology'])[0]['tcp_pose']) if q[0]>.01 else np.eye(4)
+    import threading
+    seen={};original=SinglePlanner.native_call
+    def spy(self,request,folder,name,timeout,cancelled=None,client=None):
+        if request.get('op')=='plan':seen.setdefault(request['stage'],set()).add(id(client or self.client))
+        return original(self,request,folder,name,timeout,cancelled,client)
+    monkeypatch.setattr(SinglePlanner,'native_call',spy)
+    plan=p.plan_cycle(obs,[box],folder)
+    assert plan['endpoint_screen']=='CLEAR' and len(p.authority._plans)==4
+    assert len(seen['approach'])==1 and len(seen['return'])==1 and seen['approach']!=seen['return']
+    status=json.loads((folder/'native-check-pool.json').read_text())
+    assert len(status)==p.site['native_check_workers'] and all(s['state']=='READY' for s in status)
+
+
+def test_failure_summary_separates_budget_exhaustion_from_sent_path_rejection():
+    from unloading_sim.workbench.single_carton.planner import failure_category
+    assert failure_category('approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED')=='approach:NATIVE_SOLVER_BUDGET_EXHAUSTED'
+    assert failure_category('approach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED')=='approach:NATIVE_PLANNING_FAILED'
+    assert failure_category("return:SENT_PATH_REJECTED:{'reason': 'CLEARANCE_INSUFFICIENT'}")=='return:SENT_PATH_REJECTED'
+    assert failure_category("detach:NATIVE_REJECTED:{'reason': 'INTERSECTION_OR_CONTACT', 'pair': ['a', 'b']}")=='detach:NATIVE_REJECTED'
+    assert failure_category('detach:ALL_PROFILES_REJECTED:[...]')=='detach:ALL_PROFILES_REJECTED'
+    assert failure_category('ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 a ↔ b 相交')=='ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED'
+    assert failure_category('INTERPOLATION_LIMIT:3:2')=='INTERPOLATION_LIMIT'

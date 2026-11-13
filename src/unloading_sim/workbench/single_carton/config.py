@@ -59,6 +59,9 @@ def issues(c):
     scale=c.get('time_scale')
     if not isinstance(scale,(int,float)) or not math.isfinite(scale) or not 1<=scale<=100:
         errors.append('time_scale：时间放大倍数，1 至 100；发送周期保持 5 ms')
+    workers=c.get('native_check_workers',0)
+    if type(workers)!=int or not 0<=workers<=12:
+        errors.append('native_check_workers：并行检查发送路径的额外原生进程数，0 至 12（0 为不并行）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

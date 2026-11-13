@@ -116,6 +116,7 @@ def main():
             ready = planner.client.request(planner.init)
             if not ready.get('capabilities', {}).get('bounded_single_carton_planning'):
                 raise SystemExit('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
+            planner.start_check_pool(out)
             q = np.array(obs['q_start']); planning = time.monotonic()
             progress = lambda text: print(f'[{time.monotonic()-planning:7.1f}s] {text}', flush=True)
             for box in boxes:
@@ -123,6 +124,7 @@ def main():
                 if found: break
             report['planning_s'] = round(time.monotonic()-planning, 2)
     finally:
+        planner.close_check_pool(); report['native_check_pool'] = planner.pool_status
         if planner.client is not None: planner.client.close(); planner.client = None
         if authority._plans: raise SystemExit('OFFLINE_REPLAY_MUST_NOT_REGISTER_PERMITS')
         report['failures'] = failures
@@ -130,11 +132,14 @@ def main():
             report['complete_plan'] = dict(
                 status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', candidate_index=found['index'],
                 endpoint_screen=found['screen']['conclusion'], active_seal_ids=found['candidate']['active_ids'],
+                detach_profile=found['segments'][2]['evidence'].get('detach_profile'),
                 seal_check=found['seal'], release=found['release'],
                 segments=[dict(stage=s['stage'], points=len(s['prepared']['points']),
                                send_duration_s=s['prepared']['send_duration_s'],
                                native_plan=s['evidence']['native_plan'], sent_path_collision=s['evidence']['sent_path_collision'],
-                               planner=s['evidence']['planner'])
+                               planner=s['evidence']['planner'],
+                               parallel_checkers=s['evidence']['collision_result'].get('parallel_checkers'),
+                               sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'))
                           for s in found['segments']])
         after = digest(record)
         report['source_record_unchanged'] = before == after
