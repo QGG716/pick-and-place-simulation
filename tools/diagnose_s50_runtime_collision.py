@@ -27,14 +27,15 @@ def save(path,value):
 
 
 def run(output,*,pose_ids=None,mesh_only=False):
-    from unloading_sim.robot_replacement_layout import frozen_baseline_layout,freeze_non_robot_scene
+    from unloading_sim.robot_replacement_layout import frozen_baseline_layout
+    from unloading_sim.s50_payload import freeze_s50_environment
     from unloading_sim.robot_model_binding import RobotModelBinding
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
     ensure_preview_assets(ROOT);definition=load_definition(ROOT)
     audit=audit_model_meshes(ROOT)
     audit_hash=save(output/'mesh-surface-audit.json',audit)
     if mesh_only:return dict(status='MESH_SURFACE_AUDIT_RECORDED_NOT_TASK_QUALIFIED',mesh_audit_sha256=audit_hash)
-    reference=frozen_baseline_layout(ROOT);frozen=freeze_non_robot_scene(reference)
+    reference=frozen_baseline_layout(ROOT);frozen=freeze_s50_environment(reference)
     mount=reference.robot_base_transform()
     binding=RobotModelBinding.from_config(ROOT/PREVIEW_CONFIG)
     world_from_base=mount@binding.mounting_from_base
@@ -123,14 +124,15 @@ def run(output,*,pose_ids=None,mesh_only=False):
 
 def run_mount_cases(output):
     """Negative fixtures change only a diagnostic copy, never the task layout."""
-    from unloading_sim.robot_replacement_layout import frozen_baseline_layout,freeze_non_robot_scene
+    from unloading_sim.robot_replacement_layout import frozen_baseline_layout
+    from unloading_sim.s50_payload import freeze_s50_environment
     from unloading_sim.robot_model_binding import RobotModelBinding
     from unloading_sim.robot import URDFRobot
     from unloading_sim.pinocchio_backend import PinocchioHppFclBackend
     from unloading_sim.mount_contact import bind_mount_contact,use_actual_mesh_backend,mount_contact_evidence
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
     ensure_preview_assets(ROOT);definition=load_definition(ROOT)
-    layout=frozen_baseline_layout(ROOT);frozen=freeze_non_robot_scene(layout)
+    layout=frozen_baseline_layout(ROOT);frozen=freeze_s50_environment(layout)
     mount=layout.robot_base_transform();plinth=next(b for b in layout.fixed_components() if b.name=='mount_plinth')
     binding=RobotModelBinding.from_config(ROOT/PREVIEW_CONFIG)
     core=URDFRobot.from_config(ROOT/PREVIEW_CONFIG,mounting_world_transform=mount)

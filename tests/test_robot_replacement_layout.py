@@ -185,6 +185,20 @@ def test_real_ready_adapter_path_uses_new_binding_and_tool(frozen, ready_test_de
     assert "mesh:test_geometry.stl" in layout.definition["verified_runtime_asset_sha256"]
 
 
+def test_s50_carton_mass_enters_scene_identity_and_ready_scene_requires_it(ready_test_definition, monkeypatch):
+    import unloading_sim.s50_payload as payload
+    pending = build_replacement_layout(root=ROOT)
+    ready = build_replacement_layout(ready_test_definition, root=ROOT)
+    def missing(data):
+        raise ValueError("S50_CARTON_MASS_NOT_CONFIGURED")
+    monkeypatch.setattr(payload, "configured_carton_mass_kg", missing)
+    # A pending model stays reportable without the mass, under another identity.
+    assert build_replacement_layout(root=ROOT).configuration_identity != pending.configuration_identity
+    with pytest.raises(ValueError, match="S50_CARTON_MASS_NOT_CONFIGURED"):
+        build_replacement_layout(ready_test_definition, root=ROOT)
+    assert ready.full_scene_fingerprint
+
+
 def test_runtime_mesh_change_invalidates_full_scene_and_loaded_robot(ready_test_definition):
     before = build_replacement_layout(ready_test_definition, root=ROOT)
     path = Path(ready_test_definition["model_config"]).parent / "test_geometry.stl"

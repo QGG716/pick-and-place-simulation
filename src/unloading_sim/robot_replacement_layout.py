@@ -340,9 +340,18 @@ def build_replacement_layout(definition=None, *, root=None):
         corners = np.array([[x, y, z] for x in bounds[:, 0] for y in bounds[:, 1] for z in bounds[:, 2]])
         world = corners @ t[:3, :3].T + t[:3, 3]
         data["robot"]["derived_base_front_edge_x_world_m"] = float(world[:, 0].max())
-    environment = freeze_non_robot_scene(reference)
+    # The S50 scene identity includes the S50 carton mass (FANUC keeps 42.5 kg).
+    # A pending model without that mass is reported by the admission; a ready
+    # S50 scene never exists without it.
+    from .s50_payload import freeze_s50_environment
+    try:
+        environment_fingerprint = freeze_s50_environment(reference)["environment_fingerprint"]
+    except ValueError as exc:
+        if str(exc) != "S50_CARTON_MASS_NOT_CONFIGURED" or ready:
+            raise
+        environment_fingerprint = None
     identity = canonical_digest(dict(schema="robot_replacement_configuration_v1",
-        environment_fingerprint=environment["environment_fingerprint"], definition=definition))
+        environment_fingerprint=environment_fingerprint, definition=definition))
     full = canonical_digest(dict(schema="robot_replacement_complete_model_scene_v1", configuration=identity)) if ready else None
     if full == reference.layout_fingerprint:
         raise ValueError("REPLACEMENT_MUST_CHANGE_FULL_SCENE_FINGERPRINT")

@@ -36,8 +36,10 @@ def simulation_layout(root, settings):
 
 def simulation_scene(root,settings):
     from .s50_tool_mount import bind_s50_tool_mount
+    from .s50_payload import bind_s50_carton_payload
     layout=simulation_layout(root,settings)
-    return layout,bind_s50_tool_mount(freeze_non_robot_scene(layout),settings,root)
+    scene=bind_s50_tool_mount(freeze_non_robot_scene(layout),settings,root)
+    return layout,bind_s50_carton_payload(scene,settings,root)
 
 
 def cad_coordinates(settings,q):

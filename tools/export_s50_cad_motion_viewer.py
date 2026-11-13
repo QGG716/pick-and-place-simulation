@@ -23,8 +23,9 @@ from s50_viewer_diagnostics import diagnostic_data
 def viewer_scene_context(definition, root=ROOT, *, environment=None, mounting_from_base=None):
     """Bind the FK root to this model's measured CAD frames and frozen world."""
     if environment is None:
-        from unloading_sim.robot_replacement_layout import frozen_baseline_layout, freeze_non_robot_scene
-        environment = freeze_non_robot_scene(frozen_baseline_layout(root))
+        from unloading_sim.robot_replacement_layout import frozen_baseline_layout
+        from unloading_sim.s50_payload import freeze_s50_environment
+        environment = freeze_s50_environment(frozen_baseline_layout(root))
     cad_from_mount = rigid_transform(definition['frames']['mount']['CAD_from_frame_zero'], 'CAD_from_mount')
     base = next(link for link in definition['links'] if link['name'] == definition['base_link'])
     cad_from_base = rigid_transform(base['CAD_from_link_zero'], 'CAD_from_model_base')

@@ -140,6 +140,16 @@ def audit(config: Path | None = None, root: Path = ROOT) -> dict:
     frozen = freeze_non_robot_scene(replacement)
     difference = compare_non_robot_scenes(freeze_non_robot_scene(reference), frozen)
     missing = list(selection['missing'])
+    # Geometry is compared first; the S50 environment then carries the S50
+    # carton mass (FANUC keeps 42.5 kg). A missing value fails closed.
+    from unloading_sim.s50_payload import apply_s50_carton_mass
+    inherited_carton_mass = frozen["tool_intrinsic"]["carton_mass_kg"]
+    try:
+        frozen = apply_s50_carton_mass(frozen, root)
+        carton_mass_status = "CONFIGURED"
+    except ValueError as exc:
+        carton_mass_status = str(exc)
+        missing.append("payload." + str(exc))
     binding = None
     try:
         if selection['selected_task_config'] is not None:
@@ -178,7 +188,8 @@ def audit(config: Path | None = None, root: Path = ROOT) -> dict:
     ready = not missing and difference["passed"]
     dynamic_missing = [k for k in ("link_inertials", "joint_effort_limits_nm", "joint_acceleration_limits_rad_s2") if data.get(k) is None]
     tool_mass = frozen["tool_intrinsic"]["tool_mass_kg"]
-    carton_mass = frozen["tool_intrinsic"]["carton_mass_kg"]
+    carton_mass = frozen["tool_intrinsic"]["carton_mass_kg"] if carton_mass_status == "CONFIGURED" else None
+    combined_mass = None if carton_mass is None else tool_mass + carton_mass
     return dict(schema="s50_model_integration_admission_v1", baseline_commit=BASELINE_COMMIT,
         status="MODEL_DEFINITION_ADMISSIBLE_NOT_MOTION_VALIDATED" if ready else "MODEL_NOT_READY",
         replacement_complete=False, missing_critical_data=missing,
@@ -206,8 +217,11 @@ def audit(config: Path | None = None, root: Path = ROOT) -> dict:
         native_worker_launched=False, dynamics=dict(status="NOT_RUN", missing_data=dynamic_missing,
             missing_dynamic_data_blocks_geometric_search=False),
         payload=dict(rated_robot_payload_kg=float(data["rated_payload_kg"]), tool_mass_kg=tool_mass,
-            carton_mass_kg=carton_mass, combined_mass_kg=tool_mass + carton_mass,
-            nominal_mass_exceeds_rating=tool_mass + carton_mass > float(data["rated_payload_kg"]),
+            carton_mass_kg=carton_mass, carton_mass_status=carton_mass_status,
+            carton_mass_source=frozen["tool_intrinsic"].get("carton_mass_source"),
+            inherited_environment_carton_mass_kg=inherited_carton_mass,
+            combined_mass_kg=combined_mass,
+            nominal_mass_exceeds_rating=None if combined_mass is None else combined_mass > float(data["rated_payload_kg"]),
             qualification="NOT_QUALIFIED", blocks_geometric_search=False),
         measured_capability=dict(robot_belt_minimum_gap_m=None, elbow_envelope_m=None,
             wrist_envelope_m=None, target_reachable=None, reason="NO_QUALIFIED_S50_MOTION_MODEL"))

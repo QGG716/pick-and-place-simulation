@@ -38,6 +38,8 @@ timing:
   outfeed_velocity_m_s: 0.25
   source: CONSERVATIVE_ENGINEERING_ANIMATION_ASSUMPTION_NOT_MANUFACTURER
 seed: 50
+# Carton mass from configs/robots/huayan_s50_2000.yaml#carton_payload (30 kg).
+carton_payload_profile: S50_ROBOT_CONFIG
 target: carton_l07_c02
 motion_profile: fixed_target_direct_mount
 layout_gap_m: 0.1

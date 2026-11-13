@@ -107,6 +107,10 @@ def build_data(audit_path=None, root=ROOT):
     before = freeze_non_robot_scene(frozen_baseline_layout(root))
     replacement = build_replacement_layout(root=root)
     frozen = freeze_non_robot_scene(replacement)
+    # Compare shared geometry first, then show the S50 carton mass.
+    difference = compare_non_robot_scenes(before, frozen)
+    from unloading_sim.s50_payload import apply_s50_carton_mass
+    frozen = apply_s50_carton_mass(frozen, root)
     tool = frozen["tool_intrinsic"]
     frames = tool["intrinsic_frames"]
     target = np.asarray(frozen["initial_physical_contact_target"])
@@ -121,7 +125,7 @@ def build_data(audit_path=None, root=ROOT):
         joint_controls_enabled=False,
         joint_controls_disabled_reason="缺少已核验的安装朝向、关节零位/正负号、限位及法兰定义；CAD 装配不等于可运动模型。",
         trajectory=[], trajectory_status="NOT_RUN", initial_state_status="NOT_SOLVED",
-        environment=frozen, layout_difference=compare_non_robot_scenes(before, frozen), cad=cad,
+        environment=frozen, layout_difference=difference, cad=cad,
         tool_reference=dict(world_from_virtual_task_tcp=world_from_virtual.tolist(),
             contact_plane_size_m=plane_size.tolist(),
             status="REQUESTED_CONTACT_POSE_REFERENCE_ONLY_NOT_ROBOT_FK", collision_checked=False),

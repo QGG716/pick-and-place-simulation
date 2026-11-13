@@ -30,7 +30,10 @@ def test_explicit_simulation_limits_mount_and_single_tool_extension(context):
     np.testing.assert_allclose(c.frames['virtual_task_tcp'][:3,3],[0,0,.205],atol=1e-12)
     assert c.intrinsic['connector_extension_m']==0
     assert c.intrinsic['tool_mass_kg']==20
-    assert c.intrinsic['carton_mass_kg']==42.5
+    # Every S50 config uses the S50 carton mass; FANUC keeps 42.5 kg.
+    assert c.settings['carton_payload_profile']=='S50_ROBOT_CONFIG'
+    assert c.intrinsic['carton_mass_kg']==30.0
+    assert c.intrinsic['inherited_carton_mass_kg']==42.5
     assert not any(c.settings['qualification'].values())
     original=freeze_non_robot_scene(simulation_layout(ROOT,c.settings))
     assert original['height_samples']==c.frozen['height_samples']
@@ -135,6 +138,18 @@ def test_flange_spacer_moves_wide_plate_and_counts_axial_length_once(context):
         row=np.asarray(c.intrinsic['rigid_local_boxes_virtual_tcp_m'][c.intrinsic['rigid_body_ids'].index(name)])
         np.testing.assert_allclose(row[2]+.285+np.array([-row[5]/2,row[5]/2]),[low_z,high_z],atol=1e-8)
     np.testing.assert_array_equal(c.intrinsic['rigid_local_boxes_virtual_tcp_m'][:130],context.intrinsic['rigid_local_boxes_virtual_tcp_m'])
+
+
+def test_default_s50_scene_uses_30kg_carton_without_changing_fanuc_record(context):
+    c=make_context(ROOT,context.output/'payload30')
+    assert c.settings['carton_payload_profile']=='S50_ROBOT_CONFIG'
+    assert c.intrinsic['tool_mass_kg']==20
+    assert c.intrinsic['carton_mass_kg']==30.0
+    assert c.intrinsic['inherited_carton_mass_kg']==42.5
+    assert c.intrinsic['carton_mass_source']=='configs/robots/huayan_s50_2000.yaml#carton_payload'
+    assert c.frozen['initial_cartons']==context.frozen['initial_cartons']
+    assert freeze_non_robot_scene(frozen_baseline_layout(ROOT))['tool_intrinsic']['carton_mass_kg']==42.5
+    assert c.frozen['source_environment_fingerprint_before_s50_payload_change']!=c.frozen['environment_fingerprint']
 
 
 def test_completed_outfeed_body_does_not_reappear_during_belt_lowering(context):

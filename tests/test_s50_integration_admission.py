@@ -37,9 +37,15 @@ def test_supplied_cad_is_not_a_qualified_motion_model():
     assert report["native_single_carton"]["global_unreachable"] is False
     assert report["native_single_carton"]["target"] in report["initial_carton_ids"]
     assert report["payload"]["tool_mass_kg"] == 20.0
-    assert report["payload"]["carton_mass_kg"] == 42.5
+    # S50 carton is 30 kg; the frozen environment keeps the FANUC 42.5 kg record.
+    assert report["payload"]["carton_mass_kg"] == 30.0
+    assert report["payload"]["carton_mass_status"] == "CONFIGURED"
+    assert report["payload"]["carton_mass_source"] == "configs/robots/huayan_s50_2000.yaml#carton_payload"
+    assert report["payload"]["inherited_environment_carton_mass_kg"] == 42.5
+    assert report["payload"]["combined_mass_kg"] == 50.0
     assert report["payload"]["rated_robot_payload_kg"] == 50.0
-    assert report["payload"]["nominal_mass_exceeds_rating"]
+    assert report["payload"]["nominal_mass_exceeds_rating"] is False
+    assert report["payload"]["qualification"] == "NOT_QUALIFIED"
     assert not report["payload"]["blocks_geometric_search"]
     assert not report["dynamics"]["missing_dynamic_data_blocks_geometric_search"]
 
@@ -54,6 +60,20 @@ def test_missing_cad_fails_closed_before_any_native_search(monkeypatch):
     assert 'source.STEP_SHA256_NOT_VERIFIED' in report['missing_critical_data']
     assert report['native_worker_launched'] is False
     assert report['native_single_carton']['planning_attempts'] == 0
+
+
+def test_missing_s50_carton_mass_fails_closed(monkeypatch):
+    import unloading_sim.s50_payload as payload
+    def missing(data):
+        raise ValueError('S50_CARTON_MASS_NOT_CONFIGURED')
+    monkeypatch.setattr(payload, 'configured_carton_mass_kg', missing)
+    report = admission.audit(ROOT / 'configs/robots/huayan_s50_2000.yaml')
+    assert report['status'] == 'MODEL_NOT_READY'
+    assert 'payload.S50_CARTON_MASS_NOT_CONFIGURED' in report['missing_critical_data']
+    assert report['payload']['carton_mass_kg'] is None
+    assert report['payload']['combined_mass_kg'] is None
+    assert report['payload']['nominal_mass_exceeds_rating'] is None
+    assert report['native_worker_launched'] is False
 
 
 def test_admission_entry_returns_nonzero_for_incomplete_model(tmp_path):

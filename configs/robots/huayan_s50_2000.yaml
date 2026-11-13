@@ -13,6 +13,11 @@ task_generation:
   command: python tools/build_s50_task_model.py
   mapping_reference_contract: Each verified axis source must name a local reference path, SHA256 and page/figure/pose locator. This config is the reviewed generator input; generated model.yaml is the independently bound task model.
 rated_payload_kg: 50.0
+# Single S50 carton mass source. FANUC carton configs remain 42.5 kg.
+carton_payload:
+  carton_mass_kg: 30.0
+  source: USER_INSTRUCTION_20261113_S50_CARTON_30KG
+  scope: S50_SIMULATION_AND_ADMISSION_BOOKKEEPING_NOT_PAYLOAD_QUALIFICATION
 reach_m: 2.0
 published_total_mass_kg: 156.0
 published_axis_count: 6

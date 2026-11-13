@@ -32,6 +32,9 @@ def main(argv=None):
     before = freeze_non_robot_scene(reference)
     after = freeze_non_robot_scene(replacement)
     difference = compare_non_robot_scenes(before, after)
+    # FANUC output keeps 42.5 kg; the S50 environment carries the S50 carton mass.
+    from unloading_sim.s50_payload import apply_s50_carton_mass
+    after = apply_s50_carton_mass(after, ROOT)
     report = dict(schema="robot_replacement_layout_report_v1", baseline_commit=BASELINE_COMMIT,
         baseline_sources=list(SOURCE_FILES), model_id=replacement.definition["model_id"],
         layout_status=difference["status"], non_robot_difference=difference,

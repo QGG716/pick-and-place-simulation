@@ -194,6 +194,9 @@ def make_configured_context(config, *, root, output, admission):
     layout = build_replacement_layout(definition, root=root)
     intrinsic = freeze_non_robot_scene(layout)
     difference = compare_non_robot_scenes(freeze_non_robot_scene(frozen_baseline_layout(root)), intrinsic)
+    # Same S50 carton mass as the admission; a missing value raises here.
+    from .s50_payload import apply_s50_carton_mass
+    intrinsic = apply_s50_carton_mass(intrinsic, root)
     if not difference['passed'] or intrinsic['environment_fingerprint'] != admission['environment_fingerprint']:
         raise ValueError('S50_ADMISSION_FROZEN_ENVIRONMENT_CHANGED')
     robot = layout.robot()
