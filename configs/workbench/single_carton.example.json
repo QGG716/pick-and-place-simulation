@@ -10,6 +10,8 @@
   "time_scale": 1.0,
   "native_check_workers": 6,
   "parallel_candidate_lanes": 7,
+  "pre_execute_visual_recheck": "DISABLED_BY_USER",
+  "pre_execute_visual_recheck_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_PRE_EXECUTE_RECHECK_AFTER_TASK_6b648ffcdb35403cb9d992e2ed8554be_TARGET_OR_SCENE_CHANGED_REPLAN_STATIC_SCENE_DEPTH_NOISE_41_PERCENT_PIXELS_OVER_5_MM",
   "topology": {
     "mode": "COMMON_GRIPPER_VALVE",
     "connected_cup_ids": [

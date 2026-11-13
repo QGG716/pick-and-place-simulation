@@ -7,10 +7,10 @@ import threading
 import time
 import uuid
 import numpy as np
-from .config import issues
+from .config import issues,pre_execute_visual_recheck
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check
-from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged
+from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged,same_session_start_and_camera
 
 
 class Journal:
@@ -144,15 +144,27 @@ class TaskManager:
             if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
                 raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-            self.progress('停稳重新取景：核对目标、场景、起点及版本')
-            current=freeze(self.backend,self.service,self.model,self.calibration,
-                           cancelled=self.stop_event.is_set,progress=self.progress)
-            check=unchanged(self.observation,current)
-            # Target-local check prevents a small target movement being diluted
-            # by unchanged background pixels in the whole-view scene test.
-            mask=self.result.masks[self.plan['target']['detection_index']]
-            target_unchanged(self.observation,current,mask)
-            self.save_observation(current,'pre_execute_observation');self.journal(kind='pre_execute_recheck',evidence=check)
+            recheck=pre_execute_visual_recheck(self.config)
+            if recheck['enabled']:
+                self.progress('停稳重新取景：核对目标、场景、起点及版本')
+                current=freeze(self.backend,self.service,self.model,self.calibration,
+                               cancelled=self.stop_event.is_set,progress=self.progress)
+                # Keep the new frame even when the comparison rejects it.
+                self.save_observation(current,'pre_execute_observation')
+                if recheck['scope']=='TARGET_ONLY':
+                    same_session_start_and_camera(self.observation,current)
+                    check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
+                else:check=unchanged(self.observation,current)
+                # Target-local check prevents a small target movement being diluted
+                # by unchanged background pixels in the whole-view scene test.
+                mask=self.result.masks[self.plan['target']['detection_index']]
+                target_unchanged(self.observation,current,mask)
+                self.journal(kind='pre_execute_recheck',evidence=check)
+            else:
+                # User instruction: no visual re-capture. The operator is
+                # responsible for an unchanged target and scene since planning.
+                self.progress('执行前画面复核已按用户要求关闭；核对会话、版本及实时起点关节后启动')
+                self.journal(kind='pre_execute_recheck',evidence=recheck)
             self.planner.binding()
             if self.stop_event.is_set():raise ValueError('CANCELLED')
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')

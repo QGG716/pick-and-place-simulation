@@ -30,10 +30,42 @@ VACUUM_MAX_TIMEOUT_S=3.
 VACUUM_MAX_AGE_S=3.
 
 
+def pre_execute_visual_recheck(c):
+    """Whether execute re-captures RGB-D and compares it with the planning frame.
+
+    ENABLED (default when absent) keeps the stationary re-capture plus the
+    whole-scene and target-local depth/appearance comparison. TARGET_ONLY keeps
+    the re-capture, session/start/camera checks and the target-local comparison.
+    DISABLED_BY_USER skips the re-capture. Both non-default values require a
+    recorded basis. The non-visual interlocks are never disabled:
+    task record, session generation, file binding, and Cycle.start()'s fresh
+    live joints within 0.01 deg of q_start with the robot enabled and no alarm.
+    """
+    value=c.get('pre_execute_visual_recheck','ENABLED')
+    if value=='ENABLED':return dict(enabled=True,scope='SCENE_AND_TARGET')
+    if value=='TARGET_ONLY':
+        # Skips only the whole-view depth comparison, which far-range depth
+        # noise trips on a static scene; the target-local check remains.
+        basis=c.get('pre_execute_visual_recheck_basis')
+        if not isinstance(basis,str) or not basis.strip():
+            raise ValueError('PRE_EXECUTE_RECHECK_SCOPE_BASIS_REQUIRED: 只复核目标须记录依据')
+        return dict(enabled=True,scope='TARGET_ONLY',basis=basis)
+    if value=='DISABLED_BY_USER':
+        basis=c.get('pre_execute_visual_recheck_basis')
+        if not isinstance(basis,str) or not basis.strip():
+            raise ValueError('PRE_EXECUTE_RECHECK_DISABLE_BASIS_REQUIRED: 关闭执行前画面复核须记录用户要求的依据')
+        return dict(enabled=False,status='VISUAL_RECHECK_DISABLED_BY_USER',basis=basis,
+                    retained=['TASK_RECORD_LIVE','SESSION_GENERATION','FILE_VERSION_BINDING',
+                              'FRESH_LIVE_JOINTS_WITHIN_0_01_DEG_OF_Q_START_ENABLED_NO_ALARM'])
+    raise ValueError('PRE_EXECUTE_RECHECK_POLICY_INVALID: ENABLED、TARGET_ONLY 或 DISABLED_BY_USER')
+
+
 def issues(c):
     errors=[]
     try:release_policy_evidence(c)
     except ValueError as e:errors.append('release_policy：'+str(e))
+    try:pre_execute_visual_recheck(c)
+    except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     geometry=c.get('geometry',{})
     prior=geometry.get('prior_size_m')
     if (not isinstance(prior,list) or len(prior)!=3 or

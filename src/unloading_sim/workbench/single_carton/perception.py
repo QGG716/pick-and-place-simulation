@@ -201,12 +201,18 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
     return boxes,rejected
 
 
-def unchanged(original,current,*,max_joint_rad=np.deg2rad(.01)):
+def same_session_start_and_camera(original,current,*,max_joint_rad=np.deg2rad(.01)):
+    """Non-scene part of the execute recheck: session, start joints, camera identity."""
     if current.generation!=original.generation:raise ValueError('CONNECTION_OR_CONFIGURATION_CHANGED_REPLAN')
     if np.max(abs(np.asarray(current.q_start)-original.q_start))>max_joint_rad:raise ValueError('START_CHANGED_REPLAN')
     a,b=original.frame,current.frame
     if a.device_id!=b.device_id or a.intrinsics!=b.intrinsics or a.depth_scale_m!=b.depth_scale_m:
         raise ValueError('CAMERA_IDENTITY_CHANGED_REPLAN')
+
+
+def unchanged(original,current,*,max_joint_rad=np.deg2rad(.01)):
+    same_session_start_and_camera(original,current,max_joint_rad=max_joint_rad)
+    a,b=original.frame,current.frame
     # The view is stopped at the same q; compare scene depth directly, including
     # surrounding geometry. Never freshen the old exposure timestamp.
     good=(a.depth>0)&(b.depth>0)
