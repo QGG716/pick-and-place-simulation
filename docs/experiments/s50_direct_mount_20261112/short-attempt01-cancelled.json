@@ -1,0 +1,12 @@
+{
+  "status": "CANCELLED_FOR_HOME_BRANCH_CORRECTION",
+  "completed_cartons": 0,
+  "reason": "First small-J1 loaded route and exit passed, but empty return to independent home J1=150.9429deg exhausted finite 2400-iteration RRT. Correct independent-home soft preference before restarting same carton.",
+  "known_failures": [
+    "POINTWISE_IK_FAILED:transfer at release Y=0",
+    "FINITE_JOINT_SEARCH_FAILED:park at release Y=-0.1"
+  ],
+  "evidence": "short-attempt01.log",
+  "retained_home_report": "short-home-probe.json",
+  "not_global_unreachability": true
+}

@@ -1,0 +1,25 @@
+{
+  "format": "gzip",
+  "gzip_mtime": 0,
+  "purpose": "Lossless GitHub archive of the original checked full-face reports; raw files remain available locally.",
+  "records": [
+    {
+      "raw_path": "cycle.json",
+      "raw_bytes": 220197987,
+      "raw_sha256": "f8c3aa6df540f3a2b9053f4b07668667e8aad38409c3d3883f38adb6419d4f33",
+      "archive_path": "cycle.json.gz",
+      "archive_bytes": 26666600,
+      "archive_sha256": "f63bd862f0cabc599c8704c4c31a10a3f656a2a7279d52c3700cfc614edfa139",
+      "roundtrip_verified": true
+    },
+    {
+      "raw_path": "attempt02/cycle.json",
+      "raw_bytes": 220197987,
+      "raw_sha256": "f8c3aa6df540f3a2b9053f4b07668667e8aad38409c3d3883f38adb6419d4f33",
+      "archive_path": "attempt02/cycle.json.gz",
+      "archive_bytes": 26666600,
+      "archive_sha256": "f63bd862f0cabc599c8704c4c31a10a3f656a2a7279d52c3700cfc614edfa139",
+      "roundtrip_verified": true
+    }
+  ]
+}

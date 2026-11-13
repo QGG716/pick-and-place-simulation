@@ -1,0 +1,82 @@
+schema: s50_kinematic_sim_v1
+scope: USER_AUTHORIZED_KINEMATIC_SIMULATION_NOT_CONTROLLER_OR_DYNAMICS
+model_definition: assets/robots/huayan/s50_1_kinematic/model.json
+source_urdf: assets/robots/huayan/s50_1_kinematic/urdf/s50_cad_preview.urdf
+joint_ranges_deg: [[-360, 360], [-190, 10], [-160, 160], [-360, 360], [-360, 360], [-360, 360]]
+joint_range_source: assets/robots/huayan/S50_1.jpg
+joint_range_semantics: MANUFACTURER_NUMERICAL_LIMITS_IN_RESEARCHED_S_SERIES_ENGINEERING_COORDINATES
+joint_coordinate_convention:
+  equation: q_cad = sign * q_sim + cad_offset
+  sign: [1, -1, -1, -1, 1, -1]
+  cad_offset_deg: [0, -90, 0, -90, 0, 0]
+  cad_assembly_q_sim_deg: [0, -90, 0, -90, 0, 0]
+  source: assets/robots/huayan/zero_reference/reference-source.json
+  scope: OFFICIAL_S_SERIES_TOPOLOGY_AND_S50_AXIS_GEOMETRY_ENGINEERING_CONVENTION_NOT_CONTROLLER_CALIBRATION
+installation_reference_from_model_base:
+  - [0, -1, 0, 0]
+  - [1, 0, 0, 0]
+  - [0, 0, 1, 0]
+  - [0, 0, 0, 1]
+installation_convention: Fixed +90deg mapping; CAD J2 +X axis maps to world +Y, positive J2 tilts upper arm toward world +X. No base search.
+flange_from_original_tool_mount:
+  - [0, 0, -1, 0]
+  - [0, 1, 0, 0]
+  - [1, 0, 0, 0]
+  - [0, 0, 0, 1]
+tool_mount_profile: S50_SHORT_RIGID_MOUNT_TO_BACKPLATE
+tool_mount_standoff_m: 0.15
+tool_connection: S50-only compact 150mm open rigid mount to the original backplate. Original long bracket bodies 11/12/13 and 200mm extension removed; source front openings retained in three shortened mounting parts. Flange to compressed cup contact is 217.5mm. FANUC keeps its inherited connector.
+timing:
+  joint_velocity_rad_s: 0.35
+  joint_acceleration_rad_s2: 0.5
+  cartesian_step_m: 0.025
+  # Uniform edge subdivision before cubic shaping; actual checked increments
+  # are bounded by 1.5 times this reference, and are reported separately.
+  joint_check_step_rad: 0.035
+  belt_velocity_m_s: 0.15
+  outfeed_velocity_m_s: 0.25
+  source: CONSERVATIVE_ENGINEERING_ANIMATION_ASSUMPTION_NOT_MANUFACTURER
+seed: 50
+target: carton_l07_c02
+motion_profile: fixed_target_direct_mount
+layout_gap_m: 0.1
+face_run:
+  release_drop_m: 0.05
+  maximum_release_drop_m: 0.1
+  scope: FIXED_CENTRE_TARGET_RETRY_IN_COMPLETE_40_CARTON_SCENE
+posture_preferences:
+  semantics: SOFT_GEOMETRIC_COSTS_NOT_JOINT_LIMITS
+  j2_preferred_deg: [-190, 10]
+  forearm_horizontal_max_deg: 30
+  forearm_definition: J3_ORIGIN_TO_J4_ORIGIN_WORLD_ELEVATION_ABSOLUTE_VALUE
+  wrist_preferred_direction_world: [0, 0, -1]
+  j3_sign_or_trend_preference: null
+  j1_withdrawal_preferred_span_deg: 15
+  j1_withdrawal_weight: 12
+  j1_empty_reposition_weight: 1
+  j2_more_negative_weight: 8
+  upper_arm_forward_free_deg: 30
+  upper_arm_large_forward_weight: 32
+  upper_arm_forward_semantics: WORLD_XZ_J2_TO_J3_TILT_FROM_VERTICAL_SOFT_ONLY_SMALL_FORWARD_TILT_ALLOWED
+receiving_height:
+  minimum: 0.55
+  maximum: 1.5
+  gap: 0.1
+loaded_flow:
+  release_box_center_x_m: -1.02
+  release_y_candidates_m: [-0.5, -0.4, -0.6]
+  method: CURRENT_RUN_POINTWISE_IK_SHORT_ARC_AFTER_FULL_STACK_CLEARANCE
+collision:
+  minimum_gap_m: 0.0
+  scope: Basic sampled intersection avoidance; no certified engineering clearance.
+  contact_tolerance_m: 0.000002
+  allowed_installation_pair: [s50_base, mount_plinth]
+  adjacent_design_interfaces: [[s50_base, s50_link_1], [s50_link_1, s50_link_2], [s50_link_2, s50_link_3], [s50_link_3, s50_link_4], [s50_link_4, s50_link_5], [s50_link_5, s50_link_6]]
+  owned_tool_interface_links: [s50_link_6]
+  flexible_cup_neighbor_mode: ignore
+qualification:
+  controller_mapping_verified: false
+  real_installation_verified: false
+  physical_adapter_verified: false
+  collision_certified: false
+  dynamics_verified: false

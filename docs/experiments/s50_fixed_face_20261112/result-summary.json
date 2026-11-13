@@ -1,0 +1,33 @@
+{
+  "status": "KINEMATIC_FACE_ATTEMPT_FAILED",
+  "completed_carton_ids": [
+    "carton_l07_c02",
+    "carton_l07_c01",
+    "carton_l07_c03"
+  ],
+  "remaining_cartons": 37,
+  "failed_target": "carton_l07_c00",
+  "source_report_sha256": "b79a01329b5326aa6ef8e7a21204e81d337dae1771f525de706f3aaedb33dbf2",
+  "same_world_prefix_states_verified": 2278,
+  "retained_main_ik_attempts": 1688,
+  "retained_main_state_checks": 20245,
+  "additional_recovery_ik_records": 985,
+  "recovery_path_combinations": 32,
+  "recovery_passes": 0,
+  "backend_tests": "10_PASS",
+  "browser_checks": "39_STAGE_OR_TARGET_SWITCH_STATES_PLUS_2_REJECTED_CANDIDATES_PASS",
+  "source_files_at_final_delivery": {
+    "src/unloading_sim/s50_face_kinematic.py": "dec01e8666ea829eab37ad1e4d3dd15ed20f44c24a2a4fb18747bff0af8e63fb",
+    "src/unloading_sim/s50_kinematic_sim.py": "88ae01e43b49bbd51d8bc1d06ee2e52ec0a48745d2d38387e27b744160175218",
+    "src/unloading_sim/s50_sim_collision.py": "ba447fca2abf9307d9e3e6d25b145218071932f719ede5e65b0cced48259dfdd",
+    "configs/robots/huayan_s50_2000_kinematic_sim.yaml": "3e0108428fc7a5dc8aaf7439f5d576556ece14c0699ebc62156f32b10d6a2012",
+    "tools/run_s50_face_kinematic_sim.py": "728cde355a32410d6c511058a1bfedcc7adf4e5a84ca3de464e7ec285a442fba",
+    "tools/probe_s50_remaining_target.py": "a98804089fa1cc4f6c49a1c2e942817a4cdd5605d288ef6ea9c6b2d7008f3fde",
+    "tools/export_s50_kinematic_viewer.py": "951ff49769bebe088be44666b27c673d81eb83b2633c195f1b28a5b5e7317a91",
+    "tools/export_s50_failure_poses.py": "b3dd722c90a596127033f1e2eceb273bd877f0d287d0bc6b1e0b2d4e781de175",
+    "tools/s50_kinematic_viewer.html": "a265cef1ddfc6b890528dd24cf30a53776c30300dbb5eab66c06959e2cf19e91",
+    "tools/check_s50_kinematic_replay.cjs": "049bc8979a2389ccffe3cbebcd808940119411c8b44984383e1e66ca4a4aef91",
+    "tools/check_s50_kinematic_viewer.mjs": "4978da395023a6ecd2fc3705e529090ebc0aaa22bd447456a0dfbcf02520f80c"
+  },
+  "earlier_attempts_have_documented_solver_changes": true
+}

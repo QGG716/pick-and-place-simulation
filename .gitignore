@@ -25,3 +25,9 @@ tmp/
 assets/robots/huayan_s50_2000/derived/*_cad.obj
 # Materialized local meshes are reconstructed and hash-checked from .obj.gz.
 assets/robots/huayan_s50_2000/meshes/link-local/*.obj
+assets/robots/huayan_s50_2000/derived/s50_1/
+assets/robots/huayan/s50_1_kinematic/meshes/link-local/*.obj
+
+# Byte-exact full-face reports are published as lossless .json.gz carriers.
+/docs/experiments/s50_spacer80_fixed_face_20261112/cycle.json
+/docs/experiments/s50_spacer80_fixed_face_20261112/attempt02/cycle.json

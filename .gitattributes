@@ -137,3 +137,16 @@ assets/robots/huayan_s50_2000/task/** -text -whitespace
 docs/experiments/s50_task_collision_20261111/** -text -whitespace
 docs/experiments/s50_kinematic_sim_20261112/** -text -whitespace
 tools/s50_kinematic_viewer.html text eol=lf
+assets/robots/huayan/s50_1_kinematic/** -text -whitespace
+docs/experiments/s50_step1_kinematic_20261112/** -text -whitespace
+
+# Preserve supplied manufacturer sources, mounting meshes and full-face evidence.
+assets/robots/huayan/** -text -whitespace
+assets/grippers/shanghai_wantai_three_zone/s50_*/** -text -whitespace
+docs/experiments/s50_continuous_20261112/** -text -whitespace
+docs/experiments/s50_direct_mount_20261112/** -text -whitespace
+docs/experiments/s50_fixed_face_20261112/** -text -whitespace
+docs/experiments/s50_full_face_20261112/** -text -whitespace
+docs/experiments/s50_mount_recovery_20261112/** -text -whitespace
+docs/experiments/s50_spacer80_fixed_face_20261112/** -text -whitespace
+*.json.gz binary

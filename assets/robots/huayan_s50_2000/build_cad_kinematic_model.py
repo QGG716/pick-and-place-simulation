@@ -53,11 +53,11 @@ def _obj_bytes(vertices, faces):
     return "".join(lines).encode("utf-8")
 
 
-def _export_local_mesh(root, mesh, target_stem, CAD_from_link):
+def _export_local_mesh(root, mesh, target_stem, CAD_from_link, asset_directory=ASSET_DIRECTORY):
     vertices, triangles = read_obj(root / mesh["path"], mesh["sha256"])
     local = transform_vertices(np.linalg.inv(CAD_from_link), vertices)
     content = _obj_bytes(local, triangles)
-    relative = f"{ASSET_DIRECTORY}/meshes/link-local/{target_stem}.obj"
+    relative = f"{asset_directory}/meshes/link-local/{target_stem}.obj"
     path = root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)
@@ -89,8 +89,8 @@ def _add_origin(element, transform):
     ET.SubElement(element, "origin", xyz=_vector(transform[:3, 3]), rpy=_vector(_rpy(transform[:3, :3])))
 
 
-def write_urdf(root, definition):
-    path = root / ASSET_DIRECTORY / "urdf/s50_cad_preview.urdf"
+def write_urdf(root, definition, asset_directory=ASSET_DIRECTORY):
+    path = root / asset_directory / "urdf/s50_cad_preview.urdf"
     robot = ET.Element("robot", name=MODEL_ID)
     robot.append(ET.Comment("CAD preview only: q0 is supplied CAD assembly; right-hand simulation axes; no controller mapping, hard limits, dynamics or tool qualification."))
     for link in definition["links"]:

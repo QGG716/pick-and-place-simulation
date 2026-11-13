@@ -1,0 +1,15 @@
+{
+  "status": "COMPLETED_KINEMATIC_FULL_FACE",
+  "sample_count": 51446,
+  "model_fk_source": "SAME_CAD_DEFINITION",
+  "source_report_sha256": "f8c3aa6df540f3a2b9053f4b07668667e8aad38409c3d3883f38adb6419d4f33",
+  "html_sha256": "a34ae5b742747d81b1c810cc04c74ac6443fe7b983846d337c2c8d27881a9361",
+  "full_task_state": true,
+  "robot_joint_count": 6,
+  "carton_initial_count": 40,
+  "tool_connected": true,
+  "browser_acceptance": "PASS",
+  "offline_payload_files": [],
+  "browser_check_report": "keyframes/browser-checks.json",
+  "browser_stage_checks": 488
+}

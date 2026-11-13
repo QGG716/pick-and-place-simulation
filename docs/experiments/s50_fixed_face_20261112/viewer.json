@@ -1,0 +1,14 @@
+{
+  "status": "KINEMATIC_FACE_ATTEMPT_FAILED",
+  "sample_count": 3748,
+  "model_fk_source": "SAME_CAD_DEFINITION",
+  "source_report_sha256": "b79a01329b5326aa6ef8e7a21204e81d337dae1771f525de706f3aaedb33dbf2",
+  "html_sha256": "cc8e7e91d99ce2b027ec0cbd38a60aee44eb356d150c7e3ad9650d1856c2cda5",
+  "full_task_state": true,
+  "robot_joint_count": 6,
+  "carton_initial_count": 40,
+  "tool_connected": true,
+  "browser_acceptance": "PASS",
+  "offline_payload_files": [],
+  "browser_evidence": "keyframes/browser-checks.json"
+}

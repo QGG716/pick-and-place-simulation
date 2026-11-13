@@ -1,0 +1,5 @@
+Captured server stdout for: python -m pytest tests/test_s50_kinematic_sim.py tests/test_s50_kinematic_motion.py -q
+..........                                                               [100%]
+10 passed in 23.62s
+
+Local Windows: 8 passed, 2 skipped in 1.04s (Pinocchio/Coal absent locally).

@@ -1,0 +1,3921 @@
+{
+  "status": "PASS",
+  "html_sha256": "a34ae5b742747d81b1c810cc04c74ac6443fe7b983846d337c2c8d27881a9361",
+  "source_report_sha256": "f8c3aa6df540f3a2b9053f4b07668667e8aad38409c3d3883f38adb6419d4f33",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "source_status": "COMPLETED_KINEMATIC_FULL_FACE",
+  "completed_cartons": 40,
+  "remaining_cartons": 0,
+  "recorded_samples": 51446,
+  "stage_checks": [
+    {
+      "target": "carton_l07_c02",
+      "phase": "home",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "belt_raise",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 40,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "belt_lower",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "belt_lower",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "belt_lower",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "belt_lower",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "pregrasp",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "approach",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "grasp",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "separate",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "withdraw",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "transfer",
+      "connectors": 4,
+      "attached": true,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "release",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "drop",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "exit",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "park",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "outfeed",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 0,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "belt_raise",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 0,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "return",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 0,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 39,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 38,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 37,
+      "passed": true
+    },
+    {
+      "target": "carton_l07_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 36,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 35,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 34,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 33,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 32,
+      "passed": true
+    },
+    {
+      "target": "carton_l06_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 31,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 30,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 29,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 28,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 27,
+      "passed": true
+    },
+    {
+      "target": "carton_l05_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 26,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 25,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 24,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 23,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 22,
+      "passed": true
+    },
+    {
+      "target": "carton_l04_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 21,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 20,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 19,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 18,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 17,
+      "passed": true
+    },
+    {
+      "target": "carton_l03_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 16,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 15,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 14,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 13,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 12,
+      "passed": true
+    },
+    {
+      "target": "carton_l02_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 11,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 10,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 9,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 8,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 7,
+      "passed": true
+    },
+    {
+      "target": "carton_l01_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 6,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c02",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 5,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c01",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 4,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c03",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 3,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c00",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 2,
+      "passed": true
+    },
+    {
+      "target": "carton_l00_c04",
+      "phase": "task_start",
+      "connectors": 4,
+      "attached": false,
+      "visible_cartons": 1,
+      "passed": true
+    }
+  ],
+  "opaque_fk_connected_parts": 4,
+  "play_pause_timeline": "PASS",
+  "carton_identity_and_reverse_scrub": "PASS",
+  "rejected_candidates_separately_checked": 0,
+  "errors": []
+}

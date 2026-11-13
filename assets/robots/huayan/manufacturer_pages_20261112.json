@@ -1,0 +1,110 @@
+{
+  "scope": "USER_SUPPLIED_MANUFACTURER_PAGES_TRANSCRIBED_NOT_MACHINE_CERTIFICATION",
+  "received_date": "2026-11-12",
+  "model_label": "S50",
+  "specific_mechanical_revision": null,
+  "specific_controller_revision": null,
+  "serial_number": null,
+  "sources": [
+    {
+      "path": "assets/robots/huayan/S50_1.jpg",
+      "sha256": "f1167fd9bc1b86d856c5c84cc99fe936523353d71194003befb5c6b28f62f500",
+      "locator": "Technical parameters table"
+    },
+    {
+      "path": "assets/robots/huayan/S50_2.jpg",
+      "sha256": "26da505062e55e61dc97dbaa933e2594e4aad77b22fcb02b3b071615381e3f80",
+      "locator": "Dimension, base/flange installation and workspace drawings; printed page 51"
+    }
+  ],
+  "published_parameters": {
+    "robot_total_mass_kg": 156,
+    "rated_payload_kg": 50,
+    "working_range_m": 2.0,
+    "joint_ranges_deg_in_unspecified_manufacturer_reference": [
+      [
+        -360,
+        360
+      ],
+      [
+        -190,
+        10
+      ],
+      [
+        -160,
+        160
+      ],
+      [
+        -360,
+        360
+      ],
+      [
+        -360,
+        360
+      ],
+      [
+        -360,
+        360
+      ]
+    ],
+    "joint_maximum_speed_deg_s": [
+      180,
+      120,
+      120,
+      180,
+      180,
+      224
+    ],
+    "tool_maximum_speed_m_s": 6.4,
+    "repeatability_m": 0.0001,
+    "axis_count": 6,
+    "communication_labels": [
+      "TCP/IP",
+      "Modbus"
+    ]
+  },
+  "readable_drawing_dimensions": {
+    "shoulder_to_elbow_m": 0.9,
+    "elbow_to_wrist_axis_m": 0.9415,
+    "shoulder_height_from_support_m": 0.2833,
+    "base_outer_diameter_m": 0.326,
+    "base_bolt_circle_diameter_m": 0.302,
+    "base_through_holes": {
+      "count": 6,
+      "diameter_m": 0.0135
+    },
+    "flange_bolt_circle_diameter_m": 0.092,
+    "flange_threaded_holes": {
+      "count": 8,
+      "thread": "M6",
+      "depth_m": 0.01
+    },
+    "flange_register_diameter_m": 0.066,
+    "flange_register_fit": "H7",
+    "flange_external_register_diameter_m": 0.107,
+    "flange_external_register_fit": "h7",
+    "flange_locator_hole_diameter_m": 0.006,
+    "flange_locator_hole_fit": "H7",
+    "flange_locator_hole_depth_m": 0.006
+  },
+  "comparison": {
+    "published_scalars_match_existing_project_config": true,
+    "page_speed_values_match_previous_product_page_values": true,
+    "mechanical_manual_speed_revision_conflict_resolved": false,
+    "controller_to_CAD_mapping_resolved": false,
+    "per_link_inertials_supplied": false,
+    "joint_effort_limits_supplied": false,
+    "joint_acceleration_limits_supplied": false,
+    "load_offset_and_inertia_envelope_supplied": false,
+    "specific_tool_adapter_manufacturing_fit_proven": false
+  },
+  "project_load_comparison": {
+    "tool_mass_kg": 20,
+    "carton_mass_kg": 42.5,
+    "combined_mass_kg": 62.5,
+    "amount_above_published_rating_kg": 12.5,
+    "fraction_above_published_rating": 0.25,
+    "conclusion": "KINEMATIC_SIMULATION_ONLY; actual robot load capability is not established and exceeds this published nominal rating. Manufacturer-specific approval or a changed physical load/robot is needed before claiming payload qualification."
+  },
+  "application": "Supplement source evidence only. Do not alter temporary simulation ranges, infer zero offsets, distribute total mass among links or enable qualification flags."
+}

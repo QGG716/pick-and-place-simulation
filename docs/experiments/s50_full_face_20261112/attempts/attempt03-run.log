@@ -1,0 +1,12 @@
+carton_l07_c02 home PASS samples 1 completed 0
+carton_l07_c02 belt_raise PASS samples 37 completed 0
+carton_l07_c02 front grasp solutions 6
+carton_l07_c02 top grasp solutions 0
+carton_l07_c02 DEFERRED FINITE_CARTON_SEARCH_EXHAUSTED:carton_l07_c02
+carton_l07_c01 front grasp solutions 6
+carton_l07_c01 top grasp solutions 0
+carton_l07_c01 DEFERRED FINITE_CARTON_SEARCH_EXHAUSTED:carton_l07_c01
+carton_l07_c03 front grasp solutions 6
+carton_l07_c03 top grasp solutions 0
+carton_l07_c03 DEFERRED FINITE_CARTON_SEARCH_EXHAUSTED:carton_l07_c03
+carton_l07_c00 front grasp solutions 5

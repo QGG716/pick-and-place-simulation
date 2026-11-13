@@ -1,0 +1,19 @@
+{
+  "requested_base": "e9cd6735802cc0e184c64c6a54c230bd569f6f49",
+  "existing_branch_parent": "d31a5d2e10263bf10f18862211aec6018bb341ef",
+  "runtime_directory": "/work-s50-step1-kinematic-20261112",
+  "files": {
+    "src/unloading_sim/s50_kinematic_sim.py": "600d20cddcc81727ed8d20cb4ebe917baddccfa58f99cbd24241930695aa4f23",
+    "src/unloading_sim/s50_kinematic_cycle.py": "8123c00ba483a823fab88d6400c46aa2db2b2b8040835eeeedad837ae48e90d3",
+    "src/unloading_sim/s50_sim_collision.py": "82b5c0eefaa4e32d053c36fe9564b135c5938d27a7f3aeab3c87eb40f14ca7b8",
+    "configs/robots/huayan_s50_2000_kinematic_sim.yaml": "174a58ef8f1a5f16f4e0b49cb784f81bd8ac5d4008320c80196b828d0ce3cfb1",
+    "tools/export_s50_kinematic_viewer.py": "29a400459e902cf01612c8333bc91e449ee9ea8ae0046584a15337420b5b8660",
+    "tools/s50_kinematic_viewer.html": "799852bceb67702fda2367f360d4def3f2a953c978a062878ebe075d10873ebc",
+    "tools/check_s50_kinematic_replay.cjs": "21484cdc633d30a7c37b4c33905ed92f02b3d278986d457742938776a3de5b97",
+    "assets/robots/huayan/s50_1_kinematic/model.json": "538db3471a7cd2fbe7f5d854c956a7a1ffb6387c7a66b86dec1ed197766c610f"
+  },
+  "focused_server_tests": "3 passed",
+  "focused_local_tests": "2 passed, 1 skipped (Coal unavailable on local Windows)",
+  "manufacturer_image_identities": "PASS",
+  "browser_acceptance": "NOT_RUN_USER_STOPPED_COMPUTER_USE"
+}

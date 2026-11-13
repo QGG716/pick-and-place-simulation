@@ -1,0 +1,17 @@
+home PASS 1 checks 7
+pregrasp PASS 30 checks 57
+approach PASS 72 checks 106
+grasp PASS 73 checks 106
+separate PASS 78 checks 112
+withdraw PASS 232 checks 294
+belt_raise PASS 260 checks 322
+transfer goal 2.1 valid 4
+transfer PASS 1037 checks 3127
+release PASS 1038 checks 3127
+drop PASS 1078 checks 3167
+exit PASS 1108 checks 3202
+park PASS 1600 checks 4169
+outfeed PASS 2190 checks 4759
+belt_lower PASS 2226 checks 4795
+return PASS 2258 checks 4844
+{"status": "COMPLETED_KINEMATIC_SINGLE_CARTON", "report": "outputs/s50_step1_kinematic/cycle.json", "viewer": "outputs/s50_step1_kinematic/viewer.html"}

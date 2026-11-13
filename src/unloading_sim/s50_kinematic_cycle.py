@@ -16,6 +16,9 @@ from .workcell_layout import canonical_digest
 
 
 def run(c):
+    if c.settings.get('motion_profile')=='continuous_preferred_posture':
+        from .s50_kinematic_flow import run as run_flow
+        return run_flow(c)
     start=perf_counter();checker=SimCollision(c);robot=c.robot
     target,contact=target_contact(c);height=.6;attached=False;relative=None;boxT=target.world_from_local.copy()
     samples=[];stages=[];failures=[];metrics=[];q=None
@@ -24,6 +27,8 @@ def run(c):
         target=target.name,environment_fingerprint=c.frozen['environment_fingerprint'],initial_carton_ids=c.frozen['initial_carton_ids'],
         world_from_model_base=c.world.tolist(),flange_from_physical_contact=c.frames['nominal_compressed_contact'].tolist(),
         flange_from_virtual_task_tcp=c.frames['virtual_task_tcp'].tolist(),source_model_sha256=c.definition['definition_sha256'],
+        source_step_path=c.definition.get('source_step_path','assets/robots/huayan_s50_2000/source/S50.STEP'),
+        source_step_sha256=c.definition['source_step_sha256'],
         initial_cartons=40,completed_cartons=0,controller_mapping_verified=False,dynamics_verified=False,
         native_planning_required=False,ik_backend='EXISTING_URDF_DLS',path_backend='EXISTING_RRT_CONNECT',
         collision_backend='PINOCCHIO_COAL_CAD_MESH_AND_ORIGINAL_TOOL_COMPOUND_SAMPLED',

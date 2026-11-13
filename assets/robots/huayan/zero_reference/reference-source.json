@@ -1,0 +1,33 @@
+{
+  "source_url": "https://raw.githubusercontent.com/huayan-robotics/elfin_s_robot/cfa35bcf5b071e4d4aa4d5ca5e9b46b3437a6659/elfin_description/urdf/S30.urdf.xacro",
+  "commit": "cfa35bcf5b071e4d4aa4d5ca5e9b46b3437a6659",
+  "sha256": "9597f2a6b9e938ad2385ecb7b3f68465ad152e5c97df95418793b58809c36c25",
+  "license": "BSD-3-Clause",
+  "scope": "JOINT_COORDINATE_CONVENTION_REFERENCE_ONLY_NOT_S50_GEOMETRY_OR_DYNAMICS",
+  "q_cad_equation": "q_cad = sign * q_sim + cad_offset",
+  "sign": [
+    1,
+    -1,
+    -1,
+    -1,
+    1,
+    -1
+  ],
+  "cad_offset_deg": [
+    0,
+    -90,
+    0,
+    -90,
+    0,
+    0
+  ],
+  "cad_assembly_q_sim_deg": [
+    0,
+    -90,
+    0,
+    -90,
+    0,
+    0
+  ],
+  "controller_calibration_verified": false
+}

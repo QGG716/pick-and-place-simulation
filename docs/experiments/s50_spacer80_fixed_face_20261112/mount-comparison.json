@@ -1,0 +1,243 @@
+{
+  "scope": "DIAGNOSTIC_COMPARISON_NO_CROSS_WORLD_COMPLETION_COUNTS",
+  "target": "carton_l07_c00",
+  "entries": [
+    {
+      "source": "docs/experiments/s50_fixed_face_20261112/c00_recovery/numerical-recovery.json",
+      "standoff_m": 0.105,
+      "face": "front",
+      "scope": "SAME_REMAINING_TARGET_NUMERICAL_RECOVERY_NOT_EXECUTED",
+      "ik_attempts": 565,
+      "ik_success": 548,
+      "contact_solutions": 2,
+      "approach_and_extraction_pass": 0,
+      "branches": [
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_s50_mount_flange",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.3936349817597635,
+            -0.8399701124062138,
+            2.2699579124271922
+          ],
+          "eligible_cups": null,
+          "preference": null
+        },
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:recovery_pregrasp_reverse",
+          "collision_pair": [
+            "s50_link_2",
+            "conveyor_longitudinal"
+          ],
+          "failed_contact_xyz_m": [
+            -0.04802552746279504,
+            -0.8399769286843974,
+            2.2499678838096067
+          ],
+          "eligible_cups": null,
+          "preference": null
+        }
+      ]
+    },
+    {
+      "source": "docs/experiments/s50_mount_recovery_20261112/s50_mount105_side_probe_20261112/recovery.json",
+      "standoff_m": 0.105,
+      "face": "left",
+      "scope": "SAME_REMAINING_TARGET_NUMERICAL_RECOVERY_NOT_EXECUTED",
+      "ik_attempts": 157,
+      "ik_success": 82,
+      "contact_solutions": 0,
+      "approach_and_extraction_pass": 0,
+      "branches": []
+    },
+    {
+      "source": "docs/experiments/s50_mount_recovery_20261112/s50_mount150_front_probe_20261112/recovery.json",
+      "standoff_m": 0.15,
+      "face": "front",
+      "scope": "CHANGED_MOUNT_DIAGNOSTIC_SCENE_NOT_EXECUTED",
+      "ik_attempts": 236,
+      "ik_success": 227,
+      "contact_solutions": 3,
+      "approach_and_extraction_pass": 0,
+      "branches": [
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_s50_mount_flange",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.3445526809481525,
+            -0.8398723733189493,
+            2.269816176434036
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        },
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_rigid_27",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.3198201222902259,
+            -0.8399827573524361,
+            2.26997025293062
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        },
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_rigid_27",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.3198032397247298,
+            -0.8399981209831414,
+            2.2699999067260133
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        }
+      ]
+    },
+    {
+      "source": "docs/experiments/s50_mount_recovery_20261112/s50_spacer50_front_probe_20261112/recovery.json",
+      "standoff_m": 0.155,
+      "face": "front",
+      "scope": "CHANGED_MOUNT_DIAGNOSTIC_SCENE_NOT_EXECUTED",
+      "ik_attempts": 248,
+      "ik_success": 239,
+      "contact_solutions": 3,
+      "approach_and_extraction_pass": 0,
+      "branches": [
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_s50_mount_flange",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.5413306407590165,
+            -0.8398897888690049,
+            2.2698418228382504
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        },
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_rigid_27",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.369022471932161,
+            -0.8399807894040922,
+            2.269966337858291
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        },
+        {
+          "status": "FAILED",
+          "reason": "POINTWISE_COLLISION:extract",
+          "collision_pair": [
+            "tool_rigid_27",
+            "s50_link_3"
+          ],
+          "failed_contact_xyz_m": [
+            -0.36910940942504594,
+            -0.8399116785300836,
+            2.269870832874173
+          ],
+          "eligible_cups": 48,
+          "preference": null
+        }
+      ]
+    },
+    {
+      "source": "docs/experiments/s50_mount_recovery_20261112/s50_spacer80_front_probe_20261112/recovery.json",
+      "standoff_m": 0.185,
+      "face": "front",
+      "scope": "CHANGED_MOUNT_DIAGNOSTIC_SCENE_NOT_EXECUTED",
+      "ik_attempts": 233,
+      "ik_success": 225,
+      "contact_solutions": 2,
+      "approach_and_extraction_pass": 2,
+      "branches": [
+        {
+          "status": "APPROACH_AND_STRAIGHT_EXTRACTION_PASS",
+          "reason": null,
+          "collision_pair": null,
+          "failed_contact_xyz_m": null,
+          "eligible_cups": 48,
+          "preference": {
+            "score": 40.86991329245858,
+            "j1_range_deg": [
+              -61.52665810433278,
+              -37.76893560177858
+            ],
+            "j1_span_deg": 23.757722502554202,
+            "j1_empty_reposition_deg": 45.4017552396273,
+            "j1_empty_reposition_weight": 1.0,
+            "j2_range_deg": [
+              -122.32253686717416,
+              -97.36554562580956
+            ],
+            "j2_start_deg": -120.99183498631747,
+            "j2_end_deg": -97.36554562580956,
+            "upper_arm_forward_tilt_range_deg": [
+              21.441395540653833,
+              37.62887447033291
+            ],
+            "upper_arm_forward_free_deg": 30.0,
+            "preference_semantics": "SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION"
+          }
+        },
+        {
+          "status": "APPROACH_AND_STRAIGHT_EXTRACTION_PASS",
+          "reason": null,
+          "collision_pair": null,
+          "failed_contact_xyz_m": null,
+          "eligible_cups": 48,
+          "preference": {
+            "score": 44.023804902201896,
+            "j1_range_deg": [
+              -61.526524397645744,
+              -37.76923892723941
+            ],
+            "j1_span_deg": 23.757285470406337,
+            "j1_empty_reposition_deg": 45.40202429436839,
+            "j1_empty_reposition_weight": 1.0,
+            "j2_range_deg": [
+              -113.04520301818455,
+              -93.01827908299731
+            ],
+            "j2_start_deg": -112.90751628619755,
+            "j2_end_deg": -93.01827908299731,
+            "upper_arm_forward_tilt_range_deg": [
+              19.492108216995792,
+              30.32401370179238
+            ],
+            "upper_arm_forward_free_deg": 30.0,
+            "preference_semantics": "SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION"
+          }
+        }
+      ]
+    }
+  ]
+}

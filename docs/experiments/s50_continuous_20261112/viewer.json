@@ -1,0 +1,14 @@
+{
+  "status": "COMPLETED_KINEMATIC_SINGLE_CARTON",
+  "sample_count": 2143,
+  "model_fk_source": "SAME_CAD_DEFINITION",
+  "source_report_sha256": "177502b7cc9d17fa23200e3264fc8e0a4c28dc5a4a4affe4106d757c787e43d6",
+  "html_sha256": "6f773e6f95f5808c9b0cb62e9ebf4355409a2fa48835e439c62d1ac845cabd3d",
+  "full_task_state": true,
+  "robot_joint_count": 6,
+  "carton_initial_count": 40,
+  "tool_connected": true,
+  "browser_acceptance": "PASS",
+  "offline_payload_files": [],
+  "browser_check": "keyframes/browser-checks.json"
+}

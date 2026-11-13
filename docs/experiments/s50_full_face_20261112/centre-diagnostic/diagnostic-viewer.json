@@ -1,0 +1,51 @@
+{
+  "status": "EXPORTED",
+  "html_sha256": "e0b08fa77888f70829fef915c059794efb70142541398c0ea2186fb7e6f268c9",
+  "source_report_sha256": "6bad5b2ce94bf11ff6f763cbed34bbcd3e4aa3706518f100471a669165cc7d95",
+  "branches": 6,
+  "valid_ik_knots": 123,
+  "rejected_candidates": 6,
+  "geometry_recheck": [
+    {
+      "valid_prefix_states": 21,
+      "rejected_candidate_collision_free": true,
+      "rejected_pair": null
+    },
+    {
+      "valid_prefix_states": 20,
+      "rejected_candidate_collision_free": false,
+      "rejected_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ]
+    },
+    {
+      "valid_prefix_states": 20,
+      "rejected_candidate_collision_free": false,
+      "rejected_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ]
+    },
+    {
+      "valid_prefix_states": 20,
+      "rejected_candidate_collision_free": false,
+      "rejected_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ]
+    },
+    {
+      "valid_prefix_states": 21,
+      "rejected_candidate_collision_free": true,
+      "rejected_pair": null
+    },
+    {
+      "valid_prefix_states": 21,
+      "rejected_candidate_collision_free": true,
+      "rejected_pair": null
+    }
+  ],
+  "browser_check": "PASS",
+  "browser_check_report": "screenshots/browser-checks.json"
+}

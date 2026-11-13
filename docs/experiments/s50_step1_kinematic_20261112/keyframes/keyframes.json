@@ -1,0 +1,58 @@
+[
+  {
+    "phase": "home",
+    "sample_index": 0,
+    "q_rad": [
+      0.09548763939081778,
+      0.4568839036273904,
+      1.8751594263298978,
+      -2.3320599458958347,
+      1.4753083924369492,
+      1.5770768954214288e-06
+    ],
+    "file": "home.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "withdraw",
+    "sample_index": 231,
+    "q_rad": [
+      0.1788663139302646,
+      -0.427774129414937,
+      1.8822195911925061,
+      -1.4544461784513034,
+      1.3919302981863566,
+      1.29615945580439e-07
+    ],
+    "file": "withdraw.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "transfer",
+    "sample_index": 1036,
+    "q_rad": [
+      0.9986190134452301,
+      -1.3292360821139615,
+      1.7486048457544994,
+      -3.5606711292774516,
+      -0.5715882863664016,
+      3.1411777156549205
+    ],
+    "file": "transfer.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  },
+  {
+    "phase": "exit",
+    "sample_index": 1107,
+    "q_rad": [
+      0.8109894036451157,
+      -1.3410543061974072,
+      1.7325199108677225,
+      -3.532830492234992,
+      -0.759217616624853,
+      3.1412566486678166
+    ],
+    "file": "exit.png",
+    "render_scope": "ACTUAL_CAD_RECORDED_POSE_NOT_BROWSER_SCREENSHOT"
+  }
+]

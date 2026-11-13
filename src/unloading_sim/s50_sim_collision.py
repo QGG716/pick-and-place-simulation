@@ -22,9 +22,18 @@ class SimCollision:
         self.adjacent={frozenset(p) for p in c.settings['collision']['adjacent_design_interfaces']}
         self.robot_local=[(v.min(0),v.max(0)) for v in self.backend._geometry_local_vertices]
         self.tool=[]
+        from .s50_tool_mount import load_structure_meshes
+        tool_meshes=load_structure_meshes(c.root,c.intrinsic)
         for kind,key in [('rigid','rigid_local_boxes_virtual_tcp_m'),('cup','compliant_local_boxes_virtual_tcp_m')]:
             for i,row in enumerate(c.intrinsic[key]):
-                row=np.asarray(row);self.tool.append(dict(name=f'tool_{kind}_{i}',kind=kind,center=row[:3],half=row[3:]/2,shape=self.coal.Box(*row[3:])))
+                name=c.intrinsic.get(kind+'_body_ids',[f'tool_{kind}_{j}' for j in range(len(c.intrinsic[key]))])[i]
+                row=np.asarray(row);shape=self.coal.Box(*row[3:])
+                if name in tool_meshes:
+                    mesh=tool_meshes[name];vertices=self.coal.StdVec_Vec3s();faces=self.coal.StdVec_Triangle()
+                    for v in mesh['vertices']-row[:3]:vertices.append(v)
+                    for a,b,d in mesh['faces']:faces.append(self.coal.Triangle(int(a),int(b),int(d)))
+                    shape=self.coal.BVHModelOBBRSS();shape.beginModel(len(faces),len(vertices));shape.addSubModel(vertices,faces);shape.endModel()
+                self.tool.append(dict(name=name,kind=kind,center=row[:3],half=row[3:]/2,shape=shape))
         self.fixed_shape_count=len(self.backend.geometry_model.geometryObjects)
         self.fk_crosscheck=max(np.max(np.abs(c.robot.fk(q)-self.backend.fk(q))) for q in [np.zeros(6),np.array([.1,.3,-.4,.2,.5,-.2])])
         if self.fk_crosscheck>1e-8:raise ValueError('SIM_CORE_PIN_FK_MISMATCH')
@@ -35,9 +44,10 @@ class SimCollision:
             bounds=bounds((-box.half_extents,box.half_extents),box.world_from_local),evidence=evidence)
 
     def environment(self,height):
-        key=round(float(height),8)
+        active=tuple(getattr(self.c,'active_cartons',self.c.layout.cartons()))
+        key=(round(float(height),8),self.c.settings['target'],tuple(b.name for b in active))
         if key not in self.env_cache:
-            state=coupled_conveyor_state(self.c.layout,height,tuple(self.c.layout.cartons()))
+            state=coupled_conveyor_state(self.c.layout,height,active)
             self.env_cache[key]=[self.entity(b) for b in state.boxes if b.name!=self.c.settings['target']]
         return self.env_cache[key]
 
@@ -75,7 +85,8 @@ class SimCollision:
         frames=c.robot.named_link_frames(q);axes=c.robot.joint_axis_frames(q)
         target=next(b for b in c.layout.cartons() if b.name==c.settings['target'])
         targetbox=target if payload is None else OBB(np.asarray(payload)[:3,3],target.half_extents,np.asarray(payload)[:3,:3],target.name,'carton')
-        targetentity=self.entity(targetbox);env=[*self.environment(height),targetentity]
+        targetentity=self.entity(targetbox);target_active=target.name not in getattr(c,'outfed_carton_ids',())
+        env=[*self.environment(height)]+([targetentity] if target_active else [])
         env_low=np.array([b['bounds'][0] for b in env]);env_high=np.array([b['bounds'][1] for b in env])
         robot_low=np.array([b['bounds'][0] for b in robot]);robot_high=np.array([b['bounds'][1] for b in robot])
         def nearby(a,items,low,high):
@@ -112,7 +123,7 @@ class SimCollision:
                 if b['name']=='s50_link_6':continue # tool belongs to its ideal fixed flange
                 hit=self.query(a,b)
                 if hit:return fail(hit)
-        if payload is not None:
+        if payload is not None and target_active:
             for b in nearby(targetentity,env[:-1],env_low[:-1],env_high[:-1]):
                 hit=self.query(targetentity,b)
                 if hit:return fail(hit)

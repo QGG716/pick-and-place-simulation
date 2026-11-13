@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/work-s50-step1-kinematic-20261112/tools/run_s50_kinematic_sim.py", line 42, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+  File "/work-s50-step1-kinematic-20261112/tools/run_s50_kinematic_sim.py", line 14, in main
+    a=p.parse_args();c=make_context(ROOT,a.output,a.config)
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/s50_kinematic_sim.py", line 53, in make_context
+    layout=frozen_baseline_layout(root);frozen=freeze_non_robot_scene(layout)
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/robot_replacement_layout.py", line 157, in freeze_non_robot_scene
+    tool_intrinsic=_tool_intrinsic(layout), height_samples=[])
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/robot_replacement_layout.py", line 109, in _tool_intrinsic
+    rigid = extended_connector_boxes(_rigid_tool_compound_boxes(geometry.data, root), extension)
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/workcell_layout.py", line 152, in _rigid_tool_compound_boxes
+    return _tool_compound_boxes(
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/workcell_layout.py", line 111, in _tool_compound_boxes
+    coverage = audit_tool_geometry(project_root)
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/tool_geometry.py", line 175, in audit_tool_geometry
+    identities = tuple((str(path.resolve()), path.stat().st_size, path.stat().st_mtime_ns) for path in paths)
+  File "/work-s50-step1-kinematic-20261112/src/unloading_sim/tool_geometry.py", line 175, in <genexpr>
+    identities = tuple((str(path.resolve()), path.stat().st_size, path.stat().st_mtime_ns) for path in paths)
+  File "/usr/lib/python3.10/pathlib.py", line 1097, in stat
+    return self._accessor.stat(self, follow_symlinks=follow_symlinks)
+FileNotFoundError: [Errno 2] No such file or directory: '/work-s50-step1-kinematic-20261112/res/上海皖泰真空吸盘三分区.STEP'

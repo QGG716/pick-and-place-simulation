@@ -1,0 +1,6 @@
+{
+  "status": "FAIL",
+  "check": "Play advances time after fixed 400 ms",
+  "observed": "No animation frame advanced within initial fixed wait in fresh headless browser",
+  "recovery": "Activate only this fresh headless tab, disable background throttling and poll a bounded 5-second window; leave viewer playback logic unchanged"
+}

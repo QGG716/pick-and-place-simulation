@@ -1,0 +1,20 @@
+{
+  "branch": "feat/v0.5-s50-moveit2-native-single-carton",
+  "checkout_head": "d31a5d2e10263bf10f18862211aec6018bb341ef",
+  "working_tree_changes_not_committed": true,
+  "files": {
+    "src/unloading_sim/s50_tool_mount.py": "2846406145e1a5ce86691b48caf4659a2d14dadc0b89013ac028076590d92b54",
+    "src/unloading_sim/s50_face_kinematic.py": "a00e88f312ec013f2917aae4b12701b6dd731fbc7177facc1abade394460826c",
+    "src/unloading_sim/s50_kinematic_sim.py": "74609b39ac60c1e5117bf30365dfe928223dde21f91158110c6d3023a54b5346",
+    "src/unloading_sim/s50_sim_collision.py": "ba447fca2abf9307d9e3e6d25b145218071932f719ede5e65b0cced48259dfdd",
+    "configs/robots/huayan_s50_2000_kinematic_sim.yaml": "eee2cd2042b366b16e12f2d7a66aad906f96daf74399110080bb9c78594b37b9",
+    "tools/run_s50_kinematic_sim.py": "4ae3b8db5a9d5a14d148245a824dca62a75de9f5eac9767db4707c3f8e0689b5",
+    "tools/export_s50_kinematic_viewer.py": "c4bf33d66ceca822b975075a7b99154566951804799c8732d9419652b1f8c5d6",
+    "tools/s50_kinematic_viewer.html": "75ca0d67a8aed4bc241c9a6b5d534284f45a4af5a4945c657e50bc6c858d3971",
+    "tools/prepare_s50_direct_tool_meshes.py": "dbfe6976845797f5175c21cfb3d2961cd2044db4166c58db4ee96ffb7946f28a",
+    "tools/prepare_s50_short_mount.py": "45d931a698c4bd605c3a5a6c529a4b04db78bbdb8b170cfb4b43e7f8619a544e",
+    "tools/check_s50_short_mount_fit.py": "c3b7047aae5e76acb254d89e6b7ee73df86e6e6a95e72bd0440fafb9be892cbe"
+  },
+  "cycle_sha256": "0eda85eedf28b42d52e9af00a2c4bc357e30accb5af993a446ac63c6e205c10e",
+  "scene_sha256": "0a9318859033a93ceb454eaf1fd3b49be13463d2480a5b3f8da70e2b276af62f"
+}

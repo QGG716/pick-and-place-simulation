@@ -1,0 +1,9 @@
+{
+  "status": "RUNNING",
+  "completed": [],
+  "target": "carton_l07_c02",
+  "phase": "belt_raise",
+  "samples": 37,
+  "checks": 165,
+  "failures": 4
+}

@@ -1,0 +1,436 @@
+{
+  "scope": "RETAINED_FAILURE_DIAGNOSIS_NOT_EXECUTED_MOTION",
+  "target": "carton_l07_c02",
+  "source_report": "outputs/s50_centre_diagnostic_attempt04/gap_100/cycle.json",
+  "model_sha256": "538db3471a7cd2fbe7f5d854c956a7a1ffb6387c7a66b86dec1ed197766c610f",
+  "belt_surface_height_m": 1.5,
+  "position_tolerance_m": 4e-05,
+  "orientation_tolerance_rad": 0.0001,
+  "rows": [
+    {
+      "branch": 0,
+      "reason": "POINTWISE_IK_FAILED",
+      "point_index": 21,
+      "first_rejected_tcp_xyz_m": [
+        -0.49338613581853585,
+        -6.823437847594595e-05,
+        2.2699596455994837
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.4687225854802637,
+        -6.957230902247482e-05,
+        2.2699596250395193
+      ],
+      "ik_success": false,
+      "ik_position_error_m": 0.0015234576652579574,
+      "ik_orientation_error_rad": 0.0001629607113806258,
+      "q_deg": [
+        47.90598537092033,
+        -42.305971329939034,
+        -94.94546562008891,
+        137.25459582323148,
+        -42.10540239223032,
+        -180.002344410593
+      ],
+      "collision_pair": null,
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        -1.2001997968185652e-16,
+        1.0179499710428761e-16,
+        -0.5520000000000002
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.25399980164770536,
+      "requested_j5_xy_radius_m": 0.253758230517405,
+      "necessary_radius_deficit_m": 0.00024157113030037758,
+      "desired_j5_xyz_m": [
+        -1.0453861350674918,
+        -8.799363275449762e-05,
+        2.2699386998442583
+      ]
+    },
+    {
+      "branch": 1,
+      "reason": "POINTWISE_COLLISION",
+      "point_index": 20,
+      "first_rejected_tcp_xyz_m": [
+        -0.4685926588034363,
+        3.991373772322074e-07,
+        2.2699950262166952
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.4439287396347148,
+        5.340863741600039e-07,
+        2.269994925065845
+      ],
+      "ik_success": true,
+      "ik_position_error_m": 2.669892045131918e-05,
+      "ik_orientation_error_rad": 2.849579642300113e-05,
+      "q_deg": [
+        78.90395088487169,
+        -133.95865460657285,
+        94.58018234572081,
+        39.37266860324806,
+        -11.096060706393812,
+        -179.99393680018744
+      ],
+      "collision_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ],
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        -1.2941411023799314e-16,
+        2.5837683511335784e-17,
+        -0.5520000000000004
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.2539998016477042,
+      "requested_j5_xy_radius_m": 0.2740946066381754,
+      "necessary_radius_deficit_m": 0.0,
+      "desired_j5_xyz_m": [
+        -1.0205926587840144,
+        -4.1728058129007467e-07,
+        2.269990468174914
+      ],
+      "independent_link2_mesh_pair_recheck": [
+        {
+          "geometry": "s50_link_2_0",
+          "intersection": true,
+          "contacts": [
+            [
+              -0.7916778175046666,
+              0.33125837064075175,
+              1.4984555464398965
+            ],
+            [
+              -0.7902368337168343,
+              0.338440889956987,
+              1.4981881246977733
+            ],
+            [
+              -0.7889680094090555,
+              0.3458698677118439,
+              1.4979526527863616
+            ],
+            [
+              -0.7878767772441052,
+              0.3535135178953234,
+              1.497750138914189
+            ]
+          ]
+        },
+        {
+          "geometry": "s50_link_2_1",
+          "intersection": false,
+          "contacts": null
+        }
+      ]
+    },
+    {
+      "branch": 2,
+      "reason": "POINTWISE_COLLISION",
+      "point_index": 20,
+      "first_rejected_tcp_xyz_m": [
+        -0.4686063896994452,
+        -8.433375430809119e-06,
+        2.2699640961544505
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.4439423696859169,
+        -8.273683411248088e-06,
+        2.269963984316112
+      ],
+      "ik_success": true,
+      "ik_position_error_m": 2.036002373339535e-07,
+      "ik_orientation_error_rad": 8.799247499781467e-07,
+      "q_deg": [
+        78.88961183613996,
+        -145.41510308595042,
+        119.10419156622063,
+        206.30414561862645,
+        11.109707416700838,
+        0.0055572035826177086
+      ],
+      "collision_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ],
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        -1.1332534749423408e-16,
+        -3.1910252137652787e-17,
+        -0.5520000000000003
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.25399980164770397,
+      "requested_j5_xy_radius_m": 0.27408387529197464,
+      "necessary_radius_deficit_m": 0.0,
+      "desired_j5_xyz_m": [
+        -1.0206063895274848,
+        -1.8072206155719507e-06,
+        2.2699761766568023
+      ],
+      "independent_link2_mesh_pair_recheck": [
+        {
+          "geometry": "s50_link_2_0",
+          "intersection": true,
+          "contacts": [
+            [
+              -0.7790677461035943,
+              0.4593355508789162,
+              1.494149603151174
+            ],
+            [
+              -0.7774896810538495,
+              0.46790427410311397,
+              1.4937085466438358
+            ],
+            [
+              -0.7760740484263788,
+              0.47681829117256835,
+              1.493312888693964
+            ],
+            [
+              -0.7748269089394018,
+              0.48603946299131057,
+              1.492964323223625
+            ]
+          ]
+        },
+        {
+          "geometry": "s50_link_2_1",
+          "intersection": false,
+          "contacts": null
+        }
+      ]
+    },
+    {
+      "branch": 3,
+      "reason": "POINTWISE_COLLISION",
+      "point_index": 20,
+      "first_rejected_tcp_xyz_m": [
+        -0.46859113255922036,
+        1.7831956475386703e-07,
+        2.2699996099574635
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.44392707679874105,
+        3.444085852638495e-07,
+        2.269999448224005
+      ],
+      "ik_success": true,
+      "ik_position_error_m": 2.3303496608061983e-07,
+      "ik_orientation_error_rad": 6.611477113181506e-06,
+      "q_deg": [
+        78.89774214750713,
+        -145.41364855320606,
+        119.102508280471,
+        206.3115549533754,
+        11.102264570634125,
+        -360.0
+      ],
+      "collision_pair": [
+        "s50_link_2",
+        "conveyor_transverse"
+      ],
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        3.7377084571430764e-17,
+        5.6267676787977035e-18,
+        -0.5520000000000002
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.25399980164770386,
+      "requested_j5_xy_radius_m": 0.274095545314306,
+      "necessary_radius_deficit_m": 0.0,
+      "desired_j5_xyz_m": [
+        -1.0205911325572399,
+        2.016675458530322e-07,
+        2.2699981314950324
+      ],
+      "independent_link2_mesh_pair_recheck": [
+        {
+          "geometry": "s50_link_2_0",
+          "intersection": true,
+          "contacts": [
+            [
+              -0.7790889318487106,
+              0.4594131323465041,
+              1.4941600648102784
+            ],
+            [
+              -0.7775113696622555,
+              0.46798337458286543,
+              1.4937194913847605
+            ],
+            [
+              -0.7760962728740374,
+              0.47689877814607257,
+              1.4933242904571662
+            ],
+            [
+              -0.7748496999098757,
+              0.4861211980046622,
+              1.4929761539933906
+            ]
+          ]
+        },
+        {
+          "geometry": "s50_link_2_1",
+          "intersection": false,
+          "contacts": null
+        }
+      ]
+    },
+    {
+      "branch": 4,
+      "reason": "POINTWISE_IK_FAILED",
+      "point_index": 21,
+      "first_rejected_tcp_xyz_m": [
+        -0.4933820004613863,
+        -1.977922546344073e-05,
+        2.2699745244784006
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.46871838735430116,
+        -2.1186004560518037e-05,
+        2.269974493881391
+      ],
+      "ik_success": false,
+      "ik_position_error_m": 0.0003201083917437296,
+      "ik_orientation_error_rad": 4.314141006470565e-05,
+      "q_deg": [
+        52.86761144317725,
+        -28.265456981667523,
+        -119.52261892040376,
+        -32.208422233887994,
+        37.13256744780535,
+        -360.0
+      ],
+      "collision_pair": null,
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        6.1011358502544324e-18,
+        2.6949857708781157e-17,
+        -0.5520000000000006
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.2539998016477054,
+      "requested_j5_xy_radius_m": 0.25372130909853474,
+      "necessary_radius_deficit_m": 0.00027849254917067245,
+      "desired_j5_xyz_m": [
+        -1.0453820000820853,
+        -1.992134468827364e-05,
+        2.2699540616109655
+      ]
+    },
+    {
+      "branch": 5,
+      "reason": "POINTWISE_IK_FAILED",
+      "point_index": 21,
+      "first_rejected_tcp_xyz_m": [
+        -0.49325511974486663,
+        -2.541159525871094e-06,
+        2.269996740941091
+      ],
+      "last_valid_tcp_xyz_m": [
+        -0.468591518558028,
+        -3.9308105821854775e-06,
+        2.269996710992581
+      ],
+      "ik_success": false,
+      "ik_position_error_m": 0.00019646340433717794,
+      "ik_orientation_error_rad": 2.9120752514870407e-06,
+      "q_deg": [
+        53.9827443867311,
+        -27.970580858629496,
+        -119.51777910240826,
+        -32.51155233083409,
+        36.01704694661915,
+        -6.43233006898379e-05
+      ],
+      "collision_pair": null,
+      "j1_axis_origin_m": [
+        -1.25,
+        0.14999999999999994,
+        1.1833
+      ],
+      "j5_from_tcp_in_tcp_axes_m": [
+        -1.274175298362911e-16,
+        1.5297591349817136e-16,
+        -0.5520000000000006
+      ],
+      "necessary_minimum_j5_xy_radius_m": 0.25399980164770536,
+      "requested_j5_xy_radius_m": 0.25381123503777475,
+      "necessary_radius_deficit_m": 0.00018856660993060714,
+      "desired_j5_xyz_m": [
+        -1.0452551197327726,
+        1.0765513322112996e-06,
+        2.269996226597773
+      ]
+    }
+  ],
+  "radial_bound": {
+    "necessary_not_sufficient": true,
+    "minimum_radius_m": 0.25399980164770536,
+    "j5_to_physical_contact_axial_distance_m": 0.5520000000000002,
+    "random_configuration_identity_max_error_m": 1.6653345369377348e-15
+  },
+  "same_target_layout_comparison": [
+    {
+      "gap_m": 0.1,
+      "base_xyz_m": [
+        -1.25,
+        0.15,
+        0.9
+      ],
+      "ideal_normal_positive_x_first_radial_boundary_withdrawal_m": 0.49302219818459914,
+      "box_depth_m": 0.6,
+      "j5_radius_at_600mm_withdrawal_m": 0.17917589123540023,
+      "radial_necessary_condition_at_600mm_passed": false,
+      "does_not_prove_collision_free_path": true
+    },
+    {
+      "gap_m": 0.2,
+      "base_xyz_m": [
+        -1.3499999999999999,
+        0.15,
+        0.9
+      ],
+      "ideal_normal_positive_x_first_radial_boundary_withdrawal_m": 0.593022198184599,
+      "box_depth_m": 0.6,
+      "j5_radius_at_600mm_withdrawal_m": 0.2484028985338132,
+      "radial_necessary_condition_at_600mm_passed": false,
+      "does_not_prove_collision_free_path": true
+    },
+    {
+      "gap_m": 0.3,
+      "base_xyz_m": [
+        -1.45,
+        0.15,
+        0.9
+      ],
+      "ideal_normal_positive_x_first_radial_boundary_withdrawal_m": 0.6930221981845991,
+      "box_depth_m": 0.6,
+      "j5_radius_at_600mm_withdrawal_m": 0.33362254120487705,
+      "radial_necessary_condition_at_600mm_passed": true,
+      "does_not_prove_collision_free_path": true
+    }
+  ]
+}

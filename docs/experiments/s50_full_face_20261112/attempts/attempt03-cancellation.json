@@ -1,0 +1,8 @@
+{
+  "status": "CANCELLED_BY_USER_ORDER_CORRECTION",
+  "reason": "User requires top centre carton first. Alternative target/adjacent-bay recovery is disallowed.",
+  "completed_cartons": 0,
+  "executed_phase": "belt_raise",
+  "cancelled_process": 11682,
+  "utc": "2026-11-12T08:23:27.973249+00:00"
+}

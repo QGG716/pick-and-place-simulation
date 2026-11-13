@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "scope": "ACTUAL_REJECTED_WITHDRAWAL_DIAGNOSTIC",
+  "html_sha256": "e0b08fa77888f70829fef915c059794efb70142541398c0ea2186fb7e6f268c9",
+  "source_report_sha256": "6bad5b2ce94bf11ff6f763cbed34bbcd3e4aa3706518f100471a669165cc7d95",
+  "branches": [
+    {
+      "branch": 0,
+      "reason": "POINTWISE_IK_FAILED",
+      "states": 21,
+      "max_fk_error": 8.881784197001252e-16,
+      "max_carton_error": 8.881784197001252e-16,
+      "max_connector_error": 0
+    },
+    {
+      "branch": 1,
+      "reason": "POINTWISE_COLLISION",
+      "states": 20,
+      "max_fk_error": 4.440892098500626e-16,
+      "max_carton_error": 5.551115123125783e-16,
+      "max_connector_error": 0
+    },
+    {
+      "branch": 2,
+      "reason": "POINTWISE_COLLISION",
+      "states": 20,
+      "max_fk_error": 6.106226635438361e-16,
+      "max_carton_error": 8.881784197001252e-16,
+      "max_connector_error": 0
+    },
+    {
+      "branch": 3,
+      "reason": "POINTWISE_COLLISION",
+      "states": 20,
+      "max_fk_error": 8.881784197001252e-16,
+      "max_carton_error": 8.881784197001252e-16,
+      "max_connector_error": 0
+    },
+    {
+      "branch": 4,
+      "reason": "POINTWISE_IK_FAILED",
+      "states": 21,
+      "max_fk_error": 4.440892098500626e-16,
+      "max_carton_error": 8.881784197001252e-16,
+      "max_connector_error": 0
+    },
+    {
+      "branch": 5,
+      "reason": "POINTWISE_IK_FAILED",
+      "states": 21,
+      "max_fk_error": 8.881784197001252e-16,
+      "max_carton_error": 1.3322676295501878e-15,
+      "max_connector_error": 0
+    }
+  ],
+  "play_pause_seek": "PASS",
+  "initial_cartons_visible": 40,
+  "opaque_fk_connected_parts": 3,
+  "errors": []
+}

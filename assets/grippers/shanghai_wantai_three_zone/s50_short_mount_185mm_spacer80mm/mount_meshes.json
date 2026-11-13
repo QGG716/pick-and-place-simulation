@@ -1,0 +1,77 @@
+{
+  "schema": "s50_short_mount_v1",
+  "standoff_m": 0.185,
+  "source_step_sha256": "d54ec5818a772877162e7d8eded484c67920de148037373d9d7d8e35cfa0694b",
+  "mesh_file": "assets/grippers/shanghai_wantai_three_zone/s50_short_mount_185mm_spacer80mm/mount_meshes.npz",
+  "mesh_sha256": "2b56c01171466ea4c4686eaea33e2819301be148325f224632b8cd9055282084",
+  "parts": [
+    {
+      "body_id": "tool_s50_mount_side_1",
+      "source_body_id": "tool_rigid_11",
+      "vertex_key": "v_11",
+      "face_key": "f_11",
+      "local_box_virtual_tcp_m": [
+        -6.938893903907228e-18,
+        -0.10500000506054688,
+        -0.14749999979373168,
+        0.2,
+        0.009999999999999995,
+        0.0949999990463257
+      ],
+      "triangles": 8932
+    },
+    {
+      "body_id": "tool_s50_mount_side_2",
+      "source_body_id": "tool_rigid_12",
+      "vertex_key": "v_12",
+      "face_key": "f_12",
+      "local_box_virtual_tcp_m": [
+        -6.938893903907228e-18,
+        0.10499999875415039,
+        -0.14749999979373168,
+        0.2,
+        0.009999999999999995,
+        0.0949999990463257
+      ],
+      "triangles": 8932
+    },
+    {
+      "body_id": "tool_s50_mount_flange",
+      "source_body_id": "tool_rigid_13",
+      "vertex_key": "v_13",
+      "face_key": "f_13",
+      "local_box_virtual_tcp_m": [
+        -1.3877787807814457e-17,
+        -3.1531982372379197e-09,
+        -0.19899999931689455,
+        0.2,
+        0.22000000381469725,
+        0.011999999999999983
+      ],
+      "triangles": 24756
+    },
+    {
+      "body_id": "tool_s50_mount_spacer",
+      "vertex_key": "v_spacer",
+      "face_key": "f_spacer",
+      "local_box_virtual_tcp_m": [
+        0.0,
+        0.0,
+        -0.245,
+        0.118,
+        0.118,
+        0.07999999999999999
+      ],
+      "triangles": 384,
+      "geometry": "IDEAL_COAXIAL_CYLINDER_MATCHING_S50_FLANGE_BODY_DIAMETER",
+      "radius_m": 0.059,
+      "length_m": 0.08
+    }
+  ],
+  "source_original_standoff_m": 0.15,
+  "removed_old_extension_m": 0.2,
+  "scope": "USER_AUTHORIZED_SHORT_IDEAL_RIGID_INSTALLATION_NOT_MANUFACTURING_QUALIFICATION",
+  "flange_spacer_m": 0.08,
+  "unchanged_compact_mount_standoff_m": 0.105,
+  "source_compact_mount_manifest_sha256": "d8c62f4e9ba8a2ad2bbcd37060353f7a56cee4da4528da59e648bae66a61e5a7"
+}

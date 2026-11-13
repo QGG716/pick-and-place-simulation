@@ -94,6 +94,7 @@ readiness:
   note: Real CAD-derived movable six-axis preview is available independently. CAD assembly is an authorized simulation zero, with explicit right-hand signs. Controller limit mapping, physical mount clocking, tool alignment and full collision qualification remain separate unresolved conditions for task planning.
 source:
   manufacturer: Huayan Robotics
+  user_supplied_parameter_and_dimension_pages: ../../assets/robots/huayan/manufacturer_pages_20261112.json
   requested_model: S50-2000
   product_page: https://www.huayan-robotics.com/s
   download_listing: https://www.huayan-robotics.com/service/download/3dmoxing?pagenum=3

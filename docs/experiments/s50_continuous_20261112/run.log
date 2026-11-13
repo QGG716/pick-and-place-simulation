@@ -1,0 +1,16 @@
+home PASS 1 checks 41
+pregrasp PASS 82 checks 159
+belt_raise PASS 127 checks 204
+approach PASS 161 checks 250
+grasp PASS 162 checks 250
+separate PASS 284 checks 1470
+withdraw PASS 650 checks 1470
+transfer PASS 1220 checks 1470
+release PASS 1221 checks 1470
+drop PASS 1261 checks 1510
+exit PASS 1285 checks 1544
+park PASS 1429 checks 1741
+outfeed PASS 2018 checks 2330
+belt_lower PASS 2063 checks 2375
+return PASS 2142 checks 2479
+{"status": "COMPLETED_KINEMATIC_SINGLE_CARTON", "report": "outputs/s50_continuous_20261112/cycle.json", "viewer": "outputs/s50_continuous_20261112/viewer.html"}

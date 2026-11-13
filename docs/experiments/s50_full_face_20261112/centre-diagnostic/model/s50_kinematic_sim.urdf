@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf8'?>
+<robot name="huayan_s50_2000_kinematic_sim">
+  
+  <link name="s50_base">
+    <visual name="base_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_base.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="base_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_base.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_1">
+    <visual name="j1_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_1.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j1_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_1.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <collision name="j1_s50_collision_1">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_1_local_patch_0.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_2">
+    <visual name="j2_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_2.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j2_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_2.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <collision name="j2_s50_collision_1">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_2_local_patch_0.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_3">
+    <visual name="j3_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_3.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j3_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_3.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_4">
+    <visual name="j4_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_4.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j4_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_4.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_5">
+    <visual name="j5_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_5.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j5_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_5.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_link_6">
+    <visual name="j6_s50_source_visual">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_6.obj" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision name="j6_s50_collision_0">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="D:\code\huayan pick and place\.codex-tools\worktrees\s50\assets\robots\huayan\s50_1_kinematic\meshes\link-local\s50_link_6.obj" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="s50_flange" />
+  <joint name="s50_joint_1" type="revolute">
+    <parent link="s50_base" />
+    <child link="s50_link_1" />
+    <origin xyz="-2.9871891993173851e-17 -9.2076525001304671e-18 0.28330000000000011" rpy="0.0 -0.0 0.0" />
+    <axis xyz="-1.6729986545114403e-16 9.180436958645249e-17 1.0" />
+    
+    <limit lower="-6.283185307179586" upper="6.283185307179586" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_joint_2" type="revolute">
+    <parent link="s50_link_1" />
+    <child link="s50_link_2" />
+    <origin xyz="-0.33449999999999996 7.2716032560591298e-17 0" rpy="-1.5707963267948966 -1.629161175495953e-16 1.0076185079887936e-16" />
+    <axis xyz="-1.0 -1.3183898417423734e-16 -3.107713337535795e-17" />
+    
+    <limit lower="-3.3161255787892263" upper="0.17453292519943295" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_joint_3" type="revolute">
+    <parent link="s50_link_2" />
+    <child link="s50_link_3" />
+    <origin xyz="0.33620000000000017 1.8609854489499798e-07 0.90000000000000913" rpy="0.0 -0.0 0.0" />
+    <axis xyz="-1.0 5.438641454004748e-16 1.5647597882003905e-16" />
+    
+    <limit lower="-2.792526803190927" upper="2.792526803190927" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_joint_4" type="revolute">
+    <parent link="s50_link_3" />
+    <child link="s50_link_4" />
+    <origin xyz="-0.25569980164770467 -1.8609854460109838e-07 0.94149999999998135" rpy="-1.5707963267948966 9.131283174390785e-16 -7.5952001119588e-17" />
+    <axis xyz="-1.0 4.945401592793333e-16 4.185881581597452e-16" />
+    
+    <limit lower="-6.283185307179586" upper="6.283185307179586" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_joint_5" type="revolute">
+    <parent link="s50_link_4" />
+    <child link="s50_link_5" />
+    <origin xyz="5.5511151231257827e-17 -2.5206862971397543e-16 0.15850000000000009" rpy="0.0 -0.0 0.0" />
+    <axis xyz="1.0390488085761057e-16 -6.245004513516504e-17 1.0" />
+    
+    <limit lower="-6.283185307179586" upper="6.283185307179586" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_joint_6" type="revolute">
+    <parent link="s50_link_5" />
+    <child link="s50_link_6" />
+    <origin xyz="-0.088000000000000356 7.2523459960687251e-17 0" rpy="0.0 -0.0 0.0" />
+    <axis xyz="-1.0 5.526514449819133e-16 1.0390488085760262e-16" />
+    
+    <limit lower="-6.283185307179586" upper="6.283185307179586" velocity="0.35" effort="0" />
+  </joint>
+  <joint name="s50_link_6_to_flange" type="fixed">
+    <parent link="s50_link_6" />
+    <child link="s50_flange" />
+    <origin xyz="-0.046499999999999986 -7.5002360335090035e-17 0" rpy="0 -1.5707963267948963 9.8607613152626476e-32" />
+  </joint>
+</robot>

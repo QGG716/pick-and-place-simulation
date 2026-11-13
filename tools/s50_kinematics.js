@@ -13,9 +13,10 @@
             [y*x*v+z*s,y*y*v+c,y*z*v-x*s,0],
             [z*x*v-y*s,z*y*v+x*s,z*z*v+c,0],[0,0,0,1]];
   }
-  function forward(model,q,worldFromMount) {
+  function forward(model,q,worldFromMount,convention) {
     if(!Array.isArray(q)||q.length!==6||!q.every(Number.isFinite))throw Error('S50_EXPECTS_SIX_FINITE_RADIANS');
     if(!model||!Array.isArray(model.joints)||model.joints.length!==6)throw Error('S50_EXPECTS_SIX_MEASURED_JOINTS');
+    if(convention)q=q.map((v,i)=>convention.sign[i]*v+convention.cad_offset_deg[i]*Math.PI/180);
     const frames={},base=model.base_link||model.links[0].name;
     frames[base]=worldFromMount||identity();
     model.joints.forEach((joint,i)=>{

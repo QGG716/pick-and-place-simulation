@@ -1,0 +1,28 @@
+carton_l07_c02 home PASS samples 1 completed 0
+carton_l07_c02 belt_raise PASS samples 37 completed 0
+carton_l07_c02 front grasp solutions 6
+carton_l07_c02 branch 0 withdraw PASS {'score': 12.88579785599447, 'j1_range_deg': [6.3883619560222655, 20.196228912562137], 'j1_span_deg': 13.807866956539872, 'j2_range_deg': [-92.85518095967272, -53.89951175634264], 'j2_start_deg': -92.3594659958318, 'j2_end_deg': -53.89951175634264, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 1 withdraw PASS {'score': 108.86852953530718, 'j1_range_deg': [110.65447344549206, 155.5349362057969], 'j1_span_deg': 44.88046276030484, 'j2_range_deg': [-126.09516615830388, -87.13872567645926], 'j2_start_deg': -87.6344959952494, 'j2_end_deg': -126.09516615830388, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 2 withdraw PASS {'score': 111.88282382580638, 'j1_range_deg': [110.65664790685123, 155.53492824669138], 'j1_span_deg': 44.878280339840146, 'j2_range_deg': [-135.18221205456447, -91.31280388452659], 'j2_start_deg': -91.33773775288292, 'j2_end_deg': -135.18221205456447, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 3 withdraw PASS {'score': 111.88248154201419, 'j1_range_deg': [110.65675867143612, 155.53496575110432], 'j1_span_deg': 44.8782070796682, 'j2_range_deg': [-135.18232731157283, -91.31284038934871], 'j2_start_deg': -91.33777602265458, 'j2_end_deg': -135.18232731157283, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 4 withdraw PASS {'score': 16.353265331010874, 'j1_range_deg': [6.388763096409398, 20.192081831445055], 'j1_span_deg': 13.803318735035656, 'j2_range_deg': [-88.68731097095781, -44.818189275268665], 'j2_start_deg': -88.66237403688604, 'j2_end_deg': -44.818189275268665, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 5 withdraw PASS {'score': 16.35331850905765, 'j1_range_deg': [6.388774172843574, 20.192128072293976], 'j1_span_deg': 13.803353899450402, 'j2_range_deg': [-88.68729610075019, -44.81816361412881], 'j2_start_deg': -88.66235930743997, 'j2_end_deg': -44.81816361412881, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 0 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l07_c02 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l07_c02 loaded path PASS, checking empty return
+carton_l07_c02 pregrasp PASS samples 48 completed 0
+carton_l07_c02 approach PASS samples 70 completed 0
+carton_l07_c02 grasp PASS samples 71 completed 0
+carton_l07_c02 separate PASS samples 151 completed 0
+carton_l07_c02 withdraw PASS samples 368 completed 0
+carton_l07_c02 transfer PASS samples 672 completed 0
+carton_l07_c02 release PASS samples 673 completed 0
+carton_l07_c02 drop PASS samples 680 completed 0
+carton_l07_c02 exit PASS samples 707 completed 0
+carton_l07_c02 park PASS samples 804 completed 0
+carton_l07_c02 outfeed PASS samples 1003 completed 0
+carton_l07_c02 belt_lower PASS samples 1040 completed 1
+carton_l07_c02 return PASS samples 1041 completed 1
+{"status": "COMPLETED_KINEMATIC_SINGLE_CARTON", "report": "outputs/s50_short_mount_attempt03_20261112/cycle.json", "viewer": "outputs/s50_short_mount_attempt03_20261112/viewer.html"}
+measured 0 / 1042
+saved outputs/s50_short_mount_attempt03_20261112/keyframe-compactness.json

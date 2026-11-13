@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "source_report_sha256": "40525d41d99485ba99e49ca6738220ec12927af0613326feab6f888f755b89ff",
+  "source_step_sha256": "2f3d1d987c146ba9ba59377377f2590882c664cdd5117912b81eea47e242973b",
+  "samples": 2278,
+  "core_to_viewer_fk_max_matrix_error": 1.3322676295501878e-15,
+  "attached_box_max_matrix_error": 1.7763568394002505e-15,
+  "home_return_error_rad": 0,
+  "maximum_sampled_joint_speed_rad_s": 0.3397817493586381,
+  "maximum_joint_sample_delta_rad": 0.020325777699481185,
+  "source_status": "CANCELLED_AT_CHECKED_EMPTY_BOUNDARY",
+  "initial_carton_count": 40,
+  "completed_cartons": 2,
+  "remaining_cartons": 38,
+  "final_belt_height_m": 1.5,
+  "scope": "INDEPENDENT_JAVASCRIPT_FK_AND_RECORDED_TASK_STATE",
+  "browser_acceptance": "SEPARATE_BROWSER_CHECK_REQUIRED"
+}

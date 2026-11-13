@@ -17,7 +17,7 @@ FACES=np.array([[0,1,3,2],[4,6,7,5],[0,4,5,1],[2,3,7,6],[0,2,6,4],[1,5,7,3]])
 
 def render(report,output,phases=None):
     data=json.loads(Path(report).read_text(encoding='utf8'));output=Path(output);output.mkdir(parents=True,exist_ok=True)
-    c=make_context(ROOT,ROOT/'outputs/s50_kinematic_keyframe_model')
+    c=make_context(ROOT,ROOT/'outputs/s50_kinematic_keyframe_model',config=data['settings'])
     if data['source_model_sha256']!=c.definition['definition_sha256']:raise ValueError('KEYFRAME_MODEL_CHANGED')
     meshes={}
     for link in c.definition['links']:

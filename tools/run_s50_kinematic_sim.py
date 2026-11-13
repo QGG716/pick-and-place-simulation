@@ -6,7 +6,7 @@ from unloading_sim.s50_kinematic_sim import make_context,ik_candidates,target_co
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--output',type=Path,default=ROOT/'outputs/s50_kinematic_sim_20261112')
+    p.add_argument('--output',type=Path,default=ROOT/'outputs/s50_direct_mount')
     p.add_argument('--config',type=Path)
     p.add_argument('--probe-ik',action='store_true')
     p.add_argument('--probe-geometry',action='store_true')
@@ -31,8 +31,12 @@ def main():
                     good=checker.check(q,contact=name=='contact',phase=name)
                     print(json.dumps(dict(stage=name,q_deg=np.rad2deg(q).tolist(),passed=good,failure=checker.last)),flush=True)
         save(a.output/('geometry-probe.json' if checker else 'ik-probe.json'),dict(solutions=found,attempts=c.attempts));return
-    from unloading_sim.s50_kinematic_cycle import run
-    result=run(c)
+    if c.settings.get('motion_profile')=='fixed_target_direct_mount':
+        from unloading_sim.s50_face_kinematic import FaceRun
+        result=FaceRun(c).run(1)
+    else:
+        from unloading_sim.s50_kinematic_cycle import run
+        result=run(c)
     if result['samples'] and not a.no_viewer:
         from export_s50_kinematic_viewer import export
         export(a.output/'cycle.json',a.output/'viewer.html')

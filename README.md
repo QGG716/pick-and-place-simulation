@@ -1,10 +1,46 @@
-# S50：完整单箱运动学仿真已跑通（2026-11-12）
+# S50：固定 100 mm 布局整面 40/40 完成（2026-11-12）
+
+在原 105 mm 短支架前加入 80 mm 同轴法兰隔距段，实际移开宽安装板，解决此前 `carton_l07_c00` 抽离时的安装板/小臂干涉。新安装从完整 40 箱开始，在同一固定布局完成全部抓放、约 50 mm 名义落带和原路线输送；最终剩余 0 箱，机械臂返回初态，横带回到 600 mm。
+
+[完整三维回放](docs/experiments/s50_spacer80_fixed_face_20261112/viewer.html) · [结果、启动命令和姿态取舍](docs/experiments/s50_spacer80_fixed_face_20261112/README.md) · [隔距段近景](docs/experiments/s50_spacer80_fixed_face_20261112/keyframes/c00-connector.png) · [整面卸完](docs/experiments/s50_spacer80_fixed_face_20261112/keyframes/last-state.png)
+
+S50 默认安装为背板距法兰 185 mm、压缩吸盘接触面距法兰 252.5 mm；原 200 mm 延长段仍移除，FANUC 保持原连接。上臂朝箱堆 30° 内不加罚，大角度作为软惩罚；本次底层仍有约 86.8° 前倾，部分箱子的腕方向和小臂角度也偏离软偏好，详见逐箱数据。12 项必要服务器回归、51,446 状态独立 FK 和 488 个浏览器阶段/换箱检查通过。
+
+已有 Pinocchio/Coal 环境运行 `python tools/run_s50_face_kinematic_sim.py --gaps .1 --allow-side-suction --output outputs/s50_spacer80_fixed_face`。这是运动学场景完成，未宣称控制器或动力学资格通过。以下保留此前记录。
+
+# 历史：S50 固定布局整面尝试完成 3/40（2026-11-12）
+
+保持 100 mm 布局和 105 mm 短连接，从完整 40 箱连续完成 `carton_l07_c02`、`carton_l07_c01`、`carton_l07_c03`，释放落差均约 50 mm；随后停在 `carton_l07_c00`。正面 IK 可解，但抽离时短连接安装板与小臂相交，另一支接近时上臂与纵带相交。增加种子、调整预抓取距离、提前/延后抬升的恢复尝试仍未通过；剩余 37 箱未移动，未跳箱计数，整面尚未跑通。
+
+[连续回放与独立碰撞候选](docs/experiments/s50_fixed_face_20261112/viewer.html) · [结果、失败原因、恢复记录与命令](docs/experiments/s50_fixed_face_20261112/README.md) · [短连接/小臂碰撞](docs/experiments/s50_fixed_face_20261112/keyframes/rejected-1.png) · [停止场景](docs/experiments/s50_fixed_face_20261112/keyframes/last-state.png)
+
+历史 105 mm 配置入口：`python tools/run_s50_face_kinematic_sim.py --config configs/robots/huayan_s50_short105_kinematic_sim.yaml --gaps .1 --output outputs/s50_fixed_face`。查看器按每箱独立附着、释放和出料状态回放，可逐箱选择并倒拖恢复初始场景；红色碰撞候选明确标为未执行。以下保留此前单箱成功记录。
+
+# 历史：S50 105 mm 短连接与 100 mm 布局单箱完成（2026-11-12）
+
+移除 S50 的原长支架及 200 mm 延长段，改用 105 mm 短刚性安装间距，FANUC 场景保留原连接件。固定 100 mm 布局，从完整 40 箱中首先抓取 `carton_l07_c02`，完成直线抽离、直接下移、约 50 mm 落差释放、出料、横带降回 600 mm 和返回，剩余 39 箱。
+
+[最新单文件三维回放](docs/experiments/s50_direct_mount_20261112/viewer.html) · [实际结果、姿态取舍与启动命令](docs/experiments/s50_direct_mount_20261112/README.md) · [短连接近景](docs/experiments/s50_direct_mount_20261112/keyframes/connector.png) · [释放姿态](docs/experiments/s50_direct_mount_20261112/keyframes/release.png) · [临时参数与 TODO](docs/experiments/s50_direct_mount_20261112/TODO.md)
+
+抽离 J1 为 6.39°→20.20°，转幅 13.81°；本次小 J1 分支的 J2 为 −92.36°→−53.90°，释放时 −34.72°，**未同时满足 J2 向更大负值运动的偏好**。已求得的更负 J2 抽离分支需要约 44.9° 的 J1 转幅。345 次实际 IK、1648 次碰撞状态检查，1042 状态完整回放；服务器 10 项必要回归、独立 FK 与 15 个浏览器阶段及播放/暂停/拖动检查通过。尚未证明整面 40 箱在同一布局可全部卸完。
+
+已有 Pinocchio/Coal 环境运行 `python tools/run_s50_kinematic_sim.py --config configs/robots/huayan_s50_short105_kinematic_sim.yaml --output outputs/s50_short_mount`。以下保留原布局、原工具和旧坐标约定的历史结果。
+
+# 历史：S50 连续抽离转运与水平小臂偏好（2026-11-12）
+
+保持原布局、安装位置和工具，用新传 `S50_1.STEP` 重新求得完整单箱周期。带载 TCP 路长由约 6.50 m 减至 1.56 m；分离、抽离、短弧转运连续执行。全程小臂相对水平面夹角绝对值最大 29.34°，J2 为 −31.53°～+17.44°，J4→J5 朝 −Z。J3 的符号和变化趋势已从偏好中移除。横带按箱底减 100 mm 并裁剪到 550～1500 mm，本顶层箱升至上限 1500 mm。
+
+[最新单文件三维查看器](docs/experiments/s50_continuous_20261112/viewer.html) · [本轮结果、命令与距离](docs/experiments/s50_continuous_20261112/README.md) · [临时参数与 TODO](docs/experiments/s50_continuous_20261112/TODO.md)
+
+已有 Linux Pinocchio/Coal 环境执行 `python tools/run_s50_kinematic_sim.py --output outputs/s50_continuous`。连接件改为不透明橙色原几何，并增加近景按钮。必要服务器测试 6/6 通过，2143 个真实计算状态的独立 FK／任务回放通过；Edge 隐藏测试实例的 15 个阶段、播放／暂停／拖动检查通过。[释放姿态](docs/experiments/s50_continuous_20261112/keyframes/release.png) · [连接件近景](docs/experiments/s50_continuous_20261112/keyframes/connector.png)。
+
+# 历史：新传 STEP 的首个完整单箱周期（2026-11-12）
 
 在冻结的 700 mm 间距、900 mm 安装面、原工具及完整 40 箱场景中，真实 S50 CAD 六轴模型完成 `carton_l07_c02` 的接近、吸取、抽离、转运、释放、退出、出料和返回，剩余 39 箱。采用本轮授权的临时运动学范围、理想刚性工具连接及名义落带；不是实机控制或动力学验收。
 
-[离线完整回放](docs/experiments/s50_kinematic_sim_20261112/viewer.html) · [实际结果与启动命令](docs/experiments/s50_kinematic_sim_20261112/README.md) · [收拢关键帧](docs/experiments/s50_kinematic_sim_20261112/keyframes/transfer.png) · [临时参数和 TODO](docs/experiments/s50_kinematic_sim_20261112/TODO.md)
+[新 STEP 单文件回放](docs/experiments/s50_step1_kinematic_20261112/viewer.html) · [实际结果与启动命令](docs/experiments/s50_step1_kinematic_20261112/README.md) · [收拢关键帧](docs/experiments/s50_step1_kinematic_20261112/keyframes/transfer.png) · [两页厂家资料解读](docs/experiments/s50_step1_kinematic_20261112/manufacturer-supplement.md) · [临时参数和 TODO](docs/experiments/s50_step1_kinematic_20261112/TODO.md)
 
-在已有 Linux Pinocchio/Coal 环境运行 `python tools/run_s50_kinematic_sim.py --output outputs/s50_kinematic_sim`，会实际求解并生成单文件查看器。浏览器验收因工具无法识别 Edge 网址而未完成；核心、Pinocchio 和独立查看器 FK 已核对。
+在已有 Linux Pinocchio/Coal 环境运行 `python tools/run_s50_kinematic_sim.py --output outputs/s50_step1_kinematic`，会实际求解并生成单文件查看器。本次明确使用用户新传的 `S50_1.STEP`，必要服务器测试 3/3 通过，全部 2,259 个状态的独立查看器 FK 已核对。用户通过 Esc 停止浏览器控制，实际浏览器播放验收未完成；[旧 STEP 结果](docs/experiments/s50_kinematic_sim_20261112/README.md)保留。
 
 # 历史：横带剪叉缩宽仍未消除 J2 干涉（2026-10-20）
 

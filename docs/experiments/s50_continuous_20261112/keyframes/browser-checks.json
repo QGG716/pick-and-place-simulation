@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "html_sha256": "6f773e6f95f5808c9b0cb62e9ebf4355409a2fa48835e439c62d1ac845cabd3d",
+  "source_report_sha256": "177502b7cc9d17fa23200e3264fc8e0a4c28dc5a4a4affe4106d757c787e43d6",
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "recorded_samples": 2143,
+  "stage_checks": [
+    {
+      "phase": "home",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "pregrasp",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "belt_raise",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "approach",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "grasp",
+      "connectors": 3,
+      "attached": true,
+      "passed": true
+    },
+    {
+      "phase": "separate",
+      "connectors": 3,
+      "attached": true,
+      "passed": true
+    },
+    {
+      "phase": "withdraw",
+      "connectors": 3,
+      "attached": true,
+      "passed": true
+    },
+    {
+      "phase": "transfer",
+      "connectors": 3,
+      "attached": true,
+      "passed": true
+    },
+    {
+      "phase": "release",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "drop",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "exit",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "park",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "outfeed",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "belt_lower",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    },
+    {
+      "phase": "return",
+      "connectors": 3,
+      "attached": false,
+      "passed": true
+    }
+  ],
+  "opaque_fk_connected_parts": 3,
+  "play_pause_timeline": "PASS",
+  "errors": []
+}

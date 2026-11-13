@@ -1,0 +1,446 @@
+{
+  "status": "COMPLETED_KINEMATIC_SINGLE_CARTON",
+  "source_step_path": "assets/robots/huayan/S50_1.STEP",
+  "source_step_sha256": "2f3d1d987c146ba9ba59377377f2590882c664cdd5117912b81eea47e242973b",
+  "source_model_sha256": "538db3471a7cd2fbe7f5d854c956a7a1ffb6387c7a66b86dec1ed197766c610f",
+  "environment_fingerprint": "13f1bbd2bdb186d0b03ea75ff907e7aa21c57e661df5a4796299b434b149d950",
+  "target": "carton_l07_c02",
+  "initial_cartons": 40,
+  "completed_cartons": 1,
+  "remaining_cartons": 39,
+  "simulated_duration_s": 111.23121665354788,
+  "elapsed_wall_s": 80.3250128235668,
+  "collision_state_checks": 2479,
+  "collision_narrow_pair_queries": 29396,
+  "posture_summary": {
+    "whole_cycle": {
+      "j2_range_deg": [
+        -31.52606389424615,
+        17.444321535351655
+      ],
+      "maximum_abs_forearm_elevation_deg": 29.33982366435682,
+      "maximum_wrist_down_error_deg": 0.0058422794262073295,
+      "soft_preferences_only": true
+    },
+    "approach_to_release": {
+      "j2_range_deg": [
+        -31.52606389424615,
+        17.444321535351655
+      ],
+      "maximum_abs_forearm_elevation_deg": 29.33982366435682,
+      "maximum_wrist_down_error_deg": 0.0058422794262073295,
+      "soft_preferences_only": true
+    }
+  },
+  "receiver_rule_at_pick": {
+    "carton_bottom_m": 2.1,
+    "requested_surface_height_m": 2.0,
+    "surface_height_m": 1.5,
+    "requested_gap_m": 0.1,
+    "actual_gap_m": 0.6000000000000001,
+    "clamped": true,
+    "minimum_surface_height_m": 0.55,
+    "maximum_surface_height_m": 1.5
+  },
+  "receiver_rule_at_release": {
+    "carton_bottom_m": 2.1199992750898384,
+    "requested_surface_height_m": 2.0199992750898383,
+    "surface_height_m": 1.5,
+    "requested_gap_m": 0.1,
+    "actual_gap_m": 0.6199992750898384,
+    "clamped": true,
+    "minimum_surface_height_m": 0.55,
+    "maximum_surface_height_m": 1.5
+  },
+  "receiving_belt_height_m": 1.5,
+  "nominal_drop_m": 0.6199992750898387,
+  "loaded_flow": {
+    "method": "POINTWISE_IK_SHORT_TASK_SPACE_ARC",
+    "release_y_m": -0.5,
+    "center_world_xy_m": [
+      -1.4325000000005859,
+      0.14999993767783137
+    ],
+    "cartesian_path_length_m": 1.5617640554602765,
+    "solver_knots": 121,
+    "timing": {
+      "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+      "duration_s": 63.46254283888183,
+      "interior_stop_required": false,
+      "maximum_sampled_velocity_rad_s": 0.07730474961254405,
+      "maximum_sampled_acceleration_rad_s2": 0.38778159865141426,
+      "solver_knots": 121
+    },
+    "rrt_used": false,
+    "intermediate_dwell": false
+  },
+  "source_report_sha256": "177502b7cc9d17fa23200e3264fc8e0a4c28dc5a4a4affe4106d757c787e43d6",
+  "ik_attempt_count": 208,
+  "sample_count": 2143,
+  "candidate_failure_count": 1,
+  "qualification": {
+    "controller_mapping_verified": false,
+    "real_installation_verified": false,
+    "physical_adapter_verified": false,
+    "collision_certified": false,
+    "dynamics_verified": false
+  },
+  "stages": [
+    {
+      "phase": "home",
+      "method": "SOFT_POSTURE_RANKED_INDEPENDENT_IK",
+      "status": "PASS",
+      "first_sample": 0,
+      "last_sample": 0
+    },
+    {
+      "phase": "pregrasp",
+      "method": "CONTINUOUS_CHECKED_JOINT_PATH",
+      "status": "PASS",
+      "first_sample": 1,
+      "last_sample": 81,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 4.818537453685492,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.33970224958981327,
+        "maximum_sampled_acceleration_rad_s2": 0.2171387110986656,
+        "solver_knots": 2
+      }
+    },
+    {
+      "phase": "belt_raise",
+      "method": "BOX_BOTTOM_MINUS_100MM_CLAMPED_TO_FROZEN_STROKE",
+      "status": "PASS",
+      "first_sample": 82,
+      "last_sample": 126,
+      "rule": {
+        "carton_bottom_m": 2.1,
+        "requested_surface_height_m": 2.0,
+        "surface_height_m": 1.5,
+        "requested_gap_m": 0.1,
+        "actual_gap_m": 0.6000000000000001,
+        "clamped": true,
+        "minimum_surface_height_m": 0.55,
+        "maximum_surface_height_m": 1.5
+      }
+    },
+    {
+      "phase": "approach",
+      "method": "CONTINUOUS_CHECKED_JOINT_PATH",
+      "status": "PASS",
+      "first_sample": 127,
+      "last_sample": 160,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 2.0044489953974365,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.31183943076507814,
+        "maximum_sampled_acceleration_rad_s2": 0.485390058510653,
+        "solver_knots": 12
+      }
+    },
+    {
+      "phase": "grasp",
+      "method": "GEOMETRIC_CONTACT_THEN_FIXED_RELATIVE_TRANSFORM",
+      "status": "PASS",
+      "first_sample": 161,
+      "last_sample": 161
+    },
+    {
+      "phase": "separate",
+      "method": "POINTWISE_IK_CONTINUOUS_FLOW",
+      "status": "PASS",
+      "first_sample": 162,
+      "last_sample": 283
+    },
+    {
+      "phase": "withdraw",
+      "method": "POINTWISE_IK_CONTINUOUS_FLOW",
+      "status": "PASS",
+      "first_sample": 284,
+      "last_sample": 649
+    },
+    {
+      "phase": "transfer",
+      "method": "POINTWISE_IK_CONTINUOUS_FLOW",
+      "status": "PASS",
+      "first_sample": 650,
+      "last_sample": 1219,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 63.46254283888183,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.07730474961254405,
+        "maximum_sampled_acceleration_rad_s2": 0.38778159865141426,
+        "solver_knots": 121
+      }
+    },
+    {
+      "phase": "release",
+      "method": "DETACH_IN_CHECKED_RECEIVER",
+      "status": "PASS",
+      "first_sample": 1220,
+      "last_sample": 1220
+    },
+    {
+      "phase": "drop",
+      "method": "KINEMATIC_ASSUMED_RECEPTION",
+      "status": "PASS",
+      "first_sample": 1221,
+      "last_sample": 1260
+    },
+    {
+      "phase": "exit",
+      "method": "CONTINUOUS_CHECKED_JOINT_PATH",
+      "status": "PASS",
+      "first_sample": 1261,
+      "last_sample": 1284,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 1.4317907110988457,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.22509778388854199,
+        "maximum_sampled_acceleration_rad_s2": 0.48538230357387896,
+        "solver_knots": 10
+      }
+    },
+    {
+      "phase": "park",
+      "method": "CONTINUOUS_CHECKED_JOINT_PATH",
+      "status": "PASS",
+      "first_sample": 1285,
+      "last_sample": 1428,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 8.598391124843808,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.3398058252427184,
+        "maximum_sampled_acceleration_rad_s2": 0.12166944228579214,
+        "solver_knots": 2
+      }
+    },
+    {
+      "phase": "outfeed",
+      "method": "ORIGINAL_MINUS_Y_MINUS_X_ROUTING",
+      "status": "PASS",
+      "first_sample": 1429,
+      "last_sample": 2017
+    },
+    {
+      "phase": "belt_lower",
+      "method": "FROZEN_COUPLED_MECHANISM",
+      "status": "PASS",
+      "first_sample": 2018,
+      "last_sample": 2062
+    },
+    {
+      "phase": "return",
+      "method": "CONTINUOUS_CHECKED_JOINT_PATH",
+      "status": "PASS",
+      "first_sample": 2063,
+      "last_sample": 2141,
+      "timing": {
+        "method": "SHAPE_PRESERVING_HERMITE_THROUGH_IK_WITH_ONE_QUINTIC_CLOCK",
+        "duration_s": 4.687893718447573,
+        "interior_stop_required": false,
+        "maximum_sampled_velocity_rad_s": 0.3396969392944492,
+        "maximum_sampled_acceleration_rad_s2": 0.22313869648889162,
+        "solver_knots": 2
+      }
+    }
+  ],
+  "loaded_comparison": {
+    "previous_report_sha256": "1a6216dfc9a0fb69afec7025c564f211287b6688cb7627dcb90e91b2921f79f5",
+    "previous": {
+      "tcp_path_length_m": 6.497887441954681,
+      "joint_travel_deg": [
+        312.5759549883823,
+        173.21765153666138,
+        173.21057287967125,
+        220.86820269031654,
+        234.5000337351006,
+        403.7514183058779
+      ],
+      "duration_s": 111.81036384350098
+    },
+    "current": {
+      "tcp_path_length_m": 1.5622776081693373,
+      "joint_travel_deg": [
+        97.12581676943834,
+        50.824384715698685,
+        59.02394953716483,
+        14.031157364441848,
+        97.12582652418112,
+        0.01542536489575157
+      ],
+      "duration_s": 63.662542838882175
+    }
+  },
+  "keyframe_compactness": {
+    "withdraw": {
+      "active_links": {
+        "distance_to_transverse_m": 0.20752400841809837,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.19728566800046451,
+            -0.3711403420408897
+          ],
+          [
+            0.7835979117004106,
+            0.5682795030159848
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.9808835797008751,
+          0.9394198450568745
+        ]
+      },
+      "elbow": {
+        "distance_to_transverse_m": 0.20752400841809837,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.19728566800046451,
+            -0.3711403420408897
+          ],
+          [
+            0.6555385323296388,
+            0.5682795030159848
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.8528242003301033,
+          0.9394198450568745
+        ]
+      },
+      "wrist": {
+        "distance_to_transverse_m": 0.7095079972367262,
+        "horizontal_bounds_xy_m": [
+          [
+            0.5593414846463995,
+            -0.24185510450955228
+          ],
+          [
+            0.7835979117004106,
+            -0.08851442961180961
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.22425642705401105,
+          0.15334067489774267
+        ]
+      }
+    },
+    "release": {
+      "active_links": {
+        "distance_to_transverse_m": 0.013365746105523523,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.2581879803646487,
+            -0.7104803398903355
+          ],
+          [
+            0.5639581715700184,
+            0.26112112285070044
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.8221461519346671,
+          0.971601462741036
+        ]
+      },
+      "elbow": {
+        "distance_to_transverse_m": 0.013365746105523523,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.2581879803646487,
+            -0.6731365670833348
+          ],
+          [
+            0.5639581715700184,
+            0.26112112285070044
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.8221461519346671,
+          0.9342576899340352
+        ]
+      },
+      "wrist": {
+        "distance_to_transverse_m": 0.7909716327860157,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.1121592270198772,
+            -0.7104803398903355
+          ],
+          [
+            0.11249933661814415,
+            -0.5661759926644612
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.22465856363802134,
+          0.14430434722587437
+        ]
+      }
+    },
+    "exit": {
+      "active_links": {
+        "distance_to_transverse_m": 0.03016656378518366,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.3651093605441902,
+            -0.7104873910030172
+          ],
+          [
+            0.5685168883316618,
+            0.2006526564727218
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.933626248875852,
+          0.911140047475739
+        ]
+      },
+      "elbow": {
+        "distance_to_transverse_m": 0.03016656378518366,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.3651093605441902,
+            -0.657383217225568
+          ],
+          [
+            0.5685168883316618,
+            0.2006526564727218
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.933626248875852,
+          0.8580358736982898
+        ]
+      },
+      "wrist": {
+        "distance_to_transverse_m": 0.8502707400664733,
+        "horizontal_bounds_xy_m": [
+          [
+            -0.23479019300069887,
+            -0.7104873910030172
+          ],
+          [
+            -0.007500666065703508,
+            -0.5604983710702002
+          ]
+        ],
+        "horizontal_span_xy_m": [
+          0.22728952693499535,
+          0.149989019932817
+        ]
+      }
+    }
+  },
+  "browser_acceptance": "PASS",
+  "browser_stage_checks": 15,
+  "focused_tests_passed": 6,
+  "replay_check": "PASS",
+  "closest_recorded_transverse_clearance_m": 0.009282242088834792
+}

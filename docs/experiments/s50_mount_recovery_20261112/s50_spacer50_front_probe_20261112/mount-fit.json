@@ -1,0 +1,2588 @@
+{
+  "status": "PASS",
+  "standoff_m": 0.155,
+  "scope": "RIGIDLY_FIXED_MOUNT_HARDWARE_AND_OWN_FLANGE_PAIRS",
+  "design_contacts": [
+    "New mount front to original backplate",
+    "New mount flange plate to S50 flange",
+    "Between the three new mount parts"
+  ],
+  "checked_near_pairs": [
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_9"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.014999999999999942,
+        "unsigned_separation_m": 0.014999999999999942,
+        "nearest_points_world": [
+          [
+            -1.1499999949394533,
+            -0.39299980137713597,
+            3.2772999999999906
+          ],
+          [
+            -1.1649999949394532,
+            -0.39299980137713597,
+            3.2772999999999906
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.014999999999999902,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_20"
+      ],
+      "intersection": null,
+      "design_contact": "ORIGINAL_FITTING_SEATED_ON_UNCHANGED_SIDE_FACE",
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 8.326672684688674e-17,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.366750344017822,
+            3.093332779378174
+          ],
+          [
+            -1.139999994939453,
+            -0.366750344017822,
+            3.093332779378174
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.36671284185964587,
+              3.093261743855248
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.366750344017822,
+              3.0932672206218075
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3634998023308103,
+              3.0927925157281315
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.1399999949394533,
+              -0.36349980233081036,
+              3.0938074842718506
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3654998023308103,
+              3.1032999999999906
+            ],
+            "normal_world": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "reported_penetration_depth_m": -0.007724914550780948
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3654998023308103,
+              3.1032999999999906
+            ],
+            "normal_world": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "reported_penetration_depth_m": -0.007665298461913661
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3654998023308103,
+              3.1032999999999906
+            ],
+            "normal_world": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "reported_penetration_depth_m": -0.007609367370605469
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3654998023308103,
+              3.1032999999999906
+            ],
+            "normal_world": [
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "reported_penetration_depth_m": -0.007557220458984215
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_21"
+      ],
+      "intersection": null,
+      "design_contact": "ORIGINAL_FITTING_SEATED_ON_UNCHANGED_SIDE_FACE",
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 8.326672684688674e-17,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.3810025549584938,
+            3.1528172245930337
+          ],
+          [
+            -1.139999994939453,
+            -0.3810025549584938,
+            3.1528172245930337
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.383175101355678,
+              3.140732210760981
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3807469292857428,
+              3.154239168812511
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3807555360529824,
+              3.1541912927803706
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.38076442709262837,
+              3.1541418354535935
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3807735865019259,
+              3.1540908852928986
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3807829987479871,
+              3.1540385287015793
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.1399999949394535,
+              -0.38079264622179343,
+              3.15398486363162
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.38080251122347375,
+              3.1539299885403844
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_22"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 8.326672684688674e-17,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.3859476361763605,
+            3.225400070475224
+          ],
+          [
+            -1.139999994939453,
+            -0.3859476361763605,
+            3.225400070475224
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.388151840434126,
+              3.2095643602654422
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3860578224814458,
+              3.2262448320938355
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.38605426747851085,
+              3.2262175770730677
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3860505841792411,
+              3.226189338447128
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.1399999949394533,
+              -0.38604677808931925,
+              3.226160158426249
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.38604285460060184,
+              3.2261300783479943
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.1399999949394533,
+              -0.3860388200191993,
+              3.2260991465592084
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.38603468075136627,
+              3.2260674121745057
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_23"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 0.0,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.36849980233082646,
+            3.2632999999999903
+          ],
+          [
+            -1.139999994939453,
+            -0.3684998023308264,
+            3.2632999999999903
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39123794963284675,
+              3.2633988885314142
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39123864710031775,
+              3.2633998678788814
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3912393304511991,
+              3.2634008889807467
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39123999842839524,
+              3.2634019503106635
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39124064975505024,
+              3.263403050113386
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39124128319789003,
+              3.2634041865164805
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.39124189750055505,
+              3.263405357794343
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.139999994939453,
+              -0.3912424914942121,
+              3.2634065618334596
+            ],
+            "normal_world": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.2887833992611187e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_27"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.00990010070800787,
+        "unsigned_separation_m": 0.00990010070800787,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.3704721762932127,
+            3.087710560607901
+          ],
+          [
+            -1.1300998942314453,
+            -0.3704721762932127,
+            3.087710560607901
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.009900100708007953,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_37"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.009060990473140244,
+        "unsigned_separation_m": 0.009060990473140244,
+        "nearest_points_world": [
+          [
+            -1.1499999949394533,
+            -0.33227389259601653,
+            3.2082999999999906
+          ],
+          [
+            -1.1567606569094995,
+            -0.33227389259601653,
+            3.2022671732926247
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.009060990473140164,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_43"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.008200065128282278,
+        "unsigned_separation_m": 0.008200065128282278,
+        "nearest_points_world": [
+          [
+            -1.1499999949394533,
+            -0.37849980042346165,
+            3.183283949763533
+          ],
+          [
+            -1.1499999983937845,
+            -0.3702997352951801,
+            3.183283949763533
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.008200065128282258,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_44"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.008200082778930688,
+        "unsigned_separation_m": 0.008200082778930688,
+        "nearest_points_world": [
+          [
+            -1.1494974859143035,
+            -0.37849980042346165,
+            3.1937818644076965
+          ],
+          [
+            -1.1494974859143035,
+            -0.370299717644531,
+            3.1937818644076965
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.00820008277893064,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_76"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.01837715694002188,
+        "unsigned_separation_m": 0.01837715694002188,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.39349980137713597,
+            3.0832999999999906
+          ],
+          [
+            -1.139400002,
+            -0.4084997996461624,
+            3.0727000019999906
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.018377156940021854,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_77"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.01501199319205104,
+        "unsigned_separation_m": 0.01501199319205104,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.393499801377136,
+            3.117486472866636
+          ],
+          [
+            -1.139400002,
+            -0.40849979964616234,
+            3.117486472866636
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993192051015,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_78"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993192051052,
+        "unsigned_separation_m": 0.015011993192051052,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.393499801377136,
+            3.1613621576219195
+          ],
+          [
+            -1.139400002,
+            -0.40849979964616234,
+            3.1613621576219195
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993192051015,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_79"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993192051048,
+        "unsigned_separation_m": 0.015011993192051048,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.393499801377136,
+            3.205237842377203
+          ],
+          [
+            -1.139400002,
+            -0.40849979964616234,
+            3.205237842377203
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993192051015,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_80"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993192051066,
+        "unsigned_separation_m": 0.015011993192051066,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.393499801377136,
+            3.2491135271324865
+          ],
+          [
+            -1.139400002,
+            -0.40849979964616234,
+            3.2491135271324865
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993192051015,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_81"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.018377156939479666,
+        "unsigned_separation_m": 0.018377156939479666,
+        "nearest_points_world": [
+          [
+            -1.139999994939453,
+            -0.393499801377136,
+            3.283299999999991
+          ],
+          [
+            -1.139400002,
+            -0.40849979964616234,
+            3.293899997999051
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.018377156939479746,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_82"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02614039057642755,
+        "unsigned_separation_m": 0.02614039057642755,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.39349980137713597,
+            3.0832999999999906
+          ],
+          [
+            -1.16859999799906,
+            -0.4084997996461624,
+            3.0727000019999906
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.026140390576427662,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_83"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.023894770597102936,
+        "unsigned_separation_m": 0.023894770597102936,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.393499801377136,
+            3.117486472866636
+          ],
+          [
+            -1.16859999799906,
+            -0.40849979964616234,
+            3.117486472866636
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894770597103057,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_84"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.023894770597102943,
+        "unsigned_separation_m": 0.023894770597102943,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.393499801377136,
+            3.1613621576219195
+          ],
+          [
+            -1.16859999799906,
+            -0.40849979964616234,
+            3.1613621576219195
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894770597103057,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_85"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.023894770597102936,
+        "unsigned_separation_m": 0.023894770597102936,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.393499801377136,
+            3.205237842377203
+          ],
+          [
+            -1.16859999799906,
+            -0.40849979964616234,
+            3.205237842377203
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894770597103057,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_86"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02389477059710295,
+        "unsigned_separation_m": 0.02389477059710295,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.393499801377136,
+            3.2491135271324865
+          ],
+          [
+            -1.16859999799906,
+            -0.40849979964616234,
+            3.2491135271324865
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894770597103057,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_1",
+        "tool_rigid_87"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02614039057604637,
+        "unsigned_separation_m": 0.02614039057604637,
+        "nearest_points_world": [
+          [
+            -1.149999994939453,
+            -0.393499801377136,
+            3.283299999999991
+          ],
+          [
+            -1.16859999799906,
+            -0.40849979964616234,
+            3.293899997999051
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.02614039057604655,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_8"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.019999998092651305,
+        "unsigned_separation_m": 0.019999998092651305,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.38700104401477026,
+            3.28082474975585
+          ],
+          [
+            -1.330000000661499,
+            -0.38700104401477026,
+            3.28082474975585
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.019999998092651516,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_10"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.014999999999999913,
+        "unsigned_separation_m": 0.014999999999999913,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.39349980137713597,
+            3.2777999999999907
+          ],
+          [
+            -1.3349999987541503,
+            -0.39349980137713597,
+            3.2777999999999907
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015000000000000124,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_16"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 1.1102230246251565e-16,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.3599999987541502,
+            -0.3836123446058237,
+            3.1382999999999908
+          ],
+          [
+            -1.3599999987541505,
+            -0.3836123446058237,
+            3.1382999999999908
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.383175101355678,
+              3.140732210760981
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38074692928574283,
+              3.154239168812511
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.3830321468059276,
+              3.14152741021602
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38302420549104776,
+              3.141571584600646
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38301599016240934,
+              3.14161728321512
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.383007511953187,
+              3.1416644441300052
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3829987833702664,
+              3.14171299777446
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3829898176333625,
+              3.1417628706124523
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_17"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 1.1102230246251565e-16,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.3599999987541502,
+            -0.39149980137713597,
+            3.208299999999991
+          ],
+          [
+            -1.3599999987541505,
+            -0.39149980137713597,
+            3.208299999999991
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3874758158539803,
+              3.209819661516608
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38422406509029955,
+              3.2255523120730496
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38748788489274877,
+              3.209834194263312
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.3874997018735593,
+              3.2098493704734397
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.3875112453804979,
+              3.2098651644033547
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38752249403135475,
+              3.2098815520435933
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3875334270950448,
+              3.209898505454232
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.38754402338414184,
+              3.2099159975949636
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_18"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 0.0,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.3599999987541502,
+            -0.36849980233082646,
+            3.103299999999991
+          ],
+          [
+            -1.3599999987541505,
+            -0.36849980233082646,
+            3.1032999999999906
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.36349980233081025,
+              3.0927925157281315
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3634998023308103,
+              3.09380748427185
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.366750344017822,
+              3.0933327793781746
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.3667128418596457,
+              3.093338256144733
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.36349980233081025,
+              3.0924086164691307
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.36675318937790974,
+              3.0928645219281723
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.3666910561696397,
+              3.0928558150425705
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.36663502524937763,
+              3.0928479632862147
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 4.965068306494546e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_19"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": true,
+        "surface_distance_m": 1.1102230246251565e-16,
+        "unsigned_separation_m": 0.0,
+        "nearest_points_world": [
+          [
+            -1.3599999987541502,
+            -0.38997038938803613,
+            3.2632999999999908
+          ],
+          [
+            -1.3599999987541505,
+            -0.38997038938803613,
+            3.2632999999999908
+          ]
+        ],
+        "nearest_points_valid": false,
+        "contacts": [
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.39095203367495557,
+              3.2635068649333405
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3909536765873205,
+              3.2635088433129678
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3909552851752365,
+              3.2635109090848227
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.390956856549211,
+              3.263513059144059
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.39095838777927006,
+              3.263515289922565
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.3909598760434124,
+              3.2635175976167203
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541502,
+              -0.39096131847030413,
+              3.263519978745996
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          },
+          {
+            "position_world_m": [
+              -1.3599999987541505,
+              -0.39096271239841013,
+              3.263522429024709
+            ],
+            "normal_world": [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "reported_penetration_depth_m": 2.220446049250313e-16
+          }
+        ],
+        "reported_contact_count": 8,
+        "contact_limit": 8,
+        "contacts_truncated": true,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 2.220446049250313e-16,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_31"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.0017059187142171215,
+        "unsigned_separation_m": 0.0017059187142171215,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.3211593497080705,
+            3.2082999999999906
+          ],
+          [
+            -1.3484453611095102,
+            -0.3211593497080705,
+            3.20759767496599
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.0017059187142172167,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_44"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.008200082778930688,
+        "unsigned_separation_m": 0.008200082778930688,
+        "nearest_points_world": [
+          [
+            -1.3599999987541502,
+            -0.37849980042346165,
+            3.193781658083303
+          ],
+          [
+            -1.3599999987541502,
+            -0.370299717644531,
+            3.193781658083303
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.00820008277893064,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_57"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.01000000000000005,
+        "unsigned_separation_m": 0.01000000000000005,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.3731613742264549,
+            3.283299999999991
+          ],
+          [
+            -1.3399999987541502,
+            -0.3731613742264549,
+            3.283299999999991
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.010000000000000231,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_100"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.026140386089826634,
+        "unsigned_separation_m": 0.026140386089826634,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.39349980137713597,
+            3.0832999999999906
+          ],
+          [
+            -1.331400002,
+            -0.4084997996461624,
+            3.0727000019999906
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.026140386089826672,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_101"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02389476568885316,
+        "unsigned_separation_m": 0.02389476568885316,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.393499801377136,
+            3.117486472866636
+          ],
+          [
+            -1.331400002,
+            -0.40849979964616234,
+            3.117486472866636
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894765688853205,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_102"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02389476568885316,
+        "unsigned_separation_m": 0.02389476568885316,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.393499801377136,
+            3.1613621576219195
+          ],
+          [
+            -1.331400002,
+            -0.40849979964616234,
+            3.1613621576219195
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894765688853205,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_103"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02389476568885316,
+        "unsigned_separation_m": 0.02389476568885316,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.393499801377136,
+            3.205237842377203
+          ],
+          [
+            -1.331400002,
+            -0.40849979964616234,
+            3.205237842377203
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894765688853205,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_104"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.023894765688853174,
+        "unsigned_separation_m": 0.023894765688853174,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.393499801377136,
+            3.2491135271324865
+          ],
+          [
+            -1.331400002,
+            -0.40849979964616234,
+            3.2491135271324865
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.023894765688853205,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_105"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.02614038608944545,
+        "unsigned_separation_m": 0.02614038608944545,
+        "nearest_points_world": [
+          [
+            -1.3499999987541504,
+            -0.393499801377136,
+            3.283299999999991
+          ],
+          [
+            -1.331400002,
+            -0.40849979964616234,
+            3.293899997999051
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.02614038608944556,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_106"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.018377157145888827,
+        "unsigned_separation_m": 0.018377157145888827,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.39349980137713597,
+            3.0832999999999906
+          ],
+          [
+            -1.3605999979990602,
+            -0.4084997996461624,
+            3.0727000019999906
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.018377157145888806,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_107"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993444066157,
+        "unsigned_separation_m": 0.015011993444066157,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.393499801377136,
+            3.117486472866636
+          ],
+          [
+            -1.3605999979990602,
+            -0.40849979964616234,
+            3.117486472866636
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993444066138,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_108"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993444066169,
+        "unsigned_separation_m": 0.015011993444066169,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.393499801377136,
+            3.1613621576219195
+          ],
+          [
+            -1.3605999979990602,
+            -0.40849979964616234,
+            3.1613621576219195
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993444066138,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_109"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993444066165,
+        "unsigned_separation_m": 0.015011993444066165,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.393499801377136,
+            3.205237842377203
+          ],
+          [
+            -1.3605999979990602,
+            -0.40849979964616234,
+            3.205237842377203
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993444066138,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_110"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.015011993444066183,
+        "unsigned_separation_m": 0.015011993444066183,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.393499801377136,
+            3.2491135271324865
+          ],
+          [
+            -1.3605999979990602,
+            -0.40849979964616234,
+            3.2491135271324865
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.015011993444066138,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_side_2",
+        "tool_rigid_111"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.01837715714534662,
+        "unsigned_separation_m": 0.01837715714534662,
+        "nearest_points_world": [
+          [
+            -1.3599999987541505,
+            -0.393499801377136,
+            3.283299999999991
+          ],
+          [
+            -1.3605999979990602,
+            -0.40849979964616234,
+            3.293899997999051
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.018377157145346698,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_25"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.005099998474121209,
+        "unsigned_separation_m": 0.005099998474121209,
+        "nearest_points_world": [
+          [
+            -1.2866000000892943,
+            -0.29679979775317367,
+            3.0832999999999906
+          ],
+          [
+            -1.2866000000892943,
+            -0.29679979775317367,
+            3.0782000015258695
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.005099998474121126,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_27"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.0173999938964845,
+        "unsigned_separation_m": 0.0173999938964845,
+        "nearest_points_world": [
+          [
+            -1.1399999949394533,
+            -0.298182570579944,
+            3.1022000015258695
+          ],
+          [
+            -1.1226000010429686,
+            -0.298182570579944,
+            3.1022000015258695
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.01739999389648461,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_30"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.01931335171213457,
+        "unsigned_separation_m": 0.01931335171213457,
+        "nearest_points_world": [
+          [
+            -1.3000977791010209,
+            -0.30049980233081025,
+            3.283299999999991
+          ],
+          [
+            -1.3000977791010209,
+            -0.31849980233081027,
+            3.2903003967285063
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.01931335171213456,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_31"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.013255232375706949,
+        "unsigned_separation_m": 0.013255232375706949,
+        "nearest_points_world": [
+          [
+            -1.3494999987541505,
+            -0.3004998023308103,
+            3.1867192015351473
+          ],
+          [
+            -1.35123730138358,
+            -0.3136406913763721,
+            3.1867192015351473
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.013255232375706921,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_32"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.019313207915827857,
+        "unsigned_separation_m": 0.019313207915827857,
+        "nearest_points_world": [
+          [
+            -1.2499999987541504,
+            -0.30049980233081025,
+            3.283299999999991
+          ],
+          [
+            -1.2499999987541504,
+            -0.31849980233081027,
+            3.2902999999999905
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.019313207915827864,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_33"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.019313207915828003,
+        "unsigned_separation_m": 0.019313207915828003,
+        "nearest_points_world": [
+          [
+            -1.2000000025688475,
+            -0.30049980233081025,
+            3.283299999999991
+          ],
+          [
+            -1.2000000025688475,
+            -0.31849980233081027,
+            3.290299999999991
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.019313207915828023,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_34"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.010002075195312515,
+        "unsigned_separation_m": 0.010002075195312515,
+        "nearest_points_world": [
+          [
+            -1.249791235631592,
+            -0.30049980233081036,
+            3.0835464065551665
+          ],
+          [
+            -1.249791235631592,
+            -0.31050187752612285,
+            3.0835464065551665
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.010002075195312488,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_36"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.014715538447168516,
+        "unsigned_separation_m": 0.014715538447168516,
+        "nearest_points_world": [
+          [
+            -1.2499999987541504,
+            -0.30049980233081036,
+            3.0832999999999906
+          ],
+          [
+            -1.2499999987541504,
+            -0.3151985253203803,
+            3.0825967118186717
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.014715538447168499,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    },
+    {
+      "pair": [
+        "tool_s50_mount_flange",
+        "tool_rigid_37"
+      ],
+      "intersection": null,
+      "design_contact": null,
+      "measurement": {
+        "status": "QUERIED",
+        "intersects": false,
+        "surface_distance_m": 0.024420452047205186,
+        "unsigned_separation_m": 0.024420452047205186,
+        "nearest_points_world": [
+          [
+            -1.1504999949394532,
+            -0.3004998023308103,
+            3.1867312780960475
+          ],
+          [
+            -1.147698614147346,
+            -0.32475904271148714,
+            3.1867312780960475
+          ]
+        ],
+        "nearest_points_valid": true,
+        "contacts": [],
+        "reported_contact_count": 0,
+        "contact_limit": 8,
+        "contacts_truncated": false,
+        "distance_semantics": "RAW_COAL_MIN_DISTANCE_NEGATIVE_MAY_BE_INTERSECTION_SENTINEL_NOT_PENETRATION_DEPTH",
+        "nearest_point_segment_length_m": 0.02442045204720521,
+        "nearest_points_validation": "FINITE_SEPARATED_PAIR_AND_SEGMENT_LENGTH_MATCHES_REPORTED_DISTANCE"
+      }
+    }
+  ],
+  "far_pair_aabb_exclusion_m": 0.02,
+  "total_pairs": 631
+}

@@ -1,0 +1,1328 @@
+{
+  "schema": "s50_cad_simulation_6r_v1",
+  "model_id": "huayan_s50_2000_cad_preview",
+  "model_usage": "cad_preview_fk_only",
+  "units": {
+    "length": "metre",
+    "angle": "radian"
+  },
+  "source_step_sha256": "2f3d1d987c146ba9ba59377377f2590882c664cdd5117912b81eea47e242973b",
+  "simulation_convention": {
+    "q0_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "zero": "SUPPLIED_CAD_ASSEMBLY_USER_AUTHORIZED_SIMULATION_ZERO",
+    "positive": "RIGHT_HAND_RULE_ABOUT_MEASURED_CANONICAL_AXIS",
+    "controller_zero_verified": false,
+    "controller_signs_verified": false,
+    "controller_reference_pose_verified": false
+  },
+  "joint_names": [
+    "s50_joint_1",
+    "s50_joint_2",
+    "s50_joint_3",
+    "s50_joint_4",
+    "s50_joint_5",
+    "s50_joint_6"
+  ],
+  "base_link": "s50_base",
+  "flange_link": "s50_flange",
+  "tip_link": "s50_flange",
+  "links": [
+    {
+      "name": "s50_base",
+      "cad_body": "base_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0030000000000000022
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_base.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_base.obj.gz",
+        "sha256": "67200d08c7a64d69bbab7d6ebcbd4f77f2b11db2f008c201df6d43a3fcace6b0",
+        "gzip_sha256": "8c35b1345c63bbabefbe70cb4d61b811f3d482a85a1655ce7f6e73cd066b4e33",
+        "vertices": 46050,
+        "triangles": 92154,
+        "local_bounds_m": [
+          [
+            -0.16295055,
+            -0.16299,
+            -5.399999999976604e-07
+          ],
+          [
+            0.1876,
+            0.16299,
+            0.1393
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/base_s50_cad.obj",
+        "source_CAD_mesh_sha256": "2ad23eaa75688334752a15038530b97baec1679e6d0c6362d8a532ab3de30bcd"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_base.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_base.obj.gz",
+          "sha256": "67200d08c7a64d69bbab7d6ebcbd4f77f2b11db2f008c201df6d43a3fcace6b0",
+          "gzip_sha256": "8c35b1345c63bbabefbe70cb4d61b811f3d482a85a1655ce7f6e73cd066b4e33",
+          "vertices": 46050,
+          "triangles": 92154,
+          "local_bounds_m": [
+            [
+              -0.16295055,
+              -0.16299,
+              -5.399999999976604e-07
+            ],
+            [
+              0.1876,
+              0.16299,
+              0.1393
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/base_s50_cad.obj",
+          "source_CAD_mesh_sha256": "2ad23eaa75688334752a15038530b97baec1679e6d0c6362d8a532ab3de30bcd",
+          "role": "SELECTED_STEP_SURFACE"
+        }
+      ]
+    },
+    {
+      "name": "s50_link_1",
+      "cad_body": "j1_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -2.987189199317385e-17
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2803000000000001
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          9.207652500130467e-18
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1.obj.gz",
+        "sha256": "680d54e35cbb4d5a648bd8d0a27b49deb95c283d28e1494ecb30ad9f9a96817d",
+        "gzip_sha256": "46095c3269f22f6de8d422813f61dcec71eb95ff5b9d548a28ae49e719213ca1",
+        "vertices": 168072,
+        "triangles": 335821,
+        "local_bounds_m": [
+          [
+            -0.19049999999999997,
+            -0.1295,
+            -0.1440000000000001
+          ],
+          [
+            0.12949859000000002,
+            0.1295,
+            0.1499999999999999
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j1_s50_cad.obj",
+        "source_CAD_mesh_sha256": "3c0cfe9049cea5b22fa6f43ccdb24448f947402448de1b55c0d6de260aaed068"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1.obj.gz",
+          "sha256": "680d54e35cbb4d5a648bd8d0a27b49deb95c283d28e1494ecb30ad9f9a96817d",
+          "gzip_sha256": "46095c3269f22f6de8d422813f61dcec71eb95ff5b9d548a28ae49e719213ca1",
+          "vertices": 168072,
+          "triangles": 335821,
+          "local_bounds_m": [
+            [
+              -0.19049999999999997,
+              -0.1295,
+              -0.1440000000000001
+            ],
+            [
+              0.12949859000000002,
+              0.1295,
+              0.1499999999999999
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j1_s50_cad.obj",
+          "source_CAD_mesh_sha256": "3c0cfe9049cea5b22fa6f43ccdb24448f947402448de1b55c0d6de260aaed068",
+          "role": "SELECTED_STEP_SURFACE"
+        },
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1_local_patch_0.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_1_local_patch_0.obj.gz",
+          "sha256": "df4f988aaf780ffac77563a29f642f6a95924026272617ceef6d43513a6999b0",
+          "gzip_sha256": "71259dc0c17f78035bf79ff1a271c9214dd3d11179984fa390ca217df73fa057",
+          "vertices": 1025,
+          "triangles": 1023,
+          "local_bounds_m": [
+            [
+              0.11795786533152766,
+              -0.052511474952357695,
+              0.06539987976204842
+            ],
+            [
+              0.12912940667602937,
+              0.05251147440291154,
+              0.06839328524351906
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/collision_repair/j1_face_74_exact_cad.obj",
+          "source_CAD_mesh_sha256": "99e56678ca07cc5c6170b2f50191b7a967a0bfefa4ff7d41950643b1fdd37cd6",
+          "role": "RETAINED_LOCAL_CONSERVATIVE_PATCH",
+          "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+          "source_face_index": 74
+        }
+      ]
+    },
+    {
+      "name": "s50_link_2",
+      "cad_body": "j2_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.3345
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2803000000000001
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -6.350838006046083e-17
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2.obj.gz",
+        "sha256": "7e26f316704790a79bbad5ab0b6e1f3d215fa63731135f33b87b2392a7506dae",
+        "gzip_sha256": "9b01fdb3371f51fe5fc3241e23aa81ab258270cb5e5a92d4ef0ee1c80ecc5b77",
+        "vertices": 139325,
+        "triangles": 278421,
+        "local_bounds_m": [
+          [
+            -0.14999999999999997,
+            -0.12949981000000005,
+            -0.1294985900000001
+          ],
+          [
+            0.14400000000000002,
+            0.12950018999999993,
+            1.0055
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j2_s50_cad.obj",
+        "source_CAD_mesh_sha256": "453f5382b7178a06f65d61aa9c8f6614a795a54de34ec33c713fed03f2787770"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2.obj.gz",
+          "sha256": "7e26f316704790a79bbad5ab0b6e1f3d215fa63731135f33b87b2392a7506dae",
+          "gzip_sha256": "9b01fdb3371f51fe5fc3241e23aa81ab258270cb5e5a92d4ef0ee1c80ecc5b77",
+          "vertices": 139325,
+          "triangles": 278421,
+          "local_bounds_m": [
+            [
+              -0.14999999999999997,
+              -0.12949981000000005,
+              -0.1294985900000001
+            ],
+            [
+              0.14400000000000002,
+              0.12950018999999993,
+              1.0055
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j2_s50_cad.obj",
+          "source_CAD_mesh_sha256": "453f5382b7178a06f65d61aa9c8f6614a795a54de34ec33c713fed03f2787770",
+          "role": "SELECTED_STEP_SURFACE"
+        },
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2_local_patch_0.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_2_local_patch_0.obj.gz",
+          "sha256": "0631e9a8f2e4d6976df207980d64708e908a0ae2f306265d74d2df355d916985",
+          "gzip_sha256": "3c7a20dff0712f90c2688327e4162b3b6d76000cd86336402bf4a57918c91c0e",
+          "vertices": 1025,
+          "triangles": 1023,
+          "local_bounds_m": [
+            [
+              -0.06839328524351901,
+              -0.05251128830436627,
+              -0.1291294066760203
+            ],
+            [
+              -0.06539987976204836,
+              0.05251166105090297,
+              -0.11795786533151861
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/collision_repair/j2_face_75_exact_cad.obj",
+          "source_CAD_mesh_sha256": "d021724fb893da8026246f801d7b23a80007aea3406a0704cc53147ce0ccd38d",
+          "role": "RETAINED_LOCAL_CONSERVATIVE_PATCH",
+          "source_step_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+          "source_face_index": 75
+        }
+      ]
+    },
+    {
+      "name": "s50_link_3",
+      "cad_body": "j3_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.001700000000000155
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.1803000000000092
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -1.8609854495850637e-07
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_3.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_3.obj.gz",
+        "sha256": "e03ba5e77e46293f23292485a1e947528b1c8a40d58cebb15656fede69b567e5",
+        "gzip_sha256": "217ece481988db0fff3520692868ae13e86076ef9c2005a1476e7ec713fd3c1c",
+        "vertices": 167859,
+        "triangles": 335624,
+        "local_bounds_m": [
+          [
+            -0.22190000000000015,
+            -0.10439176609854496,
+            -0.10399296000000913
+          ],
+          [
+            -0.014699800000000155,
+            0.10438679390145504,
+            1.0019994699999906
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j3_s50_cad.obj",
+        "source_CAD_mesh_sha256": "9d067772e360b7bd219712a3b0b62247585e1bceed3341e2236bcdbf4818ef4a"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_3.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_3.obj.gz",
+          "sha256": "e03ba5e77e46293f23292485a1e947528b1c8a40d58cebb15656fede69b567e5",
+          "gzip_sha256": "217ece481988db0fff3520692868ae13e86076ef9c2005a1476e7ec713fd3c1c",
+          "vertices": 167859,
+          "triangles": 335624,
+          "local_bounds_m": [
+            [
+              -0.22190000000000015,
+              -0.10439176609854496,
+              -0.10399296000000913
+            ],
+            [
+              -0.014699800000000155,
+              0.10438679390145504,
+              1.0019994699999906
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j3_s50_cad.obj",
+          "source_CAD_mesh_sha256": "9d067772e360b7bd219712a3b0b62247585e1bceed3341e2236bcdbf4818ef4a",
+          "role": "SELECTED_STEP_SURFACE"
+        }
+      ]
+    },
+    {
+      "name": "s50_link_4",
+      "cad_body": "j4_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.2539998016477045
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.1217999999999906
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -3.5740797806919104e-16
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_4.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_4.obj.gz",
+        "sha256": "a6beb127b247c6c6dd7949a3da3ab81198fa06258d73cf946e02641b0482c1d9",
+        "gzip_sha256": "48a11dd1626fa51dffc609e80db536c08b5d12392ec9238bbf5fbf2d3365c6a9",
+        "vertices": 60856,
+        "triangles": 121710,
+        "local_bounds_m": [
+          [
+            -0.06049242835229546,
+            -0.06045854000000036,
+            -0.08249999999999069
+          ],
+          [
+            0.07200000164770454,
+            0.06044814999999964,
+            0.08950000000000946
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j4_s50_cad.obj",
+        "source_CAD_mesh_sha256": "3e7f1d4c5859b4d6f43b99803ed63f6f63bc2293e1decb60b6ed231d693210bb"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_4.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_4.obj.gz",
+          "sha256": "a6beb127b247c6c6dd7949a3da3ab81198fa06258d73cf946e02641b0482c1d9",
+          "gzip_sha256": "48a11dd1626fa51dffc609e80db536c08b5d12392ec9238bbf5fbf2d3365c6a9",
+          "vertices": 60856,
+          "triangles": 121710,
+          "local_bounds_m": [
+            [
+              -0.06049242835229546,
+              -0.06045854000000036,
+              -0.08249999999999069
+            ],
+            [
+              0.07200000164770454,
+              0.06044814999999964,
+              0.08950000000000946
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j4_s50_cad.obj",
+          "source_CAD_mesh_sha256": "3e7f1d4c5859b4d6f43b99803ed63f6f63bc2293e1decb60b6ed231d693210bb",
+          "role": "SELECTED_STEP_SURFACE"
+        }
+      ]
+    },
+    {
+      "name": "s50_link_5",
+      "cad_body": "j5_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.25399980164770447
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.2802999999999907
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -1.0533934835521564e-16
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_5.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_5.obj.gz",
+        "sha256": "6e8229c2fd689e10eaa72a11ece83af53c8557b0b88c280090d86e8eddf35374",
+        "gzip_sha256": "45f9f136ead6859a80426b678fcce85b8af1abe7c0d52c7f530fedd096c389d4",
+        "vertices": 61047,
+        "triangles": 122090,
+        "local_bounds_m": [
+          [
+            -0.08949999835229555,
+            -0.0604481500000001,
+            -0.07199999999999074
+          ],
+          [
+            0.08250000164770446,
+            0.060458539999999894,
+            0.06049243000000937
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j5_s50_cad.obj",
+        "source_CAD_mesh_sha256": "29dfae2a9f70792709c2a0604193fcaf3f0190d1b84bdcba08fbdba067df6c97"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_5.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_5.obj.gz",
+          "sha256": "6e8229c2fd689e10eaa72a11ece83af53c8557b0b88c280090d86e8eddf35374",
+          "gzip_sha256": "45f9f136ead6859a80426b678fcce85b8af1abe7c0d52c7f530fedd096c389d4",
+          "vertices": 61047,
+          "triangles": 122090,
+          "local_bounds_m": [
+            [
+              -0.08949999835229555,
+              -0.0604481500000001,
+              -0.07199999999999074
+            ],
+            [
+              0.08250000164770446,
+              0.060458539999999894,
+              0.06049243000000937
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j5_s50_cad.obj",
+          "source_CAD_mesh_sha256": "29dfae2a9f70792709c2a0604193fcaf3f0190d1b84bdcba08fbdba067df6c97",
+          "role": "SELECTED_STEP_SURFACE"
+        }
+      ]
+    },
+    {
+      "name": "s50_link_6",
+      "cad_body": "j6_s50",
+      "CAD_from_link_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.3419998016477048
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          2.2802999999999907
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -1.778628083159029e-16
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "visual_mesh": {
+        "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_6.obj",
+        "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_6.obj.gz",
+        "sha256": "afbc455de32f70c34770b5ad5568b3f4840013711272cbef255ff4e7159c1520",
+        "gzip_sha256": "b593a39b6d71d0e011d7840f65f16d692a31955ee4f3abf5b8cc853ccfe8b1c8",
+        "vertices": 15834,
+        "triangles": 31662,
+        "local_bounds_m": [
+          [
+            -0.04649999835229518,
+            -0.05900000000000018,
+            -0.05899999999999084
+          ],
+          [
+            0.0015000016477048073,
+            0.058999999999999816,
+            0.07553109000000946
+          ]
+        ],
+        "coordinate_frame": "LINK_LOCAL_METRES",
+        "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j6_s50_cad.obj",
+        "source_CAD_mesh_sha256": "e6281e0ca11149cfa8b5b1432ba17a4728e0a3de0f4577ad41253cf2c9c2f9e7"
+      },
+      "collision_meshes": [
+        {
+          "path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_6.obj",
+          "gzip_path": "assets/robots/huayan/s50_1_kinematic/meshes/link-local/s50_link_6.obj.gz",
+          "sha256": "afbc455de32f70c34770b5ad5568b3f4840013711272cbef255ff4e7159c1520",
+          "gzip_sha256": "b593a39b6d71d0e011d7840f65f16d692a31955ee4f3abf5b8cc853ccfe8b1c8",
+          "vertices": 15834,
+          "triangles": 31662,
+          "local_bounds_m": [
+            [
+              -0.04649999835229518,
+              -0.05900000000000018,
+              -0.05899999999999084
+            ],
+            [
+              0.0015000016477048073,
+              0.058999999999999816,
+              0.07553109000000946
+            ]
+          ],
+          "coordinate_frame": "LINK_LOCAL_METRES",
+          "source_CAD_mesh_path": "assets/robots/huayan_s50_2000/derived/s50_1/j6_s50_cad.obj",
+          "source_CAD_mesh_sha256": "e6281e0ca11149cfa8b5b1432ba17a4728e0a3de0f4577ad41253cf2c9c2f9e7",
+          "role": "SELECTED_STEP_SURFACE"
+        }
+      ]
+    }
+  ],
+  "joints": [
+    {
+      "name": "s50_joint_1",
+      "type": "revolute",
+      "parent_link": "s50_base",
+      "child_link": "s50_link_1",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -2.987189199317385e-17
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -9.207652500130467e-18
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.2833000000000001
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        -1.6729986545114403e-16,
+        9.180436958645249e-17,
+        1.0
+      ],
+      "point_CAD_m": [
+        -2.987189199317385e-17,
+        0.2803000000000001,
+        9.207652500130467e-18
+      ],
+      "axis_CAD": [
+        -1.6729986545114403e-16,
+        1.0,
+        -9.180436958645249e-17
+      ],
+      "measured_line_point_CAD_m": [
+        1.702226029278184e-17,
+        0.0,
+        3.494041729521311e-17
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        5.733777452347287e-18,
+        0.2803000000000001,
+        -1.0760852026674324e-16
+      ],
+      "line_parameter_shift_m": 0.2803000000000001,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 100
+    },
+    {
+      "name": "s50_joint_2",
+      "type": "revolute",
+      "parent_link": "s50_link_1",
+      "child_link": "s50_link_2",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.33449999999999996
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          7.27160325605913e-17
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        1.0,
+        1.3183898417423734e-16,
+        3.107713337535795e-17
+      ],
+      "point_CAD_m": [
+        -0.3345,
+        0.2803000000000001,
+        -6.350838006046083e-17
+      ],
+      "axis_CAD": [
+        1.0,
+        3.107713337535795e-17,
+        -1.3183898417423734e-16
+      ],
+      "measured_line_point_CAD_m": [
+        0.0,
+        0.2803000000000001,
+        -1.0760852026674323e-16
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        -0.3345,
+        0.2803000000000091,
+        -1.8609854512963153e-07
+      ],
+      "line_parameter_shift_m": -0.3345,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 180
+    },
+    {
+      "name": "s50_joint_3",
+      "type": "revolute",
+      "parent_link": "s50_link_2",
+      "child_link": "s50_link_3",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.33620000000000017
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.8609854489499798e-07
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.9000000000000091
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        1.0,
+        -5.438641454004748e-16,
+        -1.5647597882003905e-16
+      ],
+      "point_CAD_m": [
+        0.001700000000000155,
+        1.1803000000000092,
+        -1.8609854495850637e-07
+      ],
+      "axis_CAD": [
+        1.0,
+        -1.5647597882003905e-16,
+        5.438641454004748e-16
+      ],
+      "measured_line_point_CAD_m": [
+        1.942890293094024e-16,
+        1.1803000000000092,
+        -1.8609854495943093e-07
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        0.0016999999999999782,
+        0.0508070430254875,
+        -1.8609854490758693e-07
+      ],
+      "line_parameter_shift_m": 0.0016999999999999607,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 3
+    },
+    {
+      "name": "s50_joint_4",
+      "type": "revolute",
+      "parent_link": "s50_link_3",
+      "child_link": "s50_link_4",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.25569980164770467
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.8609854460109838e-07
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.9414999999999814
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        1.0,
+        -4.945401592793333e-16,
+        -4.185881581597452e-16
+      ],
+      "point_CAD_m": [
+        -0.2539998016477045,
+        2.1217999999999906,
+        -3.5740797806919104e-16
+      ],
+      "axis_CAD": [
+        1.0,
+        -4.185881581597452e-16,
+        4.945401592793333e-16
+      ],
+      "measured_line_point_CAD_m": [
+        8.881784197001252e-16,
+        2.1217999999999906,
+        -2.3179487570541577e-16
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        -0.25399980164770447,
+        2.1892999999999905,
+        -1.1102230246251563e-16
+      ],
+      "line_parameter_shift_m": -0.2539998016477054,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 1
+    },
+    {
+      "name": "s50_joint_5",
+      "type": "revolute",
+      "parent_link": "s50_link_4",
+      "child_link": "s50_link_5",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          5.551115123125783e-17
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -2.5206862971397543e-16
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.15850000000000009
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        1.0390488085761057e-16,
+        -6.245004513516504e-17,
+        1.0
+      ],
+      "point_CAD_m": [
+        -0.25399980164770447,
+        2.2802999999999907,
+        -1.0533934835521564e-16
+      ],
+      "axis_CAD": [
+        1.0390488085761057e-16,
+        1.0,
+        6.245004513516504e-17
+      ],
+      "measured_line_point_CAD_m": [
+        -0.2539998016477047,
+        0.0,
+        -2.477441862769319e-16
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        -0.3214998016477045,
+        2.2802999999999907,
+        -1.6653345369377346e-16
+      ],
+      "line_parameter_shift_m": 2.2802999999999907,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 2
+    },
+    {
+      "name": "s50_joint_6",
+      "type": "revolute",
+      "parent_link": "s50_link_5",
+      "child_link": "s50_link_6",
+      "origin": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.08800000000000036
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          7.252345996068725e-17
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "axis": [
+        1.0,
+        -5.526514449819133e-16,
+        -1.0390488085760262e-16
+      ],
+      "point_CAD_m": [
+        -0.3419998016477048,
+        2.2802999999999907,
+        -1.778628083159029e-16
+      ],
+      "axis_CAD": [
+        1.0,
+        -1.0390488085760262e-16,
+        5.526514449819133e-16
+      ],
+      "measured_line_point_CAD_m": [
+        2.220446049250313e-16,
+        2.2802999999999907,
+        1.1143876248229044e-17
+      ],
+      "frame_origin_selection": "PROJECT_CHILD_CAD_INSTANCE_ORIGIN_ON_MEASURED_AXIS_LINE",
+      "child_CAD_instance_origin_m": [
+        -0.3419998016477048,
+        2.2802999999999907,
+        -1.1102230246251565e-16
+      ],
+      "line_parameter_shift_m": -0.34199980164770505,
+      "simulation_positive": "RIGHT_HAND_RULE_ABOUT_RECORDED_CANONICAL_AXIS",
+      "simulation_zero": "SUPPLIED_CAD_ASSEMBLY",
+      "controller_mapping_verified": false,
+      "controller_zero_offset_rad": null,
+      "controller_positive_sign": null,
+      "preview_range_rad": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+      "axis_measurement_evidence_count": 12
+    }
+  ],
+  "fixed_joints": [
+    {
+      "name": "s50_link_6_to_flange",
+      "type": "fixed",
+      "parent_link": "s50_link_6",
+      "child_link": "s50_flange",
+      "origin": [
+        [
+          3.0978751951332657e-16,
+          -9.860761315262648e-32,
+          -1.0,
+          -0.046499999999999986
+        ],
+        [
+          3.054740788368183e-47,
+          1.0,
+          -9.860761315262648e-32,
+          -7.500236033509004e-17
+        ],
+        [
+          1.0,
+          0.0,
+          3.0978751951332657e-16,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  ],
+  "frames": {
+    "mount": {
+      "link": "s50_base",
+      "CAD_from_frame_zero": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0030000000000000022
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "origin": "MEASURED_SUPPORT_PLANE_AND_J1_AXIS_INTERSECTION",
+      "axes": "X=CAD+X; Y=CAD-Z; Z=CAD+Y",
+      "clocking_status": "SIMULATION_CONVENTION_NOT_MACHINE_VERIFIED",
+      "support_plane_source": {
+        "y_CAD_m": -0.0030000000000000022,
+        "up_CAD": [
+          0,
+          1,
+          0
+        ],
+        "axis_intersection_CAD_m": [
+          0,
+          -0.0030000000000000022,
+          0
+        ],
+        "support_faces": [
+          {
+            "face_index": 17,
+            "area_m2": 0.002655504837061523,
+            "surface_centroid_m": [
+              6.439119903826486e-16,
+              -0.0030000000000000152,
+              -0.1426419264761151
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          },
+          {
+            "face_index": 18,
+            "area_m2": 0.002320510365915363,
+            "surface_centroid_m": [
+              0.1200336124407596,
+              -0.0029999999999999892,
+              -0.07604583419272676
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          },
+          {
+            "face_index": 19,
+            "area_m2": 0.0023205100124620583,
+            "surface_centroid_m": [
+              0.12003361297680072,
+              -0.0029999999999999753,
+              0.07604583761737262
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          },
+          {
+            "face_index": 20,
+            "area_m2": 0.00265550483706152,
+            "surface_centroid_m": [
+              -1.6469271563286964e-15,
+              -0.0029999999999999892,
+              0.14264192647611507
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          },
+          {
+            "face_index": 21,
+            "area_m2": 0.0026555048370614644,
+            "surface_centroid_m": [
+              -0.12353153197306825,
+              -0.0030000000000000165,
+              0.07132096323805694
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          },
+          {
+            "face_index": 28,
+            "area_m2": 0.002655504837061522,
+            "surface_centroid_m": [
+              -0.12353153197306764,
+              -0.0030000000000000296,
+              -0.07132096323805766
+            ],
+            "origin_m": [
+              1.7524159889135272e-17,
+              -0.0030000000000000022,
+              3.5215830403972466e-17
+            ],
+            "normal": [
+              1.6729986545114403e-16,
+              -1.0,
+              9.180436958645249e-17
+            ]
+          }
+        ],
+        "interpretation": "Lowest parallel support surfaces of the base (not the recessed centre plane at Y=0). Mounting clocking and controller-base frame remain unverified."
+      }
+    },
+    "flange": {
+      "link": "s50_flange",
+      "CAD_from_frame_zero": [
+        [
+          3.0978751951332657e-16,
+          -9.860761315262648e-32,
+          -1.0,
+          -0.3884998016477048
+        ],
+        [
+          1.0,
+          0.0,
+          3.0978751951332657e-16,
+          2.2802999999999907
+        ],
+        [
+          -3.054740788368183e-47,
+          -1.0,
+          9.860761315262648e-32,
+          -1.0286044798081286e-16
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "origin": "MEASURED_DISTAL_J6_FACE_ORIGIN",
+      "z_axis": "MEASURED_OUTWARD_FACE_NORMAL",
+      "x_axis": "PROJECTION_OF_CAD+Y_ON_FLANGE_PLANE_SIMULATION_CLOCKING",
+      "source_face_index": 10,
+      "controller_tool0_verified": false
+    },
+    "controller_tool0": null,
+    "physical_tool_mount": null,
+    "virtual_tcp": null
+  },
+  "preview_constraints": {
+    "position_range_semantics": "DISPLAY_ONLY_NOT_MECHANICAL_LIMITS",
+    "velocity_rad_s": 1.0,
+    "velocity_semantics": "URDF_PARSER_AND_DISPLAY_PLACEHOLDER_NOT_HARDWARE_LIMIT",
+    "effort_nm": 0.0,
+    "effort_semantics": "URDF_REQUIRED_FIELD_PLACEHOLDER_NOT_DYNAMICS_INPUT"
+  },
+  "collision_coverage_status": "NOT_QUALIFIED",
+  "collision_repair": null,
+  "operational_planning_ready": false,
+  "dynamics_verified": false,
+  "tool_attached": false,
+  "physical_adapter_added": false,
+  "claims": {
+    "real_measured_six_revolute_chain": true,
+    "kinematics_checks": "RUN_SEPARATELY",
+    "official_controller_model": false,
+    "physical_joint_limits_verified": false,
+    "environment_collision_clearance_verified": false,
+    "motion_plan_generated": false
+  },
+  "source_step_path": "assets/robots/huayan/S50_1.STEP",
+  "source_model_usage": "USER_AUTHORIZED_KINEMATIC_SIMULATION",
+  "historical_model_sha256": "38c6f9c501b7539ffc4417a3c397dfc2e363ff85da18bec83afa3cd834b38036",
+  "urdf_path": "assets/robots/huayan/s50_1_kinematic/urdf/s50_cad_preview.urdf",
+  "urdf_sha256": "f776d6e39300881c727e39d605ddad262816776882b5f99b56ac5bf55f029663",
+  "srdf_path": "assets/robots/huayan/s50_1_kinematic/urdf/s50_cad_preview.srdf",
+  "srdf_sha256": "4c9126abd2c63e94284625af2ce9f49507135af2c18a91938c0fcd77800e72d5"
+}

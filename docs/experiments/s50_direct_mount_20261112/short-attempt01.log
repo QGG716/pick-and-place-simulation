@@ -1,0 +1,14 @@
+carton_l07_c02 home PASS samples 1 completed 0
+carton_l07_c02 belt_raise PASS samples 37 completed 0
+carton_l07_c02 front grasp solutions 5
+carton_l07_c02 branch 0 withdraw PASS {'score': 108.99698496225129, 'j1_range_deg': [110.62451574427638, 155.5318810952217], 'j1_span_deg': 44.90736535094533, 'j2_range_deg': [-126.10775101240522, -87.15010817686421], 'j2_start_deg': -87.64574708312723, 'j2_end_deg': -126.10775101240522, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 1 withdraw PASS {'score': 12.885717465611052, 'j1_range_deg': [6.388883555503013, 20.196741100109513], 'j1_span_deg': 13.807857544606499, 'j2_range_deg': [-92.85674767861667, -53.90092190508413], 'j2_start_deg': -92.36101807463346, 'j2_end_deg': -53.90092190508413, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 2 withdraw PASS {'score': 111.88282382580638, 'j1_range_deg': [110.65664790685123, 155.53492824669138], 'j1_span_deg': 44.878280339840146, 'j2_range_deg': [-135.18221205456447, -91.31280388452659], 'j2_start_deg': -91.33773775288292, 'j2_end_deg': -135.18221205456447, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 3 withdraw PASS {'score': 16.352663435394113, 'j1_range_deg': [6.3883572719661705, 20.19126677364601], 'j1_span_deg': 13.802909501679839, 'j2_range_deg': [-88.6868124629825, -44.817039492167005], 'j2_start_deg': -88.66191992324123, 'j2_end_deg': -44.817039492167005, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 4 withdraw PASS {'score': 16.353265332831384, 'j1_range_deg': [6.388763096409398, 20.192081832842923], 'j1_span_deg': 13.803318736433525, 'j2_range_deg': [-88.68731097131659, -44.818189277351216], 'j2_start_deg': -88.66237403688604, 'j2_end_deg': -44.818189277351216, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c02 branch 1 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l07_c02 branch 1 release 0.0 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l07_c02 branch 1 release -0.1 yaw 0.0 route line FINITE_JOINT_SEARCH_FAILED:park:maximum iterations reached
+carton_l07_c02 branch 1 release -0.1 yaw 0.0 route arc FINITE_JOINT_SEARCH_FAILED:park:maximum iterations reached
+carton_l07_c02 branch 1 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l07_c02 branch 1 release 0.1 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer

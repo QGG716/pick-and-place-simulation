@@ -1,0 +1,975 @@
+carton_l07_c03 front grasp solutions 6
+carton_l07_c03 branch 0 withdraw PASS {'score': 185.48153475616684, 'j1_range_deg': [33.68240305020571, 91.29841907222291], 'j1_span_deg': 57.616016022017206, 'j1_empty_reposition_deg': 25.16068838110808, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-89.4784022388275, -54.33747543225614], 'j2_start_deg': -88.99565899175455, 'j2_end_deg': -54.33747543225614, 'upper_arm_forward_tilt_range_deg': [-30.950513631515502, -12.120410517769155], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c03 branch 1 withdraw PASS {'score': 266.3220356044087, 'j1_range_deg': [181.05925637659587, 183.5771893556601], 'j1_span_deg': 2.517932979064227, 'j1_empty_reposition_deg': 172.5375435805298, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-125.6494936287935, -90.51422189726132], 'j2_start_deg': -90.99709617865028, 'j2_end_deg': -125.6494936287935, 'upper_arm_forward_tilt_range_deg': [-34.49517025223629, -0.11845131265818232], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c03 branch 2 withdraw PASS {'score': 269.3232405072985, 'j1_range_deg': [181.0532257113856, 183.55832061166424], 'j1_span_deg': 2.5050949002786354, 'j1_empty_reposition_deg': 172.53151216032452, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-134.63195814096255, -94.66926671988217], 'j2_start_deg': -94.69791509519496, 'j2_end_deg': -134.63195814096255, 'upper_arm_forward_tilt_range_deg': [-43.613958896180385, -4.276144997238013], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c03 branch 3 withdraw PASS {'score': 269.34565112165814, 'j1_range_deg': [181.05929973360972, 183.57732961281187], 'j1_span_deg': 2.518029879202146, 'j1_empty_reposition_deg': 172.53758618250728, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-134.6182872715902, -94.66139500147577], 'j2_start_deg': -94.69010658757387, 'j2_end_deg': -134.6182872715902, 'upper_arm_forward_tilt_range_deg': [-43.59423224137646, -4.265997959300676], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c03 branch 4 POINTWISE_IK_FAILED:extract
+carton_l07_c03 branch 5 withdraw PASS {'score': 188.87254145770922, 'j1_range_deg': [33.68656769598001, 91.28670932934303], 'j1_span_deg': 57.600141633363016, 'j1_empty_reposition_deg': 25.164853026882383, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-85.33860398456804, -45.39410269665102], 'j2_start_deg': -85.30989156857869, 'j2_end_deg': -45.39410269665102, 'upper_arm_forward_tilt_range_deg': [-34.92750162663081, -15.414889860254355], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c03 branch 0 release 0.42 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.42 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.42 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.42 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.42 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.42 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.0 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.1 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.1 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.2 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.2 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.3 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.3 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release -0.5 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 0 release 0.5 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.42 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.42 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release -0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c03 branch 5 release 0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l07_c03 loaded path PASS, checking empty return
+carton_l07_c03 pregrasp PASS samples 2495 completed 2
+carton_l07_c03 approach PASS samples 2517 completed 2
+carton_l07_c03 grasp PASS samples 2518 completed 2
+carton_l07_c03 separate PASS samples 2644 completed 2
+carton_l07_c03 withdraw PASS samples 3168 completed 2
+carton_l07_c03 transfer PASS samples 3698 completed 2
+carton_l07_c03 release PASS samples 3699 completed 2
+carton_l07_c03 drop PASS samples 3706 completed 2
+carton_l07_c03 exit PASS samples 3732 completed 2
+carton_l07_c03 park PASS samples 4042 completed 2
+carton_l07_c03 outfeed PASS samples 4288 completed 2
+carton_l07_c00 front grasp solutions 2
+carton_l07_c00 branch 0 withdraw PASS {'score': 50.752830232145506, 'j1_range_deg': [-61.52555080255383, -37.769446079085974], 'j1_span_deg': 23.756104723467857, 'j1_empty_reposition_deg': 46.29119745443098, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-122.33940174809445, -97.37371855781025], 'j2_start_deg': -121.00675102508792, 'j2_end_deg': -97.37371855781025, 'upper_arm_forward_tilt_range_deg': [21.445067780520795, 37.64238443882518], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c00 branch 1 withdraw PASS {'score': 53.907024130874966, 'j1_range_deg': [-61.52561355817816, -37.76948792403227], 'j1_span_deg': 23.75612563414589, 'j1_empty_reposition_deg': 46.291204882104296, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-113.04943573516252, -93.02117847263636], 'j2_start_deg': -112.91159820608968, 'j2_end_deg': -93.02117847263636, 'upper_arm_forward_tilt_range_deg': [19.493277902592116, 30.32730262611263], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c00 loaded path PASS, checking empty return
+carton_l07_c00 branch 0 release -0.84 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l07_c00 loaded path PASS, checking empty return
+carton_l07_c00 branch 0 release -0.84 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l07_c00 branch 0 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l07_c00 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c00 loaded path PASS, checking empty return
+carton_l07_c00 branch 0 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:exit
+carton_l07_c00 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c00 branch 0 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l07_c00 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l07_c00 loaded path PASS, checking empty return
+carton_l07_c00 pregrasp PASS samples 4370 completed 3
+carton_l07_c00 approach PASS samples 4396 completed 3
+carton_l07_c00 grasp PASS samples 4397 completed 3
+carton_l07_c00 separate PASS samples 4565 completed 3
+carton_l07_c00 withdraw PASS samples 4881 completed 3
+carton_l07_c00 transfer PASS samples 5542 completed 3
+carton_l07_c00 release PASS samples 5543 completed 3
+carton_l07_c00 drop PASS samples 5550 completed 3
+carton_l07_c00 exit PASS samples 5581 completed 3
+carton_l07_c00 park PASS samples 5711 completed 3
+carton_l07_c00 outfeed PASS samples 5904 completed 3
+carton_l07_c04 front grasp solutions 5
+carton_l07_c04 branch 0 withdraw PASS {'score': 98.10176404226266, 'j1_range_deg': [51.933516457589846, 90.49986644791605], 'j1_span_deg': 38.5663499903262, 'j1_empty_reposition_deg': 43.411802201651014, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-103.46227106383789, -78.41068338714244], 'j2_start_deg': -102.86566865444641, 'j2_end_deg': -78.41068338714244, 'upper_arm_forward_tilt_range_deg': [-21.626845236053658, -8.800139017909009], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c04 branch 1 withdraw PASS {'score': 270.9545952692245, 'j1_range_deg': [-154.64635246100963, -130.0379301006275], 'j1_span_deg': 24.60842236038212, 'j1_empty_reposition_deg': 163.16806268764552, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-101.58107017227981, -76.53549278879716], 'j2_start_deg': -77.13218251055449, 'j2_end_deg': -101.58107017227981, 'upper_arm_forward_tilt_range_deg': [8.44773658082382, 20.848932310759004], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c04 branch 2 withdraw PASS {'score': 101.47748276393506, 'j1_range_deg': [51.93353720602469, 90.49920404976022], 'j1_span_deg': 38.565666843735535, 'j1_empty_reposition_deg': 43.411822681886825, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-98.60221386185353, -73.78818669021314], 'j2_start_deg': -98.56335218873903, 'j2_end_deg': -73.78818669021314, 'upper_arm_forward_tilt_range_deg': [-22.57491157929574, -11.539614350272505], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c04 branch 3 withdraw PASS {'score': 101.47687124951848, 'j1_range_deg': [51.933598383607325, 90.49905729409441], 'j1_span_deg': 38.56545891048709, 'j1_empty_reposition_deg': 43.41188386089678, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-98.6023722211245, -73.77357835710704], 'j2_start_deg': -98.56350250730685, 'j2_end_deg': -73.77357835710704, 'upper_arm_forward_tilt_range_deg': [-22.574927681500068, -11.539545988104878], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c04 branch 4 withdraw PASS {'score': 273.98479002136185, 'j1_range_deg': [-154.64643264474904, -130.03788557733384], 'j1_span_deg': 24.608547067415202, 'j1_empty_reposition_deg': 163.16814578262722, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-106.2277282427655, -81.39800782223006], 'j2_start_deg': -81.43686698957553, 'j2_end_deg': -106.2277282427655, 'upper_arm_forward_tilt_range_deg': [5.368396478219348, 16.61925258055003], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l07_c04 loaded path PASS, checking empty return
+carton_l07_c04 pregrasp PASS samples 5985 completed 4
+carton_l07_c04 approach PASS samples 6007 completed 4
+carton_l07_c04 grasp PASS samples 6008 completed 4
+carton_l07_c04 separate PASS samples 6104 completed 4
+carton_l07_c04 withdraw PASS samples 6383 completed 4
+carton_l07_c04 transfer PASS samples 6717 completed 4
+carton_l07_c04 release PASS samples 6718 completed 4
+carton_l07_c04 drop PASS samples 6725 completed 4
+carton_l07_c04 exit PASS samples 6750 completed 4
+carton_l07_c04 park PASS samples 7188 completed 4
+carton_l07_c04 outfeed PASS samples 7436 completed 4
+carton_l06_c02 front grasp solutions 6
+carton_l06_c02 branch 0 withdraw PASS {'score': 417.28161649673115, 'j1_range_deg': [87.62667444570165, 153.2833100037457], 'j1_span_deg': 65.65663555804404, 'j1_empty_reposition_deg': 144.76159533464806, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-142.50498886485155, -96.49589413756561], 'j2_start_deg': -96.55150139865601, 'j2_end_deg': -142.50498886485155, 'upper_arm_forward_tilt_range_deg': [-40.54880877717969, -15.148810567564595], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c02 branch 1 withdraw PASS {'score': 31.58820524516523, 'j1_range_deg': [6.997154923475136, 30.029154388315845], 'j1_span_deg': 23.03199946484071, 'j1_empty_reposition_deg': 1.5245597456224909, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-83.50363125039362, -37.50313482220364], 'j2_start_deg': -83.44811957180532, 'j2_end_deg': -37.50313482220364, 'upper_arm_forward_tilt_range_deg': [-55.13308532284453, -9.024576780861274], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c02 branch 2 POINTWISE_COLLISION:extract
+carton_l06_c02 branch 3 withdraw PASS {'score': 420.50450875410036, 'j1_range_deg': [87.62503610147002, 153.28439962277224], 'j1_span_deg': 65.65936352130223, 'j1_empty_reposition_deg': 144.7626849536746, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-150.5037051574026, -93.65786719328754], 'j2_start_deg': -93.65786719328754, 'j2_end_deg': -150.5037051574026, 'upper_arm_forward_tilt_range_deg': [-43.51769134267797, -12.701287684362363], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c02 branch 4 withdraw PASS {'score': 34.82239275112105, 'j1_range_deg': [6.996196121896118, 30.0224024534007], 'j1_span_deg': 23.026206331504582, 'j1_empty_reposition_deg': 1.525518547201508, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-86.34130718068364, -29.484005751144146], 'j2_start_deg': -86.34130718068364, 'j2_end_deg': -29.484005751144146, 'upper_arm_forward_tilt_range_deg': [-62.378720681415956, -6.224110172837057], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c02 branch 5 withdraw PASS {'score': 34.82312118668613, 'j1_range_deg': [6.996254037525132, 30.022755321584498], 'j1_span_deg': 23.026501284059364, 'j1_empty_reposition_deg': 1.5254606315724946, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-86.3412733262821, -29.483845644695386], 'j2_start_deg': -86.3412733262821, 'j2_end_deg': -29.483845644695386, 'upper_arm_forward_tilt_range_deg': [-62.378849524990436, -6.224164432270339], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c02 branch 1 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l06_c02 branch 1 release 0.0 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l06_c02 loaded path PASS, checking empty return
+carton_l06_c02 branch 1 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:exit
+carton_l06_c02 loaded path PASS, checking empty return
+carton_l06_c02 branch 1 release -0.1 yaw 0.0 route arc POINTWISE_IK_FAILED:exit
+carton_l06_c02 branch 1 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l06_c02 branch 1 release 0.1 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l06_c02 loaded path PASS, checking empty return
+carton_l06_c02 pregrasp PASS samples 7473 completed 5
+carton_l06_c02 approach PASS samples 7495 completed 5
+carton_l06_c02 grasp PASS samples 7496 completed 5
+carton_l06_c02 separate PASS samples 7573 completed 5
+carton_l06_c02 withdraw PASS samples 7830 completed 5
+carton_l06_c02 transfer PASS samples 8202 completed 5
+carton_l06_c02 release PASS samples 8203 completed 5
+carton_l06_c02 drop PASS samples 8210 completed 5
+carton_l06_c02 exit PASS samples 8241 completed 5
+carton_l06_c02 park PASS samples 8416 completed 5
+carton_l06_c02 outfeed PASS samples 8609 completed 5
+carton_l06_c01 front grasp solutions 6
+carton_l06_c01 branch 0 withdraw PASS {'score': 37.871296082796675, 'j1_range_deg': [-42.36914187366878, -19.227512126775153], 'j1_span_deg': 23.141629746893628, 'j1_empty_reposition_deg': 27.749228272891855, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-93.96646597883478, -65.9983939808641], 'j2_start_deg': -93.91569565492324, 'j2_end_deg': -65.9983939808641, 'upper_arm_forward_tilt_range_deg': [-3.9331177892605913, 10.6907848251091], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 branch 1 withdraw PASS {'score': 236.2403912852708, 'j1_range_deg': [89.39541397234127, 132.3390940059779], 'j1_span_deg': 42.943680033636625, 'j1_empty_reposition_deg': 123.8173792539261, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-114.00445173622617, -86.03301966266406], 'j2_start_deg': -86.0837945094877, 'j2_end_deg': -114.00445173622617, 'upper_arm_forward_tilt_range_deg': [-24.89118164456647, -12.957000829756806], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 branch 2 withdraw PASS {'score': 40.983420176966675, 'j1_range_deg': [-42.369013319473595, -19.22756901363102], 'j1_span_deg': 23.141444305842576, 'j1_empty_reposition_deg': 27.749284947620204, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-96.72770550377894, -66.9277252339132], 'j2_start_deg': -96.72770550377894, 'j2_end_deg': -66.9277252339132, 'upper_arm_forward_tilt_range_deg': [-2.8549770674278565, 13.238423545989955], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 branch 3 withdraw PASS {'score': 40.98335679564041, 'j1_range_deg': [-42.36897910345284, -19.2275617206946], 'j1_span_deg': 23.141417382758238, 'j1_empty_reposition_deg': 27.749277654680007, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-96.72768580440525, -66.9276704557758], 'j2_start_deg': -96.72768580440525, 'j2_end_deg': -66.9276704557758, 'upper_arm_forward_tilt_range_deg': [-2.8550289697427815, 13.238403217035762], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 branch 4 withdraw PASS {'score': 239.53222533212886, 'j1_range_deg': [89.38897223079915, 132.33730014523385], 'j1_span_deg': 42.9483279144347, 'j1_empty_reposition_deg': 123.81558541225417, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-113.07536775525698, -83.27512574149802], 'j2_start_deg': -83.27512574149802, 'j2_end_deg': -113.07536775525698, 'upper_arm_forward_tilt_range_deg': [-24.32784418375413, -11.23436015407632], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 branch 5 withdraw PASS {'score': 239.51525690887493, 'j1_range_deg': [89.3954435133939, 132.33909225176615], 'j1_span_deg': 42.94364873837225, 'j1_empty_reposition_deg': 123.81737751875488, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-113.04982219276667, -83.27217078071618], 'j2_start_deg': -83.27217078071618, 'j2_end_deg': -113.04982219276667, 'upper_arm_forward_tilt_range_deg': [-24.327030518186646, -11.231925003272233], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c01 loaded path PASS, checking empty return
+carton_l06_c01 pregrasp PASS samples 8660 completed 6
+carton_l06_c01 approach PASS samples 8680 completed 6
+carton_l06_c01 grasp PASS samples 8681 completed 6
+carton_l06_c01 separate PASS samples 8740 completed 6
+carton_l06_c01 withdraw PASS samples 8931 completed 6
+carton_l06_c01 transfer PASS samples 9111 completed 6
+carton_l06_c01 release PASS samples 9112 completed 6
+carton_l06_c01 drop PASS samples 9119 completed 6
+carton_l06_c01 exit PASS samples 9145 completed 6
+carton_l06_c01 park PASS samples 9306 completed 6
+carton_l06_c01 outfeed PASS samples 9488 completed 6
+carton_l06_c03 front grasp solutions 6
+carton_l06_c03 branch 0 withdraw PASS {'score': 185.6645912123847, 'j1_range_deg': [33.68659090535102, 91.28679367605605], 'j1_span_deg': 57.60020277070503, 'j1_empty_reposition_deg': 25.16487623625339, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-85.38415274342216, -45.75344742798919], 'j2_start_deg': -85.33251878255022, 'j2_end_deg': -45.75344742798919, 'upper_arm_forward_tilt_range_deg': [-34.78021216995651, -15.378720881771171], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c03 branch 1 withdraw PASS {'score': 266.14986396355096, 'j1_range_deg': [181.05924351871414, 183.5771582413427], 'j1_span_deg': 2.5179147226285465, 'j1_empty_reposition_deg': 172.53752999555803, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-134.24182500822343, -94.61596617013352], 'j2_start_deg': -94.66759589676253, 'j2_end_deg': -134.24182500822343, 'upper_arm_forward_tilt_range_deg': [-43.21171684140305, -4.2205746104786535], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c03 branch 2 withdraw PASS {'score': 269.36980954693104, 'j1_range_deg': [181.05924323154625, 183.57723064858655], 'j1_span_deg': 2.5179874170403025, 'j1_empty_reposition_deg': 172.53752974838713, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-138.73571769803632, -91.74709879432697], 'j2_start_deg': -91.74709879432697, 'j2_end_deg': -138.73571769803632, 'upper_arm_forward_tilt_range_deg': [-47.78193060266724, -1.351231302645446], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c03 branch 3 withdraw PASS {'score': 269.352578281702, 'j1_range_deg': [181.05455521345306, 183.56190808401382], 'j1_span_deg': 2.5073528705607657, 'j1_empty_reposition_deg': 172.5328417303414, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-138.74395014852004, -91.74388275472343], 'j2_start_deg': -91.74388275472343, 'j2_end_deg': -138.74395014852004, 'upper_arm_forward_tilt_range_deg': [-47.79471059999967, -1.3497686978064631], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c03 branch 4 POINTWISE_IK_FAILED:extract
+carton_l06_c03 branch 5 withdraw PASS {'score': 188.8595039608769, 'j1_range_deg': [33.686566580799074, 91.28650990059604], 'j1_span_deg': 57.59994331979697, 'j1_empty_reposition_deg': 25.164851911701447, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-88.25336793861209, -41.29217319713887], 'j2_start_deg': -88.25336793861209, 'j2_end_deg': -41.29217319713887, 'upper_arm_forward_tilt_range_deg': [-35.698623554915635, -13.097557140180164], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c03 branch 0 release 0.42 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.42 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.42 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.42 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw 1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw 1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.42 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.42 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.0 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.1 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.1 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.2 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.2 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.3 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.3 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release -0.5 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw -1.5707963267948966 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 0 release 0.5 yaw -1.5707963267948966 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.42 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.42 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release -0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c03 branch 5 release 0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l06_c03 loaded path PASS, checking empty return
+carton_l06_c03 pregrasp PASS samples 9779 completed 7
+carton_l06_c03 approach PASS samples 9801 completed 7
+carton_l06_c03 grasp PASS samples 9802 completed 7
+carton_l06_c03 separate PASS samples 9901 completed 7
+carton_l06_c03 withdraw PASS samples 10349 completed 7
+carton_l06_c03 transfer PASS samples 10739 completed 7
+carton_l06_c03 release PASS samples 10740 completed 7
+carton_l06_c03 drop PASS samples 10747 completed 7
+carton_l06_c03 exit PASS samples 10773 completed 7
+carton_l06_c03 park PASS samples 11070 completed 7
+carton_l06_c03 outfeed PASS samples 11316 completed 7
+carton_l06_c00 front grasp solutions 3
+carton_l06_c00 branch 0 withdraw PASS {'score': 50.71090594844269, 'j1_range_deg': [-61.52699328373817, -37.768078866880934], 'j1_span_deg': 23.758914416857237, 'j1_empty_reposition_deg': 46.289796040569215, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-113.18253133630328, -93.05568132494426], 'j2_start_deg': -113.01557197200991, 'j2_end_deg': -93.05568132494426, 'upper_arm_forward_tilt_range_deg': [19.50863197842943, 30.430330174170766], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c00 branch 1 withdraw PASS {'score': 53.853718538125136, 'j1_range_deg': [-61.5293263451592, -37.76791307364768], 'j1_span_deg': 23.761413271511522, 'j1_empty_reposition_deg': 46.28962901778758, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-114.34088774520862, -95.46051878282115], 'j2_start_deg': -114.34088774520862, 'j2_end_deg': -95.46051878282115, 'upper_arm_forward_tilt_range_deg': [20.578415335499923, 31.329444058315605], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c00 branch 2 withdraw PASS {'score': 53.84158636446234, 'j1_range_deg': [-61.52568747263828, -37.7694712340955], 'j1_span_deg': 23.756216238542784, 'j1_empty_reposition_deg': 46.291187178644954, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-114.35501963910501, -95.47251242794627], 'j2_start_deg': -114.35501963910501, 'j2_end_deg': -95.47251242794627, 'upper_arm_forward_tilt_range_deg': [20.58350203992163, 31.340488016789205], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c00 loaded path PASS, checking empty return
+carton_l06_c00 branch 0 release -0.84 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l06_c00 loaded path PASS, checking empty return
+carton_l06_c00 branch 0 release -0.84 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l06_c00 branch 0 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l06_c00 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c00 loaded path PASS, checking empty return
+carton_l06_c00 branch 0 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:exit
+carton_l06_c00 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c00 branch 0 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l06_c00 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l06_c00 loaded path PASS, checking empty return
+carton_l06_c00 pregrasp PASS samples 11398 completed 8
+carton_l06_c00 approach PASS samples 11419 completed 8
+carton_l06_c00 grasp PASS samples 11420 completed 8
+carton_l06_c00 separate PASS samples 11530 completed 8
+carton_l06_c00 withdraw PASS samples 11814 completed 8
+carton_l06_c00 transfer PASS samples 12354 completed 8
+carton_l06_c00 release PASS samples 12355 completed 8
+carton_l06_c00 drop PASS samples 12362 completed 8
+carton_l06_c00 exit PASS samples 12393 completed 8
+carton_l06_c00 park PASS samples 12607 completed 8
+carton_l06_c00 outfeed PASS samples 12800 completed 8
+carton_l06_c04 front grasp solutions 6
+carton_l06_c04 branch 0 withdraw PASS {'score': 98.27555751548938, 'j1_range_deg': [51.93354519887459, 90.49924816760684], 'j1_span_deg': 38.565702968732246, 'j1_empty_reposition_deg': 43.41183068300591, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-98.65691533004929, -73.8543564749043], 'j2_start_deg': -98.59432493414003, 'j2_end_deg': -73.8543564749043, 'upper_arm_forward_tilt_range_deg': [-22.559410037636468, -11.508860754468609], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 branch 1 withdraw PASS {'score': 270.78622142120247, 'j1_range_deg': [-154.6463310952519, -130.03791907212408], 'j1_span_deg': 24.608412023127812, 'j1_empty_reposition_deg': 163.16804415588166, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-106.14248024616013, -81.34270337979467], 'j2_start_deg': -81.40530194658109, 'j2_end_deg': -106.14248024616013, 'upper_arm_forward_tilt_range_deg': [5.416995612081699, 16.667459435660096], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 branch 2 withdraw PASS {'score': 101.3794366898355, 'j1_range_deg': [51.933566696162906, 90.49902463603904], 'j1_span_deg': 38.56545793987613, 'j1_empty_reposition_deg': 43.4118521400295, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-101.19881553896586, -75.75444168798967], 'j2_start_deg': -101.19881553896586, 'j2_end_deg': -75.75444168798967, 'upper_arm_forward_tilt_range_deg': [-22.056720916359563, -10.07826647537481], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 branch 3 withdraw PASS {'score': 101.41879272090318, 'j1_range_deg': [51.93371467745759, 90.50864910516356], 'j1_span_deg': 38.57493442770597, 'j1_empty_reposition_deg': 43.41200011985173, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-101.1901328158175, -75.75564119524353], 'j2_start_deg': -101.1901328158175, 'j2_end_deg': -75.75564119524353, 'upper_arm_forward_tilt_range_deg': [-22.05818787055218, -10.083215895375528], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 branch 4 withdraw PASS {'score': 274.0855948543939, 'j1_range_deg': [-154.6494000532663, -130.04050417653454], 'j1_span_deg': 24.608895876731765, 'j1_empty_reposition_deg': 163.17111348247045, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-104.25027737809364, -78.80334602245435], 'j2_start_deg': -78.80334602245435, 'j2_end_deg': -104.25027737809364, 'upper_arm_forward_tilt_range_deg': [6.894798680215845, 18.876949096249998], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 branch 5 withdraw PASS {'score': 274.0756193733657, 'j1_range_deg': [-154.64633041935033, -130.03793340225107], 'j1_span_deg': 24.608397017099264, 'j1_empty_reposition_deg': 163.16804384814395, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-104.24666437789534, -78.80119264267111], 'j2_start_deg': -78.80119264267111, 'j2_end_deg': -104.24666437789534, 'upper_arm_forward_tilt_range_deg': [6.898365360889034, 18.879534686453542], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l06_c04 loaded path PASS, checking empty return
+carton_l06_c04 pregrasp PASS samples 12881 completed 9
+carton_l06_c04 approach PASS samples 12902 completed 9
+carton_l06_c04 grasp PASS samples 12903 completed 9
+carton_l06_c04 separate PASS samples 12962 completed 9
+carton_l06_c04 withdraw PASS samples 13179 completed 9
+carton_l06_c04 transfer PASS samples 13357 completed 9
+carton_l06_c04 release PASS samples 13358 completed 9
+carton_l06_c04 drop PASS samples 13365 completed 9
+carton_l06_c04 exit PASS samples 13390 completed 9
+carton_l06_c04 park PASS samples 13688 completed 9
+carton_l06_c04 outfeed PASS samples 13936 completed 9
+carton_l05_c02 belt_lower PASS samples 13943 completed 10
+carton_l05_c02 front grasp solutions 6
+carton_l05_c02 branch 0 withdraw PASS {'score': 31.632861342759707, 'j1_range_deg': [6.996394605845269, 30.02396352094962], 'j1_span_deg': 23.027568915104354, 'j1_empty_reposition_deg': 1.5253200632523578, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-85.99464923522986, -29.81555290859444], 'j2_start_deg': -85.99464923522986, 'j2_end_deg': -29.81555290859444, 'upper_arm_forward_tilt_range_deg': [-62.076181110056815, -6.566559404818855], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 1 withdraw PASS {'score': 417.2735742280044, 'j1_range_deg': [87.6271068262892, 153.2832839454171], 'j1_span_deg': 65.65617711912792, 'j1_empty_reposition_deg': 144.76156927631948, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-150.201484052265, -94.00567609507326], 'j2_start_deg': -94.00567609507326, 'j2_end_deg': -150.201484052265, 'upper_arm_forward_tilt_range_deg': [-43.48252282376053, -13.001970214793028], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 2 withdraw PASS {'score': 34.47403890360245, 'j1_range_deg': [6.996148192648507, 30.038604447801124], 'j1_span_deg': 23.042456255152615, 'j1_empty_reposition_deg': 1.5255664764491197, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-96.47233254804775, -27.57970306142984], 'j2_start_deg': -96.47233254804775, 'j2_end_deg': -27.57970306142984, 'upper_arm_forward_tilt_range_deg': [-64.11982783509985, 3.822232818896402], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 3 withdraw PASS {'score': 34.54828659920667, 'j1_range_deg': [6.9975678838545, 30.06996508806129], 'j1_span_deg': 23.07239720420679, 'j1_empty_reposition_deg': 1.5241467852431265, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-96.4670179191868, -27.536794646397315], 'j2_start_deg': -96.4670179191868, 'j2_end_deg': -27.536794646397315, 'upper_arm_forward_tilt_range_deg': [-64.157610957706, 3.816394187330057], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 4 withdraw PASS {'score': 420.7656767826208, 'j1_range_deg': [87.62671886641434, 153.28338853173418], 'j1_span_deg': 65.65666966531984, 'j1_empty_reposition_deg': 144.76167386263654, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-152.39517217698864, -83.52765006033898], 'j2_start_deg': -83.52765006033898, 'j2_end_deg': -152.39517217698864, 'upper_arm_forward_tilt_range_deg': [-40.45681921569887, -3.872108245757227], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 5 withdraw PASS {'score': 420.8357533043185, 'j1_range_deg': [87.61876609861748, 153.2848903948537], 'j1_span_deg': 65.66612429623622, 'j1_empty_reposition_deg': 144.76317572575607, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-152.4005129979406, -83.52643842021351], 'j2_start_deg': -83.52643842021351, 'j2_end_deg': -152.4005129979406, 'upper_arm_forward_tilt_range_deg': [-40.45951407654638, -3.870461835566321], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c02 branch 0 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l05_c02 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l05_c02 loaded path PASS, checking empty return
+carton_l05_c02 branch 0 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:exit
+carton_l05_c02 loaded path PASS, checking empty return
+carton_l05_c02 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_IK_FAILED:exit
+carton_l05_c02 branch 0 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l05_c02 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l05_c02 loaded path PASS, checking empty return
+carton_l05_c02 pregrasp PASS samples 14003 completed 10
+carton_l05_c02 approach PASS samples 14026 completed 10
+carton_l05_c02 grasp PASS samples 14027 completed 10
+carton_l05_c02 separate PASS samples 14097 completed 10
+carton_l05_c02 withdraw PASS samples 14361 completed 10
+carton_l05_c02 transfer PASS samples 14703 completed 10
+carton_l05_c02 release PASS samples 14704 completed 10
+carton_l05_c02 drop PASS samples 14711 completed 10
+carton_l05_c02 exit PASS samples 14742 completed 10
+carton_l05_c02 park PASS samples 14852 completed 10
+carton_l05_c02 outfeed PASS samples 15043 completed 10
+carton_l05_c01 front grasp solutions 6
+carton_l05_c01 branch 0 withdraw PASS {'score': 37.79696906485353, 'j1_range_deg': [-42.368868404195155, -19.22726629189055], 'j1_span_deg': 23.141602112304604, 'j1_empty_reposition_deg': 27.748982251886755, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-96.40262931904408, -66.65983207420933], 'j2_start_deg': -96.40262931904408, 'j2_end_deg': -66.65983207420933, 'upper_arm_forward_tilt_range_deg': [-3.0847837406998266, 12.938878193405705], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 branch 1 withdraw PASS {'score': 236.32453823749367, 'j1_range_deg': [89.39221566714316, 132.33995062036823], 'j1_span_deg': 42.947734953225066, 'j1_empty_reposition_deg': 123.81823588555554, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-113.19428875650952, -83.60225774138091], 'j2_start_deg': -83.60225774138091, 'j2_end_deg': -113.19428875650952, 'upper_arm_forward_tilt_range_deg': [-24.42331847872577, -11.438060644871436], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 branch 2 withdraw PASS {'score': 40.58572272780019, 'j1_range_deg': [-42.3690082199322, -19.227566666667826], 'j1_span_deg': 23.14144155326437, 'j1_empty_reposition_deg': 27.74928259564156, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-105.74762934532787, -77.37055440530433], 'j2_start_deg': -105.74762934532787, 'j2_end_deg': -77.37055440530433, 'upper_arm_forward_tilt_range_deg': [5.209604709005261, 21.507998586139937], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 branch 3 withdraw PASS {'score': 40.58558380249622, 'j1_range_deg': [-42.368953279848355, -19.227569077268733], 'j1_span_deg': 23.141384202579623, 'j1_empty_reposition_deg': 27.749285006239315, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-105.74767948509859, -77.37059287410786], 'j2_start_deg': -105.74767948509859, 'j2_end_deg': -77.37059287410786, 'upper_arm_forward_tilt_range_deg': [5.209613792994533, 21.50804495887036], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 branch 4 withdraw PASS {'score': 239.90362530503245, 'j1_range_deg': [89.39545915995984, 132.3391007027149], 'j1_span_deg': 42.943641542755046, 'j1_empty_reposition_deg': 123.8173859761279, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-102.60907137013663, -74.25222794628934], 'j2_start_deg': -74.25222794628934, 'j2_end_deg': -102.60907137013663, 'upper_arm_forward_tilt_range_deg': [-21.694128180615348, -5.5384574421432395], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 branch 5 withdraw PASS {'score': 239.90390715439466, 'j1_range_deg': [89.39544210840818, 132.33912873200723], 'j1_span_deg': 42.94368662359905, 'j1_empty_reposition_deg': 123.81741400542157, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-102.61069061063635, -74.2523922819981], 'j2_start_deg': -74.2523922819981, 'j2_end_deg': -102.61069061063635, 'upper_arm_forward_tilt_range_deg': [-21.694217236479098, -5.538549595708556], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c01 loaded path PASS, checking empty return
+carton_l05_c01 pregrasp PASS samples 15107 completed 11
+carton_l05_c01 approach PASS samples 15128 completed 11
+carton_l05_c01 grasp PASS samples 15129 completed 11
+carton_l05_c01 separate PASS samples 15157 completed 11
+carton_l05_c01 withdraw PASS samples 15263 completed 11
+carton_l05_c01 transfer PASS samples 15336 completed 11
+carton_l05_c01 release PASS samples 15337 completed 11
+carton_l05_c01 drop PASS samples 15344 completed 11
+carton_l05_c01 exit PASS samples 15370 completed 11
+carton_l05_c01 park PASS samples 15558 completed 11
+carton_l05_c01 outfeed PASS samples 15738 completed 11
+carton_l05_c03 front grasp solutions 6
+carton_l05_c03 branch 0 withdraw PASS {'score': 185.67567623516993, 'j1_range_deg': [33.686254683444645, 91.28715568486139], 'j1_span_deg': 57.600901001416744, 'j1_empty_reposition_deg': 25.16454001434702, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-87.9084713071164, -41.32694574019919], 'j2_start_deg': -87.9084713071164, 'j2_end_deg': -41.32694574019919, 'upper_arm_forward_tilt_range_deg': [-35.76543413916879, -13.371987943947213], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 1 withdraw PASS {'score': 266.16240428140435, 'j1_range_deg': [181.05922101772126, 183.57710047786586], 'j1_span_deg': 2.5178794601445986, 'j1_empty_reposition_deg': 172.53750754643835, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-138.66462472711916, -92.09149974316931], 'j2_start_deg': -92.09149974316931, 'j2_end_deg': -138.66462472711916, 'upper_arm_forward_tilt_range_deg': [-47.70960969273177, -1.6956450405795593], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 2 withdraw PASS {'score': 188.53248049694395, 'j1_range_deg': [33.68693982117509, 91.30418476194374], 'j1_span_deg': 57.61724494076866, 'j1_empty_reposition_deg': 25.16522515207746, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-98.19226112643474, -46.38969477735881], 'j2_start_deg': -98.19226112643474, 'j2_end_deg': -46.38969477735881, 'upper_arm_forward_tilt_range_deg': [-31.018202773979045, -5.11666097826298], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 3 withdraw PASS {'score': 188.42816613135355, 'j1_range_deg': [33.68653414834176, 91.28664936178043], 'j1_span_deg': 57.60011521343868, 'j1_empty_reposition_deg': 25.16481947924413, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-98.19321728055219, -46.51710735062523], 'j2_start_deg': -98.19321728055219, 'j2_end_deg': -46.51710735062523, 'upper_arm_forward_tilt_range_deg': [-31.0226984401238, -5.115725413784085], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 4 withdraw PASS {'score': 269.68946594377866, 'j1_range_deg': [181.05921970607994, 183.57717747123826], 'j1_span_deg': 2.5179577651583145, 'j1_empty_reposition_deg': 172.53750630832488, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-133.48373775581004, -81.80682111828428], 'j2_start_deg': -81.80682111828428, 'j2_end_deg': -133.48373775581004, 'upper_arm_forward_tilt_range_deg': [-42.44149270662706, 8.583038338593362], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 5 withdraw PASS {'score': 269.6856132939045, 'j1_range_deg': [181.0580818301097, 183.57381704589932], 'j1_span_deg': 2.5157352157896185, 'j1_empty_reposition_deg': 172.53636843243285, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-133.48143615346405, -81.80027033005709], 'j2_start_deg': -81.80027033005709, 'j2_end_deg': -133.48143615346405, 'upper_arm_forward_tilt_range_deg': [-42.44020323755033, 8.589164471849061], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c03 branch 0 release 0.42 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.42 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.2 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.3 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.5 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release 0.5 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.8 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l05_c03 branch 0 release -0.8 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c03 loaded path PASS, checking empty return
+carton_l05_c03 pregrasp PASS samples 15801 completed 12
+carton_l05_c03 approach PASS samples 15823 completed 12
+carton_l05_c03 grasp PASS samples 15824 completed 12
+carton_l05_c03 separate PASS samples 15894 completed 12
+carton_l05_c03 withdraw PASS samples 16222 completed 12
+carton_l05_c03 transfer PASS samples 16468 completed 12
+carton_l05_c03 release PASS samples 16469 completed 12
+carton_l05_c03 drop PASS samples 16476 completed 12
+carton_l05_c03 exit PASS samples 16502 completed 12
+carton_l05_c03 park PASS samples 16818 completed 12
+carton_l05_c03 outfeed PASS samples 17061 completed 12
+carton_l05_c00 front grasp solutions 4
+carton_l05_c00 branch 0 withdraw PASS {'score': 50.64952486542057, 'j1_range_deg': [-61.52559512199517, -37.76949862315687], 'j1_span_deg': 23.756096498838296, 'j1_empty_reposition_deg': 46.291214630415595, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-114.1157310892423, -95.1690877890147], 'j2_start_deg': -114.1157310892423, 'j2_end_deg': -95.1690877890147, 'upper_arm_forward_tilt_range_deg': [20.44732376333805, 31.154462957216243], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c00 branch 1 withdraw PASS {'score': 161.80034063315895, 'j1_range_deg': [89.64928553025007, 119.92673260977195], 'j1_span_deg': 30.277447079521878, 'j1_empty_reposition_deg': 111.40501774860934, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-84.71715980427226, -65.892588626832], 'j2_start_deg': -65.892588626832, 'j2_end_deg': -84.71715980427226, 'upper_arm_forward_tilt_range_deg': [-20.591602979116228, -7.4879916486209925], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c00 branch 2 withdraw PASS {'score': 53.8358484236789, 'j1_range_deg': [-61.52709907230875, -37.76830441821855], 'j1_span_deg': 23.758794654090202, 'j1_empty_reposition_deg': 46.29002014751025, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-121.29084436255324, -104.16512471239923], 'j2_start_deg': -121.29084436255324, 'j2_end_deg': -104.16512471239923, 'upper_arm_forward_tilt_range_deg': [24.65485660899518, 36.80348631008117], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c00 branch 3 withdraw PASS {'score': 53.83060699823364, 'j1_range_deg': [-61.525655606242154, -37.76943065289189], 'j1_span_deg': 23.756224953350262, 'j1_empty_reposition_deg': 46.29114638216132, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-121.29732484947434, -104.17085540310042], 'j2_start_deg': -121.29732484947434, 'j2_end_deg': -104.17085540310042, 'upper_arm_forward_tilt_range_deg': [24.657707324160796, 36.80864066064435], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c00 loaded path PASS, checking empty return
+carton_l05_c00 branch 0 release -0.84 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l05_c00 loaded path PASS, checking empty return
+carton_l05_c00 branch 0 release -0.84 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l05_c00 branch 0 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l05_c00 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c00 loaded path PASS, checking empty return
+carton_l05_c00 branch 0 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:exit
+carton_l05_c00 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c00 branch 0 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l05_c00 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l05_c00 loaded path PASS, checking empty return
+carton_l05_c00 pregrasp PASS samples 17143 completed 13
+carton_l05_c00 approach PASS samples 17163 completed 13
+carton_l05_c00 grasp PASS samples 17164 completed 13
+carton_l05_c00 separate PASS samples 17262 completed 13
+carton_l05_c00 withdraw PASS samples 17547 completed 13
+carton_l05_c00 transfer PASS samples 18073 completed 13
+carton_l05_c00 release PASS samples 18074 completed 13
+carton_l05_c00 drop PASS samples 18081 completed 13
+carton_l05_c00 exit PASS samples 18112 completed 13
+carton_l05_c00 park PASS samples 18230 completed 13
+carton_l05_c00 outfeed PASS samples 18421 completed 13
+carton_l05_c04 front grasp solutions 6
+carton_l05_c04 branch 0 withdraw PASS {'score': 98.19228799804628, 'j1_range_deg': [51.933540249303014, 90.49901967925976], 'j1_span_deg': 38.565479429956746, 'j1_empty_reposition_deg': 43.41182569641049, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-100.89093746803455, -75.4459079900588], 'j2_start_deg': -100.89093746803455, 'j2_end_deg': -75.4459079900588, 'upper_arm_forward_tilt_range_deg': [-22.12175465587236, -10.251734729601345], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c04 branch 1 withdraw PASS {'score': 270.87065617651393, 'j1_range_deg': [-154.64827133331488, -130.0392549943521], 'j1_span_deg': 24.60901633896279, 'j1_empty_reposition_deg': 163.1699847294507, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-104.55846953266634, -79.11129821742796], 'j2_start_deg': -79.11129821742796, 'j2_end_deg': -104.55846953266634, 'upper_arm_forward_tilt_range_deg': [6.679983233129501, 18.6093633182425], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c04 branch 2 POINTWISE_IK_FAILED:extract
+carton_l05_c04 branch 3 withdraw PASS {'score': 101.02235524395397, 'j1_range_deg': [51.933589228667365, 90.4992509495109], 'j1_span_deg': 38.56566172084353, 'j1_empty_reposition_deg': 43.41187466111438, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-109.70520434572865, -86.07812540443064], 'j2_start_deg': -109.70520434572865, 'j2_end_deg': -86.07812540443064, 'upper_arm_forward_tilt_range_deg': [-20.61145461226144, -5.231648146989332], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c04 branch 4 withdraw PASS {'score': 274.49740766181867, 'j1_range_deg': [-154.64888809941579, -130.032495067211], 'j1_span_deg': 24.616393032204797, 'j1_empty_reposition_deg': 163.17060157925062, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-93.9531173810957, -70.31043822674158], 'j2_start_deg': -70.31043822674158, 'j2_end_deg': -93.9531173810957, 'upper_arm_forward_tilt_range_deg': [13.565074447348682, 26.25535777989679], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c04 branch 5 withdraw PASS {'score': 274.47427770679616, 'j1_range_deg': [-154.64737293585267, -130.03843415448878], 'j1_span_deg': 24.60893878136389, 'j1_empty_reposition_deg': 163.1690864160884, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-93.93698288836467, -70.2956916145523], 'j2_start_deg': -70.2956916145523, 'j2_end_deg': -93.93698288836467, 'upper_arm_forward_tilt_range_deg': [13.573552760651678, 26.26842004207753], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l05_c04 loaded path PASS, checking empty return
+carton_l05_c04 pregrasp PASS samples 18502 completed 14
+carton_l05_c04 approach PASS samples 18523 completed 14
+carton_l05_c04 grasp PASS samples 18524 completed 14
+carton_l05_c04 separate PASS samples 18550 completed 14
+carton_l05_c04 withdraw PASS samples 18663 completed 14
+carton_l05_c04 transfer PASS samples 18732 completed 14
+carton_l05_c04 release PASS samples 18733 completed 14
+carton_l05_c04 drop PASS samples 18740 completed 14
+carton_l05_c04 exit PASS samples 18765 completed 14
+carton_l05_c04 park PASS samples 19083 completed 14
+carton_l05_c04 outfeed PASS samples 19328 completed 14
+carton_l04_c02 belt_lower PASS samples 19343 completed 15
+carton_l04_c02 front grasp solutions 6
+carton_l04_c02 branch 0 withdraw PASS {'score': 31.31439815845897, 'j1_range_deg': [6.996299280472064, 30.04040395309797], 'j1_span_deg': 23.044104672625906, 'j1_empty_reposition_deg': 1.5254153886255626, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-95.68992197965699, -27.344098176522845], 'j2_start_deg': -95.68992197965699, 'j2_end_deg': -27.344098176522845, 'upper_arm_forward_tilt_range_deg': [-64.33579494599607, 3.0433918253708927], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c02 branch 1 POINTWISE_COLLISION:extract
+carton_l04_c02 branch 2 POINTWISE_IK_FAILED:extract
+carton_l04_c02 branch 3 POINTWISE_IK_FAILED:extract
+carton_l04_c02 branch 4 POINTWISE_IK_FAILED:extract
+carton_l04_c02 branch 5 POINTWISE_IK_FAILED:extract
+carton_l04_c02 branch 0 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l04_c02 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c02 branch 0 release -0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l04_c02 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c02 branch 0 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l04_c02 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c02 loaded path PASS, checking empty return
+carton_l04_c02 pregrasp PASS samples 19438 completed 15
+carton_l04_c02 approach PASS samples 19460 completed 15
+carton_l04_c02 grasp PASS samples 19461 completed 15
+carton_l04_c02 separate PASS samples 19538 completed 15
+carton_l04_c02 withdraw PASS samples 19842 completed 15
+carton_l04_c02 transfer PASS samples 20211 completed 15
+carton_l04_c02 release PASS samples 20212 completed 15
+carton_l04_c02 drop PASS samples 20219 completed 15
+carton_l04_c02 exit PASS samples 20251 completed 15
+carton_l04_c02 park PASS samples 20373 completed 15
+carton_l04_c02 outfeed PASS samples 20559 completed 15
+carton_l04_c01 front grasp solutions 6
+carton_l04_c01 branch 0 withdraw PASS {'score': 37.41257602435329, 'j1_range_deg': [-42.36895986586781, -19.227589096149522], 'j1_span_deg': 23.141370769718286, 'j1_empty_reposition_deg': 27.749305051914185, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-105.07198180370426, -76.44155348083491], 'j2_start_deg': -105.07198180370426, 'j2_end_deg': -76.44155348083491, 'upper_arm_forward_tilt_range_deg': [4.532450743860504, 20.890681588986304], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c01 branch 1 POINTWISE_COLLISION:extract
+carton_l04_c01 branch 2 withdraw PASS {'score': 40.300011735660156, 'j1_range_deg': [-42.37020542905804, -19.22791444175907], 'j1_span_deg': 23.14229098729897, 'j1_empty_reposition_deg': 27.749630309745715, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-120.50497866006194, -101.08985040000776], 'j2_start_deg': -120.50497866006194, 'j2_end_deg': -101.08985040000776, 'upper_arm_forward_tilt_range_deg': [21.867968168472967, 34.95668372582624], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c01 branch 3 withdraw PASS {'score': 40.29767494501772, 'j1_range_deg': [-42.368263700756785, -19.226691318259178], 'j1_span_deg': 23.141572382497607, 'j1_empty_reposition_deg': 27.748407186256745, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-120.50543001522456, -101.09029799402998], 'j2_start_deg': -120.50543001522456, 'j2_end_deg': -101.09029799402998, 'upper_arm_forward_tilt_range_deg': [21.868033881484298, 34.95691793228288], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c01 branch 4 POINTWISE_COLLISION:extract
+carton_l04_c01 branch 5 POINTWISE_COLLISION:extract
+carton_l04_c01 loaded path PASS, checking empty return
+carton_l04_c01 pregrasp PASS samples 20655 completed 16
+carton_l04_c01 approach PASS samples 20676 completed 16
+carton_l04_c01 grasp PASS samples 20677 completed 16
+carton_l04_c01 separate PASS samples 20714 completed 16
+carton_l04_c01 withdraw PASS samples 20852 completed 16
+carton_l04_c01 transfer PASS samples 20946 completed 16
+carton_l04_c01 release PASS samples 20947 completed 16
+carton_l04_c01 drop PASS samples 20954 completed 16
+carton_l04_c01 exit PASS samples 20980 completed 16
+carton_l04_c01 park PASS samples 21189 completed 16
+carton_l04_c01 outfeed PASS samples 21364 completed 16
+carton_l04_c03 front grasp solutions 6
+carton_l04_c03 branch 0 POINTWISE_COLLISION:extract
+carton_l04_c03 branch 1 withdraw PASS {'score': 266.45669290366953, 'j1_range_deg': [181.05929065896044, 183.5773984495319], 'j1_span_deg': 2.518107790571463, 'j1_empty_reposition_deg': 172.5375772853924, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-134.28015487273905, -82.56864683017376], 'j2_start_deg': -82.56864683017376, 'j2_end_deg': -134.28015487273905, 'upper_arm_forward_tilt_range_deg': [-43.25059178455971, 7.822113548535541], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c03 branch 2 POINTWISE_COLLISION:extract
+carton_l04_c03 branch 3 POINTWISE_COLLISION:extract
+carton_l04_c03 branch 4 POINTWISE_IK_FAILED:extract
+carton_l04_c03 branch 5 POINTWISE_IK_FAILED:extract
+carton_l04_c03 branch 1 FINITE_JOINT_SEARCH_FAILED:pregrasp:maximum iterations reached
+carton_l04_c03 top grasp solutions 2
+carton_l04_c03 branch 0 withdraw PASS {'score': 11.18285271820125, 'j1_range_deg': [19.171896764706403, 31.236340335908267], 'j1_span_deg': 12.064443571201863, 'j1_empty_reposition_deg': 10.650182095608777, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-120.404203221935, -80.65884118364689], 'j2_start_deg': -120.404203221935, 'j2_end_deg': -80.65884118364689, 'upper_arm_forward_tilt_range_deg': [-18.622076249939195, 22.392240401963626], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c03 branch 1 withdraw PASS {'score': 266.4847621927757, 'j1_range_deg': [180.5907329133513, 180.9778044645713], 'j1_span_deg': 0.3870715512200036, 'j1_empty_reposition_deg': 172.06901896970336, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-99.3422579454694, -59.597111024701505], 'j2_start_deg': -59.597111024701505, 'j2_end_deg': -99.3422579454694, 'upper_arm_forward_tilt_range_deg': [-8.980136344052092, 30.591529278237566], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c03 loaded path PASS, checking empty return
+carton_l04_c03 pregrasp PASS samples 21642 completed 17
+carton_l04_c03 approach PASS samples 21663 completed 17
+carton_l04_c03 grasp PASS samples 21664 completed 17
+carton_l04_c03 separate PASS samples 21693 completed 17
+carton_l04_c03 withdraw PASS samples 21811 completed 17
+carton_l04_c03 transfer PASS samples 21881 completed 17
+carton_l04_c03 release PASS samples 21882 completed 17
+carton_l04_c03 drop PASS samples 21889 completed 17
+carton_l04_c03 exit PASS samples 21911 completed 17
+carton_l04_c03 park PASS samples 22187 completed 17
+carton_l04_c03 outfeed PASS samples 22405 completed 17
+carton_l04_c00 front grasp solutions 3
+carton_l04_c00 branch 0 withdraw PASS {'score': 50.60755269524312, 'j1_range_deg': [-61.525602579589325, -37.769483349475216], 'j1_span_deg': 23.75611923011411, 'j1_empty_reposition_deg': 46.29119911448746, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-120.7746723384518, -103.50968486490238], 'j2_start_deg': -120.7746723384518, 'j2_end_deg': -103.50968486490238, 'upper_arm_forward_tilt_range_deg': [24.33521566913325, 36.39182717614673], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c00 branch 1 withdraw PASS {'score': 56.57794496926153, 'j1_range_deg': [-61.525695094134996, -37.769616921626046], 'j1_span_deg': 23.75607817250895, 'j1_empty_reposition_deg': 46.29133258329699, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-132.7079179818493, -118.79300797922645], 'j2_start_deg': -132.7079179818493, 'j2_end_deg': -118.79300797922645, 'upper_arm_forward_tilt_range_deg': [32.4856976873438, 46.15086484051274], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c00 branch 2 withdraw PASS {'score': 56.57779685293851, 'j1_range_deg': [-61.52554866282091, -37.76949741121335], 'j1_span_deg': 23.75605125160756, 'j1_empty_reposition_deg': 46.291213072883814, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-132.70793706286304, -118.7929857746293], 'j2_start_deg': -132.70793706286304, 'j2_end_deg': -118.7929857746293, 'upper_arm_forward_tilt_range_deg': [32.48571378767306, 46.15089025544464], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c00 loaded path PASS, checking empty return
+carton_l04_c00 branch 0 release -0.84 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l04_c00 loaded path PASS, checking empty return
+carton_l04_c00 branch 0 release -0.84 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l04_c00 branch 0 release 0.0 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l04_c00 branch 0 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c00 branch 0 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l04_c00 branch 0 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c00 branch 0 release 0.1 yaw 0.0 route line POINTWISE_COLLISION:transfer
+carton_l04_c00 branch 0 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l04_c00 loaded path PASS, checking empty return
+carton_l04_c00 pregrasp PASS samples 22591 completed 18
+carton_l04_c00 approach PASS samples 22611 completed 18
+carton_l04_c00 grasp PASS samples 22612 completed 18
+carton_l04_c00 separate PASS samples 22706 completed 18
+carton_l04_c00 withdraw PASS samples 22991 completed 18
+carton_l04_c00 transfer PASS samples 23522 completed 18
+carton_l04_c00 release PASS samples 23523 completed 18
+carton_l04_c00 drop PASS samples 23530 completed 18
+carton_l04_c00 exit PASS samples 23562 completed 18
+carton_l04_c00 park PASS samples 23684 completed 18
+carton_l04_c00 outfeed PASS samples 23870 completed 18
+carton_l04_c04 front grasp solutions 6
+carton_l04_c04 branch 0 POINTWISE_COLLISION:extract
+carton_l04_c04 branch 1 withdraw PASS {'score': 271.25191457311803, 'j1_range_deg': [-154.6500561290473, -130.03895463940097], 'j1_span_deg': 24.61110148964633, 'j1_empty_reposition_deg': 163.17176958121718, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-94.79482614378664, -70.93301698393718], 'j2_start_deg': -70.93301698393718, 'j2_end_deg': -94.79482614378664, 'upper_arm_forward_tilt_range_deg': [13.043481154136847, 25.71429263311868], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c04 branch 2 POINTWISE_COLLISION:extract
+carton_l04_c04 branch 3 POINTWISE_COLLISION:extract
+carton_l04_c04 branch 4 withdraw PASS {'score': 275.9054229758291, 'j1_range_deg': [-154.64730596091223, -130.03809741438718], 'j1_span_deg': 24.609208546525053, 'j1_empty_reposition_deg': 163.16901949277516, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-73.63852387590062, -56.52344089763739], 'j2_start_deg': -56.52344089763739, 'j2_end_deg': -73.63852387590062, 'upper_arm_forward_tilt_range_deg': [25.963028145251045, 38.2865521169216], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c04 branch 5 withdraw PASS {'score': 275.90069130553013, 'j1_range_deg': [-154.64635232882952, -130.0379393483896], 'j1_span_deg': 24.60841298043991, 'j1_empty_reposition_deg': 163.16806586024583, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-73.63863024112939, -56.52301488770716], 'j2_start_deg': -56.52301488770716, 'j2_end_deg': -73.63863024112939, 'upper_arm_forward_tilt_range_deg': [25.96296382447959, 38.28699772580148], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c04 branch 1 FINITE_JOINT_SEARCH_FAILED:pregrasp:maximum iterations reached
+carton_l04_c04 branch 5 FINITE_JOINT_SEARCH_FAILED:pregrasp:maximum iterations reached
+carton_l04_c04 branch 4 FINITE_JOINT_SEARCH_FAILED:pregrasp:maximum iterations reached
+carton_l04_c04 top grasp solutions 2
+carton_l04_c04 branch 0 withdraw PASS {'score': 21.648253689772044, 'j1_range_deg': [32.60677626044698, 49.05215074004018], 'j1_span_deg': 16.445374479593205, 'j1_empty_reposition_deg': 24.08506159134935, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-129.96769833326795, -93.20441109011615], 'j2_start_deg': -129.92498198558692, 'j2_end_deg': -93.20441109011615, 'upper_arm_forward_tilt_range_deg': [-13.814898608790465, 23.91188172673224], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c04 branch 1 withdraw PASS {'score': 274.94682244580025, 'j1_range_deg': [-164.6137988401633, -156.19945203861081], 'j1_span_deg': 8.414346801552483, 'j1_empty_reposition_deg': 173.13551230389214, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-86.80283302504743, -50.04398532752166], 'j2_start_deg': -50.08632396894634, 'j2_end_deg': -86.80283302504743, 'upper_arm_forward_tilt_range_deg': [11.425229000727276, 43.139136033845915], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l04_c04 loaded path PASS, checking empty return
+carton_l04_c04 pregrasp PASS samples 24148 completed 19
+carton_l04_c04 approach PASS samples 24171 completed 19
+carton_l04_c04 grasp PASS samples 24172 completed 19
+carton_l04_c04 separate PASS samples 24205 completed 19
+carton_l04_c04 withdraw PASS samples 24340 completed 19
+carton_l04_c04 transfer PASS samples 24416 completed 19
+carton_l04_c04 release PASS samples 24417 completed 19
+carton_l04_c04 drop PASS samples 24424 completed 19
+carton_l04_c04 exit PASS samples 24446 completed 19
+carton_l04_c04 park PASS samples 24722 completed 19
+carton_l04_c04 outfeed PASS samples 24961 completed 19
+carton_l03_c02 belt_lower PASS samples 24976 completed 20
+carton_l03_c02 front grasp solutions 6
+carton_l03_c02 branch 0 POINTWISE_IK_FAILED:extract
+carton_l03_c02 branch 1 POINTWISE_IK_FAILED:extract
+carton_l03_c02 branch 2 POINTWISE_COLLISION:extract
+carton_l03_c02 branch 3 POINTWISE_COLLISION:extract
+carton_l03_c02 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c02 branch 5 POINTWISE_COLLISION:extract
+carton_l03_c02 top grasp solutions 5
+carton_l03_c02 branch 0 withdraw PASS {'score': 2.8096521110156565, 'j1_range_deg': [3.863636390304863, 6.451917231913234], 'j1_span_deg': 2.588280841608371, 'j1_empty_reposition_deg': 4.658078278792763, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-123.83417491763045, -86.18522447148418], 'j2_start_deg': -123.83417491763045, 'j2_end_deg': -86.18522447148418, 'upper_arm_forward_tilt_range_deg': [-6.182529534292952, 32.557393154274656], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c02 branch 1 withdraw PASS {'score': 226.47138194655798, 'j1_range_deg': [155.32626844642851, 165.08493364462626], 'j1_span_deg': 9.758665198197747, 'j1_empty_reposition_deg': 156.56321897552863, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-93.79419499839156, -56.14794231346051], 'j2_start_deg': -56.14794231346051, 'j2_end_deg': -93.79419499839156, 'upper_arm_forward_tilt_range_deg': [-12.218551853826218, 28.030168753228022], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c02 branch 2 withdraw PASS {'score': 230.58822962522657, 'j1_range_deg': [155.32635841938202, 165.08495090576204], 'j1_span_deg': 9.758592486380024, 'j1_empty_reposition_deg': 156.5632362366644, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-74.515177038802, -32.74050943898892], 'j2_start_deg': -32.74050943898892, 'j2_end_deg': -74.515177038802, 'upper_arm_forward_tilt_range_deg': [5.138889382433317, 52.958882093208125], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c02 branch 3 withdraw PASS {'score': 7.234906304215489, 'j1_range_deg': [3.8599474263662263, 6.444911815255166], 'j1_span_deg': 2.5849643888889395, 'j1_empty_reposition_deg': 4.6617672427314005, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-147.26051196219402, -105.48536194458853], 'j2_start_deg': -147.26051196219402, 'j2_end_deg': -105.48536194458853, 'upper_arm_forward_tilt_range_deg': [13.05002589439515, 56.40269566890076], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c02 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c02 loaded path PASS, checking empty return
+carton_l03_c02 pregrasp PASS samples 25259 completed 20
+carton_l03_c02 approach PASS samples 25279 completed 20
+carton_l03_c02 grasp PASS samples 25280 completed 20
+carton_l03_c02 separate PASS samples 25314 completed 20
+carton_l03_c02 withdraw PASS samples 25465 completed 20
+carton_l03_c02 transfer PASS samples 25549 completed 20
+carton_l03_c02 release PASS samples 25550 completed 20
+carton_l03_c02 drop PASS samples 25557 completed 20
+carton_l03_c02 exit PASS samples 25581 completed 20
+carton_l03_c02 park PASS samples 25858 completed 20
+carton_l03_c02 outfeed PASS samples 26052 completed 20
+carton_l03_c01 front grasp solutions 5
+carton_l03_c01 branch 0 withdraw PASS {'score': 37.0814031088991, 'j1_range_deg': [-42.36939868759467, -19.225849852103543], 'j1_span_deg': 23.143548835491124, 'j1_empty_reposition_deg': 27.747565746259827, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-119.53743426886933, -99.41324948600729], 'j2_start_deg': -119.53743426886933, 'j2_end_deg': -99.41324948600729, 'upper_arm_forward_tilt_range_deg': [20.689727426708014, 34.07509476465939], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c01 branch 1 withdraw PASS {'score': 237.7481614498949, 'j1_range_deg': [89.3945957558561, 132.33875188069754], 'j1_span_deg': 42.94415612484144, 'j1_empty_reposition_deg': 123.81703715762606, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-80.56427846480663, -60.45424986430138], 'j2_start_deg': -60.45424986430138, 'j2_end_deg': -80.56427846480663, 'upper_arm_forward_tilt_range_deg': [-20.827509591843302, 3.682975768258347], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c01 branch 2 POINTWISE_IK_FAILED:extract
+carton_l03_c01 branch 3 withdraw PASS {'score': 242.72418297662574, 'j1_range_deg': [89.39543370976357, 132.33910062570075], 'j1_span_deg': 42.943666915937186, 'j1_empty_reposition_deg': 123.81738590702236, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-48.08268384453215, -41.12710178180378], 'j2_start_deg': -41.12710178180378, 'j2_end_deg': -48.020791065760505, 'upper_arm_forward_tilt_range_deg': [-27.11109434744779, 19.367672753564882], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c01 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c01 loaded path PASS, checking empty return
+carton_l03_c01 pregrasp PASS samples 26186 completed 21
+carton_l03_c01 approach PASS samples 26207 completed 21
+carton_l03_c01 grasp PASS samples 26208 completed 21
+carton_l03_c01 separate PASS samples 26247 completed 21
+carton_l03_c01 withdraw PASS samples 26385 completed 21
+carton_l03_c01 transfer PASS samples 26487 completed 21
+carton_l03_c01 release PASS samples 26488 completed 21
+carton_l03_c01 drop PASS samples 26495 completed 21
+carton_l03_c01 exit PASS samples 26521 completed 21
+carton_l03_c01 park PASS samples 26736 completed 21
+carton_l03_c01 outfeed PASS samples 26909 completed 21
+carton_l03_c03 front grasp solutions 6
+carton_l03_c03 branch 0 POINTWISE_IK_FAILED:extract
+carton_l03_c03 branch 1 POINTWISE_IK_FAILED:extract
+carton_l03_c03 branch 2 POINTWISE_COLLISION:extract
+carton_l03_c03 branch 3 POINTWISE_COLLISION:extract
+carton_l03_c03 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c03 branch 5 POINTWISE_COLLISION:extract
+carton_l03_c03 top grasp solutions 6
+carton_l03_c03 branch 0 withdraw PASS {'score': 10.972483633714493, 'j1_range_deg': [19.172085653272003, 31.236525545332952], 'j1_span_deg': 12.06443989206095, 'j1_empty_reposition_deg': 10.650370984174376, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-124.84870829736148, -87.99465353081865], 'j2_start_deg': -124.84870829736148, 'j2_end_deg': -87.99465353081865, 'upper_arm_forward_tilt_range_deg': [-12.613437133451685, 26.93853099615164], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c03 branch 1 withdraw PASS {'score': 266.8294288909413, 'j1_range_deg': [180.59089884035285, 180.97806683945018], 'j1_span_deg': 0.38716799909732913, 'j1_empty_reposition_deg': 172.0691846485887, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-92.00491897504533, -55.15102013379154], 'j2_start_deg': -55.15102013379154, 'j2_end_deg': -92.00491897504533, 'upper_arm_forward_tilt_range_deg': [-1.639417708123877, 35.02831496437181], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c03 branch 2 withdraw PASS {'score': 13.415452513663553, 'j1_range_deg': [19.17193718321549, 31.23640172127301], 'j1_span_deg': 12.064464538057518, 'j1_empty_reposition_deg': 10.650222514117864, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-149.01587630614554, -107.05011134210051], 'j2_start_deg': -149.01587630614554, 'j2_end_deg': -107.05011134210051, 'upper_arm_forward_tilt_range_deg': [3.4112459847716328, 53.157453233685104], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c03 branch 3 withdraw PASS {'score': 274.4324080154456, 'j1_range_deg': [180.59058762649028, 180.97762351185244], 'j1_span_deg': 0.3870358853621667, 'j1_empty_reposition_deg': 172.06887546011643, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-72.95809940945855, -31.0016860460501], 'j2_start_deg': -31.0016860460501, 'j2_end_deg': -72.95809940945855, 'upper_arm_forward_tilt_range_deg': [17.38807317760058, 59.110247139410156], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c03 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c03 branch 5 POINTWISE_COLLISION:extract
+carton_l03_c03 loaded path PASS, checking empty return
+carton_l03_c03 pregrasp PASS samples 27187 completed 22
+carton_l03_c03 approach PASS samples 27207 completed 22
+carton_l03_c03 grasp PASS samples 27208 completed 22
+carton_l03_c03 separate PASS samples 27242 completed 22
+carton_l03_c03 withdraw PASS samples 27396 completed 22
+carton_l03_c03 transfer PASS samples 27484 completed 22
+carton_l03_c03 release PASS samples 27485 completed 22
+carton_l03_c03 drop PASS samples 27492 completed 22
+carton_l03_c03 exit PASS samples 27516 completed 22
+carton_l03_c03 park PASS samples 27792 completed 22
+carton_l03_c03 outfeed PASS samples 28007 completed 22
+carton_l03_c00 front grasp solutions 6
+carton_l03_c00 branch 0 withdraw PASS {'score': 162.9101292460409, 'j1_range_deg': [89.6523149571264, 119.92784811528907], 'j1_span_deg': 30.27553315816266, 'j1_empty_reposition_deg': 111.40613330746433, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-62.14995184794641, -48.03775161052171], 'j2_start_deg': -48.03775161052171, 'j2_end_deg': -62.14995184794641, 'upper_arm_forward_tilt_range_deg': [-23.058960151602708, 0.7587359203804606], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c00 branch 1 withdraw PASS {'score': 53.01980267384398, 'j1_range_deg': [-61.52589226846231, -37.76864338671785], 'j1_span_deg': 23.75724888174446, 'j1_empty_reposition_deg': 46.29035907367958, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-131.95759246414605, -117.82928140803146], 'j2_start_deg': -131.95759246414605, 'j2_end_deg': -117.82928140803146, 'upper_arm_forward_tilt_range_deg': [31.92256680753654, 45.521411397463034], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c00 branch 2 withdraw PASS {'score': 167.37695447315411, 'j1_range_deg': [89.64927396523824, 119.92843782249976], 'j1_span_deg': 30.279163857261523, 'j1_empty_reposition_deg': 111.4067230252414, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-42.75689328338584, -32.671022842150926], 'j2_start_deg': -32.671022842150926, 'j2_end_deg': -42.75689328338584, 'upper_arm_forward_tilt_range_deg': [-29.111488838803254, 10.108632190628143], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c00 branch 3 POINTWISE_IK_FAILED:extract
+carton_l03_c00 branch 4 withdraw PASS {'score': 70.36996198681388, 'j1_range_deg': [-61.525572300377426, -37.769356864869785], 'j1_span_deg': 23.75621543550764, 'j1_empty_reposition_deg': 46.291072530097054, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-147.33476000101555, -137.2526176970605], 'j2_start_deg': -147.33476000101555, 'j2_end_deg': -137.2526176970605, 'upper_arm_forward_tilt_range_deg': [44.987937782585654, 58.88682717665919], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c00 branch 5 withdraw PASS {'score': 70.37021320353281, 'j1_range_deg': [-61.52557030977368, -37.7695043126763], 'j1_span_deg': 23.75606599709738, 'j1_empty_reposition_deg': 46.29121997790285, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-147.3352042111764, -137.25299942220082], 'j2_start_deg': -147.3352042111764, 'j2_end_deg': -137.25299942220082, 'upper_arm_forward_tilt_range_deg': [44.9882359971577, 58.887211379980755], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c00 loaded path PASS, checking empty return
+carton_l03_c00 branch 1 release -0.84 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l03_c00 loaded path PASS, checking empty return
+carton_l03_c00 branch 1 release -0.84 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l03_c00 branch 1 release 0.0 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release 0.0 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l03_c00 branch 1 release -0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release -0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l03_c00 branch 1 release 0.1 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release 0.1 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l03_c00 branch 1 release -0.2 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release -0.2 yaw 0.0 route arc POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release 0.2 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release 0.2 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l03_c00 loaded path PASS, checking empty return
+carton_l03_c00 branch 1 release -0.3 yaw 0.0 route line POINTWISE_COLLISION:exit
+carton_l03_c00 loaded path PASS, checking empty return
+carton_l03_c00 branch 1 release -0.3 yaw 0.0 route arc POINTWISE_COLLISION:exit
+carton_l03_c00 branch 1 release 0.3 yaw 0.0 route line POINTWISE_IK_FAILED:transfer
+carton_l03_c00 branch 1 release 0.3 yaw 0.0 route arc POINTWISE_COLLISION:transfer
+carton_l03_c00 loaded path PASS, checking empty return
+carton_l03_c00 pregrasp PASS samples 28117 completed 23
+carton_l03_c00 approach PASS samples 28137 completed 23
+carton_l03_c00 grasp PASS samples 28138 completed 23
+carton_l03_c00 separate PASS samples 28207 completed 23
+carton_l03_c00 withdraw PASS samples 28445 completed 23
+carton_l03_c00 transfer PASS samples 28701 completed 23
+carton_l03_c00 release PASS samples 28702 completed 23
+carton_l03_c00 drop PASS samples 28709 completed 23
+carton_l03_c00 exit PASS samples 28734 completed 23
+carton_l03_c00 park PASS samples 28914 completed 23
+carton_l03_c00 outfeed PASS samples 29083 completed 23
+carton_l03_c04 front grasp solutions 6
+carton_l03_c04 branch 0 withdraw PASS {'score': 97.51991788943276, 'j1_range_deg': [51.9335454243793, 90.49902232359712], 'j1_span_deg': 38.56547689921782, 'j1_empty_reposition_deg': 43.411830853269905, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-122.58226652730094, -104.995327748835], 'j2_start_deg': -122.58226652730094, 'j2_end_deg': -104.995327748835, 'upper_arm_forward_tilt_range_deg': [-21.25817326010411, 2.5775902561943083], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c04 branch 1 withdraw PASS {'score': 272.516727206634, 'j1_range_deg': [-154.64626721088166, -130.0378211246153], 'j1_span_deg': 24.608446086266355, 'j1_empty_reposition_deg': 163.1679807176214, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-75.0152279614529, -57.41773203162602], 'j2_start_deg': -57.41773203162602, 'j2_end_deg': -75.0152279614529, 'upper_arm_forward_tilt_range_deg': [25.091642253632397, 37.50153706045721], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c04 branch 2 withdraw PASS {'score': 100.55315281360649, 'j1_range_deg': [51.93359615681655, 90.49906793404165], 'j1_span_deg': 38.5654717772251, 'j1_empty_reposition_deg': 43.41188157835024, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-140.69634968925266, -132.26001400080045], 'j2_start_deg': -140.69634968925266, 'j2_end_deg': -132.26001400080045, 'upper_arm_forward_tilt_range_deg': [-27.141109630848298, 16.11467163702989], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c04 branch 3 withdraw PASS {'score': 100.5625212497174, 'j1_range_deg': [51.93303493767017, 90.50085854913412], 'j1_span_deg': 38.56782361146395, 'j1_empty_reposition_deg': 43.41132035879978, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-140.69568491840033, -132.2603049129082], 'j2_start_deg': -140.69568491840033, 'j2_end_deg': -132.2603049129082, 'upper_arm_forward_tilt_range_deg': [-27.14250110441579, 16.11476330232462], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l03_c04 branch 4 POINTWISE_COLLISION:extract
+carton_l03_c04 branch 5 POINTWISE_COLLISION:extract
+carton_l03_c04 loaded path PASS, checking empty return
+carton_l03_c04 pregrasp PASS samples 29258 completed 24
+carton_l03_c04 approach PASS samples 29279 completed 24
+carton_l03_c04 grasp PASS samples 29280 completed 24
+carton_l03_c04 separate PASS samples 29316 completed 24
+carton_l03_c04 withdraw PASS samples 29464 completed 24
+carton_l03_c04 transfer PASS samples 29559 completed 24
+carton_l03_c04 release PASS samples 29560 completed 24
+carton_l03_c04 drop PASS samples 29567 completed 24
+carton_l03_c04 exit PASS samples 29592 completed 24
+carton_l03_c04 park PASS samples 29952 completed 24
+carton_l03_c04 outfeed PASS samples 30188 completed 24
+carton_l02_c02 belt_lower PASS samples 30200 completed 25
+carton_l02_c02 top grasp solutions 4
+carton_l02_c02 branch 0 withdraw PASS {'score': 3.3514224820945477, 'j1_range_deg': [3.859865991287228, 6.444698204413356], 'j1_span_deg': 2.5848322131261283, 'j1_empty_reposition_deg': 4.661848677810399, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-133.1664974398063, -100.3245523939438], 'j2_start_deg': -133.1664974398063, 'j2_end_deg': -100.3245523939438, 'upper_arm_forward_tilt_range_deg': [7.8798239714879434, 42.03016448658452], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c02 branch 1 withdraw PASS {'score': 227.36626987890168, 'j1_range_deg': [155.32663643334595, 165.08500187786316], 'j1_span_deg': 9.75836544451721, 'j1_empty_reposition_deg': 156.56328720876553, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-79.67602091592403, -46.83422486595942], 'j2_start_deg': -46.83422486595942, 'j2_end_deg': -79.67602091592403, 'upper_arm_forward_tilt_range_deg': [0.402630016473975, 37.75839790711269], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c02 branch 2 withdraw PASS {'score': 235.90466314923134, 'j1_range_deg': [155.32593609761213, 165.08490563677162], 'j1_span_deg': 9.758969539159494, 'j1_empty_reposition_deg': 156.563190967674, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-63.997799885331304, -26.819675264649437], 'j2_start_deg': -26.819675264649437, 'j2_end_deg': -63.997799885331304, 'upper_arm_forward_tilt_range_deg': [15.095637007318334, 59.508400417565376], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c02 branch 3 withdraw PASS {'score': 13.277272526796875, 'j1_range_deg': [3.859929429948448, 6.444870267671294], 'j1_span_deg': 2.5849408377228458, 'j1_empty_reposition_deg': 4.661785239149179, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-153.18408442358256, -116.0041995431737], 'j2_start_deg': -153.18408442358256, 'j2_end_deg': -116.0041995431737, 'upper_arm_forward_tilt_range_deg': [23.657577456874712, 62.46434401095861], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c02 loaded path PASS, checking empty return
+carton_l02_c02 pregrasp PASS samples 30483 completed 25
+carton_l02_c02 approach PASS samples 30502 completed 25
+carton_l02_c02 grasp PASS samples 30503 completed 25
+carton_l02_c02 separate PASS samples 30547 completed 25
+carton_l02_c02 withdraw PASS samples 30683 completed 25
+carton_l02_c02 transfer PASS samples 30761 completed 25
+carton_l02_c02 release PASS samples 30762 completed 25
+carton_l02_c02 drop PASS samples 30769 completed 25
+carton_l02_c02 exit PASS samples 30795 completed 25
+carton_l02_c02 park PASS samples 31072 completed 25
+carton_l02_c02 outfeed PASS samples 31265 completed 25
+carton_l02_c01 top grasp solutions 4
+carton_l02_c01 branch 0 withdraw PASS {'score': 198.08583782899834, 'j1_range_deg': [135.22026246536467, 150.96213866951075], 'j1_span_deg': 15.741876204146081, 'j1_empty_reposition_deg': 142.44042400041312, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-71.92869575072255, -41.6723687729928], 'j2_start_deg': -41.6723687729928, 'j2_end_deg': -71.92869575072255, 'upper_arm_forward_tilt_range_deg': [-2.586168731063582, 35.35691437516489], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c01 branch 1 withdraw PASS {'score': 11.652206627687784, 'j1_range_deg': [-17.955327273479643, -11.343129667800605], 'j1_span_deg': 6.612197605679038, 'j1_empty_reposition_deg': 19.8648446361947, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-138.32664461125688, -108.07088264265418], 'j2_start_deg': -138.32664461125688, 'j2_end_deg': -108.07088264265418, 'upper_arm_forward_tilt_range_deg': [23.341630509201924, 50.474246683075535], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c01 branch 2 withdraw PASS {'score': 209.5149659279366, 'j1_range_deg': [135.21985831360846, 150.9620629279623], 'j1_span_deg': 15.742204614353852, 'j1_empty_reposition_deg': 142.44034825886467, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-56.563101691642366, -16.75625866175458], 'j2_start_deg': -16.75625866175458, 'j2_end_deg': -56.563101691642366, 'upper_arm_forward_tilt_range_deg': [8.719963364823208, 66.27071107804925], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c01 branch 3 withdraw PASS {'score': 31.676734968388836, 'j1_range_deg': [-17.955519825562767, -11.343183579961448], 'j1_span_deg': 6.61233624560132, 'j1_empty_reposition_deg': 19.8649026838543, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-163.24020240784742, -123.43568497932226], 'j2_start_deg': -163.24020240784742, 'j2_end_deg': -123.43568497932226, 'upper_arm_forward_tilt_range_deg': [37.45613594158817, 74.0999242303425], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c01 loaded path PASS, checking empty return
+carton_l02_c01 pregrasp PASS samples 31543 completed 26
+carton_l02_c01 approach PASS samples 31561 completed 26
+carton_l02_c01 grasp PASS samples 31562 completed 26
+carton_l02_c01 separate PASS samples 31605 completed 26
+carton_l02_c01 withdraw PASS samples 31741 completed 26
+carton_l02_c01 transfer PASS samples 31816 completed 26
+carton_l02_c01 release PASS samples 31817 completed 26
+carton_l02_c01 drop PASS samples 31824 completed 26
+carton_l02_c01 exit PASS samples 31848 completed 26
+carton_l02_c01 park PASS samples 32124 completed 26
+carton_l02_c01 outfeed PASS samples 32296 completed 26
+carton_l02_c03 top grasp solutions 4
+carton_l02_c03 branch 0 withdraw PASS {'score': 10.842173510270081, 'j1_range_deg': [19.171884312514624, 31.236462871317975], 'j1_span_deg': 12.064578558803351, 'j1_empty_reposition_deg': 10.650169643416998, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-134.0179843847824, -101.74776908650055], 'j2_start_deg': -134.0179843847824, 'j2_end_deg': -101.74776908650055, 'upper_arm_forward_tilt_range_deg': [-1.1484635123827909, 36.57946440996992], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c03 branch 1 withdraw PASS {'score': 268.7570489125086, 'j1_range_deg': [180.59091538707833, 180.978092748532], 'j1_span_deg': 0.38717736145366644, 'j1_empty_reposition_deg': 172.06920101070267, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-78.25061822101605, -45.98061135812747], 'j2_start_deg': -45.98061135812747, 'j2_end_deg': -78.25061822101605, 'upper_arm_forward_tilt_range_deg': [12.104964344896812, 44.1761938827801], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c03 branch 2 withdraw PASS {'score': 17.785534863103898, 'j1_range_deg': [19.17192539109646, 31.23635419239095], 'j1_span_deg': 12.06442880129449, 'j1_empty_reposition_deg': 10.650210721998835, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-154.60194238952943, -117.31520124785888], 'j2_start_deg': -154.60194238952943, 'j2_end_deg': -117.31520124785888, 'upper_arm_forward_tilt_range_deg': [12.602834465608312, 59.58357837228727], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c03 branch 3 withdraw PASS {'score': 282.12968066284145, 'j1_range_deg': [180.5909154365931, 180.97809325635737], 'j1_span_deg': 0.38717781976427545, 'j1_empty_reposition_deg': 172.0692015669896, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-62.68437578842192, -25.39731420025677], 'j2_start_deg': -25.39731420025677, 'j2_end_deg': -62.68437578842192, 'upper_arm_forward_tilt_range_deg': [27.63591605661951, 64.69586884334772], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c03 loaded path PASS, checking empty return
+carton_l02_c03 pregrasp PASS samples 32574 completed 27
+carton_l02_c03 approach PASS samples 32593 completed 27
+carton_l02_c03 grasp PASS samples 32594 completed 27
+carton_l02_c03 separate PASS samples 32638 completed 27
+carton_l02_c03 withdraw PASS samples 32775 completed 27
+carton_l02_c03 transfer PASS samples 32856 completed 27
+carton_l02_c03 release PASS samples 32857 completed 27
+carton_l02_c03 drop PASS samples 32864 completed 27
+carton_l02_c03 exit PASS samples 32890 completed 27
+carton_l02_c03 park PASS samples 33166 completed 27
+carton_l02_c03 outfeed PASS samples 33380 completed 27
+carton_l02_c00 top grasp solutions 2
+carton_l02_c00 branch 0 withdraw PASS {'score': 173.26533533266962, 'j1_range_deg': [122.61125745007836, 139.4956784193206], 'j1_span_deg': 16.884420969242242, 'j1_empty_reposition_deg': 130.97396375022296, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-58.749766912890124, -29.3942888101155], 'j2_start_deg': -29.3942888101155, 'j2_end_deg': -58.749766912890124, 'upper_arm_forward_tilt_range_deg': [-2.349432359130048, 40.54366617030037], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c00 branch 1 withdraw PASS {'score': 33.28939646566767, 'j1_range_deg': [-35.88675645961537, -24.628501589201335], 'j1_span_deg': 11.258254870414035, 'j1_empty_reposition_deg': 33.15021669092525, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-150.617362502775, -121.2567691242104], 'j2_start_deg': -150.617362502775, 'j2_end_deg': -121.2567691242104, 'upper_arm_forward_tilt_range_deg': [36.793235829164544, 62.63029642574526], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c00 loaded path PASS, checking empty return
+carton_l02_c00 pregrasp PASS samples 33658 completed 28
+carton_l02_c00 approach PASS samples 33676 completed 28
+carton_l02_c00 grasp PASS samples 33677 completed 28
+carton_l02_c00 separate PASS samples 33718 completed 28
+carton_l02_c00 withdraw PASS samples 33861 completed 28
+carton_l02_c00 transfer PASS samples 33935 completed 28
+carton_l02_c00 release PASS samples 33936 completed 28
+carton_l02_c00 drop PASS samples 33943 completed 28
+carton_l02_c00 exit PASS samples 33964 completed 28
+carton_l02_c00 park PASS samples 34240 completed 28
+carton_l02_c00 outfeed PASS samples 34393 completed 28
+carton_l02_c04 top grasp solutions 4
+carton_l02_c04 branch 0 withdraw PASS {'score': 21.347602958868656, 'j1_range_deg': [32.60689108282914, 49.05249444936202], 'j1_span_deg': 16.445603366532886, 'j1_empty_reposition_deg': 24.08517641373151, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-140.97621161265192, -111.41537779581283], 'j2_start_deg': -140.97621161265192, 'j2_end_deg': -111.41537779581283, 'upper_arm_forward_tilt_range_deg': [-2.6358599441927586, 35.7416659627597], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c04 branch 1 withdraw PASS {'score': 280.847319733809, 'j1_range_deg': [-164.61324289714875, -156.1996468773759], 'j1_span_deg': 8.413596019772854, 'j1_empty_reposition_deg': 173.13495725524055, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-68.58369623814959, -39.022662105287715], 'j2_start_deg': -39.022662105287715, 'j2_end_deg': -68.58369623814959, 'upper_arm_forward_tilt_range_deg': [27.510411133007263, 53.41206563256995], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l02_c04 loaded path PASS, checking empty return
+carton_l02_c04 pregrasp PASS samples 34671 completed 29
+carton_l02_c04 approach PASS samples 34689 completed 29
+carton_l02_c04 grasp PASS samples 34690 completed 29
+carton_l02_c04 separate PASS samples 34725 completed 29
+carton_l02_c04 withdraw PASS samples 34839 completed 29
+carton_l02_c04 transfer PASS samples 34905 completed 29
+carton_l02_c04 release PASS samples 34906 completed 29
+carton_l02_c04 drop PASS samples 34913 completed 29
+carton_l02_c04 exit PASS samples 34936 completed 29
+carton_l02_c04 park PASS samples 35212 completed 29
+carton_l02_c04 outfeed PASS samples 35447 completed 29
+carton_l01_c02 top grasp solutions 4
+carton_l01_c02 branch 0 withdraw PASS {'score': 230.29119282951754, 'j1_range_deg': [155.32683892477033, 165.0850483922922], 'j1_span_deg': 9.75820946752188, 'j1_empty_reposition_deg': 156.56333372319457, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-79.67602382228714, -33.92916365971383], 'j2_start_deg': -33.92916365971383, 'j2_end_deg': -79.67602382228714, 'upper_arm_forward_tilt_range_deg': [0.40271263274743707, 51.6551606683193], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c02 branch 1 withdraw PASS {'score': 6.96427620928081, 'j1_range_deg': [3.859098928698708, 6.443567616575759], 'j1_span_deg': 2.584468687877051, 'j1_empty_reposition_deg': 4.662615740398918, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-146.0682594863474, -100.32079876782223], 'j2_start_deg': -146.0682594863474, 'j2_end_deg': -100.32079876782223, 'upper_arm_forward_tilt_range_deg': [7.876512547665724, 55.18423382714444], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c02 branch 2 withdraw PASS {'score': 25.357061989292482, 'j1_range_deg': [3.8599810083660917, 6.4450427400030526], 'j1_span_deg': 2.585061731636961, 'j1_empty_reposition_deg': 4.661733660731535, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-163.97216406754274, -116.00226726519449], 'j2_start_deg': -163.97216406754274, 'j2_end_deg': -116.00226726519449, 'upper_arm_forward_tilt_range_deg': [23.655552416133542, 73.52819012731432], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c02 branch 3 withdraw PASS {'score': 247.71009282489834, 'j1_range_deg': [155.32623314331963, 165.08494041192196], 'j1_span_deg': 9.758707268602336, 'j1_empty_reposition_deg': 156.56322574282433, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-63.997182214008575, -16.027079346244516], 'j2_start_deg': -16.027079346244516, 'j2_end_deg': -63.997182214008575, 'upper_arm_forward_tilt_range_deg': [15.096396937014227, 71.65442248694407], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c02 loaded path PASS, checking empty return
+carton_l01_c02 pregrasp PASS samples 35732 completed 30
+carton_l01_c02 approach PASS samples 35751 completed 30
+carton_l01_c02 grasp PASS samples 35752 completed 30
+carton_l01_c02 separate PASS samples 35977 completed 30
+carton_l01_c02 withdraw PASS samples 36229 completed 30
+carton_l01_c02 transfer PASS samples 36411 completed 30
+carton_l01_c02 release PASS samples 36412 completed 30
+carton_l01_c02 drop PASS samples 36419 completed 30
+carton_l01_c02 exit PASS samples 36445 completed 30
+carton_l01_c02 park PASS samples 36722 completed 30
+carton_l01_c02 outfeed PASS samples 36915 completed 30
+carton_l01_c01 top grasp solutions 4
+carton_l01_c01 branch 0 withdraw PASS {'score': 200.35963769314776, 'j1_range_deg': [135.2203036832993, 150.96214284306208], 'j1_span_deg': 15.741839159762776, 'j1_empty_reposition_deg': 142.44042817396445, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-71.9286279656901, -29.548544341417678], 'j2_start_deg': -29.548544341417678, 'j2_end_deg': -71.9286279656901, 'upper_arm_forward_tilt_range_deg': [-2.586100783724163, 49.590501015481166], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c01 branch 1 withdraw PASS {'score': 17.933377092555578, 'j1_range_deg': [-17.955422147963507, -11.343284691261957], 'j1_span_deg': 6.61213745670155, 'j1_empty_reposition_deg': 19.864999939720576, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-150.45111727052682, -108.07103777035262], 'j2_start_deg': -150.45111727052682, 'j2_end_deg': -108.07103777035262, 'upper_arm_forward_tilt_range_deg': [23.34179518034704, 61.971936948679094], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c01 branch 2 withdraw PASS {'score': 226.39318545989457, 'j1_range_deg': [135.2193743158874, 150.9619956362158], 'j1_span_deg': 15.742621320328396, 'j1_empty_reposition_deg': 142.44028096711816, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-56.56473020948025, -6.058225292887686], 'j2_start_deg': -6.058225292887686, 'j2_end_deg': -56.56473020948025, 'upper_arm_forward_tilt_range_deg': [8.718302682881575, 81.28002612763103], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c01 branch 3 withdraw PASS {'score': 49.93219404189385, 'j1_range_deg': [-17.955621414545757, -11.343112396746454], 'j1_span_deg': 6.612509017799303, 'j1_empty_reposition_deg': 19.864831726922056, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-173.93672957967195, -123.43355772752035], 'j2_start_deg': -173.93672957967195, 'j2_end_deg': -123.43355772752035, 'upper_arm_forward_tilt_range_deg': [37.454196900724405, 84.24713160739417], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c01 loaded path PASS, checking empty return
+carton_l01_c01 pregrasp PASS samples 37193 completed 31
+carton_l01_c01 approach PASS samples 37211 completed 31
+carton_l01_c01 grasp PASS samples 37212 completed 31
+carton_l01_c01 separate PASS samples 37432 completed 31
+carton_l01_c01 withdraw PASS samples 37688 completed 31
+carton_l01_c01 transfer PASS samples 37866 completed 31
+carton_l01_c01 release PASS samples 37867 completed 31
+carton_l01_c01 drop PASS samples 37874 completed 31
+carton_l01_c01 exit PASS samples 37898 completed 31
+carton_l01_c01 park PASS samples 38174 completed 31
+carton_l01_c01 outfeed PASS samples 38346 completed 31
+carton_l01_c03 top grasp solutions 4
+carton_l01_c03 branch 0 withdraw PASS {'score': 12.915671500257362, 'j1_range_deg': [19.171667708642538, 31.237202984207375], 'j1_span_deg': 12.065535275564837, 'j1_empty_reposition_deg': 10.649953039544911, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-146.77715161600096, -101.74354109482421], 'j2_start_deg': -146.77715161600096, 'j2_end_deg': -101.74354109482421, 'upper_arm_forward_tilt_range_deg': [-1.1523805938717187, 50.61910860124786], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c03 branch 1 withdraw PASS {'score': 273.5536958343539, 'j1_range_deg': [180.5908913325992, 180.97805447640502], 'j1_span_deg': 0.3871631438058216, 'j1_empty_reposition_deg': 172.06917723058314, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-78.25075188742703, -33.21823945651702], 'j2_start_deg': -33.21823945651702, 'j2_end_deg': -78.25075188742703, 'upper_arm_forward_tilt_range_deg': [12.104817046140857, 56.900916998644554], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c03 branch 2 withdraw PASS {'score': 29.366904777408745, 'j1_range_deg': [19.17195119594259, 31.236522259542706], 'j1_span_deg': 12.064571063600116, 'j1_empty_reposition_deg': 10.650236526844964, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-165.33092004673998, -117.31456284664577], 'j2_start_deg': -165.33092004673998, 'j2_end_deg': -117.31456284664577, 'upper_arm_forward_tilt_range_deg': [12.602143978979177, 72.24922068356146], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c03 branch 3 withdraw PASS {'score': 295.65482436067776, 'j1_range_deg': [180.59040616560435, 180.977334799416], 'j1_span_deg': 0.38692863381166376, 'j1_empty_reposition_deg': 172.06869303401768, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-62.69464974310644, -14.685125891390618], 'j2_start_deg': -14.685125891390618, 'j2_end_deg': -62.69464974310644, 'upper_arm_forward_tilt_range_deg': [27.62542823798507, 75.36984797937943], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c03 loaded path PASS, checking empty return
+carton_l01_c03 pregrasp PASS samples 38624 completed 32
+carton_l01_c03 approach PASS samples 38642 completed 32
+carton_l01_c03 grasp PASS samples 38643 completed 32
+carton_l01_c03 separate PASS samples 38871 completed 32
+carton_l01_c03 withdraw PASS samples 39132 completed 32
+carton_l01_c03 transfer PASS samples 39326 completed 32
+carton_l01_c03 release PASS samples 39327 completed 32
+carton_l01_c03 drop PASS samples 39334 completed 32
+carton_l01_c03 exit PASS samples 39360 completed 32
+carton_l01_c03 park PASS samples 39636 completed 32
+carton_l01_c03 outfeed PASS samples 39850 completed 32
+carton_l01_c00 top grasp solutions 2
+carton_l01_c00 branch 0 withdraw PASS {'score': 177.2678578722079, 'j1_range_deg': [122.6132470107672, 139.49504749478706], 'j1_span_deg': 16.881800484019863, 'j1_empty_reposition_deg': 130.97333282568943, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-58.741099540470934, -18.447325611344528], 'j2_start_deg': -18.447325611344528, 'j2_end_deg': -58.741099540470934, 'upper_arm_forward_tilt_range_deg': [-2.343500895795049, 56.53154972702839], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c00 branch 1 withdraw PASS {'score': 43.92031059555608, 'j1_range_deg': [-35.886455426627386, -24.628563798205754], 'j1_span_deg': 11.257891628421632, 'j1_empty_reposition_deg': 33.150279301240005, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-161.55244671833802, -121.25876563804341], 'j2_start_deg': -161.55244671833802, 'j2_end_deg': -121.25876563804341, 'upper_arm_forward_tilt_range_deg': [36.79485470094155, 72.7324289504128], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c00 loaded path PASS, checking empty return
+carton_l01_c00 pregrasp PASS samples 40128 completed 33
+carton_l01_c00 approach PASS samples 40145 completed 33
+carton_l01_c00 grasp PASS samples 40146 completed 33
+carton_l01_c00 separate PASS samples 40358 completed 33
+carton_l01_c00 withdraw PASS samples 40634 completed 33
+carton_l01_c00 transfer PASS samples 40810 completed 33
+carton_l01_c00 release PASS samples 40811 completed 33
+carton_l01_c00 drop PASS samples 40818 completed 33
+carton_l01_c00 exit PASS samples 40839 completed 33
+carton_l01_c00 park PASS samples 41115 completed 33
+carton_l01_c00 outfeed PASS samples 41268 completed 33
+carton_l01_c04 top grasp solutions 2
+carton_l01_c04 branch 0 withdraw PASS {'score': 23.176148023465807, 'j1_range_deg': [32.60675899212286, 49.05200108183451], 'j1_span_deg': 16.44524208971165, 'j1_empty_reposition_deg': 24.085044323025237, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-152.76948750477928, -111.41634982915399], 'j2_start_deg': -152.76948750477928, 'j2_end_deg': -111.41634982915399, 'upper_arm_forward_tilt_range_deg': [-2.634966443974023, 50.124801091869315], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c04 branch 1 withdraw PASS {'score': 288.60238631944844, 'j1_range_deg': [-164.6136086849096, -156.19995807410677], 'j1_span_deg': 8.413650610802819, 'j1_empty_reposition_deg': 173.13532275237802, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-68.58518291343789, -27.232179809994484], 'j2_start_deg': -27.232179809994484, 'j2_end_deg': -68.58518291343789, 'upper_arm_forward_tilt_range_deg': [27.50905109164387, 64.4309650563632], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l01_c04 loaded path PASS, checking empty return
+carton_l01_c04 pregrasp PASS samples 41546 completed 34
+carton_l01_c04 approach PASS samples 41564 completed 34
+carton_l01_c04 grasp PASS samples 41565 completed 34
+carton_l01_c04 separate PASS samples 41778 completed 34
+carton_l01_c04 withdraw PASS samples 42037 completed 34
+carton_l01_c04 transfer PASS samples 42222 completed 34
+carton_l01_c04 release PASS samples 42223 completed 34
+carton_l01_c04 drop PASS samples 42230 completed 34
+carton_l01_c04 exit PASS samples 42253 completed 34
+carton_l01_c04 park PASS samples 42529 completed 34
+carton_l01_c04 outfeed PASS samples 42764 completed 34
+carton_l00_c02 top grasp solutions 4
+carton_l00_c02 branch 0 withdraw PASS {'score': 237.92804708408698, 'j1_range_deg': [155.3269545304615, 165.08508545143184], 'j1_span_deg': 9.75813092097033, 'j1_empty_reposition_deg': 156.5633707823342, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-79.6756869470522, -18.503956808359437], 'j2_start_deg': -18.503956808359437, 'j2_end_deg': -79.6756869470522, 'upper_arm_forward_tilt_range_deg': [0.4030678460776431, 68.8465706853255], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c02 branch 1 withdraw PASS {'score': 15.2677115048432, 'j1_range_deg': [3.860314515411744, 6.445605640303505], 'j1_span_deg': 2.5852911248917607, 'j1_empty_reposition_deg': 4.661400153685882, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-161.49203411970603, -100.31897475497799], 'j2_start_deg': -161.49203411970603, 'j2_end_deg': -100.31897475497799, 'upper_arm_forward_tilt_range_deg': [7.87389362994704, 70.98229731945777], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c02 branch 2 withdraw PASS {'score': 41.97024220515313, 'j1_range_deg': [3.8601408602973586, 6.445606165889946], 'j1_span_deg': 2.5854653055925874, 'j1_empty_reposition_deg': 4.661573808800268, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-179.45881988887183, -115.99532405648685], 'j2_start_deg': -179.45881988887183, 'j2_end_deg': -115.99532405648685, 'upper_arm_forward_tilt_range_deg': [23.648298005403632, 89.44355228903355], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c02 branch 3 withdraw PASS {'score': 265.12318989260405, 'j1_range_deg': [155.3263025531359, 165.08493864683928], 'j1_span_deg': 9.758636093703387, 'j1_empty_reposition_deg': 156.56322397774164, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-63.9972161236727, -0.527196150423762], 'j2_start_deg': -0.527196150423762, 'j2_end_deg': -63.9972161236727, 'upper_arm_forward_tilt_range_deg': [15.096401665940151, 89.39415522461198], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c02 loaded path PASS, checking empty return
+carton_l00_c02 pregrasp PASS samples 43049 completed 35
+carton_l00_c02 approach PASS samples 43069 completed 35
+carton_l00_c02 grasp PASS samples 43070 completed 35
+carton_l00_c02 separate PASS samples 43454 completed 35
+carton_l00_c02 withdraw PASS samples 43749 completed 35
+carton_l00_c02 transfer PASS samples 43983 completed 35
+carton_l00_c02 release PASS samples 43984 completed 35
+carton_l00_c02 drop PASS samples 43991 completed 35
+carton_l00_c02 exit PASS samples 44017 completed 35
+carton_l00_c02 park PASS samples 44294 completed 35
+carton_l00_c02 outfeed PASS samples 44487 completed 35
+carton_l00_c01 top grasp solutions 2
+carton_l00_c01 branch 0 withdraw PASS {'score': 207.76873579916202, 'j1_range_deg': [135.22029103453195, 150.96214093453352], 'j1_span_deg': 15.741849900001569, 'j1_empty_reposition_deg': 142.4404262654359, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-71.92867047722488, -14.621652954604563], 'j2_start_deg': -14.621652954604563, 'j2_end_deg': -71.92867047722488, 'upper_arm_forward_tilt_range_deg': [-2.586136694599225, 69.20358891213334], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c01 branch 1 withdraw PASS {'score': 28.06507073446019, 'j1_range_deg': [-17.95554299286526, -11.343298740305524], 'j1_span_deg': 6.612244252559737, 'j1_empty_reposition_deg': 19.865014216991575, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-165.3768071507954, -108.06973948179787], 'j2_start_deg': -165.3768071507954, 'j2_end_deg': -108.06973948179787, 'upper_arm_forward_tilt_range_deg': [23.340627736304384, 76.12655072985251], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c01 loaded path PASS, checking empty return
+carton_l00_c01 pregrasp PASS samples 44765 completed 36
+carton_l00_c01 approach PASS samples 44785 completed 36
+carton_l00_c01 grasp PASS samples 44786 completed 36
+carton_l00_c01 separate PASS samples 45164 completed 36
+carton_l00_c01 withdraw PASS samples 45463 completed 36
+carton_l00_c01 transfer PASS samples 45691 completed 36
+carton_l00_c01 release PASS samples 45692 completed 36
+carton_l00_c01 drop PASS samples 45699 completed 36
+carton_l00_c01 exit PASS samples 45723 completed 36
+carton_l00_c01 park PASS samples 45999 completed 36
+carton_l00_c01 outfeed PASS samples 46171 completed 36
+carton_l00_c03 top grasp solutions 4
+carton_l00_c03 branch 0 withdraw PASS {'score': 19.91673621845668, 'j1_range_deg': [19.17207521155122, 31.236716301158097], 'j1_span_deg': 12.064641089606877, 'j1_empty_reposition_deg': 10.650360542453594, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-162.10516844780614, -101.74797360667068], 'j2_start_deg': -162.10516844780614, 'j2_end_deg': -101.74797360667068, 'upper_arm_forward_tilt_range_deg': [-1.1483995278030383, 68.40217064927901], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c03 branch 1 withdraw PASS {'score': 282.9304953636342, 'j1_range_deg': [180.5906765273458, 180.97771478826925], 'j1_span_deg': 0.38703826092344684, 'j1_empty_reposition_deg': 172.0689625382346, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-78.25387746922912, -17.896271704891166], 'j2_start_deg': -17.896271704891166, 'j2_end_deg': -78.25387746922912, 'upper_arm_forward_tilt_range_deg': [12.101573314053333, 72.17041220230574], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c03 branch 2 withdraw PASS {'score': 47.32854727943923, 'j1_range_deg': [19.17207520296545, 31.237404380746234], 'j1_span_deg': 12.065329177780786, 'j1_empty_reposition_deg': 10.650360533867822, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-181.183681222019, -117.31102918173944], 'j2_start_deg': -181.183681222019, 'j2_end_deg': -117.31102918173944, 'upper_arm_forward_tilt_range_deg': [12.598350865191676, 91.44018238117498], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c03 branch 3 withdraw PASS {'score': 312.90278494180865, 'j1_range_deg': [180.59039684319757, 180.9773558056731], 'j1_span_deg': 0.3869589624755463, 'j1_empty_reposition_deg': 172.06868750067673, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-62.70111830458854, 1.1575207914757042], 'j2_start_deg': 1.1575207914757042, 'j2_end_deg': -62.70111830458854, 'upper_arm_forward_tilt_range_deg': [27.618986056020724, 91.15315539374834], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c03 loaded path PASS, checking empty return
+carton_l00_c03 pregrasp PASS samples 46449 completed 37
+carton_l00_c03 approach PASS samples 46469 completed 37
+carton_l00_c03 grasp PASS samples 46470 completed 37
+carton_l00_c03 separate PASS samples 46858 completed 37
+carton_l00_c03 withdraw PASS samples 47160 completed 37
+carton_l00_c03 transfer PASS samples 47409 completed 37
+carton_l00_c03 release PASS samples 47410 completed 37
+carton_l00_c03 drop PASS samples 47417 completed 37
+carton_l00_c03 exit PASS samples 47443 completed 37
+carton_l00_c03 park PASS samples 47719 completed 37
+carton_l00_c03 outfeed PASS samples 47933 completed 37
+carton_l00_c00 top grasp solutions 2
+carton_l00_c00 branch 0 withdraw PASS {'score': 190.3625774348668, 'j1_range_deg': [122.61040362939157, 139.49561281132193], 'j1_span_deg': 16.885209181930364, 'j1_empty_reposition_deg': 130.9738981422243, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-58.75794176122352, -3.4053932106818623], 'j2_start_deg': -3.4053932106818623, 'j2_end_deg': -58.75794176122352, 'upper_arm_forward_tilt_range_deg': [-2.3542635967685426, 83.43809202673717], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c00 branch 1 withdraw PASS {'score': 58.02766833520025, 'j1_range_deg': [-35.886749711766626, -24.628490834532332], 'j1_span_deg': 11.258258877234294, 'j1_empty_reposition_deg': 33.150207391669205, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-176.61684955349648, -121.2562204801343], 'j2_start_deg': -176.61684955349648, 'j2_end_deg': -121.2562204801343, 'upper_arm_forward_tilt_range_deg': [36.79279106584118, 86.8228066349338], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c00 loaded path PASS, checking empty return
+carton_l00_c00 pregrasp PASS samples 48211 completed 38
+carton_l00_c00 approach PASS samples 48231 completed 38
+carton_l00_c00 grasp PASS samples 48232 completed 38
+carton_l00_c00 separate PASS samples 48619 completed 38
+carton_l00_c00 withdraw PASS samples 48950 completed 38
+carton_l00_c00 transfer PASS samples 49184 completed 38
+carton_l00_c00 release PASS samples 49185 completed 38
+carton_l00_c00 drop PASS samples 49192 completed 38
+carton_l00_c00 exit PASS samples 49213 completed 38
+carton_l00_c00 park PASS samples 49489 completed 38
+carton_l00_c00 outfeed PASS samples 49642 completed 38
+carton_l00_c04 top grasp solutions 2
+carton_l00_c04 branch 0 withdraw PASS {'score': 30.818592853216774, 'j1_range_deg': [32.606884360009836, 49.05309001351002], 'j1_span_deg': 16.446205653500186, 'j1_empty_reposition_deg': 24.08516969091221, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-167.5441038378039, -111.41200018476327], 'j2_start_deg': -167.5441038378039, 'j2_end_deg': -111.41200018476327, 'upper_arm_forward_tilt_range_deg': [-2.638340263167187, 70.85412029281332], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c04 branch 1 withdraw PASS {'score': 300.0243536696555, 'j1_range_deg': [-164.61320403161514, -156.19961934685952], 'j1_span_deg': 8.41358468475562, 'j1_empty_reposition_deg': 173.1349178102665, 'j1_empty_reposition_weight': 2.0, 'j2_range_deg': [-68.58362092029667, -12.45137690648454], 'j2_start_deg': -12.45137690648454, 'j2_end_deg': -68.58362092029667, 'upper_arm_forward_tilt_range_deg': [27.51048196801208, 78.29399458538136], 'upper_arm_forward_free_deg': 30, 'preference_semantics': 'SOFT_BRANCH_ORDERING_NO_LIMIT_OR_COLLISION_EXCEPTION'}
+carton_l00_c04 loaded path PASS, checking empty return
+carton_l00_c04 pregrasp PASS samples 49920 completed 39
+carton_l00_c04 approach PASS samples 49940 completed 39
+carton_l00_c04 grasp PASS samples 49941 completed 39
+carton_l00_c04 separate PASS samples 50329 completed 39
+carton_l00_c04 withdraw PASS samples 50648 completed 39
+carton_l00_c04 transfer PASS samples 50899 completed 39
+carton_l00_c04 release PASS samples 50900 completed 39
+carton_l00_c04 drop PASS samples 50907 completed 39
+carton_l00_c04 exit PASS samples 50930 completed 39
+carton_l00_c04 park PASS samples 51206 completed 39
+carton_l00_c04 outfeed PASS samples 51441 completed 39
+carton_l00_c04 belt_raise PASS samples 51444 completed 40
+carton_l00_c04 return PASS samples 51445 completed 40
+{"gap_m": 0.1, "status": "COMPLETED_KINEMATIC_FULL_FACE", "completed_cartons": 40, "report": "outputs/s50_spacer80_full_face02_20261112/gap_100/cycle.json", "failure": null}

@@ -1,0 +1,13 @@
+{
+  "status": "RUNNING",
+  "sample_count": 7438,
+  "model_fk_source": "SAME_CAD_DEFINITION",
+  "source_report_sha256": "d905eca7ff6ce8b63749e16a8c3a0ad91c1f0b9730fe7f45101d4bac108d5d0e",
+  "html_sha256": "2b97892f3f2c75ee3832872c6b085d42ed3730fd0cd8a5a5f4c5a3f0d5fcd5b0",
+  "full_task_state": true,
+  "robot_joint_count": 6,
+  "carton_initial_count": 40,
+  "tool_connected": true,
+  "browser_acceptance": "PENDING",
+  "offline_payload_files": []
+}

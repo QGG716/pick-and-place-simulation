@@ -1,0 +1,118 @@
+{
+  "source": "assets/robots/huayan/S50_1.STEP",
+  "sha256": "2f3d1d987c146ba9ba59377377f2590882c664cdd5117912b81eea47e242973b",
+  "previous_source_sha256": "7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3",
+  "axis_comparison": [
+    {
+      "joint": "J1",
+      "line_point_difference_m": 0.0,
+      "axis_difference": 2.465190328815662e-32
+    },
+    {
+      "joint": "J2",
+      "line_point_difference_m": 1.232595164407831e-32,
+      "axis_difference": 6.972611193684198e-32
+    },
+    {
+      "joint": "J3",
+      "line_point_difference_m": 2.220446049250313e-16,
+      "axis_difference": 7.11069610745824e-31
+    },
+    {
+      "joint": "J4",
+      "line_point_difference_m": 2.710505426835583e-23,
+      "axis_difference": 4.409866522165503e-31
+    },
+    {
+      "joint": "J5",
+      "line_point_difference_m": 0.0,
+      "axis_difference": 3.9462299860811545e-31
+    },
+    {
+      "joint": "J6",
+      "line_point_difference_m": 2.9582283945787943e-31,
+      "axis_difference": 4.641895130180582e-30
+    }
+  ],
+  "parts": [
+    {
+      "link": "s50_base",
+      "vertices": 46050,
+      "triangles": 92154,
+      "missing_tessellation_faces": [],
+      "source_topology_valid": true
+    },
+    {
+      "link": "s50_link_1",
+      "vertices": 168072,
+      "triangles": 335821,
+      "missing_tessellation_faces": [
+        {
+          "face_index": 74,
+          "area_m2": -1.2925292930646036e-06,
+          "surface_centroid_m": [
+            0.12688720995064443,
+            0.3463006745638878,
+            -2.9324589189176955e-05
+          ],
+          "surface_type": "GeomAbs_SurfaceType.GeomAbs_Plane"
+        }
+      ],
+      "source_topology_valid": false
+    },
+    {
+      "link": "s50_link_2",
+      "vertices": 139325,
+      "triangles": 278421,
+      "missing_tessellation_faces": [
+        {
+          "face_index": 75,
+          "area_m2": -1.292529293052894e-06,
+          "surface_centroid_m": [
+            -0.4005006745638861,
+            0.1534127900493696,
+            2.9138490605107745e-05
+          ],
+          "surface_type": "GeomAbs_SurfaceType.GeomAbs_Plane"
+        }
+      ],
+      "source_topology_valid": true
+    },
+    {
+      "link": "s50_link_3",
+      "vertices": 167859,
+      "triangles": 335624,
+      "missing_tessellation_faces": [],
+      "source_topology_valid": true
+    },
+    {
+      "link": "s50_link_4",
+      "vertices": 60856,
+      "triangles": 121710,
+      "missing_tessellation_faces": [],
+      "source_topology_valid": true
+    },
+    {
+      "link": "s50_link_5",
+      "vertices": 61047,
+      "triangles": 122090,
+      "missing_tessellation_faces": [],
+      "source_topology_valid": true
+    },
+    {
+      "link": "s50_link_6",
+      "vertices": 15834,
+      "triangles": 31662,
+      "missing_tessellation_faces": [],
+      "source_topology_valid": true
+    }
+  ],
+  "flange_origin_difference_m": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "support_plane_y_m": -0.0030000000000000022,
+  "units": "metres",
+  "scope": "BASIC_KINEMATIC_MODEL_PREPARATION_NOT_CERTIFICATION"
+}
