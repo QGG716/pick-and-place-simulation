@@ -168,3 +168,49 @@ def test_completed_outfeed_body_does_not_reappear_during_belt_lowering(context):
     c.outfed_carton_ids={'carton_l07_c02'}
     assert checker.check(q,height=1.475,payload=box,phase='belt_lower_after_handoff')
     assert len(c.active_cartons)==39
+
+
+def test_cup_target_contact_follows_explicit_phases_not_a_default():
+    from types import SimpleNamespace
+    from unloading_sim.s50_face_kinematic import FaceRun
+    calls=[]
+    run=FaceRun.__new__(FaceRun)
+    run.robot=SimpleNamespace(fk=lambda q:np.eye(4));run.height=.6;run.box=np.eye(4);run.failures=[];run.target=None
+    run.checker=SimpleNamespace(check=lambda q,h,body,contact,phase:calls.append((phase,contact)) or True,last=None)
+    for phase in ['pregrasp','park','belt_raise','belt_lower','resume_empty_boundary','home_height','outfeed']:
+        run.valid(np.zeros(6),phase)
+    for phase in ['grasp_candidate','pregrasp_reverse','approach','extract','transfer','loaded_flow','drop_corridor','drop','exit']:
+        run.valid(np.zeros(6),phase)
+    run.valid(np.zeros(6),'approach',contact=False)
+    assert [c for _,c in calls]==[False]*7+[True]*9+[False]
+    assert c_settings_gap()==.005
+
+
+def c_settings_gap():
+    import yaml
+    values={yaml.safe_load(p.read_text(encoding='utf8'))['collision']['minimum_gap_m']
+            for p in (ROOT/'configs/robots').glob('huayan_s50_*kinematic_sim.yaml')}
+    assert len(values)==1
+    return values.pop()
+
+
+def test_free_payload_keeps_5mm_gap_but_belt_ride_allows_support_contact(context):
+    pytest.importorskip('pinocchio');pytest.importorskip('coal')
+    from types import SimpleNamespace
+    from unloading_sim.s50_sim_collision import SimCollision
+    c=SimpleNamespace(**vars(context));c.settings=dict(context.settings);c.settings['collision']=dict(context.settings['collision'],minimum_gap_m=.005)
+    q=[.13321719581922287,-1.4429302127844457,-1.3376641785418004,2.7805971237330325,-1.4375789563789023,-3.141593027554974]
+    checker=SimCollision(c)
+    box=np.eye(4);box[:3,3]=[-3.5010001713726835,-.8,.8350011457180528]
+    low,high=0.,.2
+    for _ in range(40):  # smallest lift that clears the longitudinal belt intersection
+        mid=(low+high)/2;trial=box.copy();trial[2,3]+=mid
+        if checker.check(q,height=1.475,payload=trial,phase='outfeed'):high=mid
+        else:low=mid
+    near=box.copy();near[2,3]+=high+.002
+    assert checker.check(q,height=1.475,payload=near,phase='outfeed')
+    assert not checker.check(q,height=1.475,payload=near,phase='loaded_flow')
+    assert checker.last['kind']=='GAP' and 'carton_l07_c02' in checker.last['pair']
+    assert checker.last['distance_m']<.005
+    far=box.copy();far[2,3]+=high+.02
+    assert checker.check(q,height=1.475,payload=far,phase='loaded_flow')

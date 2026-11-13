@@ -65,10 +65,10 @@
 python tools/run_s50_face_kinematic_sim.py --config configs/robots/huayan_s50_spacer80_kinematic_sim.yaml --gaps .1 --allow-side-suction --output outputs/s50_spacer80_fixed_face
 ```
 
-授权服务器上的完整命令：
+授权服务器上在既有 rootfs 的 `/opt/planning-venv` 中执行（服务器地址与登录方式不写入仓库）：
 
 ```bash
-ssh -p 30794 root@connect.westd.seetacloud.com "chroot /root/m710-gap-search-20261107/rootfs /bin/bash -lc 'cd /work-s50-step1-kinematic-20261112 && OPENBLAS_NUM_THREADS=1 /opt/planning-venv/bin/python tools/run_s50_face_kinematic_sim.py --config configs/robots/huayan_s50_spacer80_kinematic_sim.yaml --gaps .1 --allow-side-suction --output outputs/s50_spacer80_fixed_face'"
+OPENBLAS_NUM_THREADS=1 /opt/planning-venv/bin/python tools/run_s50_face_kinematic_sim.py --config configs/robots/huayan_s50_spacer80_kinematic_sim.yaml --gaps .1 --allow-side-suction --output outputs/s50_spacer80_fixed_face
 ```
 
 现有 `viewer.html` 可直接离线打开，无需重新计算。最终计算发生在 `outputs/s50_spacer80_full_face02_20261112/gap_100`。

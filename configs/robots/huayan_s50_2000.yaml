@@ -109,7 +109,7 @@ source:
   ros_reference: https://github.com/huayan-robotics/elfin_s_robot
   accessed_date: '2026-11-10'
   model_file_sha256: 7296244abc02bca236a7ed26a0f10f5cc56fc63b7381fc1293b2edbb92509bc3
-  model_license_or_usage_terms: User-supplied CAD for this project; no explicit CAD redistribution license obtained. ROS repository license is not applied to CAD.
+  model_license_or_usage_terms: Redistribution with this repository authorized in writing by the project owner on 2026-11-13 (docs/redistribution_authorization_20261113.md). ROS repository license is not applied to CAD.
   model_source: ../../assets/robots/huayan_s50_2000/sources.json
   cad_measurements: ../../assets/robots/huayan_s50_2000/derived/interface_measurements.json
   specifications_scope: S50 scalar specifications and measured real CAD geometry; controller coordinates and collision coverage not qualified.

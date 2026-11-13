@@ -89,7 +89,13 @@ class FaceRun:
         if not r.valid(r.q,'resume_empty_boundary'):raise ValueError('RESUME_RECORDED_STATE_COLLIDES')
         return r
 
-    def valid(self,q,phase,*,relative=None,box=None,height=None,contact=True):
+    # Cups may touch the target only from final approach to release/exit;
+    # free transit, belt motion and parking keep normal cup/target checks.
+    CONTACT_PHASES=frozenset({'grasp_candidate','pregrasp_reverse','approach','extract','transfer',
+                              'loaded_flow','drop_corridor','drop','exit'})
+
+    def valid(self,q,phase,*,relative=None,box=None,height=None,contact=None):
+        if contact is None:contact=phase in self.CONTACT_PHASES
         body=self.robot.fk(q)@relative if relative is not None else (self.box if box is None else box)
         ok=self.checker.check(q,self.height if height is None else height,body,contact,phase)
         if not ok:self.failures.append(dict(record_kind='REJECTED_CANDIDATE_STATE',target=self.target.name if self.target else None,**deepcopy(self.checker.last)))
@@ -117,10 +123,15 @@ class FaceRun:
             phase=phase,samples=len(self.samples),checks=self.checker.check_count,failures=len(self.failures)))
         print(self.target.name,phase,'PASS','samples',len(self.samples),'completed',len(self.completed),flush=True)
 
-    def shaped(self,path,phase,relative=None):
+    def shaped(self,path,phase,relative=None,labels=None):
         timing=self.c.settings['timing'];rows,law=continuous_samples(path,timing['joint_velocity_rad_s'],timing['joint_acceleration_rad_s2'])
         for row in rows:
-            if not self.valid(row['q'],phase,relative=relative):raise RuntimeError('SMOOTH_PATH_COLLISION:'+phase)
+            checked=phase
+            if labels is not None:
+                k=row['knot_index'];around={labels[min(k,len(labels)-1)],labels[min(k+1,len(labels)-1)]}
+                # The stack-separation permission follows the extraction knots only.
+                if around&{'separate','withdraw'}:checked='extract'
+            if not self.valid(row['q'],checked,relative=relative):raise RuntimeError('SMOOTH_PATH_COLLISION:'+checked)
         return rows,law
 
     def emit(self,rows,law,phase,labels=None):
@@ -268,7 +279,7 @@ class FaceRun:
         for z in np.linspace(final[2,3],self.height+ext[2],8):
             box=final.copy();box[2,3]=z
             if not self.valid(path[-1],'drop_corridor',box=box):raise RuntimeError('DROP_CORRIDOR_COLLISION')
-        rows,law=self.shaped(path,'loaded_flow',relative)
+        rows,law=self.shaped(path,'loaded_flow',relative,labels=labels)
         return dict(rows=rows,law=law,labels=labels,relative=relative,release_body=final,release_drop_m=drop,release_y_m=release_y,
             release_yaw_deg=float(np.rad2deg(yaw)),route=route,ik_knots=len(path),face=face,
             extraction_lateral_shift_m=extraction['lateral_shift_m'])

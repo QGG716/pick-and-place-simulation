@@ -35,7 +35,7 @@ $env:PYTHONPATH='outputs/s50_model_sources/cad_python312'
 
 可选修复复现使用 `audit_step.py --repair --output assets/robots/huayan_s50_2000/derived/healed`；原始 STEP 保持不变。报告记录的是本轮实际失败结果，不会将修复尝试当作修复成功。
 
-原始 CAD 来源是用户提供的本地文件；其哈希是否与官网需要登录的 ZIP 相同尚未核实。未找到 CAD/手册的明确再分发许可，不把官方 ROS 仓库的 BSD-3-Clause 许可套用于这些文件。保留厂商归属与来源说明。
+原始 CAD 来源是用户提供的本地文件；其哈希是否与官网需要登录的 ZIP 相同尚未核实。项目负责人已于 2026-11-13 书面确认 CAD 与手册可随本仓库分发，见 [分发授权记录](../../../docs/redistribution_authorization_20261113.md)；官方 ROS 仓库的 BSD-3-Clause 许可仍不套用于这些文件。保留厂商归属与来源说明。
 
 ## 无损网格发布
 

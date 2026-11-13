@@ -1,0 +1,4689 @@
+{
+  "schema": "s50_quasi_static_load_screening_v1",
+  "status": "SCREENING_ESTIMATE_NOT_QUALIFICATION",
+  "cycle": {
+    "path": "docs/experiments/s50_spacer80_fixed_face_20261112/cycle.json.gz",
+    "uncompressed_sha256": "f8c3aa6df540f3a2b9053f4b07668667e8aad38409c3d3883f38adb6419d4f33",
+    "status": "COMPLETED_KINEMATIC_FULL_FACE",
+    "completed_cartons": 40
+  },
+  "config": "/work-s50-payload30-20261113/configs/robots/huayan_s50_spacer80_kinematic_sim.yaml",
+  "model_definition_sha256": "538db3471a7cd2fbe7f5d854c956a7a1ffb6387c7a66b86dec1ed197766c610f",
+  "environment_fingerprint": "429b54211353b8820e19b5c08aba1313e09ccc23a6792dd28a430927d5941541",
+  "gravity_m_s2": 9.80665,
+  "carton_mass_kg": 30.0,
+  "tool": {
+    "mass_kg": 20.0,
+    "com_flange_m": [
+      -0.002622005,
+      0.000777904,
+      0.18481009800000003
+    ],
+    "inertia_com_kg_m2": [
+      [
+        0.535363874,
+        0.004253938,
+        -0.004337304
+      ],
+      [
+        0.004253938,
+        0.191270136,
+        0.001445978
+      ],
+      [
+        -0.004337304,
+        0.001445978,
+        0.629784544
+      ]
+    ],
+    "source": "configs/tools/unloading_gripper_20kg.yaml (scaled STEP distribution; S50 spacer/mount mass not added)"
+  },
+  "link_inertials": {
+    "method": "CAD_VISUAL_MESH_VOLUME_UNIFORM_DENSITY_SCALED_TO_PUBLISHED_TOTAL",
+    "published_total_mass_kg": 156.0,
+    "density_kg_m3": 1705.0827615046728,
+    "links": {
+      "s50_base": {
+        "mass_kg": 14.88278778689975,
+        "com_local_m": [
+          -0.0014033360541887796,
+          2.72062426676708e-06,
+          0.0651338795063314
+        ],
+        "inertia_com_kg_m2": [
+          [
+            0.10222774544020524,
+            0.0009832036967701802,
+            -0.00083162326691937
+          ],
+          [
+            0.0009832036967701802,
+            0.10039645328948502,
+            2.2891073253429992e-06
+          ],
+          [
+            -0.00083162326691937,
+            2.2891073253429992e-06,
+            0.15591708539954405
+          ]
+        ],
+        "volume_m3": 0.00872848410816507,
+        "boundary_edges": 20,
+        "nonmanifold_edges": 16
+      },
+      "s50_link_1": {
+        "mass_kg": 32.542392969859655,
+        "com_local_m": [
+          -0.031293219484645564,
+          8.524000636314759e-06,
+          0.00013158791992653375
+        ],
+        "inertia_com_kg_m2": [
+          [
+            0.3485931554809738,
+            9.32941844958832e-06,
+            -0.0001620967011899026
+          ],
+          [
+            9.32941844958832e-06,
+            0.43605607498255217,
+            -1.1434747785718549e-05
+          ],
+          [
+            -0.0001620967011899026,
+            -1.1434747785718549e-05,
+            0.37500285989998
+          ]
+        ],
+        "volume_m3": 0.019085521069453656,
+        "boundary_edges": 201,
+        "nonmanifold_edges": 20
+      },
+      "s50_link_2": {
+        "mass_kg": 75.3985098790769,
+        "com_local_m": [
+          -0.001105213957150275,
+          -4.496157775757489e-05,
+          0.37474706514069633
+        ],
+        "inertia_com_kg_m2": [
+          [
+            9.698363187413227,
+            -5.061676324090341e-05,
+            0.03925111889543429
+          ],
+          [
+            -5.061676324090341e-05,
+            9.779324484943729,
+            -0.000997457793102229
+          ],
+          [
+            0.03925111889543429,
+            -0.000997457793102229,
+            0.5785206776132465
+          ]
+        ],
+        "volume_m3": 0.0442198534765201,
+        "boundary_edges": 219,
+        "nonmanifold_edges": 6
+      },
+      "s50_link_3": {
+        "mass_kg": 25.322778278798342,
+        "com_local_m": [
+          -0.11415402527150752,
+          -5.725551907145773e-05,
+          0.40565599648429423
+        ],
+        "inertia_com_kg_m2": [
+          [
+            2.989751770413146,
+            9.038825427043045e-06,
+            -0.1620323794659412
+          ],
+          [
+            9.038825427043045e-06,
+            3.0076265833455706,
+            -0.00045293505905192406
+          ],
+          [
+            -0.1620323794659412,
+            -0.00045293505905192406,
+            0.08231836059469652
+          ]
+        ],
+        "volume_m3": 0.014851348480264924,
+        "boundary_edges": 36,
+        "nonmanifold_edges": 63
+      },
+      "s50_link_4": {
+        "mass_kg": 3.512424039405227,
+        "com_local_m": [
+          0.005963136283845013,
+          -6.948588692805211e-06,
+          0.004631577734152862
+        ],
+        "inertia_com_kg_m2": [
+          [
+            0.010864460845497437,
+            -5.084384816339265e-08,
+            7.653444326864986e-05
+          ],
+          [
+            -5.084384816339265e-08,
+            0.011481293662539652,
+            -1.1623420654696291e-07
+          ],
+          [
+            7.653444326864986e-05,
+            -1.1623420654696291e-07,
+            0.007059892950116544
+          ]
+        ],
+        "volume_m3": 0.002059972758334406,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 3
+      },
+      "s50_link_5": {
+        "mass_kg": 3.51241942448871,
+        "com_local_m": [
+          -0.0046311053141271435,
+          6.873460528100816e-06,
+          -0.005962987838768339
+        ],
+        "inertia_com_kg_m2": [
+          [
+            0.007059884896033557,
+            -1.3253972631549048e-07,
+            7.652439612927902e-05
+          ],
+          [
+            -1.3253972631549048e-07,
+            0.011481230020119209,
+            -4.36124162616069e-08
+          ],
+          [
+            7.652439612927902e-05,
+            -4.36124162616069e-08,
+            0.010864401168837842
+          ]
+        ],
+        "volume_m3": 0.0020599700517698796,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 3
+      },
+      "s50_link_6": {
+        "mass_kg": 0.8286876214714085,
+        "com_local_m": [
+          -0.02073810185892321,
+          2.9169451756947763e-06,
+          0.0003142296515048662
+        ],
+        "inertia_com_kg_m2": [
+          [
+            0.0014572119418130357,
+            5.43271523064996e-08,
+            -1.1553974616766243e-06
+          ],
+          [
+            5.43271523064996e-08,
+            0.000876620471483513,
+            -9.165784634678387e-08
+          ],
+          [
+            -1.1553974616766243e-06,
+            -9.165784634678387e-08,
+            0.000858987477668786
+          ]
+        ],
+        "volume_m3": 0.00048601020441970934,
+        "boundary_edges": 2,
+        "nonmanifold_edges": 2
+      }
+    }
+  },
+  "payload_curve": {
+    "source": "assets/robots/huayan_s50_2000/source/S-series-mechanical.pdf PDF page 37",
+    "points_mm_kg": [
+      [
+        0.0,
+        50.0
+      ],
+      [
+        40.0,
+        50.0
+      ],
+      [
+        50.0,
+        41.7
+      ],
+      [
+        450.0,
+        35.0
+      ],
+      [
+        550.0,
+        30.0
+      ],
+      [
+        600.0,
+        28.0
+      ],
+      [
+        650.0,
+        26.1
+      ],
+      [
+        700.0,
+        24.5
+      ],
+      [
+        750.0,
+        23.0
+      ],
+      [
+        800.0,
+        21.8
+      ]
+    ],
+    "reading_uncertainty_kg": 0.5,
+    "note": "Manual 2.3.4 states larger payloads are allowed with the last joint facing down, but gives no S50 curve for that case; not used."
+  },
+  "sensitivity_cases": {
+    "link_mass_x0.7": {
+      "joint_names": [
+        "s50_joint_1",
+        "s50_joint_2",
+        "s50_joint_3",
+        "s50_joint_4",
+        "s50_joint_5",
+        "s50_joint_6"
+      ],
+      "sample_count": 51446,
+      "fk_replay_max_error_m": 0.0,
+      "peak_abs_torque_nm": [
+        2.7001475699719663e-13,
+        1394.1686039871938,
+        846.0843254841084,
+        265.50404024602636,
+        61.85534891175589,
+        0.5345661886517218
+      ],
+      "peak_abs_payload_only_torque_nm": [
+        1.7167704894261298e-13,
+        892.9515987994275,
+        724.151027385053,
+        264.7738124176422,
+        61.14116627439918,
+        0.5362667390803882
+      ],
+      "rms_torque_nm": [
+        1.1515823129005507e-13,
+        602.1306425481147,
+        493.6867816753657,
+        111.5648473259112,
+        12.290334516434301,
+        0.16356553826576917
+      ],
+      "peak_sample": [
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 7495,
+          "time_s": 474.049295335045,
+          "target": "carton_l06_c02",
+          "phase": "grasp",
+          "q_rad": [
+            0.12212339168677298,
+            -1.4564444411259234,
+            -1.6522200527210553,
+            3.108679692805731,
+            -1.4486729496039634,
+            -3.1415941404500165
+          ]
+        },
+        {
+          "index": 522,
+          "time_s": 35.30935995352994,
+          "target": "carton_l07_c02",
+          "phase": "transfer",
+          "q_rad": [
+            -0.0012942271436845326,
+            -0.699776821608561,
+            -2.0396353219424204,
+            2.7394461697012127,
+            -1.5721004244525378,
+            -3.141593015636923
+          ]
+        },
+        {
+          "index": 2356,
+          "time_s": 152.51116722141225,
+          "target": "carton_l07_c03",
+          "phase": "pregrasp",
+          "q_rad": [
+            0.4343854675236885,
+            -1.3551652955850149,
+            -1.5973802484730366,
+            1.2494522687627565,
+            -0.1658741545361872,
+            -1.4384915059959407
+          ]
+        },
+        {
+          "index": 40981,
+          "time_s": 2600.3949941777537,
+          "target": "carton_l01_c00",
+          "phase": "park",
+          "q_rad": [
+            -0.24228331264841596,
+            -1.649075438735249,
+            -1.613478626651706,
+            3.9946561436400234,
+            -0.0272047438314294,
+            -1.9991128793759299
+          ]
+        }
+      ],
+      "peak_overturning_moment_nm": 1434.7167372115557,
+      "max_payload_offset_m": 0.4054843612000186,
+      "min_payload_curve_margin_kg": -14.25436305010031,
+      "samples_over_payload_curve": 23762,
+      "samples_beyond_curve_range": 0,
+      "per_target": {
+        "carton_l00_c00": {
+          "peak_abs_torque_nm": [
+            2.7001475699719663e-13,
+            1394.1686039871938,
+            634.3986305902968,
+            83.06871286047107,
+            47.87461973314827,
+            0.5345661487635878
+          ],
+          "peak_overturning_nm": 1434.7167372115557,
+          "max_attached_payload_offset_m": 0.3154331911010751,
+          "min_curve_margin_kg": -12.746005950943008,
+          "attached_samples": 953,
+          "samples": 1709,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c01": {
+          "peak_abs_torque_nm": [
+            2.502175474703595e-13,
+            1267.9685872664868,
+            590.4177830105334,
+            82.83236203760829,
+            47.878292083217595,
+            0.5328900840382256
+          ],
+          "peak_overturning_nm": 1312.395520113365,
+          "max_attached_payload_offset_m": 0.315434403264089,
+          "min_curve_margin_kg": -12.746026254673488,
+          "attached_samples": 906,
+          "samples": 1684,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c02": {
+          "peak_abs_torque_nm": [
+            2.2823821239585524e-13,
+            1203.3422842855732,
+            568.4335580846879,
+            82.76774742571826,
+            47.59213806094854,
+            0.48094791413790916
+          ],
+          "peak_overturning_nm": 1250.0331113062477,
+          "max_attached_payload_offset_m": 0.31545083386518413,
+          "min_curve_margin_kg": -12.746301467241835,
+          "attached_samples": 914,
+          "samples": 1723,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c03": {
+          "peak_abs_torque_nm": [
+            2.0320979962718553e-13,
+            1214.3898852134514,
+            572.143433696033,
+            82.75293779927269,
+            47.58028963406975,
+            0.44738795076367416
+          ],
+          "peak_overturning_nm": 1260.6327865714636,
+          "max_attached_payload_offset_m": 0.3154310836401249,
+          "min_curve_margin_kg": -12.74597065097209,
+          "attached_samples": 940,
+          "samples": 1762,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c04": {
+          "peak_abs_torque_nm": [
+            1.7542313109037604e-13,
+            1298.7057533647062,
+            601.0167886294355,
+            82.83143287752267,
+            47.57407939991755,
+            0.4098655144865444
+          ],
+          "peak_overturning_nm": 1342.015243765277,
+          "max_attached_payload_offset_m": 0.31544276104319696,
+          "min_curve_margin_kg": -12.746166247473546,
+          "attached_samples": 959,
+          "samples": 1803,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c00": {
+          "peak_abs_torque_nm": [
+            2.673444961020884e-13,
+            1380.139940848768,
+            634.3875512175559,
+            83.0513236507462,
+            47.87412862221079,
+            0.5345661886517218
+          ],
+          "peak_overturning_nm": 1421.0882317427802,
+          "max_attached_payload_offset_m": 0.315426151306054,
+          "min_curve_margin_kg": -12.745888034376406,
+          "attached_samples": 665,
+          "samples": 1418,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c01": {
+          "peak_abs_torque_nm": [
+            2.451861820758219e-13,
+            1240.3374840877395,
+            590.4132694644942,
+            82.82395655040838,
+            47.87771713519827,
+            0.5328903406747897
+          ],
+          "peak_overturning_nm": 1285.7193342067533,
+          "max_attached_payload_offset_m": 0.31542649560288083,
+          "min_curve_margin_kg": -12.745893801348252,
+          "attached_samples": 655,
+          "samples": 1431,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c02": {
+          "peak_abs_torque_nm": [
+            2.2284585733680984e-13,
+            1169.7942503201973,
+            568.4282632056586,
+            82.76964973372989,
+            47.59189080823612,
+            0.48094695199669796
+          ],
+          "peak_overturning_nm": 1217.7686899799137,
+          "max_attached_payload_offset_m": 0.31543760343772986,
+          "min_curve_margin_kg": -12.746079857581975,
+          "attached_samples": 660,
+          "samples": 1468,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c03": {
+          "peak_abs_torque_nm": [
+            1.9904310897690934e-13,
+            1181.8007148655965,
+            572.123712378279,
+            82.78163305894387,
+            47.58027326959227,
+            0.44739142737433946
+          ],
+          "peak_overturning_nm": 1229.2695612172959,
+          "max_attached_payload_offset_m": 0.31542652714037206,
+          "min_curve_margin_kg": -12.745894329601228,
+          "attached_samples": 684,
+          "samples": 1504,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c04": {
+          "peak_abs_torque_nm": [
+            1.731663219737195e-13,
+            1274.028454368483,
+            601.0061075058175,
+            82.81019318105194,
+            47.573551129285605,
+            0.4098707324845734
+          ],
+          "peak_overturning_nm": 1318.1487138543534,
+          "max_attached_payload_offset_m": 0.31542650935167654,
+          "min_curve_margin_kg": -12.745894031640582,
+          "attached_samples": 658,
+          "samples": 1496,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c00": {
+          "peak_abs_torque_nm": [
+            2.6318174940525633e-13,
+            1358.269377028585,
+            634.3947029419319,
+            83.06704259381766,
+            47.874624879736466,
+            0.5345661487839936
+          ],
+          "peak_overturning_nm": 1399.8577752542635,
+          "max_attached_payload_offset_m": 0.31542595285775277,
+          "min_curve_margin_kg": -12.745884710367356,
+          "attached_samples": 259,
+          "samples": 1013,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c01": {
+          "peak_abs_torque_nm": [
+            2.388480778386474e-13,
+            1205.529370404729,
+            590.4274507218129,
+            82.8310152839048,
+            47.877824782588,
+            0.5328902939527893
+          ],
+          "peak_overturning_nm": 1252.1738019987179,
+          "max_attached_payload_offset_m": 0.31541595688763374,
+          "min_curve_margin_kg": -12.745717277867868,
+          "attached_samples": 255,
+          "samples": 1031,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c02": {
+          "peak_abs_torque_nm": [
+            2.162264456360048e-13,
+            1128.6138339684244,
+            568.4226437492837,
+            82.75559261072326,
+            47.59167560000253,
+            0.4809503234044509
+          ],
+          "peak_overturning_nm": 1178.2685565603754,
+          "max_attached_payload_offset_m": 0.31542591175591383,
+          "min_curve_margin_kg": -12.745884021911557,
+          "attached_samples": 259,
+          "samples": 1077,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c03": {
+          "peak_abs_torque_nm": [
+            1.939204946674798e-13,
+            1141.7430260090175,
+            572.1344227839894,
+            82.75976682466322,
+            47.580290895859655,
+            0.447388281742116
+          ],
+          "peak_overturning_nm": 1190.8100525778527,
+          "max_attached_payload_offset_m": 0.3154310158295893,
+          "min_curve_margin_kg": -12.745969515145617,
+          "attached_samples": 263,
+          "samples": 1084,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c04": {
+          "peak_abs_torque_nm": [
+            1.7025958742667763e-13,
+            1242.2493949149773,
+            600.9878188599164,
+            82.81801962802763,
+            47.57383683259505,
+            0.40986785193365893
+          ],
+          "peak_overturning_nm": 1287.4595445704492,
+          "max_attached_payload_offset_m": 0.31542670292288905,
+          "min_curve_margin_kg": -12.745897273958391,
+          "attached_samples": 216,
+          "samples": 1054,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c00": {
+          "peak_abs_torque_nm": [
+            2.2033703236435693e-13,
+            1196.9392493440942,
+            642.0834349006461,
+            210.05025826018178,
+            6.529194672661137,
+            0.1681548827429007
+          ],
+          "peak_overturning_nm": 1209.7887175964952,
+          "max_attached_payload_offset_m": 0.40544689829627956,
+          "min_curve_margin_kg": -14.253735546462678,
+          "attached_samples": 564,
+          "samples": 1076,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c01": {
+          "peak_abs_torque_nm": [
+            1.9819256821790608e-13,
+            1010.9508497433168,
+            607.0657253417778,
+            250.89547171347135,
+            3.8736110921665827,
+            0.16916813731543084
+          ],
+          "peak_overturning_nm": 1041.6596753677877,
+          "max_attached_payload_offset_m": 0.4054663085691986,
+          "min_curve_margin_kg": -14.254060668534073,
+          "attached_samples": 280,
+          "samples": 857,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c02": {
+          "peak_abs_torque_nm": [
+            2.1041805342141918e-13,
+            1092.482050176478,
+            629.3519562295758,
+            82.68644325916466,
+            47.59505110643863,
+            0.4809408984294367
+          ],
+          "peak_overturning_nm": 1143.7159764501266,
+          "max_attached_payload_offset_m": 0.31543243930355525,
+          "min_curve_margin_kg": -12.745993358334552,
+          "attached_samples": 270,
+          "samples": 1091,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c03": {
+          "peak_abs_torque_nm": [
+            1.8945346857629056e-13,
+            1106.809806939761,
+            631.2624900210926,
+            82.5719426688018,
+            47.58026521085429,
+            0.4473904266748435
+          ],
+          "peak_overturning_nm": 1157.359599445407,
+          "max_attached_payload_offset_m": 0.3154319907485075,
+          "min_curve_margin_kg": -12.745985845037502,
+          "attached_samples": 277,
+          "samples": 1098,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c04": {
+          "peak_abs_torque_nm": [
+            1.3340516915919401e-13,
+            981.7631194853768,
+            538.5919857653512,
+            163.62491684374035,
+            45.89706574549987,
+            0.36958403753904795
+          ],
+          "peak_overturning_nm": 1124.0737897527029,
+          "max_attached_payload_offset_m": 0.40542567025640686,
+          "min_curve_margin_kg": -14.253379976794818,
+          "attached_samples": 280,
+          "samples": 1105,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l04_c00": {
+          "peak_abs_torque_nm": [
+            2.1197069370608885e-13,
+            1152.5538835037669,
+            757.4104455399463,
+            233.5291078167565,
+            4.714945720249795,
+            0.16564521396334655
+          ],
+          "peak_overturning_nm": 1165.8913795832027,
+          "max_attached_payload_offset_m": 0.4054275017241596,
+          "min_curve_margin_kg": -14.25341065387967,
+          "attached_samples": 911,
+          "samples": 1465,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c01": {
+          "peak_abs_torque_nm": [
+            1.857901155701042e-13,
+            945.0559647827257,
+            734.6140986365366,
+            250.86469949579998,
+            4.387993215627553,
+            0.15309542609890225
+          ],
+          "peak_overturning_nm": 977.8322548465301,
+          "max_attached_payload_offset_m": 0.40542557693626224,
+          "min_curve_margin_kg": -14.253378413682391,
+          "attached_samples": 270,
+          "samples": 805,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l04_c02": {
+          "peak_abs_torque_nm": [
+            1.6688215478496857e-13,
+            810.5791837013074,
+            838.3062668162311,
+            265.4771092901325,
+            3.85414746112917,
+            0.1529447118721433
+          ],
+          "peak_overturning_nm": 891.3733803799357,
+          "max_attached_payload_offset_m": 0.4054292664195482,
+          "min_curve_margin_kg": -14.25344021252743,
+          "attached_samples": 751,
+          "samples": 1231,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l04_c03": {
+          "peak_abs_torque_nm": [
+            1.870900641716674e-13,
+            1088.327034860305,
+            664.0127186488863,
+            82.06068982575802,
+            47.58021118511466,
+            0.44738879386383046
+          ],
+          "peak_overturning_nm": 1139.696205685217,
+          "max_attached_payload_offset_m": 0.3154227092982414,
+          "min_curve_margin_kg": -12.745830380745545,
+          "attached_samples": 218,
+          "samples": 1041,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c04": {
+          "peak_abs_torque_nm": [
+            1.667787512025016e-13,
+            1204.189309955487,
+            664.824610113542,
+            82.10835921567269,
+            47.57372340585215,
+            0.4098690390887121
+          ],
+          "peak_overturning_nm": 1250.7756919390688,
+          "max_attached_payload_offset_m": 0.31542343183308436,
+          "min_curve_margin_kg": -12.745842483204164,
+          "attached_samples": 245,
+          "samples": 1091,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l05_c00": {
+          "peak_abs_torque_nm": [
+            2.06473127022255e-13,
+            1123.3854810825192,
+            816.3234654227324,
+            233.5300146452979,
+            2.0508366864860905,
+            0.15370122954764537
+          ],
+          "peak_overturning_nm": 1137.065191666212,
+          "max_attached_payload_offset_m": 0.40542710060076115,
+          "min_curve_margin_kg": -14.25340393506275,
+          "attached_samples": 910,
+          "samples": 1360,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c01": {
+          "peak_abs_torque_nm": [
+            1.778799067929284e-13,
+            903.0241900925944,
+            813.0296262010578,
+            250.79626616379932,
+            0.7969212477476073,
+            0.15587306465231063
+          ],
+          "peak_overturning_nm": 937.2723621598625,
+          "max_attached_payload_offset_m": 0.4054306526959696,
+          "min_curve_margin_kg": -14.25346343265749,
+          "attached_samples": 208,
+          "samples": 695,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c02": {
+          "peak_abs_torque_nm": [
+            1.5947590693860777e-13,
+            762.7570945889958,
+            844.1876747894914,
+            265.4724791003249,
+            0.9875878093806302,
+            0.15315099105329882
+          ],
+          "peak_overturning_nm": 848.1197415567693,
+          "max_attached_payload_offset_m": 0.40542718058996446,
+          "min_curve_margin_kg": -14.253405274881906,
+          "attached_samples": 677,
+          "samples": 1107,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l05_c03": {
+          "peak_abs_torque_nm": [
+            1.4819661862636064e-13,
+            747.8204280620413,
+            782.3883192370477,
+            220.84838711544649,
+            42.378369761858735,
+            0.15259285709808013
+          ],
+          "peak_overturning_nm": 891.7076063251653,
+          "max_attached_payload_offset_m": 0.4054271558069855,
+          "min_curve_margin_kg": -14.25340485976701,
+          "attached_samples": 645,
+          "samples": 1323,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l05_c04": {
+          "peak_abs_torque_nm": [
+            1.303509005880143e-13,
+            882.8415429270942,
+            727.435983061548,
+            163.59134178228658,
+            15.76601846884279,
+            0.15302041350250156
+          ],
+          "peak_overturning_nm": 1038.793806395294,
+          "max_attached_payload_offset_m": 0.40542564665829417,
+          "min_curve_margin_kg": -14.253379581526431,
+          "attached_samples": 209,
+          "samples": 907,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "separate"
+          ]
+        },
+        "carton_l06_c00": {
+          "peak_abs_torque_nm": [
+            2.0567097735520265e-13,
+            1119.1230983400956,
+            814.5633689506374,
+            233.5965987535256,
+            4.24105536072594,
+            0.18369327160361953
+          ],
+          "peak_overturning_nm": 1132.8565890531993,
+          "max_attached_payload_offset_m": 0.4054781718279117,
+          "min_curve_margin_kg": -14.254259378117524,
+          "attached_samples": 935,
+          "samples": 1484,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c01": {
+          "peak_abs_torque_nm": [
+            1.7562537704839223e-13,
+            891.0456242187889,
+            833.3942681070858,
+            250.71698441338623,
+            1.669553673123492,
+            0.15446814683062124
+          ],
+          "peak_overturning_nm": 925.7364263164276,
+          "max_attached_payload_offset_m": 0.40542967244057576,
+          "min_curve_margin_kg": -14.253447013379642,
+          "attached_samples": 431,
+          "samples": 879,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c02": {
+          "peak_abs_torque_nm": [
+            1.5758570768246249e-13,
+            750.5495738845998,
+            846.0843254841084,
+            265.4727952050043,
+            2.5503208596821816,
+            0.15688245046037402
+          ],
+          "peak_overturning_nm": 837.1609181741898,
+          "max_attached_payload_offset_m": 0.4054265547610968,
+          "min_curve_margin_kg": -14.253394792248372,
+          "attached_samples": 707,
+          "samples": 1173,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c03": {
+          "peak_abs_torque_nm": [
+            1.4834700136014613e-13,
+            749.5236705299774,
+            779.1148968721049,
+            220.90640766766924,
+            61.85534683623091,
+            0.18150517638122673
+          ],
+          "peak_overturning_nm": 893.1379730883325,
+          "max_attached_payload_offset_m": 0.4054255699373024,
+          "min_curve_margin_kg": -14.253378296449817,
+          "attached_samples": 938,
+          "samples": 1828,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "separate",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l06_c04": {
+          "peak_abs_torque_nm": [
+            1.3001520081051804e-13,
+            871.9692903783523,
+            746.0787955428445,
+            163.56630006742344,
+            17.163417751019487,
+            0.15259110792281053
+          ],
+          "peak_overturning_nm": 1029.5697518283826,
+          "max_attached_payload_offset_m": 0.40542727711168036,
+          "min_curve_margin_kg": -14.25340689162065,
+          "attached_samples": 455,
+          "samples": 1136,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c00": {
+          "peak_abs_torque_nm": [
+            2.1321331262607542e-13,
+            1159.1467138912953,
+            814.5058821979562,
+            233.53170345892735,
+            1.571210718405743,
+            0.15290147194145176
+          ],
+          "peak_overturning_nm": 1172.4092955485814,
+          "max_attached_payload_offset_m": 0.4054264819947903,
+          "min_curve_margin_kg": -14.253393573412737,
+          "attached_samples": 1146,
+          "samples": 1616,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l07_c01": {
+          "peak_abs_torque_nm": [
+            1.7966064980660113e-13,
+            912.4871278804203,
+            795.8431570713283,
+            250.7168837087532,
+            4.444873062463973,
+            0.19738434071362038
+          ],
+          "peak_overturning_nm": 946.3921428761738,
+          "max_attached_payload_offset_m": 0.4054293554526786,
+          "min_curve_margin_kg": -14.253441703832365,
+          "attached_samples": 565,
+          "samples": 1028,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l07_c02": {
+          "peak_abs_torque_nm": [
+            1.6071018999104112e-13,
+            770.7314151362992,
+            821.3662553757727,
+            265.50404024602636,
+            4.347308350597488,
+            0.15259009751714062
+          ],
+          "peak_overturning_nm": 855.293295395251,
+          "max_attached_payload_offset_m": 0.4054843612000186,
+          "min_curve_margin_kg": -14.25436305010031,
+          "attached_samples": 733,
+          "samples": 1176,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c03": {
+          "peak_abs_torque_nm": [
+            1.470782029097132e-13,
+            735.1526470661614,
+            803.691988465233,
+            220.81801619774637,
+            61.85534891175589,
+            0.18150516149076137
+          ],
+          "peak_overturning_nm": 881.1124556154965,
+          "max_attached_payload_offset_m": 0.4054258709862286,
+          "min_curve_margin_kg": -14.25338333901933,
+          "attached_samples": 1181,
+          "samples": 2085,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l07_c04": {
+          "peak_abs_torque_nm": [
+            1.3073420469731766e-13,
+            895.2560499986514,
+            705.2729306279207,
+            163.5723852001222,
+            37.749938862108166,
+            0.2205936293682932
+          ],
+          "peak_overturning_nm": 1049.364737056047,
+          "max_attached_payload_offset_m": 0.40543166591039337,
+          "min_curve_margin_kg": -14.253480403999092,
+          "attached_samples": 710,
+          "samples": 1532,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        }
+      },
+      "rated_reference_abs_torque_nm": [
+        2.864005796889336e-13,
+        1514.0827342993034,
+        673.8505891770367,
+        209.78413061780617,
+        202.41380052202092,
+        0.0017875439601540816
+      ],
+      "rated_reference_q_rad": [
+        [
+          0.0,
+          -3.141592653589793,
+          -0.08726646259971647,
+          0.0,
+          1.0471975511965976,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.08726646259971647,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.4363323129985824,
+          0.3490658503988659,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.8726646259971648,
+          -2.530727415391778,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -3.141592653589793,
+          -1.5707963267948966,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.2617993877991494,
+          0.2617993877991494,
+          1.5707963267948966,
+          0.0,
+          0.0
+        ]
+      ],
+      "peak_to_rated_reference_ratio": [
+        0.9427870477443377,
+        0.9208008072507318,
+        1.2555963281376932,
+        1.2656059324607978,
+        0.30558859500800956,
+        299.05065305674697
+      ]
+    },
+    "link_mass_x1.0": {
+      "joint_names": [
+        "s50_joint_1",
+        "s50_joint_2",
+        "s50_joint_3",
+        "s50_joint_4",
+        "s50_joint_5",
+        "s50_joint_6"
+      ],
+      "sample_count": 51446,
+      "fk_replay_max_error_m": 0.0,
+      "peak_abs_torque_nm": [
+        3.1217479683822107e-13,
+        1609.0589157455352,
+        898.3414532408462,
+        265.8169950296196,
+        62.16142718490876,
+        0.5338373813251505
+      ],
+      "peak_abs_payload_only_torque_nm": [
+        1.7167704894261298e-13,
+        892.9515987994275,
+        724.151027385053,
+        264.7738124176422,
+        61.14116627439918,
+        0.5362667390803882
+      ],
+      "rms_torque_nm": [
+        1.3361410989225622e-13,
+        680.6286933578323,
+        537.8131529136375,
+        112.10299128659246,
+        12.351100646975336,
+        0.1634805099072055
+      ],
+      "peak_sample": [
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 7495,
+          "time_s": 474.049295335045,
+          "target": "carton_l06_c02",
+          "phase": "grasp",
+          "q_rad": [
+            0.12212339168677298,
+            -1.4564444411259234,
+            -1.6522200527210553,
+            3.108679692805731,
+            -1.4486729496039634,
+            -3.1415941404500165
+          ]
+        },
+        {
+          "index": 522,
+          "time_s": 35.30935995352994,
+          "target": "carton_l07_c02",
+          "phase": "transfer",
+          "q_rad": [
+            -0.0012942271436845326,
+            -0.699776821608561,
+            -2.0396353219424204,
+            2.7394461697012127,
+            -1.5721004244525378,
+            -3.141593015636923
+          ]
+        },
+        {
+          "index": 2356,
+          "time_s": 152.51116722141225,
+          "target": "carton_l07_c03",
+          "phase": "pregrasp",
+          "q_rad": [
+            0.4343854675236885,
+            -1.3551652955850149,
+            -1.5973802484730366,
+            1.2494522687627565,
+            -0.1658741545361872,
+            -1.4384915059959407
+          ]
+        },
+        {
+          "index": 40981,
+          "time_s": 2600.3949941777537,
+          "target": "carton_l01_c00",
+          "phase": "park",
+          "q_rad": [
+            -0.24228331264841596,
+            -1.649075438735249,
+            -1.613478626651706,
+            3.9946561436400234,
+            -0.0272047438314294,
+            -1.9991128793759299
+          ]
+        }
+      ],
+      "peak_overturning_moment_nm": 1665.6030590259757,
+      "max_payload_offset_m": 0.4054843612000186,
+      "min_payload_curve_margin_kg": -14.25436305010031,
+      "samples_over_payload_curve": 23762,
+      "samples_beyond_curve_range": 0,
+      "per_target": {
+        "carton_l00_c00": {
+          "peak_abs_torque_nm": [
+            3.1217479683822107e-13,
+            1609.0589157455352,
+            685.5782033749288,
+            85.08140342456451,
+            48.11012591227845,
+            0.5338373428994305
+          ],
+          "peak_overturning_nm": 1665.6030590259757,
+          "max_attached_payload_offset_m": 0.3154331911010751,
+          "min_curve_margin_kg": -12.746005950943008,
+          "attached_samples": 953,
+          "samples": 1709,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c01": {
+          "peak_abs_torque_nm": [
+            2.9199523386380434e-13,
+            1468.6705011104632,
+            637.69795927575,
+            84.84488862899411,
+            48.11380328134249,
+            0.532164509703485
+          ],
+          "peak_overturning_nm": 1530.3821244591477,
+          "max_attached_payload_offset_m": 0.315434403264089,
+          "min_curve_margin_kg": -12.746026254673488,
+          "attached_samples": 906,
+          "samples": 1684,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c02": {
+          "peak_abs_torque_nm": [
+            2.686993734664622e-13,
+            1396.4293162916733,
+            613.7549775885948,
+            84.78024946581273,
+            47.82809141412221,
+            0.4803673746123876
+          ],
+          "peak_overturning_nm": 1461.1571663107627,
+          "max_attached_payload_offset_m": 0.31545083386518413,
+          "min_curve_margin_kg": -12.746301467241835,
+          "attached_samples": 914,
+          "samples": 1723,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c03": {
+          "peak_abs_torque_nm": [
+            2.4104658407946364e-13,
+            1408.7850926180276,
+            617.7984035256973,
+            84.76540782326325,
+            47.816236996164946,
+            0.44687340846736257
+          ],
+          "peak_overturning_nm": 1472.927906395498,
+          "max_attached_payload_offset_m": 0.3154310836401249,
+          "min_curve_margin_kg": -12.74597065097209,
+          "attached_samples": 940,
+          "samples": 1762,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c04": {
+          "peak_abs_torque_nm": [
+            2.0945427022767632e-13,
+            1503.001073425491,
+            649.2391447902385,
+            84.84388612589265,
+            47.8100289274898,
+            0.40942308023625773
+          ],
+          "peak_overturning_nm": 1563.2487812931279,
+          "max_attached_payload_offset_m": 0.31544276104319696,
+          "min_curve_margin_kg": -12.746166247473546,
+          "attached_samples": 959,
+          "samples": 1803,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c00": {
+          "peak_abs_torque_nm": [
+            3.083595026179664e-13,
+            1589.0145696846544,
+            685.5689446385132,
+            85.064004471228,
+            48.10963238109033,
+            0.5338373813251505
+          ],
+          "peak_overturning_nm": 1646.247140155335,
+          "max_attached_payload_offset_m": 0.315426151306054,
+          "min_curve_margin_kg": -12.745888034376406,
+          "attached_samples": 665,
+          "samples": 1418,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c01": {
+          "peak_abs_torque_nm": [
+            2.8480744300588704e-13,
+            1429.1966664544852,
+            637.6866883075947,
+            84.83647402990331,
+            48.11322547630647,
+            0.5321647645971893
+          ],
+          "peak_overturning_nm": 1492.541094679902,
+          "max_attached_payload_offset_m": 0.31542649560288083,
+          "min_curve_margin_kg": -12.745893801348252,
+          "attached_samples": 655,
+          "samples": 1431,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c02": {
+          "peak_abs_torque_nm": [
+            2.609958340764537e-13,
+            1348.5023731679544,
+            613.7475609990179,
+            84.78215551112284,
+            47.82784299574324,
+            0.48036641145921494
+          ],
+          "peak_overturning_nm": 1415.4200201610388,
+          "max_attached_payload_offset_m": 0.31543760343772986,
+          "min_curve_margin_kg": -12.746079857581975,
+          "attached_samples": 660,
+          "samples": 1468,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c03": {
+          "peak_abs_torque_nm": [
+            2.350949787780414e-13,
+            1362.2365106236732,
+            617.7692366770084,
+            84.79410461913923,
+            47.81622052647863,
+            0.44687687873307574
+          ],
+          "peak_overturning_nm": 1428.4703979643652,
+          "max_attached_payload_offset_m": 0.31542652714037206,
+          "min_curve_margin_kg": -12.745894329601228,
+          "attached_samples": 684,
+          "samples": 1504,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c04": {
+          "peak_abs_torque_nm": [
+            2.0622978653134808e-13,
+            1467.7429585966595,
+            649.2293006035699,
+            84.82263781503437,
+            47.809498041339545,
+            0.40942828826174194
+          ],
+          "peak_overturning_nm": 1529.379951061607,
+          "max_attached_payload_offset_m": 0.31542650935167654,
+          "min_curve_margin_kg": -12.745894031640582,
+          "attached_samples": 658,
+          "samples": 1496,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c00": {
+          "peak_abs_torque_nm": [
+            3.024133441895547e-13,
+            1557.7742290701683,
+            685.5747158841143,
+            85.07973128415748,
+            48.110131083902736,
+            0.5338373429422646
+          ],
+          "peak_overturning_nm": 1616.1137644713613,
+          "max_attached_payload_offset_m": 0.31542595285775277,
+          "min_curve_margin_kg": -12.745884710367356,
+          "attached_samples": 259,
+          "samples": 1013,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c01": {
+          "peak_abs_torque_nm": [
+            2.757533546770641e-13,
+            1379.4727243798193,
+            637.7024054780799,
+            84.84353423878655,
+            48.11333365407881,
+            0.53216471885985
+          ],
+          "peak_overturning_nm": 1444.9990391964445,
+          "max_attached_payload_offset_m": 0.31541595688763374,
+          "min_curve_margin_kg": -12.745717277867868,
+          "attached_samples": 255,
+          "samples": 1031,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c02": {
+          "peak_abs_torque_nm": [
+            2.51538974270817e-13,
+            1289.669894045795,
+            613.741987954905,
+            84.76809610638495,
+            47.82762667394209,
+            0.4803697775526936
+          ],
+          "peak_overturning_nm": 1359.4891974279037,
+          "max_attached_payload_offset_m": 0.31542591175591383,
+          "min_curve_margin_kg": -12.745884021911557,
+          "attached_samples": 259,
+          "samples": 1077,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c03": {
+          "peak_abs_torque_nm": [
+            2.277761345980622e-13,
+            1305.00403778727,
+            617.7831396054214,
+            84.77224468802848,
+            47.81623826496071,
+            0.446873738651182
+          ],
+          "peak_overturning_nm": 1373.9999758432818,
+          "max_attached_payload_offset_m": 0.3154310158295893,
+          "min_curve_margin_kg": -12.745969515145617,
+          "attached_samples": 263,
+          "samples": 1084,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c04": {
+          "peak_abs_torque_nm": [
+            2.0207748639510566e-13,
+            1422.345889148659,
+            649.212862146657,
+            84.83046911023311,
+            47.80978515776215,
+            0.4094254132966116
+          ],
+          "peak_overturning_nm": 1485.867700423585,
+          "max_attached_payload_offset_m": 0.31542670292288905,
+          "min_curve_margin_kg": -12.745897273958391,
+          "attached_samples": 216,
+          "samples": 1054,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c00": {
+          "peak_abs_torque_nm": [
+            2.4634066540679463e-13,
+            1349.4107255563003,
+            680.8548621546258,
+            210.3006936148536,
+            6.561462589387256,
+            0.16816077504876392
+          ],
+          "peak_overturning_nm": 1375.628020755756,
+          "max_attached_payload_offset_m": 0.40544689829627956,
+          "min_curve_margin_kg": -14.253735546462678,
+          "attached_samples": 564,
+          "samples": 1076,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c01": {
+          "peak_abs_torque_nm": [
+            2.228088380967496e-13,
+            1126.3862103039255,
+            639.1204496192979,
+            251.1959698809766,
+            3.8927630221759593,
+            0.16917452801638513
+          ],
+          "peak_overturning_nm": 1177.331981476079,
+          "max_attached_payload_offset_m": 0.4054663085691986,
+          "min_curve_margin_kg": -14.254060668534073,
+          "attached_samples": 280,
+          "samples": 857,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c02": {
+          "peak_abs_torque_nm": [
+            2.432456032190405e-13,
+            1238.0786307619146,
+            680.108861711069,
+            84.69875717629012,
+            47.831018848886416,
+            0.48036037515213575
+          ],
+          "peak_overturning_nm": 1310.6596427047602,
+          "max_attached_payload_offset_m": 0.31543243930355525,
+          "min_curve_margin_kg": -12.745993358334552,
+          "attached_samples": 270,
+          "samples": 1091,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c03": {
+          "peak_abs_torque_nm": [
+            2.213944878572996e-13,
+            1255.0981421918036,
+            682.20171352532,
+            84.58416705436301,
+            47.81621242797687,
+            0.44687588029331515
+          ],
+          "peak_overturning_nm": 1326.6929557008289,
+          "max_attached_payload_offset_m": 0.3154319907485075,
+          "min_curve_margin_kg": -12.745985845037502,
+          "attached_samples": 277,
+          "samples": 1098,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c04": {
+          "peak_abs_torque_nm": [
+            1.5456195483890408e-13,
+            1106.6386988216746,
+            572.2237453169059,
+            163.82103280398002,
+            46.12369389088118,
+            0.3692338126232586
+          ],
+          "peak_overturning_nm": 1278.0291056358556,
+          "max_attached_payload_offset_m": 0.40542567025640686,
+          "min_curve_margin_kg": -14.253379976794818,
+          "attached_samples": 280,
+          "samples": 1105,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l04_c00": {
+          "peak_abs_torque_nm": [
+            2.343879322525214e-13,
+            1285.9986986723552,
+            804.3944721255457,
+            233.80424060197404,
+            4.738313673789183,
+            0.16563000526201027
+          ],
+          "peak_overturning_nm": 1313.4806606202633,
+          "max_attached_payload_offset_m": 0.4054275017241596,
+          "min_curve_margin_kg": -14.25341065387967,
+          "attached_samples": 911,
+          "samples": 1465,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c01": {
+          "peak_abs_torque_nm": [
+            2.0508967330302024e-13,
+            1032.2432870359403,
+            778.044750977383,
+            251.165109811943,
+            4.409626113025962,
+            0.1531017928963953
+          ],
+          "peak_overturning_nm": 1087.6028646749858,
+          "max_attached_payload_offset_m": 0.40542557693626224,
+          "min_curve_margin_kg": -14.253378413682391,
+          "attached_samples": 270,
+          "samples": 805,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l04_c02": {
+          "peak_abs_torque_nm": [
+            1.8618102827139068e-13,
+            869.1994269003,
+            889.9010919526438,
+            265.7900651019422,
+            3.873242206489535,
+            0.15295128860920743
+          ],
+          "peak_overturning_nm": 984.5802588826082,
+          "max_attached_payload_offset_m": 0.4054292664195482,
+          "min_curve_margin_kg": -14.25344021252743,
+          "attached_samples": 751,
+          "samples": 1231,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l04_c03": {
+          "peak_abs_torque_nm": [
+            2.180182765095211e-13,
+            1228.6946697691478,
+            717.9140973070146,
+            84.07219708871557,
+            47.816158159345754,
+            0.4468742497347422
+          ],
+          "peak_overturning_nm": 1301.741708928882,
+          "max_attached_payload_offset_m": 0.3154227092982414,
+          "min_curve_margin_kg": -12.745830380745545,
+          "attached_samples": 218,
+          "samples": 1041,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c04": {
+          "peak_abs_torque_nm": [
+            1.9710471942924674e-13,
+            1367.9730986637355,
+            718.8103441702701,
+            84.11959698550838,
+            47.809671170792626,
+            0.409426598105154
+          ],
+          "peak_overturning_nm": 1433.905423820435,
+          "max_attached_payload_offset_m": 0.31542343183308436,
+          "min_curve_margin_kg": -12.745842483204164,
+          "attached_samples": 245,
+          "samples": 1091,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l05_c00": {
+          "peak_abs_torque_nm": [
+            2.265342486957391e-13,
+            1244.3294623014945,
+            868.5616259197341,
+            233.80514370425757,
+            2.060980476871687,
+            0.1537076991331222
+          ],
+          "peak_overturning_nm": 1272.7115726380264,
+          "max_attached_payload_offset_m": 0.40542710060076115,
+          "min_curve_margin_kg": -14.25340393506275,
+          "attached_samples": 910,
+          "samples": 1360,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c01": {
+          "peak_abs_torque_nm": [
+            1.93789566681892e-13,
+            972.1989162450199,
+            863.4586069772743,
+            251.0943560036516,
+            0.8008568136488773,
+            0.15587972861739677
+          ],
+          "peak_overturning_nm": 1030.7894460940222,
+          "max_attached_payload_offset_m": 0.4054306526959696,
+          "min_curve_margin_kg": -14.25346343265749,
+          "attached_samples": 208,
+          "samples": 695,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c02": {
+          "peak_abs_torque_nm": [
+            1.756006396891542e-13,
+            800.8819650427015,
+            896.1504047963263,
+            265.7853506630222,
+            0.9924600088320182,
+            0.153158003179409
+          ],
+          "peak_overturning_nm": 924.8263257205291,
+          "max_attached_payload_offset_m": 0.40542718058996446,
+          "min_curve_margin_kg": -14.253405274881906,
+          "attached_samples": 677,
+          "samples": 1107,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l05_c03": {
+          "peak_abs_torque_nm": [
+            1.6758992913414278e-13,
+            791.5711169688176,
+            832.7234985482601,
+            221.11003843556227,
+            42.58772392389071,
+            0.15259996318630473
+          ],
+          "peak_overturning_nm": 979.8428696922084,
+          "max_attached_payload_offset_m": 0.4054271558069855,
+          "min_curve_margin_kg": -14.25340485976701,
+          "attached_samples": 645,
+          "samples": 1323,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l05_c04": {
+          "peak_abs_torque_nm": [
+            1.5019871317465154e-13,
+            965.3221485214642,
+            777.9094525391542,
+            163.78576787210457,
+            15.843623603848158,
+            0.15302681708620613
+          ],
+          "peak_overturning_nm": 1157.8241396537012,
+          "max_attached_payload_offset_m": 0.40542564665829417,
+          "min_curve_margin_kg": -14.253379581526431,
+          "attached_samples": 209,
+          "samples": 907,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "separate"
+          ]
+        },
+        "carton_l06_c00": {
+          "peak_abs_torque_nm": [
+            2.2539032927147829e-13,
+            1238.251014552134,
+            866.6391303018834,
+            233.87185247178084,
+            4.262045619404336,
+            0.18370032466218417
+          ],
+          "peak_overturning_nm": 1266.7724635891623,
+          "max_attached_payload_offset_m": 0.4054781718279117,
+          "min_curve_margin_kg": -14.254259378117524,
+          "attached_samples": 935,
+          "samples": 1484,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c01": {
+          "peak_abs_torque_nm": [
+            1.905687269880777e-13,
+            955.0862244473075,
+            885.6425358295487,
+            251.012408735338,
+            1.677816725202478,
+            0.15447510313629287
+          ],
+          "peak_overturning_nm": 1014.6646163339511,
+          "max_attached_payload_offset_m": 0.40542967244057576,
+          "min_curve_margin_kg": -14.253447013379642,
+          "attached_samples": 431,
+          "samples": 879,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c02": {
+          "peak_abs_torque_nm": [
+            1.7289667866174444e-13,
+            783.4191135975825,
+            898.3414532408462,
+            265.7856923718448,
+            2.56291539639025,
+            0.15688911457543692
+          ],
+          "peak_overturning_nm": 909.7492136931648,
+          "max_attached_payload_offset_m": 0.4054265547610968,
+          "min_curve_margin_kg": -14.253394792248372,
+          "attached_samples": 707,
+          "samples": 1173,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c03": {
+          "peak_abs_torque_nm": [
+            1.67804788397246e-13,
+            794.0043831273483,
+            829.1661560410314,
+            221.16919021183548,
+            62.16142509982416,
+            0.1814639282425674
+          ],
+          "peak_overturning_nm": 981.8113116855694,
+          "max_attached_payload_offset_m": 0.4054255699373024,
+          "min_curve_margin_kg": -14.253378296449817,
+          "attached_samples": 938,
+          "samples": 1828,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "separate",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l06_c04": {
+          "peak_abs_torque_nm": [
+            1.497191544484895e-13,
+            949.7906372315721,
+            798.2099480677266,
+            163.7592718903628,
+            17.248004780228445,
+            0.15259821662585055
+          ],
+          "peak_overturning_nm": 1144.9070856619096,
+          "max_attached_payload_offset_m": 0.40542727711168036,
+          "min_curve_margin_kg": -14.25340689162065,
+          "attached_samples": 455,
+          "samples": 1136,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c00": {
+          "peak_abs_torque_nm": [
+            2.3616319956683863e-13,
+            1295.4175294249208,
+            866.5821816264422,
+            233.80683521571098,
+            1.5789681823267383,
+            0.15290850425598815
+          ],
+          "peak_overturning_nm": 1322.7039184302294,
+          "max_attached_payload_offset_m": 0.4054264819947903,
+          "min_curve_margin_kg": -14.253393573412737,
+          "attached_samples": 1146,
+          "samples": 1616,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l07_c01": {
+          "peak_abs_torque_nm": [
+            1.963334085167176e-13,
+            985.7169823611262,
+            844.7444013784541,
+            251.0123132383595,
+            4.466926474952206,
+            0.19732207615685549
+          ],
+          "peak_overturning_nm": 1043.5478410044218,
+          "max_attached_payload_offset_m": 0.4054293554526786,
+          "min_curve_margin_kg": -14.253441703832365,
+          "attached_samples": 565,
+          "samples": 1028,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l07_c02": {
+          "peak_abs_torque_nm": [
+            1.7736452663810923e-13,
+            812.2772989997968,
+            872.5188445661288,
+            265.8169950296196,
+            4.368776139422493,
+            0.1525972077305531
+          ],
+          "peak_overturning_nm": 934.7058139461299,
+          "max_attached_payload_offset_m": 0.4054843612000186,
+          "min_curve_margin_kg": -14.25436305010031,
+          "attached_samples": 733,
+          "samples": 1176,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c03": {
+          "peak_abs_torque_nm": [
+            1.6599226651429704e-13,
+            773.4748628258326,
+            855.9233560730856,
+            221.07883282842968,
+            62.16142718490876,
+            0.18146391337179937
+          ],
+          "peak_overturning_nm": 965.2843867044185,
+          "max_attached_payload_offset_m": 0.4054258709862286,
+          "min_curve_margin_kg": -14.25338333901933,
+          "attached_samples": 1181,
+          "samples": 2085,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l07_c04": {
+          "peak_abs_torque_nm": [
+            1.507463379094861e-13,
+            983.0584805397128,
+            753.7663808718523,
+            163.76540948358394,
+            37.93566583122618,
+            0.22017132631745914
+          ],
+          "peak_overturning_nm": 1172.652260630686,
+          "max_attached_payload_offset_m": 0.40543166591039337,
+          "min_curve_margin_kg": -14.253480403999092,
+          "attached_samples": 710,
+          "samples": 1532,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        }
+      },
+      "rated_reference_abs_torque_nm": [
+        3.321665883777747e-13,
+        1737.317526415341,
+        726.1141405263904,
+        210.60705569863663,
+        202.72675907431557,
+        0.002553634228761961
+      ],
+      "rated_reference_q_rad": [
+        [
+          0.0,
+          -3.141592653589793,
+          -0.08726646259971647,
+          0.0,
+          1.0471975511965976,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.08726646259971647,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.9599310885968813,
+          0.8726646259971648,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.7853981633974483,
+          2.0943951023931953,
+          1.5707963267948966,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -3.141592653589793,
+          -1.5707963267948966,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.2617993877991494,
+          0.2617993877991494,
+          1.5707963267948966,
+          0.0,
+          0.0
+        ]
+      ],
+      "peak_to_rated_reference_ratio": [
+        0.9398139601060151,
+        0.9261743413511486,
+        1.2371904127767035,
+        1.262146674753311,
+        0.306626650910557,
+        209.05005709606365
+      ]
+    },
+    "link_mass_x1.3": {
+      "joint_names": [
+        "s50_joint_1",
+        "s50_joint_2",
+        "s50_joint_3",
+        "s50_joint_4",
+        "s50_joint_5",
+        "s50_joint_6"
+      ],
+      "sample_count": 51446,
+      "fk_replay_max_error_m": 0.0,
+      "peak_abs_torque_nm": [
+        3.543348366792455e-13,
+        1823.9492275038765,
+        950.5985809975843,
+        266.1299498132128,
+        62.46750545806164,
+        0.5331085739985791
+      ],
+      "peak_abs_payload_only_torque_nm": [
+        1.7167704894261298e-13,
+        892.9515987994275,
+        724.151027385053,
+        264.7738124176422,
+        61.14116627439918,
+        0.5362667390803882
+      ],
+      "rms_torque_nm": [
+        1.524542486414328e-13,
+        761.1305262047753,
+        582.3906683050099,
+        112.6508452778613,
+        12.411866842004986,
+        0.16339555713548942
+      ],
+      "peak_sample": [
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 48231,
+          "time_s": 3055.4215297750343,
+          "target": "carton_l00_c00",
+          "phase": "grasp",
+          "q_rad": [
+            -0.4298482878123364,
+            -3.0825455392079903,
+            -0.6821291825725881,
+            5.33549824089202,
+            1.5707927382585576,
+            -0.4298480636897784
+          ]
+        },
+        {
+          "index": 7495,
+          "time_s": 474.049295335045,
+          "target": "carton_l06_c02",
+          "phase": "grasp",
+          "q_rad": [
+            0.12212339168677298,
+            -1.4564444411259234,
+            -1.6522200527210553,
+            3.108679692805731,
+            -1.4486729496039634,
+            -3.1415941404500165
+          ]
+        },
+        {
+          "index": 522,
+          "time_s": 35.30935995352994,
+          "target": "carton_l07_c02",
+          "phase": "transfer",
+          "q_rad": [
+            -0.0012942271436845326,
+            -0.699776821608561,
+            -2.0396353219424204,
+            2.7394461697012127,
+            -1.5721004244525378,
+            -3.141593015636923
+          ]
+        },
+        {
+          "index": 2356,
+          "time_s": 152.51116722141225,
+          "target": "carton_l07_c03",
+          "phase": "pregrasp",
+          "q_rad": [
+            0.4343854675236885,
+            -1.3551652955850149,
+            -1.5973802484730366,
+            1.2494522687627565,
+            -0.1658741545361872,
+            -1.4384915059959407
+          ]
+        },
+        {
+          "index": 40981,
+          "time_s": 2600.3949941777537,
+          "target": "carton_l01_c00",
+          "phase": "park",
+          "q_rad": [
+            -0.24228331264841596,
+            -1.649075438735249,
+            -1.613478626651706,
+            3.9946561436400234,
+            -0.0272047438314294,
+            -1.9991128793759299
+          ]
+        }
+      ],
+      "peak_overturning_moment_nm": 1897.1558543197616,
+      "max_payload_offset_m": 0.4054843612000186,
+      "min_payload_curve_margin_kg": -14.25436305010031,
+      "samples_over_payload_curve": 23762,
+      "samples_beyond_curve_range": 0,
+      "per_target": {
+        "carton_l00_c00": {
+          "peak_abs_torque_nm": [
+            3.543348366792455e-13,
+            1823.9492275038765,
+            736.757776159561,
+            87.09409398865797,
+            48.345632091408625,
+            0.5331085370352733
+          ],
+          "peak_overturning_nm": 1897.1558543197616,
+          "max_attached_payload_offset_m": 0.3154331911010751,
+          "min_curve_margin_kg": -12.746005950943008,
+          "attached_samples": 953,
+          "samples": 1709,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c01": {
+          "peak_abs_torque_nm": [
+            3.337729202572492e-13,
+            1669.3724149544396,
+            684.9781355409668,
+            86.85741522037992,
+            48.349314479467395,
+            0.5314389353687444
+          ],
+          "peak_overturning_nm": 1749.0309253085945,
+          "max_attached_payload_offset_m": 0.315434403264089,
+          "min_curve_margin_kg": -12.746026254673488,
+          "attached_samples": 906,
+          "samples": 1684,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l00_c02": {
+          "peak_abs_torque_nm": [
+            3.0916053453706916e-13,
+            1589.5163482977734,
+            659.0763970925016,
+            86.7927515059072,
+            48.064044767295876,
+            0.479786835086866
+          ],
+          "peak_overturning_nm": 1672.9413680343218,
+          "max_attached_payload_offset_m": 0.31545083386518413,
+          "min_curve_margin_kg": -12.746301467241835,
+          "attached_samples": 914,
+          "samples": 1723,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c03": {
+          "peak_abs_torque_nm": [
+            2.7888336853174175e-13,
+            1603.1803000226041,
+            663.4533733553615,
+            86.77787784725379,
+            48.05218435826014,
+            0.446358866171051
+          ],
+          "peak_overturning_nm": 1685.8846759541968,
+          "max_attached_payload_offset_m": 0.3154310836401249,
+          "min_curve_margin_kg": -12.74597065097209,
+          "attached_samples": 940,
+          "samples": 1762,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l00_c04": {
+          "peak_abs_torque_nm": [
+            2.434854093649766e-13,
+            1707.2963934862755,
+            697.4615009510412,
+            86.85633937426266,
+            48.045978455062055,
+            0.4089806459859711
+          ],
+          "peak_overturning_nm": 1785.1475309241453,
+          "max_attached_payload_offset_m": 0.31544276104319696,
+          "min_curve_margin_kg": -12.746166247473546,
+          "attached_samples": 959,
+          "samples": 1803,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c00": {
+          "peak_abs_torque_nm": [
+            3.4937450913384437e-13,
+            1797.8891985205407,
+            736.7503380594706,
+            87.07668529170982,
+            48.345136139969874,
+            0.5331085739985791
+          ],
+          "peak_overturning_nm": 1872.114961744817,
+          "max_attached_payload_offset_m": 0.315426151306054,
+          "min_curve_margin_kg": -12.745888034376406,
+          "attached_samples": 665,
+          "samples": 1418,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c01": {
+          "peak_abs_torque_nm": [
+            3.2442870393595216e-13,
+            1618.055848821231,
+            684.9601071506953,
+            86.84899150939822,
+            48.34873381741467,
+            0.531439188519589
+          ],
+          "peak_overturning_nm": 1700.120295528675,
+          "max_attached_payload_offset_m": 0.31542649560288083,
+          "min_curve_margin_kg": -12.745893801348252,
+          "attached_samples": 655,
+          "samples": 1431,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l01_c02": {
+          "peak_abs_torque_nm": [
+            2.991458108160975e-13,
+            1527.2104960157114,
+            659.0668587923769,
+            86.79466128851578,
+            48.06379518325035,
+            0.4797858709217319
+          ],
+          "peak_overturning_nm": 1613.8556875522831,
+          "max_attached_payload_offset_m": 0.31543760343772986,
+          "min_curve_margin_kg": -12.746079857581975,
+          "attached_samples": 660,
+          "samples": 1468,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c03": {
+          "peak_abs_torque_nm": [
+            2.711468485791734e-13,
+            1542.6723063817496,
+            663.4147609757379,
+            86.8065761793346,
+            48.05216778336499,
+            0.44636233009181203
+          ],
+          "peak_overturning_nm": 1628.451975478365,
+          "max_attached_payload_offset_m": 0.31542652714037206,
+          "min_curve_margin_kg": -12.745894329601228,
+          "attached_samples": 684,
+          "samples": 1504,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l01_c04": {
+          "peak_abs_torque_nm": [
+            2.392932510889767e-13,
+            1661.457462824836,
+            697.4524937013225,
+            86.83508244901677,
+            48.045444953393485,
+            0.40898584403891053
+          ],
+          "peak_overturning_nm": 1741.3588520881115,
+          "max_attached_payload_offset_m": 0.31542650935167654,
+          "min_curve_margin_kg": -12.745894031640582,
+          "attached_samples": 658,
+          "samples": 1496,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c00": {
+          "peak_abs_torque_nm": [
+            3.4164493897385306e-13,
+            1757.2790811117518,
+            736.7547288262969,
+            87.09241997449726,
+            48.345637288069,
+            0.5331085371005356
+          ],
+          "peak_overturning_nm": 1833.1502092393484,
+          "max_attached_payload_offset_m": 0.31542595285775277,
+          "min_curve_margin_kg": -12.745884710367356,
+          "attached_samples": 259,
+          "samples": 1013,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c01": {
+          "peak_abs_torque_nm": [
+            3.1265863151548067e-13,
+            1553.4160783549091,
+            684.977360234347,
+            86.85605319366829,
+            48.348842525569616,
+            0.5314391437669106
+          ],
+          "peak_overturning_nm": 1638.7213464045992,
+          "max_attached_payload_offset_m": 0.31541595688763374,
+          "min_curve_margin_kg": -12.745717277867868,
+          "attached_samples": 255,
+          "samples": 1031,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "park"
+          ]
+        },
+        "carton_l02_c02": {
+          "peak_abs_torque_nm": [
+            2.868515029056291e-13,
+            1450.7259541231658,
+            659.0613321605263,
+            86.78059960204664,
+            48.06357774788165,
+            0.47978923170093635
+          ],
+          "peak_overturning_nm": 1541.6786448416012,
+          "max_attached_payload_offset_m": 0.31542591175591383,
+          "min_curve_margin_kg": -12.745884021911557,
+          "attached_samples": 259,
+          "samples": 1077,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c03": {
+          "peak_abs_torque_nm": [
+            2.6163177452864456e-13,
+            1468.2650495655223,
+            663.4318564268535,
+            86.78472255139376,
+            48.052185634061765,
+            0.44635919556024806
+          ],
+          "peak_overturning_nm": 1558.1468603393985,
+          "max_attached_payload_offset_m": 0.3154310158295893,
+          "min_curve_margin_kg": -12.745969515145617,
+          "attached_samples": 263,
+          "samples": 1084,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l02_c04": {
+          "peak_abs_torque_nm": [
+            2.3389538536353375e-13,
+            1602.4423833823405,
+            697.4379054333976,
+            86.8429185924386,
+            48.04573348292925,
+            0.40898297465956424
+          ],
+          "peak_overturning_nm": 1685.1448313063988,
+          "max_attached_payload_offset_m": 0.31542670292288905,
+          "min_curve_margin_kg": -12.745897273958391,
+          "attached_samples": 216,
+          "samples": 1054,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c00": {
+          "peak_abs_torque_nm": [
+            2.723442984492323e-13,
+            1501.882201768507,
+            719.6262894086053,
+            210.55112896952542,
+            6.593730506113376,
+            0.16816666735462715
+          ],
+          "peak_overturning_nm": 1544.1279154942547,
+          "max_attached_payload_offset_m": 0.40544689829627956,
+          "min_curve_margin_kg": -14.253735546462678,
+          "attached_samples": 564,
+          "samples": 1076,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c01": {
+          "peak_abs_torque_nm": [
+            2.4742510797559306e-13,
+            1241.8215708645341,
+            671.175173896818,
+            251.4964680484819,
+            3.911914952185336,
+            0.16918091871733942
+          ],
+          "peak_overturning_nm": 1315.51102473287,
+          "max_attached_payload_offset_m": 0.4054663085691986,
+          "min_curve_margin_kg": -14.254060668534073,
+          "attached_samples": 280,
+          "samples": 857,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l03_c02": {
+          "peak_abs_torque_nm": [
+            2.760731530166618e-13,
+            1383.675211347351,
+            730.8657671925623,
+            86.71107109341557,
+            48.06698659133421,
+            0.47977985187483485
+          ],
+          "peak_overturning_nm": 1478.7690543963108,
+          "max_attached_payload_offset_m": 0.31543243930355525,
+          "min_curve_margin_kg": -12.745993358334552,
+          "attached_samples": 270,
+          "samples": 1091,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c03": {
+          "peak_abs_torque_nm": [
+            2.5333550713830866e-13,
+            1403.3864774438466,
+            733.1409370295473,
+            86.59639143992419,
+            48.05215964509946,
+            0.44636133391178684
+          ],
+          "peak_overturning_nm": 1497.1693634413407,
+          "max_attached_payload_offset_m": 0.3154319907485075,
+          "min_curve_margin_kg": -12.745985845037502,
+          "attached_samples": 277,
+          "samples": 1098,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l03_c04": {
+          "peak_abs_torque_nm": [
+            1.7571874051861416e-13,
+            1231.5142781579725,
+            605.8555048684609,
+            164.01714876421966,
+            46.35032203626248,
+            0.36888358770746926
+          ],
+          "peak_overturning_nm": 1432.2161764967543,
+          "max_attached_payload_offset_m": 0.40542567025640686,
+          "min_curve_margin_kg": -14.253379976794818,
+          "attached_samples": 280,
+          "samples": 1105,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l04_c00": {
+          "peak_abs_torque_nm": [
+            2.56805170798954e-13,
+            1419.443513840944,
+            851.3784987111451,
+            234.0793733871916,
+            4.7616816273285725,
+            0.165614796560674
+          ],
+          "peak_overturning_nm": 1464.0679752301858,
+          "max_attached_payload_offset_m": 0.4054275017241596,
+          "min_curve_margin_kg": -14.25341065387967,
+          "attached_samples": 911,
+          "samples": 1465,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c01": {
+          "peak_abs_torque_nm": [
+            2.243892310359364e-13,
+            1119.4306092891552,
+            821.4754033182294,
+            251.46552012808604,
+            4.4312590104243705,
+            0.15310815969388838
+          ],
+          "peak_overturning_nm": 1200.6497042313435,
+          "max_attached_payload_offset_m": 0.40542557693626224,
+          "min_curve_margin_kg": -14.253378413682391,
+          "attached_samples": 270,
+          "samples": 805,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l04_c02": {
+          "peak_abs_torque_nm": [
+            2.0547990175781281e-13,
+            927.8196700992925,
+            941.5182432105516,
+            266.103020913752,
+            3.8923369518499,
+            0.15295786534627154
+          ],
+          "peak_overturning_nm": 1080.7066868426975,
+          "max_attached_payload_offset_m": 0.4054292664195482,
+          "min_curve_margin_kg": -14.25344021252743,
+          "attached_samples": 751,
+          "samples": 1231,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l04_c03": {
+          "peak_abs_torque_nm": [
+            2.489464888473748e-13,
+            1369.0623046779906,
+            771.8154759651427,
+            86.08370435167312,
+            48.052105133576845,
+            0.4463597056056539
+          ],
+          "peak_overturning_nm": 1465.0432653629953,
+          "max_attached_payload_offset_m": 0.3154227092982414,
+          "min_curve_margin_kg": -12.745830380745545,
+          "attached_samples": 218,
+          "samples": 1041,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l04_c04": {
+          "peak_abs_torque_nm": [
+            2.2743068765599187e-13,
+            1531.756887371984,
+            772.7960782269982,
+            86.13083475534407,
+            48.045618935733096,
+            0.4089841571215959
+          ],
+          "peak_overturning_nm": 1618.076033422486,
+          "max_attached_payload_offset_m": 0.31542343183308436,
+          "min_curve_margin_kg": -12.745842483204164,
+          "attached_samples": 245,
+          "samples": 1091,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "withdraw",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l05_c00": {
+          "peak_abs_torque_nm": [
+            2.4659537036922325e-13,
+            1365.2734435204698,
+            920.799786416736,
+            234.08027276321724,
+            2.071124267257283,
+            0.15371416871859905
+          ],
+          "peak_overturning_nm": 1411.6114883966343,
+          "max_attached_payload_offset_m": 0.40542710060076115,
+          "min_curve_margin_kg": -14.25340393506275,
+          "attached_samples": 910,
+          "samples": 1360,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c01": {
+          "peak_abs_torque_nm": [
+            2.0969922657085563e-13,
+            1041.3736423974456,
+            913.8875877534907,
+            251.3924458435039,
+            0.8047923795501473,
+            0.15588639258248294
+          ],
+          "peak_overturning_nm": 1128.2273787916513,
+          "max_attached_payload_offset_m": 0.4054306526959696,
+          "min_curve_margin_kg": -14.25346343265749,
+          "attached_samples": 208,
+          "samples": 695,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l05_c02": {
+          "peak_abs_torque_nm": [
+            1.9172537243970065e-13,
+            839.0068354964072,
+            948.120407819084,
+            266.09822222571955,
+            0.9973322082834063,
+            0.15316501530551918
+          ],
+          "peak_overturning_nm": 1005.4907538764191,
+          "max_attached_payload_offset_m": 0.40542718058996446,
+          "min_curve_margin_kg": -14.253405274881906,
+          "attached_samples": 677,
+          "samples": 1107,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "transfer",
+            "transfer",
+            "park",
+            "transfer"
+          ]
+        },
+        "carton_l05_c03": {
+          "peak_abs_torque_nm": [
+            1.869832396419249e-13,
+            835.3218058755938,
+            883.0586778594727,
+            221.37185398844343,
+            42.797078085922685,
+            0.15260706927452936
+          ],
+          "peak_overturning_nm": 1070.384908999348,
+          "max_attached_payload_offset_m": 0.4054271558069855,
+          "min_curve_margin_kg": -14.25340485976701,
+          "attached_samples": 645,
+          "samples": 1323,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l05_c04": {
+          "peak_abs_torque_nm": [
+            1.7004652576128872e-13,
+            1047.802754115834,
+            828.3829220167604,
+            163.98019396192257,
+            15.921228738853529,
+            0.1530332206699107
+          ],
+          "peak_overturning_nm": 1277.6962057494843,
+          "max_attached_payload_offset_m": 0.40542564665829417,
+          "min_curve_margin_kg": -14.253379581526431,
+          "attached_samples": 209,
+          "samples": 907,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "withdraw",
+            "park",
+            "separate"
+          ]
+        },
+        "carton_l06_c00": {
+          "peak_abs_torque_nm": [
+            2.451096811877539e-13,
+            1357.3789307641725,
+            918.7148916531291,
+            234.14710619003608,
+            4.283035878082732,
+            0.1837073777207488
+          ],
+          "peak_overturning_nm": 1403.981368791956,
+          "max_attached_payload_offset_m": 0.4054781718279117,
+          "min_curve_margin_kg": -14.254259378117524,
+          "attached_samples": 935,
+          "samples": 1484,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c01": {
+          "peak_abs_torque_nm": [
+            2.0551207692776313e-13,
+            1019.1268246758259,
+            937.8908035520117,
+            251.30783305728974,
+            1.6860797772814642,
+            0.15448205944196453
+          ],
+          "peak_overturning_nm": 1107.7253714971068,
+          "max_attached_payload_offset_m": 0.40542967244057576,
+          "min_curve_margin_kg": -14.253447013379642,
+          "attached_samples": 431,
+          "samples": 879,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c02": {
+          "peak_abs_torque_nm": [
+            1.8820793778456072e-13,
+            816.2905137457051,
+            950.5985809975843,
+            266.09858953868536,
+            2.5755099330983184,
+            0.1568957786904998
+          ],
+          "peak_overturning_nm": 986.6189766901107,
+          "max_attached_payload_offset_m": 0.4054265547610968,
+          "min_curve_margin_kg": -14.253394792248372,
+          "attached_samples": 707,
+          "samples": 1173,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l06_c03": {
+          "peak_abs_torque_nm": [
+            1.8726257543434583e-13,
+            838.4850957247193,
+            879.2174152099578,
+            221.4319727560017,
+            62.46750336341741,
+            0.18142268010390808
+          ],
+          "peak_overturning_nm": 1072.8571842854801,
+          "max_attached_payload_offset_m": 0.4054255699373024,
+          "min_curve_margin_kg": -14.253378296449817,
+          "attached_samples": 938,
+          "samples": 1828,
+          "peak_phase": [
+            "grasp",
+            "grasp",
+            "withdraw",
+            "separate",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l06_c04": {
+          "peak_abs_torque_nm": [
+            1.6942310808646092e-13,
+            1027.6119840847919,
+            850.3411005926085,
+            163.95224371330215,
+            17.3325918094374,
+            0.1526053253288906
+          ],
+          "peak_overturning_nm": 1261.1913114158015,
+          "max_attached_payload_offset_m": 0.40542727711168036,
+          "min_curve_margin_kg": -14.25340689162065,
+          "attached_samples": 455,
+          "samples": 1136,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c00": {
+          "peak_abs_torque_nm": [
+            2.5911308650760183e-13,
+            1431.6883449585462,
+            918.658481054928,
+            234.08196697249463,
+            1.5867256462477337,
+            0.15291553657052454
+          ],
+          "peak_overturning_nm": 1475.9427607164275,
+          "max_attached_payload_offset_m": 0.4054264819947903,
+          "min_curve_margin_kg": -14.253393573412737,
+          "attached_samples": 1146,
+          "samples": 1616,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "withdraw"
+          ]
+        },
+        "carton_l07_c01": {
+          "peak_abs_torque_nm": [
+            2.1300616722683407e-13,
+            1058.9468368418322,
+            893.6456456855801,
+            251.30774276796578,
+            4.488979887440439,
+            0.19725981160009057
+          ],
+          "peak_overturning_nm": 1144.4665847140052,
+          "max_attached_payload_offset_m": 0.4054293554526786,
+          "min_curve_margin_kg": -14.253441703832365,
+          "attached_samples": 565,
+          "samples": 1028,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        },
+        "carton_l07_c02": {
+          "peak_abs_torque_nm": [
+            1.9401919385076715e-13,
+            853.8253174968165,
+            923.7868622275687,
+            266.1299498132128,
+            4.390243928247497,
+            0.1526043179439656
+          ],
+          "peak_overturning_nm": 1017.8817818535169,
+          "max_attached_payload_offset_m": 0.4054843612000186,
+          "min_curve_margin_kg": -14.25436305010031,
+          "attached_samples": 733,
+          "samples": 1176,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "transfer",
+            "transfer",
+            "park",
+            "approach"
+          ]
+        },
+        "carton_l07_c03": {
+          "peak_abs_torque_nm": [
+            1.8490633011888084e-13,
+            811.7970785855039,
+            908.1547236809382,
+            221.33965409684075,
+            62.46750545806164,
+            0.18142266525283737
+          ],
+          "peak_overturning_nm": 1052.1311445091146,
+          "max_attached_payload_offset_m": 0.4054258709862286,
+          "min_curve_margin_kg": -14.25338333901933,
+          "attached_samples": 1181,
+          "samples": 2085,
+          "peak_phase": [
+            "separate",
+            "separate",
+            "grasp",
+            "withdraw",
+            "pregrasp",
+            "pregrasp"
+          ]
+        },
+        "carton_l07_c04": {
+          "peak_abs_torque_nm": [
+            1.7075847112165454e-13,
+            1070.8609110807743,
+            802.259831115784,
+            163.95843376704565,
+            38.121392800344196,
+            0.21974902326662513
+          ],
+          "peak_overturning_nm": 1296.6724344914899,
+          "max_attached_payload_offset_m": 0.40543166591039337,
+          "min_curve_margin_kg": -14.253480403999092,
+          "attached_samples": 710,
+          "samples": 1532,
+          "peak_phase": [
+            "withdraw",
+            "withdraw",
+            "grasp",
+            "separate",
+            "park",
+            "park"
+          ]
+        }
+      },
+      "rated_reference_abs_torque_nm": [
+        3.779325970666157e-13,
+        1960.5523185313787,
+        778.3776918757443,
+        211.42998077946706,
+        203.03971762661018,
+        0.0033197244973698415
+      ],
+      "rated_reference_q_rad": [
+        [
+          0.0,
+          -3.141592653589793,
+          -0.08726646259971647,
+          0.0,
+          1.0471975511965976,
+          0.0
+        ],
+        [
+          0.0,
+          -3.141592653589793,
+          -0.08726646259971647,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.9599310885968813,
+          0.8726646259971648,
+          0.0,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -0.7853981633974483,
+          2.0943951023931953,
+          1.5707963267948966,
+          1.5707963267948966,
+          0.0
+        ],
+        [
+          0.0,
+          -3.141592653589793,
+          -1.5707963267948966,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.2617993877991494,
+          0.2617993877991494,
+          1.5707963267948966,
+          0.0,
+          0.0
+        ]
+      ],
+      "peak_to_rated_reference_ratio": [
+        0.9375609286668364,
+        0.9303241797036921,
+        1.2212561985259625,
+        1.2587143452034875,
+        0.3076615067645992,
+        160.588197731755
+      ]
+    }
+  },
+  "historical_42p5kg_carton": {
+    "joint_names": [
+      "s50_joint_1",
+      "s50_joint_2",
+      "s50_joint_3",
+      "s50_joint_4",
+      "s50_joint_5",
+      "s50_joint_6"
+    ],
+    "sample_count": 51446,
+    "fk_replay_max_error_m": 0.0,
+    "peak_abs_torque_nm": [
+      3.5510354418023297e-13,
+      1832.351493238574,
+      1097.2786203289397,
+      350.0442217026139,
+      62.16142718490876,
+      0.5338373813251505
+    ],
+    "peak_abs_payload_only_torque_nm": [
+      2.1461944145680581e-13,
+      1116.317377916924,
+      923.0881944731466,
+      349.00103909063654,
+      61.14116627439918,
+      0.5362667390803882
+    ],
+    "rms_torque_nm": [
+      1.490814447378165e-13,
+      773.8317210205404,
+      621.6002161651668,
+      142.91253141717416,
+      12.351170991846729,
+      0.1638498687438455
+    ],
+    "peak_sample": [
+      {
+        "index": 48231,
+        "time_s": 3055.4215297750343,
+        "target": "carton_l00_c00",
+        "phase": "grasp",
+        "q_rad": [
+          -0.4298482878123364,
+          -3.0825455392079903,
+          -0.6821291825725881,
+          5.33549824089202,
+          1.5707927382585576,
+          -0.4298480636897784
+        ]
+      },
+      {
+        "index": 48231,
+        "time_s": 3055.4215297750343,
+        "target": "carton_l00_c00",
+        "phase": "grasp",
+        "q_rad": [
+          -0.4298482878123364,
+          -3.0825455392079903,
+          -0.6821291825725881,
+          5.33549824089202,
+          1.5707927382585576,
+          -0.4298480636897784
+        ]
+      },
+      {
+        "index": 7495,
+        "time_s": 474.049295335045,
+        "target": "carton_l06_c02",
+        "phase": "grasp",
+        "q_rad": [
+          0.12212339168677298,
+          -1.4564444411259234,
+          -1.6522200527210553,
+          3.108679692805731,
+          -1.4486729496039634,
+          -3.1415941404500165
+        ]
+      },
+      {
+        "index": 522,
+        "time_s": 35.30935995352994,
+        "target": "carton_l07_c02",
+        "phase": "transfer",
+        "q_rad": [
+          -0.0012942271436845326,
+          -0.699776821608561,
+          -2.0396353219424204,
+          2.7394461697012127,
+          -1.5721004244525378,
+          -3.141593015636923
+        ]
+      },
+      {
+        "index": 2356,
+        "time_s": 152.51116722141225,
+        "target": "carton_l07_c03",
+        "phase": "pregrasp",
+        "q_rad": [
+          0.4343854675236885,
+          -1.3551652955850149,
+          -1.5973802484730366,
+          1.2494522687627565,
+          -0.1658741545361872,
+          -1.4384915059959407
+        ]
+      },
+      {
+        "index": 40981,
+        "time_s": 2600.3949941777537,
+        "target": "carton_l01_c00",
+        "phase": "park",
+        "q_rad": [
+          -0.24228331264841596,
+          -1.649075438735249,
+          -1.613478626651706,
+          3.9946561436400234,
+          -0.0272047438314294,
+          -1.9991128793759299
+        ]
+      }
+    ],
+    "peak_overturning_moment_nm": 1889.560854898229,
+    "max_payload_offset_m": 0.4349068203846912,
+    "min_payload_curve_margin_kg": -27.24718924144358,
+    "samples_over_payload_curve": 23762,
+    "samples_beyond_curve_range": 0,
+    "per_target": {
+      "carton_l00_c00": {
+        "peak_abs_torque_nm": [
+          3.5510354418023297e-13,
+          1832.351493238574,
+          814.4709811515066,
+          104.82795540012943,
+          48.11012591227845,
+          0.5338373428994305
+        ],
+        "peak_overturning_nm": 1889.560854898229,
+        "max_attached_payload_offset_m": 0.33284861994058745,
+        "min_curve_margin_kg": -25.537714384004843,
+        "attached_samples": 953,
+        "samples": 1709,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l00_c01": {
+        "peak_abs_torque_nm": [
+          3.3019744127054003e-13,
+          1668.7058665241373,
+          757.8778774652627,
+          104.54110662662387,
+          48.11380328134249,
+          0.532164509703485
+        ],
+        "peak_overturning_nm": 1731.3042856346012,
+        "max_attached_payload_offset_m": 0.3328499851574981,
+        "min_curve_margin_kg": -25.537737251388094,
+        "attached_samples": 906,
+        "samples": 1684,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l00_c02": {
+        "peak_abs_torque_nm": [
+          3.0217504093792175e-13,
+          1584.7641474939394,
+          729.5965495805679,
+          104.4731934018445,
+          47.82809141412221,
+          0.4803673746123876
+        ],
+        "peak_overturning_nm": 1650.5135547338205,
+        "max_attached_payload_offset_m": 0.3328686244773143,
+        "min_curve_margin_kg": -25.538049459995015,
+        "attached_samples": 914,
+        "samples": 1723,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l00_c03": {
+        "peak_abs_torque_nm": [
+          2.69795711615647e-13,
+          1599.1200762566714,
+          734.3738809267818,
+          104.4564611578925,
+          47.816236996164946,
+          0.44687340846736257
+        ],
+        "peak_overturning_nm": 1664.2621591799934,
+        "max_attached_payload_offset_m": 0.33284622272450054,
+        "min_curve_margin_kg": -25.537674230635382,
+        "attached_samples": 940,
+        "samples": 1762,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l00_c04": {
+        "peak_abs_torque_nm": [
+          2.334768578285835e-13,
+          1708.6370297794815,
+          771.5346011119962,
+          104.55365690513564,
+          47.8100289274898,
+          0.40942308023625773
+        ],
+        "peak_overturning_nm": 1769.7201744321876,
+        "max_attached_payload_offset_m": 0.3328594798788025,
+        "min_curve_margin_kg": -25.537896287969943,
+        "attached_samples": 959,
+        "samples": 1803,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l01_c00": {
+        "peak_abs_torque_nm": [
+          3.512882499599783e-13,
+          1812.307186255586,
+          814.4551418351222,
+          104.80416573967481,
+          48.10963238109033,
+          0.5338373813251505
+        ],
+        "peak_overturning_nm": 1870.1295794749087,
+        "max_attached_payload_offset_m": 0.3328406267926867,
+        "min_curve_margin_kg": -25.5375804987775,
+        "attached_samples": 665,
+        "samples": 1418,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l01_c01": {
+        "peak_abs_torque_nm": [
+          3.230096504126227e-13,
+          1629.2320241094674,
+          757.8726999048604,
+          104.52998653608759,
+          48.11322547630647,
+          0.5321647645971893
+        ],
+        "peak_overturning_nm": 1693.290181245129,
+        "max_attached_payload_offset_m": 0.33284101760190254,
+        "min_curve_margin_kg": -25.537587044831866,
+        "attached_samples": 655,
+        "samples": 1431,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l01_c02": {
+        "peak_abs_torque_nm": [
+          2.9447150154791323e-13,
+          1536.8378649431554,
+          729.5898588736171,
+          104.47556553416774,
+          47.82784299574324,
+          0.48036641145921494
+        ],
+        "peak_overturning_nm": 1604.547762345871,
+        "max_attached_payload_offset_m": 0.332853629752452,
+        "min_curve_margin_kg": -25.53779829835357,
+        "attached_samples": 660,
+        "samples": 1468,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l01_c03": {
+        "peak_abs_torque_nm": [
+          2.6384410631422475e-13,
+          1552.571715710194,
+          734.3527697065797,
+          104.49698825071161,
+          47.81622052647863,
+          0.44687687873307574
+        ],
+        "peak_overturning_nm": 1619.5861315029556,
+        "max_attached_payload_offset_m": 0.3328411122528504,
+        "min_curve_margin_kg": -25.53758863023524,
+        "attached_samples": 684,
+        "samples": 1504,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l01_c04": {
+        "peak_abs_torque_nm": [
+          2.302523741322553e-13,
+          1673.3789830796472,
+          771.5188497286204,
+          104.52430044873148,
+          47.809498041339545,
+          0.40942828826174194
+        ],
+        "peak_overturning_nm": 1735.7029818724013,
+        "max_attached_payload_offset_m": 0.3328410328677305,
+        "min_curve_margin_kg": -25.537587300534483,
+        "attached_samples": 658,
+        "samples": 1496,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l02_c00": {
+        "peak_abs_torque_nm": [
+          3.4534209153156654e-13,
+          1781.0668116167312,
+          814.4657891239881,
+          104.82575729027064,
+          48.110131083902736,
+          0.5338373429422646
+        ],
+        "peak_overturning_nm": 1839.871564151444,
+        "max_attached_payload_offset_m": 0.33284041626550304,
+        "min_curve_margin_kg": -25.537576972447177,
+        "attached_samples": 259,
+        "samples": 1013,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l02_c01": {
+        "peak_abs_torque_nm": [
+          3.139555620837998e-13,
+          1579.5079976374623,
+          757.891617053797,
+          104.5398411671083,
+          48.11333365407881,
+          0.53216471885985
+        ],
+        "peak_overturning_nm": 1645.503620638254,
+        "max_attached_payload_offset_m": 0.3328290828235418,
+        "min_curve_margin_kg": -25.537387137294324,
+        "attached_samples": 255,
+        "samples": 1031,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "park"
+        ]
+      },
+      "carton_l02_c02": {
+        "peak_abs_torque_nm": [
+          2.850146417422765e-13,
+          1478.0049689944683,
+          729.5810946179868,
+          104.45584648688263,
+          47.82762667394209,
+          0.4803697775526936
+        ],
+        "peak_overturning_nm": 1548.2931487045346,
+        "max_attached_payload_offset_m": 0.3328403551931089,
+        "min_curve_margin_kg": -25.537575949484577,
+        "attached_samples": 259,
+        "samples": 1077,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l02_c03": {
+        "peak_abs_torque_nm": [
+          2.5652526213424557e-13,
+          1495.3391251667063,
+          734.3631489242441,
+          104.465473865159,
+          47.81623826496071,
+          0.446873738651182
+        ],
+        "peak_overturning_nm": 1564.8070640214103,
+        "max_attached_payload_offset_m": 0.33284614806716983,
+        "min_curve_margin_kg": -25.537672980125095,
+        "attached_samples": 263,
+        "samples": 1084,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l02_c04": {
+        "peak_abs_torque_nm": [
+          2.2610007399601287e-13,
+          1627.9818418492223,
+          771.4953597856297,
+          104.53497729651912,
+          47.80978515776215,
+          0.4094254132966116
+        ],
+        "peak_overturning_nm": 1691.9794228622218,
+        "max_attached_payload_offset_m": 0.3328412607372744,
+        "min_curve_margin_kg": -25.537591117349344,
+        "attached_samples": 216,
+        "samples": 1054,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l03_c00": {
+        "peak_abs_torque_nm": [
+          2.892694127488065e-13,
+          1573.9351764116345,
+          832.9831254533274,
+          276.8951181160254,
+          6.561462589387256,
+          0.17430686090369024
+        ],
+        "peak_overturning_nm": 1593.1741806561906,
+        "max_attached_payload_offset_m": 0.43486431631592115,
+        "min_curve_margin_kg": -27.24647729829168,
+        "attached_samples": 564,
+        "samples": 1076,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l03_c01": {
+        "peak_abs_torque_nm": [
+          2.610110455034853e-13,
+          1328.8016048211762,
+          789.1989754842948,
+          330.7552309030723,
+          3.8927630221759593,
+          0.17588176728478888
+        ],
+        "peak_overturning_nm": 1373.1075836986013,
+        "max_attached_payload_offset_m": 0.4348862910167891,
+        "min_curve_margin_kg": -27.24684537453122,
+        "attached_samples": 280,
+        "samples": 857,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l03_c02": {
+        "peak_abs_torque_nm": [
+          2.7672127069050007e-13,
+          1426.4116563618313,
+          808.0140162494185,
+          104.37402869515469,
+          47.831018848886416,
+          0.48036037515213575
+        ],
+        "peak_overturning_nm": 1499.1344729965356,
+        "max_attached_payload_offset_m": 0.3328478738562602,
+        "min_curve_margin_kg": -25.53770188709236,
+        "attached_samples": 270,
+        "samples": 1091,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l03_c03": {
+        "peak_abs_torque_nm": [
+          2.50143615393483e-13,
+          1445.4331201560128,
+          810.4672606370902,
+          104.22097095851706,
+          47.81621242797687,
+          0.44687588029331515
+        ],
+        "peak_overturning_nm": 1517.188908958534,
+        "max_attached_payload_offset_m": 0.3328472439364119,
+        "min_curve_margin_kg": -25.537691335934902,
+        "attached_samples": 277,
+        "samples": 1098,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l03_c04": {
+        "peak_abs_torque_nm": [
+          1.7858454243981127e-13,
+          1290.3816887603627,
+          698.387687731092,
+          215.753979989827,
+          46.12369389088118,
+          0.3692338126232586
+        ],
+        "peak_overturning_nm": 1485.8913156338776,
+        "max_attached_payload_offset_m": 0.4348402876184529,
+        "min_curve_margin_kg": -27.246074817609085,
+        "attached_samples": 280,
+        "samples": 1105,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "park"
+        ]
+      },
+      "carton_l04_c00": {
+        "peak_abs_torque_nm": [
+          2.773166795945333e-13,
+          1510.5228498119186,
+          982.176383617712,
+          307.8626723802322,
+          4.738313673789183,
+          0.16563000526201027
+        ],
+        "peak_overturning_nm": 1530.5573141131383,
+        "max_attached_payload_offset_m": 0.43484236170634966,
+        "min_curve_margin_kg": -27.24610955858136,
+        "attached_samples": 911,
+        "samples": 1465,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "transfer",
+          "transfer",
+          "park",
+          "pregrasp"
+        ]
+      },
+      "carton_l04_c01": {
+        "peak_abs_torque_nm": [
+          2.43291880709756e-13,
+          1234.6587849326208,
+          953.3701770173483,
+          330.71249391446787,
+          4.409626113025962,
+          0.15310520537768976
+        ],
+        "peak_overturning_nm": 1282.2159603068037,
+        "max_attached_payload_offset_m": 0.4348401820162751,
+        "min_curve_margin_kg": -27.246073048772608,
+        "attached_samples": 270,
+        "samples": 805,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l04_c02": {
+        "peak_abs_torque_nm": [
+          2.196566957428502e-13,
+          1055.5488160856182,
+          1087.2588359926103,
+          350.00609162694445,
+          3.873242206489535,
+          0.1529504176535977
+        ],
+        "peak_overturning_nm": 1169.647335882149,
+        "max_attached_payload_offset_m": 0.43484436347955097,
+        "min_curve_margin_kg": -27.24614308828248,
+        "attached_samples": 751,
+        "samples": 1231,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "transfer",
+          "transfer",
+          "park",
+          "transfer"
+        ]
+      },
+      "carton_l04_c03": {
+        "peak_abs_torque_nm": [
+          2.4676740404570446e-13,
+          1419.0297503817196,
+          852.6168990115914,
+          103.55716982678175,
+          47.816158159345754,
+          0.4468742497347422
+        ],
+        "peak_overturning_nm": 1492.0549636925837,
+        "max_attached_payload_offset_m": 0.3328367289009736,
+        "min_curve_margin_kg": -25.53751520909131,
+        "attached_samples": 218,
+        "samples": 1041,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l04_c04": {
+        "peak_abs_torque_nm": [
+          2.2112731900082422e-13,
+          1573.6092468354993,
+          853.6536144995923,
+          103.59443178154903,
+          47.809671170792626,
+          0.409426598105154
+        ],
+        "peak_overturning_nm": 1639.7300015700666,
+        "max_attached_payload_offset_m": 0.33283754777574165,
+        "min_curve_margin_kg": -25.53752892524367,
+        "attached_samples": 245,
+        "samples": 1091,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "withdraw",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l05_c00": {
+        "peak_abs_torque_nm": [
+          2.69462996037751e-13,
+          1468.8536079047199,
+          1058.0069275868404,
+          307.8638510158633,
+          2.060980476871687,
+          0.15399217125066728
+        ],
+        "peak_overturning_nm": 1489.448707850619,
+        "max_attached_payload_offset_m": 0.4348419079779725,
+        "min_curve_margin_kg": -27.246101958631037,
+        "attached_samples": 910,
+        "samples": 1360,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "transfer",
+          "transfer",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l05_c01": {
+        "peak_abs_torque_nm": [
+          2.3199177408862773e-13,
+          1174.6143949694726,
+          1054.3051793172144,
+          330.6284154777215,
+          0.8008568136488773,
+          0.15712335299727995
+        ],
+        "peak_overturning_nm": 1224.5070851830253,
+        "max_attached_payload_offset_m": 0.43484593265289506,
+        "min_curve_margin_kg": -27.24616937193599,
+        "attached_samples": 208,
+        "samples": 695,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l05_c02": {
+        "peak_abs_torque_nm": [
+          2.0907630716061376e-13,
+          987.2312853588097,
+          1094.8742619161849,
+          350.00014822546876,
+          0.9924600088320182,
+          0.15336437128592478
+        ],
+        "peak_overturning_nm": 1108.3856504371831,
+        "max_attached_payload_offset_m": 0.43484200853979066,
+        "min_curve_margin_kg": -27.246103643041494,
+        "attached_samples": 677,
+        "samples": 1107,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "transfer",
+          "transfer",
+          "park",
+          "transfer"
+        ]
+      },
+      "carton_l05_c03": {
+        "peak_abs_torque_nm": [
+          1.9633905667032615e-13,
+          968.028210323475,
+          1013.9723006113484,
+          291.19137682054765,
+          42.58772392389071,
+          0.15259996318630473
+        ],
+        "peak_overturning_nm": 1168.9978589963566,
+        "max_attached_payload_offset_m": 0.4348419743020651,
+        "min_curve_margin_kg": -27.246103069559588,
+        "attached_samples": 645,
+        "samples": 1323,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "approach"
+        ]
+      },
+      "carton_l05_c04": {
+        "peak_abs_torque_nm": [
+          1.7422130077555872e-13,
+          1149.0651472299714,
+          941.462165217305,
+          215.71399139716263,
+          15.843623603848158,
+          0.15300920287971811
+        ],
+        "peak_overturning_nm": 1364.9686736887884,
+        "max_attached_payload_offset_m": 0.4348402609330428,
+        "min_curve_margin_kg": -27.246074370628463,
+        "attached_samples": 209,
+        "samples": 907,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "withdraw",
+          "park",
+          "separate"
+        ]
+      },
+      "carton_l06_c00": {
+        "peak_abs_torque_nm": [
+          2.683190742972142e-13,
+          1462.7756551465093,
+          1055.7470066879996,
+          307.9549990945303,
+          4.262045619404336,
+          0.19664405029726928
+        ],
+        "peak_overturning_nm": 1483.4585454164292,
+        "max_attached_payload_offset_m": 0.4348997844312717,
+        "min_curve_margin_kg": -27.247071389223805,
+        "attached_samples": 935,
+        "samples": 1484,
+        "peak_phase": [
+          "withdraw",
+          "withdraw",
+          "transfer",
+          "transfer",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l06_c01": {
+        "peak_abs_torque_nm": [
+          2.287709485672316e-13,
+          1157.5017929505511,
+          1080.524125531253,
+          330.5305032327283,
+          1.677816725202478,
+          0.15521472838005523
+        ],
+        "peak_overturning_nm": 1208.1005129989137,
+        "max_attached_payload_offset_m": 0.43484482288810267,
+        "min_curve_margin_kg": -27.246150783375718,
+        "attached_samples": 431,
+        "samples": 879,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "grasp",
+          "separate",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l06_c02": {
+        "peak_abs_torque_nm": [
+          2.0637443642928502e-13,
+          969.7813817289932,
+          1097.2786203289397,
+          350.000528055936,
+          2.56291539639025,
+          0.15855330035131288
+        ],
+        "peak_overturning_nm": 1092.8762194155536,
+        "max_attached_payload_offset_m": 0.43484132059666697,
+        "min_curve_margin_kg": -27.246092119994174,
+        "attached_samples": 707,
+        "samples": 1173,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "grasp",
+          "transfer",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l06_c03": {
+        "peak_abs_torque_nm": [
+          1.9655391593342936e-13,
+          970.4610527212576,
+          1009.7665531395966,
+          291.2654765553077,
+          62.16142509982416,
+          0.1814639282425674
+        ],
+        "peak_overturning_nm": 1171.0153759708298,
+        "max_attached_payload_offset_m": 0.4348401741351754,
+        "min_curve_margin_kg": -27.24607291676419,
+        "attached_samples": 938,
+        "samples": 1828,
+        "peak_phase": [
+          "grasp",
+          "grasp",
+          "withdraw",
+          "separate",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l06_c04": {
+        "peak_abs_torque_nm": [
+          1.7374174299114307e-13,
+          1133.5336738585138,
+          965.4663068573923,
+          215.68477970723575,
+          17.248004780228445,
+          0.15259821662585055
+        ],
+        "peak_overturning_nm": 1351.9199199217996,
+        "max_attached_payload_offset_m": 0.4348421088443971,
+        "min_curve_margin_kg": -27.246105323143652,
+        "attached_samples": 455,
+        "samples": 1136,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "grasp",
+          "separate",
+          "park",
+          "approach"
+        ]
+      },
+      "carton_l07_c00": {
+        "peak_abs_torque_nm": [
+          2.790918711161972e-13,
+          1519.9412959795,
+          1055.66757531406,
+          307.8660320270646,
+          1.5789681823267383,
+          0.15301653145433586
+        ],
+        "peak_overturning_nm": 1539.8533381415077,
+        "max_attached_payload_offset_m": 0.4348412077923685,
+        "min_curve_margin_kg": -27.24609023052217,
+        "attached_samples": 1146,
+        "samples": 1616,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "transfer",
+          "transfer",
+          "park",
+          "withdraw"
+        ]
+      },
+      "carton_l07_c01": {
+        "peak_abs_torque_nm": [
+          2.345356141519122e-13,
+          1188.1324694200055,
+          1032.1905841261903,
+          330.53032047579677,
+          4.466926474952206,
+          0.19732207615685549
+        ],
+        "peak_overturning_nm": 1237.4791365193319,
+        "max_attached_payload_offset_m": 0.43484446480807537,
+        "min_curve_margin_kg": -27.246144785535265,
+        "attached_samples": 565,
+        "samples": 1028,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "grasp",
+          "separate",
+          "park",
+          "park"
+        ]
+      },
+      "carton_l07_c02": {
+        "peak_abs_torque_nm": [
+          2.1084048563556016e-13,
+          998.6294254447357,
+          1065.082656918108,
+          350.0442217026139,
+          4.368776139422493,
+          0.1525972077305531
+        ],
+        "peak_overturning_nm": 1118.5425407737735,
+        "max_attached_payload_offset_m": 0.4349068203846912,
+        "min_curve_margin_kg": -27.24718924144358,
+        "attached_samples": 733,
+        "samples": 1176,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "transfer",
+          "transfer",
+          "park",
+          "approach"
+        ]
+      },
+      "carton_l07_c03": {
+        "peak_abs_torque_nm": [
+          1.9474136956308125e-13,
+          949.9312565448081,
+          1041.4009148764449,
+          291.1537589192311,
+          62.16142718490876,
+          0.18146391337179937
+        ],
+        "peak_overturning_nm": 1154.0588550954087,
+        "max_attached_payload_offset_m": 0.43484051542810376,
+        "min_curve_margin_kg": -27.246078633420737,
+        "attached_samples": 1181,
+        "samples": 2085,
+        "peak_phase": [
+          "separate",
+          "separate",
+          "grasp",
+          "withdraw",
+          "pregrasp",
+          "pregrasp"
+        ]
+      },
+      "carton_l07_c04": {
+        "peak_abs_torque_nm": [
+          1.7476892343594362e-13,
+          1166.8014998319732,
+          912.9438566431886,
+          215.6929996267355,
+          37.93566583122618,
+          0.22017132631745914
+        ],
+        "peak_overturning_nm": 1379.9325263239164,
+        "max_attached_payload_offset_m": 0.4348470875280184,
+        "min_curve_margin_kg": -27.24618871609431,
+        "attached_samples": 710,
+        "samples": 1532,
+        "peak_phase": [
+          "withdraw",
+          "withdraw",
+          "grasp",
+          "separate",
+          "park",
+          "park"
+        ]
+      }
+    }
+  },
+  "manufacturer_joint_torque_ratings": "NOT_SUPPLIED",
+  "elapsed_s": 491.14676117897034
+}

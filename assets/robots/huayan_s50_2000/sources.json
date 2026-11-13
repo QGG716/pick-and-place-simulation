@@ -20,7 +20,7 @@
     "units": "millimetres",
     "normalization_scale_to_m": 0.001,
     "provenance": "User supplied local file. Model identity matches STEP header and named S50 components; exact hash equivalence to gated official ZIP is unverified.",
-    "license": "No explicit redistribution license embedded/obtained for this CAD; user authorized use and code delivery. Official ROS BSD license is not assumed to cover CAD."
+    "license": "Redistribution with this repository authorized in writing by the project owner on 2026-11-13; see docs/redistribution_authorization_20261113.md. Official ROS BSD license is not assumed to cover this file."
   },
   "official_cad_listing": {
     "url": "https://www.huayan-robotics.com/service/download/3dmoxing?pagenum=3",
@@ -207,7 +207,7 @@
     "anonymous_download_http_status": 200,
     "anonymous_download_application_code": 200,
     "form_submitted": false,
-    "license": "Publicly downloadable manufacturer reference manual; no explicit redistribution license was identified. Not covered by the separate ROS repository BSD license."
+    "license": "Redistribution with this repository authorized in writing by the project owner on 2026-11-13; see docs/redistribution_authorization_20261113.md. Official ROS BSD license is not assumed to cover this file."
   },
   "specification_conflicts": [
     {

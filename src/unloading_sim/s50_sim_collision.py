@@ -8,6 +8,15 @@ from .geometry import OBB
 from .s50_kinematic_sim import tool_virtual
 
 
+# Robot/environment, tool/environment and tool/robot pairs keep the configured
+# uninflated surface gap (5 mm in the POC policy); robot self pairs keep
+# intersection checks without an extra gap. The target carton needs the gap only
+# while it is a free attached payload; resting in the stack, separating from it,
+# landing and riding the belts it must touch its supports and keeps
+# intersection-only checks.
+FREE_PAYLOAD_PHASES=frozenset({'transfer','loaded_flow'})
+
+
 def bounds(local,T):
     lo,hi=local;center=T[:3,:3]@((lo+hi)/2)+T[:3,3];half=np.abs(T[:3,:3])@((hi-lo)/2)
     return center-half,center+half
@@ -78,6 +87,7 @@ class SimCollision:
 
     def check(self,q,height=.6,payload=None,contact=False,phase='',record=False):
         self.check_count+=1;c=self.c
+        gap=float(c.settings['collision'].get('minimum_gap_m',0.))
         if not c.robot.within_limits(q):self.last=dict(pair=[],kind='JOINT_LIMIT');return False
         geometries=_world_geometry(self.backend,q);robot=[]
         for i,g in enumerate(geometries):
@@ -89,8 +99,9 @@ class SimCollision:
         env=[*self.environment(height)]+([targetentity] if target_active else [])
         env_low=np.array([b['bounds'][0] for b in env]);env_high=np.array([b['bounds'][1] for b in env])
         robot_low=np.array([b['bounds'][0] for b in robot]);robot_high=np.array([b['bounds'][1] for b in robot])
+        margin=max(gap,1e-6)
         def nearby(a,items,low,high):
-            return [items[i] for i in np.flatnonzero(np.all(a['bounds'][0]<=high+1e-6,axis=1)&np.all(low<=a['bounds'][1]+1e-6,axis=1))]
+            return [items[i] for i in np.flatnonzero(np.all(a['bounds'][0]<=high+margin,axis=1)&np.all(low<=a['bounds'][1]+margin,axis=1))]
         def fail(hit):
             self.last=dict(**hit,q_rad=np.asarray(q).tolist(),phase=phase,height_m=height)
             return False
@@ -108,7 +119,7 @@ class SimCollision:
         for a in robot:
             for b in nearby(a,env,env_low,env_high):
                 if a['name']=='s50_base' and b['name']=='mount_plinth':continue
-                hit=self.query(a,b)
+                hit=self.query(a,b,gap)
                 if hit:return fail(hit)
         virtual=tool_virtual(c,q);tool=[]
         for spec in self.tool:
@@ -117,15 +128,15 @@ class SimCollision:
             for b in nearby(a,env,env_low,env_high):
                 if spec['kind']=='cup' and b['kind']=='carton':
                     if b['name']!=target.name or contact:continue
-                hit=self.query(a,b)
+                hit=self.query(a,b,gap)
                 if hit:return fail(hit)
             for b in nearby(a,robot,robot_low,robot_high):
                 if b['name']=='s50_link_6':continue # tool belongs to its ideal fixed flange
-                hit=self.query(a,b)
+                hit=self.query(a,b,gap)
                 if hit:return fail(hit)
         if payload is not None and target_active:
             for b in nearby(targetentity,env[:-1],env_low[:-1],env_high[:-1]):
-                hit=self.query(targetentity,b)
+                hit=self.query(targetentity,b,gap if phase in FREE_PAYLOAD_PHASES else 0.)
                 if hit:return fail(hit)
         self.last=None
         return True

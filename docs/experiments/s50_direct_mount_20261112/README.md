@@ -63,10 +63,10 @@
 python tools/run_s50_kinematic_sim.py --config configs/robots/huayan_s50_short105_kinematic_sim.yaml --output outputs/s50_short_mount
 ```
 
-授权服务器的明确入口：
+授权服务器上在既有 rootfs 的 `/opt/planning-venv` 中，于工作目录执行同一条命令（服务器地址与登录方式不写入仓库）：
 
-```powershell
-ssh -p 30794 root@connect.westd.seetacloud.com "chroot /root/m710-gap-search-20261107/rootfs /bin/bash -lc 'cd /work-s50-step1-kinematic-20261112 && OPENBLAS_NUM_THREADS=1 /opt/planning-venv/bin/python tools/run_s50_kinematic_sim.py --config configs/robots/huayan_s50_short105_kinematic_sim.yaml --output outputs/s50_short_mount'"
+```sh
+OPENBLAS_NUM_THREADS=1 /opt/planning-venv/bin/python tools/run_s50_kinematic_sim.py --config configs/robots/huayan_s50_short105_kinematic_sim.yaml --output outputs/s50_short_mount
 ```
 
 这会重新求解并生成 `outputs/s50_short_mount/viewer.html`。已有 [viewer.html](viewer.html) 是本次实际结果的单文件离线回放，可直接打开，无需启动服务器，支持播放、暂停、时间轴、阶段跳转和短连接近景。吸具跟随真实法兰 FK，吸取后箱子按固定相对变换跟随，释放后独立落带、输送并退出。

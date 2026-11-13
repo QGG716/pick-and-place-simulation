@@ -69,8 +69,8 @@ loaded_flow:
   release_y_candidates_m: [-0.5, -0.4, -0.6]
   method: CURRENT_RUN_POINTWISE_IK_SHORT_ARC_AFTER_FULL_STACK_CLEARANCE
 collision:
-  minimum_gap_m: 0.0
-  scope: Basic sampled intersection avoidance; no certified engineering clearance.
+  minimum_gap_m: 0.005
+  scope: Sampled 5 mm uninflated surface gap for robot/environment, tool/environment, tool/robot and free attached payload/environment; robot self pairs intersection-only; cups touch the target only from final approach to exit. Not certified clearance.
   contact_tolerance_m: 0.000002
   allowed_installation_pair: [s50_base, mount_plinth]
   adjacent_design_interfaces: [[s50_base, s50_link_1], [s50_link_1, s50_link_2], [s50_link_2, s50_link_3], [s50_link_3, s50_link_4], [s50_link_4, s50_link_5], [s50_link_5, s50_link_6]]
