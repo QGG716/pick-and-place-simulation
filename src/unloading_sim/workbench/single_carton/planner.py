@@ -30,6 +30,9 @@ TARGET_BLOCK_MARGIN_M=1e-4
 PAYLOAD_REST_DEPTH_M=.001
 # Smallest probe-path chunk handed to one native checker process.
 CHECK_CHUNK_MIN_STATES=500
+# Worker status for a plan whose own waypoint check the caller deferred to
+# its exact sent-path check (physical single-carton scope only).
+DEFERRED_OUTPUT='DEFERRED_TO_CALLER_SENT_PATH_CHECK'
 
 
 def failure_category(reason):
@@ -79,6 +82,7 @@ class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
+        self.defer_output_check=False
         super().__init__(config['execution'],mapping,authority)
     def build_world(self,s):
         # Source snapshot supplies robot/tool/camera solids only. Its trailer,
@@ -350,6 +354,15 @@ class SinglePlanner(EmptyPlanner):
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
         finally:path.write_text(json.dumps(record))
     # -- resident checker pool (final sent-path checks and concurrent plans) ----
+    def worker_ready(self,ready,boxes=()):
+        """Required capabilities of the main native worker; binds output-check deferral."""
+        capabilities=ready.get('capabilities',{})
+        if not capabilities.get('bounded_single_carton_planning'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
+        if any(b.get('uncertainty') for b in boxes) and not capabilities.get('partial_observed_contact_envelope'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
+        self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
+        return ready
     def start_check_pool(self,folder):
         """Extra resident native workers, initialised in the background.
 
@@ -378,6 +391,10 @@ class SinglePlanner(EmptyPlanner):
         self.pool_closed=False
         for k in range(count):
             thread=threading.Thread(target=start,args=(k,),daemon=True,name=f'native-check-{k}');thread.start();self.pool_threads.append(thread)
+    def wait_check_pool(self,timeout=240.):
+        """Wait until every pool worker is READY or FAILED, so lane count is fixed."""
+        deadline=time.monotonic()+timeout
+        for thread in self.pool_threads:thread.join(max(0.,deadline-time.monotonic()))
     def close_check_pool(self):
         with self.pool_lock:
             self.pool_closed=True;pool,self.pool=list(self.pool),[]
@@ -385,13 +402,24 @@ class SinglePlanner(EmptyPlanner):
             try:client.close()
             except Exception:pass
     def checkers(self):
-        with self.pool_lock:return [self.client]+list(self.pool)
+        """Live native workers: the main one first, then ready pool workers.
+
+        A worker whose process ended (a cancelled or failed request closes
+        it) is never handed another request.
+        """
+        alive=lambda c:getattr(getattr(c,'process',None),'poll',lambda:None)() is None
+        with self.pool_lock:return [c for c in [self.client]+list(self.pool) if alive(c)]
     # -- segments -----------------------------------------------------------------
     def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
         """Native plan and send-grid preparation, without the final dense check."""
         record=record or stage;progress('原生规划 '+record)
         req=dict(context,op='plan',pipeline_id='pilz_industrial_motion_planner',planner_id='LIN' if linear else 'PTP',
                  velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=25.)
+        # The worker's own dense check of its linear-joint waypoint path is
+        # deferred only when it supports that, because sent_check() runs the
+        # identical output-phase check on the exact sent path (all waypoints
+        # included) before any segment can be registered.
+        if self.defer_output_check:req['defer_output_check_to_sent_path']=True
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
         result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
@@ -412,7 +440,8 @@ class SinglePlanner(EmptyPlanner):
             progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（25 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
         (folder/(record+'-native.json')).write_text(json.dumps(dict(request=req,result=result)))
-        if result.get('status')!='SUCCESS' or result.get('native_output_status')!='PASS':
+        accepted={'PASS'}|({DEFERRED_OUTPUT} if req.get('defer_output_check_to_sent_path') else set())
+        if result.get('status')!='SUCCESS' or result.get('native_output_status') not in accepted:
             raise SegmentRejected(stage,stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))),result)
         payload_reach=0.
         if context.get('attachment'):
@@ -428,7 +457,8 @@ class SinglePlanner(EmptyPlanner):
                 progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
         planner=dict(pipeline_id=req['pipeline_id'],planner_id=req['planner_id'],velocity_scale=req['velocity_scale'],
                      acceleration_scale=req['acceleration_scale'],goal='JOINT' if 'q_goal' in req else 'POSE',
-                     configured_time_scale=scale,send_time_scale=prepared['time_scale'])
+                     configured_time_scale=scale,send_time_scale=prepared['time_scale'],
+                     native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
         return dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
     def sent_check(self,segment,folder,progress,cancelled=None):
         """Final dense validation of the exact sent path, split across checkers.
@@ -498,73 +528,164 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError(self.loaded_start_failure(endcheck,world))
         screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions)
         return dict(release_supports=release_supports,screen=screen)
-    def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None):
-        """Four native segments for one candidate; no permit issued here.
+    def plan_candidate_segments(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,
+                                clients=None,reuse=None):
+        """Plan all four native segments for one candidate; no dense sent check.
 
-        All four segments are planned before any final dense sent-path check,
-        so a later infeasible segment never costs minutes of dense checking.
         With a screened approach configuration the contact/detach chain is
-        planned from it first, then the approach and the loaded return are
-        planned concurrently on two workers. Dense checks run cheapest first.
+        planned from it first; approach and loaded return then run on two
+        workers when two are given. Detach profiles are tried in order;
+        ``reuse`` carries an earlier attempt's approach/contact and the profiles
+        already rejected, so only a new detach + return are planned.
         """
+        clients=list(clients or self.checkers())[:2];primary=clients[0];helper=clients[1] if len(clients)>1 else None
+        plan=lambda *a,client=primary,**k:self.plan_segment(*a,client=client,**k)
         scale=self.site['time_scale'];tcp=rigid(candidate['tcp_pose']);release_supports=screened['release_supports']
-        screen=screened['screen'];known=screen.get('approach_q')
-        plan=lambda *a,**k:self.plan_segment(*a,**k)
-        approach=None
-        if known is None:
-            approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
-            qpre=approach['prepared']['points'][-1]['q']
-        else:qpre=list(known)
-        contact=plan(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',scale,sub,progress,True,cancelled)
-        qc=contact['prepared']['points'][-1]['q'];actual=self.coordinate_model.tcp(qc)
-        seal=candidate_contact_check(actual,candidate)
-        if not seal['valid']:raise ValueError('ACTUAL_NATIVE_CONTACT_FK_SEAL_REJECTED')
-        actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
-        attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
-        release=self.release_check(q,attachment,box,world)
-        original=self.detach_supports(world,box)
-        checked=set();rejected=[]
-        for name,goal in self.detach_goals(actual,box,candidate):
+        if reuse is None:
+            screen=screened['screen'];known=screen.get('approach_q');approach=None
+            if known is None:
+                approach=plan(self.context(q,world,box,candidate,'approach'),candidate['precontact_pose'],'approach',scale,sub,progress,cancelled=cancelled)
+                qpre=approach['prepared']['points'][-1]['q']
+            else:qpre=list(known)
+            contact=plan(self.context(qpre,world,box,candidate,'contact'),tcp,'contact',scale,sub,progress,True,cancelled)
+            qc=contact['prepared']['points'][-1]['q'];actual=self.coordinate_model.tcp(qc)
+            seal=candidate_contact_check(actual,candidate)
+            if not seal['valid']:raise ValueError('ACTUAL_NATIVE_CONTACT_FK_SEAL_REJECTED')
+            actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
+            attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
+            reuse=dict(approach=approach,known=known,qpre=qpre,contact=contact,qc=qc,actual=actual,seal=seal,attachment=attachment,
+                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[])
+        r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
+        for name,goal in self.detach_goals(r['actual'],box,candidate):
+            if name in excluded:continue
             # Each profile is a new native LIN in the same scene with the full
             # attached box; the first whose whole chain passes is used.
             record='detach' if name=='OUTWARD' else 'detach-'+name.lower()
-            try:extraction=plan(self.context(qc,world,box,candidate,'detach',attachment,original),goal,'detach',scale,sub,progress,True,cancelled,record)
+            try:extraction=plan(self.context(r['qc'],world,box,candidate,'detach',r['attachment'],r['original']),goal,'detach',scale,sub,progress,True,cancelled,record)
             except SegmentRejected as e:
                 failure=(e.native_result or {}).get('failure')
                 if str((e.native_result or {}).get('status','')).startswith('INVALID_START') and self.payload_world_blocked(failure,box,world):
                     raise TargetBlocked(self.target_blocked_message(failure,box,'带箱脱离起点')) from e
-                rejected.append(dict(profile=name,reason=str(e)[:400]));continue
+                r['rejected'].append(dict(profile=name,reason=str(e)[:400]));continue
             qe=extraction['prepared']['points'][-1]['q']
-            return_context=self.context(qe,world,box,candidate,'return',attachment,release_supports)
+            return_context=self.context(qe,world,box,candidate,'return',r['attachment'],release_supports)
             try:
-                if approach is None:
-                    workers=self.checkers();helper=workers[1] if len(workers)>1 else None
+                if r['approach'] is None and helper is None:
+                    # One worker: fixed order keeps its OMPL request history reproducible.
+                    r['approach']=plan(self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                    if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
+                        raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
+                    returning=plan(return_context,q,'return',scale,sub,progress,cancelled=cancelled)
+                elif r['approach'] is None:
                     with ThreadPoolExecutor(max_workers=2) as executor:
-                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),known,'approach',scale,sub,progress,False,cancelled)
-                        second=executor.submit(plan,return_context,q,'return',scale,sub,progress,False,cancelled,None,helper)
+                        first=executor.submit(plan,self.context(q,world,box,candidate,'approach'),r['known'],'approach',scale,sub,progress,False,cancelled)
+                        second=executor.submit(plan,return_context,q,'return',scale,sub,progress,False,cancelled,None,client=helper)
                         approach_error=first.exception()
                         if approach_error is not None:raise approach_error
-                        approach=first.result()
-                        if np.max(abs(np.asarray(approach['prepared']['points'][-1]['q'])-qpre))>1e-7:raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
+                        r['approach']=first.result()
+                        if np.max(abs(np.asarray(r['approach']['prepared']['points'][-1]['q'])-r['qpre']))>1e-7:
+                            raise ValueError('APPROACH_END_NOT_SCREENED_CONFIGURATION')
                         returning=second.result()
                 else:returning=plan(return_context,q,'return',scale,sub,progress,cancelled=cancelled)
             except SegmentRejected as e:
                 if e.stage=='approach':raise
-                rejected.append(dict(profile=name,reason=str(e)[:400]));continue
+                r['rejected'].append(dict(profile=name,reason=str(e)[:400]));continue
             if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
-            segments=[approach,contact,extraction,returning]
-            try:
-                for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
-                    if segment['stage'] in checked:continue
-                    self.sent_check(segment,sub,progress,cancelled)
-                    if segment['stage'] in ('approach','contact'):checked.add(segment['stage'])
+            return dict(r,extraction=extraction,returning=returning,profile=name)
+        raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
+    def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None):
+        """Final dense sent-path checks of a planned candidate, cheapest first.
+
+        A segment checked in an earlier detach-profile attempt (approach and
+        contact) keeps its evidence. Raises SegmentRejected on any failure.
+        """
+        segments=[planned[k] for k in ('approach','contact','extraction','returning')]
+        for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
+            if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled)
+        planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
+        return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
+                    attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
+    def replan_after(self,planned,error):
+        """reuse for the next detach profile after a detach/return sent-path rejection."""
+        if error.stage in ('approach','contact'):raise error
+        return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
+    def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None):
+        """Four native segments for one candidate, planned then densely checked; no permit."""
+        planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients)
+        while True:
+            try:return self.verify_candidate(planned,sub,progress,cancelled)
             except SegmentRejected as e:
-                if e.stage in ('approach','contact'):raise
-                rejected.append(dict(profile=name,reason=str(e)[:400]));continue
-            extraction['evidence'].update(detach_profile=name,rejected_detach_profiles=rejected)
-            return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
-                        attachment=attachment,release=release,seal=seal)
-        raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(rejected,ensure_ascii=False))
+                planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients,self.replan_after(planned,e))
+    def parallel_candidates(self,q,world,box,order,progress,cancelled,failures):
+        """Plan candidates concurrently, verify them strictly in priority order.
+
+        Candidate ranks are assigned to lanes round-robin (rank % lanes); each
+        lane plans its own candidates in rank order on its own native worker,
+        so every worker's request history, and therefore every OMPL result,
+        is reproducible. Lanes plan only. The main thread checks candidates in
+        rank order with all workers and accepts the first that passes, exactly
+        like the sequential search; a detach/return rejection sends the
+        candidate back to its own lane for the next detach profile. New lane
+        work pauses while a check runs. Any exit stops and joins every lane.
+        """
+        lanes=self.checkers()[:max(1,int(self.site.get('parallel_candidate_lanes',1)))]
+        count=len(lanes);stop=threading.Event();idle=threading.Event();idle.set()
+        lane_cancelled=lambda:stop.is_set() or bool(cancelled())
+        import queue
+        results={rank:queue.Queue() for rank in range(len(order))};commands={rank:queue.Queue() for rank in range(len(order))}
+        progress(f'{len(order)} 个候选分配到 {count} 个原生进程同时规划；按优先级逐个检查发送路径')
+        def lane(index):
+            client=lanes[index]
+            for rank in range(index,len(order),count):
+                while not idle.wait(.05):
+                    if lane_cancelled():break
+                if lane_cancelled():results[rank].put(('STOPPED',None));continue
+                i,candidate,sub,screened=order[rank]
+                say=lambda text,i=i,rank=rank:progress(f'规划候选 {i+1}（{rank+1}/{len(order)}，进程 {index}）：{text}')
+                reuse=None
+                while True:
+                    try:
+                        planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,say,lane_cancelled,[client],reuse)
+                        results[rank].put(('PLANNED',planned))
+                    except TargetBlocked as e:results[rank].put(('TARGET_BLOCKED',e));break
+                    except ValueError as e:results[rank].put(('FAILED',e));break
+                    except Exception as e:
+                        # This lane's worker is closed; later ranks report it too.
+                        results[rank].put(('ERROR',e))
+                        for later in range(rank+count,len(order),count):results[later].put(('ERROR',e))
+                        return
+                    command=commands[rank].get()
+                    if command[0]!='REPLAN':break
+                    reuse=command[1]
+        threads=[threading.Thread(target=lane,args=(k,),daemon=True,name=f'candidate-lane-{k}') for k in range(count)]
+        for thread in threads:thread.start()
+        def receive(rank):
+            while True:
+                if cancelled():raise ValueError('CANCELLED')
+                try:return results[rank].get(timeout=.1)
+                except queue.Empty:continue
+        try:
+            for rank,(i,candidate,sub,screened) in enumerate(order):
+                kind,value=receive(rank)
+                while kind=='PLANNED':
+                    idle.clear()
+                    try:
+                        result=self.verify_candidate(value,sub,lambda text,i=i,rank=rank:progress(f'检查候选 {i+1}（{rank+1}/{len(order)}）：{text}'),cancelled)
+                    except SegmentRejected as e:
+                        try:reuse=self.replan_after(value,e)
+                        except SegmentRejected as fatal:kind,value='FAILED',fatal;commands[rank].put(('DONE',));break
+                        commands[rank].put(('REPLAN',reuse));idle.set();kind,value=receive(rank);continue
+                    finally:idle.set()
+                    commands[rank].put(('DONE',))
+                    return dict(result,index=i,candidate=candidate,screen=screened['screen'],lanes=count)
+                if kind=='TARGET_BLOCKED':raise value
+                if kind=='ERROR':raise value
+                if kind=='FAILED':failures.append(dict(target=box['id'],candidate=i,reason=str(value)))
+            return None
+        finally:
+            stop.set();idle.set()
+            for rank in commands:commands[rank].put(('STOP',))
+            for thread in threads:thread.join()
     def search_box(self,q,world,box,folder,progress=lambda _:None,cancelled=lambda:False,failures=None,candidate_filter=None):
         """Two-phase search for one target; returns the first complete plan.
 
@@ -599,13 +720,16 @@ class SinglePlanner(EmptyPlanner):
             clear=sum(s[3]['screen']['conclusion']=='CLEAR' for s in order)
             progress(f'预检完成：{clear} 个候选终态全部通过，{len(order)-clear} 个逆解未定论，'
                      f'{len(candidates)-len(order)} 个已排除；按此顺序完整规划')
+            if int(self.site.get('parallel_candidate_lanes',1))>1 and len(order)>1:
+                self.wait_check_pool()
+                if len(self.checkers())>1:return self.parallel_candidates(q,world,box,order,progress,cancelled,failures)
             for rank,(i,candidate,sub,screened_candidate) in enumerate(order):
                 if cancelled():raise ValueError('CANCELLED')
                 say=lambda text,i=i,rank=rank:progress(f'规划候选 {i+1}（{rank+1}/{len(order)}）：{text}')
                 try:result=self.plan_candidate(q,world,box,candidate,sub,screened_candidate,say,cancelled)
                 except TargetBlocked:raise
                 except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)));continue
-                return dict(result,index=i,candidate=candidate,screen=screened_candidate['screen'])
+                return dict(result,index=i,candidate=candidate,screen=screened_candidate['screen'],lanes=1)
         except TargetBlocked as e:
             progress(str(e));failures.append(dict(target=box['id'],reason=str(e)))
         return None
@@ -628,11 +752,7 @@ class SinglePlanner(EmptyPlanner):
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
         try:
-            ready=self.client.request(self.init)
-            if not ready.get('capabilities',{}).get('bounded_single_carton_planning'):
-                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
-            if any(b.get('uncertainty') for b in boxes) and not ready.get('capabilities',{}).get('partial_observed_contact_envelope'):
-                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
+            self.worker_ready(self.client.request(self.init),boxes)
             self.start_check_pool(folder)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
@@ -649,10 +769,15 @@ class SinglePlanner(EmptyPlanner):
                     inertia_box_kg_m2=(mass/12*np.diag([size[1]**2+size[2]**2,size[0]**2+size[2]**2,size[0]**2+size[1]**2])).tolist(),
                     basis='USER_CONFIRMED_2_KG_UNIFORM_CUBOID_INERTIA_ESTIMATE')
                 binding=self.binding();segments=result['segments']
+                # A segment is registered only with its exact sent path checked;
+                # a deferred worker waypoint check is never accepted on its own.
+                if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
+                native_checks=sorted({s['evidence']['planner'].get('native_output_check','PASS') for s in segments})
                 for segment in segments:segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
                 plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
-                    candidate_index=i,endpoint_screen=screen['conclusion'],
+                    candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
+                    native_output_check=native_checks,
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
                 (folder/'complete-plan.json').write_text(json.dumps(plan));return plan
             # Keep every concrete failure on disk; one task-status label must

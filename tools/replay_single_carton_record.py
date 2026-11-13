@@ -113,9 +113,8 @@ def main():
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
             planner.client = ResidentMoveItClient(['env', 'ROS_LOG_DIR='+str(out), str(ROOT/'ros2/m710_moveit_backend/worker.sh')], log_path=out/'moveit.log')
-            ready = planner.client.request(planner.init)
-            if not ready.get('capabilities', {}).get('bounded_single_carton_planning'):
-                raise SystemExit('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
+            planner.worker_ready(planner.client.request(planner.init), boxes)
+            report['native_output_check_deferral'] = planner.defer_output_check
             planner.start_check_pool(out)
             q = np.array(obs['q_start']); planning = time.monotonic()
             progress = lambda text: print(f'[{time.monotonic()-planning:7.1f}s] {text}', flush=True)
@@ -132,12 +131,14 @@ def main():
             report['complete_plan'] = dict(
                 status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', candidate_index=found['index'],
                 endpoint_screen=found['screen']['conclusion'], active_seal_ids=found['candidate']['active_ids'],
+                candidate_lanes=found.get('lanes', 1),
                 detach_profile=found['segments'][2]['evidence'].get('detach_profile'),
                 seal_check=found['seal'], release=found['release'],
                 segments=[dict(stage=s['stage'], points=len(s['prepared']['points']),
                                send_duration_s=s['prepared']['send_duration_s'],
                                native_plan=s['evidence']['native_plan'], sent_path_collision=s['evidence']['sent_path_collision'],
                                planner=s['evidence']['planner'],
+                               native_output_check=s['evidence']['planner'].get('native_output_check'),
                                parallel_checkers=s['evidence']['collision_result'].get('parallel_checkers'),
                                sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'))
                           for s in found['segments']])

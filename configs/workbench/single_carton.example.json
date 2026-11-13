@@ -9,6 +9,7 @@
   "record_root": "outputs/single_carton",
   "time_scale": 1.0,
   "native_check_workers": 6,
+  "parallel_candidate_lanes": 7,
   "topology": {
     "mode": "COMMON_GRIPPER_VALVE",
     "connected_cup_ids": [

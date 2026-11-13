@@ -1239,7 +1239,8 @@ public:
       identity=req.at("identity");
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
-              {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+              {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
+                {"single_carton_output_check_deferral",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1632,6 +1633,9 @@ public:
     auto* motion_stage=motion.get();
     task.add(std::move(motion)); auto planning=Clock::now(); ++requests; clearance->phase="search";
     const bool bounded_single=identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
+    const bool defer_output=req.value("defer_output_check_to_sent_path",false);
+    if(defer_output && (!bounded_single || evaluation_profile!="strict" || planning_only))
+      throw std::runtime_error("OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID");
     const double solve_budget=req.at("allowed_planning_time_s");
     if(!std::isfinite(solve_budget)||solve_budget<=0)throw std::runtime_error("INVALID_SOLVE_BUDGET");
     std::shared_ptr<m710::SearchTrace> single_trace;
@@ -1680,11 +1684,24 @@ public:
       for(auto& p:sub.trajectory.joint_trajectory.points) points.push_back({{"q",p.positions},{"v",p.velocities},{"a",p.accelerations},
         {"t",p.time_from_start.sec+p.time_from_start.nanosec*1e-9}});
     }
+    // Physical single-carton callers may defer this dense check of the
+    // planner's linear-joint waypoint path: they must run the identical
+    // clearance->checkPath ("output" phase, same policy and resolution) on
+    // the exact sent quintic path, which contains every returned waypoint,
+    // before the segment can be registered. Every other scope keeps it.
+    if(defer_output) {
+      out["native_output_check_s"]=nullptr;out["clearance"]=clearance->evidence();
+      out["native_output_status"]="DEFERRED_TO_CALLER_SENT_PATH_CHECK";
+      out["output_check_deferral"]={{"scope","PHYSICAL_SINGLE_CARTON_STRICT"},
+        {"required_caller_check","VALIDATE_PROBE_PATH_OUTPUT_PHASE_ON_EXACT_SENT_PATH_INCLUDING_ALL_WAYPOINTS"},
+        {"returned_waypoints",points.size()}};
+    } else {
     clearance->phase="output"; J path=J::array();for(const auto& p:points) path.push_back(p.at("q"));
     auto output_check=Clock::now();J native_failure=path_check(path);
     out["native_output_check_s"]=seconds(output_check);out["clearance"]=clearance->evidence();
     if(!native_failure.is_null()) {out["status"]="NATIVE_PATH_REJECTED";out["failure"]=native_failure;out["points"]=points;out["total_s"]=seconds(begin);return out;}
     out["native_output_status"]="PASS";
+    }
     out["status"]="SUCCESS";out["points"]=points;out["joint_names"]=names;out["total_s"]=seconds(begin);
     out["time_parameterization"]=pipeline=="ompl"?"IPTP_preserves_waypoints":"Pilz_original";return out;
   }

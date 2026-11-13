@@ -17,6 +17,9 @@ def case(tmp_path,monkeypatch):
     config=load(ROOT/'configs/workbench/single_carton.example.json')
     # Retained pre-site native chain fixture explicitly uses its historical policy.
     config.pop('site');config['release_policy']='USER_DEFERRED_RECEIVER_QUALIFICATION'
+    # Exact call-sequence tests below use the sequential search; the parallel
+    # lane search has its own directed tests at the end of this file.
+    config['parallel_candidate_lanes']=1
     tool=json.loads((ROOT/'configs/local/eco65_desktop/tool.json').read_text())
     T=np.eye(4);T[:3,3]=[.4,0,.4]
     box=dict(id='real-observation-box-0',detection_index=0,pose=T.tolist(),size_m=[.15,.1,.1],corners_m=corners(T,[.15,.1,.1]).tolist(),
@@ -41,10 +44,13 @@ def case(tmp_path,monkeypatch):
         def __init__(self,*args,**kwargs):pass
         def request(self,r,**kwargs):
             calls.append(deepcopy(r))
-            if r==p.init:return dict(status='READY',capabilities={'bounded_single_carton_planning':not options['legacy_worker']})
+            if r==p.init:return dict(status='READY',capabilities={'bounded_single_carton_planning':not options['legacy_worker'],**options.get('capabilities',{})})
             if r['op']=='ik':return options.get('ik',lambda r:dict(status='NATIVE_IK_FAILED'))(r)
             if r['op']=='validate' and 'validate' in options and 'probe_path' not in r:
                 hooked=options['validate'](r)
+                if hooked is not None:return hooked
+            if r['op']=='validate' and 'sent' in options and 'probe_path' in r:
+                hooked=options['sent'](r)
                 if hooked is not None:return hooked
             if r['op']=='validate':
                 valid=not((options['reject_return'] and r['stage']=='return' and 'probe_path' in r) or
@@ -54,7 +60,9 @@ def case(tmp_path,monkeypatch):
             if 'plan' in options:
                 hooked=options['plan'](r)
                 if hooked is not None:return hooked
-            stage=r['stage'];qgoal=r.get('q_goal',[dict(approach=.01,contact=.02,detach=.03)[stage]]*6) if stage!='return' else r['q_goal']
+            stage=r['stage']
+            if 'goal' in options:qgoal=options['goal'](r)
+            else:qgoal=r.get('q_goal',[dict(approach=.01,contact=.02,detach=.03)[stage]]*6) if stage!='return' else r['q_goal']
             return dict(status='SUCCESS',native_output_status='PASS',points=[dict(t=0.,q=r['q_start'],v=[0.]*6,a=[0.]*6),dict(t=1.,q=qgoal,v=[0.]*6,a=[0.]*6)])
         def close(self):pass
     monkeypatch.setattr('unloading_sim.moveit2_backend.ResidentMoveItClient',Native)
@@ -299,7 +307,7 @@ def test_lin_failure_retries_slower_native_profiles_and_records_each_attempt(cas
     segment=p.checked_segment({'q_start':[0.]*6,'stage':'contact'},np.eye(4),'contact',10.,folder,progress.append,True)
     assert attempts==[(1.,1.),(.5,.5),(.25,.25)]
     assert segment['evidence']['planner']==dict(pipeline_id='pilz_industrial_motion_planner',planner_id='LIN',
-        velocity_scale=.25,acceleration_scale=.25,goal='POSE',configured_time_scale=10.,send_time_scale=10.)
+        velocity_scale=.25,acceleration_scale=.25,goal='POSE',configured_time_scale=10.,send_time_scale=10.,native_output_check='PASS')
     for name in ('contact-pilz','contact-pilz-s0.5','contact-pilz-s0.25'):
         assert json.loads((folder/f'{name}-native.json').read_text())['status']=='REPLIED'
     assert not (folder/'contact-ompl-native.json').exists() and p.authority._plans=={}
@@ -582,3 +590,151 @@ def test_failure_summary_separates_budget_exhaustion_from_sent_path_rejection():
     assert failure_category('detach:ALL_PROFILES_REJECTED:[...]')=='detach:ALL_PROFILES_REJECTED'
     assert failure_category('ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: approach 终态 a ↔ b 相交')=='ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED'
     assert failure_category('INTERPOLATION_LIMIT:3:2')=='INTERPOLATION_LIMIT'
+
+
+def spy_plans(monkeypatch,p):
+    """Record (candidate folder, stage, record, client id) for every native plan request."""
+    seen=[];lock=__import__('threading').Lock();original=SinglePlanner.native_call
+    def spy(self,request,folder,name,timeout,cancelled=None,client=None):
+        if request.get('op')=='plan':
+            with lock:seen.append((folder.name,request['stage'],name,id(client or self.client)))
+        return original(self,request,folder,name,timeout,cancelled,client)
+    monkeypatch.setattr(SinglePlanner,'native_call',spy)
+    return seen
+
+
+cand_of=lambda q:int((q[0]-.01+1e-7)*1000)
+# Detach end stage per profile, from its lift above the contact pose.
+profile_stage=lambda lift:3+int(round(lift*100))%3
+
+
+def lanes_case(case,monkeypatch,count=4,lanes=4):
+    """Fake native world in which every joint vector encodes (candidate, stage).
+
+    q[0] = 0.01 + candidate/1000 + stage/10000 with stage 1 approach, 2 contact,
+    3..5 detach (one per profile); joints move < 0.02 rad in one second so the
+    0.1 rad/s limit holds at time_scale 1, and fake FK returns that
+    candidate's TCP pose.
+    """
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates;cands=real(box,p.source['tool'],p.site['topology'])[:count]
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:deepcopy(cands))
+    p.site['parallel_candidate_lanes']=lanes
+    key=lambda pose:json.dumps(np.round(pose,9).tolist())
+    poses={}
+    for i,c in enumerate(cands):poses[key(c['precontact_pose'])]=(i,1);poses[key(c['tcp_pose'])]=(i,2)
+    q_of=lambda i,stage:[.01+i/1000+stage/10000]*6
+    opts['ik']=lambda r:dict(status='SUCCESS',q=q_of(*poses[key(r['goal_pose'])]))
+    p.coordinate_model.tcp=lambda q:np.asarray(cands[cand_of(q)]['tcp_pose']) if q[0]>.005 else np.eye(4)
+    def goal_q(r):
+        if 'q_goal' in r:return r['q_goal']
+        i=cand_of(r['q_start']) if r['q_start'][0]>.005 else poses[key(r['goal_pose'])][0]
+        if r['stage'] in ('approach','contact'):return q_of(i,1 if r['stage']=='approach' else 2)
+        # Distinct detach end per profile: the goal height above the contact pose.
+        lift=np.asarray(r['goal_pose'])[2,3]-np.asarray(cands[i]['tcp_pose'])[2,3]
+        return q_of(i,profile_stage(lift))
+    opts['goal']=goal_q
+    return p,obs,box,folder,calls,opts,cands
+
+
+def test_parallel_lanes_are_fixed_round_robin_and_accept_first_feasible_by_priority(case,monkeypatch):
+    p,obs,box,folder,calls,opts,cands=lanes_case(case,monkeypatch,count=6,lanes=3)
+    import time as clock
+    def plan(r):
+        # Rank 0 fails its contact line, slowly; every later rank is feasible.
+        if r['stage']=='contact' and cand_of(r['q_start'])==0:clock.sleep(.3);return dict(status='NATIVE_PLANNING_FAILED')
+    opts['plan']=plan;seen=spy_plans(monkeypatch,p);progress=[]
+    result=p.plan_cycle(obs,[box],folder,progress.append)
+    # Rank 1 was planned while rank 0 was still failing, but accepted only after it.
+    assert result['candidate_index']==1 and result['candidate_lanes']==3
+    by_candidate={}
+    for sub,stage,name,client in seen:by_candidate.setdefault(int(sub.rsplit('-',1)[1]),set()).add(client)
+    assert all(len(v)==1 for v in by_candidate.values())
+    ids={i:next(iter(v)) for i,v in by_candidate.items()}
+    assert len({ids[0],ids[1],ids[2]})==3 and all(ids[i]==ids[i%3] for i in ids)  # rank % lanes
+    probes=[c for c in calls if c.get('op')=='validate' and 'probe_path' in c]
+    # Only the accepted candidate's exact sent paths were densely checked.
+    assert {c['stage'] for c in probes}=={'approach','contact','detach','return'}
+    assert {cand_of(c['q_start']) for c in probes if c['stage']!='approach'}=={1}
+    assert any('分配到 3 个原生进程同时规划' in m for m in progress) and len(p.authority._plans)==4
+
+
+def test_parallel_detach_sent_rejection_replans_next_profile_on_the_same_lane(case,monkeypatch):
+    p,obs,box,folder,calls,opts,cands=lanes_case(case,monkeypatch,count=3,lanes=3)
+    seen=spy_plans(monkeypatch,p)
+    # The fake face normal points up, so OUTWARD lifts by max(size)+10 mm.
+    outward=lambda q:abs(q[0]-(.01+profile_stage(max(box['size_m'])+.01)/10000))<1e-9
+    def sent(r):
+        # Candidate 0's OUTWARD detach fails its exact sent-path check.
+        if r['stage']=='detach' and cand_of(r['q_start'])==0 and outward(r['probe_path'][-1]):
+            return dict(native_valid=True,legacy_intersection_valid=True,failure=None,path_failure=dict(reason='CLEARANCE_INSUFFICIENT',edge=3))
+    opts['sent']=sent
+    result=p.plan_cycle(obs,[box],folder)
+    assert result['candidate_index']==0
+    detach=result['segments'][2]['package']['evidence']
+    assert detach['detach_profile']=='DIAGONAL_45' and [r['profile'] for r in detach['rejected_detach_profiles']]==['OUTWARD']
+    assert 'SENT_PATH_REJECTED' in detach['rejected_detach_profiles'][0]['reason']
+    rank0=[(name,client) for sub,stage,name,client in seen if sub.endswith('-0')]
+    assert [name for name,_ in rank0][-2:]==['detach-diagonal_45-pilz','return-pilz'] and len({c for _,c in rank0})==1
+    # Approach and contact were checked once and reused, not re-planned.
+    assert [name for name,_ in rank0].count('approach-pilz')==1 and [name for name,_ in rank0].count('contact-pilz')==1
+
+
+def test_parallel_and_sequential_searches_choose_the_same_candidate_and_paths(case,monkeypatch):
+    p,obs,box,folder,calls,opts,cands=lanes_case(case,monkeypatch,count=5,lanes=1)
+    opts['plan']=lambda r:dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='return' and cand_of(r['q_start'])<3 else None
+    sequential=p.plan_cycle(obs,[box],folder)
+    q_seq=[s['package']['prepared']['points'][-1]['q'] for s in sequential['segments']]
+    other=folder.parent/('b'*32);other.mkdir();p.site['parallel_candidate_lanes']=4;p.authority.invalidate()
+    parallel=p.plan_cycle(obs,[box],other)
+    assert sequential['candidate_lanes']==1 and parallel['candidate_lanes']==4
+    assert sequential['candidate_index']==parallel['candidate_index']==3
+    assert [s['package']['prepared']['points'][-1]['q'] for s in parallel['segments']]==q_seq
+
+
+def test_parallel_target_block_in_a_lane_stops_all_lanes(case,monkeypatch):
+    p,obs,box,folder,calls,opts,cands=lanes_case(case,monkeypatch,count=4,lanes=4)
+    failure=dict(reason='INTERSECTION_OR_CONTACT',pair=[box['id'],'wall'],surface_distance_m=-1.,required_pair_clearance_m=.0024)
+    opts['plan']=lambda r:dict(status='INVALID_START_CLEARANCE',failure=failure) if r['stage']=='detach' else None
+    with pytest.raises(ValueError,match='TARGET_PAYLOAD_BLOCKED_AT_REST'):p.plan_cycle(obs,[box],folder)
+    assert not p.authority._plans and not [t for t in __import__('threading').enumerate() if t.name.startswith('candidate-lane')]
+
+
+def test_deferred_worker_waypoint_check_is_used_only_when_supported_and_never_without_sent_check(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    opts['capabilities']={'single_carton_output_check_deferral':True}
+    def plan(r):
+        assert r['defer_output_check_to_sent_path'] is True
+        stage=r['stage'];q=r['q_goal'] if 'q_goal' in r else [dict(approach=.01,contact=.02,detach=.03)[stage]]*6
+        return dict(status='SUCCESS',native_output_status='DEFERRED_TO_CALLER_SENT_PATH_CHECK',
+                    points=[dict(t=0.,q=r['q_start'],v=[0.]*6,a=[0.]*6),dict(t=1.,q=q,v=[0.]*6,a=[0.]*6)])
+    opts['plan']=plan
+    result=p.plan_cycle(obs,[box],folder)
+    assert result['native_output_check']==['DEFERRED_TO_SENT_PATH_CHECK']
+    assert {c['stage'] for c in calls if c.get('op')=='validate' and 'probe_path' in c}=={'approach','contact','detach','return'}
+    for segment in result['segments']:
+        evidence=segment['package']['evidence']
+        assert evidence['sent_path_collision']=='PASS' and evidence['planner']['native_output_check']=='DEFERRED_TO_SENT_PATH_CHECK'
+
+
+def test_deferred_status_without_a_deferral_request_is_rejected(case,monkeypatch):
+    p,obs,box,folder,calls,opts=case
+    real=contact_candidates
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:real(*a)[:1])
+    def plan(r):
+        assert 'defer_output_check_to_sent_path' not in r  # worker did not advertise the capability
+        return dict(status='SUCCESS',native_output_status='DEFERRED_TO_CALLER_SENT_PATH_CHECK',
+                    points=[dict(t=0.,q=r['q_start'],v=[0.]*6,a=[0.]*6),dict(t=1.,q=[.01]*6,v=[0.]*6,a=[0.]*6)])
+    opts['plan']=plan
+    with pytest.raises(ValueError,match='approach:NATIVE_REJECTED'):p.plan_cycle(obs,[box],folder)
+    assert not p.authority._plans
+
+
+def test_dead_worker_is_never_given_a_request():
+    from types import SimpleNamespace as N
+    p=SinglePlanner.__new__(SinglePlanner);p.pool_lock=__import__('threading').Lock()
+    alive=N(process=N(poll=lambda:None));dead=N(process=N(poll=lambda:-15));fake=N()
+    p.client=alive;p.pool=[dead,fake]
+    assert p.checkers()==[alive,fake]

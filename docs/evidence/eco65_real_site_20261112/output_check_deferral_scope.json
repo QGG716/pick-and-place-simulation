@@ -1,0 +1,14 @@
+{
+  "scope": "NATIVE_DEFERRAL_SCOPE_CHECK_PLANNING_ONLY_NOT_EXECUTABLE",
+  "hardware_execution": "NOT_RUN",
+  "capability_single_carton_output_check_deferral": false,
+  "policy_scope": "CONTROLLED_EMPTY_NO_CONTACT",
+  "without_field": {
+    "status": "SUCCESS",
+    "native_output_status": "PASS"
+  },
+  "with_field": {
+    "error": "OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID"
+  },
+  "result": "PASS"
+}

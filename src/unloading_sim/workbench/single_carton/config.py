@@ -62,6 +62,9 @@ def issues(c):
     workers=c.get('native_check_workers',0)
     if type(workers)!=int or not 0<=workers<=12:
         errors.append('native_check_workers：并行检查发送路径的额外原生进程数，0 至 12（0 为不并行）')
+    lanes=c.get('parallel_candidate_lanes',1)
+    if type(lanes)!=int or not 1<=lanes<=13:
+        errors.append('parallel_candidate_lanes：同时规划的候选数（每个占一个原生进程），1 至 13（1 为逐个规划）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

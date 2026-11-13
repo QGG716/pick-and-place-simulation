@@ -1,0 +1,185 @@
+{
+  "schema": "eco65_parallel_candidates_and_output_deferral_report_v1",
+  "date": "2026-11-13",
+  "scope": "OFFLINE_REPLAY_bb88010f_NOT_EXECUTABLE_NOT_PHYSICAL_ACCEPTANCE",
+  "hardware_execution": "NOT_RUN",
+  "worker": {
+    "installed_sha256": "d0cf287f8b4d0bae9b09a236a1fd2b2d02d01341b6003eba26176aefe2804261",
+    "previous_sha256": "5691e4f7e860d007b4a99292771ecc31ddb5a76ef71ccfb2e040182bbd8572d5",
+    "clearance_tests": "optimized PASS, reference PASS",
+    "scope_check": "controlled-empty scope refuses deferral; without field PASS"
+  },
+  "sequential_a_to_d": {
+    "planning_s": 695.47,
+    "candidate": 18,
+    "lanes": 1,
+    "detach_profile": "DIAGONAL_45",
+    "native_output_check_deferral": false,
+    "segments": [
+      {
+        "stage": "approach",
+        "points": 6439,
+        "send_duration_s": 32.19,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "PASS",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 73.22154092902201
+      },
+      {
+        "stage": "contact",
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "PASS",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 4.162025266996352
+      },
+      {
+        "stage": "detach",
+        "points": 2456,
+        "send_duration_s": 12.275,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "PASS",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 7.144427048013313
+      },
+      {
+        "stage": "return",
+        "points": 6391,
+        "send_duration_s": 31.95,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "PASS",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 91.65783703999477
+      }
+    ],
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 21,
+      "detach": 3,
+      "INTERPOLATION_LIMIT": 2,
+      "approach": 3
+    },
+    "source_record_unchanged": true,
+    "permits_issued": 0
+  },
+  "parallel_separate_prefix": {
+    "planning_s": 338.05,
+    "candidate": 18,
+    "lanes": 7,
+    "detach_profile": "DIAGONAL_45",
+    "native_output_check_deferral": true,
+    "segments": [
+      {
+        "stage": "approach",
+        "points": 6439,
+        "send_duration_s": 32.19,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 73.13382856201497
+      },
+      {
+        "stage": "contact",
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 6.126835130999098
+      },
+      {
+        "stage": "detach",
+        "points": 2456,
+        "send_duration_s": 12.275,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 9.608530782017624
+      },
+      {
+        "stage": "return",
+        "points": 6391,
+        "send_duration_s": 31.95,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 106.90404482500162
+      }
+    ],
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 21,
+      "detach": 3,
+      "INTERPOLATION_LIMIT": 2,
+      "approach": 3
+    },
+    "source_record_unchanged": true,
+    "permits_issued": 0
+  },
+  "parallel_installed": {
+    "planning_s": 360.73,
+    "candidate": 18,
+    "lanes": 7,
+    "detach_profile": "DIAGONAL_45",
+    "native_output_check_deferral": true,
+    "segments": [
+      {
+        "stage": "approach",
+        "points": 6439,
+        "send_duration_s": 32.19,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 87.29424718799419
+      },
+      {
+        "stage": "contact",
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 7.156096393999178
+      },
+      {
+        "stage": "detach",
+        "points": 2456,
+        "send_duration_s": 12.275,
+        "planner": "LIN",
+        "send_time_scale": 2.0,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 10.551212788006524
+      },
+      {
+        "stage": "return",
+        "points": 6391,
+        "send_duration_s": 31.95,
+        "planner": "PTP",
+        "send_time_scale": 1.25,
+        "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK",
+        "sent_path_collision": "PASS",
+        "sent_check_wall_s": 108.33383721401333
+      }
+    ],
+    "failures_by_reason": {
+      "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 21,
+      "detach": 3,
+      "INTERPOLATION_LIMIT": 2,
+      "approach": 3
+    },
+    "source_record_unchanged": true,
+    "permits_issued": 0
+  },
+  "same_candidate_and_trajectories_as_sequential": true,
+  "directed_tests": "397 passed (working tree also contained another session's uncommitted execution-side changes)"
+}
