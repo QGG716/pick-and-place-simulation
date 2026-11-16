@@ -14,9 +14,15 @@
 #include <ompl/util/RandomNumbers.h>
 #include <nlohmann/json.hpp>
 #include <chrono>
+#include <condition_variable>
+#include <cstring>
+#include <deque>
+#include <functional>
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <set>
+#include <thread>
 #include "clearance.h"
 #include "process_policy.h"
 #include "basic_sampled_path.h"
@@ -34,6 +40,9 @@ using J = nlohmann::json;
 namespace mtc = moveit::task_constructor;
 using Clock = std::chrono::steady_clock;
 double seconds(Clock::time_point t) { return std::chrono::duration<double>(Clock::now()-t).count(); }
+// OMPL's process-global seed generator: seeded once at the first init, and
+// re-seeded with the same value by an ECO65 task reset.
+static bool g_ompl_seeded=false;static uint32_t g_process_seed=0;
 Eigen::Isometry3d matrix(const J& j) {
   if (j.size()!=4) throw std::runtime_error("INVALID_TRANSFORM");
   Eigen::Isometry3d t=Eigen::Isometry3d::Identity();
@@ -202,6 +211,9 @@ class Worker {
   J identity, scene_content, bound_policy, bound_tools, bound_compliant, bound_process_geometry; std::string scene_key;
   uint32_t seed=0; size_t requests=0; std::map<std::string,size_t> calls;
   std::map<std::string,std::unique_ptr<NativeTaskSession>> tasks;
+  // Uploaded ECO65 scenes (step 4): handle -> fingerprint, world, imported scene.
+  struct SceneHandle {std::string fingerprint;J world;planning_scene::PlanningScenePtr scene;};
+  std::map<std::string,SceneHandle> scene_handles;size_t scene_version=0;bool world_from_handle=false;
   size_t ik_calls=0;
   bool planning_only=false;  // Bound at process initialization, never per-stage downgrade.
   std::string planning_mode="cold_from_scratch";
@@ -1115,36 +1127,69 @@ class Worker {
     compactPlanningOnlyReply(record->result,planning_only,planning_mode);
     return record->result;
   }
-  // Optional unified planning deadline of the physical single-carton chain.
-  // The caller's time.monotonic() and this steady_clock are both Linux
-  // CLOCK_MONOTONIC on the same host; a request received before the caller's
-  // reference or long after the deadline proves a different clock domain.
-  // Absent field: the request budget alone applies, exactly as before.
-  J applyAbsoluteDeadline(const J& req,Clock::time_point begin) {
-    if(!model || req.at("op")=="init" || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")
-      throw std::runtime_error("ABSOLUTE_DEADLINE_SCOPE_INVALID");
-    const auto& a=req.at("absolute_deadline_monotonic_s");const auto& r=req.at("deadline_clock_reference_monotonic_s");
-    if(!a.is_number() || !r.is_number())throw std::runtime_error("INVALID_ABSOLUTE_DEADLINE");
-    const double absolute=a.get<double>(),reference=r.get<double>();
-    const double now=std::chrono::duration<double>(begin.time_since_epoch()).count();
-    if(!std::isfinite(absolute) || !std::isfinite(reference) || reference>absolute)throw std::runtime_error("INVALID_ABSOLUTE_DEADLINE");
-    if(now<reference-1e-3 || now>absolute+60.)throw std::runtime_error("DEADLINE_CLOCK_DOMAIN_MISMATCH");
-    const auto point=Clock::time_point(std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(absolute)));
-    const bool earlier=point<request_deadline;
-    if(earlier)request_deadline=point;
-    return {{"absolute_deadline_monotonic_s",absolute},{"receipt_monotonic_s",now},{"limits_request",earlier},
-            {"clock","CLOCK_MONOTONIC_STEADY_CLOCK"}};
+  // -- resident ECO65 single-carton tasks (step 4) --------------------------------
+  void requireSingleCartonContext(const J& req) const {
+    if(!model || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")throw std::runtime_error("TASK_RESET_SCOPE_INVALID");
+    if(req.at("identity")!=identity)throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
+  }
+  // A new task starts as a fresh process would: no world object, scene,
+  // counter, cached OMPL context/sampler/simplifier or RNG state of an
+  // earlier task remains (AGENTS 2026-11-16 3c).
+  J taskReset(const J& req) {
+    const auto t=Clock::now();requireSingleCartonContext(req);
+    if(req.at("seed")!=seed)throw std::runtime_error("RESIDENT_SEED_MISMATCH");
+    base=std::make_shared<planning_scene::PlanningScene>(model);scene_key.clear();scene_content=nullptr;
+    scene_handles.clear();scene_version=0;calls.clear();requests=0;ik_calls=0;tasks.clear();
+    auto p=std::make_shared<planning_pipeline::PlanningPipeline>(model,node,"ompl","planning_plugin","request_adapters");
+    if(!p->getPlannerManager())throw std::runtime_error("PIPELINE_UNAVAILABLE:ompl");
+    p->displayComputedMotionPlans(false);p->publishReceivedRequests(false);
+    pipelines["ompl"]=p;original_ompl_configurations=p->getPlannerManager()->getPlannerConfigurations();
+    ompl::RNG::setSeed(g_process_seed);
+    return {{"status","RESET"},{"seed",seed},{"ompl_pipeline_rebuilt",true},{"ompl_seed_reapplied",g_process_seed},
+            {"reset_s",seconds(t)},{"scope","PHYSICAL_SINGLE_CARTON_TASK_START"}};
+  }
+  // One upload per observation and worker; later requests carry the handle.
+  J sceneUpload(const J& req) {
+    const auto t=Clock::now();requireSingleCartonContext(req);
+    const std::string fingerprint=req.at("scene_fingerprint");
+    auto next=std::make_shared<planning_scene::PlanningScene>(model);std::set<std::string> ids;
+    for(const auto& b:req.at("world")) {
+      if(!ids.insert(b.at("id").get<std::string>()).second) throw std::runtime_error("DUPLICATE_OBJECT");
+      if(!next->processCollisionObjectMsg(object(b))) throw std::runtime_error("SCENE_IMPORT_FAILED");
+    }
+    const std::string handle="scene-"+std::to_string(++scene_version);
+    scene_handles[handle]=SceneHandle{fingerprint,req.at("world"),next};
+    base=next;scene_key=fingerprint;scene_content=req.at("world");
+    return {{"status","SCENE_READY"},{"scene_handle",handle},{"scene_version",scene_version},
+            {"scene_fingerprint",fingerprint},{"objects",ids.size()},{"upload_s",seconds(t)}};
+  }
+  // The stored world re-enters the request, so every policy reading
+  // req["world"] sees exactly the uploaded content.
+  J expandSceneHandle(const J& input) {
+    requireSingleCartonContext(input);
+    if(input.contains("world"))throw std::runtime_error("SCENE_HANDLE_WITH_WORLD");
+    const auto found=scene_handles.find(input.at("scene_handle").get<std::string>());
+    if(found==scene_handles.end())throw std::runtime_error("SCENE_HANDLE_UNKNOWN");
+    if(input.at("scene_fingerprint")!=found->second.fingerprint)throw std::runtime_error("SCENE_HANDLE_FINGERPRINT_MISMATCH");
+    J expanded=input;expanded.erase("scene_handle");expanded["world"]=found->second.world;
+    if(scene_key!=found->second.fingerprint) {base=found->second.scene;scene_key=found->second.fingerprint;scene_content=found->second.world;}
+    return expanded;
   }
 public:
-  J dispatch(const J& req) {
+  std::function<void(const m710::NativeDeadlinePtr&)> on_deadline;
+  J dispatch(const J& input) {
+    J expanded;world_from_handle=false;
+    const bool handle=input.is_object() && input.contains("scene_handle") && input.value("op",std::string())!="init";
+    if(handle) {expanded=expandSceneHandle(input);world_from_handle=true;}
+    const J& req=handle?expanded:input;
+    struct HandleFlagReset {bool& flag;~HandleFlagReset(){flag=false;}} handle_flag_reset{world_from_handle};
     const auto begin=Clock::now();const double budget=req.value("request_budget_s",86400.);
     if(!std::isfinite(budget)||budget<=0)throw std::runtime_error("INVALID_REQUEST_BUDGET");
     request_deadline=begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(budget));
-    const J absolute=req.contains("absolute_deadline_monotonic_s")?applyAbsoluteDeadline(req,begin):J(nullptr);
     native_deadline=std::make_shared<m710::NativeDeadline>(request_deadline);
+    if(on_deadline)on_deadline(native_deadline);
     auto result=run(req);result["evaluation_profile"]=evaluation_profile;
     result["budget"]={{"request_budget_s",budget},{"remaining_on_return_s",remainingBudget()},{"return_reserve_s",req.value("return_reserve_s",5.)}};
-    if(!absolute.is_null())result["budget"]["absolute_deadline"]=absolute;
     if(req.value("search_trace",false) && !result.contains("search_trace")) {
       const std::string pipeline=req.value("pipeline_id",std::string());
       result["search_trace_status"]=pipeline=="ompl"?"NOT_STARTED_NO_TREE":
@@ -1181,9 +1226,8 @@ public:
       if(planning_mode=="static_prior_fast" && !planning_only)
         throw std::runtime_error("STATIC_PRIOR_REQUIRES_PLANNING_ONLY");
       seed=req.at("seed");
-      static bool seeded=false;static uint32_t process_seed=0;
-      if(!seeded) {ompl::RNG::setSeed(seed);process_seed=seed;seeded=true;}
-      else if(seed!=process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
+      if(!g_ompl_seeded) {ompl::RNG::setSeed(seed);g_process_seed=seed;g_ompl_seeded=true;}
+      else if(seed!=g_process_seed) throw std::runtime_error("RESIDENT_SEED_MISMATCH");
       const bool physical_single=req.at("identity").value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON";
       if(physical_single && (planning_only || req.at("identity").value("robot_variant",std::string())!="ECO65-B"))
         throw std::runtime_error("PHYSICAL_SINGLE_CARTON_SCOPE_INVALID");
@@ -1268,13 +1312,19 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"path_endpoint_reuse",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if(op=="sc_task_reset")return taskReset(req);
+    if(op=="sc_scene_upload")return sceneUpload(req);
+    if(op=="sc_scene_release") {
+      requireSingleCartonContext(req);const size_t removed=scene_handles.erase(req.at("scene_handle").get<std::string>());
+      return {{"status","RELEASED"},{"removed",removed}};
+    }
     if(cycle_binding && req.value("continuous_task_mode",std::string())!=m710::kEcoCycleMode)
       throw std::runtime_error("ECO65_CONTINUOUS_MODE_REQUIRED");
     if(req.value("evaluation_profile",std::string("strict"))!=evaluation_profile)
@@ -1757,7 +1807,37 @@ int main(int argc,char**argv) {
   // Measurement only (M710_NATIVE_TIMING=1). The serialization time of a
   // reply is known only after it is written, so it is reported with the next.
   const bool timing=m710::NativeTiming::enabled();double previous_dump_s=-1.,previous_reply_bytes=-1.;
-  while(std::getline(std::cin,line)) {
+  // Resident ECO65 workers (M710_WORKER_CANCEL=1): a reader thread takes
+  // out-of-band {"op":"cancel","target_request_id":...} lines and cancels the
+  // running request's NativeDeadline; every other line is queued and handled
+  // serially exactly as before. Without the variable the loop is unchanged.
+  const bool async_cancel=[]{const char* v=std::getenv("M710_WORKER_CANCEL");return v&&std::strcmp(v,"1")==0;}();
+  std::mutex queue_mutex,running_mutex;std::condition_variable queue_cv;std::deque<std::string> queued;bool input_closed=false;
+  std::string running_id;m710::NativeDeadlinePtr running_deadline;bool running_cancelled=false;std::set<std::string> early_cancels;
+  std::thread reader;
+  if(async_cancel)reader=std::thread([&]{
+    std::string l;
+    while(std::getline(std::cin,l)) {
+      if(l.size()<512 && l.find("\"op\":\"cancel\"")!=std::string::npos) {
+        std::string target;try {target=J::parse(l).at("target_request_id").get<std::string>();} catch(...) {continue;}
+        std::lock_guard<std::mutex> g(running_mutex);
+        if(target==running_id && running_deadline) {running_deadline->cancel();running_cancelled=true;}
+        else early_cancels.insert(target);
+        continue;
+      }
+      {std::lock_guard<std::mutex> g(queue_mutex);queued.push_back(std::move(l));}
+      queue_cv.notify_one();
+    }
+    {std::lock_guard<std::mutex> g(queue_mutex);input_closed=true;}
+    queue_cv.notify_one();
+  });
+  auto next_line=[&](std::string& out)->bool {
+    if(!async_cancel)return bool(std::getline(std::cin,out));
+    std::unique_lock<std::mutex> g(queue_mutex);queue_cv.wait(g,[&]{return input_closed||!queued.empty();});
+    if(queued.empty())return false;
+    out=std::move(queued.front());queued.pop_front();return true;
+  };
+  while(next_line(line)) {
     const auto received=Clock::now();double parse_s=-1.;
     if(timing)m710::NativeTiming::instance().reset();
     J req,answer;try {req=J::parse(line);parse_s=seconds(received); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
@@ -1772,11 +1852,24 @@ int main(int argc,char**argv) {
           workers[key]=std::make_unique<Worker>();
         }
         if(!workers.count(key)) throw std::runtime_error("UNKNOWN_MODEL_TCP_CONTEXT");
+        if(async_cancel) {
+          std::lock_guard<std::mutex> g(running_mutex);
+          running_id=req.value("request_id",std::string());running_cancelled=false;running_deadline=nullptr;
+          workers.at(key)->on_deadline=[&](const m710::NativeDeadlinePtr& d) {
+            std::lock_guard<std::mutex> h(running_mutex);running_deadline=d;
+            if(early_cancels.erase(running_id)) {d->cancel();running_cancelled=true;}
+          };
+        }
         answer=workers.at(key)->dispatch(req);
         if(req.at("op")=="init") {answer["context_reused"]=false;startups[key]=answer;init_requests[key]=init_content;}
       }} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
     if(!answer.contains("evaluation_profile"))answer["evaluation_profile"]=req.value("evaluation_profile",std::string("strict"));
     answer["request_id"]=req.value("request_id",std::string());
+    if(async_cancel) {
+      std::lock_guard<std::mutex> g(running_mutex);
+      if(running_cancelled)answer["cancelled_by_request"]=true;
+      running_id.clear();running_deadline=nullptr;running_cancelled=false;
+    }
     if(timing) {
       J t=m710::NativeTiming::instance().json();
       t["request_line_bytes"]=line.size();t["request_parse_s"]=parse_s<0?J(nullptr):J(parse_s);
@@ -1788,6 +1881,7 @@ int main(int argc,char**argv) {
       previous_reply_bytes=double(text.size());std::cout<<text<<std::endl;
     } else std::cout<<answer.dump()<<std::endl;
   }
+  if(reader.joinable())reader.detach();
   rclcpp::shutdown();return 0;
 }
 

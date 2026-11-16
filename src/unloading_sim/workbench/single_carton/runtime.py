@@ -41,6 +41,9 @@ class TaskManager:
         self.stop_event=threading.Event();self.closing=threading.Event();self.busy=False;self.lock=threading.Lock()
         self.evidence=None  # observation evidence writer (async_evidence only)
         self.thread=threading.Thread(target=self._monitor,daemon=True,name='single-carton-supervisor');self.thread.start()
+        # resident_workers: start and initialise the native workers in the
+        # background as soon as the entry starts (no motion or valve command).
+        if (config or {}).get('resident_workers') is True and hasattr(planner,'prewarm'):planner.prewarm()
     @property
     def active(self):return self.busy or (self.cycle is not None and self.cycle.active)
     def progress(self,text):self.notify('progress',text)

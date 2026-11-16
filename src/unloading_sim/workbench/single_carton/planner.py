@@ -168,8 +168,13 @@ class SinglePlanner(EmptyPlanner):
             entry=self.ipc_executors.get(id(client))
             if entry is None:
                 entry=self.ipc_executors[id(client)]=(client,ThreadPoolExecutor(max_workers=1,thread_name_prefix='native-ipc'))
+        stop=cancelled
+        if hasattr(client,'retire'):
+            # Resident worker: cancel this request by id at the deadline; the
+            # worker replies and stays usable for later tasks.
+            stop=lambda:(cancelled is not None and cancelled()) or time.monotonic()>=deadline
         future=entry[1].submit(timing.native_request,client,payload,timeout=min(timeout,left+DEADLINE_IPC_GRACE_S),
-                               cancelled=cancelled,record=name)
+                               cancelled=stop,record=name)
         try:return future.result(timeout=max(0.,deadline-time.monotonic()))
         except FutureTimeout:
             with self.pool_lock:self.abandoned.add(id(client))
@@ -207,6 +212,9 @@ class SinglePlanner(EmptyPlanner):
         # base placement, conveyors, floor, lift and cartons never enter real IO.
         return []
     def build(self):
+        # A background prewarm (resident_workers) and observe may both build.
+        with self.build_lock:return self._build()
+    def _build(self):
         if self.ready:return
         for path,expected in self.site.get('loaded_file_sha256',{}).items():self.track(path,expected)
         super().build()
@@ -638,7 +646,8 @@ class SinglePlanner(EmptyPlanner):
         alive=lambda c:getattr(getattr(c,'process',None),'poll',lambda:None)() is None
         # A worker whose reply was abandoned at the deadline is never reused.
         abandoned=getattr(self,'abandoned',())
-        with self.pool_lock:return [c for c in [self.client]+list(self.pool) if alive(c) and id(c) not in abandoned]
+        with self.pool_lock:return [c for c in [self.client]+list(self.pool)
+                                    if alive(c) and id(c) not in abandoned and getattr(c,'retired',None) is None]
     # -- segments -----------------------------------------------------------------
     def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
         """Native plan and send-grid preparation, without the final dense check."""
