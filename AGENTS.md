@@ -1,4 +1,174 @@
-# November 12 real-site continuous single-carton entry (current active override)
+# November 16 real-time refactor and continuous multi-carton job (current active override)
+
+Work from the actual latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration`;
+preserve prior commits and LFS assets. The user authorizes development, commit
+and push. Every rule in the sections below stays in force unless a numbered
+item here names what it supersedes. Development tests use fake IO or inert
+smoke mode. Physical acceptance of everything in this section is NOT_RUN until
+a real operator-started run produces the evidence.
+
+## 1. Scope and latency target
+
+Refactor three modules of the ECO65 real-site chain for latency: vision
+(frozen-frame carton geometry and site scene), motion planning, and online
+scheduling (task, cycle and execution orchestration). Move only measured hot
+paths from Python to C++. UI, configuration, device connection, network
+restore, model inference, reports, offline tools and tests remain Python.
+FANUC, M710, Isaac and offline-simulation entries are frozen: no refactor, and
+their retained regressions keep passing.
+
+Target: `prepare_plan` entry to `PLAN_READY`, p95 <= 2.0 s on the saved field
+records, with a success rate no lower than the measured baseline. Vision and
+scheduling latency are measured and reported separately. A missed target is
+reported per stage; it is never met by weakening or skipping a check.
+
+## 2. Invariants
+
+Unchanged by this refactor: the 2.4 mm required pair clearance and every pair
+rule; all 715 robot/tool collision solids and all 12 cups; contact,
+seal-coverage, lip-penetration and attachment rules; full uncertainty
+envelopes; unknown-space, target-envelope-point and receiver policies with
+their recorded bases; contact-candidate generation and priority order (the
+accepted candidate is still the highest-priority one whose plan and final
+audit both pass); joint limits 0.10 rad/s and 0.20 rad/s^2; the 5 ms CANFD
+period and every reviewed monitor threshold; the pressure gate (-60 / -30 /
+-10 kPa, two fresh heartbeats spanning >= 1 s, 3 s timeouts); all stop
+semantics.
+
+Each migrated function keeps its Python implementation until an equivalence
+report on saved records shows identical decisions. Selection is an explicit
+`PYTHON | NATIVE` configuration value per module, default PYTHON until that
+report exists. A NATIVE failure is reported; it never falls back silently.
+
+## 3. Permitted performance mechanisms
+
+a. Collision proxies. Conservative proxies (spheres or capsules that contain
+   the source solids, conservatively rounded distance fields built from the
+   current scene, boxes for payload envelopes) may prove a state clear when
+   their distance lower bound exceeds the required clearance. Any state they
+   cannot prove clear is decided by the existing exact FCL check on the
+   original solids. Pairs with permitted contact never use proxies. Proxy
+   generation is source-bound and hashed into the model identity.
+b. Final audit. This supersedes "preserve ... search density and final
+   sent-path audit" (November 11) only as follows: the final audit may advance
+   along the geometric path of the exact quintic sent trajectory with steps
+   bounded by a proven distance lower bound, provided the clearance guaranteed
+   between checked states is never lower than under the present 1 mm
+   pair-displacement rule. The audit stays mandatory for every segment before
+   registration. Uniform time scaling of an audited segment needs no new
+   audit; any change of geometry does. Planner search density is unchanged.
+c. Resident native workers may serve consecutive tasks. No world object,
+   attachment, collision permission or random-generator state of an earlier
+   task may affect a later one: scenes are versioned handles, and each task
+   starts from a reset with a fixed seed.
+d. One absolute monotonic deadline per planning request, passed to every
+   native call. Expiry is reported as budget exhaustion, distinct from IPC
+   failure and from physical infeasibility, with searched and unsearched
+   candidate counts. Unsearched candidates are never reported as infeasible.
+e. Composite native requests. This supersedes the form, not the purpose, of
+   "Persist each request before dispatch and retain each Pilz/OMPL attempt
+   separately": the composite request is persisted before dispatch; the worker
+   appends every internal IK, Pilz, OMPL and validation attempt to its own
+   journal while it runs, so a timeout or crash still leaves them. Replies and
+   human-readable evidence may be written asynchronously. `PLAN_READY`
+   requires the plan evidence record to be written; execution still refuses to
+   start when the record writer has failed.
+f. File binding may reuse a stored content hash while the file's device,
+   inode, size, mtime_ns and ctime_ns are all unchanged; any difference forces
+   a full rehash. Evidence states REUSED or REHASHED per file.
+g. Binary IPC and shared memory for scenes and trajectories. Digests are
+   computed over a canonical binary form, identically at issue and at claim.
+h. IK may be analytic or batched multi-seed inside the worker. It stays
+   deterministic, uses seeds of the current task only, and every solution is
+   verified by native FK within the existing 2e-5 m and 2e-4 rad tolerances.
+   The branch order (closest to q_start first, at most three checked) is kept.
+
+## 4. Execution process
+
+The timed sender, feedback receiver and motion supervisor may move to one C++
+process. It uses the same vendor SDK binary (1.1.7), the same model, controller
+generation and firmware checks, the same `rm_movej_canfd` high-follow call, the
+same independent stop channel and owned UDP feedback. No kernel or system
+package change: use real-time scheduling where the existing system grants it
+and report the scheduling class actually obtained. The Python path stays
+selectable until a fake-IO equivalence report exists.
+
+## 5. Pre-execution checks and motion-time behaviour
+
+Once planning meets the target, field configurations return `start_joint_check`
+to ENABLED (0.01 degree) and `pre_execute_visual_recheck` to TARGET_ONLY.
+DISABLED_BY_USER stays expressible with its recorded basis. A threshold change
+is proposed with measured evidence and decided by the user, never applied by
+the implementer.
+
+Still excluded: motion-time replanning, replacing a running trajectory,
+starting a segment at nonzero velocity, and using moving-camera frames to
+judge a running path.
+
+## 6. Continuous multi-carton job
+
+A new explicit entry, `unloading_sim.workbench.continuous`
+(`eco65-workbench-continuous`), may run consecutive carton cycles. For this
+entry only, this supersedes "ONE operator-started ... carton cycle", "Only the
+operator's single-carton execute button starts the physical cycle" and "no
+multi-box scheduling". The single-carton, controlled-empty and read-only
+entries keep their scopes. Startup, import, connect, preview and tests never
+move hardware or write valve commands.
+
+- One operator click starts one job. Each cycle inside it is the unchanged
+  single-carton cycle (approach, contact, detach, loaded return to that
+  cycle's frozen q_start, release) with its own task record. A job record
+  links the task ids in order and stores each round's target order and skip
+  reasons.
+- A cycle starts automatically only when all of these hold: the previous
+  cycle reached COMPLETE with release confirmed by the pressure gate; no load
+  is held; no STOP_UNCONFIRMED; the session generation is unchanged; device
+  data is valid; a new stationary frozen RGB-D was taken after that release;
+  a complete plan exists with every final audit PASS; the start-joint check is
+  ENABLED and passes; and motion starts no later than `plan_validity_s` after
+  the frozen exposure (default 5 s; a field file may only tighten it).
+  Otherwise the job re-observes and replans; it never reuses.
+- No observation, plan, IK seed or path is carried from one cycle to the
+  next. No N+1 lookahead planning.
+- Target order is deterministic and recorded. A target whose planning fails
+  is recorded with its reason and searched/unsearched counts, and the next
+  target is tried within the same deadline. A planning failure is not a fault.
+- The job ends, with no automatic resume or retry, on: operator stop; any
+  cycle state other than COMPLETE; pressure loss; a device or session
+  transition; a record write failure; a frozen q_start further than the
+  arrival tolerance from the job's first q_start; no target detected
+  (recorded as NO_TARGET_DETECTED, never as proof of an empty site); no
+  complete plan for any detected target; receiver not cleared in time; the
+  configured carton count reached. A new job needs a new operator click. A
+  stopped job that may hold a load requires local handling exactly as today.
+- Released cartons are objects this system placed. USER_CONFIRMED_CLEAR for
+  unobserved space never covers them. The job configuration must name
+  `receiver_clearing` with a recorded field basis:
+  SENSOR_OBSERVED_CLEAR (the release envelope is measured free in the new
+  frozen frame; available only with a measured receiver whose region is in
+  view), USER_CONFIRMED_SELF_CLEARING (the user confirms each released carton
+  leaves within `clearing_time_s`; recorded as field confirmation, not sensor
+  evidence), or OPERATOR_CONFIRM_EACH. A missing policy or basis is a
+  configuration error. Until the policy is satisfied the next cycle does not
+  start, and where the release pose is a measured support the released
+  carton's full envelope stays a collision object.
+- One carton type per job: carton mass and controller payload stay the
+  configured values and are checked as today.
+- Only real complete evidence yields PHYSICAL_CYCLE_COMPLETE per cycle, and
+  PHYSICAL_JOB_COMPLETE only when every cycle of the job has it.
+- Still excluded: conveyor or lift commands, valve commands outside the
+  reviewed set, visual servo, J1 direction and top-height constraints, and
+  simulated objects in real scenes.
+
+## 7. Tests and evidence
+
+Run directed checks only. `m710_clearance_test optimized` and `reference`,
+`tools/check_eco65_single_carton_native.py` and the directed pytest set of
+`docs/eco65_real_site.md` must pass after every step. Each step writes its
+report under `docs/evidence/` and appends a dated section to
+`docs/eco65_real_site.md`, stating what was not run or not verified.
+
+# November 12 real-site continuous single-carton entry (in force where not superseded above)
 
 Work from the actual latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration`;
 preserve prior commits and LFS assets. The user authorizes development, commit
