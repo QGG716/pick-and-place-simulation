@@ -561,3 +561,29 @@ Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装�
 模块开关 `vision_module`、`planning_module`、`scheduling_module` 取 PYTHON | NATIVE，缺省 PYTHON；机制开关（`resident_workers`、`scene_handles`、`async_evidence`、`path_endpoint_reuse`、`binding_hash_cache`、`collision_check_mode`、`sent_path_audit`、`planning_deadline_s`）缺省都保持现行为。
 
 报告见 `docs/evidence/realtime_20261116_boundary/report.json`。本步无代码改动，测试未运行；共享内存传输只写入契约、尚未实现；契约 E 对应第 13 步，代码尚不存在。
+
+### 2026-11-16：实时化第 4 步，低风险五项
+
+按 `docs/native_boundary.md` 契约 A 实现五项机制，各有一个开关，**缺省全部关闭，保持现行为**；示例配置都不打开。报告见 `docs/evidence/realtime_20261116_low_risk/report.json`。
+
+1. `resident_workers`：入口启动后在后台拉起并初始化主 worker 和检查池，任务之间不关闭。每个 worker 在初始化后和每个任务结束后都执行 `sc_task_reset`：清空世界物体、场景句柄、计数器和任务会话，重建 OMPL 管线并重新设置固定随机种子。取消和超时改为按请求编号生效：worker 的读取线程把正在运行请求的 `NativeDeadline` 置为到期，worker 回复后进程继续可用。5 s 内不回复、初始化或重置失败的 worker 退役，不再分配请求，并在后台补充。
+2. `scene_handles`：每次观测只对 world 做一次 digest。每个 worker 上传一次（`sc_scene_upload`），之后的请求只带句柄；worker 把保存的 world 放回请求，各项策略看到的内容不变。
+3. `async_evidence`：请求仍在发出前同步落盘。回复、分段与发送路径证据、observation 的 npz、`site-scene.json`、`geometry.json`、`complete-plan.json` 由一个按顺序写入的后台线程完成。`plan_cycle` 返回前先 flush（`PLAN_READY` 必须在计划证据落盘之后），execute 前再 flush 一次。任何写入失败都会拒绝 `PLAN_READY` 和执行。
+4. `path_endpoint_reuse`：`checkPath` 原本逐边采样并包含两个端点，相邻两边共享的端点会被检查两次。打开后，与前一个已通过的采样点逐位相同的点不再重复检查；被检查的状态集合和每条边的采样规则不变，与空载入口已有的规则相同。只在现场单箱范围生效。
+5. `binding_hash_cache`：文件的设备号、inode、大小、mtime_ns、ctime_ns 都没变时，复用上次的内容哈希；有任何变化就完整重算；0.1 s 内刚修改过的文件始终重算（时间戳精度）。计划和执行日志逐文件标注 REUSED / REHASHED。
+
+**验收**：
+- 合成可达场景 A、B（同一箱体，两个 q_start），真实 worker，生成完整四段计划。现场记录已删除，用这两个场景代替。
+- 开关全开时，候选编号、四段规划器、发送点数、时长、检查状态数、脱离方案、首末关节和每条失败原因，都与全关时逐项一致：A 选中候选 0，B 选中候选 4。
+- 同一驻留 planner 连续规划 A 两次，结果逐项一致；先规划 A 再规划 B，与新开 planner 单独规划 B 的结果逐项一致，说明任务间没有残留、随机种子已重置。
+- `m710_clearance_test optimized` 和 `reference` 都 PASS。原生组件检查 PASS，与第 1 步相比，只有本步改动的源文件哈希和提交号不同。
+- 定向 pytest **501 passed，1 failed，0 skipped**。失败的仍是那一项原有失败；新增 36 项测试。
+
+**三个口径的改前改后**：
+- 规划（合成场景，`plan_cycle` 总时长）：A 129.8 s → 116.6 s，B 166.8 s → 136.8 s。
+- 调度（fake IO，`binding_hash_cache`）：点击执行到首点发出 3.25–3.88 s → **0.12–0.15 s**；每段从状态进入到控制器受理约 1.9 s → 0.06–0.17 s。
+- 视觉：无冻结帧，**NOT_RUN**。
+
+**提交**：五项各一个提交。共享骨架放在最先用到它的那个提交里：开关校验和计划字段在 hash cache 提交；`plan_cycle` 的 worker 生命周期重构在 async evidence 提交；场景上传和句柄展开的原生代码与任务重置在同一代码块里，放在 resident 提交，由 scene handles 提交启用。中间提交只做了 Python 编译检查，没有逐个做原生构建。测试、工具、报告和本节放在第六个提交。
+
+**未做或未验证**：现场记录上的回放和规划 p95；视觉耗时；完整工作台 UI 下的 `resident_workers`（只验证了 `plan_cycle` 和 `TaskManager` 的启动钩子）；实机运动、阀门命令或验收，均为 **NOT_RUN**。

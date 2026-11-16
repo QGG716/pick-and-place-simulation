@@ -1,0 +1,440 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-16",
+ "step": "4_low_risk_five",
+ "scope": "FIVE_SWITCHED_MECHANISMS_DEFAULT_OFF; SYNTHETIC_SCENES_AND_FAKE_IO_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "base_commit": "2bf97af",
+ "contract": "docs/native_boundary.md A",
+ "mechanisms": {
+  "resident_workers": {
+   "switch": "resident_workers",
+   "default": false,
+   "behaviour": "main worker and checker pool start at entry start (background) and stay; every worker is reset (sc_task_reset: fresh scene, handles, counters, task sessions, OMPL pipeline rebuilt, OMPL seed re-applied) after init and after every task; cancellation and timeouts by request id (worker M710_WORKER_CANCEL=1 reader thread expires the running request NativeDeadline); a worker not replying within 5 s of a cancel, failing its reset or init is retired, never given another request, reported and replaced in the background",
+   "files": [
+    "ros2/m710_moveit_backend/src/worker.cpp (sc_task_reset, out-of-band cancel)",
+    "ros2/m710_moveit_backend/src/native_deadline.h (cancel)",
+    "single_carton/resident.py"
+   ]
+  },
+  "scene_handles": {
+   "switch": "scene_handles",
+   "default": false,
+   "behaviour": "the task world is hashed once (register_scene); each worker gets it uploaded once (sc_scene_upload) and later requests carry scene_handle; the worker re-inserts the stored world, so every policy sees the same content; context() no longer hashes the world per request"
+  },
+  "async_evidence": {
+   "switch": "async_evidence",
+   "default": false,
+   "behaviour": "requests still persisted synchronously before dispatch; replies, segment and sent-check evidence, observation npz, site-scene.json, geometry.json and complete-plan.json go through one ordered background writer; plan_cycle flushes before returning (PLAN_READY needs the plan evidence on disk) and execute flushes again; a write failure refuses PLAN_READY and execution (TASK_RECORD_UNAVAILABLE_NO_MOTION)"
+  },
+  "path_endpoint_reuse": {
+   "switch": "path_endpoint_reuse",
+   "default": false,
+   "behaviour": "Clearance::checkPath already samples every edge including both endpoints, so the endpoint shared by two adjacent edges was checked twice; with the switch, a sample bitwise equal to the immediately preceding, passed sample is not checked again (the rule already used by the controlled-empty scope). The checked state set and every edge sampling rule are unchanged; physical single-carton scope only"
+  },
+  "binding_hash_cache": {
+   "switch": "binding_hash_cache",
+   "default": false,
+   "behaviour": "a stored content hash is reused while device, inode, size, mtime_ns and ctime_ns are unchanged; any difference forces a full rehash; files changed within 0.1 s of hashing are never cached (timestamp granularity); per-file REUSED / REHASHED in the plan and the execute journal (AGENTS 3f)"
+  }
+ },
+ "behaviour_unchanged": {
+  "native_clearance_tests": {
+   "optimized": "PASS",
+   "reference": "PASS"
+  },
+  "native_component_check": {
+   "status": "PASS",
+   "differences_vs_step1": [
+    [
+     "config.py",
+     "VALUE"
+    ],
+    [
+     "evidence.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "resident.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "implementation_commit",
+     "VALUE"
+    ]
+   ],
+   "interpretation": "only source-file hashes changed by this step and the commit id differ"
+  },
+  "directed_pytest": {
+   "passed": 501,
+   "failed": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_tests": [
+    "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+   ]
+  },
+  "synthetic_plans": {
+   "note": "Two SYNTHETIC reachable scenes (same box, two q_start), real workers, complete four-segment plans; tools/check_step4_mechanisms.py. Saved field records do not exist.",
+   "switches_off": {
+    "A": {
+     "outcome": "PLAN_READY",
+     "candidate": 0,
+     "elapsed_s": 129.84,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       1905,
+       9.52,
+       7654
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       337,
+       1.68,
+       1687
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": null,
+     "resident_task_start": null
+    },
+    "B": {
+     "outcome": "PLAN_READY",
+     "candidate": 4,
+     "elapsed_s": 166.84,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       3606,
+       18.025000000000002,
+       22760
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       3606,
+       18.025000000000002,
+       18130
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": null,
+     "resident_task_start": null
+    }
+   },
+   "switches_on_one_resident_planner": {
+    "A_first": {
+     "outcome": "PLAN_READY",
+     "candidate": 0,
+     "elapsed_s": 117.1,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       1905,
+       9.52,
+       7654
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       337,
+       1.68,
+       1687
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": {
+      "reused": 809,
+      "rehashed": 0,
+      "seconds": 0.004080301849171519
+     },
+     "resident_task_start": {
+      "already_reset": 7,
+      "reset_now": 0
+     }
+    },
+    "A_second": {
+     "outcome": "PLAN_READY",
+     "candidate": 0,
+     "elapsed_s": 116.58,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       1905,
+       9.52,
+       7654
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       337,
+       1.68,
+       1687
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": {
+      "reused": 809,
+      "rehashed": 0,
+      "seconds": 0.004996811971068382
+     },
+     "resident_task_start": {
+      "already_reset": 7,
+      "reset_now": 0
+     }
+    },
+    "B_after_A": {
+     "outcome": "PLAN_READY",
+     "candidate": 4,
+     "elapsed_s": 136.85,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       3606,
+       18.025000000000002,
+       22760
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       3606,
+       18.025000000000002,
+       18130
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": {
+      "reused": 809,
+      "rehashed": 0,
+      "seconds": 0.004141926066949964
+     },
+     "resident_task_start": {
+      "already_reset": 7,
+      "reset_now": 0
+     }
+    }
+   },
+   "switches_on_fresh_planner": {
+    "B_alone": {
+     "outcome": "PLAN_READY",
+     "candidate": 4,
+     "elapsed_s": 144.76,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       3606,
+       18.025000000000002,
+       22760
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       3606,
+       18.025000000000002,
+       18130
+      ]
+     ],
+     "failures": 0,
+     "binding_hash": {
+      "reused": 809,
+      "rehashed": 0,
+      "seconds": 0.015641022007912397
+     },
+     "resident_task_start": {
+      "already_reset": 7,
+      "reset_now": 0
+     }
+    }
+   },
+   "comparisons": [
+    {
+     "comparison": "off:A",
+     "left": "A.json",
+     "right": "A-first.json",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "comparison": "resident-repeat:A",
+     "left": "A-first.json",
+     "right": "A-second.json",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "comparison": "off:B",
+     "left": "B.json",
+     "right": "B-after-A.json",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "comparison": "resident-history:B",
+     "left": "B-alone.json",
+     "right": "B-after-A.json",
+     "identical": true,
+     "differences": null
+    }
+   ],
+   "acceptance": {
+    "same_record_twice_identical": true,
+    "A_then_B_equals_B_alone": true,
+    "switches_on_equals_switches_off": true,
+    "compared_fields": "outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason"
+   }
+  }
+ },
+ "latency": {
+  "planning_synthetic": {
+   "A": {
+    "off_s": 129.84,
+    "on_s": 116.58
+   },
+   "B": {
+    "off_s": 166.84,
+    "on_s": 136.85
+   },
+   "note": "plan_cycle wall time; includes the sequential 5 s per-worker close of the off path"
+  },
+  "scheduling_fake_io": {
+   "before_step4": {
+    "execute_entry_to_first_send_s": [
+     3.835,
+     3.839,
+     3.877,
+     3.458,
+     3.254
+    ],
+    "segment_state_entry_to_accept_s": 1.9
+   },
+   "binding_hash_cache_on": [
+    {
+     "execute_entry_to_first_send_s": 0.1456,
+     "segment_state_entry_to_accept_s": [
+      0.0697,
+      0.1668,
+      0.0812,
+      0.1135
+     ]
+    },
+    {
+     "execute_entry_to_first_send_s": 0.144,
+     "segment_state_entry_to_accept_s": [
+      0.0726,
+      0.0924,
+      0.0825,
+      0.115
+     ]
+    },
+    {
+     "execute_entry_to_first_send_s": 0.1215,
+     "segment_state_entry_to_accept_s": [
+      0.0638,
+      0.0888,
+      0.0841,
+      0.1272
+     ]
+    }
+   ]
+  },
+  "vision": "NOT_RUN (no frozen frame); async observation writes are implemented behind async_evidence"
+ },
+ "not_run_or_not_verified": [
+  "Saved field records: the record-level acceptance (A twice, A then B) ran on synthetic reachable scenes instead",
+  "Planning p95 on field records; vision latency",
+  "Real SDK/serial/camera paths; any physical motion, valve command or acceptance: NOT_RUN",
+  "resident_workers with the full workbench UI (only plan_cycle and the TaskManager start hook were exercised)"
+ ]
+}
