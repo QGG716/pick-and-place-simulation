@@ -211,14 +211,19 @@
    ],
    "result": "FAKE_DEVICE_CYCLE_COMPLETE; physical_result NOT_COMPLETE"
   },
-  "same_record_replay": "NOT_RUN: no saved field record available (see records)"
+  "same_record_replay": "NOT_RUN: the user confirmed on 2026-11-16 that every saved field task record was deleted (see records); this comparison cannot be made for the documented tasks"
  },
  "records": {
   "repository_outputs_single_carton": "ABSENT (outputs/ is ignored; no task folder is tracked)",
   "repository_docs_evidence": "reports only (JSON/XML); no observation.npz / segmentation.npz record",
   "windows_workstation": "ABSENT",
   "gpu_server": "ABSENT",
-  "user_upload": "the user agreed to upload field records and the installation file to /root/autodl-tmp/eco65-records; not present when this report was built",
+  "field_pc": "DELETED: the user confirmed on 2026-11-16 that the field task records under outputs/single_carton and the field-local configuration files were deleted. Records are original sensor data and are not reconstructed. The configuration needed for replay is available from the repository: configs/workbench/single_carton.example.json and real_site.example.json carry the documented field settings, and tests/fixtures/eco65_installation_cad_reference.json is the user-approved byte copy of the field installation.local.json; any undocumented field-only edit is lost.",
+  "next_field_baseline_procedure": [
+   "Start the single-carton workbench with ECO65_TIMING=1 and run observe and prepare_plan only; planning sends no motion or valve command. Each task folder then holds timing-observe.json and timing-prepare_plan.json measured on the field PC.",
+   "Do not press execute in a timing-enabled session (timing together with hardware execution is not established as safe); restart with timing off before any execution.",
+   "Keep the task folders (observation.json/.npz, segmentation.npz, geometry.json, site-scene.json) and upload them; the same records then allow the before/after replay at 0783e86 versus the current commit and the planning/vision baselines."
+  ],
   "documented_but_absent": {
    "bb88010f39ae4abdbccfeac31472d687": "replay 338-361 s parallel, 695 s sequential",
    "6b648ffcdb35403cb9d992e2ed8554be": "field planning 232 s",
@@ -232,7 +237,7 @@
  "baselines": {
   "planning": {
    "definition": "prepare_plan entry to PLAN_READY",
-   "field_record_baseline": "NOT_RUN (no saved record); success rate NOT_RUN",
+   "field_record_baseline": "NOT_RUN (all saved field records deleted); success rate NOT_RUN",
    "documented_values_not_remeasured": {
     "field_6b648ffc_s": 232,
     "replay_19803562_s": 251,
@@ -1020,7 +1025,7 @@
   "No optimisation was made in this step; all thresholds, checks and decisions are unchanged."
  ],
  "not_run_or_not_verified": [
-  "Replay of any saved field record (none available): record-level behaviour identity and the 232-361 s breakdown",
+  "Replay of any saved field record (all deleted, confirmed by the user 2026-11-16): record-level behaviour identity and the 232-361 s breakdown; requires new field records",
   "Planning baseline prepare_plan -> PLAN_READY on field records, and its success rate",
   "Vision baseline observe -> TARGET_READY (no frozen frame, no camera, remote detector not connected)",
   "Exact single-state check distribution per approach/contact/detach/return on real scenes (only the synthetic approach output and diagnostic phases were measured)",

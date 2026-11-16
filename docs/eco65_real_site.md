@@ -477,8 +477,16 @@ bb88010f 离线复核（**不可执行、不是实机验收**）：规划 695 s 
 
 **保存记录**：仓库的 `outputs/` 被忽略，没有任何任务目录；`docs/evidence/` 下只有报告，没有 `observation.npz` 或 `segmentation.npz`。
 本机和 GPU 服务器上也都没有。文档提到的 bb88010f、6b648ffc、19803562、71ce26a3、4cde3b86、2814e675、7ccdb15e 均不在这里，
-因此同一记录回放的改前改后对比 **NOT_RUN**。用户已同意把现场记录和 `installation.local.json` 上传到 `/root/autodl-tmp/eco65-records/`，到本节写成时尚未收到。
-本次组件检查用的 `installation.local.json` 是仓库里 `tests/fixtures/eco65_installation_cad_reference.json` 的原字节副本。
+因此同一记录回放的改前改后对比 **NOT_RUN**。用户 2026-11-16 确认：现场电脑上的任务记录和现场本地配置文件都已删除。
+记录是原始传感器数据，不重建；这些任务的回放对比和 232–361 s 分解核对因此无法再做。
+回放所需的配置可以从仓库取得：`single_carton.example.json` 和 `real_site.example.json` 已含文档记录的现场设定，
+`tests/fixtures/eco65_installation_cad_reference.json` 是经用户同意保存的现场 `installation.local.json` 原字节副本（本次组件检查即用它）；
+现场未写入仓库的改动已无法找回。
+
+**下一次现场基线的做法**：用 `ECO65_TIMING=1` 启动单箱工作台，只做“准备观测”和“规划所选箱”（规划不发运动或阀门命令），
+每个任务目录会生成在现场电脑上测得的 `timing-observe.json` 和 `timing-prepare_plan.json`。计时打开的会话里不要点“执行单箱”
+（计时与实机执行同时打开的安全性尚未建立），执行前先关闭计时重启。保留任务目录并上传，即可在同一记录上做 0783e86 与当前提交的
+改前改后回放，并补齐规划和视觉基线。
 
 **环境**：没有改内核，也没有动系统 ROS / MoveIt。在现有的 `/root/v05-gpu-venv` 里离线新增了 7 个包，没有升级任何已有包，
 新增包的版本和 wheel SHA-256 记在报告 `environment` 中（pytest 8.4.2、pyserial 3.5 及其依赖）。
