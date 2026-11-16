@@ -141,8 +141,13 @@ class TaskManager:
                 raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并提供足够密封的实测可见面'))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.phase='PLANNING';start=time.monotonic()
+            # Optional unified planning deadline: one absolute monotonic time
+            # from this entry; absent keeps every request and timeout unchanged.
+            budget=self.config.get('planning_deadline_s')
+            deadline=None if budget is None else entered+float(budget)
             with timing.span('prepare_plan.plan_cycle'):
-                self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,scene=self.scene)
+                self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,
+                                                  scene=self.scene,**({} if deadline is None else dict(deadline=deadline)))
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
             with timing.span('prepare_plan.cycle_ready'):
                 self.cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],self.journal,self.check_contact,self.check_release,physical_io=True)
@@ -156,7 +161,7 @@ class TaskManager:
             self.busy=False
             if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase),since=entered)
     def execute(self):
-        self._enter();self.execute_entered=timing.now()
+        self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
         try:
             if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
             # No cycle starts without its task record or with a revoked observation.

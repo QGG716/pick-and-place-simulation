@@ -124,6 +124,12 @@ def issues(c):
     lanes=c.get('parallel_candidate_lanes',1)
     if type(lanes)!=int or not 1<=lanes<=13:
         errors.append('parallel_candidate_lanes：同时规划的候选数（每个占一个原生进程），1 至 13（1 为逐个规划）')
+    # Optional: absent keeps the per-request budgets; present sets one absolute
+    # planning deadline from prepare_plan entry, and expiry is budget exhaustion.
+    deadline=c.get('planning_deadline_s')
+    if deadline is not None and (isinstance(deadline,bool) or not isinstance(deadline,(int,float))
+                                 or not math.isfinite(deadline) or not 0<deadline<=3600):
+        errors.append('planning_deadline_s：可选的统一规划截止时间（秒），0 < s ≤ 3600；不填则保持各请求原有预算')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

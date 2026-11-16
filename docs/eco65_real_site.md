@@ -496,3 +496,58 @@ Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装�
 **未做或未验证**：现场记录回放、规划与视觉基线及成功率、真实场景下按 approach/contact/detach/return 分段的单状态分布、
 现场电脑上的耗时、真实 SDK/UDP/串口心跳节奏与控制器负载查询延迟、计时打开时的实机执行（安全性未建立），以及任何实机运动、阀门命令或验收，
 均为 **NOT_RUN**。
+
+### 2026-11-16：实时化第 2 步，量具与统一截止时间
+
+按 AGENTS.md 11-16 节 §3d 实现，未发现冲突。报告见 `docs/evidence/realtime_20261116_deadline/report.json`。
+
+**量具** `tools/bench_planning_latency.py`：
+- `--discover` 用 `ECO65_TIMING=1` 回放 `outputs/single_carton/` 下每条完整记录；`--timing` 读入已有的 `timing-*.json`。
+- 按规划、视觉、调度三个口径分别给出 p50 / p95 / max（最近秩，不插值）、成功率、逐环节分解，以及超出预算的环节。
+- 没有输入时报 `NO_SAMPLES`，不编数字。不连接设备，不改记录。
+
+**预算表** `configs/workbench/planning_budget.json`：
+- 规划总预算 2.0 s，分成 9 个环节，每个环节标明由哪些计时分段测量。
+- 状态为 `ALLOCATION_AND_REPORTING_ONLY_NOT_ENFORCED`，只用于分配和报告，不强制执行。
+- 视觉、调度口径只测量，不设目标。没有现场基线，第一次现场计时后需要修订。
+
+**统一截止时间**：单箱配置新增可选项 `planning_deadline_s`（0 < s ≤ 3600）。**不填时，所有请求、超时和收尾都与原来完全相同**；示例配置不填。
+填写后：
+- `prepare_plan` 入口生成绝对截止时间（`time.monotonic()`），传给 `plan_cycle`。
+- 每个原生请求的 `request_budget_s` 取原值与剩余时间（减去 0.1 s 回复余量）中较小的一个；同时附带 `absolute_deadline_monotonic_s` 和时钟参考。
+- Pilz / OMPL 的 25 s 求解时间、IK 的 110 s，以及 120 / 180 / 240 / 600 s 的 IPC 和检查池等待，都由截止时间截短。
+- worker 只在 `PHYSICAL_SINGLE_CARTON` 范围接受绝对截止时间，用它收紧本请求的 `NativeDeadline`。
+  时钟参考晚于收到时刻，或截止时间已过 60 s 以上，按 `DEADLINE_CLOCK_DOMAIN_MISMATCH` 拒绝（两边都是 Linux CLOCK_MONOTONIC）。
+- 到期时调用方立即返回。没有回复的 worker 不再分配请求，它的回复在后台收走。
+- `search_box` 在辅助线程运行，所以不可抢占的 Python 步骤不会拖住返回；辅助线程到期后不再发出请求，也不签发许可。
+- 截止时间模式下，worker 在后台关闭；上一次规划遗留的检查池 worker 不会进入下一次的检查池。
+
+**归类**：到期抛出 `PlanningBudgetExhausted`。它不是 `ValueError`，候选和目标的失败处理都不会把它记成不可行；
+它也不同于 IPC 失败。worker 返回的 `NATIVE_ABSOLUTE_DEADLINE_EXPIRED`，以及由截止时间截短后出现的 `NATIVE_SOLVER_BUDGET_EXHAUSTED`，都归为预算耗尽。
+原有 25 s 单次上限造成的求解耗尽，仍按原来那样记为该候选的结论。
+`planning-failures.json` 改为 `{failures, planning_budget}`，逐目标给出状态、候选数、已搜索（已有结论）和未搜索数。**未搜索的不算不可行。**
+
+**未设置时行为不变**：
+- `m710_clearance_test optimized` 和 `reference` 都 PASS。
+- 原生组件检查 PASS。与第 1 步改前的记录相比，只有 `config.py` 的绑定哈希和提交号不同（本步改了 `config.py`），状态、关节值、点数、检查结果都一致。
+- 合成场景 search_box（候选 0、1、2，7 条车道）：改前代码加第 1 步 worker，与本步代码加新 worker 相比，24 个记录文件逐项一致。
+- 定向 pytest **465 passed，1 failed，0 skipped**。失败的仍是那一项原有失败；比第 1 步多出的 30 项是本步新增的测试。
+
+**设置很小的值**：
+- fake worker：24 项测试连续 3 次全部通过。慢原生请求（0.15 / 0.3 / 0.6 s）、无回复 worker、并行车道，都在截止时间 + 50 ms 内返回，归类和计数正确。
+- 真实 worker、合成场景，截止时间取 0.5 – 30 s 共 16 个值：15 个在 +27 ms 内返回。30 s 那次晚了 **122 ms**：
+  7 条车道被截短的 OMPL 求解同时在截止前 0.1 s 结束，各自序列化约 270 kB 的记录（`json.dumps` 持有 GIL），和主线程的归类争用 GIL。
+- 另测到 `contact_candidates`（约 1 s 纯 Python）里的 numpy 调用最长占用 GIL 83 ms；截止时间落在这一步时，返回会相应延后。
+  这两处都没有为了满足 50 ms 去改候选生成或记录内容；第 4 步的异步证据和第 7 步的复合原生请求会把它们移出截止路径。
+- 第一次运行出现过晚 0.965 s：上一次规划的检查池 worker 在下一次规划期间才完成初始化，持有池锁时关闭（5 s）。截止时间路径上已修复。
+
+**量具结果**：规划和视觉都是 `NO_SAMPLES`，因为现场记录已全部删除。调度（第 1 步的 5 次 fake IO）：p50 3.83 s，p95 3.88 s，成功率 5/5。
+
+**测到的其他问题（未修，留给第 4 步）**：
+- worker 不响应 SIGTERM，每次关闭要等 5 s 才 SIGKILL。不设截止时间时，`plan_cycle` 在 `PLAN_READY` 之前逐个关闭主 worker 和检查池，
+  按示例配置约 5 s × 7 = 35 s。
+- worker 冷启动 3.8 s；不设截止时间时，检查池存在上一次 worker 进入下一次检查池的竞争。
+- 找到完整计划后的收尾（binding 重哈希约 1.86 s、签发、写记录）不受截止时间中断，耗时记入预算表的 finalize 环节。
+
+**未做或未验证**：现场记录上的量具结果、规划与视觉基线；真实现场场景下的截止时间行为；2.0 s 截止时间下的成功率
+（worker 冷启动就要 3.8 s，第 4–8 步之前没有意义）；现场电脑上的耗时；任何实机运动、阀门命令或验收，均为 **NOT_RUN**。

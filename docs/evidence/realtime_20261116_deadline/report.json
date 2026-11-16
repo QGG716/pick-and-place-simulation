@@ -1,0 +1,550 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-16",
+ "step": "2_bench_and_unified_deadline",
+ "scope": "BENCH_TOOL_BUDGET_TABLE_AND_OPTIONAL_UNIFIED_PLANNING_DEADLINE; FAKE_IO_SYNTHETIC_AND_OFFLINE_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "physical_result": "NOT_RUN",
+ "base_commit": "abf6835c22d81af041e4f50dfb2b8cf74c9f511a",
+ "agents_conflict_check": "AGENTS.md 2026-11-16 section 3d requires exactly this (one absolute monotonic deadline per planning request passed to every native call; expiry distinct from IPC failure and infeasibility; searched and unsearched counts); no conflict found",
+ "delivered": {
+  "bench": "tools/bench_planning_latency.py: replays every saved record (--discover) with ECO65_TIMING=1 and/or reads timing-*.json; p50/p95/max (nearest rank), success rate, per-stage breakdown and over-budget stages per the budget table; NO_SAMPLES instead of invented numbers",
+  "budget_table": "configs/workbench/planning_budget.json: planning total 2.0 s split over 9 stages with their timing spans; status ALLOCATION_AND_REPORTING_ONLY_NOT_ENFORCED; vision/scheduling measured only",
+  "configuration": "optional planning_deadline_s (0 < s <= 3600) in the single-carton config; absent keeps every request, timeout and teardown unchanged; the example config does not set it",
+  "deadline_path": [
+   "TaskManager.prepare_plan: deadline = entry time.monotonic() + planning_deadline_s, passed to plan_cycle",
+   "every native request: request_budget_s = min(old timeout-10, remaining-0.1 s), plus absolute_deadline_monotonic_s = deadline-0.1 s and deadline_clock_reference_monotonic_s",
+   "Pilz/OMPL allowed_planning_time_s = min(25 s, remaining); IK 110 s budget and the 120/180/240/600 s IPC and pool waits are all capped by the deadline",
+   "worker: optional absolute deadline (PHYSICAL_SINGLE_CARTON scope only, never init) caps the request NativeDeadline; a reference after receipt or a deadline more than 60 s past refuses with DEADLINE_CLOCK_DOMAIN_MISMATCH (both clocks are Linux CLOCK_MONOTONIC)",
+   "each request waits on a per-worker IPC thread; at the deadline the caller is released, that worker is never reused and its late reply is collected in the background",
+   "search_box runs on a helper thread so non-preemptible Python steps (candidate generation ~0.6 s, send-grid preparation, record writes) cannot delay the result; the helper dispatches nothing after the deadline, never registers a permit, and the next plan_cycle waits for it",
+   "workers are closed in the background under a deadline (a worker ignores SIGTERM; each close takes 5 s)",
+   "a pool worker whose plan ended or whose generation is old never joins a pool; it is closed outside the lock"
+  ],
+  "classification": {
+   "exception": "PlanningBudgetExhausted (not a ValueError: no candidate or target handler can record it as infeasible)",
+   "where": [
+    "BEFORE_DISPATCH",
+    "NO_REPLY_BY_DEADLINE",
+    "NATIVE_DEADLINE",
+    "SEARCH_STEP_RUNNING_AT_DEADLINE",
+    "WAITING_FOR_CANDIDATE_LANE",
+    "WAITING_FOR_CHECK_POOL"
+   ],
+   "native_outcomes_classified_as_budget": [
+    "any NATIVE_ABSOLUTE_DEADLINE_EXPIRED reason",
+    "NATIVE_SOLVER_BUDGET_EXHAUSTED when the solver time came from the deadline"
+   ],
+   "kept_as_before": "NATIVE_SOLVER_BUDGET_EXHAUSTED of the per-call 25 s cap stays the candidate verdict it was",
+   "summary": "planning-failures.json becomes {failures, planning_budget}; per target: status, candidates, considered, screened, searched (concluded), unsearched, infeasible_candidates; unsearched never counted infeasible; targets not reached are NOT_STARTED"
+  }
+ },
+ "behaviour_unchanged_without_deadline": {
+  "native_clearance_tests": {
+   "optimized": "PASS",
+   "reference": "PASS",
+   "note": "m710_clearance_test binary hash unchanged by this step"
+  },
+  "native_component_check": {
+   "status": "PASS",
+   "compared_with": "step-1 pre-change records (before-native-1)",
+   "differences": [
+    [
+     "/binding/files//root/m710-gap-search-20261107/rootfs/work-eco65-realtime-20261116/repo/src/unloading_sim/workbench/single_carton/config.py",
+     "VALUE",
+     "bbcb5d371fcf31b16967d11ba8362a3e768de005c89c09dd6a9ef58d375b3591",
+     "c3b040844cd618a8246bc15452e67bc6bab6be158d3a591f872206d83139b106"
+    ],
+    [
+     "/binding/implementation_commit",
+     "VALUE",
+     "de8cf04b33b806847b740574e0203b495609a4d3",
+     "abf6835c22d81af041e4f50dfb2b8cf74c9f511a"
+    ]
+   ],
+   "interpretation": "only the bound SHA-256 of config.py (changed by this step) and implementation_commit differ; all statuses, joint values, points and checks are identical"
+  },
+  "synthetic_search_old_vs_new": {
+   "identical": true,
+   "files": [
+    {
+     "file": "check.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "search-result.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/approach-endpoint-ik-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/approach-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/approach-ompl-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/approach-pilz-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/endpoint-precheck.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/loaded-start-check.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-0/loaded-start-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/approach-endpoint-ik-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/approach-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/approach-ompl-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/approach-pilz-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/endpoint-precheck.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/loaded-start-check.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-1/loaded-start-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/approach-endpoint-ik-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/approach-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/approach-ompl-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/approach-pilz-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/endpoint-precheck.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/loaded-start-check.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-2/loaded-start-native.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    },
+    {
+     "file": "synthetic-target-payload-rest-check.json",
+     "status": "IDENTICAL",
+     "differences": [],
+     "difference_count": 0
+    }
+   ],
+   "old": "abf6835 code with the step-1 worker binary",
+   "new": "this step with the new worker binary",
+   "scene": "synthetic carton, candidates 0,1,2, 7 lanes / 6 pool workers, no deadline",
+   "outcome": "NO_PLAN"
+  },
+  "directed_pytest": {
+   "passed": 465,
+   "failed": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_tests": [
+    "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+   ],
+   "wall": "223.02 s"
+  },
+  "preexisting_failure": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior also fails on the pristine tree on this server (library versions differ from the field .venv)",
+  "note": "the directed pytest, the native component check and the old/new search comparison ran on the final code; the clearance tests ran on the final worker binary (later edits are Python-only)"
+ },
+ "deadline_acceptance": {
+  "fake_workers": "tests/test_single_carton_deadline.py: 24 tests (3 consecutive runs 24/24); slow native search 0.15/0.3/0.6 s, unanswered worker 0.4 s, parallel lanes 0.5 s all return within deadline + 50 ms; classification and counts asserted",
+  "real_worker_synthetic_scene": {
+   "runs": [
+    {
+     "deadline_s": 0.5,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.0022,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 2.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.002,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 3.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.002,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 3.9,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.0019,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 4.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0021,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 4.1,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.0018,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 4.3,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0037,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 5.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "NO_REPLY_BY_DEADLINE",
+     "returned_after_deadline_s": 0.002,
+     "within_50_ms": true,
+     "target_status": "NOT_STARTED",
+     "considered": null,
+     "searched": 0,
+     "unsearched": "ALL_NOT_GENERATED",
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 6.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "BEFORE_DISPATCH",
+     "returned_after_deadline_s": -0.0327,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 7.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0239,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 8.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "BEFORE_DISPATCH",
+     "returned_after_deadline_s": -0.0944,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 10.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0256,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 12.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0269,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 15.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0253,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 20.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.0246,
+     "within_50_ms": true,
+     "target_status": "BUDGET_EXHAUSTED_IN_SCREENING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    },
+    {
+     "deadline_s": 30.0,
+     "outcome": "PLANNING_BUDGET_EXHAUSTED",
+     "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+     "returned_after_deadline_s": 0.1224,
+     "within_50_ms": false,
+     "target_status": "BUDGET_EXHAUSTED_IN_PLANNING",
+     "considered": 32,
+     "searched": 0,
+     "unsearched": 32,
+     "infeasible_candidates": 0
+    }
+   ],
+   "worst_late_s": 0.1224,
+   "all_within_50_ms": false,
+   "within_50_ms": "15/16",
+   "note": "synthetic carton; the full unbounded search ends with no plan after ~37 s, so every run expires; returns before the deadline (negative) are BEFORE_DISPATCH refusals inside the 0.1 s reply reserve"
+  },
+  "late_return_limitation": {
+   "observed": [
+    "30 s deadline: 0.122 s late. All 7 lanes have deadline-capped OMPL solves ending 0.1 s before the deadline; their final ~270 kB record serialisations (json.dumps holds the GIL) contend with the classification on the main thread",
+    "fake test at 0.3 s (before the test was narrowed): 64 ms late while the real contact_candidates was running; its numpy tolist calls hold the GIL up to 83 ms (measured, total ~1 s)"
+   ],
+   "cause": "a Python thread cannot be preempted inside a C call that holds the GIL; the release is bounded by the longest such call of whatever runs at the deadline",
+   "not_done": "no change to candidate generation or record contents to shorten those calls; the composite native request (step 7) and asynchronous evidence (step 4) remove these Python steps from the deadline path"
+  },
+  "first_attempt_before_pool_fix": {
+   "runs": [
+    {
+     "deadline_s": 0.5,
+     "returned_after_deadline_s": 0.0022
+    },
+    {
+     "deadline_s": 3.0,
+     "returned_after_deadline_s": 0.0018
+    },
+    {
+     "deadline_s": 5.0,
+     "returned_after_deadline_s": 0.0028
+    },
+    {
+     "deadline_s": 8.0,
+     "returned_after_deadline_s": 0.9653
+    },
+    {
+     "deadline_s": 15.0,
+     "returned_after_deadline_s": -0.0385
+    },
+    {
+     "deadline_s": 30.0,
+     "returned_after_deadline_s": 0.1307
+    }
+   ],
+   "cause": "a pool worker of the previous plan finished init during the next plan, closed itself (5 s) while holding the pool lock, and the deadline teardown waited for that lock (0.965 s late); fixed in the deadline path by pool generations and closing outside the lock"
+  },
+  "clock_domain_check": {
+   "accepted": {
+    "status": "REPLIED",
+    "native_valid": true,
+    "absolute": {
+     "absolute_deadline_monotonic_s": 1219859.754673622,
+     "clock": "CLOCK_MONOTONIC_STEADY_CLOCK",
+     "limits_request": true,
+     "receipt_monotonic_s": 1219839.800306415
+    }
+   },
+   "reference_in_future": {
+    "status": "REFUSED",
+    "detail": "DEADLINE_CLOCK_DOMAIN_MISMATCH"
+   },
+   "deadline_long_past": {
+    "status": "REFUSED",
+    "detail": "DEADLINE_CLOCK_DOMAIN_MISMATCH"
+   }
+  }
+ },
+ "bench": {
+  "command": "tools/bench_planning_latency.py --discover --timing <5 step-1 fake-IO scheduling timing files>",
+  "planning": {
+   "status": "NO_SAMPLES",
+   "samples": 0,
+   "p50_s": null,
+   "p95_s": null,
+   "max_s": null,
+   "success_rate": null
+  },
+  "vision": {
+   "status": "NO_SAMPLES",
+   "samples": 0
+  },
+  "scheduling": {
+   "status": "MEASURED",
+   "samples": 5,
+   "p50_s": 3.8347912030294538,
+   "p95_s": 3.8773934619966894,
+   "max_s": 3.8773934619966894,
+   "success_rate": 1.0
+  },
+  "scheduling_stages": [
+   {
+    "name": "execute_binding",
+    "target_s": null,
+    "count": 5,
+    "p50_s": 1.8496345679741353,
+    "p95_s": 1.8898035269230604,
+    "max_s": 1.8898035269230604
+   },
+   {
+    "name": "first_submit",
+    "target_s": null,
+    "count": 5,
+    "p50_s": 1.9754315218888223,
+    "p95_s": 2.0091666008811444,
+    "max_s": 2.0091666008811444
+   }
+  ],
+  "records_found": 0,
+  "note": "planning and vision: NO_SAMPLES because every saved field record was deleted (user 2026-11-16)"
+ },
+ "findings": [
+  "Worker close: SIGTERM is ignored and ResidentMoveItClient.close waits 5 s before SIGKILL. Without a deadline, plan_cycle closes the main worker and every pool worker sequentially before PLAN_READY: about 5 s x (1 + native_check_workers) = 35 s with the example configuration. Unchanged without a deadline (step 4).",
+  "Worker cold start (init) measured 3.8 s; a first planner build 9.2 s (cached after observe in the workbench).",
+  "contact_candidates takes ~0.6 s of pure Python for a 150x100x100 mm top face (not preemptible).",
+  "Pre-existing race without a deadline: a pool worker still initialising when its plan ends can join the next plan's pool (pool_closed is reset by the next start_check_pool), and closes while holding the pool lock. Fixed only on the deadline path here; to be fixed for both with resident workers (step 4).",
+  "Finalisation after a complete plan (binding rehash ~1.86 s, register, records) is not aborted by the deadline; its duration is reported (finalize stage of the budget table)."
+ ],
+ "not_run_or_not_verified": [
+  "Bench on field records and the planning/vision baselines: no saved record exists (deleted)",
+  "Deadline behaviour on a real field scene (thousands of obstacles, real candidate counts)",
+  "Planning success rate under a 2.0 s deadline: not meaningful before steps 4-8 (worker start alone is 3.8 s)",
+  "Field PC timings (all numbers from the shared GPU server)",
+  "Any physical motion, valve command or acceptance: NOT_RUN"
+ ]
+}

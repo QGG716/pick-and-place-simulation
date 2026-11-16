@@ -1,0 +1,49 @@
+{
+  "schema": "eco65_latency_budget_v1",
+  "status": "ALLOCATION_AND_REPORTING_ONLY_NOT_ENFORCED",
+  "basis": "Initial allocation of the AGENTS.md 2026-11-16 planning target (prepare_plan entry to PLAN_READY, p95 <= 2.0 s). No field-record baseline exists (all saved field records were deleted, user 2026-11-16); revise after the first timed field session. Each stage lists the timing spans (ECO65_TIMING=1) that measure it.",
+  "flag_factor": 1.2,
+  "planning": {
+    "metric": "prepare_plan entry to PLAN_READY",
+    "total_s": 2.0,
+    "stages": [
+      {"name": "build", "target_s": 0.02, "spans": ["plan_cycle.build"],
+       "note": "cached after observe in the workbench"},
+      {"name": "worker_start", "target_s": 0.05, "spans": ["native.main_worker_process_start", "native.request:main-init"],
+       "note": "measured cold start about 3.8 s; resident workers are step 4"},
+      {"name": "rest_and_candidates", "target_s": 0.02, "spans": ["search.payload_rest_check", "search.contact_candidates"]},
+      {"name": "endpoint_screening", "target_s": 0.45, "spans": ["search.screen_candidate"]},
+      {"name": "candidate_planning", "target_s": 0.55,
+       "spans": ["main.wait_planned_candidate", "main.wait_replanned_candidate", "search.sequential_plan_candidate"],
+       "minus_spans_inside": ["sent_check"],
+       "note": "sequential search spans contain their sent-path checks, which are subtracted"},
+      {"name": "sent_path_check", "target_s": 0.55, "spans": ["sent_check"]},
+      {"name": "finalize", "target_s": 0.15,
+       "spans": ["plan_cycle.binding", "plan_cycle.register", "json.dumps:complete-plan.json", "disk.write:complete-plan.json", "prepare_plan.cycle_ready"]},
+      {"name": "worker_close", "target_s": 0.01, "spans": ["plan_cycle.close_workers"],
+       "note": "measured 5.0 s per worker (SIGTERM ignored, SIGKILL after 5 s), sequential; resident workers are step 4"},
+      {"name": "reserve", "target_s": 0.2, "spans": [],
+       "note": "unallocated margin, includes the 0.1 s deadline reply reserve"}
+    ]
+  },
+  "vision": {
+    "metric": "observe entry to TARGET_READY",
+    "total_s": null,
+    "stages": [
+      {"name": "freeze", "target_s": null, "spans": ["observe.freeze"]},
+      {"name": "detection_and_segmentation", "target_s": null, "spans": ["observe.vision_infer_frozen", "observe.detector_detect"]},
+      {"name": "reconstruct", "target_s": null, "spans": ["observe.reconstruct"]},
+      {"name": "scene_model", "target_s": null, "spans": ["observe.planner_build", "observe.self_filter_construct"]},
+      {"name": "build_scene", "target_s": null, "spans": ["observe.build_scene"]},
+      {"name": "records", "target_s": null, "spans": ["disk.write", "json.dumps"]}
+    ]
+  },
+  "scheduling": {
+    "metric": "execute click to first point sent, plus handoff waits beyond the rules",
+    "total_s": null,
+    "stages": [
+      {"name": "execute_binding", "target_s": null, "spans": ["execute.binding"]},
+      {"name": "first_submit", "target_s": null, "spans": ["execute.cycle_start"]}
+    ]
+  }
+}

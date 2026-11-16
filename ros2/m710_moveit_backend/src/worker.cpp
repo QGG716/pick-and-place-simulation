@@ -1115,14 +1115,36 @@ class Worker {
     compactPlanningOnlyReply(record->result,planning_only,planning_mode);
     return record->result;
   }
+  // Optional unified planning deadline of the physical single-carton chain.
+  // The caller's time.monotonic() and this steady_clock are both Linux
+  // CLOCK_MONOTONIC on the same host; a request received before the caller's
+  // reference or long after the deadline proves a different clock domain.
+  // Absent field: the request budget alone applies, exactly as before.
+  J applyAbsoluteDeadline(const J& req,Clock::time_point begin) {
+    if(!model || req.at("op")=="init" || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")
+      throw std::runtime_error("ABSOLUTE_DEADLINE_SCOPE_INVALID");
+    const auto& a=req.at("absolute_deadline_monotonic_s");const auto& r=req.at("deadline_clock_reference_monotonic_s");
+    if(!a.is_number() || !r.is_number())throw std::runtime_error("INVALID_ABSOLUTE_DEADLINE");
+    const double absolute=a.get<double>(),reference=r.get<double>();
+    const double now=std::chrono::duration<double>(begin.time_since_epoch()).count();
+    if(!std::isfinite(absolute) || !std::isfinite(reference) || reference>absolute)throw std::runtime_error("INVALID_ABSOLUTE_DEADLINE");
+    if(now<reference-1e-3 || now>absolute+60.)throw std::runtime_error("DEADLINE_CLOCK_DOMAIN_MISMATCH");
+    const auto point=Clock::time_point(std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(absolute)));
+    const bool earlier=point<request_deadline;
+    if(earlier)request_deadline=point;
+    return {{"absolute_deadline_monotonic_s",absolute},{"receipt_monotonic_s",now},{"limits_request",earlier},
+            {"clock","CLOCK_MONOTONIC_STEADY_CLOCK"}};
+  }
 public:
   J dispatch(const J& req) {
     const auto begin=Clock::now();const double budget=req.value("request_budget_s",86400.);
     if(!std::isfinite(budget)||budget<=0)throw std::runtime_error("INVALID_REQUEST_BUDGET");
     request_deadline=begin+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(budget));
+    const J absolute=req.contains("absolute_deadline_monotonic_s")?applyAbsoluteDeadline(req,begin):J(nullptr);
     native_deadline=std::make_shared<m710::NativeDeadline>(request_deadline);
     auto result=run(req);result["evaluation_profile"]=evaluation_profile;
     result["budget"]={{"request_budget_s",budget},{"remaining_on_return_s",remainingBudget()},{"return_reserve_s",req.value("return_reserve_s",5.)}};
+    if(!absolute.is_null())result["budget"]["absolute_deadline"]=absolute;
     if(req.value("search_trace",false) && !result.contains("search_trace")) {
       const std::string pipeline=req.value("pipeline_id",std::string());
       result["search_trace_status"]=pipeline=="ompl"?"NOT_STARTED_NO_TREE":

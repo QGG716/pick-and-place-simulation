@@ -1,5 +1,5 @@
 """Full physical single-carton native MTC/Pilz/OMPL plan before any actuation."""
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor,TimeoutError as FutureTimeout
 from copy import deepcopy
 from collections import Counter
 from pathlib import Path
@@ -34,6 +34,14 @@ CHECK_CHUNK_MIN_STATES=500
 # Worker status for a plan whose own waypoint check the caller deferred to
 # its exact sent-path check (physical single-carton scope only).
 DEFERRED_OUTPUT='DEFERRED_TO_CALLER_SENT_PATH_CHECK'
+# Optional unified planning deadline (config planning_deadline_s). Native work
+# ends this long before the absolute deadline so its reply and the Python-side
+# classification are complete when the deadline arrives.
+DEADLINE_REPLY_RESERVE_S=.1
+# A reply no longer awaited after the deadline is still collected for this
+# long in the background, so the worker can be closed cleanly.
+DEADLINE_IPC_GRACE_S=10.
+DEADLINE_EXPIRED='NATIVE_ABSOLUTE_DEADLINE_EXPIRED'
 
 
 def failure_category(reason):
@@ -61,12 +69,87 @@ class SegmentRejected(ValueError):
         super().__init__(message);self.stage=stage;self.native_result=result
 
 
+class PlanningBudgetExhausted(Exception):
+    """The unified planning deadline passed before the search concluded.
+
+    Deliberately not a ValueError: no candidate or target handler may record
+    it as an infeasibility. ``evidence`` carries the per-target searched and
+    unsearched candidate counts once ``plan_cycle`` has classified it.
+    """
+    def __init__(self,where,detail=''):
+        super().__init__(f'PLANNING_BUDGET_EXHAUSTED:{where}'+(f':{detail}' if detail else ''))
+        self.where=where;self.detail=detail;self.evidence=None
+
+
 class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
         self.defer_output_check=False
+        # Unified planning deadline (absolute time.monotonic seconds) of the
+        # current plan_cycle; None keeps every request and timeout unchanged.
+        self.deadline=None;self.deadline_reference=None
+        # Keyed by id(client): fakes and real clients alike, no hashing needed.
+        self.ipc_executors={};self.abandoned=set();self.search_counts={};self.search_thread=None
         super().__init__(config['execution'],mapping,authority)
+    # -- unified planning deadline -------------------------------------------------
+    def native_left(self):
+        """Seconds of native work left before the reply reserve; None without a deadline."""
+        return None if self.deadline is None else self.deadline-DEADLINE_REPLY_RESERVE_S-time.monotonic()
+    def deadline_fields(self,request,budget):
+        """The worker's request budget and absolute deadline, both derived from the unified deadline."""
+        left=self.native_left()
+        if left<=0:raise PlanningBudgetExhausted('BEFORE_DISPATCH',str(request.get('op')))
+        return dict(request,request_budget_s=min(budget,left),
+                    absolute_deadline_monotonic_s=self.deadline-DEADLINE_REPLY_RESERVE_S,
+                    deadline_clock_reference_monotonic_s=self.deadline_reference)
+    def bounded_request(self,client,payload,timeout,cancelled,name):
+        """``client.request`` that returns or is classified by the unified deadline.
+
+        The request runs on a per-client IPC thread. At the deadline the caller
+        gets PlanningBudgetExhausted at once; the client is never used again
+        and its late reply is collected in the background.
+        """
+        deadline=self.deadline;left=deadline-time.monotonic()
+        if left<=0:raise PlanningBudgetExhausted('BEFORE_DISPATCH',name)
+        with self.pool_lock:
+            entry=self.ipc_executors.get(id(client))
+            if entry is None:
+                entry=self.ipc_executors[id(client)]=(client,ThreadPoolExecutor(max_workers=1,thread_name_prefix='native-ipc'))
+        future=entry[1].submit(timing.native_request,client,payload,timeout=min(timeout,left+DEADLINE_IPC_GRACE_S),
+                               cancelled=cancelled,record=name)
+        try:return future.result(timeout=max(0.,deadline-time.monotonic()))
+        except FutureTimeout:
+            with self.pool_lock:self.abandoned.add(id(client))
+            if cancelled is not None and cancelled():raise RuntimeError('CANCELLED')
+            raise PlanningBudgetExhausted('NO_REPLY_BY_DEADLINE',name) from None
+    def bounded_search(self,q,world,box,folder,progress,cancelled,failures):
+        """``search_box`` on a helper thread; the caller is released at the deadline.
+
+        Pure-Python steps between native calls (candidate generation, send-grid
+        preparation, record writes) cannot be preempted. At the deadline the
+        caller classifies the expiry while the helper finishes its current
+        step; its next native call is refused before dispatch, it never
+        registers a permit, and the next plan_cycle waits for it to end.
+        """
+        outcome={}
+        def run():
+            try:outcome['found']=self.search_box(q,world,box,folder,progress,cancelled,failures)
+            except BaseException as error:outcome['error']=error
+        thread=self.search_thread=threading.Thread(target=run,daemon=True,name='target-search')
+        thread.start();thread.join(max(0.,self.deadline-time.monotonic()))
+        if thread.is_alive():raise PlanningBudgetExhausted('SEARCH_STEP_RUNNING_AT_DEADLINE',box['id'])
+        if 'error' in outcome:raise outcome['error']
+        return outcome['found']
+    def deadline_outcome(self,result,solver_capped):
+        """Whether a native reply ended because the unified deadline expired."""
+        if not isinstance(result,dict):return False
+        text=json.dumps({k:result.get(k) for k in ('status','failure','path_failure','detail')},default=str)
+        if DEADLINE_EXPIRED in text:return True
+        # A solver budget is global only when the deadline, not the per-call
+        # 25 s cap, set it; a per-call exhaustion keeps its candidate verdict.
+        return result.get('status')=='NATIVE_SOLVER_BUDGET_EXHAUSTED' and (
+            solver_capped or time.monotonic()>=self.deadline-DEADLINE_REPLY_RESERVE_S-1e-3)
     def build_world(self,s):
         # Source snapshot supplies robot/tool/camera solids only. Its trailer,
         # base placement, conveyors, floor, lift and cartons never enter real IO.
@@ -201,13 +284,17 @@ class SinglePlanner(EmptyPlanner):
         """
         template=dict(op='ik',identity=self.init['identity'],goal_pose=np.asarray(pose).tolist(),seed=6518,planning_only=False,
                       position_tolerance_m=2e-5,orientation_tolerance_rad=2e-4,request_budget_s=110.)
+        if self.deadline is not None:template=self.deadline_fields(template,110.)
         path=folder/(name+'-native.json');started=time.monotonic()
         record=dict(request=template,seeds=[list(map(float,s)) for s in seeds],status='PENDING',ipc_timeout_s=120)
         timing.write_json(path,record,'ik-record:pending');replies=[];solutions=[]
         try:
             for seed in seeds:
                 if cancelled is not None and cancelled():raise ValueError('CANCELLED')
-                reply=timing.native_request(self.client,dict(template,q_start=list(map(float,seed))),timeout=120,cancelled=cancelled,record=name)
+                request=dict(template,q_start=list(map(float,seed)))
+                if self.deadline is None:
+                    reply=timing.native_request(self.client,request,timeout=120,cancelled=cancelled,record=name)
+                else:reply=self.bounded_request(self.client,request,120,cancelled,name)
                 replies.append(dict(status=reply.get('status'),q=reply.get('q'),position_error_m=reply.get('position_error_m'),
                                     orientation_error_rad=reply.get('orientation_error_rad')))
                 if reply.get('status')=='SUCCESS':
@@ -217,6 +304,9 @@ class SinglePlanner(EmptyPlanner):
             solutions.sort(key=lambda x:float(np.linalg.norm(np.asarray(x)-reference)))
             record.update(status='REPLIED',replies=replies,distinct_solutions=solutions,elapsed_s=time.monotonic()-started)
             return solutions,[r['status'] for r in replies]
+        except PlanningBudgetExhausted as error:
+            record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),replies=replies,
+                          unsent_seeds=len(seeds)-len(replies),elapsed_s=time.monotonic()-started);raise
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),replies=replies,elapsed_s=time.monotonic()-started);raise
         finally:timing.write_json(path,record,'ik-record:final')
@@ -323,6 +413,7 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('site'):context['site_workspace_bounds_m']=self.site['site']['workspace_bounds_m']
         return context
     def native_call(self,request,folder,name,timeout,cancelled=None,client=None):
+        if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client)
         # Persist before dispatch: a timed-out worker cannot return its request
         # or profiling data. Keep every Pilz/OMPL attempt instead of overwriting.
         request=dict(request,request_budget_s=timeout-10.)
@@ -335,6 +426,40 @@ class SinglePlanner(EmptyPlanner):
             return result
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
+            raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
+        finally:timing.write_json(path,record,'native-record:final')
+    def deadline_native_call(self,request,folder,name,timeout,cancelled=None,client=None):
+        """``native_call`` under the unified deadline.
+
+        Request budget, solver time and IPC wait all derive from the one
+        absolute deadline, which the worker receives as well. The request is
+        persisted before dispatch as before. An expiry raises
+        PlanningBudgetExhausted, never a rejection of this candidate.
+        """
+        client=client or self.client
+        capped=False
+        if 'allowed_planning_time_s' in request:
+            left=self.native_left()
+            capped=left<request['allowed_planning_time_s']
+            if capped:request=dict(request,allowed_planning_time_s=max(left,1e-3))
+        request=self.deadline_fields(request,timeout-10.)
+        path=folder/(name+'-native.json');started=time.monotonic()
+        record=dict(request=request,status='PENDING',ipc_timeout_s=min(timeout,self.deadline-started+DEADLINE_IPC_GRACE_S),
+                    planning_deadline=dict(absolute_monotonic_s=self.deadline,reply_reserve_s=DEADLINE_REPLY_RESERVE_S,
+                                           solver_budget_from_deadline=capped))
+        timing.write_json(path,record,'native-record:pending')
+        try:
+            result=self.bounded_request(client,request,timeout,cancelled,name)
+            record.update(status='REPLIED',result=result,elapsed_s=time.monotonic()-started)
+            if self.deadline_outcome(result,capped):
+                record['status']='PLANNING_BUDGET_EXHAUSTED'
+                raise PlanningBudgetExhausted('NATIVE_DEADLINE',name)
+            return result
+        except PlanningBudgetExhausted as error:
+            record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),elapsed_s=time.monotonic()-started);raise
+        except Exception as error:
+            record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
+            if DEADLINE_EXPIRED in str(error):raise PlanningBudgetExhausted('NATIVE_DEADLINE',name) from error
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
         finally:timing.write_json(path,record,'native-record:final')
     # -- resident checker pool (final sent-path checks and concurrent plans) ----
@@ -358,27 +483,50 @@ class SinglePlanner(EmptyPlanner):
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         self.pool=[];self.pool_status=[];self.pool_threads=[]
         count=int(self.site.get('native_check_workers',0))
+        if self.deadline is not None and count:
+            # A worker whose start would end after the deadline (estimated by
+            # this plan's measured main-worker init) adds no parallelism, only
+            # process starts competing with the deadline classification.
+            estimate=getattr(self,'worker_init_s',None);left=self.deadline-time.monotonic()
+            if estimate is not None and left<estimate:
+                self.pool_status=[dict(index=k,state='NOT_STARTED',reason='DEADLINE_BEFORE_MEASURED_WORKER_INIT',
+                                       remaining_s=left,measured_init_s=estimate) for k in range(count)]
+                self.pool_closed=False;return
         def start(k):
             status=dict(index=k,state='STARTING');self.pool_status.append(status);client=None
             try:
                 with timing.span('native.pool_worker_process_start',index=k):
                     client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
                                                 log_path=folder/f'moveit-check-{k}.log')
-                ready=timing.native_request(client,self.init,timeout=180,record=f'pool-{k}-init')
+                # Under a deadline the IPC wait also derives from it; this
+                # background start never blocks the planning result.
+                init_timeout=180 if deadline is None else max(1e-3,min(180.,deadline-time.monotonic()+DEADLINE_IPC_GRACE_S))
+                ready=timing.native_request(client,self.init,timeout=init_timeout,record=f'pool-{k}-init')
                 if not ready.get('capabilities',{}).get('bounded_single_carton_planning'):raise RuntimeError('NATIVE_WORKER_CAPABILITY_MISSING')
-                with self.pool_lock:
-                    if self.pool_closed:client.close();status['state']='CLOSED';return
-                    self.pool.append(client)
+                if deadline is None:
+                    with self.pool_lock:
+                        if self.pool_closed:client.close();status['state']='CLOSED';return
+                        self.pool.append(client)
+                else:
+                    # Under a deadline: a worker whose plan already ended (or a
+                    # later plan began) never joins a pool, and is closed
+                    # outside the lock so the 5 s close never blocks a plan.
+                    with self.pool_lock:
+                        stale=self.pool_closed or generation!=self.pool_generation
+                        if not stale:self.pool.append(client)
+                    if stale:status['state']='CLOSED';client.close();return
                 status['state']='READY'
             except Exception as error:
                 status.update(state='FAILED',error=str(error))
                 if client is not None:client.close()
-        self.pool_closed=False
+        self.pool_closed=False;deadline=self.deadline
+        with self.pool_lock:self.pool_generation=getattr(self,'pool_generation',0)+1;generation=self.pool_generation
         for k in range(count):
             thread=threading.Thread(target=start,args=(k,),daemon=True,name=f'native-check-{k}');thread.start();self.pool_threads.append(thread)
     def wait_check_pool(self,timeout=240.):
         """Wait until every pool worker is READY or FAILED, so lane count is fixed."""
         deadline=time.monotonic()+timeout
+        if self.deadline is not None:deadline=min(deadline,self.deadline)
         with timing.span('native.pool_wait_ready',workers=len(self.pool_threads)):
             for thread in self.pool_threads:thread.join(max(0.,deadline-time.monotonic()))
     def close_check_pool(self):
@@ -394,7 +542,9 @@ class SinglePlanner(EmptyPlanner):
         it) is never handed another request.
         """
         alive=lambda c:getattr(getattr(c,'process',None),'poll',lambda:None)() is None
-        with self.pool_lock:return [c for c in [self.client]+list(self.pool) if alive(c)]
+        # A worker whose reply was abandoned at the deadline is never reused.
+        abandoned=getattr(self,'abandoned',())
+        with self.pool_lock:return [c for c in [self.client]+list(self.pool) if alive(c) and id(c) not in abandoned]
     # -- segments -----------------------------------------------------------------
     def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
         """Native plan and send-grid preparation, without the final dense check."""
@@ -653,7 +803,12 @@ class SinglePlanner(EmptyPlanner):
         def receive(rank):
             while True:
                 if cancelled():raise ValueError('CANCELLED')
-                try:return results[rank].get(timeout=.1)
+                wait=.1
+                if self.deadline is not None:
+                    left=self.deadline-time.monotonic()
+                    if left<=0:raise PlanningBudgetExhausted('WAITING_FOR_CANDIDATE_LANE',f'rank {rank}')
+                    wait=min(wait,left)
+                try:return results[rank].get(timeout=wait)
                 except queue.Empty:continue
         try:
             for rank,(i,candidate,sub,screened) in enumerate(order):
@@ -698,9 +853,14 @@ class SinglePlanner(EmptyPlanner):
                     (f"{hit['id']} 相交 {hit['overlap_depth_m']*1000:.1f} mm" if hit else '现场工作范围边界相交')+
                     f"（共 {len(rest['intersections'])} 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划")
             progress(reason);failures.append(dict(target=box['id'],reason=reason,evidence=rest));return None
+        # Bookkeeping for the searched / unsearched summary only.
+        self.search_counts[box['id']]=dict(candidates=None,phase='CANDIDATE_GENERATION',screened=0,considered=None)
         try:
             with timing.span('search.contact_candidates'):candidates=contact_candidates(box,self.source['tool'],self.site['topology'])
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
+        # Bookkeeping for the searched / unsearched summary only.
+        self.search_counts[box['id']]=dict(candidates=len(candidates),phase='SCREENING',screened=0,
+            considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter])
         screened=[];solutions=[]
         try:
             for i,candidate in enumerate(candidates):
@@ -714,11 +874,14 @@ class SinglePlanner(EmptyPlanner):
                 except TargetBlocked:raise
                 except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)))
             order=sorted(screened,key=lambda s:s[3]['screen']['conclusion']!='CLEAR')
+            self.search_counts[box['id']].update(phase='PLANNING',screened=len(order))
             clear=sum(s[3]['screen']['conclusion']=='CLEAR' for s in order)
             progress(f'预检完成：{clear} 个候选终态全部通过，{len(order)-clear} 个逆解未定论，'
                      f'{len(candidates)-len(order)} 个已排除；按此顺序完整规划')
             if int(self.site.get('parallel_candidate_lanes',1))>1 and len(order)>1:
                 self.wait_check_pool()
+                if self.deadline is not None and time.monotonic()>=self.deadline:
+                    raise PlanningBudgetExhausted('WAITING_FOR_CHECK_POOL')
                 if len(self.checkers())>1:
                     with timing.span('search.parallel_candidates',candidates=len(order)):
                         return self.parallel_candidates(q,world,box,order,progress,cancelled,failures)
@@ -734,11 +897,78 @@ class SinglePlanner(EmptyPlanner):
         except TargetBlocked as e:
             progress(str(e));failures.append(dict(target=box['id'],reason=str(e)))
         return None
-    def plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None):
+    def budget_summary(self,boxes,failures,selected,error):
+        """Per-target searched / unsearched candidate counts under the unified deadline.
+
+        A candidate is searched only when it was concluded: rejected (it has a
+        recorded failure) or accepted. Candidates screened but not planned, in
+        flight at expiry, or never reached are unsearched and are never counted
+        as infeasible. A target-level verdict (rest intersection, TargetBlocked)
+        concludes every candidate of that target.
+        """
+        targets=[]
+        for box in boxes:
+            if selected is not None and box['detection_index']!=selected:continue
+            ident=box['id'];counts=self.search_counts.get(ident)
+            level=[f for f in failures if f.get('target')==ident and 'candidate' not in f]
+            failed={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f}
+            if counts is None or counts['considered'] is None:
+                # Candidates never generated: a target-level verdict, or not reached.
+                status='TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
+                    'BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION' if error is not None else 'CANDIDATE_GENERATION')
+                targets.append(dict(target=ident,status=status,candidates=None,considered=None,screened=0,
+                    searched='ALL_BY_TARGET_VERDICT' if level else 0,unsearched=None if level else 'ALL_NOT_GENERATED',
+                    infeasible_candidates=0,target_reason=level[0]['reason'][:300] if level else None))
+                continue
+            considered=counts['considered']
+            if level:
+                status,searched,infeasible='TARGET_BLOCKED',len(considered),len(considered)
+            else:
+                infeasible=len(failed&set(considered));searched=infeasible
+                status=('SEARCHED_NO_PLAN' if counts['phase']=='DONE' else
+                        'BUDGET_EXHAUSTED_IN_'+counts['phase'] if error is not None else counts['phase'])
+            targets.append(dict(target=ident,status=status,candidates=counts['candidates'],considered=len(considered),
+                                screened=counts['screened'],searched=searched,unsearched=len(considered)-searched,
+                                infeasible_candidates=infeasible,
+                                target_reason=level[0]['reason'][:300] if level else None))
+        return dict(status='PLANNING_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_FINISHED_WITHIN_DEADLINE',
+                    where=getattr(error,'where',None),detail=getattr(error,'detail',None),
+                    deadline_monotonic_s=self.deadline,classified_monotonic_s=time.monotonic(),
+                    reply_reserve_s=DEADLINE_REPLY_RESERVE_S,targets=targets,
+                    rule='UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY')
+    def background_close(self,folder):
+        """Under a deadline: record the pool, then close every worker off this thread.
+
+        A worker ignores SIGTERM, so each ResidentMoveItClient.close waits 5 s
+        before SIGKILL; sequential closes must not delay the classified result.
+        Closed workers never receive another request.
+        """
+        with self.pool_lock:
+            self.pool_closed=True;pool,self.pool=list(self.pool),[]
+            executors,self.ipc_executors=dict(self.ipc_executors),{}
+        status=[dict(s) for s in self.pool_status]
+        threading.Thread(target=timing.write_json,args=(folder/'native-check-pool.json',status,'native-check-pool.json'),
+                         kwargs=dict(ensure_ascii=False),daemon=True,name='native-pool-record').start()
+        clients=[c for c in [self.client]+pool if c is not None];self.client=None
+        def close(client):
+            entry=executors.get(id(client))
+            if entry is not None:entry[1].shutdown(wait=True)
+            try:client.close()
+            except Exception:pass
+        for client in clients:threading.Thread(target=close,args=(client,),daemon=True,name='native-close').start()
+    def plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None,deadline=None):
+        """Full search and permit registration; ``deadline`` is the optional absolute
+        time.monotonic() planning deadline (None keeps the original behaviour)."""
         from ..contracts import Source,HOST_SESSION
         if (observation.frame.stamp.source!=Source.LIVE or observation.frame.stamp.host_session!=HOST_SESSION or
                 observation.robot_sample.get('source')!='LIVE'):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
+        # A search thread released at an earlier deadline may still finish its
+        # last pure-Python step (it dispatches nothing more); it must end
+        # before any planner state of this request is set.
+        stale=getattr(self,'search_thread',None)
+        if stale is not None and stale.is_alive():stale.join()
+        self.deadline=None;self.abandoned=set();self.search_counts={};self.search_thread=None
         self.authority.invalidate();self.cycle_binding=None
         qualification=release_policy_evidence(self.site)
         with timing.span('plan_cycle.build'):self.build()
@@ -751,15 +981,24 @@ class SinglePlanner(EmptyPlanner):
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         q=np.array(observation.q_start);failures=[]
         from unloading_sim.moveit2_backend import ResidentMoveItClient
+        # Unified deadline for every native request of this plan (None: unchanged).
+        self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
         with timing.span('native.main_worker_process_start'):
             self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
         try:
-            self.worker_ready(timing.native_request(self.client,self.init,record='main-init'),boxes)
+            if self.deadline is None:ready=timing.native_request(self.client,self.init,record='main-init')
+            else:
+                initialising=time.monotonic()
+                ready=self.bounded_request(self.client,self.init,120.,None,'main-init')
+                self.worker_init_s=time.monotonic()-initialising
+            self.worker_ready(ready,boxes)
             self.start_check_pool(folder)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
                 with timing.span('plan_cycle.search_box',target=box['id']):
-                    found=self.search_box(q,world,box,folder,progress,cancelled,failures)
+                    if self.deadline is None:found=self.search_box(q,world,box,folder,progress,cancelled,failures)
+                    else:found=self.bounded_search(q,world,box,folder,progress,cancelled,failures)
+                if box['id'] in self.search_counts:self.search_counts[box['id']]['phase']='DONE'
                 if found is None:continue
                 i,candidate,screen,result=found['index'],found['candidate'],found['screen'],found
                 attachment,release=result['attachment'],result['release']
@@ -792,13 +1031,42 @@ class SinglePlanner(EmptyPlanner):
                 timing.write_json(folder/'complete-plan.json',plan,'complete-plan.json');return plan
             # Keep every concrete failure on disk; one task-status label must
             # not grow into 32 copies of the full native collision JSON.
-            timing.write_json(folder/'planning-failures.json',failures,'planning-failures.json',ensure_ascii=False,indent=2)
+            searched=None
+            if self.deadline is None:
+                timing.write_json(folder/'planning-failures.json',failures,'planning-failures.json',ensure_ascii=False,indent=2)
+            else:
+                searched=self.budget_summary(boxes,failures,selected,None)
+                timing.write_json(folder/'planning-failures.json',dict(failures=failures,planning_budget=searched),
+                                  'planning-failures.json',ensure_ascii=False,indent=2)
             counts=Counter(failure_category(f['reason']) for f in failures)
             summary='；'.join(f'{reason} × {count}' for reason,count in counts.items())
             first=failures[0]['reason'][:600] if failures else '没有符合所选编号的目标'
+            if searched is not None:
+                summary+='；'+'；'.join(f"{t['target']}: 已搜索 {t['searched']}，未搜索 {t['unsearched']}" for t in searched['targets'])
             raise ValueError(f'NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: {summary}；首项：{first}；详情：planning-failures.json')
+        except PlanningBudgetExhausted as error:
+            # Not an infeasibility verdict and not an IPC failure: record what
+            # was and was not searched, then report the expiry as such. A
+            # released search thread may still append to ``failures``, so the
+            # summary is taken from a snapshot of what was concluded by now.
+            concluded=list(failures)
+            error.evidence=self.budget_summary(boxes,concluded,selected,error)
+            # The classification is complete here; its record is written off
+            # this thread, so lanes still writing their own records cannot
+            # delay the return (AGENTS 2026-11-16 3e: evidence may be async).
+            record=dict(failures=concluded,planning_budget=error.evidence)
+            error.record_thread=threading.Thread(target=timing.write_json,args=(folder/'planning-failures.json',record,'planning-failures.json'),
+                kwargs=dict(ensure_ascii=False,indent=2),daemon=True,name='planning-budget-record')
+            error.record_thread.start()
+            progress('规划预算耗尽：'+'；'.join(f"{t['target']} 已搜索 {t['searched']}、未搜索 {t['unsearched']}（未搜索的不算不可行）"
+                                          for t in error.evidence['targets']))
+            raise
         finally:
             with timing.span('plan_cycle.close_workers'):
-                self.close_check_pool()
-                timing.write_json(folder/'native-check-pool.json',self.pool_status,'native-check-pool.json',ensure_ascii=False)
-                self.client.close();self.client=None
+                if self.deadline is None:
+                    self.close_check_pool()
+                    timing.write_json(folder/'native-check-pool.json',self.pool_status,'native-check-pool.json',ensure_ascii=False)
+                    self.client.close();self.client=None
+                else:self.background_close(folder)
+            # A released search thread keeps its (past) deadline until it ends.
+            if self.search_thread is None or not self.search_thread.is_alive():self.deadline=None;self.deadline_reference=None
