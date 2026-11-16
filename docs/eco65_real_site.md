@@ -551,3 +551,13 @@ Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装�
 
 **未做或未验证**：现场记录上的量具结果、规划与视觉基线；真实现场场景下的截止时间行为；2.0 s 截止时间下的成功率
 （worker 冷启动就要 3.8 s，第 4–8 步之前没有意义）；现场电脑上的耗时；任何实机运动、阀门命令或验收，均为 **NOT_RUN**。
+
+### 2026-11-16：实时化第 3 步，接口冻结
+
+只写文档，不改代码。`docs/native_boundary.md` 给出五个边界的契约：A 规划 worker、B 轨迹准备、C 现场场景构建、D 执行进程、E 连续作业层。
+每份契约列出字段与单位、错误码、取消与截止时间语义、线程与重入、Python 保留部分，以及按 AGENTS.md 不得改变的字段和判据；第 F 节把每组字段对应到代码中的文件和函数。
+
+跨语言通道只选一种：现有 worker 管道上的二进制帧，大块数据走共享内存；不用 pybind11（保留进程隔离、按进程并行，且开发服务器上 worker 在 chroot 中运行）。旧 JSONL 协议保留为 PYTHON 实现的通道。
+模块开关 `vision_module`、`planning_module`、`scheduling_module` 取 PYTHON | NATIVE，缺省 PYTHON；机制开关（`resident_workers`、`scene_handles`、`async_evidence`、`path_endpoint_reuse`、`binding_hash_cache`、`collision_check_mode`、`sent_path_audit`、`planning_deadline_s`）缺省都保持现行为。
+
+报告见 `docs/evidence/realtime_20261116_boundary/report.json`。本步无代码改动，测试未运行；共享内存传输只写入契约、尚未实现；契约 E 对应第 13 步，代码尚不存在。

@@ -1,0 +1,15 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-16",
+ "step": "3_interface_freeze",
+ "scope": "DOCUMENTATION_ONLY_NO_CODE_CHANGE",
+ "deliverable": "docs/native_boundary.md",
+ "contracts": ["A planning worker", "B trajectory preparation", "C real-site scene construction", "D execution process", "E continuous job"],
+ "channel": "binary frames on the existing worker pipes plus shared memory for large blocks; legacy JSONL kept as the PYTHON channel; pybind11 not used",
+ "module_switches": {"vision_module": "PYTHON", "planning_module": "PYTHON", "scheduling_module": "PYTHON"},
+ "mechanism_switches_default_current_behaviour": {"planning_deadline_s": "absent", "resident_workers": false, "scene_handles": false, "async_evidence": false, "path_endpoint_reuse": false, "binding_hash_cache": false, "collision_check_mode": "EXACT", "sent_path_audit": "SAMPLED"},
+ "field_sources": "every contract field group is mapped to its file and function in section F of the document",
+ "tests": "NOT_RUN (no code change)",
+ "hardware_execution": "NOT_RUN",
+ "not_done": ["shared-memory transport is specified but not implemented in this step", "contract E describes step 13; no code exists yet"]
+}
