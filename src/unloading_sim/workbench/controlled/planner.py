@@ -74,15 +74,18 @@ class EmptyPlanner:
         path=Path(path).resolve();value=file_hash(path)
         if expected is not None and value!=expected:raise ValueError('ASSET_HASH_MISMATCH:'+str(path))
         self.files[str(path)]=value;return path
+    def current_file_hashes(self):
+        """Content hash of every tracked file, read and hashed now."""
+        if not timing.ENABLED:return {p:file_hash(p) for p in self.files}
+        # Measurement only: one fixed-size aggregate per file, plus the whole binding.
+        current={};started=timing.now()
+        for p in self.files:
+            one=timing.now();current[p]=file_hash(p)
+            timing.aggregate('binding.rehash_file',p,timing.now()-one,bytes=Path(p).stat().st_size)
+        timing.aggregate('binding.rehash_all',len(self.files),timing.now()-started)
+        return current
     def binding(self):
-        if not timing.ENABLED:current={p:file_hash(p) for p in self.files}
-        else:
-            # Measurement only: one fixed-size aggregate per file, plus the whole binding.
-            current={};started=timing.now()
-            for p in self.files:
-                one=timing.now();current[p]=file_hash(p)
-                timing.aggregate('binding.rehash_file',p,timing.now()-one,bytes=Path(p).stat().st_size)
-            timing.aggregate('binding.rehash_all',len(self.files),timing.now()-started)
+        current=self.current_file_hashes()
         if current!=self.files:raise ValueError('INPUT_CHANGED_REBUILD_PLAN')
         return dict(files=current,model=self.model_hash,scene=self.scene_hash,
                     implementation_commit=self.commit,

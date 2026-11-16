@@ -5,6 +5,7 @@ import math
 import hashlib
 from ..controlled.planner import ROOT,load_config as load_execution
 
+STEP4_SWITCHES=('resident_workers','scene_handles','async_evidence','path_endpoint_reuse','binding_hash_cache')
 REQUIRED_VACUUM=('grip_below_kpa','release_above_kpa','hold_below_kpa',
                 'grip_dwell_s','release_dwell_s','grip_timeout_s','release_timeout_s',
                 'max_age_s','establish_commands','release_commands','field_basis')
@@ -130,6 +131,10 @@ def issues(c):
     if deadline is not None and (isinstance(deadline,bool) or not isinstance(deadline,(int,float))
                                  or not math.isfinite(deadline) or not 0<deadline<=3600):
         errors.append('planning_deadline_s：可选的统一规划截止时间（秒），0 < s ≤ 3600；不填则保持各请求原有预算')
+    # Step-4 mechanism switches: optional booleans, absent or false keeps the current behaviour.
+    for key in STEP4_SWITCHES:
+        if key in c and type(c[key]) is not bool:
+            errors.append(f'{key}：可选开关，true 或 false（缺省 false，保持现行为）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

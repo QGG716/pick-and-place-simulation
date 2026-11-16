@@ -37,6 +37,7 @@ def main():
     parser.add_argument('--config', type=Path, default=ROOT/'configs/workbench/single_carton.example.json')
     parser.add_argument('--time-scale', type=float, default=1.,
                         help='speed-up of the fake motion only (send grid, monitor and dwell rules unchanged)')
+    parser.add_argument('--binding-hash-cache', action='store_true', help='enable the step-4 binding hash cache')
     args = parser.parse_args()
     if os.environ.get('ECO65_TIMING') != '1':
         raise SystemExit('ECO65_TIMING=1 REQUIRED')
@@ -56,6 +57,8 @@ def main():
 
     out = args.output.resolve(); out.mkdir(parents=True, exist_ok=False)
     config = load(args.config)
+    if args.binding_hash_cache:
+        config['binding_hash_cache'] = True
     execution = deepcopy(config['execution']); execution['record_root'] = str(out/'records')
     installation = Installation.load(execution['installation'])
     model = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)

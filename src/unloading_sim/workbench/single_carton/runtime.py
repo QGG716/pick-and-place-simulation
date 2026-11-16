@@ -192,6 +192,9 @@ class TaskManager:
                 self.journal(kind='pre_execute_recheck',evidence=recheck)
             recheck_timing.__exit__(None,None,None)
             with timing.span('execute.binding'):self.planner.binding()
+            hashed=getattr(self.planner,'binding_evidence',None)
+            if hashed is not None:self.journal(kind='binding_hash',evidence={k:v for k,v in hashed.items() if k!='files'},
+                                               files=[(r['file'],r['status']) for r in hashed['files']])
             if self.stop_event.is_set():raise ValueError('CANCELLED')
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             with timing.span('execute.cycle_start'):self.cycle.start()

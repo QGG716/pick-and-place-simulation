@@ -7,7 +7,8 @@ import json
 import threading
 import time
 import numpy as np
-from ..controlled.planner import EmptyPlanner,ROOT
+import os
+from ..controlled.planner import EmptyPlanner,ROOT,file_hash
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
@@ -42,6 +43,8 @@ DEADLINE_REPLY_RESERVE_S=.1
 # long in the background, so the worker can be closed cleanly.
 DEADLINE_IPC_GRACE_S=10.
 DEADLINE_EXPIRED='NATIVE_ABSOLUTE_DEADLINE_EXPIRED'
+# binding_hash_cache: a file changed this recently is never served from cache.
+BINDING_RACY_WINDOW_NS=100_000_000
 
 
 def failure_category(reason):
@@ -91,7 +94,56 @@ class SinglePlanner(EmptyPlanner):
         self.deadline=None;self.deadline_reference=None
         # Keyed by id(client): fakes and real clients alike, no hashing needed.
         self.ipc_executors={};self.abandoned=set();self.search_counts={};self.search_thread=None
+        # Step 4 mechanisms, each off unless enabled in the config (契约 A).
+        self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
+        self.hash_cache={};self.binding_evidence=None
+        self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         super().__init__(config['execution'],mapping,authority)
+    def enabled(self,name):
+        """A step-4 mechanism switch of the single-carton config (default off)."""
+        return self.site.get(name) is True
+    # -- step 4: binding hash cache (AGENTS 2026-11-16 3f) ----------------------------
+    @staticmethod
+    def file_identity(path):
+        try:s=os.stat(path)
+        except OSError:return None
+        return (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+    @staticmethod
+    def cacheable(before,after):
+        """Reusable only when unchanged during hashing and last changed well before it.
+
+        File timestamps have coarse granularity: a second change within the
+        same tick as a change just before hashing could keep size, mtime and
+        ctime. Such recent ("racy") files are rehashed every time instead.
+        """
+        return (before is not None and before==after and
+                time.time_ns()-max(after[3],after[4])>BINDING_RACY_WINDOW_NS)
+    def track(self,path,expected=None):
+        if not self.enabled('binding_hash_cache'):return super().track(path,expected)
+        path=Path(path).resolve();before=self.file_identity(path);value=file_hash(path);after=self.file_identity(path)
+        if expected is not None and value!=expected:raise ValueError('ASSET_HASH_MISMATCH:'+str(path))
+        self.files[str(path)]=value
+        # Only a file unchanged during its own hashing gets a reusable entry.
+        if self.cacheable(before,after):self.hash_cache[str(path)]=(after,value)
+        else:self.hash_cache.pop(str(path),None)
+        return path
+    def current_file_hashes(self):
+        if not self.enabled('binding_hash_cache'):return super().current_file_hashes()
+        current={};rows=[];started=time.monotonic()
+        for p in self.files:
+            key=self.file_identity(p);cached=self.hash_cache.get(p)
+            if key is not None and cached is not None and cached[0]==key:
+                current[p]=cached[1];status='REUSED'
+            else:
+                # Any difference of device, inode, size, mtime_ns or ctime_ns: full rehash.
+                current[p]=file_hash(p);after=self.file_identity(p);status='REHASHED'
+                if self.cacheable(key,after):self.hash_cache[p]=(after,current[p])
+                else:self.hash_cache.pop(p,None)
+            rows.append(dict(file=p,status=status,bytes=None if key is None else key[2]))
+        self.binding_evidence=dict(policy='REUSE_WHILE_DEV_INO_SIZE_MTIME_NS_CTIME_NS_UNCHANGED',
+            reused=sum(r['status']=='REUSED' for r in rows),rehashed=sum(r['status']=='REHASHED' for r in rows),
+            seconds=time.monotonic()-started,files=rows)
+        return current
     # -- unified planning deadline -------------------------------------------------
     def native_left(self):
         """Seconds of native work left before the reply reserve; None without a deadline."""
@@ -1028,7 +1080,15 @@ class SinglePlanner(EmptyPlanner):
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
-                timing.write_json(folder/'complete-plan.json',plan,'complete-plan.json');return plan
+                if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
+                if self.task_start is not None:plan['resident_task_start']=self.task_start
+                if self.evidence is None:
+                    timing.write_json(folder/'complete-plan.json',plan,'complete-plan.json');return plan
+                # PLAN_READY needs the plan evidence on disk: everything queued
+                # for this task, then the plan itself, before returning.
+                self.evidence.write_json(folder/'complete-plan.json',plan,'complete-plan.json')
+                with timing.span('plan_cycle.evidence_flush'):self.evidence.flush(timeout=120)
+                return plan
             # Keep every concrete failure on disk; one task-status label must
             # not grow into 32 copies of the full native collision JSON.
             searched=None
