@@ -323,24 +323,37 @@ class NativeIKCandidateStream:
 
 class ResidentMoveItClient:
     """One serialized JSONL stream. Timeout poisons the process; no late replies."""
-    def __init__(self, command, *, log_path=None):
+    def __init__(self, command, *, log_path=None, binary=False):
         if not command:
             raise MoveItUnavailable("MOVEIT2_UNAVAILABLE: set M710_MOVEIT_COMMAND to the resident worker launcher")
         self._ids = itertools.count(1)
         self._lock = threading.Lock()
         self._replies = queue.Queue()
         self._log = open(log_path, "a", encoding="utf-8") if log_path else None
+        # binary=True (realtime step 7, planning_module NATIVE): byte pipes;
+        # JSON lines until the worker's init reply declares binary_protocol=2,
+        # then protocol-2 frames (workbench/binary_frames.py). Default unchanged.
+        self._wire = None
         try:
             self.process = subprocess.Popen(shlex.split(command) if isinstance(command, str) else command,
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self._log,
-                text=True, encoding="utf-8", bufsize=1)
+                **(dict(bufsize=-1) if binary else dict(text=True, encoding="utf-8", bufsize=1)))
         except OSError as exc:
             if self._log: self._log.close()
             raise MoveItUnavailable(f"MOVEIT2_UNAVAILABLE: {exc}") from exc
+        if binary:
+            from .workbench.binary_frames import Wire
+            self._wire = Wire(self.process)
+        # Measurement only: round trips and pipe bytes (both modes).
+        self.round_trips = 0; self._text_sent = 0; self._text_received = 0
+        def lines():
+            for line in self.process.stdout:
+                self._text_received += len(line)  # ASCII JSON: characters == bytes
+                yield json.loads(line)
         def read():
             try:
-                for line in self.process.stdout:
-                    self._replies.put(json.loads(line))
+                for reply in (self._wire.replies() if self._wire else lines()):
+                    self._replies.put(reply)
             except Exception as exc:
                 self._replies.put(exc)
             finally:
@@ -348,14 +361,28 @@ class ResidentMoveItClient:
         threading.Thread(target=read, daemon=True).start()
         atexit.register(self.close)
 
+    @property
+    def binary_active(self):
+        return bool(self._wire and self._wire.binary)
+
+    def transfer_bytes(self):
+        """(sent, received) bytes on the pipes."""
+        if self._wire is not None:
+            return self._wire.sent_bytes, self._wire.received_bytes
+        return self._text_sent, self._text_received
+
     def request(self, payload, *, timeout=120., cancelled=None):
         with self._lock:
             request = {**payload, "request_id": str(next(self._ids))}
-            started = perf_counter()
+            started = perf_counter(); self.round_trips += 1
             completed_read_only_deadline = False
             try:
-                self.process.stdin.write(json.dumps(request, allow_nan=False)+"\n")
-                self.process.stdin.flush()
+                if self._wire is not None:
+                    self._wire.send(request)
+                else:
+                    line = json.dumps(request, allow_nan=False)+"\n"; self._text_sent += len(line)
+                    self.process.stdin.write(line)
+                    self.process.stdin.flush()
                 while True:
                     if cancelled is not None and cancelled():
                         raise MoveItUnavailable("CANCELLED")
@@ -381,6 +408,8 @@ class ResidentMoveItClient:
                     error = MoveItUnavailable(result.get("detail", "MOVEIT2_ERROR"))
                     error.response = result
                     raise error
+                if self._wire is not None and request.get("op") == "init":
+                    self._wire.activate(result)
                 return result
             except Exception:
                 if not completed_read_only_deadline:

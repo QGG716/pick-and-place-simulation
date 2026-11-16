@@ -34,6 +34,7 @@
 #include "static_prior.h"
 #include "native_timing.h"
 #include "native_prepare.h"
+#include "binary_frames.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <random_numbers/random_numbers.h>
 #include <moveit/kinematic_constraints/utils.h>
@@ -1395,7 +1396,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1900,35 +1901,49 @@ int main(int argc,char**argv) {
   // running request's NativeDeadline; every other line is queued and handled
   // serially exactly as before. Without the variable the loop is unchanged.
   const bool async_cancel=[]{const char* v=std::getenv("M710_WORKER_CANCEL");return v&&std::strcmp(v,"1")==0;}();
-  std::mutex queue_mutex,running_mutex;std::condition_variable queue_cv;std::deque<std::string> queued;bool input_closed=false;
+  // Step 7: stdin carries JSON lines and/or protocol-2 binary frames
+  // (binary_frames.h, magic E65B); a reply uses the format of its request.
+  struct Message {std::string line;bool binary=false;m710::Frame frame;};
+  auto read_message=[&](Message& m)->bool {
+    const int c=std::cin.peek();if(c==EOF)return false;
+    if(c=='E') {m.binary=true;m.line.clear();return m710::readFrame(std::cin,m.frame);}
+    m.binary=false;return bool(std::getline(std::cin,m.line));
+  };
+  std::mutex queue_mutex,running_mutex;std::condition_variable queue_cv;std::deque<Message> queued;bool input_closed=false;
   std::string running_id;m710::NativeDeadlinePtr running_deadline;bool running_cancelled=false;std::set<std::string> early_cancels;
   std::thread reader;
   if(async_cancel)reader=std::thread([&]{
-    std::string l;
-    while(std::getline(std::cin,l)) {
-      if(l.size()<512 && l.find("\"op\":\"cancel\"")!=std::string::npos) {
-        std::string target;try {target=J::parse(l).at("target_request_id").get<std::string>();} catch(...) {continue;}
+    Message m;
+    while(true) {
+      try {if(!read_message(m))break;} catch(...) {break;}
+      std::string target;bool cancel=false;
+      if(m.binary&&m.frame.kind==m710::kFrameCancel) {cancel=true;target=m.frame.value.value("target_request_id",std::string());}
+      else if(!m.binary&&m.line.size()<512 && m.line.find("\"op\":\"cancel\"")!=std::string::npos) {
+        cancel=true;try {target=J::parse(m.line).at("target_request_id").get<std::string>();} catch(...) {continue;}
+      }
+      if(cancel) {
         std::lock_guard<std::mutex> g(running_mutex);
         if(target==running_id && running_deadline) {running_deadline->cancel();running_cancelled=true;}
         else early_cancels.insert(target);
         continue;
       }
-      {std::lock_guard<std::mutex> g(queue_mutex);queued.push_back(std::move(l));}
+      {std::lock_guard<std::mutex> g(queue_mutex);queued.push_back(std::move(m));m=Message{};}
       queue_cv.notify_one();
     }
     {std::lock_guard<std::mutex> g(queue_mutex);input_closed=true;}
     queue_cv.notify_one();
   });
-  auto next_line=[&](std::string& out)->bool {
-    if(!async_cancel)return bool(std::getline(std::cin,out));
+  Message message;
+  auto next_message=[&](Message& out)->bool {
+    if(!async_cancel) {try {return read_message(out);} catch(...) {return false;}}
     std::unique_lock<std::mutex> g(queue_mutex);queue_cv.wait(g,[&]{return input_closed||!queued.empty();});
     if(queued.empty())return false;
     out=std::move(queued.front());queued.pop_front();return true;
   };
-  while(next_line(line)) {
-    const auto received=Clock::now();double parse_s=-1.;
+  while(next_message(message)) {
+    const auto received=Clock::now();double parse_s=-1.;line=message.binary?std::string():message.line;
     if(timing)m710::NativeTiming::instance().reset();
-    J req,answer;try {req=J::parse(line);parse_s=seconds(received); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
+    J req,answer;try {req=message.binary?std::move(message.frame.value):J::parse(line);parse_s=seconds(received); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
       J init_content=req;init_content.erase("request_id");
       if(req.at("op")=="init" && startups.count(key)) {
         if(init_content!=init_requests.at(key)) throw std::runtime_error("CONTEXT_IDENTITY_REUSED_WITH_DIFFERENT_CONTENT");
@@ -1960,14 +1975,19 @@ int main(int argc,char**argv) {
     }
     if(timing) {
       J t=m710::NativeTiming::instance().json();
-      t["request_line_bytes"]=line.size();t["request_parse_s"]=parse_s<0?J(nullptr):J(parse_s);
+      t["request_line_bytes"]=message.binary?message.frame.bytes:line.size();t["request_parse_s"]=parse_s<0?J(nullptr):J(parse_s);
+      t["request_format"]=message.binary?"BINARY_FRAME_V2":"JSON_LINE";
       t["handled_s"]=seconds(received);
       t["previous_reply_dump_s"]=previous_dump_s<0?J(nullptr):J(previous_dump_s);
       t["previous_reply_bytes"]=previous_reply_bytes<0?J(nullptr):J(previous_reply_bytes);
       answer["native_timing"]=t;
-      const auto dumping=Clock::now();const std::string text=answer.dump();previous_dump_s=seconds(dumping);
-      previous_reply_bytes=double(text.size());std::cout<<text<<std::endl;
-    } else std::cout<<answer.dump()<<std::endl;
+    }
+    const auto dumping=Clock::now();
+    if(message.binary) {
+      const std::string bytes=m710::encodeFrame(m710::kFrameReply,message.frame.id,std::move(answer));
+      std::cout.write(bytes.data(),std::streamsize(bytes.size()));std::cout.flush();previous_reply_bytes=double(bytes.size());
+    } else {const std::string text=answer.dump();std::cout<<text<<std::endl;previous_reply_bytes=double(text.size());}
+    previous_dump_s=seconds(dumping);
   }
   if(reader.joinable())reader.detach();
   rclcpp::shutdown();return 0;

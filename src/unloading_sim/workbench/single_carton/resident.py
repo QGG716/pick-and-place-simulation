@@ -41,23 +41,29 @@ class WorkerRetired(MoveItUnavailable):
 class CancellableWorkerClient:
     """One serialized request stream with request-id cancellation."""
 
-    def __init__(self, command, *, log_path=None, name='worker'):
+    def __init__(self, command, *, log_path=None, name='worker', binary=False):
         self.name = name; self._ids = itertools.count(1); self._lock = threading.Lock()
         self._replies = queue.Queue(); self.retired = None; self.cancelled_requests = 0; self.clean = False
         self._log = open(log_path, 'a', encoding='utf-8') if log_path else None
         env = dict(os.environ, M710_WORKER_CANCEL='1')
         try:
             self.process = subprocess.Popen(shlex.split(command) if isinstance(command, str) else command,
-                                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self._log,
-                                            text=True, encoding='utf-8', bufsize=1, env=env)
+                                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self._log, env=env,
+                                            **(dict(bufsize=-1) if binary else dict(text=True, encoding='utf-8', bufsize=1)))
         except OSError as exc:
             if self._log: self._log.close()
             raise MoveItUnavailable(f'MOVEIT2_UNAVAILABLE: {exc}') from exc
 
+        # binary=True (step 7): byte pipes, frames after init declares binary_protocol=2.
+        self._wire = None
+        if binary:
+            from ..binary_frames import Wire
+            self._wire = Wire(self.process)
+
         def read():
             try:
-                for line in self.process.stdout:
-                    self._replies.put(json.loads(line))
+                for reply in (self._wire.replies() if self._wire else (json.loads(line) for line in self.process.stdout)):
+                    self._replies.put(reply)
             except Exception as exc:
                 self._replies.put(exc)
             finally:
@@ -78,7 +84,20 @@ class CancellableWorkerClient:
         if self._log and not self._log.closed: self._log.close()
 
     def _send(self, payload):
+        if self._wire is not None:
+            if payload.get('op') == 'cancel' and set(payload) == {'op', 'target_request_id'}:
+                self._wire.cancel(payload['target_request_id'])
+            else:
+                self._wire.send(payload)
+            return
         self.process.stdin.write(json.dumps(payload, allow_nan=False)+'\n'); self.process.stdin.flush()
+
+    @property
+    def binary_active(self):
+        return bool(self._wire and self._wire.binary)
+
+    def transfer_bytes(self):
+        return None if self._wire is None else (self._wire.sent_bytes, self._wire.received_bytes)
 
     def request(self, payload, *, timeout=120., cancelled=None):
         with self._lock:
@@ -121,6 +140,8 @@ class CancellableWorkerClient:
                 if result.get('status') == 'ERROR':
                     error = MoveItUnavailable(result.get('detail', 'MOVEIT2_ERROR')); error.response = result
                     raise error
+                if self._wire is not None and request.get('op') == 'init':
+                    self._wire.activate(result)
                 return result
 
     def reset(self, identity, seed=TASK_SEED):
@@ -150,11 +171,11 @@ REQUIRED_CAPABILITIES = ('bounded_single_carton_planning', 'resident_task_reset'
 class WorkerPool:
     """Main worker plus checker pool, started once and kept between tasks."""
 
-    def __init__(self, command_for, init, checkers, log_dir):
+    def __init__(self, command_for, init, checkers, log_dir, binary=False):
         self.command_for, self.init, self.count, self.log_dir = command_for, init, checkers, log_dir
         self.lock = threading.Lock(); self.main = None; self.main_ready = None; self.pool = []
         self.status = []; self.ready = threading.Event(); self.closed = False; self.thread = None
-        self.background = None; self.serial = itertools.count()
+        self.background = None; self.serial = itertools.count(); self.binary = binary
 
     # -- startup ---------------------------------------------------------------
     def start(self):
@@ -171,7 +192,7 @@ class WorkerPool:
         with self.lock: self.status.append(status)
         client = None
         try:
-            client = CancellableWorkerClient(self.command_for(name), log_path=self.log_dir/f'resident-{name}.log', name=name)
+            client = CancellableWorkerClient(self.command_for(name), log_path=self.log_dir/f'resident-{name}.log', name=name, binary=self.binary)
             ready = client.request(self.init, timeout=180)
             capabilities = ready.get('capabilities', {})
             missing = [c for c in REQUIRED_CAPABILITIES if not capabilities.get(c)]

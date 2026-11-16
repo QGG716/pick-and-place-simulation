@@ -103,15 +103,27 @@ class Authority:
     def __init__(self,schema='eco65_controlled_empty_package_v1'):
         if schema not in {'eco65_controlled_empty_package_v1','eco65_single_carton_segment_v1'}:raise ValueError('UNSUPPORTED_EXECUTION_SCOPE')
         self.schema=schema;self.session=secrets.token_hex(24);self._plans={};self._lock=threading.RLock()
+        self.digest_method='CANONICAL_JSON_SHA256'
+    def use_canonical_binary_digest(self):
+        """Single-carton planning_module NATIVE (AGENTS 2026-11-16 3g): issue and claim both use
+        SHA-256 over the canonical binary frame form (workbench/binary_frames.canonical_digest)."""
+        with self._lock:
+            if self._plans:raise ValueError('AUTHORITY_DIGEST_METHOD_FIXED_ONCE_PLANS_EXIST')
+            self.digest_method='CANONICAL_BINARY_SHA256'
+    def _digest(self,package):
+        if self.digest_method=='CANONICAL_BINARY_SHA256':
+            from ..binary_frames import canonical_digest
+            return canonical_digest(package)
+        return digest(package)
     def register(self, prepared, binding, evidence):
         if evidence.get('native_plan')!='PASS' or evidence.get('sent_path_collision')!='PASS': raise ValueError('VALIDATION_REQUIRED')
         package=dict(schema=self.schema,session=self.session,
                      plan_id=secrets.token_hex(16),prepared=prepared,binding=binding,evidence=evidence)
-        with timing.span('authority.register_digest'):self._plans[package['plan_id']]=digest(package)
+        with timing.span('authority.register_digest'):self._plans[package['plan_id']]=self._digest(package)
         return package
     def verify(self, package, binding):
         with timing.span('authority.verify_digest'):
-            if package.get('schema')!=self.schema or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=digest(package):
+            if package.get('schema')!=self.schema or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=self._digest(package):
                 raise ValueError('UNTRUSTED_STALE_OR_PREVIEW_TRAJECTORY')
     def consume(self, package): self._plans.pop(package['plan_id'],None)
     def claim(self,package,binding):
