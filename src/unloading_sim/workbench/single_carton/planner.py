@@ -665,7 +665,9 @@ class SinglePlanner(EmptyPlanner):
         progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行")
         def run(k):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
-            return a,b,self.native_call(dict(context,op='validate',probe_path=path[a:b+1]),folder,name,600,cancelled,workers[k])
+            check=dict(context,op='validate',probe_path=path[a:b+1])
+            if self.enabled('path_endpoint_reuse'):check['path_endpoint_reuse']=True
+            return a,b,self.native_call(check,folder,name,600,cancelled,workers[k])
         started=time.monotonic()
         with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
             with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))

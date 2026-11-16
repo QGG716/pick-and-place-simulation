@@ -29,6 +29,7 @@ class Clearance {
   std::unique_ptr<ClearanceWorkspace> workspace_;
   std::string mode_;
   bool eco65_=false;
+  bool path_endpoint_reuse_=false;
   NativeDeadlinePtr deadline_;
   std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
@@ -46,6 +47,14 @@ public:
       policy.at("schema")=="eco65_native_single_carton_clearance_v1";
     if(policy.at("schema")=="eco65_native_single_carton_clearance_v1")
       single_carton_=std::make_unique<SingleCartonContact>(request,deadline_);
+    // Optional (physical single carton only): a sample bitwise equal to the
+    // immediately preceding, already passed sample (the endpoint shared by
+    // two adjacent edges) is not checked twice. The checked state set and
+    // every edge's sampling rule are unchanged.
+    if(!request.is_null() && request.is_object() && request.value("path_endpoint_reuse",false)) {
+      if(!single_carton_)throw std::runtime_error("PATH_ENDPOINT_REUSE_SCOPE_INVALID");
+      path_endpoint_reuse_=true;
+    }
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||
@@ -243,7 +252,7 @@ public:
     // One immutable scene/policy per call. Reuse only the immediately preceding
     // successful check of an exactly equal joint vector, only in controlled empty
     // mode. Keep every distinct endpoint/interior state and all legacy sampling.
-    const bool reuse=policy_.at("schema")=="eco65_native_empty_clearance_v1";
+    const bool reuse=policy_.at("schema")=="eco65_native_empty_clearance_v1" || path_endpoint_reuse_;
     std::vector<double> previous;
     for(size_t edge=0;edge<std::max(size_t(1),path.size()-1);++edge) {
       auto a=path.at(edge).get<std::vector<double>>();auto b=path.at(std::min(edge+1,path.size()-1)).get<std::vector<double>>();
