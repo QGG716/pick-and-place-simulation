@@ -340,8 +340,115 @@ void physicalSingleCartonCases(J& out) {
   m710::nativeFrames()=old;out["physical_single_carton_contact_and_loaded_support"]="PASS";
 }
 
+// Step 5: TWO_LEVEL must take exactly the EXACT decisions (same validity,
+// same first failing pair and distance) and its proxies must be conservative.
+planning_scene::PlanningScenePtr twoJointScene() {
+  const char* urdf_text=R"(<robot name="two"><link name="world"/>
+    <link name="base"><collision><geometry><box size="0.2 0.2 0.05"/></geometry></collision></link>
+    <joint name="fixed_base" type="fixed"><parent link="world"/><child link="base"/><origin xyz="0 0 -0.3"/></joint>
+    <link name="mast"><collision><geometry><box size="0.04 0.04 0.4"/></geometry></collision></link>
+    <joint name="fixed_mast" type="fixed"><parent link="base"/><child link="mast"/><origin xyz="-0.3 0 0.2"/></joint>
+    <link name="arm"><collision><geometry><box size="0.3 0.04 0.04"/></geometry></collision></link>
+    <joint name="J1" type="prismatic"><parent link="world"/><child link="arm"/><axis xyz="1 0 0"/><limit lower="-1" upper="1" effort="1" velocity="1"/></joint>
+    <link name="hand"><collision><geometry><box size="0.04 0.08 0.04"/></geometry></collision></link>
+    <joint name="fixed_hand" type="fixed"><parent link="arm"/><child link="hand"/><origin xyz="0.17 0 0"/></joint>
+    <link name="finger"><collision><geometry><box size="0.02 0.02 0.06"/></geometry></collision></link>
+    <joint name="fixed_finger" type="fixed"><parent link="hand"/><child link="finger"/><origin xyz="0.0 0.03 -0.05"/></joint>
+    <link name="tip"><collision><geometry><box size="0.12 0.02 0.02"/></geometry></collision></link>
+    <joint name="J2" type="revolute"><parent link="hand"/><child link="tip"/><axis xyz="0 0 1"/><origin xyz="0.08 0 0"/><limit lower="-3.1" upper="3.1" effort="1" velocity="1"/></joint>
+    <link name="tip2"><collision><geometry><box size="0.02 0.05 0.02"/></geometry></collision></link>
+    <joint name="fixed_tip2" type="fixed"><parent link="tip"/><child link="tip2"/><origin xyz="0.07 0 0"/></joint>
+  </robot>)";
+  auto urdf=urdf::parseURDF(urdf_text);auto srdf=std::make_shared<srdf::Model>();
+  require(bool(urdf),"TWO_URDF");
+  require(srdf->initString(*urdf,R"(<robot name="two"><group name="manipulator"><joint name="J1"/><joint name="J2"/></group>
+    <disable_collisions link1="arm" link2="hand" reason="Adjacent"/><disable_collisions link1="hand" link2="finger" reason="Adjacent"/>
+    <disable_collisions link1="hand" link2="tip" reason="Adjacent"/><disable_collisions link1="tip" link2="tip2" reason="Adjacent"/>
+    <disable_collisions link1="base" link2="mast" reason="Adjacent"/></robot>)"),"TWO_SRDF");
+  auto model=std::make_shared<moveit::core::RobotModel>(urdf,srdf);
+  auto result=std::make_shared<planning_scene::PlanningScene>(model);
+  result->getCurrentStateNonConst().setToDefaultValues();result->getCurrentStateNonConst().update();return result;
+}
+moveit_msgs::msg::CollisionObject obstacle(const std::string& name,double x,double y,double z,double sx,double sy,double sz) {
+  moveit_msgs::msg::CollisionObject b;b.id=name;b.header.frame_id="world";b.operation=b.ADD;
+  shape_msgs::msg::SolidPrimitive shape;shape.type=shape.BOX;shape.dimensions={sx,sy,sz};b.primitives.push_back(shape);
+  geometry_msgs::msg::Pose pose;pose.orientation.w=1;pose.position.x=x;pose.position.y=y;pose.position.z=z;b.primitive_poses.push_back(pose);return b;
+}
+J twoLevelCases() {
+  J out;out["mode"]="two_level";out["scope"]="synthetic implementation checks only";
+  // Conservative sphere: lower bound <= exact FCL distance for 300 poses.
+  {
+    auto convex_vertices=std::make_shared<std::vector<fcl::Vector3d>>(std::vector<fcl::Vector3d>{
+      {0,0,0},{.1,0,0},{0,.07,0},{0,0,.05},{.06,.05,.04}});
+    auto faces=std::make_shared<std::vector<int>>(std::vector<int>{3,0,1,2, 3,0,1,3, 3,0,2,3, 3,1,2,4, 3,1,3,4, 3,2,3,4});
+    auto convex=std::make_shared<fcl::Convexd>(convex_vertices,6,faces);
+    auto box=std::make_shared<fcl::Boxd>(.08,.03,.05);
+    size_t checked=0;
+    for(int k=0;k<300;++k) {
+      Eigen::Isometry3d A=Eigen::Isometry3d::Identity(),B=Eigen::Isometry3d::Identity();
+      A.linear()=(Eigen::AngleAxisd(k*.37,Eigen::Vector3d::UnitX())*Eigen::AngleAxisd(k*.21,Eigen::Vector3d::UnitZ())).toRotationMatrix();
+      B.linear()=Eigen::AngleAxisd(k*.53,Eigen::Vector3d::UnitY()).toRotationMatrix();
+      A.translation()=Eigen::Vector3d(.001*k,-.0005*k,.0003*k);B.translation()=Eigen::Vector3d(.2-.0009*k,.0004*k,-.0002*k);
+      fcl::CollisionObjectd a(convex,A),b(box,B);
+      const auto sa=m710::ClearanceWorkspace::localSphere(a),sb=m710::ClearanceWorkspace::localSphere(b);
+      const double lower=(A*sa.first-B*sb.first).norm()-sa.second-sb.second;
+      fcl::DistanceResultd result;const double d=fcl::distance(&a,&b,fcl::DistanceRequestd(false),result);
+      if(d>0) {require(lower<=d+1e-12,"SPHERE_PROXY_NOT_CONSERVATIVE");++checked;}
+    }
+    out["sphere_lower_bound_conservative"]={{"separated_poses_checked",checked},{"status","PASS"}};
+  }
+  // Decisions: EXACT and TWO_LEVEL workspaces on the same scene and states.
+  size_t states=0,valid=0,invalid=0,constant_cleared=0,group_cleared=0,sphere_cleared=0,unvisited_cleared=0,exact_two=0,exact_one=0;
+  for(int layout=0;layout<3;++layout) {
+    auto s=twoJointScene();
+    s->processCollisionObjectMsg(obstacle("wall",.9+.1*layout,0,0,.05,.6,.4));
+    s->processCollisionObjectMsg(obstacle("post",0,.12-.03*layout,0,.04,.04,.3));
+    s->processCollisionObjectMsg(obstacle("shelf",.2,-.2,.06*layout,.5,.05,.02));
+    const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(s->getCollisionEnvUnpadded().get());
+    require(fcl,"FCL_ENV");
+    auto required=[](const std::string&,collision_detection::BodyType,const std::string&,collision_detection::BodyType){return .005;};
+    m710::ClearanceWorkspace exact(*fcl,s,required,true,0.,{},true,false),two(*fcl,s,required,true,0.,{},true,true);
+    require(two.twoLevel() && !exact.twoLevel(),"TWO_LEVEL_FLAG");
+    auto state=s->getCurrentState();
+    for(int k=0;k<1500;++k) {
+      const double j1=-1.+2.*((k*7919)%1500)/1499.,j2=-3.1+6.2*((k*104729)%1499)/1498.;
+      state.setJointGroupPositions("manipulator",std::vector<double>{j1,j2});state.update();
+      m710::ClearanceWorkspace::Failure fe,fw;
+      const bool e=exact.check(state,fe,k%2?"output":"search"),w=two.check(state,fw,k%2?"output":"search");
+      require(e==w,"TWO_LEVEL_DECISION_DIFFERS");
+      if(!e)require(fe.a==fw.a&&fe.b==fw.b&&fe.distance==fw.distance&&fe.limit==fw.limit,"TWO_LEVEL_FAILURE_DIFFERS");
+      ++states;(e?valid:invalid)++;
+    }
+    for(const auto& entry:two.phases) {
+      constant_cleared+=entry.second.proxy_constant_cleared;group_cleared+=entry.second.proxy_group_cleared;
+      sphere_cleared+=entry.second.proxy_sphere_cleared;unvisited_cleared+=entry.second.proxy_unvisited_cleared;
+      exact_two+=entry.second.narrow_calls;
+    }
+    for(const auto& entry:exact.phases)exact_one+=entry.second.narrow_calls;
+  }
+  if(!(valid>100&&invalid>100))throw std::runtime_error("TWO_LEVEL_CASES_MUST_COVER_BOTH_OUTCOMES:valid="+std::to_string(valid)+",invalid="+std::to_string(invalid));
+  require(sphere_cleared+group_cleared+unvisited_cleared+constant_cleared>0,"TWO_LEVEL_PROXIES_NOT_EXERCISED");
+  require(exact_two<=exact_one,"TWO_LEVEL_MUST_NOT_ADD_EXACT_QUERIES");
+  out["decision_equivalence"]={{"states",states},{"valid",valid},{"invalid",invalid},{"exact_fcl_calls_exact_mode",exact_one},
+    {"exact_fcl_calls_two_level",exact_two},{"proxy_constant_cleared",constant_cleared},{"proxy_group_cleared",group_cleared},
+    {"proxy_sphere_cleared",sphere_cleared},{"proxy_unvisited_cleared",unvisited_cleared},{"status","PASS"}};
+  // Scope: TWO_LEVEL is refused outside the physical single-carton schema.
+  {
+    auto s=scene(.02);J req={{"collision_check_mode","TWO_LEVEL"},{"attachment",nullptr}};bool refused=false;
+    try {m710::Clearance c(s,policy(),"optimized",nullptr,req);} catch(const std::exception& e) {refused=std::string(e.what())=="COLLISION_CHECK_MODE_SCOPE_INVALID";}
+    require(refused,"TWO_LEVEL_SCOPE_NOT_ENFORCED");
+    J bad={{"collision_check_mode","FAST"},{"attachment",nullptr}};refused=false;
+    try {m710::Clearance c(s,policy(),"optimized",nullptr,bad);} catch(const std::exception& e) {refused=std::string(e.what())=="COLLISION_CHECK_MODE_INVALID";}
+    require(refused,"UNKNOWN_CHECK_MODE_NOT_REFUSED");
+    out["scope"]="PASS";
+  }
+  out["status"]="PASS";return out;
+}
+
 int main(int argc,char** argv) {
-  const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
+  const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);
+  if(mode=="two_level") {auto result=twoLevelCases();std::cout<<result.dump(2)<<std::endl;rclcpp::shutdown();return 0;}
+  J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   controlledRepeatedPathCases(out);
   conservativeBoundsCases(out);
   physicalSingleCartonCases(out);

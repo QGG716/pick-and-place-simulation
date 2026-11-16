@@ -7,6 +7,7 @@
 #include <set>
 #include <iostream>
 #include <cstdlib>
+#include <optional>
 #include "clearance_workspace.h"
 #include "eco65_collision_policy.h"
 #include "eco65_rigid_carton_policy.h"
@@ -30,6 +31,7 @@ class Clearance {
   std::string mode_;
   bool eco65_=false;
   bool path_endpoint_reuse_=false;
+  bool two_level_=false;
   NativeDeadlinePtr deadline_;
   std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
@@ -55,6 +57,13 @@ public:
       if(!single_carton_)throw std::runtime_error("PATH_ENDPOINT_REUSE_SCOPE_INVALID");
       path_endpoint_reuse_=true;
     }
+    // collision_check_mode (physical single carton only): EXACT (default) or
+    // TWO_LEVEL, where conservative proxies may only prove pairs clear and
+    // every other pair keeps the exact FCL decision.
+    const std::string check_mode=(!request.is_null()&&request.is_object())?request.value("collision_check_mode",std::string("EXACT")):std::string("EXACT");
+    if(check_mode!="EXACT"&&check_mode!="TWO_LEVEL")throw std::runtime_error("COLLISION_CHECK_MODE_INVALID");
+    if(check_mode=="TWO_LEVEL"&&!single_carton_)throw std::runtime_error("COLLISION_CHECK_MODE_SCOPE_INVALID");
+    two_level_=check_mode=="TWO_LEVEL";
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||
@@ -144,7 +153,7 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_));
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_),two_level_);
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
   }
@@ -195,8 +204,13 @@ public:
     };
     if(!input.satisfiesBounds()) {last_failure={{"reason","JOINT_BOUNDS"}};return finish(false);}
     auto copying=Clock::now();
-    auto state=input;
-    {NativeSpan span("clearance.state_copy_update");state.updateCollisionBodyTransforms();}
+    // TWO_LEVEL: a state whose collision transforms are already current is
+    // used as is (same transforms); otherwise copied and updated as before.
+    std::optional<moveit::core::RobotState> updated;const moveit::core::RobotState* current=&input;
+    if(!two_level_ || input.dirtyCollisionBodyTransforms()) {
+      NativeSpan span("clearance.state_copy_update");updated.emplace(input);updated->updateCollisionBodyTransforms();current=&*updated;
+    }
+    const auto& state=*current;
     if(single_carton_) {
       {NativeSpan span("clearance.single_carton_contact");last_failure=single_carton_->check(state);}
       if(!last_failure.is_null())return finish(false);
@@ -278,6 +292,9 @@ public:
       result["phases"][entry.first]={{"queries",s.queries},{"aabb_tests",s.aabb_tests},{"aabb_skips",s.aabb_skips},
         {"hierarchy_nodes_visited",s.hierarchy_nodes_visited},
         {"narrow_calls",s.narrow_calls},{"self_narrow",s.self_narrow},{"world_narrow",s.world_narrow},
+        {"proxy_constant_cleared",s.proxy_constant_cleared},{"proxy_group_cleared",s.proxy_group_cleared},
+        {"proxy_sphere_cleared",s.proxy_sphere_cleared},{"proxy_unvisited_cleared",s.proxy_unvisited_cleared},
+        {"exact_candidates",s.exact_candidates},{"states_with_exact",s.states_with_exact},
         {"transform_aabb_update_s",s.update_s},{"broad_phase_s",s.broad_s},{"narrow_s",s.narrow_s},
         {"self_narrow_s",s.self_s},{"world_narrow_s",s.world_s}};
     }return result;
@@ -294,6 +311,6 @@ public:
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
     {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
     {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},
-    {"mode",mode_},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
+    {"mode",mode_},{"collision_check_mode",two_level_?"TWO_LEVEL":"EXACT"},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
 };
 }

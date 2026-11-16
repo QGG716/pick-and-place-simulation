@@ -475,6 +475,7 @@ class SinglePlanner(EmptyPlanner):
             scene_fingerprint=fingerprint,world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
         if self.site.get('site'):context['site_workspace_bounds_m']=self.site['site']['workspace_bounds_m']
+        if self.site.get('collision_check_mode')=='TWO_LEVEL':context['collision_check_mode']='TWO_LEVEL'
         return context
     # -- step 4: evidence writer and scene handles --------------------------------------
     def write_evidence(self,path,value,name,**options):
@@ -1217,20 +1218,22 @@ class SinglePlanner(EmptyPlanner):
             with timing.span('native.resident_begin_task'):self.task_start=pool.begin_task()
             if self.deadline is not None and time.monotonic()>=self.deadline:raise PlanningBudgetExhausted('RESIDENT_TASK_START')
             self.client=pool.main;self.pool=pool.checkers();self.pool_threads=[];self.pool_status=pool.snapshot()
-            self.worker_ready(ready,boxes)
-            if self.enabled('scene_handles') and not ready.get('capabilities',{}).get('scene_handles'):
-                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_SCENE_HANDLES')
+            self.worker_ready(ready,boxes);self.require_mechanism_capabilities(ready)
             return
         if self.deadline is None:ready=timing.native_request(self.client,self.init,record='main-init')
         else:
             initialising=time.monotonic()
             ready=self.bounded_request(self.client,self.init,120.,None,'main-init')
             self.worker_init_s=time.monotonic()-initialising
-        self.worker_ready(ready,boxes)
-        for name in ('scene_handles','path_endpoint_reuse'):
-            if self.enabled(name) and not ready.get('capabilities',{}).get(name):
-                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
+        self.worker_ready(ready,boxes);self.require_mechanism_capabilities(ready)
         self.start_check_pool(folder)
+    def require_mechanism_capabilities(self,ready):
+        """An enabled mechanism needs the worker to declare it; never silently ignored."""
+        capabilities=ready.get('capabilities',{})
+        needed=[n for n in ('scene_handles','path_endpoint_reuse') if self.enabled(n)]
+        if self.site.get('collision_check_mode')=='TWO_LEVEL':needed.append('two_level_collision')
+        for name in needed:
+            if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
     def release_workers(self,folder):
         if self.enabled('resident_workers') and self.resident is not None:
             # Workers stay; every one is reset in the background for the next task.

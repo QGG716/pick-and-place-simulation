@@ -34,6 +34,7 @@
 #include "static_prior.h"
 #include "native_timing.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
+#include <random_numbers/random_numbers.h>
 #include <moveit/kinematic_constraints/utils.h>
 
 using J = nlohmann::json;
@@ -1127,6 +1128,59 @@ class Worker {
     compactPlanningOnlyReply(record->result,planning_only,planning_mode);
     return record->result;
   }
+  // -- two-level collision equivalence (step 5, development evidence) -----------
+  // The same scene, policy and states through EXACT and TWO_LEVEL. Reports
+  // every disagreement; a TWO_LEVEL pass where EXACT fails is a counterexample.
+  J collisionEquivalence(const J& req,const planning_scene::PlanningScenePtr& scene) {
+    if(identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")throw std::runtime_error("EQUIVALENCE_SCOPE_INVALID");
+    J exact_req=req;exact_req["collision_check_mode"]="EXACT";J two_req=req;two_req["collision_check_mode"]="TWO_LEVEL";
+    auto built=Clock::now();m710::Clearance exact(scene,req.at("clearance_policy"),"optimized",native_deadline,exact_req);const double exact_build=seconds(built);
+    built=Clock::now();m710::Clearance two(scene,req.at("clearance_policy"),"optimized",native_deadline,two_req);const double two_build=seconds(built);
+    const auto* group=model->getJointModelGroup(m710::nativeFrames().planning_group);
+    std::vector<std::vector<double>> states;std::vector<std::string> origin;
+    for(const auto& row:req.value("probe_states",J::array())) {states.push_back(row.get<std::vector<double>>());origin.push_back("given");}
+    random_numbers::RandomNumberGenerator rng(uint32_t(req.value("random_seed",6518)));
+    auto probe=scene->getCurrentState();
+    const size_t given=states.size();const double perturb=req.value("perturb_rad",0.);
+    for(size_t k=0;perturb>0 && k<given*size_t(req.value("perturbed_per_state",0));++k) {
+      auto q=states[k%given];for(auto& x:q)x+=rng.uniformReal(-perturb,perturb);
+      probe.setJointGroupPositions(group,q);probe.enforceBounds(group);std::vector<double> b;probe.copyJointGroupPositions(group,b);
+      states.push_back(b);origin.push_back("perturbed");
+    }
+    for(size_t k=0;k<size_t(req.value("random_states",0));++k) {
+      probe.setToRandomPositions(group,rng);std::vector<double> q;probe.copyJointGroupPositions(group,q);states.push_back(q);origin.push_back("random");
+    }
+    J mismatches=J::array(),phases=J::object();size_t counterexamples=0,extra_rejects=0,reason_differences=0,checked=0;bool expired=false;
+    for(const auto& phase:req.value("phases",std::vector<std::string>{"output"})) {
+      exact.phase=phase;two.phase=phase;std::map<std::string,std::vector<double>> te,tw;size_t valid=0,invalid=0;
+      for(size_t i=0;i<states.size();++i) {
+        if(native_deadline&&native_deadline->expired()) {expired=true;break;}
+        probe.setJointGroupPositions(group,states[i]);probe.update();
+        auto a=Clock::now();const bool e=exact.check(probe);te[origin[i]].push_back(seconds(a));const J fe=exact.last_failure;
+        a=Clock::now();const bool w=two.check(probe);tw[origin[i]].push_back(seconds(a));const J fw=two.last_failure;
+        ++checked;(e?valid:invalid)++;
+        auto note=[&](const char* kind){if(mismatches.size()<20)mismatches.push_back({{"kind",kind},{"phase",phase},{"origin",origin[i]},{"q",states[i]},{"exact",fe},{"two_level",fw}});};
+        if(w&&!e) {++counterexamples;note("TWO_LEVEL_PASS_EXACT_FAIL");}
+        else if(!w&&e) {++extra_rejects;note("TWO_LEVEL_FAIL_EXACT_PASS");}
+        else if(!e&&fe!=fw) {++reason_differences;note("FAILURE_DIFFERS");}
+      }
+      auto summary=[](std::vector<double> v)->J {
+        if(v.empty())return nullptr;std::sort(v.begin(),v.end());double sum=0;for(double x:v)sum+=x;
+        return {{"count",v.size()},{"median_s",v[v.size()/2]},{"p90_s",v[std::min(v.size()-1,size_t(v.size()*.9))]},{"max_s",v.back()},{"mean_s",sum/v.size()}};
+      };
+      J times=J::object();
+      for(const auto& entry:te) {
+        times[entry.first]={{"exact",summary(entry.second)},{"two_level",summary(tw[entry.first])}};
+        if(req.value("return_times",false)) {times[entry.first]["exact_raw_s"]=entry.second;times[entry.first]["two_level_raw_s"]=tw[entry.first];}
+      }
+      phases[phase]={{"valid",valid},{"invalid",invalid},{"timing",times}};
+    }
+    return {{"status",expired?"NATIVE_SOLVER_BUDGET_EXHAUSTED":"SUCCESS"},{"states",states.size()},{"checks",checked},
+            {"counterexamples",counterexamples},{"extra_rejects",extra_rejects},{"failure_differences",reason_differences},
+            {"mismatches",mismatches},{"phases",phases},{"build_s",{{"exact",exact_build},{"two_level",two_build}}},
+            {"two_level_workspace",two.workspaceEvidence()},{"exact_workspace",exact.workspaceEvidence()},
+            {"scope","DEVELOPMENT_EQUIVALENCE_EVIDENCE_NOT_A_PLAN"}};
+  }
   // -- resident ECO65 single-carton tasks (step 4) --------------------------------
   void requireSingleCartonContext(const J& req) const {
     if(!model || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")throw std::runtime_error("TASK_RESET_SCOPE_INVALID");
@@ -1312,7 +1366,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1348,7 +1402,7 @@ public:
     if(planning_only && (op=="plan" || op=="diagnostic_connection") && !req.value("require_native_motion",false))
       throw std::runtime_error("PLANNING_ONLY_REQUIRES_NATIVE_TASK");
     if(op!="fk" && op!="ik" && op!="ik_batch" && op!="load_static_prior" && op!="build_static_prior" &&
-      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task" && op!="eco65_transition") throw std::runtime_error("UNKNOWN_OPERATION");
+      op!="task_audit" && op!="plan" && op!="diagnostic_connection" && op!="compose" && op!="inspect" && op!="validate" && op!="check_state_offline" && op!="check_path_offline" && op!="retire_touch_task" && op!="eco65_transition" && op!="sc_collision_equivalence") throw std::runtime_error("UNKNOWN_OPERATION");
     if(req.at("identity")!=identity) throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
     if(op=="eco65_transition" && !cycle_binding)throw std::runtime_error("ECO65_TRANSITION_MODE_REQUIRED");
     if(op=="retire_touch_task") {
@@ -1539,7 +1593,7 @@ public:
     }
     std::shared_ptr<m710::Clearance> clearance;
     std::shared_ptr<m710::ProcessPolicy> process;
-    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior" || op=="eco65_transition") {
+    if(op=="plan" || op=="diagnostic_connection" || op=="validate" || op=="check_state_offline" || op=="check_path_offline" || op=="build_static_prior" || op=="eco65_transition" || op=="sc_collision_equivalence") {
       if(!req.contains("clearance_policy")) throw std::runtime_error("CLEARANCE_POLICY_REQUIRED");
       if(req.at("clearance_policy").at("schema")=="eco65_native_single_carton_clearance_v1" &&
           (req.at("single_carton_contact").at("geometry")!=bound_process_geometry ||
@@ -1592,6 +1646,7 @@ public:
       }
       auto result=m710::StaticPriorGraph::build(req,scene,*clearance);result["scene_import_s"]=import_s;return result;
     }
+    if(op=="sc_collision_equivalence")return collisionEquivalence(req,scene);
     auto path_check=[&](const J& path) {return clearance->checkPath(scene->getCurrentState(),path,req.at("clearance_policy").at("edge_resolution_rad"));};
     if(op=="check_path_offline") {
       if(!process)throw std::runtime_error("PROCESS_POLICY_REQUIRED");

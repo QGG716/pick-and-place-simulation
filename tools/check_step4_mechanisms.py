@@ -42,7 +42,7 @@ def box_of(name):
                 quality={}, scope='SYNTHETIC_STEP4_CHECK_NOT_FIELD_DATA')
 
 
-def planner_for(switches, record_root):
+def planner_for(switches, record_root, check_mode=None):
     from unloading_sim.workbench.single_carton.config import load
     from unloading_sim.workbench.single_carton.planner import SinglePlanner
     from unloading_sim.workbench.controlled.trajectory import Authority
@@ -50,6 +50,8 @@ def planner_for(switches, record_root):
     from unloading_sim.workbench.coordinates import Installation, CoordinateModel
     config = load(ROOT/'configs/workbench/single_carton.example.json')
     config.pop('site', None); config['record_root'] = str(record_root)
+    if check_mode:
+        config['collision_check_mode'] = check_mode
     for key in SWITCHES:
         config[key] = bool(switches)
     installation = Installation.load(config['execution']['installation'])
@@ -115,6 +117,7 @@ def main():
     parser.add_argument('--mode', choices=('off', 'on', 'compare'), required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--off', type=Path); parser.add_argument('--on', type=Path)
+    parser.add_argument('--collision-check-mode', choices=('EXACT', 'TWO_LEVEL'))
     args = parser.parse_args()
     if args.mode == 'compare':
         pairs = [('off', 'A', args.off/'A.json', args.on/'A-first.json'), ('resident-repeat', 'A', args.on/'A-first.json', args.on/'A-second.json'),
@@ -128,7 +131,7 @@ def main():
     out = args.output.resolve(); out.mkdir(parents=True, exist_ok=False)
     if args.mode == 'off':
         for name in ('A', 'B'):
-            planner, model = planner_for(False, out/'records')
+            planner, model = planner_for(False, out/'records', args.collision_check_mode)
             try: run(planner, model, name, out, name)
             finally: planner.close()
         return

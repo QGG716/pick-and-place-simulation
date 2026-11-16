@@ -135,6 +135,8 @@ def issues(c):
     for key in STEP4_SWITCHES:
         if key in c and type(c[key]) is not bool:
             errors.append(f'{key}：可选开关，true 或 false（缺省 false，保持现行为）')
+    if c.get('collision_check_mode','EXACT') not in ('EXACT','TWO_LEVEL'):
+        errors.append('collision_check_mode：EXACT（缺省）或 TWO_LEVEL（保守代理只证明通过，其余仍由精确检查决定）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')

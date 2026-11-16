@@ -1,0 +1,488 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-16",
+ "step": "5_two_level_collision",
+ "scope": "COLLISION_CHECK_MODE_SWITCH_DEFAULT_EXACT; PHYSICAL_SINGLE_CARTON_ONLY; SYNTHETIC_SCENES_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "base_commit": "f1a2a1c",
+ "contract": "AGENTS.md 2026-11-16 amendment; docs/native_boundary.md A",
+ "mechanism": {
+  "switch": "collision_check_mode",
+  "values": [
+   "EXACT",
+   "TWO_LEVEL"
+  ],
+  "default": "EXACT",
+  "scope_rule": "TWO_LEVEL is accepted only for physical single-carton requests (COLLISION_CHECK_MODE_SCOPE_INVALID otherwise); the planner refuses TWO_LEVEL before any request when the worker lacks capability two_level_collision",
+  "proxy_level": [
+   "per-body bounding sphere: centre = local AABB centre, radius = max convex-vertex distance (local AABB half-diagonal for non-convex shapes), inflated by 1e-9 relative + 1e-9 m",
+   "rigid groups (bodies joined by fixed joints) with one group sphere",
+   "static bounding-volume tree over static world bodies",
+   "pairs whose relative transform never changes are decided once per scene (constant pairs)"
+  ],
+  "exact_level": "every pair not cleared by a proxy goes, in the original pair-index order, through the unchanged conservative AABB test and the exact fcl::distance against the same required clearance; the first failing pair and its reason are therefore identical to EXACT",
+  "proxy_soundness": "a proxy only clears a pair when sphere (or group-sphere / static-tree) distance > pair limit (+ search payload reserve in the search phase) + 1 mm; spheres contain every vertex of the convex solid, so the solids are never closer; proxies never reject, every rejection comes from the exact level",
+  "other": "robot convex geometry cached per process; RobotState copy skipped when collision transforms are not dirty",
+  "files": [
+   "ros2/m710_moveit_backend/src/clearance_workspace.h",
+   "ros2/m710_moveit_backend/src/clearance.h",
+   "ros2/m710_moveit_backend/src/worker.cpp (sc_collision_equivalence, capability)",
+   "ros2/m710_moveit_backend/src/clearance_test.cpp (two_level mode)",
+   "single_carton/config.py",
+   "single_carton/planner.py"
+  ]
+ },
+ "equivalence": {
+  "native_unit": {
+   "mode": "m710_clearance_test two_level",
+   "status": "PASS",
+   "decision_equivalence": {
+    "exact_fcl_calls_exact_mode": 2865,
+    "exact_fcl_calls_two_level": 2865,
+    "invalid": 2669,
+    "proxy_constant_cleared": 31500,
+    "proxy_group_cleared": 0,
+    "proxy_sphere_cleared": 22124,
+    "proxy_unvisited_cleared": 90515,
+    "states": 4500,
+    "status": "PASS",
+    "valid": 1831
+   },
+   "sphere_lower_bound_conservative": {
+    "separated_poses_checked": 300,
+    "status": "PASS"
+   }
+  },
+  "recorded_states": {
+   "tool": "tools/check_collision_equivalence.py",
+   "inputs": "every validate request of the step-4 switches-off synthetic plans A and B",
+   "states": "given (every endpoint and every sent-path probe state), one perturbed copy per state (+-0.02 rad), 200 uniform random states per record; each checked with EXACT and TWO_LEVEL in the output and search phases (diagnostic and search for endpoint checks)",
+   "totals": {
+    "records": 316,
+    "checks": 520340,
+    "counterexamples": 0,
+    "extra_rejects": 0,
+    "failure_differences": 0,
+    "states_by_origin": {
+     "given": 196970,
+     "perturbed": 196970,
+     "random": 126400
+    },
+    "valid": 432550,
+    "invalid": 87790
+   },
+   "acceptance": {
+    "counterexamples_two_level_pass_exact_fail": 0,
+    "extra_rejects_two_level_fail_exact_pass": 0,
+    "first_failure_differences": 0
+   }
+  }
+ },
+ "latency": {
+  "single_state_sent_path_output_by_stage": {
+   "approach": {
+    "exact_median_ms": 1.899,
+    "two_level_median_ms": 0.548,
+    "exact_p90_ms": 2.087,
+    "two_level_p90_ms": 0.765,
+    "states": 30426
+   },
+   "contact": {
+    "exact_median_ms": 1.573,
+    "two_level_median_ms": 0.464,
+    "exact_p90_ms": 1.948,
+    "two_level_p90_ms": 0.805,
+    "states": 4256
+   },
+   "detach": {
+    "exact_median_ms": 1.588,
+    "two_level_median_ms": 0.485,
+    "exact_p90_ms": 2.076,
+    "two_level_p90_ms": 0.793,
+    "states": 43708
+   },
+   "return": {
+    "exact_median_ms": 1.62,
+    "two_level_median_ms": 0.486,
+    "exact_p90_ms": 2.079,
+    "two_level_p90_ms": 0.774,
+    "states": 19825
+   }
+  },
+  "target": "contact and detach single-state check <= 0.5 ms (median)",
+  "target_met": {
+   "contact": true,
+   "detach": true
+  },
+  "fallback": [
+   {
+    "stage": "approach",
+    "phase": "diagnostic",
+    "states": 19392,
+    "pair_checks": 1712662656,
+    "exact_fcl": 336349,
+    "exact_fallback_ratio_of_pairs": 0.00019638952179033207,
+    "proxy_cleared_ratio_of_pairs": 0.9974039575251882,
+    "states_needing_exact_ratio": 0.9875206270627063
+   },
+   {
+    "stage": "approach",
+    "phase": "output",
+    "states": 63652,
+    "pair_checks": 5621617336,
+    "exact_fcl": 80528,
+    "exact_fallback_ratio_of_pairs": 1.4324703228074719e-05,
+    "proxy_cleared_ratio_of_pairs": 0.9988467372265838,
+    "states_needing_exact_ratio": 0.4266008923521649
+   },
+   {
+    "stage": "approach",
+    "phase": "search",
+    "states": 83044,
+    "pair_checks": 7334279992,
+    "exact_fcl": 416877,
+    "exact_fallback_ratio_of_pairs": 5.6839526232256774e-05,
+    "proxy_cleared_ratio_of_pairs": 0.998509826866179,
+    "states_needing_exact_ratio": 0.5575839314098551
+   },
+   {
+    "stage": "contact",
+    "phase": "diagnostic",
+    "states": 61,
+    "pair_checks": 5386666,
+    "exact_fcl": 786,
+    "exact_fallback_ratio_of_pairs": 0.00014591585964305193,
+    "proxy_cleared_ratio_of_pairs": 0.9986407176535541,
+    "states_needing_exact_ratio": 0.8360655737704918
+   },
+   {
+    "stage": "contact",
+    "phase": "output",
+    "states": 4790,
+    "pair_checks": 422985740,
+    "exact_fcl": 7298,
+    "exact_fallback_ratio_of_pairs": 1.7253536726793675e-05,
+    "proxy_cleared_ratio_of_pairs": 0.998948562663129,
+    "states_needing_exact_ratio": 1.0
+   },
+   {
+    "stage": "contact",
+    "phase": "search",
+    "states": 4851,
+    "pair_checks": 428372406,
+    "exact_fcl": 8084,
+    "exact_fallback_ratio_of_pairs": 1.88714302946955e-05,
+    "proxy_cleared_ratio_of_pairs": 0.9989446915962182,
+    "states_needing_exact_ratio": 0.9979385693671408
+   },
+   {
+    "stage": "detach",
+    "phase": "diagnostic",
+    "states": 10504,
+    "pair_checks": 927566224,
+    "exact_fcl": 181659,
+    "exact_fallback_ratio_of_pairs": 0.0001958447766851847,
+    "proxy_cleared_ratio_of_pairs": 0.9973035628774685,
+    "states_needing_exact_ratio": 0.9869573495811119
+   },
+   {
+    "stage": "detach",
+    "phase": "output",
+    "states": 90216,
+    "pair_checks": 7966614096,
+    "exact_fcl": 127803,
+    "exact_fallback_ratio_of_pairs": 1.6042323433762066e-05,
+    "proxy_cleared_ratio_of_pairs": 0.998988951027006,
+    "states_needing_exact_ratio": 0.7183093907954243
+   },
+   {
+    "stage": "detach",
+    "phase": "search",
+    "states": 100720,
+    "pair_checks": 8894180320,
+    "exact_fcl": 309462,
+    "exact_fallback_ratio_of_pairs": 3.4793762760141565e-05,
+    "proxy_cleared_ratio_of_pairs": 0.9988131833828168,
+    "states_needing_exact_ratio": 0.7463264495631453
+   },
+   {
+    "stage": "return",
+    "phase": "diagnostic",
+    "states": 12928,
+    "pair_checks": 1141619968,
+    "exact_fcl": 221514,
+    "exact_fallback_ratio_of_pairs": 0.00019403479810191967,
+    "proxy_cleared_ratio_of_pairs": 0.997309122925222,
+    "states_needing_exact_ratio": 0.9831373762376238
+   },
+   {
+    "stage": "return",
+    "phase": "output",
+    "states": 41650,
+    "pair_checks": 3677944900,
+    "exact_fcl": 48902,
+    "exact_fallback_ratio_of_pairs": 1.3296012128947336e-05,
+    "proxy_cleared_ratio_of_pairs": 0.9987388446194504,
+    "states_needing_exact_ratio": 0.19039615846338537
+   },
+   {
+    "stage": "return",
+    "phase": "search",
+    "states": 54578,
+    "pair_checks": 4819564868,
+    "exact_fcl": 270416,
+    "exact_fallback_ratio_of_pairs": 5.610796978695214e-05,
+    "proxy_cleared_ratio_of_pairs": 0.9984001835827142,
+    "states_needing_exact_ratio": 0.378174355967606
+   }
+  ],
+  "planning_synthetic": {
+   "A": {
+    "exact_s": 129.84,
+    "two_level_s": 66.56
+   },
+   "B": {
+    "exact_s": 166.84,
+    "two_level_s": 81.0
+   },
+   "note": "plan_cycle wall time, one run each, step-4 switches off in both; single runs, not a p95"
+  },
+  "scheduling": "unchanged by this step (no scheduling code touched)",
+  "vision": "NOT_RUN (no frozen frame)"
+ },
+ "behaviour_unchanged": {
+  "native_clearance_tests": {
+   "optimized": "PASS",
+   "reference": "PASS"
+  },
+  "native_component_check": {
+   "status": "PASS",
+   "differences_vs_step1": [
+    [
+     "collision_check_mode",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "config.py",
+     "VALUE"
+    ],
+    [
+     "evidence.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "exact_candidates",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "implementation_commit",
+     "VALUE"
+    ],
+    [
+     "proxy_constant_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_group_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_sphere_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_unvisited_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "resident.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "states_with_exact",
+     "MISSING_IN_BEFORE"
+    ]
+   ],
+   "interpretation": "only new evidence counters (collision_check_mode, proxy/exact counters), source-file hashes changed by steps 4-5 and the commit id differ"
+  },
+  "directed_pytest": {
+   "passed": 510,
+   "failed": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_tests": [
+    "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+   ]
+  },
+  "synthetic_replay": {
+   "note": "tools/check_step4_mechanisms.py --mode off --collision-check-mode TWO_LEVEL against the step-4 EXACT run",
+   "exact": {
+    "A": {
+     "outcome": "PLAN_READY",
+     "candidate": 0,
+     "elapsed_s": 129.84,
+     "failures": 0,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       1905,
+       9.52,
+       7654
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       337,
+       1.68,
+       1687
+      ]
+     ]
+    },
+    "B": {
+     "outcome": "PLAN_READY",
+     "candidate": 4,
+     "elapsed_s": 166.84,
+     "failures": 0,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       3606,
+       18.025000000000002,
+       22760
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       3606,
+       18.025000000000002,
+       18130
+      ]
+     ]
+    }
+   },
+   "two_level": {
+    "A": {
+     "outcome": "PLAN_READY",
+     "candidate": 0,
+     "elapsed_s": 66.56,
+     "failures": 0,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       1905,
+       9.52,
+       7654
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       337,
+       1.68,
+       1687
+      ]
+     ]
+    },
+    "B": {
+     "outcome": "PLAN_READY",
+     "candidate": 4,
+     "elapsed_s": 81.0,
+     "failures": 0,
+     "segments": [
+      [
+       "approach",
+       "PTP",
+       3606,
+       18.025000000000002,
+       22760
+      ],
+      [
+       "contact",
+       "LIN",
+       1051,
+       5.25,
+       2125
+      ],
+      [
+       "detach",
+       "LIN",
+       6601,
+       33.0,
+       21848
+      ],
+      [
+       "return",
+       "PTP",
+       3606,
+       18.025000000000002,
+       18130
+      ]
+     ]
+    }
+   },
+   "comparisons": [
+    {
+     "scene": "A",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "scene": "B",
+     "identical": true,
+     "differences": null
+    }
+   ],
+   "compared_fields": "outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason"
+  }
+ },
+ "not_run_or_not_verified": [
+  "Saved field records were deleted; equivalence ran on the synthetic scene records and random states, not field scenes",
+  "Planning p95 on field records; vision latency",
+  "TWO_LEVEL is not enabled in any example configuration",
+  "Real SDK/serial/camera paths; any physical motion, valve command or acceptance: NOT_RUN"
+ ]
+}
