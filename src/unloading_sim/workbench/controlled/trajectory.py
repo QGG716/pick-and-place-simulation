@@ -6,6 +6,7 @@ import threading
 from dataclasses import dataclass, asdict
 import numpy as np
 from scipy.interpolate import BPoly, PPoly
+from .. import timing
 
 
 def digest(x):
@@ -106,11 +107,12 @@ class Authority:
         if evidence.get('native_plan')!='PASS' or evidence.get('sent_path_collision')!='PASS': raise ValueError('VALIDATION_REQUIRED')
         package=dict(schema=self.schema,session=self.session,
                      plan_id=secrets.token_hex(16),prepared=prepared,binding=binding,evidence=evidence)
-        self._plans[package['plan_id']]=digest(package)
+        with timing.span('authority.register_digest'):self._plans[package['plan_id']]=digest(package)
         return package
     def verify(self, package, binding):
-        if package.get('schema')!=self.schema or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=digest(package):
-            raise ValueError('UNTRUSTED_STALE_OR_PREVIEW_TRAJECTORY')
+        with timing.span('authority.verify_digest'):
+            if package.get('schema')!=self.schema or package.get('session')!=self.session or package.get('binding')!=binding or self._plans.get(package.get('plan_id'))!=digest(package):
+                raise ValueError('UNTRUSTED_STALE_OR_PREVIEW_TRAJECTORY')
     def consume(self, package): self._plans.pop(package['plan_id'],None)
     def claim(self,package,binding):
         with self._lock:

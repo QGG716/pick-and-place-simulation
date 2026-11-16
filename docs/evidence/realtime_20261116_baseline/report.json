@@ -1,0 +1,1032 @@
+{
+ "schema": "eco65_realtime_baseline_report_v1",
+ "date": "2026-11-16",
+ "step": "1_baseline_measurement",
+ "scope": "TIMING_INSTRUMENTATION_ONLY_NO_BEHAVIOUR_CHANGE; FAKE_IO_AND_OFFLINE_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "physical_result": "NOT_RUN",
+ "permits_issued_by_measurement": 0,
+ "base_commit": "0783e86abce45e3e1d79827cd5faef1ec02d6834",
+ "agents_commit": "de8cf04b33b806847b740574e0203b495609a4d3",
+ "step_commit": null,
+ "environment": {
+  "host": "Remote Ubuntu 22.04.5 GPU server (shared, 128 logical CPUs, load average ~20 from other tenants); NOT the field PC (i5-12500H 12C/16T)",
+  "native": "Existing chroot /root/m710-gap-search-20261107/rootfs: ROS 2 Humble, MoveIt 2.5.10, cmake 3.22.1, Release build of build/moveit, installed to install/moveit; no system package changed",
+  "python": "Existing /root/v05-gpu-venv (Python 3.10.12, numpy 1.26.4, scipy 1.14.1, opencv 4.10.0, trimesh 4.7.1); the field .venv-workbench was not available here and its versions differ",
+  "packages_added_offline_no_upgrade": [
+   "Pygments==2.21.0",
+   "exceptiongroup==1.3.1",
+   "iniconfig==2.3.1",
+   "pluggy==1.7.0",
+   "pyserial==3.5",
+   "pytest==8.4.2",
+   "tomli==2.5.0"
+  ],
+  "wheel_sha256": [
+   {
+    "file": "pygments-2.21.0-py3-none-any.whl",
+    "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+   },
+   {
+    "file": "exceptiongroup-1.3.1-py3-none-any.whl",
+    "sha256": "a7a39a3bd276781e98394987d3a5701d0c4edffb633bb7a5144577f82c773598"
+   },
+   {
+    "file": "iniconfig-2.3.1-py3-none-any.whl",
+    "sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7"
+   },
+   {
+    "file": "pluggy-1.7.0-py3-none-any.whl",
+    "sha256": "7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec"
+   },
+   {
+    "file": "pyserial-3.5-py2.py3-none-any.whl",
+    "sha256": "c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"
+   },
+   {
+    "file": "pytest-8.4.2-py3-none-any.whl",
+    "sha256": "872f880de3fc3a5bdc88a11b39c9710c3497a547cfa9320bc3c5e62fbf272e79"
+   },
+   {
+    "file": "tomli-2.5.0-py3-none-any.whl",
+    "sha256": "32a7b79ac57a2e83670ce329ccf675798bc5a2094783a63676866b70503f2e2b"
+   }
+  ],
+  "no_kernel_or_system_ros_change": true,
+  "worker_launch": "Python on the host; the unchanged worker.sh runs in the chroot through a test-only env shim outside the repository (/root/autodl-tmp/eco65-rt-shim/env)",
+  "assets": "LFS objects copied from the local LFS store with SHA-256 verification; detector weights are the existing server copies, verified against the repository LFS pointers; outputs/workbench/installation.local.json is a byte copy of the committed tests/fixtures/eco65_installation_cad_reference.json (field file not available)"
+ },
+ "instrumentation": {
+  "switches": {
+   "python": "ECO65_TIMING=1 (default off)",
+   "native": "M710_NATIVE_TIMING=1 (set by the Python switch for workers started afterwards; default off)"
+  },
+  "when_off": "every wrapper performs exactly the original call; no record, reply or file content changes",
+  "when_on": "low-rate spans are kept in memory, high-rate ones (supervisor tick, RPC, IPC, per-file rehash, GC pause) fold into fixed-size aggregates; each phase hands its data to a background thread that writes timing-<phase>.json after the phase; native replies gain native_timing, removed before any caller sees the reply; nothing is written synchronously on a measured path",
+  "clock": {
+   "python": "time.monotonic",
+   "native": "std::chrono::steady_clock"
+  },
+  "new_files": [
+   "ros2/m710_moveit_backend/src/native_timing.h",
+   "src/unloading_sim/workbench/timing.py",
+   "tools/measure_scheduling_fake_io.py",
+   "tools/fake_io_transport.py",
+   "tools/summarize_eco65_timing.py"
+  ],
+  "changed_files": [
+   "ros2/m710_moveit_backend/src/worker.cpp",
+   "ros2/m710_moveit_backend/src/clearance.h",
+   "ros2/m710_moveit_backend/src/clearance_workspace.h",
+   "single_carton/planner.py",
+   "single_carton/runtime.py",
+   "single_carton/cycle.py",
+   "single_carton/perception.py",
+   "single_carton/live.py",
+   "single_carton/site_scene.py",
+   "single_carton/remote_detector.py",
+   "controlled/planner.py",
+   "controlled/trajectory.py",
+   "controlled/service.py",
+   "tools/replay_single_carton_record.py",
+   "tools/check_eco65_single_carton_native.py"
+  ],
+  "native_segments": [
+   "init.node_and_model_load",
+   "init.planning_pipelines",
+   "init.geometry_and_policy_validation",
+   "world.compare_same_fingerprint",
+   "world.import_new_scene",
+   "scene.diff_acm_attachment",
+   "clearance.construct_and_workspace",
+   "clearance.state_copy_update",
+   "clearance.single_carton_contact",
+   "ik",
+   "plan.start_goal_checks",
+   "plan.start_legacy_collision",
+   "plan.solve_pilz",
+   "plan.solve_ompl",
+   "plan.solution_to_points",
+   "plan.output_check_path",
+   "validate.legacy_collision",
+   "validate.endpoint_state",
+   "validate.check_path",
+   "validate.reply_evidence",
+   "request_parse_s",
+   "previous_reply_dump_s"
+  ],
+  "native_workspace_counters": "per phase: broad-phase tree nodes, AABB tests/skips, exact FCL distance calls (self/world), transform update / broad phase / FCL seconds",
+  "exact_state_distribution": "log histogram (20 bins/decade) of every complete Clearance::check per phase, valid/rejected; labelled by stage (approach/contact/detach/return/loaded-start) from the request record name",
+  "measurement_perturbation_found_and_fixed": {
+   "observed": "First version retained one Python dict per span (~7900 per fake-IO cycle). With timing on, 4 of 5 fake-IO cycles stopped in CONTACT with LIVE_ROBOT_STALE_DISCONNECTED_OR_FAULT: a 0.115-0.135 s gen-2 collection in the process that holds the 68 MB source snapshot delayed a snapshot RPC past the unchanged 0.1 s sample-age rule (fail-safe stop, fake IO, no hardware).",
+   "fix": "high-rate spans aggregated into fixed-size histograms; nothing else changed",
+   "after_fix": {
+    "timing_on": [
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE"
+    ],
+    "timing_off": [
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE",
+     "COMPLETE"
+    ]
+   }
+  }
+ },
+ "behaviour_unchanged": {
+  "native_clearance_tests": {
+   "before": {
+    "optimized": "PASS",
+    "reference": "PASS"
+   },
+   "after": {
+    "optimized": "PASS",
+    "reference": "PASS"
+   },
+   "outputs_identical_excluding_timing_values": true
+  },
+  "native_component_check": {
+   "before": "PASS (pristine code with the pre-change worker binary)",
+   "after": "PASS",
+   "records_identical_timing_off": true,
+   "records_identical_timing_on": true,
+   "comparison": "every JSON record key by key; only elapsed-time keys, request ids and the SHA-256 of files changed by this step are excluded"
+  },
+  "revision_note": "The directed pytest and native component comparisons ran on the revision just before the final one. The final revision only folds high-rate spans into fixed-size aggregates and adds the GC pause probe; both act only while ECO65_TIMING=1, and binding() with timing off is the original expression. Per the user (2026-11-16) the full checks were not rerun on the final revision; it was checked by 5 timing-on and 5 timing-off fake-IO cycles. The native worker sources and binaries did not change after the clearance tests.",
+  "directed_pytest": {
+   "before_pristine": {
+    "passed": 435,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failed_tests": [
+     "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+    ],
+    "wall": "185.45 s"
+   },
+   "after_timing_off": {
+    "passed": 435,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "wall": "190.05 s",
+    "failed_tests": [
+     "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+    ],
+    "source": "console result of the penultimate-revision run; its log file was overwritten by the full rerun that was stopped at the user request"
+   },
+   "after_timing_on": {
+    "passed": 435,
+    "failed": 1,
+    "errors": 0,
+    "skipped": 0,
+    "failed_tests": [
+     "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+    ],
+    "wall": "187.01 s",
+    "revision": "penultimate"
+   },
+   "final_revision": "NOT_RERUN_AT_USER_REQUEST",
+   "preexisting_failure": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior fails identically on the pristine tree on this server (recover_partial returns 140x186x108 mm); library versions differ from the field .venv; not caused by this step and not changed"
+  },
+  "fake_io_cycles": {
+   "timing_on": [
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE"
+   ],
+   "timing_off": [
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE",
+    "COMPLETE"
+   ],
+   "result": "FAKE_DEVICE_CYCLE_COMPLETE; physical_result NOT_COMPLETE"
+  },
+  "same_record_replay": "NOT_RUN: no saved field record available (see records)"
+ },
+ "records": {
+  "repository_outputs_single_carton": "ABSENT (outputs/ is ignored; no task folder is tracked)",
+  "repository_docs_evidence": "reports only (JSON/XML); no observation.npz / segmentation.npz record",
+  "windows_workstation": "ABSENT",
+  "gpu_server": "ABSENT",
+  "user_upload": "the user agreed to upload field records and the installation file to /root/autodl-tmp/eco65-records; not present when this report was built",
+  "documented_but_absent": {
+   "bb88010f39ae4abdbccfeac31472d687": "replay 338-361 s parallel, 695 s sequential",
+   "6b648ffcdb35403cb9d992e2ed8554be": "field planning 232 s",
+   "1980356201804419a9e66e4063b9d732": "replay 251 s",
+   "71ce26a3e9cf458e906b065bcb8275e7": "START_CHANGED_REPLAN",
+   "4cde3b86824046f99bc8085d419deb83": "receiver-policy diagnosis",
+   "2814e675 (short id only)": "rest-check rejection 0.14 s",
+   "7ccdb15e (short id only)": "carton prior measurement"
+  }
+ },
+ "baselines": {
+  "planning": {
+   "definition": "prepare_plan entry to PLAN_READY",
+   "field_record_baseline": "NOT_RUN (no saved record); success rate NOT_RUN",
+   "documented_values_not_remeasured": {
+    "field_6b648ffc_s": 232,
+    "replay_19803562_s": 251,
+    "replay_bb88010f_parallel_s": [
+     338,
+     361
+    ],
+    "replay_bb88010f_sequential_s": 695.47,
+    "docs_breakdown_bb88010f_s": {
+     "precheck": 51,
+     "parallel_planning": 91,
+     "sent_path_check": 196,
+     "sent_check_approach": 73,
+     "sent_check_return": 107
+    }
+   },
+   "report_fields_for_that_breakdown": {
+    "precheck": "planning.search[\"search.screen_candidate\"] (loaded q_start, endpoint IK and endpoint validate)",
+    "parallel_planning": "planning.main_thread[\"main.wait_planned_candidate\"] and lanes[\"lane.plan_candidate\"]",
+    "sent_path_check": "planning.sent_check; per stage via native.requests_by_op.validate and native.exact_state_check_by_stage_and_phase[\"<stage>:output\"]",
+    "remainder": "plan_cycle.build, native.main_worker_process_start, native.pool_*, plan_cycle.binding, authority.register_digest, disk[\"complete-plan.json\"], prepare_plan.cycle_ready"
+   },
+   "synthetic_component": {
+    "note": "tools/check_eco65_single_carton_native.py: one small Pilz PTP and a 491-state sent-path check on a synthetic far box; NOT prepare_plan, NOT comparable to field planning",
+    "elapsed_s": 4.016,
+    "native": {
+     "requests_by_op": {
+      "plan": {
+       "count": 1,
+       "round_trip_s": 0.5161,
+       "worker_handled_s": 0.4768,
+       "request_bytes": 268057,
+       "request_dumps_s": 0.0121,
+       "request_parse_s": 0.005,
+       "reply_dump_s": 0.0,
+       "transport_overhead_s": 0.0392
+      },
+      "validate": {
+       "count": 1,
+       "round_trip_s": 3.5085,
+       "worker_handled_s": 3.4567,
+       "request_bytes": 327901,
+       "request_dumps_s": 0.0126,
+       "request_parse_s": 0.0047,
+       "reply_dump_s": 0.0001,
+       "transport_overhead_s": 0.0518
+      }
+     },
+     "worker_segments": {
+      "validate.check_path": {
+       "count": 1,
+       "seconds": 3.0795
+      },
+      "clearance.construct_and_workspace": {
+       "count": 2,
+       "seconds": 0.6044
+      },
+      "world.import_new_scene": {
+       "count": 1,
+       "seconds": 0.0445
+      },
+      "clearance.single_carton_contact": {
+       "count": 1496,
+       "seconds": 0.0382
+      },
+      "plan.solve_pilz": {
+       "count": 1,
+       "seconds": 0.0376
+      },
+      "plan.output_check_path": {
+       "count": 1,
+       "seconds": 0.0291
+      },
+      "scene.diff_acm_attachment": {
+       "count": 2,
+       "seconds": 0.0274
+      },
+      "plan.solution_to_points": {
+       "count": 1,
+       "seconds": 0.0206
+      },
+      "validate.legacy_collision": {
+       "count": 1,
+       "seconds": 0.0178
+      },
+      "plan.start_legacy_collision": {
+       "count": 1,
+       "seconds": 0.0058
+      },
+      "validate.endpoint_state": {
+       "count": 1,
+       "seconds": 0.0046
+      },
+      "plan.start_goal_checks": {
+       "count": 1,
+       "seconds": 0.0032
+      },
+      "validate.reply_evidence": {
+       "count": 1,
+       "seconds": 0.0001
+      },
+      "clearance.state_copy_update": {
+       "count": 1496,
+       "seconds": 0.0001
+      },
+      "world.compare_same_fingerprint": {
+       "count": 2,
+       "seconds": 0.0
+      }
+     },
+     "workspace_by_phase": {
+      "endpoint": {
+       "broad_aabb_skips": 176626.0,
+       "broad_aabb_tests": 10.0,
+       "broad_phase_s": 0.0027,
+       "broad_tree_nodes_visited": 221160.0,
+       "fcl_distance_calls": 10.0,
+       "fcl_distance_s": 0.0002,
+       "fcl_self_distance_calls": 10.0,
+       "fcl_world_distance_calls": 0.0,
+       "states": 2.0,
+       "transform_aabb_update_s": 0.0002
+      },
+      "output": {
+       "broad_aabb_skips": 131498057.0,
+       "broad_aabb_tests": 7445.0,
+       "broad_phase_s": 2.8135,
+       "broad_tree_nodes_visited": 164664929.0,
+       "fcl_distance_calls": 7445.0,
+       "fcl_distance_s": 0.1042,
+       "fcl_self_distance_calls": 7445.0,
+       "fcl_world_distance_calls": 0.0,
+       "states": 1489.0,
+       "transform_aabb_update_s": 0.0939
+      },
+      "search": {
+       "broad_aabb_skips": 353252.0,
+       "broad_aabb_tests": 20.0,
+       "broad_phase_s": 0.0056,
+       "broad_tree_nodes_visited": 442356.0,
+       "fcl_distance_calls": 20.0,
+       "fcl_distance_s": 0.0003,
+       "fcl_self_distance_calls": 20.0,
+       "fcl_world_distance_calls": 0.0,
+       "states": 4.0,
+       "transform_aabb_update_s": 0.0002
+      },
+      "diagnostic": {
+       "broad_aabb_skips": 88313.0,
+       "broad_aabb_tests": 5.0,
+       "broad_phase_s": 0.004,
+       "broad_tree_nodes_visited": 110549.0,
+       "fcl_distance_calls": 5.0,
+       "fcl_distance_s": 0.0002,
+       "fcl_self_distance_calls": 5.0,
+       "fcl_world_distance_calls": 0.0,
+       "states": 1.0,
+       "transform_aabb_update_s": 0.0002
+      }
+     },
+     "exact_state_check_by_stage_and_phase": {
+      "approach:diagnostic": {
+       "count": 1,
+       "sum_s": 0.0046,
+       "mean_s": 0.0046,
+       "p50_upper_s": 0.005,
+       "p90_upper_s": 0.005,
+       "p99_upper_s": 0.005,
+       "max_s": 0.0046
+      },
+      "approach:endpoint": {
+       "count": 2,
+       "sum_s": 0.0032,
+       "mean_s": 0.0016,
+       "p50_upper_s": 0.0016,
+       "p90_upper_s": 0.0018,
+       "p99_upper_s": 0.0018,
+       "max_s": 0.0016
+      },
+      "approach:output": {
+       "count": 1489,
+       "sum_s": 3.0688,
+       "mean_s": 0.0021,
+       "p50_upper_s": 0.0022,
+       "p90_upper_s": 0.0022,
+       "p99_upper_s": 0.0028,
+       "max_s": 0.0043
+      },
+      "approach:search": {
+       "count": 4,
+       "sum_s": 0.0065,
+       "mean_s": 0.0016,
+       "p50_upper_s": 0.0016,
+       "p90_upper_s": 0.0018,
+       "p99_upper_s": 0.0018,
+       "max_s": 0.0017
+      }
+     }
+    },
+    "python_disk": {
+     "json_dumps": {
+      "json.dumps": {
+       "count": 6,
+       "seconds": 0.1032
+      }
+     },
+     "writes": {
+      "count": 6,
+      "seconds": 0.0073
+     },
+     "by_file": {
+      "json.dumps:native-record": {
+       "count": 4,
+       "seconds": 0.0907,
+       "bytes": 1201881
+      },
+      "json.dumps:segment-native.json": {
+       "count": 1,
+       "seconds": 0.0122,
+       "bytes": 273916
+      },
+      "disk.write:native-record": {
+       "count": 4,
+       "seconds": 0.0066,
+       "bytes": 1201881
+      },
+      "disk.write:sent-check.json": {
+       "count": 1,
+       "seconds": 0.0003,
+       "bytes": 4008
+      },
+      "disk.write:segment-native.json": {
+       "count": 1,
+       "seconds": 0.0003,
+       "bytes": 273916
+      },
+      "json.dumps:sent-check.json": {
+       "count": 1,
+       "seconds": 0.0003,
+       "bytes": 4008
+      }
+     }
+    },
+    "context_digest_world": {
+     "count": 1,
+     "seconds": 0.000153
+    },
+    "prepare_send_grid": {
+     "count": 1,
+     "seconds": 0.004147
+    },
+    "sent_check": {
+     "count": 1,
+     "seconds": 3.573615
+    },
+    "binding_rehash_per_binding": {},
+    "gc": {
+     "by_generation": {},
+     "note": "Python collection pauses in this process while measuring"
+    }
+   }
+  },
+  "vision": {
+   "definition": "observe entry to TARGET_READY",
+   "baseline": "NOT_RUN (no saved frozen frame on this host, no camera, remote detector not connected)",
+   "documented_values_not_remeasured": {
+    "remote_detect_round_trip_s": 0.3,
+    "remote_segment_round_trip_s": 0.18,
+    "server_detect_s": 0.19,
+    "server_segment_s": 0.11,
+    "geometry_and_scene_s": 20.8
+   },
+   "instrumented": "freeze waits (stationary window, frame age/pairing), frozen-frame queue wait, detection, SAM, remote PNG encode, round trip split into server inference and transfer/protocol, mask decode, reconstruct per box, build_scene laps (voxel corner projection, free-space voxel loop, measured clear regions, point claims, two self_filter.contains calls, occupancy, shadow, supports, cell extents, voxel column merge, boundaries), every observe write"
+  },
+  "scheduling": {
+   "definition": "execute entry to first point sent; per-segment submit steps; Cycle.tick RPCs; handoff waits",
+   "measured_with": "real Cycle; real spawned ExecutionService child with the real Supervisor, Authority and record writers; fake in-memory SDK transport (ideal follower, 200 Hz feedback, 2 ms payload query) and fake vacuum (0.5 s heartbeats, not field-measured); synthetic 1.5 s segments because no replay segments exist; execution config pre_execute_visual_recheck/start_joint_check as in the example (both DISABLED_BY_USER)",
+   "runs": 5,
+   "execute_entry_to_first_send_s": [
+    3.835,
+    3.839,
+    3.877,
+    3.458,
+    3.254
+   ],
+   "representative_run": {
+    "execute": {
+     "execute.cycle_start": {
+      "count": 1,
+      "seconds": 1.9754
+     },
+     "execute.binding": {
+      "count": 1,
+      "seconds": 1.8496
+     }
+    },
+    "service_submit": {
+     "service.submit.binding_rehash": {
+      "count": 4,
+      "seconds": 7.4326
+     },
+     "service.submit.ipc": {
+      "count": 4,
+      "seconds": 0.2336
+     },
+     "service.submit.authority_claim": {
+      "count": 4,
+      "seconds": 0.0546
+     }
+    },
+    "ipc": {
+     "pipe_send_by_op": {
+      "snapshot": {
+       "count": 481,
+       "sum": 0.0244,
+       "mean": 0.0001,
+       "max": 0.0004,
+       "p50_upper": 0.0,
+       "p90_upper": 0.0001,
+       "p99_upper": 0.0004
+      },
+      "submit": {
+       "count": 4,
+       "sum": 0.0049,
+       "mean": 0.0012,
+       "max": 0.0017,
+       "p50_upper": 0.0013,
+       "p90_upper": 0.0017,
+       "p99_upper": 0.0017
+      },
+      "feedback": {
+       "count": 480,
+       "sum": 0.0364,
+       "mean": 0.0001,
+       "max": 0.0002,
+       "p50_upper": 0.0001,
+       "p90_upper": 0.0001,
+       "p99_upper": 0.0002
+      },
+      "close": {
+       "count": 1,
+       "sum": 0.0001,
+       "mean": 0.0001,
+       "max": 0.0001,
+       "p50_upper": 0.0001,
+       "p90_upper": 0.0001,
+       "p99_upper": 0.0001
+      }
+     },
+     "wait_and_receive_reply_by_op": {
+      "snapshot": {
+       "count": 481,
+       "sum": 0.1782,
+       "mean": 0.0004,
+       "max": 0.0008,
+       "p50_upper": 0.0004,
+       "p90_upper": 0.0005,
+       "p99_upper": 0.0006
+      },
+      "submit": {
+       "count": 4,
+       "sum": 0.2283,
+       "mean": 0.0571,
+       "max": 0.0736,
+       "p50_upper": 0.0501,
+       "p90_upper": 0.0736,
+       "p99_upper": 0.0736
+      },
+      "feedback": {
+       "count": 480,
+       "sum": 0.1455,
+       "mean": 0.0003,
+       "max": 0.0008,
+       "p50_upper": 0.0003,
+       "p90_upper": 0.0005,
+       "p99_upper": 0.0008
+      },
+      "close": {
+       "count": 1,
+       "sum": 0.0001,
+       "mean": 0.0001,
+       "max": 0.0001,
+       "p50_upper": 0.0001,
+       "p90_upper": 0.0001,
+       "p99_upper": 0.0001
+      }
+     }
+    },
+    "authority": {
+     "authority.verify_digest": {
+      "count": 4,
+      "seconds": 0.0544
+     }
+    },
+    "child_submits": [
+     {
+      "task_id": "7279e579d4a643feaa17c3359a862c93",
+      "pipe_transfer_s": 0.0042,
+      "steps": {
+       "mkdir": 0.0004,
+       "trajectory_package_json_dumps": 0.0403,
+       "trajectory_package_json_write": 0.0006,
+       "task_json_write": 0.0001,
+       "check_limits": 0.0,
+       "cancel_epoch_check": 0.0,
+       "controller_payload_query": 0.002,
+       "controller_json_write": 0.0002,
+       "events_file_open": 0.0001,
+       "engine_submit": 0.0004,
+       "python.gc_pause": 0.0004
+      },
+      "first_send_due_after_accept_s": null
+     },
+     {
+      "task_id": "8e45f37f29b34e5f8c62639a7d432285",
+      "pipe_transfer_s": 0.0062,
+      "steps": {
+       "mkdir": 0.0007,
+       "trajectory_package_json_dumps": 0.04,
+       "trajectory_package_json_write": 0.0009,
+       "task_json_write": 0.0001,
+       "check_limits": 0.0,
+       "cancel_epoch_check": 0.0,
+       "controller_payload_query": 0.0021,
+       "controller_json_write": 0.0002,
+       "events_file_open": 0.0001,
+       "engine_submit": 0.0002,
+       "python.gc_pause": 0.0784
+      },
+      "first_send_due_after_accept_s": null
+     },
+     {
+      "task_id": "bc208478cb974d34a9a3a51b2d2834b6",
+      "pipe_transfer_s": 0.023,
+      "steps": {
+       "mkdir": 0.0003,
+       "trajectory_package_json_dumps": 0.0313,
+       "trajectory_package_json_write": 0.0009,
+       "task_json_write": 0.0001,
+       "check_limits": 0.0,
+       "cancel_epoch_check": 0.0,
+       "controller_payload_query": 0.0021,
+       "controller_json_write": 0.0002,
+       "events_file_open": 0.0001,
+       "engine_submit": 0.0003,
+       "python.gc_pause": 0.017
+      },
+      "first_send_due_after_accept_s": null
+     },
+     {
+      "task_id": "ccd2a3a6b67e4e6d91b4305231679785",
+      "pipe_transfer_s": 0.0073,
+      "steps": {
+       "mkdir": 0.0004,
+       "trajectory_package_json_dumps": 0.0632,
+       "trajectory_package_json_write": 0.0012,
+       "task_json_write": 0.0001,
+       "check_limits": 0.0,
+       "cancel_epoch_check": 0.0,
+       "controller_payload_query": 0.0021,
+       "controller_json_write": 0.0002,
+       "events_file_open": 0.0001,
+       "engine_submit": 0.0004,
+       "python.gc_pause": 0.0007
+      },
+      "first_send_due_after_accept_s": null
+     }
+    ],
+    "ticks_by_state": {
+     "APPROACH": {
+      "count": 91,
+      "sum": 2.0328,
+      "mean": 0.0223,
+      "max": 1.939,
+      "p50_upper": 0.0013,
+      "p90_upper": 0.0013,
+      "p99_upper": 1.939
+     },
+     "CONTACT": {
+      "count": 91,
+      "sum": 0.0978,
+      "mean": 0.0011,
+      "max": 0.002,
+      "p50_upper": 0.0013,
+      "p90_upper": 0.0013,
+      "p99_upper": 0.002
+     },
+     "ESTABLISH_VACUUM": {
+      "count": 56,
+      "sum": 1.9851,
+      "mean": 0.0354,
+      "max": 1.9198,
+      "p50_upper": 0.0013,
+      "p90_upper": 0.0016,
+      "p99_upper": 1.9198
+     },
+     "DETACH": {
+      "count": 91,
+      "sum": 2.0432,
+      "mean": 0.0225,
+      "max": 1.952,
+      "p50_upper": 0.0013,
+      "p90_upper": 0.0013,
+      "p99_upper": 1.952
+     },
+     "RETURN_LOADED": {
+      "count": 91,
+      "sum": 0.1046,
+      "mean": 0.0011,
+      "max": 0.0019,
+      "p50_upper": 0.0013,
+      "p90_upper": 0.0016,
+      "p99_upper": 0.0019
+     },
+     "RELEASE": {
+      "count": 60,
+      "sum": 0.0776,
+      "mean": 0.0013,
+      "max": 0.0021,
+      "p50_upper": 0.0016,
+      "p90_upper": 0.002,
+      "p99_upper": 0.0021
+     }
+    },
+    "rpc_per_tick_by_state": {
+     "APPROACH": {
+      "count": 91,
+      "sum": 273.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     },
+     "CONTACT": {
+      "count": 91,
+      "sum": 273.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     },
+     "ESTABLISH_VACUUM": {
+      "count": 56,
+      "sum": 168.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     },
+     "DETACH": {
+      "count": 91,
+      "sum": 273.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     },
+     "RETURN_LOADED": {
+      "count": 91,
+      "sum": 273.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     },
+     "RELEASE": {
+      "count": 60,
+      "sum": 180.0,
+      "mean": 3.0,
+      "max": 3.0,
+      "p50_upper": 3.0,
+      "p90_upper": 3.0,
+      "p99_upper": 3.0
+     }
+    },
+    "rpc_by_call": {
+     "snapshot": {
+      "count": 481,
+      "sum": 0.2226,
+      "mean": 0.0005,
+      "max": 0.001,
+      "p50_upper": 0.0005,
+      "p90_upper": 0.0006,
+      "p99_upper": 0.0008
+     },
+     "feedback": {
+      "count": 480,
+      "sum": 0.2176,
+      "mean": 0.0005,
+      "max": 0.001,
+      "p50_upper": 0.0005,
+      "p90_upper": 0.0006,
+      "p99_upper": 0.001
+     },
+     "pressure": {
+      "count": 480,
+      "sum": 0.0025,
+      "mean": 0.0,
+      "max": 0.0,
+      "p50_upper": 0.0,
+      "p90_upper": 0.0,
+      "p99_upper": 0.0
+     }
+    },
+    "gc": {
+     "by_generation": {
+      "0": {
+       "count": 5,
+       "sum": 0.0005,
+       "mean": 0.0001,
+       "max": 0.0001,
+       "p50_upper": 0.0001,
+       "p90_upper": 0.0001,
+       "p99_upper": 0.0001
+      },
+      "1": {
+       "count": 1,
+       "sum": 0.001,
+       "mean": 0.001,
+       "max": 0.001,
+       "p50_upper": 0.001,
+       "p90_upper": 0.001,
+       "p99_upper": 0.001
+      },
+      "2": {
+       "count": 1,
+       "sum": 0.1155,
+       "mean": 0.1155,
+       "max": 0.1155,
+       "p50_upper": 0.1155,
+       "p90_upper": 0.1155,
+       "p99_upper": 0.1155
+      }
+     },
+     "note": "Python collection pauses in this process while measuring"
+    },
+    "handoffs": {
+     "motion_segments": [
+      {
+       "stage": "APPROACH",
+       "cycle_state_entered_s": 1212177.5115,
+       "state_entry_to_accept_s": 1.9146,
+       "accept_to_first_send_s": 0.0102,
+       "motion_send_s": 1.5,
+       "last_send_to_succeeded_s": 0.4041,
+       "rule_arrival_dwell_s": 0.4,
+       "beyond_arrival_dwell_s": 0.0041,
+       "succeeded_to_cycle_transition_s": 0.0153,
+       "sends": 301,
+       "engine_result": "SUCCEEDED"
+      },
+      {
+       "stage": "CONTACT",
+       "cycle_state_entered_s": 1212181.3557,
+       "state_entry_to_accept_s": 1.9372,
+       "accept_to_first_send_s": 0.0103,
+       "motion_send_s": 1.4999,
+       "last_send_to_succeeded_s": 0.406,
+       "rule_arrival_dwell_s": 0.4,
+       "beyond_arrival_dwell_s": 0.006,
+       "succeeded_to_cycle_transition_s": 0.0156,
+       "sends": 301,
+       "engine_result": "SUCCEEDED"
+      },
+      {
+       "stage": "DETACH",
+       "cycle_state_entered_s": 1212186.4202,
+       "state_entry_to_accept_s": 1.9174,
+       "accept_to_first_send_s": 0.0106,
+       "motion_send_s": 1.4994,
+       "last_send_to_succeeded_s": 0.4031,
+       "rule_arrival_dwell_s": 0.4,
+       "beyond_arrival_dwell_s": 0.0031,
+       "succeeded_to_cycle_transition_s": 0.014,
+       "sends": 301,
+       "engine_result": "SUCCEEDED"
+      },
+      {
+       "stage": "RETURN_LOADED",
+       "cycle_state_entered_s": 1212190.2647,
+       "state_entry_to_accept_s": 1.9501,
+       "accept_to_first_send_s": 0.0102,
+       "motion_send_s": 1.4998,
+       "last_send_to_succeeded_s": 0.406,
+       "rule_arrival_dwell_s": 0.4,
+       "beyond_arrival_dwell_s": 0.006,
+       "succeeded_to_cycle_transition_s": 0.0227,
+       "sends": 301,
+       "engine_result": "SUCCEEDED"
+      }
+     ],
+     "pressure": [
+      {
+       "stage": "ESTABLISH_VACUUM",
+       "entered_s": 1212185.2246,
+       "confirmed_s": 1212186.4202,
+       "total_s": 1.1956,
+       "to_first_qualifying_heartbeat_s": 0.1943,
+       "rule_dwell_s": 1.0,
+       "beyond_rule_after_first_qualifying_s": 0.0013,
+       "heartbeat_period_s": 0.5,
+       "heartbeat_basis": "FAKE_IN_MEMORY_HEARTBEAT_PERIOD_NOT_FIELD_MEASURED"
+      },
+      {
+       "stage": "RELEASE",
+       "entered_s": 1212194.1535,
+       "confirmed_s": 1212195.4403,
+       "total_s": 1.2868,
+       "to_first_qualifying_heartbeat_s": 0.2681,
+       "rule_dwell_s": 1.0,
+       "beyond_rule_after_first_qualifying_s": 0.0187,
+       "heartbeat_period_s": 0.5,
+       "heartbeat_basis": "FAKE_IN_MEMORY_HEARTBEAT_PERIOD_NOT_FIELD_MEASURED"
+      },
+      {
+       "stage": "ATTACHMENT_CONFIRMED_TO_DETACH_FIRST_SEND",
+       "seconds": 1.928
+      }
+     ],
+     "monitor_dwell_s": 0.4,
+     "note": "Fake ideal follower: physical settling time is zero here; field values add real settling."
+    }
+   },
+   "binding_rehash": {
+    "files": 807,
+    "seconds_per_binding": 1.8561,
+    "bindings_per_cycle_in_execute_path": 5,
+    "detector_model_files": {
+     "files": 10,
+     "bytes": 1309333844,
+     "seconds_per_binding": 1.6678
+    },
+    "top_files": [
+     {
+      "file": "/root/autodl-tmp/eco65-gpu-inference/models/huggingface/IDEA-Research/grounding-dino-base/12bdfa3120f3e7ec7b434d90674b3396eccf88eb/model.safetensors",
+      "bytes": 933400872,
+      "mean_s": 1.18974,
+      "count": 5
+     },
+     {
+      "file": "/root/autodl-tmp/eco65-gpu-inference/models/huggingface/facebook/sam-vit-base/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f/model.safetensors",
+      "bytes": 374979480,
+      "mean_s": 0.47654,
+      "count": 5
+     },
+     {
+      "file": "outputs/workbench/scene_snapshot.json",
+      "bytes": 67877851,
+      "mean_s": 0.0982,
+      "count": 5
+     },
+     {
+      "file": "install/moveit/lib/m710_moveit_backend/m710_moveit_worker",
+      "bytes": 1963440,
+      "mean_s": 0.00273,
+      "count": 5
+     },
+     {
+      "file": "assets/tools/desktop_suction/derived/visual/part_040.obj",
+      "bytes": 1600331,
+      "mean_s": 0.00217,
+      "count": 5
+     },
+     {
+      "file": "assets/tools/desktop_suction/derived/visual/part_008.obj",
+      "bytes": 1511621,
+      "mean_s": 0.00204,
+      "count": 5
+     }
+    ],
+    "host_note": "server disk and CPU; field values differ"
+   }
+  }
+ },
+ "findings": [
+  "Each binding() rehashes 807 files in ~1.86 s; the two detector model directories take ~1.67 s of it (1.31 GB). The execute path calls it 5 times per cycle: TaskManager.execute once and ExecutionService.submit for every segment, so segment 1 waits for two of them.",
+  "Each segment start (cycle state entry to controller acceptance) takes ~1.9 s, almost all of it that rehash inside the 20 ms supervisor tick; during it the Cycle supervisor does not tick (the execution process keeps supervising the motion). Rule-required waits are separate: 0.4 s arrival dwell, 1 s pressure dwell plus the wait for the first qualifying heartbeat.",
+  "Child-side submit: trajectory-package.json serialization 0.04-0.06 s; pipe transfer ~5 ms; everything else < 3 ms on fake IO (the real controller payload TCP query was not measured).",
+  "Pre-existing risk, not caused and not fixed here: in the process holding the planner snapshot, Python gen-2 collections pause 0.04-0.135 s even with timing off; a pause just before Cycle.tick validates the 0.1 s sample age stops the cycle (seen only with the first instrumentation version, fail-safe, fake IO).",
+  "No optimisation was made in this step; all thresholds, checks and decisions are unchanged."
+ ],
+ "not_run_or_not_verified": [
+  "Replay of any saved field record (none available): record-level behaviour identity and the 232-361 s breakdown",
+  "Planning baseline prepare_plan -> PLAN_READY on field records, and its success rate",
+  "Vision baseline observe -> TARGET_READY (no frozen frame, no camera, remote detector not connected)",
+  "Exact single-state check distribution per approach/contact/detach/return on real scenes (only the synthetic approach output and diagnostic phases were measured)",
+  "Field PC timings: every number here comes from a shared GPU server with a different CPU and disk",
+  "Real SDK/UDP feedback, serial pressure heartbeat cadence and controller payload query latency (fakes only)",
+  "ECO65_TIMING=1 together with real hardware execution was not run; its safety is not established",
+  "Any physical motion, valve command or acceptance: NOT_RUN"
+ ]
+}

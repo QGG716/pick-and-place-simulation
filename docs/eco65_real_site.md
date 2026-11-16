@@ -425,3 +425,66 @@ bb88010f 离线复核（**不可执行、不是实机验收**）：规划 695 s 
 始终保留：反馈 ≤0.1 s、已使能、无报警、关节速度 ≤0.5°/s（静止）；运动中跟踪误差、到位、反馈过期、停止监控不变。
 **若规划后机械臂被移动过，第一段的第一个指令会从当前位置跳向规划起点，由操作者负责确认机械臂未动。**
 定向回归 **436 passed**。
+
+### 2026-11-16：实时化第 1 步，基线测量（只加计时，不改行为）
+
+按 AGENTS.md 11-16 节第 7 条，本步只加计时。所有检查、阈值和判定都不变，也没有做任何优化。
+报告见 `docs/evidence/realtime_20261116_baseline/report.json`。
+
+**开关**：`ECO65_TIMING=1` 打开 Python 侧计时，同时给之后启动的原生 worker 设 `M710_NATIVE_TIMING=1`。两者默认都关闭。
+关闭时，每个包装只执行原调用，不记录任何东西，记录文件、回复和判定都与改前相同。
+打开时，低频分段先存在内存里；高频分段（监视 tick、RPC、管道、逐文件重哈希、Python GC 停顿）累加到固定大小的直方图。
+每个阶段结束后，由后台线程写一次 `timing-<阶段>.json`（observe / prepare_plan / execute，执行子进程另写 `submit-timing.json`）。
+原生回复里的 `native_timing` 在交给调用方之前就被去掉。热路径上没有同步写盘。时钟：Python 用 `time.monotonic`，C++ 用 `steady_clock`。
+
+- **原生 worker**：按 init（模型、管线、策略校验）、world 比较与导入、场景 diff、Clearance 与工作区重建、IK、Pilz、OMPL、输出检查、
+  validate、checkPath、请求解析和回复序列化分段计时。工作区按阶段累计粗筛（树节点数、AABB 测试数与跳过数）和 FCL 精确距离查询的次数与耗时。
+  每次完整的单状态精确检查都计入对数直方图，按阶段和通过/拒绝分开；Python 侧再按 approach / contact / detach / return / loaded-start 标注。
+- **规划**：原生调用往返与 JSON 大小、`context()` 中的 `digest(world)`、每次写盘（序列化和写入分开）、`binding()` 逐文件重哈希
+  （文件大小与耗时）、`Authority.register` 的摘要、`complete-plan.json`、主 worker 与检查池的启动、预检、各候选通道、主线程等待与发送路径检查。
+- **视觉**：freeze 的停稳等待与取帧配对、冻结帧排队、检测和 SAM（远程拆成 PNG 编码、往返中的服务器推理与传输协议、掩码解码）、
+  逐箱 reconstruct、`build_scene` 各段（体素角点投影、逐体素自由空间循环、目标点归属、两次 `self_filter.contains`、体素列合并等），以及各次落盘。
+- **调度**：execute 入口到首个点发出；每段 submit 的各步（binding 重哈希、authority claim 摘要、管道传输、
+  `trajectory-package.json` 序列化与写入、控制器负载查询）；`Cycle.tick` 每次的 RPC 次数与耗时；段间交接拆成规则要求的停留和其余部分。
+- **新工具**：`tools/measure_scheduling_fake_io.py` 使用真实的 `Cycle`、真实启动的执行子进程（Supervisor、Authority、记录线程）和真实的 `binding()`，
+  只把 SDK 传输和真空串口换成内存 fake（`tools/fake_io_transport.py`）。`tools/summarize_eco65_timing.py` 负责汇总各计时文件。
+
+**测量干扰（已修正）**：第一版把每个分段都保存成对象，计时打开时 5 次 fake IO 周期里有 4 次在 CONTACT 段报
+`LIVE_ROBOT_STALE_DISCONNECTED_OR_FAULT` 停止。原因是持有 68 MB 源快照的进程里 gen-2 GC 停顿约 0.12 s，超过了原有的 0.1 s 反馈年龄规则。
+这是 fake IO 上的安全停止，没有涉及硬件。改为固定大小的聚合后，计时开和关各 5 次全部完成，结果为 `FAKE_DEVICE_CYCLE_COMPLETE`。
+
+**行为零变化**（远程 GPU 服务器，现有 Humble chroot 与 `/root/v05-gpu-venv`）：
+- 原生检查：`m710_clearance_test optimized` 和 `reference` 改前改后都 PASS；去掉计时字段后，两次输出完全一致。
+- 原生组件检查：`tools/check_eco65_single_carton_native.py` 改后 PASS。改前代码加改前二进制，与改后计时关、改后计时开相比，5 个记录文件逐项一致。
+- 定向 pytest：改前、改后计时关、改后计时开都是 **435 passed，1 failed，0 skipped**。
+  失败的是 `test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior`，在本服务器的改前代码上就同样失败（`recover_partial` 返回 140×186×108 mm，数值库版本与现场 `.venv` 不同），不是本步引入的，也没有修改。
+- pytest 和组件逐项对比跑在倒数第二个修订上。最后一个修订只改了计时打开时的高频分段聚合和 GC 停顿记录，计时关闭时的路径与原代码等价。
+  按用户要求，最后一个修订没有重跑全量检查，只用 10 次 fake IO 周期验证过。
+
+**三个口径的基线**：
+- **规划**（`prepare_plan` 入口到 `PLAN_READY`）：**NOT_RUN**，原因是仓库、本机和服务器上都没有保存的现场记录（见下文）。
+  报告中给出了 232–361 s 分解与各字段的对应关系：预检对应 `search.screen_candidate`，并行规划对应 `main.wait_planned_candidate` 和
+  `lane.plan_candidate`，发送路径检查对应 `sent_check` 以及按段的 `<stage>:output` 单状态直方图。
+  合成组件检查（一次小 PTP 加 491 个发送状态，**不是** prepare_plan）：单状态精确检查均值约 2.1 ms，p99 约 2.8 ms；
+  validate 请求约 0.33 MB，往返 3.51 s，其中 3.08 s 是 checkPath。
+- **视觉**（observe 入口到 `TARGET_READY`）：**NOT_RUN**，原因是没有冻结帧、没有相机，远程检测也未连接。插桩已完成。
+- **调度**（fake IO，合成 1.5 s 段，5 次）：execute 入口到首个点发出 **3.25–3.88 s**。
+  每次 `binding()` 重哈希 807 个文件约 1.86 s，其中检测模型两个目录（1.31 GB）约 1.67 s。执行路径每个周期调用 5 次
+  （execute 入口 1 次，每段 submit 各 1 次），所以第一段要等两次。每段从状态进入到控制器受理约 1.9 s，几乎都是这次重哈希，期间 Cycle 监视不 tick
+  （执行进程仍在监控运动）。规则要求的停留另算：到位停留 0.4 s，压力停留 1 s 加上等待第一条合格心跳的时间。
+  子进程侧 `trajectory-package.json` 序列化 0.04–0.06 s，管道约 5 ms。每次 tick 有 3 次 RPC，通常每次 <1 ms。
+- **原有风险（未修）**：计时关闭时，持有快照的进程 gen-2 GC 停顿仍有 0.04–0.135 s。若恰好落在 `Cycle.tick` 校验 0.1 s 反馈年龄之前，会触发安全停止。
+
+**保存记录**：仓库的 `outputs/` 被忽略，没有任何任务目录；`docs/evidence/` 下只有报告，没有 `observation.npz` 或 `segmentation.npz`。
+本机和 GPU 服务器上也都没有。文档提到的 bb88010f、6b648ffc、19803562、71ce26a3、4cde3b86、2814e675、7ccdb15e 均不在这里，
+因此同一记录回放的改前改后对比 **NOT_RUN**。用户已同意把现场记录和 `installation.local.json` 上传到 `/root/autodl-tmp/eco65-records/`，到本节写成时尚未收到。
+本次组件检查用的 `installation.local.json` 是仓库里 `tests/fixtures/eco65_installation_cad_reference.json` 的原字节副本。
+
+**环境**：没有改内核，也没有动系统 ROS / MoveIt。在现有的 `/root/v05-gpu-venv` 里离线新增了 7 个包，没有升级任何已有包，
+新增包的版本和 wheel SHA-256 记在报告 `environment` 中（pytest 8.4.2、pyserial 3.5 及其依赖）。
+Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装在现有 chroot 中启动。所有数字都来自共享 GPU 服务器（负载约 20），
+不是现场 i5-12500H。
+
+**未做或未验证**：现场记录回放、规划与视觉基线及成功率、真实场景下按 approach/contact/detach/return 分段的单状态分布、
+现场电脑上的耗时、真实 SDK/UDP/串口心跳节奏与控制器负载查询延迟、计时打开时的实机执行（安全性未建立），以及任何实机运动、阀门命令或验收，
+均为 **NOT_RUN**。

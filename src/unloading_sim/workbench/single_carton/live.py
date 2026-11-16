@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 from ..controlled.ui import ControlledBackend
 from ..devices import StreamProfile
+from .. import timing
 from .perception import make_detector
 
 
@@ -98,6 +99,7 @@ class LiveVision:
             if generation!=self.generation:raise ValueError('OBSERVATION_INVALIDATED')
             if self.task_waiter:raise ValueError('VISION_TASK_ALREADY_PENDING')
             if self.error:raise RuntimeError(self.error)
+            if timing.ENABLED:waiter['timing_queued_s']=timing.now()
             self.task_waiter=waiter;self.pending=(frame,None,generation,waiter);self.condition.notify_all()
             try:
                 while not waiter['done']:
@@ -132,20 +134,26 @@ class LiveVision:
                 if self.closed:return
                 job=self.pending;self.pending=None;self.current=job
             frame,joint,generation,waiter=job
+            # Measurement only: time the frozen task frame; never record live frames.
+            measured=timing.ENABLED and waiter is not None
+            if measured and 'timing_queued_s' in waiter:
+                timing.add('vision.frozen_frame_queue_wait',waiter['timing_queued_s'],timing.now()-waiter['timing_queued_s'])
+            scope=(lambda:timing.tags(vision_job='frozen_task')) if measured else timing.suppressed
             try:
                 if self.model is None:
-                    self.status=getattr(self.factory,'loading_status','正在加载本地模型');self.model=self.factory(**self.config)
+                    self.status=getattr(self.factory,'loading_status','正在加载本地模型')
+                    with scope(),timing.span('vision.model_load'):self.model=self.factory(**self.config)
                     self.backend_text=getattr(self.model,'description','')
                 self.status='检测处理中'
                 self.stage_status['detection']='检测处理中';self.stage_status['segmentation']='等待同帧检测'
-                detected=self.model.detect_boxes(frame)
+                with scope(),timing.span('vision.detect'):detected=self.model.detect_boxes(frame)
                 self._publish('detection',frame,joint,generation,detected)
                 self.stage_status['detection']='检测已完成 · 持续运行'
                 with self.condition:
                     if generation!=self.generation:continue
                 self.status='SAM 分割处理中'
                 self.stage_status['segmentation']='SAM 分割处理中'
-                segmented=self.model.segment(frame,detected)
+                with scope(),timing.span('vision.segment'):segmented=self.model.segment(frame,detected)
                 self._publish('segmentation',frame,joint,generation,segmented)
                 with self.condition:
                     if waiter and generation==self.generation:

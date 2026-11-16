@@ -12,6 +12,7 @@ from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
 from .config import release_policy_evidence,start_joint_check
+from .. import timing
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1)
@@ -202,11 +203,11 @@ class SinglePlanner(EmptyPlanner):
                       position_tolerance_m=2e-5,orientation_tolerance_rad=2e-4,request_budget_s=110.)
         path=folder/(name+'-native.json');started=time.monotonic()
         record=dict(request=template,seeds=[list(map(float,s)) for s in seeds],status='PENDING',ipc_timeout_s=120)
-        path.write_text(json.dumps(record));replies=[];solutions=[]
+        timing.write_json(path,record,'ik-record:pending');replies=[];solutions=[]
         try:
             for seed in seeds:
                 if cancelled is not None and cancelled():raise ValueError('CANCELLED')
-                reply=self.client.request(dict(template,q_start=list(map(float,seed))),timeout=120,cancelled=cancelled)
+                reply=timing.native_request(self.client,dict(template,q_start=list(map(float,seed))),timeout=120,cancelled=cancelled,record=name)
                 replies.append(dict(status=reply.get('status'),q=reply.get('q'),position_error_m=reply.get('position_error_m'),
                                     orientation_error_rad=reply.get('orientation_error_rad')))
                 if reply.get('status')=='SUCCESS':
@@ -218,7 +219,7 @@ class SinglePlanner(EmptyPlanner):
             return solutions,[r['status'] for r in replies]
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),replies=replies,elapsed_s=time.monotonic()-started);raise
-        finally:path.write_text(json.dumps(record))
+        finally:timing.write_json(path,record,'ik-record:final')
     def payload_world_blocked(self,failure,box,world):
         """A payload/world failure bigger than the IK tolerance, at the box's rest pose."""
         pair=list((failure or {}).get('pair') or []);others={o['id'] for o in world}-{box['id']}
@@ -301,7 +302,7 @@ class SinglePlanner(EmptyPlanner):
                 solutions.append(qa)
                 return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),record=record)
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
-        finally:(folder/'endpoint-precheck.json').write_text(json.dumps(record,ensure_ascii=False))
+        finally:timing.write_json(folder/'endpoint-precheck.json',record,'endpoint-precheck.json',ensure_ascii=False)
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         loaded=attachment is not None;contact=stage=='contact'
         contact_ids=candidate['target_lip_contact_ids']
@@ -315,8 +316,9 @@ class SinglePlanner(EmptyPlanner):
                   face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
+        with timing.span('context.digest_world',stage=stage,objects=len(world)):fingerprint=digest(world)
         context=dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],
-            scene_fingerprint=digest(world),world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
+            scene_fingerprint=fingerprint,world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
         if self.site.get('site'):context['site_workspace_bounds_m']=self.site['site']['workspace_bounds_m']
         return context
@@ -326,15 +328,15 @@ class SinglePlanner(EmptyPlanner):
         request=dict(request,request_budget_s=timeout-10.)
         path=folder/(name+'-native.json');started=time.monotonic()
         record=dict(request=request,status='PENDING',ipc_timeout_s=timeout)
-        path.write_text(json.dumps(record))
+        timing.write_json(path,record,'native-record:pending')
         try:
-            result=(client or self.client).request(request,timeout=timeout,cancelled=cancelled)
+            result=timing.native_request(client or self.client,request,timeout=timeout,cancelled=cancelled,record=name)
             record.update(status='REPLIED',result=result,elapsed_s=time.monotonic()-started)
             return result
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
-        finally:path.write_text(json.dumps(record))
+        finally:timing.write_json(path,record,'native-record:final')
     # -- resident checker pool (final sent-path checks and concurrent plans) ----
     def worker_ready(self,ready,boxes=()):
         """Required capabilities of the main native worker; binds output-check deferral."""
@@ -359,9 +361,10 @@ class SinglePlanner(EmptyPlanner):
         def start(k):
             status=dict(index=k,state='STARTING');self.pool_status.append(status);client=None
             try:
-                client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
-                                            log_path=folder/f'moveit-check-{k}.log')
-                ready=client.request(self.init,timeout=180)
+                with timing.span('native.pool_worker_process_start',index=k):
+                    client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
+                                                log_path=folder/f'moveit-check-{k}.log')
+                ready=timing.native_request(client,self.init,timeout=180,record=f'pool-{k}-init')
                 if not ready.get('capabilities',{}).get('bounded_single_carton_planning'):raise RuntimeError('NATIVE_WORKER_CAPABILITY_MISSING')
                 with self.pool_lock:
                     if self.pool_closed:client.close();status['state']='CLOSED';return
@@ -376,7 +379,8 @@ class SinglePlanner(EmptyPlanner):
     def wait_check_pool(self,timeout=240.):
         """Wait until every pool worker is READY or FAILED, so lane count is fixed."""
         deadline=time.monotonic()+timeout
-        for thread in self.pool_threads:thread.join(max(0.,deadline-time.monotonic()))
+        with timing.span('native.pool_wait_ready',workers=len(self.pool_threads)):
+            for thread in self.pool_threads:thread.join(max(0.,deadline-time.monotonic()))
     def close_check_pool(self):
         with self.pool_lock:
             self.pool_closed=True;pool,self.pool=list(self.pool),[]
@@ -421,7 +425,7 @@ class SinglePlanner(EmptyPlanner):
             req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault')
             progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（25 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
-        (folder/(record+'-native.json')).write_text(json.dumps(dict(request=req,result=result)))
+        timing.write_json(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
         accepted={'PASS'}|({DEFERRED_OUTPUT} if req.get('defer_output_check_to_sent_path') else set())
         if result.get('status')!='SUCCESS' or result.get('native_output_status') not in accepted:
             raise SegmentRejected(stage,stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))),result)
@@ -433,7 +437,10 @@ class SinglePlanner(EmptyPlanner):
         # within every joint limit; a native profile planned exactly at its
         # limits can overshoot between knots, so slow down only as needed.
         for factor in SEND_SLOWDOWN_STEPS:
-            try:prepared=prepare(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach);break
+            try:
+                with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(result['points'])):
+                    prepared=prepare(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
+                break
             except ValueError as error:
                 if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
                 progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
@@ -458,7 +465,8 @@ class SinglePlanner(EmptyPlanner):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
             return a,b,self.native_call(dict(context,op='validate',probe_path=path[a:b+1]),folder,name,600,cancelled,workers[k])
         started=time.monotonic()
-        with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))
+        with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
+            with ThreadPoolExecutor(max_workers=count) as executor:parts=list(executor.map(run,range(count)))
         valid=all(r.get('native_valid') and r.get('legacy_intersection_valid') and r.get('path_failure') is None for _,_,r in parts)
         path_failure=failure=None
         for a,b,r in parts:
@@ -469,7 +477,7 @@ class SinglePlanner(EmptyPlanner):
                      legacy_intersection_valid=all(r.get('legacy_intersection_valid') for _,_,r in parts),
                      path_failure=path_failure,failure=failure,probe_states=len(path),parallel_checkers=count,
                      wall_s=time.monotonic()-started,chunks=[dict(states=[a,b],result=r) for a,b,r in parts])
-        (folder/(record+'-sent-check.json')).write_text(json.dumps(checked))
+        timing.write_json(folder/(record+'-sent-check.json'),checked,'sent-check.json')
         if not valid:raise SegmentRejected(stage,stage+':SENT_PATH_REJECTED:'+str(path_failure or failure),checked)
         segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
@@ -505,7 +513,7 @@ class SinglePlanner(EmptyPlanner):
         release_supports=[dict(id=o['id'],top_world_m=self.object_top(o)) for o in world if o['id'] in release['region']['ids']]
         start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
         endcheck=self.native_call(dict(start_loaded,op='validate'),sub,'loaded-start',120,cancelled)
-        (sub/'loaded-start-check.json').write_text(json.dumps(dict(request=start_loaded,result=endcheck)))
+        timing.write_json(sub/'loaded-start-check.json',dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):
             raise ValueError(self.loaded_start_failure(endcheck,world))
         screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions)
@@ -627,7 +635,8 @@ class SinglePlanner(EmptyPlanner):
                 reuse=None
                 while True:
                     try:
-                        planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,say,lane_cancelled,[client],reuse)
+                        with timing.span('lane.plan_candidate',lane=index,rank=rank,candidate=i,replan=reuse is not None):
+                            planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,say,lane_cancelled,[client],reuse)
                         results[rank].put(('PLANNED',planned))
                     except TargetBlocked as e:results[rank].put(('TARGET_BLOCKED',e));break
                     except ValueError as e:results[rank].put(('FAILED',e));break
@@ -648,15 +657,17 @@ class SinglePlanner(EmptyPlanner):
                 except queue.Empty:continue
         try:
             for rank,(i,candidate,sub,screened) in enumerate(order):
-                kind,value=receive(rank)
+                with timing.span('main.wait_planned_candidate',rank=rank,candidate=i):kind,value=receive(rank)
                 while kind=='PLANNED':
                     idle.clear()
                     try:
-                        result=self.verify_candidate(value,sub,lambda text,i=i,rank=rank:progress(f'检查候选 {i+1}（{rank+1}/{len(order)}）：{text}'),cancelled)
+                        with timing.span('main.verify_candidate',rank=rank,candidate=i):result=self.verify_candidate(value,sub,lambda text,i=i,rank=rank:progress(f'检查候选 {i+1}（{rank+1}/{len(order)}）：{text}'),cancelled)
                     except SegmentRejected as e:
                         try:reuse=self.replan_after(value,e)
                         except SegmentRejected as fatal:kind,value='FAILED',fatal;commands[rank].put(('DONE',));break
-                        commands[rank].put(('REPLAN',reuse));idle.set();kind,value=receive(rank);continue
+                        commands[rank].put(('REPLAN',reuse));idle.set()
+                        with timing.span('main.wait_replanned_candidate',rank=rank,candidate=i):kind,value=receive(rank)
+                        continue
                     finally:idle.set()
                     commands[rank].put(('DONE',))
                     return dict(result,index=i,candidate=candidate,screen=screened['screen'],lanes=count)
@@ -679,14 +690,16 @@ class SinglePlanner(EmptyPlanner):
         Every failure is appended to ``failures``. No permit is issued here.
         """
         failures=[] if failures is None else failures
-        rest=self.payload_rest_check(world,box);(folder/(box['id']+'-payload-rest-check.json')).write_text(json.dumps(rest))
+        with timing.span('search.payload_rest_check'):rest=self.payload_rest_check(world,box)
+        timing.write_json(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
             hit=rest['intersections'][0] if rest['intersections'] else None
             reason=('TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 '+
                     (f"{hit['id']} 相交 {hit['overlap_depth_m']*1000:.1f} mm" if hit else '现场工作范围边界相交')+
                     f"（共 {len(rest['intersections'])} 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划")
             progress(reason);failures.append(dict(target=box['id'],reason=reason,evidence=rest));return None
-        try:candidates=contact_candidates(box,self.source['tool'],self.site['topology'])
+        try:
+            with timing.span('search.contact_candidates'):candidates=contact_candidates(box,self.source['tool'],self.site['topology'])
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
         screened=[];solutions=[]
         try:
@@ -695,7 +708,9 @@ class SinglePlanner(EmptyPlanner):
                 if cancelled():raise ValueError('CANCELLED')
                 sub=folder/(box['id']+'-'+str(i));sub.mkdir()
                 progress(f'预检候选 {i+1}/{len(candidates)}：带载返回起点及接近 / 接触 / 脱离终态')
-                try:screened.append((i,candidate,sub,self.screen_candidate(q,world,box,candidate,sub,cancelled,solutions)))
+                try:
+                    with timing.span('search.screen_candidate',candidate=i):
+                        screened.append((i,candidate,sub,self.screen_candidate(q,world,box,candidate,sub,cancelled,solutions)))
                 except TargetBlocked:raise
                 except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)))
             order=sorted(screened,key=lambda s:s[3]['screen']['conclusion']!='CLEAR')
@@ -704,11 +719,15 @@ class SinglePlanner(EmptyPlanner):
                      f'{len(candidates)-len(order)} 个已排除；按此顺序完整规划')
             if int(self.site.get('parallel_candidate_lanes',1))>1 and len(order)>1:
                 self.wait_check_pool()
-                if len(self.checkers())>1:return self.parallel_candidates(q,world,box,order,progress,cancelled,failures)
+                if len(self.checkers())>1:
+                    with timing.span('search.parallel_candidates',candidates=len(order)):
+                        return self.parallel_candidates(q,world,box,order,progress,cancelled,failures)
             for rank,(i,candidate,sub,screened_candidate) in enumerate(order):
                 if cancelled():raise ValueError('CANCELLED')
                 say=lambda text,i=i,rank=rank:progress(f'规划候选 {i+1}（{rank+1}/{len(order)}）：{text}')
-                try:result=self.plan_candidate(q,world,box,candidate,sub,screened_candidate,say,cancelled)
+                try:
+                    with timing.span('search.sequential_plan_candidate',rank=rank,candidate=i):
+                        result=self.plan_candidate(q,world,box,candidate,sub,screened_candidate,say,cancelled)
                 except TargetBlocked:raise
                 except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)));continue
                 return dict(result,index=i,candidate=candidate,screen=screened_candidate['screen'],lanes=1)
@@ -722,7 +741,7 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
         self.authority.invalidate();self.cycle_binding=None
         qualification=release_policy_evidence(self.site)
-        self.build()
+        with timing.span('plan_cycle.build'):self.build()
         # A global configuration failure is not 32 independent infeasible
         # grasps. Retain the explicit measured policy without silently deferring.
         if not qualification['qualification_deferred']:self.receiver()
@@ -732,13 +751,15 @@ class SinglePlanner(EmptyPlanner):
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         q=np.array(observation.q_start);failures=[]
         from unloading_sim.moveit2_backend import ResidentMoveItClient
-        self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
+        with timing.span('native.main_worker_process_start'):
+            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
         try:
-            self.worker_ready(self.client.request(self.init),boxes)
+            self.worker_ready(timing.native_request(self.client,self.init,record='main-init'),boxes)
             self.start_check_pool(folder)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
-                found=self.search_box(q,world,box,folder,progress,cancelled,failures)
+                with timing.span('plan_cycle.search_box',target=box['id']):
+                    found=self.search_box(q,world,box,folder,progress,cancelled,failures)
                 if found is None:continue
                 i,candidate,screen,result=found['index'],found['candidate'],found['screen'],found
                 attachment,release=result['attachment'],result['release']
@@ -750,7 +771,8 @@ class SinglePlanner(EmptyPlanner):
                 self.cycle_binding['payload_mass_properties']=dict(mass_kg=mass,com_box_m=[0.,0.,0.],
                     inertia_box_kg_m2=(mass/12*np.diag([size[1]**2+size[2]**2,size[0]**2+size[2]**2,size[0]**2+size[1]**2])).tolist(),
                     basis='USER_CONFIRMED_2_KG_UNIFORM_CUBOID_INERTIA_ESTIMATE')
-                binding=self.binding();segments=result['segments']
+                with timing.span('plan_cycle.binding'):binding=self.binding()
+                segments=result['segments']
                 # A segment is registered only with its exact sent path checked;
                 # a deferred worker waypoint check is never accepted on its own.
                 if any(s['evidence'].get('sent_path_collision')!='PASS' for s in segments):raise ValueError('SENT_PATH_CHECK_MISSING')
@@ -759,21 +781,24 @@ class SinglePlanner(EmptyPlanner):
                 # package (and therefore its digest), never applied implicitly.
                 start_policy=start_joint_check(self.site)
                 if not start_policy['enabled']:segments[0]['prepared']['start_joint_check']=start_policy
-                for segment in segments:segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
+                for segment in segments:
+                    with timing.span('plan_cycle.register',stage=segment['stage']):
+                        segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
                 plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,start_joint_check=start_policy,
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,
                     duration_s=sum(s['package']['prepared']['send_duration_s'] for s in segments),hardware_execution='NOT_RUN')
-                (folder/'complete-plan.json').write_text(json.dumps(plan));return plan
+                timing.write_json(folder/'complete-plan.json',plan,'complete-plan.json');return plan
             # Keep every concrete failure on disk; one task-status label must
             # not grow into 32 copies of the full native collision JSON.
-            (folder/'planning-failures.json').write_text(json.dumps(failures,ensure_ascii=False,indent=2))
+            timing.write_json(folder/'planning-failures.json',failures,'planning-failures.json',ensure_ascii=False,indent=2)
             counts=Counter(failure_category(f['reason']) for f in failures)
             summary='；'.join(f'{reason} × {count}' for reason,count in counts.items())
             first=failures[0]['reason'][:600] if failures else '没有符合所选编号的目标'
             raise ValueError(f'NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: {summary}；首项：{first}；详情：planning-failures.json')
         finally:
-            self.close_check_pool()
-            (folder/'native-check-pool.json').write_text(json.dumps(self.pool_status,ensure_ascii=False))
-            self.client.close();self.client=None
+            with timing.span('plan_cycle.close_workers'):
+                self.close_check_pool()
+                timing.write_json(folder/'native-check-pool.json',self.pool_status,'native-check-pool.json',ensure_ascii=False)
+                self.client.close();self.client=None

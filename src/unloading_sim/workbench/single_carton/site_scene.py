@@ -21,6 +21,7 @@ import numpy as np
 from ..coordinates import rigid
 from ..detection import metric_points
 from .geometry import transform, obb_overlap_depth
+from .. import timing
 
 # Target-local scene rules (metres / pixels). Plane band is several times the
 # recorded RANSAC RMS; the pixel band only reaches SAM border misses.
@@ -197,6 +198,7 @@ def _project(points,k):
 
 
 def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None):
+    lap=timing.Laps('scene.')  # measurement only; no-op unless ECO65_TIMING=1
     cleared_unknown=user_cleared_unknown(config)
     frame=observation.frame
     if result.observation_id!=frame.observation_id:raise ValueError('SCENE_FRAME_MISMATCH')
@@ -208,6 +210,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     vertices=centers[:,None,:]+offsets
     camera=transform(C,vertices.reshape(-1,3)).reshape(-1,8,3)
     uv=_project(camera.reshape(-1,3),frame.intrinsics).reshape(-1,8,2)
+    lap('voxel_corner_projection',voxels=len(centers))
     # Full projected voxel footprint must have valid, continuous farther depth.
     # Check every pixel in its bounding rectangle via integral min queries;
     # using only 8 corners would miss an intervening obstacle or depth hole.
@@ -218,6 +221,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     for i in np.flatnonzero(in_view):
         x0,y0,x1,y1=bounds[i];patch=depth[y0:y1+1,x0:x1+1]
         free[i]=bool(patch.size and patch.min()>camera[i,:,2].max()+.006)
+    lap('free_space_voxel_loop',voxels_in_view=int(in_view.sum()))
     for region in config.get('measured_clear_regions',[]):
         a,b=np.asarray(region['bounds_m'])
         free |= np.all(centers-cell/2>=a,axis=1)&np.all(centers+cell/2<=b,axis=1)
@@ -225,10 +229,12 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # including unreconstructed detections and unlabelled tables/floors/objects.
     # A failed/unexplained depth outside the full envelope stays an obstacle even
     # if SAM labelled it as the target; off-plane depth inside it also stays.
+    lap('measured_clear_regions')
     points=metric_points(frame);valid=np.isfinite(points).all(-1)&(depth>.1)&(depth<3.)
     world_points=transform(W,points.reshape(-1,3)).reshape(points.shape)
     z=np.where(valid,depth,0.).astype(np.float32);square=np.ones((3,3),np.uint8)
     jump=(cv2.dilate(z,square)-cv2.erode(z,square))>FLYING_DEPTH_JUMP_M
+    lap('points_and_depth_jumps')
     claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
         owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),valid,world_points,jump)
@@ -247,15 +253,18 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             inside=(valid&~claimed&~flying&(world_points[...,2]>=bottom)&
                     np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
+    lap('target_point_claims',targets=len(boxes))
     observed=world_points[valid&~claimed&~flying]
     removed_self=0
     if self_filter is not None:
         owned=self_filter.contains(observed,observation.q_capture)
         removed_self=int(owned.sum());observed=observed[~owned]
+        lap('self_filter_points',points=len(owned))
         # A voxel is owned only when ALL corners are inside actual robot solids.
         # Partial/uncertain cells remain occupied unless field evidence covers them.
         owned_cells=self_filter.contains(vertices.reshape(-1,3),observation.q_capture,group_size=8)
         free |= owned_cells
+        lap('self_filter_voxel_corners',corners=int(vertices.reshape(-1,3).shape[0]))
     for fixed in config.get('fixed_obstacles',[]):
         local=transform(np.linalg.inv(fixed['pose']),observed)
         observed=observed[~np.all(abs(local)<=np.asarray(fixed['size_m'])/2+1e-9,axis=1)]
@@ -273,6 +282,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # Under user-confirmed clearance, keep (full cells) each of its unclaimed
     # depth rays extended by one conservative carton depth. Reconstructed target
     # envelopes, robot-owned cells and sensor-proven free cells are excluded.
+    lap('fixed_obstacles_indexing_occupancy')
     shadow=np.zeros(tuple(shape),bool);unreconstructed=[]
     if cleared_unknown and neighbor_depth_m:
         reconstructed={b['detection_index'] for b in boxes}
@@ -293,6 +303,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             cells_hit=cells_hit[np.all(cells_hit>=0,axis=1)&np.all(cells_hit<shape,axis=1)]
             if len(cells_hit):shadow[tuple(cells_hit.T)]=True
         shadow&=unknown
+    lap('neighbor_shadow')
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
@@ -303,6 +314,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         if support is not None:
             keep=np.flatnonzero(~represented);represented[keep[selected]]=True
             world.append(support);supports.append(support['id'])
+    lap('observed_supports')
     near=np.zeros(len(observed),bool)
     for box in boxes:
         half=np.asarray(box['size_m'],float)/2
@@ -323,6 +335,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     refined_runs=0;refined_boxes=0
     emit=emit.reshape(tuple(shape));tight=tight.reshape(tuple(shape))
     low=low.reshape(*shape,3);high=high.reshape(*shape,3);tight_runs=0;camera_side_runs=0;camera_origin=W[:3,3]
+    lap('cell_extents_and_near_target_points')
     grids=[('observed',emit)]
     if not cleared_unknown:grids.append(('unknown',unknown))
     else:grids.append(('neighbor_shadow',shadow))
@@ -359,11 +372,13 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                         upper=np.where(camera_origin>upper,np.minimum(upper,far_side),upper)
                         camera_side_runs+=int(np.any(lower!=before[0]) or np.any(upper!=before[1]))
                     world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}',lower,upper,kind))
+    lap('voxel_column_merge',objects=len(world))
     # Finite boundary walls keep paths inside the region actually classified.
     for axis in range(3):
         for sign in (0,1):
             a=lo.copy();b=hi.copy();a[axis]=(lo if sign==0 else hi)[axis]-.04*(sign==0);b[axis]=a[axis]+.04
             world.append(_box(f'site_boundary_{axis}_{sign}',a,b,'workspace_boundary'))
+    lap('workspace_boundaries')
     return dict(schema='eco65_real_rgbd_scene_v1',frame='base_link',world=world,
         observation_id=frame.observation_id,q_capture=list(observation.q_capture),T_base_camera=W.tolist(),
         unknown_policy=config['unknown_policy'],unknown_voxels=int(unknown.sum()),

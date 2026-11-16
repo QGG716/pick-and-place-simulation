@@ -7,6 +7,7 @@ import time
 import numpy as np
 from ..contracts import DetectionResult, Source, HOST_SESSION
 from ..detection import metric_points
+from .. import timing
 from .geometry import recover
 
 
@@ -135,7 +136,10 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
     if calibration is None or calibration.parent_frame!='link_1':raise ValueError('FIELD_LINK1_CAMERA_CALIBRATION_REQUIRED')
     generation=backend.observation_generation;start=clock();history=[];last=None;reported=-1.
     diagnostic=dict(waiting='等待新反馈')
+    # Measurement only: when the stationary window first passed (host monotonic).
+    wall_start=timing.now();first_stationary=None;polls=0
     while clock()-start<4:
+        polls+=1
         if cancelled():raise ValueError('CANCELLED')
         sample=service.snapshot();now=clock();q=validate_robot(sample,now)
         if sample['sequence']!=last:
@@ -143,6 +147,7 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
         history=[h for h in history if sample['received_s']-h['received_s']<=.55]
         diagnostic=dict(stationary_checks(history),elapsed_s=clock()-start,waiting='等待连续停稳反馈')
         if diagnostic['stationary']:
+            if first_stationary is None:first_stationary=timing.now()
             diagnostic['waiting']='等待本会话新 RGB-D'
             frame=backend.frame
             if frame is not None and backend.sample_state(frame.stamp,'camera')=='LIVE_VALID' and frame.stamp.host_session==HOST_SESSION:
@@ -162,6 +167,10 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
                 else:
                     if generation!=backend.observation_generation:raise ValueError('CONNECTION_CHANGED_DURING_CAPTURE')
                     capture=tuple(paired['q']);T=model.camera(capture,calibration)['T_world_camera']
+                    locked=timing.now()
+                    timing.add('freeze.wait_stationary',wall_start,first_stationary-wall_start,polls=polls)
+                    timing.add('freeze.wait_frame_and_pairing',first_stationary,locked-first_stationary,
+                               frame_age_s=age,pair_skew_s=skew,stationary_window_s=diagnostic.get('window_s'))
                     return Observation(frame,tuple(q),capture,dict(paired),tuple(history),generation,
                         tuple(map(tuple,T)),tuple(map(tuple,model.tcp(q))),dict(diagnostic,waiting='已锁定'))
         elif diagnostic.get('range_deg',0)>.02:diagnostic['waiting']='关节位置变化超过 0.02°'
@@ -190,11 +199,12 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
         if any(np.count_nonzero(mask&previous)/max(1,np.count_nonzero(mask|previous))>=.95 for previous in seen):continue
         seen.append(mask)
         try:
-            if geometry and geometry.get('prior_size_m'):
-                from .partial_geometry import recover_partial
-                box=recover_partial(points,mask,world_camera,rgb=f.rgb,
-                    prior=geometry['prior_size_m'],dimension_tolerance_m=geometry.get('dimension_tolerance_m',.008))
-            else:box=recover(points,mask,world_camera,rgb=f.rgb)
+            with timing.span('reconstruct.box',detection_index=i,mask_pixels=int(np.count_nonzero(mask)) if timing.ENABLED else None):
+                if geometry and geometry.get('prior_size_m'):
+                    from .partial_geometry import recover_partial
+                    box=recover_partial(points,mask,world_camera,rgb=f.rgb,
+                        prior=geometry['prior_size_m'],dimension_tolerance_m=geometry.get('dimension_tolerance_m',.008))
+                else:box=recover(points,mask,world_camera,rgb=f.rgb)
             box.update(id=f.observation_id+'-carton-'+str(i),detection_index=i,detection=item)
             boxes.append(box)
         except ValueError as e:rejected.append(dict(detection_index=i,reason=str(e),evidence=getattr(e,'evidence',None)))

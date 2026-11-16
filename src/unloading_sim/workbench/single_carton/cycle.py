@@ -5,6 +5,7 @@ import numpy as np
 from ..controlled.engine import SubmissionRejected,MonitorConfig
 from ..controlled.trajectory import digest
 from .perception import validate_robot
+from .. import timing
 
 TERMINAL={'COMPLETE','FAILED','CANCELLED','STOP_UNCONFIRMED'}
 MOVEMENTS=('APPROACH','CONTACT','DETACH','RETURN_LOADED')
@@ -46,7 +47,7 @@ class Cycle:
         with self.lock:
             if self.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY_OR_TASK_ACTIVE')
             if digest(self.plan)!=self.plan_hash:raise ValueError('PLAN_CHANGED')
-            q=validate_robot(self.robot.snapshot(),self.clock())
+            q=validate_robot(self._rpc('snapshot',self.robot.snapshot),self.clock())
             start_error=float(np.rad2deg(np.max(abs(q-self.plan['q_start']))))
             policy=self.plan.get('start_joint_check') or dict(enabled=True)
             self.record(kind='start_joint_check',q_live=q.tolist(),q_start=list(self.plan['q_start']),
@@ -61,7 +62,9 @@ class Cycle:
         ticket=self.robot.submission_ticket()
         if self.state=='STOPPING' or self.stop_requested.is_set():raise ValueError('STOPPING')
         self.transition(MOVEMENTS[index])
-        try:self.motion_id=self.robot.submit(self.plan['segments'][index]['package'],cancel_ticket=ticket)
+        try:
+            with timing.span('cycle.submit',segment=index):
+                self.motion_id=self.robot.submit(self.plan['segments'][index]['package'],cancel_ticket=ticket)
         except SubmissionRejected as e:
             self.record(kind='motion_rejected_before_start',cycle_task_id=self.task_id,segment=index,
                         reason=str(e),segment_motion='NOT_STARTED')
@@ -85,24 +88,37 @@ class Cycle:
             self.cancelled=cancelled;self.reason=reason;self.transition('STOPPING',reason=reason,load_may_be_held=self.vacuum.holding,
                 valve_state_not_changed_by_stop=True,automatic_release_sent=False,
                 cycle_release_command_attempted=self.release_attempted,cycle_release_command_sent=self.release_sent)
+    def _rpc(self,name,call):
+        """Measurement only: time one supervisor call; identical call when disabled."""
+        if not timing.ENABLED:return call()
+        self._tick_rpcs=getattr(self,'_tick_rpcs',0)+1
+        with timing.aggregated('cycle.rpc',name):return call()
     def tick(self):
+        if not timing.ENABLED:return self._tick()
+        # Fixed-size aggregates only: a 50 Hz tick must not grow retained state.
+        state=self.state;self._tick_rpcs=0;start=timing.now()
+        try:return self._tick()
+        finally:
+            timing.aggregate('cycle.tick',state,timing.now()-start)
+            timing.aggregate('cycle.rpc_per_tick',state,float(self._tick_rpcs))
+    def _tick(self):
         if self.state in TERMINAL|{'IDLE','PLAN_READY'}:return
         now=self.clock()
         try:
-            status=self.robot.feedback();self.last_feedback=status
+            status=self._rpc('feedback',self.robot.feedback);self.last_feedback=status
             self.record(kind='robot_status',feedback=status)
             if self.state=='STOPPING':
                 # A previous arrival confirmation also proves a stationary arm
                 # during vacuum dwell; it is rechecked against current real q.
-                sample=self.robot.snapshot();now=self.clock();q=validate_robot(sample,now)
+                sample=self._rpc('snapshot',self.robot.snapshot);now=self.clock();q=validate_robot(sample,now)
                 stopped=status.get('stop_confirmed') or (status.get('arrival_confirmed') and np.max(abs(np.asarray(sample['velocity'])))<=np.deg2rad(.5))
                 if stopped:
                     self.vacuum.unclaim();self.transition('CANCELLED' if self.cancelled else 'FAILED',reason=self.reason,stop_confirmed=True)
                 elif status.get('state')=='STOP_UNCONFIRMED' or now-self.entered>2.:
                     self.transition('STOP_UNCONFIRMED',reason=self.reason,stop_confirmed=False)
                 return
-            sample=self.robot.snapshot();now=self.clock();q=validate_robot(sample,now)
-            pressure=self.vacuum.pressure()
+            sample=self._rpc('snapshot',self.robot.snapshot);now=self.clock();q=validate_robot(sample,now)
+            pressure=self._rpc('pressure',self.vacuum.pressure)
             now=self.clock()
             if (pressure.get('source')!='LIVE' or pressure.get('channel')!='gripper' or
                     pressure.get('integrity')!='CHECKED_BINARY' or

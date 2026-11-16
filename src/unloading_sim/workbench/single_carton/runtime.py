@@ -11,6 +11,7 @@ from .config import issues,pre_execute_visual_recheck
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check
 from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged,same_session_start_and_camera
+from .. import timing
 
 
 class Journal:
@@ -47,55 +48,64 @@ class TaskManager:
             if self.active or self.vacuum.holding or (self.cycle and self.cycle.state=='STOP_UNCONFIRMED'):raise ValueError('TASK_ACTIVE_OR_HELD_LOAD')
             self.busy=True
     def save_observation(self,observation,name):
-        (self.folder/(name+'.json')).write_text(json.dumps(observation.metadata(),indent=2))
-        np.savez_compressed(self.folder/(name+'.npz'),rgb=observation.frame.rgb,depth=observation.frame.depth)
+        timing.write_json(self.folder/(name+'.json'),observation.metadata(),name+'.json',indent=2)
+        with timing.span('disk.write',file=name+'.npz'):
+            np.savez_compressed(self.folder/(name+'.npz'),rgb=observation.frame.rgb,depth=observation.frame.depth)
     def observe(self):
         self._enter();self.stop_event.clear();self.planner.authority.invalidate();self.plan=None;self.cycle=None
         self.observation=None;self.result=None;self.boxes=[];self.scene=None;self.reason=''
+        entered=timing.now()
         try:
             if self.journal:self.journal.close()
             self.journal=None;self.folder=None
             self.task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/self.task_id;folder.mkdir(parents=True)
             self.folder=folder;self.journal=Journal(folder,self.task_id)
-            (folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,physical_result='NOT_RUN')))
+            timing.write_json(folder/'result.json',dict(task_id=self.task_id,physical_result='NOT_RUN'),'result.json')
             missing=issues(self.config)
             if missing:raise ValueError('缺少现场参数：\n'+'\n'.join(missing))
             self.phase='OBSERVING';started=time.monotonic();self.progress('等待机械臂停稳，锁定 q_start 与同帧 RGB-D')
-            self.observation=freeze(self.backend,self.service,self.model,self.calibration,
-                                    cancelled=self.stop_event.is_set,progress=self.progress)
+            with timing.span('observe.freeze'):
+                self.observation=freeze(self.backend,self.service,self.model,self.calibration,
+                                        cancelled=self.stop_event.is_set,progress=self.progress)
             self.notify('capture',self.observation)
             self.save_observation(self.observation,'observation')
             self.progress('q_start 与原始 RGB-D 已锁定；等待本次冻结帧的检测 / 分割')
             vision=getattr(self.backend,'vision',None)
             if vision:
-                self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,
-                                              self.stop_event.is_set,progress=self.progress)
+                with timing.span('observe.vision_infer_frozen'):
+                    self.result=vision.infer_frozen(self.observation.frame,self.observation.generation,
+                                                  self.stop_event.is_set,progress=self.progress)
             else:
-                if self.detector is None:self.detector=make_detector(**self.config['detector'])
-                self.result=self.detector.detect(self.observation.frame)
+                with timing.span('observe.detector_detect'):
+                    if self.detector is None:self.detector=make_detector(**self.config['detector'])
+                    self.result=self.detector.detect(self.observation.frame)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
-            self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
+            with timing.span('observe.reconstruct'):
+                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
             if self.config.get('site'):
                 from .site_scene import build_scene
                 from .self_filter import RobotSelfFilter
                 clear=self.config['site']['unknown_policy']=='USER_CONFIRMED_CLEAR'
                 self.progress('构建同帧现场碰撞场景：保留邻物及实测障碍；'+
                               ('未观测区域采用用户已清空确认' if clear else '未知区域保留为障碍'))
-                self.planner.build()
+                with timing.span('observe.planner_build'):self.planner.build()
                 if self.self_filter is None:
-                    self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
+                    with timing.span('observe.self_filter_construct'):
+                        self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
                 # Ray depth behind an unreconstructed neighbour's visible surface:
                 # the prior's space diagonal plus its tolerance bounds any carton.
                 geometry=self.config.get('geometry') or {}
                 neighbor_depth=(float(np.linalg.norm(geometry['prior_size_m']))+float(geometry.get('dimension_tolerance_m',0.))
                                 if geometry.get('prior_size_m') else None)
-                self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
-                                       neighbor_depth_m=neighbor_depth)
+                with timing.span('observe.build_scene'):
+                    self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
+                                           neighbor_depth_m=neighbor_depth)
                 if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-                (self.folder/'site-scene.json').write_text(json.dumps(self.scene))
-            np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
-            (self.folder/'geometry.json').write_text(json.dumps(dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2))
+                timing.write_json(self.folder/'site-scene.json',self.scene,'site-scene.json')
+            with timing.span('disk.write',file='segmentation.npz'):
+                np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
+            timing.write_json(self.folder/'geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),'geometry.json',indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
             if rejected and not self.config.get('site'):
@@ -119,25 +129,34 @@ class TaskManager:
                     return f"{r['detection_index']}: {r['reason']}"
                 raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
             self.phase='TARGET_READY';self.reason=''
+            timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
         except Exception as e:self.reject(e);raise
-        finally:self.busy=False
+        finally:
+            self.busy=False
+            if self.folder:timing.write_later(self.folder/'timing-observe.json','observe',dict(task_id=self.task_id,final_phase=self.phase),since=entered)
     def prepare_plan(self,selected=None):
-        self._enter()
+        self._enter();entered=timing.now()
         try:
             if self.phase!='TARGET_READY' or self.observation is None:
                 raise ValueError('请先完成有效观测；'+(self.reason or '点击准备观测并提供足够密封的实测可见面'))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.phase='PLANNING';start=time.monotonic()
-            self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,scene=self.scene)
+            with timing.span('prepare_plan.plan_cycle'):
+                self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,scene=self.scene)
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
-            self.cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],self.journal,self.check_contact,self.check_release,physical_io=True)
-            self.cycle.ready(self.task_id,self.plan);self.phase='PLAN_READY'
+            with timing.span('prepare_plan.cycle_ready'):
+                self.cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],self.journal,self.check_contact,self.check_release,physical_io=True)
+                self.cycle.ready(self.task_id,self.plan)
+            self.phase='PLAN_READY'
+            timing.add('prepare_plan.entry_to_plan_ready',entered,timing.now()-entered)
             self.journal(kind='planning',duration_s=time.monotonic()-start,full_path='PASS')
             self.notify('plan',self.plan)
         except Exception as e:self.reject(e);raise
-        finally:self.busy=False
+        finally:
+            self.busy=False
+            if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase),since=entered)
     def execute(self):
-        self._enter()
+        self._enter();self.execute_entered=timing.now()
         try:
             if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
             # No cycle starts without its task record or with a revoked observation.
@@ -145,6 +164,7 @@ class TaskManager:
                 raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             recheck=pre_execute_visual_recheck(self.config)
+            recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
             if recheck['enabled']:
                 self.progress('停稳重新取景：核对目标、场景、起点及版本')
                 current=freeze(self.backend,self.service,self.model,self.calibration,
@@ -165,10 +185,12 @@ class TaskManager:
                 # responsible for an unchanged target and scene since planning.
                 self.progress('执行前画面复核已按用户要求关闭；核对会话、版本及实时起点关节后启动')
                 self.journal(kind='pre_execute_recheck',evidence=recheck)
-            self.planner.binding()
+            recheck_timing.__exit__(None,None,None)
+            with timing.span('execute.binding'):self.planner.binding()
             if self.stop_event.is_set():raise ValueError('CANCELLED')
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-            self.cycle.start();self.phase=self.cycle.state
+            with timing.span('execute.cycle_start'):self.cycle.start()
+            self.phase=self.cycle.state
         except Exception as e:
             self.planner.authority.invalidate()
             if self.cycle and self.cycle.active:self.cycle.stop(str(e))
@@ -234,6 +256,9 @@ class TaskManager:
                 (self.folder/'result.json').write_text(json.dumps(status,indent=2))
                 self.notify('result',status)
             except Exception as e:c.stop('RESULT_WRITE_FAILED:'+str(e))
+            # Measurement only: this cycle's spans, written after it is terminal.
+            timing.write_later(self.folder/'timing-execute.json','execute',dict(task_id=self.task_id,final_state=c.state),
+                               since=getattr(self,'execute_entered',None))
     def close(self):
         self.stop()
         if self.cycle and (self.cycle.active or self.cycle.state=='STOP_UNCONFIRMED'):raise ValueError('等待实测停止确认，连接暂时保留')

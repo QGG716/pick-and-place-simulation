@@ -10,6 +10,7 @@ import uuid
 from .engine import Supervisor,MonitorConfig,TERMINAL,SubmissionRejected
 from .transport import RealmanTransport,payload_matches
 from .trajectory import expected_controller_payload
+from .. import timing
 
 
 def read_controller_payload(transport,mass):
@@ -45,6 +46,11 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     if record_file:record_file.close()
                 except Exception:pass
                 record_file=msg['_file']
+            elif '_timing' in msg:
+                # Measurement only (ECO65_TIMING=1): submit steps of this task,
+                # written by this record thread after the engine accepted it.
+                try:Path(msg['_timing']['task_dir'],'submit-timing.json').write_text(json.dumps(msg['_timing'],default=str))
+                except Exception:pass
             elif record_file:
                 try:
                     record_file.write(json.dumps(msg,allow_nan=False)+'\n')
@@ -77,6 +83,7 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
             if engine.state=='STOPPING' and time.monotonic()-last_tick>.02:engine.expire_stalled_stop()
             if not pipe.poll(.01):continue
             ident,op,arg=pipe.recv()
+            received=time.monotonic();lap=timing.Laps('child.submit.') if op=='submit' else None
             attempt_dir=None;attempt_id=None
             try:
                 if op=='connect':
@@ -89,6 +96,7 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                     if engine.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
                     value=read_controller_payload(transport,expected_controller_payload(config))
                 elif op=='submit':
+                    sent=arg.get('timing_sent_monotonic')
                     ticket=arg.get('cancel_epoch');arg=arg.get('package',arg)
                     if not transport.connected:raise RuntimeError('DISCONNECTED')
                     if engine.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
@@ -99,26 +107,47 @@ def worker(pipe, mapping, config, stop_event, cancel_epoch=None):
                         record_root=record_root/cycle_id/'motion'
                     task_dir=record_root/task_id;task_dir.mkdir(parents=True)
                     attempt_dir,attempt_id=task_dir,task_id
-                    (task_dir/'trajectory-package.json').write_text(json.dumps(arg,indent=2,allow_nan=False))
+                    lap('mkdir')
+                    if timing.ENABLED:
+                        dumping=time.monotonic();text=json.dumps(arg,indent=2,allow_nan=False);dumps_s=time.monotonic()-dumping
+                        writing=time.monotonic();(task_dir/'trajectory-package.json').write_text(text)
+                        timing.add('child.submit.trajectory_package_json_dumps',dumping,dumps_s,bytes=len(text))
+                        timing.add('child.submit.trajectory_package_json_write',writing,time.monotonic()-writing,bytes=len(text))
+                        lap.t=time.monotonic()
+                    else:(task_dir/'trajectory-package.json').write_text(json.dumps(arg,indent=2,allow_nan=False))
                     (task_dir/'task.json').write_text(json.dumps({'task_id':task_id,'directory':str(task_dir)}))
+                    lap('task_json_write')
                     transport.check_limits(arg['prepared'])
+                    lap('check_limits')
                     if cancel_epoch is not None:
                         with cancel_epoch.get_lock():
                             if ticket!=cancel_epoch.value:raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                             stop_event.clear()
                     else:stop_event.clear()
+                    lap('cancel_epoch_check')
                     # No active sender while this bounded TCP query occurs.
                     payload=read_controller_payload(transport,expected_controller_payload(config))
+                    lap('controller_payload_query')
                     transport.capabilities['submit_tool_frame']=payload['tool']
                     (task_dir/'controller.json').write_text(json.dumps(transport.capabilities,indent=2))
+                    lap('controller_json_write')
                     if not payload['matches']:raise RuntimeError(payload_error(payload))
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                     # A task without its event record never starts.
                     try:handle=open(task_dir/'events.jsonl','a',buffering=1)
                     except OSError as error:raise RuntimeError('LOG_OPEN_FAILED_NO_MOTION:'+str(error)) from error
                     events.put({'_file':handle})
+                    lap('events_file_open')
                     if stop_event.is_set():raise RuntimeError('SUBMISSION_CANCELLED_BEFORE_MOTION')
                     value=engine.submit(arg['prepared'],transport.latest,task_id);active_package=arg
+                    lap('engine_submit')
+                    if timing.ENABLED:
+                        # Only this submit's own spans: never serialize unrelated spans here.
+                        spans,overhead=timing.recorder.take(since=received)
+                        events.put({'_timing':dict(schema='eco65_timing_v1',phase='child_submit',task_id=task_id,task_dir=str(task_dir),
+                            clock='time.monotonic',parent_sent_monotonic_s=sent,child_received_monotonic_s=received,
+                            pipe_transfer_s=None if sent is None else received-sent,first_send_due_monotonic_s=engine.start_time,
+                            measurement_overhead_s=overhead,events=spans)})
                 elif op=='cancel':
                     if arg!=engine.task_id:raise ValueError('UNKNOWN_TASK')
                     engine.cancel();value=None
@@ -165,7 +194,12 @@ class ExecutionService:
                 self.stop_event=ctx.Event()
                 self.cancel_epoch=ctx.Value('Q',0)
                 self.process=ctx.Process(target=worker,args=(child,self.mapping,self.config,self.stop_event,self.cancel_epoch),daemon=False);self.process.start();child.close()
-            self._id+=1;ident=self._id;self.pipe.send((ident,op,arg))
+            self._id+=1;ident=self._id
+            if timing.ENABLED:
+                if op=='submit' and isinstance(arg,dict):arg=dict(arg,timing_sent_monotonic=time.monotonic())
+                with timing.aggregated('ipc.pipe_send',op):self.pipe.send((ident,op,arg))
+            else:self.pipe.send((ident,op,arg))
+            waiting=timing.now()
             if not self.pipe.poll(10):
                 # Advance the cancel epoch too: a submit still inside its
                 # pre-motion checks compares the epoch and would otherwise
@@ -173,6 +207,7 @@ class ExecutionService:
                 self._poisoned=True;self.request_stop();self.authority.invalidate()
                 raise RuntimeError('EXECUTION_PROCESS_TIMEOUT_STOP_STATUS_UNKNOWN')
             got,ok,value=self.pipe.recv()
+            timing.aggregate('ipc.wait_and_receive_reply',op,timing.now()-waiting)
             if got!=ident:raise RuntimeError('IPC_SEQUENCE_ERROR')
             # An explicit submit reply of failure is raised before engine
             # acceptance in the child: nothing was sent for that package.
@@ -196,9 +231,14 @@ class ExecutionService:
                 self.authority.invalidate()
                 raise SubmissionRejected('SINGLE_CARTON_REPLAY_OR_FOREIGN_OBSERVATION_REJECTED')
         # Consume even rejected starts: an old preview can never be retried.
-        try:self.authority.claim(trajectory,self.binding())
+        try:
+            if timing.ENABLED:
+                with timing.span('service.submit.binding_rehash'):binding=self.binding()
+                with timing.span('service.submit.authority_claim'):self.authority.claim(trajectory,binding)
+            else:self.authority.claim(trajectory,self.binding())
         except Exception as e:raise SubmissionRejected(str(e)) from e
-        task=self._call('submit',dict(package=trajectory,cancel_epoch=ticket));self._active_id=task;return task
+        with timing.span('service.submit.ipc'):task=self._call('submit',dict(package=trajectory,cancel_epoch=ticket))
+        self._active_id=task;return task
     def feedback(self,task_id=None):
         try:self._cache=self._call('feedback')
         except (RuntimeError,EOFError,BrokenPipeError,OSError) as e:

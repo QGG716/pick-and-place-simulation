@@ -30,6 +30,7 @@ from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.ui import load_mapping, URDF, URDF_SHA, ROOT
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
 from unloading_sim.moveit2_backend import ResidentMoveItClient
+from unloading_sim.workbench import timing
 
 INPUTS = ('observation.json', 'observation.npz', 'segmentation.npz', 'geometry.json')
 
@@ -57,6 +58,7 @@ def main():
         raise SystemExit('RECORD_HAS_NO_FROZEN_OBSERVATION_AND_MASKS: '+str(record))
     out = (args.output or ROOT/'outputs/single_carton_development'/f'replay-{record.name[:8]}-{datetime.now():%Y%m%dT%H%M%S}').resolve()
     out.mkdir(parents=True, exist_ok=False)
+    replay_started = timing.now()
     config = load(args.config)
     obs = json.loads((record/'observation.json').read_text())
     arrays = np.load(record/'observation.npz'); saved = np.load(record/'segmentation.npz')
@@ -69,10 +71,16 @@ def main():
     detection_report = None
     if args.detector == 'config':
         from unloading_sim.workbench.single_carton.perception import make_detector
-        loading = time.monotonic(); model = make_detector(**config['detector']); load_s = time.monotonic()-loading
+        loading = time.monotonic()
+        with timing.span('vision.model_load'): model = make_detector(**config['detector'])
+        load_s = time.monotonic()-loading
         try:
-            inferring = time.monotonic(); boxes_only = model.detect_boxes(frame); detect_s = time.monotonic()-inferring
-            segmenting = time.monotonic(); result = model.segment(frame, boxes_only); segment_s = time.monotonic()-segmenting
+            inferring = time.monotonic()
+            with timing.span('vision.detect'): boxes_only = model.detect_boxes(frame)
+            detect_s = time.monotonic()-inferring
+            segmenting = time.monotonic()
+            with timing.span('vision.segment'): result = model.segment(frame, boxes_only)
+            segment_s = time.monotonic()-segmenting
         finally:
             if hasattr(model, 'close'): model.close()
         field = [saved[f'mask_{i}'] for i in range(len(saved.files))]
@@ -86,17 +94,21 @@ def main():
         print(json.dumps(dict(detection={k: v for k, v in detection_report.items() if k != 'remote'}), ensure_ascii=False, default=str), flush=True)
         detections, masks = result.detections, tuple(result.masks)
     started = time.monotonic()
-    boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
+    with timing.span('observe.reconstruct'):
+        boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
     installation = Installation.load(config['execution']['installation'])
     model = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     authority = Authority('eco65_single_carton_segment_v1')
     planner = SinglePlanner(config, load_mapping(config['execution']['mapping']), authority, model)
-    planner.build()
-    scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
-                        SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
-                        RobotSelfFilter(planner.init['parameters']['robot_description'], model))
-    (out/'geometry.json').write_text(json.dumps(dict(boxes=boxes, rejected=rejected), indent=2))
-    (out/'site-scene.json').write_text(json.dumps(scene))
+    with timing.span('observe.planner_build'): planner.build()
+    with timing.span('observe.self_filter_construct'):
+        self_filter = RobotSelfFilter(planner.init['parameters']['robot_description'], model)
+    with timing.span('observe.build_scene'):
+        scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
+                            SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
+                            self_filter)
+    timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected), 'geometry.json', indent=2)
+    timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
     report = dict(scope='OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE', record=str(record), task_id=record.name,
                   hardware_execution='NOT_RUN', physical_result='NOT_RUN', permits_issued=0,
                   prior_size_m=config['geometry']['prior_size_m'],
@@ -112,19 +124,26 @@ def main():
         if not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
-            planner.client = ResidentMoveItClient(['env', 'ROS_LOG_DIR='+str(out), str(ROOT/'ros2/m710_moveit_backend/worker.sh')], log_path=out/'moveit.log')
-            planner.worker_ready(planner.client.request(planner.init), boxes)
+            planning_entered = timing.now()
+            with timing.span('native.main_worker_process_start'):
+                planner.client = ResidentMoveItClient(['env', 'ROS_LOG_DIR='+str(out), str(ROOT/'ros2/m710_moveit_backend/worker.sh')], log_path=out/'moveit.log')
+            planner.worker_ready(timing.native_request(planner.client, planner.init, record='main-init'), boxes)
             report['native_output_check_deferral'] = planner.defer_output_check
             planner.start_check_pool(out)
             q = np.array(obs['q_start']); planning = time.monotonic()
             progress = lambda text: print(f'[{time.monotonic()-planning:7.1f}s] {text}', flush=True)
             for box in boxes:
-                found = planner.search_box(q, world, box, out, progress, lambda: False, failures, selected)
+                with timing.span('plan_cycle.search_box', target=box['id']):
+                    found = planner.search_box(q, world, box, out, progress, lambda: False, failures, selected)
                 if found: break
             report['planning_s'] = round(time.monotonic()-planning, 2)
+            if found and timing.ENABLED:
+                measure_plan_tail(planner, found, box, world, scene, obs, out)
+            timing.add('replay.planning_entry_to_search_end', planning_entered, timing.now()-planning_entered)
     finally:
-        planner.close_check_pool(); report['native_check_pool'] = planner.pool_status
-        if planner.client is not None: planner.client.close(); planner.client = None
+        with timing.span('plan_cycle.close_workers'):
+            planner.close_check_pool(); report['native_check_pool'] = planner.pool_status
+            if planner.client is not None: planner.client.close(); planner.client = None
         if authority._plans: raise SystemExit('OFFLINE_REPLAY_MUST_NOT_REGISTER_PERMITS')
         report['failures'] = failures
         if found:
@@ -146,7 +165,62 @@ def main():
         report['source_record_unchanged'] = before == after
         (out/'replay-report.json').write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
         print('report', out/'replay-report.json')
+        if timing.ENABLED:
+            # Measurement only, after the replay: all spans of this run.
+            events, overhead = timing.recorder.take(replay_started)
+            (out/'timing-replay.json').write_text(json.dumps(dict(
+                schema='eco65_timing_v1', phase='offline_replay', clock='time.monotonic', task_id=record.name,
+                measurement_overhead_s=overhead, events=events), default=str))
         if before != after: raise SystemExit('SOURCE_RECORD_CHANGED')
+
+
+def measure_plan_tail(planner, found, box, world, scene, obs, out):
+    """Time what ``plan_cycle`` does after the search, without minting any permit.
+
+    The same binding rehash, the digest that ``Authority.register`` takes of each
+    segment package, the ``complete-plan.json`` serialization/write and the
+    ``Cycle.ready`` plan digest, on an equivalently shaped plan. Nothing is
+    registered; the written measurement file is removed at once. The segments
+    are kept for the fake-IO scheduling measurement as NOT_EXECUTABLE data.
+    """
+    from unloading_sim.workbench.controlled.trajectory import digest as content_digest
+    from unloading_sim.workbench.single_carton.config import start_joint_check
+    candidate = found['candidate']; attachment = found['attachment']; release = found['release']
+    size = np.array(box['size_m']); mass = planner.site['carton_mass_kg']
+    planner.cycle_binding = dict(task_id=Path(out).name, observation=obs, target=box, world=content_digest(world),
+        candidate=candidate, attachment=np.asarray(attachment).tolist(), release=release,
+        expected_attachment='PLANNED_NOT_PHYSICALLY_CONFIRMED', site_scene=scene, release_world=world,
+        payload_mass_properties=dict(mass_kg=mass, com_box_m=[0., 0., 0.],
+            inertia_box_kg_m2=(mass/12*np.diag([size[1]**2+size[2]**2, size[0]**2+size[2]**2, size[0]**2+size[1]**2])).tolist(),
+            basis='USER_CONFIRMED_2_KG_UNIFORM_CUBOID_INERTIA_ESTIMATE'))
+    try:
+        with timing.span('plan_cycle.binding'): binding = planner.binding()
+        segments = []
+        for s in found['segments']:
+            package = dict(schema=planner.authority.schema, session='MEASUREMENT_ONLY_NO_SESSION', plan_id='0'*32,
+                           prepared=s['prepared'], binding=binding, evidence=s['evidence'])
+            with timing.span('authority.register_digest', stage=s['stage'], equivalent=True): content_digest(package)
+            segments.append(dict(stage=s['stage'], package=package))
+        start_policy = start_joint_check(planner.site)
+        plan = dict(binding=binding, segments=segments, target=box, candidate=candidate, release=release,
+                    start_joint_check=start_policy, q_start=list(obs['q_start']), T_world_tcp_start=obs.get('T_world_tcp_start'),
+                    full_path_validated=True, candidate_index=found['index'], endpoint_screen=found['screen']['conclusion'],
+                    candidate_lanes=found.get('lanes', 1), hardware_execution='NOT_RUN',
+                    duration_s=sum(s['prepared']['send_duration_s'] for s in found['segments']))
+        probe = Path(out)/'tail-measurement-NOT-A-PLAN.json'
+        timing.write_json(probe, plan, 'complete-plan.json'); probe.unlink()
+        with timing.span('prepare_plan.cycle_ready', equivalent=True): content_digest(plan)
+        for s in segments:
+            with timing.span('child.submit.trajectory_package_json_dumps', stage=s['stage'], equivalent=True):
+                text = json.dumps(s['package'], indent=2, allow_nan=False)
+            timing.add('child.submit.trajectory_package_bytes', timing.now(), 0., stage=s['stage'], bytes=len(text), equivalent=True)
+        (Path(out)/'measurement-segments-NOT-EXECUTABLE.json').write_text(json.dumps(dict(
+            status='MEASUREMENT_INPUT_NOT_EXECUTABLE_NO_PERMIT', binding=binding, candidate=candidate, target=box,
+            release=release, q_start=list(obs['q_start']), attachment=np.asarray(attachment).tolist(),
+            segments=[dict(stage=s['stage'], prepared=s['prepared'], evidence=s['evidence']) for s in found['segments']]),
+            default=str))
+    finally:
+        planner.cycle_binding = None
 
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@
 #include "native_zero_motion.h"
 #include "native_semantic_event.h"
 #include "static_prior.h"
+#include "native_timing.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <moveit/kinematic_constraints/utils.h>
 
@@ -1136,6 +1137,8 @@ public:
     // model/TCP contexts. Restore this worker's bound frames on every dispatch.
     if(model) m710::bindNativeFrames(identity);
     auto begin=Clock::now(); auto op=req.at("op").get<std::string>();
+    if(m710::NativeTiming::enabled())
+      m710::NativeTiming::instance().stage(req.contains("stage")&&req.at("stage").is_string()?req.at("stage").get<std::string>():std::string());
     if(op=="init") {
       if(model) throw std::runtime_error("ALREADY_INITIALIZED");
       m710::bindNativeFrames(req.at("identity"));
@@ -1182,6 +1185,7 @@ public:
         else if(v.is_array()) params.emplace_back(it.key(),v.get<std::vector<std::string>>());
         else throw std::runtime_error("INVALID_PARAMETER_TYPE");
       }
+      auto init_model=std::make_unique<m710::NativeSpan>("init.node_and_model_load");
       node=std::make_shared<rclcpp::Node>("m710_moveit_worker_"+req.at("identity").at("model_tool_fingerprint").get<std::string>().substr(0,12), rclcpp::NodeOptions().parameter_overrides(params).automatically_declare_parameters_from_overrides(true));
       loader=std::make_shared<robot_model_loader::RobotModelLoader>(node,"robot_description");
       model=loader->getModel(); if(!model) throw std::runtime_error("MODEL_UNAVAILABLE");
@@ -1191,6 +1195,7 @@ public:
                             req.at("identity").at("task_tcp_link").get<std::string>()})
         if(!model->getLinkModel(link)) throw std::runtime_error("ROBOT_FRAME_UNAVAILABLE:"+link);
       names=group->getVariableNames(); if(names!=req.at("joint_names").get<std::vector<std::string>>()) throw std::runtime_error("JOINT_ORDER_MISMATCH");
+      init_model.reset();auto init_pipelines=std::make_unique<m710::NativeSpan>("init.planning_pipelines");
       for(const auto& name:{"pilz_industrial_motion_planner","ompl"}) {
         auto p=std::make_shared<planning_pipeline::PlanningPipeline>(model,node,name,"planning_plugin","request_adapters");
         if(!p->getPlannerManager()) throw std::runtime_error(std::string("PIPELINE_UNAVAILABLE:")+name);
@@ -1198,6 +1203,7 @@ public:
         pipelines[name]=p;
       }
       original_ompl_configurations=pipelines.at("ompl")->getPlannerManager()->getPlannerConfigurations();
+      init_pipelines.reset();m710::NativeSpan init_policy("init.geometry_and_policy_validation");
       for(auto it=req.at("expected_collision_shapes").begin();it!=req.at("expected_collision_shapes").end();++it) {
         const auto* link=model->getLinkModel(it.key());
         if(!link || link->getShapes().size()!=it.value().get<size_t>()) throw std::runtime_error("COLLISION_GEOMETRY_MISSING:"+it.key());
@@ -1387,6 +1393,7 @@ public:
     }
     if(req.value("cancelled",false)) throw std::runtime_error("CANCELLED");
     if(op=="ik") {
+      m710::NativeSpan ik_span("ik");
       if(req.contains("history") || req.contains("path") || req.contains("q_goal")) throw std::runtime_error("NATIVE_IK_FORBIDDEN_INPUT");
       const auto* group=model->getJointModelGroup(m710::nativeFrames().planning_group);const auto& solver=group->getSolverInstance();
       if(!solver || solver->getJointNames()!=names || solver->getTipFrame()!=identity.at("task_tcp_link").get<std::string>()) throw std::runtime_error("NATIVE_IK_SOLVER_CONTEXT_MISMATCH");
@@ -1414,8 +1421,10 @@ public:
     if(!req.at("path_constraints").empty()) throw std::runtime_error("UNSUPPORTED_PATH_CONSTRAINTS");
     auto imported=Clock::now();
     std::string key=req.at("scene_fingerprint"); bool changed=key!=scene_key;
-    if(!changed && req.at("world")!=scene_content) throw std::runtime_error("SCENE_FINGERPRINT_REUSED_WITH_DIFFERENT_CONTENT");
+    {m710::NativeSpan span("world.compare_same_fingerprint");
+    if(!changed && req.at("world")!=scene_content) throw std::runtime_error("SCENE_FINGERPRINT_REUSED_WITH_DIFFERENT_CONTENT");}
     if(changed) {
+      m710::NativeSpan span("world.import_new_scene");
       auto next=std::make_shared<planning_scene::PlanningScene>(model); std::set<std::string> ids;
       for(const auto& b:req.at("world")) {
         if(!ids.insert(b.at("id").get<std::string>()).second) throw std::runtime_error("DUPLICATE_OBJECT");
@@ -1423,6 +1432,7 @@ public:
       }
       base=next;scene_key=key;scene_content=req.at("world");
     }
+    auto scene_setup=std::make_unique<m710::NativeSpan>("scene.diff_acm_attachment");
     auto scene=base->diff(); scene->decoupleParent(); scene->setCurrentState(state);
     auto& acm=scene->getAllowedCollisionMatrixNonConst();
     for(const auto& pair:req.at("allowed_pairs")) acm.setEntry(pair.at(0).get<std::string>(),pair.at(1).get<std::string>(),true);
@@ -1436,6 +1446,7 @@ public:
       if(!scene->processAttachedCollisionObjectMsg(a)) throw std::runtime_error("ATTACH_FAILED");
       if(scene->getWorld()->hasObject(attached_id)) throw std::runtime_error("DUPLICATE_ATTACHMENT");
     }
+    scene_setup.reset();
     double import_s=seconds(imported);
     if(op=="inspect") {
       J permissions=J::array();
@@ -1484,8 +1495,9 @@ public:
           req.at("clearance_policy").at("schema")=="eco65_native_process_clearance_v1") && !process && op!="build_static_prior")
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       if(req.value("require_native_motion",false) && (op=="plan" || op=="diagnostic_connection") && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
+      {m710::NativeSpan span("clearance.construct_and_workspace");
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),
-        (cycle_binding || identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON")?native_deadline:nullptr,req);
+        (cycle_binding || identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON")?native_deadline:nullptr,req);}
       // Environment + ACM belong to this immutable candidate. The predicate
       // always checks OMPL's supplied state, including its real attached body.
       scene->setStateFeasibilityPredicate([clearance,process](const moveit::core::RobotState& current,bool verbose){
@@ -1551,19 +1563,25 @@ public:
           {"legacy_intersection_s",legacy_s},{"legacy_intersection_queries",legacy_queries},{"batch_s",seconds(t)}};
       }
       collision_detection::CollisionRequest old_request;old_request.contacts=true;old_request.max_contacts=20;
-      collision_detection::CollisionResult old_result;scene->checkCollision(old_request,old_result);
+      collision_detection::CollisionResult old_result;
+      {m710::NativeSpan span("validate.legacy_collision");scene->checkCollision(old_request,old_result);}
       clearance->phase="diagnostic";
+      auto endpoint_span=std::make_unique<m710::NativeSpan>("validate.endpoint_state");
       const bool clearance_valid=clearance->check(scene->getCurrentState());const J failure=clearance->last_failure;
       const bool process_valid=!process || process->check(scene->getCurrentState(),true);
+      endpoint_span.reset();
       const J process_failure=process?process->last_failure:J(nullptr);
-      J path_failure=nullptr,process_path_failure=nullptr;if(req.contains("probe_path")) {clearance->phase="output";path_failure=path_check(req.at("probe_path"));
+      J path_failure=nullptr,process_path_failure=nullptr;if(req.contains("probe_path")) {clearance->phase="output";
+        {m710::NativeSpan span("validate.check_path");path_failure=path_check(req.at("probe_path"));}
         if(process) process_path_failure=process->checkPath(scene->getCurrentState(),req.at("probe_path"),req.at("clearance_policy").at("edge_resolution_rad"));}
+      m710::NativeSpan evidence_span("validate.reply_evidence");
       return {{"status","SUCCESS"},{"legacy_intersection_valid",!old_result.collision},{"native_valid",clearance_valid&&process_valid},
         {"failure",failure},{"path_failure",path_failure},{"clearance",clearance->evidence()},
         {"process_valid",process_valid},{"process_failure",process_failure},{"process_path_failure",process_path_failure},{"process_policy_evidence",process?process->evidence():J(nullptr)},
         {"world_count",scene->getWorld()->size()},{"attached_id",attached_id},{"pipeline_calls",calls}};
     }
     if(op=="plan" || op=="diagnostic_connection") {
+      m710::NativeSpan span("plan.start_goal_checks");
       const std::string phase=req.at("stage");
       const int expected=cycle_binding?m710::ecoCycleDirection(req):
         directed_j1?(phase=="contact"||phase=="extraction"||phase=="transit"||phase=="place"?-1:phase=="withdrawal"||phase=="residence"?1:0):0;
@@ -1590,7 +1608,8 @@ public:
       }
     }
     collision_detection::CollisionRequest cr; cr.contacts=true; cr.max_contacts=20;
-    collision_detection::CollisionResult collision; scene->checkCollision(cr,collision);
+    collision_detection::CollisionResult collision;
+    {m710::NativeSpan span("plan.start_legacy_collision");scene->checkCollision(cr,collision);}
     if(collision.collision) {
       J pairs=J::array();for(auto& p:collision.contacts) pairs.push_back({p.first.first,p.first.second});
       return {{"status","INVALID_START_COLLISION"},{"collision_pairs",pairs},{"scene_import_s",import_s}};
@@ -1651,7 +1670,8 @@ public:
       native_deadline->set(std::min(request_deadline,planning+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(solve_budget))));
       m710::active_native_deadline=native_deadline;
     }
-    task.plan(1);double plan_s=seconds(planning);
+    {m710::NativeSpan span(pipeline=="ompl"?"plan.solve_ompl":"plan.solve_pilz");task.plan(1);}
+    double plan_s=seconds(planning);
     const bool solve_expired=bounded_single&&native_deadline->expired();
     if(bounded_single){native_deadline->set(request_deadline);m710::active_native_deadline.reset();}
     J out={{"status","SEARCH_EXHAUSTED"},{"pipeline_id",pipeline},{"planner_id",planner},{"mtc_attempt_index",requests},{"pipeline_calls",calls},
@@ -1670,6 +1690,7 @@ public:
         if(message.find("NO_IK_SOLUTION")!=std::string::npos) out["status"]="NATIVE_IK_FAILED";
         else if(message.find("INVALID_MOTION_PLAN")!=std::string::npos) out["status"]="NATIVE_INVALID_MOTION_PLAN";
       }return out;}
+    auto output_span=std::make_unique<m710::NativeSpan>("plan.solution_to_points");
     moveit_task_constructor_msgs::msg::Solution msg;task.solutions().front()->toMsg(msg);
     J points=J::array();
     for(auto& sub:msg.sub_trajectory) {
@@ -1689,6 +1710,7 @@ public:
     // clearance->checkPath ("output" phase, same policy and resolution) on
     // the exact sent quintic path, which contains every returned waypoint,
     // before the segment can be registered. Every other scope keeps it.
+    output_span.reset();
     if(defer_output) {
       out["native_output_check_s"]=nullptr;out["clearance"]=clearance->evidence();
       out["native_output_status"]="DEFERRED_TO_CALLER_SENT_PATH_CHECK";
@@ -1697,7 +1719,8 @@ public:
         {"returned_waypoints",points.size()}};
     } else {
     clearance->phase="output"; J path=J::array();for(const auto& p:points) path.push_back(p.at("q"));
-    auto output_check=Clock::now();J native_failure=path_check(path);
+    auto output_check=Clock::now();J native_failure;
+    {m710::NativeSpan span("plan.output_check_path");native_failure=path_check(path);}
     out["native_output_check_s"]=seconds(output_check);out["clearance"]=clearance->evidence();
     if(!native_failure.is_null()) {out["status"]="NATIVE_PATH_REJECTED";out["failure"]=native_failure;out["points"]=points;out["total_s"]=seconds(begin);return out;}
     out["native_output_status"]="PASS";
@@ -1709,8 +1732,13 @@ public:
 #ifndef M710_NATIVE_WORKER_NO_MAIN
 int main(int argc,char**argv) {
   setenv("RCUTILS_LOGGING_USE_STDOUT","0",1);rclcpp::init(argc,argv);std::map<std::string,std::unique_ptr<Worker>> workers;std::map<std::string,J> startups,init_requests;std::string line;
+  // Measurement only (M710_NATIVE_TIMING=1). The serialization time of a
+  // reply is known only after it is written, so it is reported with the next.
+  const bool timing=m710::NativeTiming::enabled();double previous_dump_s=-1.,previous_reply_bytes=-1.;
   while(std::getline(std::cin,line)) {
-    J req,answer;try {req=J::parse(line); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
+    const auto received=Clock::now();double parse_s=-1.;
+    if(timing)m710::NativeTiming::instance().reset();
+    J req,answer;try {req=J::parse(line);parse_s=seconds(received); auto* protocol=std::cout.rdbuf(std::cerr.rdbuf()); try {const auto key=req.at("identity").dump();
       J init_content=req;init_content.erase("request_id");
       if(req.at("op")=="init" && startups.count(key)) {
         if(init_content!=init_requests.at(key)) throw std::runtime_error("CONTEXT_IDENTITY_REUSED_WITH_DIFFERENT_CONTENT");
@@ -1726,7 +1754,17 @@ int main(int argc,char**argv) {
         if(req.at("op")=="init") {answer["context_reused"]=false;startups[key]=answer;init_requests[key]=init_content;}
       }} catch(...) {std::cout.rdbuf(protocol);throw;} std::cout.rdbuf(protocol);} catch(const std::exception& e) {answer={{"status","ERROR"},{"detail",e.what()}};}
     if(!answer.contains("evaluation_profile"))answer["evaluation_profile"]=req.value("evaluation_profile",std::string("strict"));
-    answer["request_id"]=req.value("request_id",std::string());std::cout<<answer.dump()<<std::endl;
+    answer["request_id"]=req.value("request_id",std::string());
+    if(timing) {
+      J t=m710::NativeTiming::instance().json();
+      t["request_line_bytes"]=line.size();t["request_parse_s"]=parse_s<0?J(nullptr):J(parse_s);
+      t["handled_s"]=seconds(received);
+      t["previous_reply_dump_s"]=previous_dump_s<0?J(nullptr):J(previous_dump_s);
+      t["previous_reply_bytes"]=previous_reply_bytes<0?J(nullptr):J(previous_reply_bytes);
+      answer["native_timing"]=t;
+      const auto dumping=Clock::now();const std::string text=answer.dump();previous_dump_s=seconds(dumping);
+      previous_reply_bytes=double(text.size());std::cout<<text<<std::endl;
+    } else std::cout<<answer.dump()<<std::endl;
   }
   rclcpp::shutdown();return 0;
 }

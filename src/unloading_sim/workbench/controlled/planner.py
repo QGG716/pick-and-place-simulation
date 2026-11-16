@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 from scipy.spatial.transform import Rotation
 from ..coordinates import Installation
+from .. import timing
 from .trajectory import Limits, digest, prepare,expected_controller_payload
 
 ROOT=Path(__file__).resolve().parents[4]
@@ -74,7 +75,14 @@ class EmptyPlanner:
         if expected is not None and value!=expected:raise ValueError('ASSET_HASH_MISMATCH:'+str(path))
         self.files[str(path)]=value;return path
     def binding(self):
-        current={p:file_hash(p) for p in self.files}
+        if not timing.ENABLED:current={p:file_hash(p) for p in self.files}
+        else:
+            # Measurement only: one fixed-size aggregate per file, plus the whole binding.
+            current={};started=timing.now()
+            for p in self.files:
+                one=timing.now();current[p]=file_hash(p)
+                timing.aggregate('binding.rehash_file',p,timing.now()-one,bytes=Path(p).stat().st_size)
+            timing.aggregate('binding.rehash_all',len(self.files),timing.now()-started)
         if current!=self.files:raise ValueError('INPUT_CHANGED_REBUILD_PLAN')
         return dict(files=current,model=self.model_hash,scene=self.scene_hash,
                     implementation_commit=self.commit,
@@ -225,16 +233,16 @@ class EmptyPlanner:
         self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(directory),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=directory/'moveit.log')
         try:
             progress('启动原生规划器并导入完整场景')
-            self.client.request(self.init)
+            timing.native_request(self.client,self.init)
             progress('生成 MoveIt / Pilz 关节路径')
-            result=self.client.request(self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
+            result=timing.native_request(self.client,self.request(q,op='plan',q_goal=goal.tolist(),pipeline_id='pilz_industrial_motion_planner',planner_id='PTP',velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=20.),timeout=120)
             (directory/'native-plan.json').write_text(json.dumps(result,indent=2))
             if result['status']!='SUCCESS' or result.get('native_output_status')!='PASS':raise ValueError('NATIVE_PLAN_REJECTED:'+str(result.get('failure',result['status'])))
             if len(result.get('points',[]))<2:
                 raise ValueError('原生规划器未生成可运动的时间轨迹（少于两个时间点）。请检查目标后重新规划；当前轨迹不可执行。')
             prepared=prepare(result['points'],self.limits,time_scale=time_scale,period=self.config['period_s'],reach_bound_m=self.reach_bound)
             progress(f"检查最终发送路径碰撞：{len(prepared['points'])} 个发送点，{len(prepared['collision_path'])} 个路径点；计划运动 {prepared['send_duration_s']:.3f} s")
-            checked=self.client.request(self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=600)
+            checked=timing.native_request(self.client,self.request(q,op='validate',probe_path=prepared['collision_path']),timeout=600)
             (directory/'sent-path-check.json').write_text(json.dumps(checked,indent=2))
             if not checked.get('native_valid') or not checked.get('legacy_intersection_valid') or checked.get('path_failure') is not None:raise ValueError('SENT_PATH_COLLISION_REJECTED:'+str(checked.get('path_failure',checked.get('failure'))))
             evidence=dict(native_plan='PASS',sent_path_collision='PASS',native_result=result,collision_result=checked,start_sample=sample,removed_simulation_exemptions=self.removed,planning_record=str(directory),hardware_execution='NOT_RUN')

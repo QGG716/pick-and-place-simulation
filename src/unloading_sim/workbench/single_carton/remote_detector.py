@@ -22,6 +22,7 @@ import hashlib
 import numpy as np
 from .hf_detector_core import directory_hashes
 from .remote_detector_server import PROTOCOL, read_frame, write_frame
+from .. import timing
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
@@ -155,8 +156,9 @@ class RemoteGroundingSAM:
     # -- detector interface ----------------------------------------------------------
     def detect_boxes(self, frame):
         from .perception import detection_result
-        png, digest = encode_png(frame.rgb)
+        with timing.span('remote.encode_png', op='detect'): png, digest = encode_png(frame.rgb)
         reply, _, elapsed = self.request(dict(op='detect', image_sha256=digest), png)
+        self._time_exchange('detect', reply, elapsed, len(png), 0)
         boxes = reply.get('detections')
         if (reply.get('image_sha256') != digest or reply.get('shape') != list(frame.rgb.shape) or
                 not isinstance(boxes, list) or not all(_finite_box(b) for b in boxes)):
@@ -166,11 +168,15 @@ class RemoteGroundingSAM:
     def segment(self, frame, detection):
         from .perception import segmentation_result
         if detection.observation_id != frame.observation_id: raise ValueError('SAM_FRAME_MISMATCH')
-        png, digest = encode_png(frame.rgb); boxes = [item['bbox_xyxy'] for item in detection.detections]
+        with timing.span('remote.encode_png', op='segment'): png, digest = encode_png(frame.rgb)
+        boxes = [item['bbox_xyxy'] for item in detection.detections]
         if not boxes: return segmentation_result(frame, detection, [], [])
         header = dict(op='segment', image_sha256=digest, boxes=boxes)
         reply, data, elapsed = self.request(header)
-        if reply is None: reply, data, more = self.request(header, png); elapsed += more
+        uploaded = 0
+        if reply is None: reply, data, more = self.request(header, png); elapsed += more; uploaded = len(png)
+        self._time_exchange('segment', reply, elapsed, uploaded, len(data or b''))
+        decoding = timing.now()
         shape = tuple(frame.rgb.shape[:2]); ious = reply.get('ious')
         if (reply.get('image_sha256') != digest or tuple(reply.get('shape', ())) != shape or reply.get('count') != len(boxes)
                 or not isinstance(ious, list) or not all(isinstance(x, (int, float)) and math.isfinite(x) for x in ious)):
@@ -178,7 +184,17 @@ class RemoteGroundingSAM:
         with np.load(io.BytesIO(data), allow_pickle=False) as packed:
             if sorted(packed.files) != sorted(f'mask_{i}' for i in range(len(boxes))): raise RemoteDetectorError('REMOTE_SEGMENTATION_RESULT_INVALID')
             masks = [np.unpackbits(packed[f'mask_{i}'], count=shape[0]*shape[1]).reshape(shape).astype(bool) for i in range(len(boxes))]
+        timing.add('remote.decode_masks', decoding, timing.now()-decoding, masks=len(masks))
         return segmentation_result(frame, detection, masks, ious, self.inference(reply, elapsed, digest))
+
+    @staticmethod
+    def _time_exchange(op, reply, round_trip, sent_bytes, received_bytes):
+        """Measurement only: round trip split into server inference and the rest."""
+        if not timing.ENABLED or not isinstance(reply, dict): return
+        server = reply.get('inference_s')
+        timing.add('remote.round_trip', timing.now()-round_trip, round_trip, op=op, server_inference_s=server,
+                   transfer_and_protocol_s=None if server is None else round_trip-server,
+                   sent_image_bytes=sent_bytes, received_bytes=received_bytes)
 
     def detect(self, frame):
         return self.segment(frame, self.detect_boxes(frame))

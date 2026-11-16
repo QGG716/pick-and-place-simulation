@@ -16,6 +16,7 @@ from unloading_sim.workbench.ui import load_mapping, URDF, URDF_SHA, ROOT
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
 from unloading_sim.moveit2_backend import ResidentMoveItClient
 from unloading_sim.workbench.single_carton.geometry import corners, contact_candidates
+from unloading_sim.workbench import timing
 
 
 def main():
@@ -61,6 +62,12 @@ def main():
     finally:
         (folder/'result.json').write_text(json.dumps(report, indent=2))
         planner.close()
+        if timing.ENABLED:
+            # Measurement only (ECO65_TIMING=1), written after the check.
+            events, overhead = timing.recorder.take()
+            (folder/'timing-native-check.json').write_text(json.dumps(dict(
+                schema='eco65_timing_v1', phase='native_component_check', clock='time.monotonic',
+                measurement_overhead_s=overhead, events=events), default=str))
         print(json.dumps({k:v for k,v in report.items() if k!='binding'}, indent=2))
 
 

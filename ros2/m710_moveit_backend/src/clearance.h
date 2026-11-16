@@ -152,6 +152,12 @@ public:
     const auto start=std::chrono::steady_clock::now();
     auto& c=counts_[phase];++c.queries;
     last_failure=nullptr;
+    // Measurement only (M710_NATIVE_TIMING=1): duration of this one complete
+    // exact state check; every rejection path sets last_failure before return.
+    struct StateTiming {
+      bool on;Clock::time_point start;const std::string& phase;const Json& failure;
+      ~StateTiming() {if(on)NativeTiming::instance().state(phase,failure.is_null(),Clearance::elapsed(start));}
+    } state_timing{NativeTiming::enabled(),start,phase,last_failure};
     if(nativeExpired(deadline_)) {
       last_failure={{"reason","NATIVE_ABSOLUTE_DEADLINE_EXPIRED"},{"phase",phase}};
       ++c.rejected;return false;
@@ -180,9 +186,10 @@ public:
     };
     if(!input.satisfiesBounds()) {last_failure={{"reason","JOINT_BOUNDS"}};return finish(false);}
     auto copying=Clock::now();
-    auto state=input;state.updateCollisionBodyTransforms();
+    auto state=input;
+    {NativeSpan span("clearance.state_copy_update");state.updateCollisionBodyTransforms();}
     if(single_carton_) {
-      last_failure=single_carton_->check(state);
+      {NativeSpan span("clearance.single_carton_contact");last_failure=single_carton_->check(state);}
       if(!last_failure.is_null())return finish(false);
     }
     profile_["state_copy_update_s"]+=elapsed(copying);

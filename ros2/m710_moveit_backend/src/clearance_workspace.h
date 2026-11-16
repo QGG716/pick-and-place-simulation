@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <limits>
 #include "native_deadline.h"
+#include "native_timing.h"
 
 namespace m710 {
 // FCL 0.7 computeAABB expands every rotated shape to a radius cube. Transform
@@ -164,6 +165,19 @@ public:
       failure.reason="NATIVE_ABSOLUTE_DEADLINE_EXPIRED";failure.distance=std::numeric_limits<double>::quiet_NaN();return true;};
     if(expired())return false;
     auto& stats=phases[phase];
+    // Measurement only (M710_NATIVE_TIMING=1): report this state's deltas of
+    // the existing broad-phase and exact FCL counters on every exit path.
+    struct TimingDelta {
+      bool on;const Stats before;const Stats& after;const std::string& phase;
+      ~TimingDelta() {
+        if(!on)return;
+        NativeTiming::instance().workspace(phase,double(after.hierarchy_nodes_visited-before.hierarchy_nodes_visited),
+          double(after.aabb_tests-before.aabb_tests),double(after.aabb_skips-before.aabb_skips),
+          double(after.narrow_calls-before.narrow_calls),double(after.self_narrow-before.self_narrow),
+          double(after.world_narrow-before.world_narrow),after.update_s-before.update_s,
+          after.broad_s-before.broad_s,after.narrow_s-before.narrow_s);
+      }
+    } timing_delta{NativeTiming::enabled(),stats,stats,phase};
     ++stats.queries;auto updating=Clock::now();
     if(state.getRobotModel()!=context_.getRobotModel()) throw std::runtime_error("WORKSPACE_MODEL_CHANGED");
     std::vector<const moveit::core::AttachedBody*> current;state.getAttachedBodies(current);
