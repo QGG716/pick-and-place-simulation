@@ -466,7 +466,11 @@ class SinglePlanner(EmptyPlanner):
                   face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
-        with timing.span('context.digest_world',stage=stage,objects=len(world)):fingerprint=digest(world)
+        if self.enabled('scene_handles') and world is self.scene_world:
+            # The task's world was hashed once when its scene was registered.
+            fingerprint=self.scene_fingerprint
+        else:
+            with timing.span('context.digest_world',stage=stage,objects=len(world)):fingerprint=digest(world)
         context=dict(identity=self.init['identity'],q_start=list(q),start_velocity=[0.]*6,path_constraints=[],
             scene_fingerprint=fingerprint,world=world,allowed_pairs=pairs,attachment=attached,clearance_policy=policy,
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
@@ -515,6 +519,7 @@ class SinglePlanner(EmptyPlanner):
         handle=self.scene_handle(client,folder)
         return {**{k:v for k,v in request.items() if k!='world'},'scene_handle':handle}
     def native_call(self,request,folder,name,timeout,cancelled=None,client=None):
+        if self.enabled('scene_handles'):request=self.with_scene_handle(request,client or self.client,folder)
         if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client)
         # Persist before dispatch: a timed-out worker cannot return its request
         # or profiling data. Keep every Pilz/OMPL attempt instead of overwriting.
