@@ -34,6 +34,14 @@
 
 规范二进制摘要：`SHA-256(header 规范 JSON ‖ 每块 dtype ‖ shape ‖ payload)`，签发（`Authority.register`）与核对（`Authority.verify` / `claim`）两端用同一函数计算（AGENTS §3g）。
 
+第 7 步实际实现：
+- 帧格式与上表一致：`binary_frames.h` 和 `workbench/binary_frames.py`。
+  - 数据块规则两边相同：64 个及以上 JSON 浮点组成的数组，或等长浮点行组成的矩阵，按排序键深度优先编号。
+  - 接收端还原出相同的 float64 位模式。
+- **共享内存未实现**，数据块随帧在管道中传输。
+- 取消帧为 kind 4。
+- JSONL 仍是缺省，只有 `planning_module=NATIVE` 的客户端在 init 确认后才改用帧。
+
 ## 1. 模块开关（PYTHON | NATIVE）与机制开关
 
 模块选择（AGENTS §2：缺省 PYTHON，直到在保存记录上有判定完全一致的等价报告；NATIVE 失败只报告，绝不静默回退）：
@@ -77,8 +85,9 @@
 | `sc_scene_release` | 新（第 4 步） | `scene_handle` | `status=RELEASED` | — |
 | `cancel` | 新（第 4 步，带外帧） | `target_request_id` | 被取消请求按截止时间到期返回，回复带 `cancelled_by_request=true` | `ResidentMoveItClient.request` 的 `cancelled` 回调 |
 | `sc_ik_multi` | 新（第 7–8 步） | `goal_pose`、种子列表（本任务的 q_start、本任务解及 J6 四分之一转变体、64 个固定伪随机种子） | 按离 `q_reference` 由近到远排序的不同解（差 ≥ 1e-3 rad） | `SinglePlanner.ik_seeds`、`spread_seeds`、`endpoint_ik` |
-| `sc_endpoint_screen` | 新（第 7 步） | 一批候选的带载起点上下文、接近/接触/脱离终态位姿 | 每个候选的 `conclusion`（CLEAR / NOT_CONCLUSIVE / TOOL_OR_PAYLOAD_POSE_BLOCKED / TARGET_BLOCKED）与逐条记录 | `SinglePlanner.screen_candidate`、`endpoint_precheck`、`payload_world_blocked` |
-| `sc_plan_candidate` | 新（第 7 步） | 一个候选的全部四段输入 | 四段 `prepared`、证据或 `SegmentRejected` 等价结论 | `SinglePlanner.plan_candidate_segments`、`verify_candidate` |
+| `sc_endpoint_screen` | 已实现（第 7 步） | 每个候选由 Python 生成的模板：带载起点 validate、接近/接触/脱离 validate、两个 IK 模板、工具连杆、箱号、世界编号；64 个固定种子、限值 | 每个候选的结论（CLEAR / NOT_CONCLUSIVE / LOADED_START_REJECTED / ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED / TARGET_BLOCKED），以及每个子请求的请求（不含 world）与结果 | `SinglePlanner.screen_candidate`、`endpoint_precheck`、`endpoint_ik`、`ik_seeds`、`payload_world_blocked` |
+| `sc_plan_candidate` | 已实现（第 7 步），分两段：`CONTACT`（接近，屏蔽时已知则跳过；接触直线及降速重试），`DETACH_AND_VERIFY`（三种脱离方案、接近、带载返回、发送路径检查、换方案重试） | Python 生成的规划请求与上下文模板；密封、附着、承接、脱离目标在两段之间由 Python 计算 | 子请求记录、worker 的 prepare 结果、结论 | `SinglePlanner.plan_candidate_segments`、`plan_segment`、`verify_candidate`、`sent_check` |
+| `sc_prepare` | 已实现（第 7 步） | `points`、`limits`、`time_scale`、`period_s`、`reach_bound_m` | 与 `prepare` 相同的字段或相同的错误串 | `controlled/trajectory.py prepare` |
 
 ### A.2 请求上下文字段（`SinglePlanner.context`）
 
@@ -107,6 +116,12 @@
 
 候选生成 `geometry.contact_candidates`（顺序即优先级）、密封检查 `candidate_contact_check`、原位包络检查 `payload_rest_check`、承接检查 `release_check`、许可签发 `Authority.register`、全部记录与 UI 进度。第 7 步若把候选级流程下沉，Python 仍保留旧流程（`planning_module=PYTHON`），结论必须逐项一致。
 
+第 7 步（`planning_module=NATIVE`）的结论来源：worker 按与 Python 相同的分支执行复合请求，并记录每个子请求和结果；Python 随后用回放客户端运行**原样不变**的 `screen_candidate` 和 `plan_candidate`。
+- Python 发出的每个请求都必须与记录一致：易变的预算和截止字段、world 除外；world 按 `scene_fingerprint` 核对，探测路径按长度和首末状态核对。
+- 不一致即报 `NATIVE_FLOW_DIVERGED`，不回退。
+- 结论、失败信息和证据文件仍由原 Python 代码产生，prepare 结果来自 worker。
+- 候选按进程车道运行，每条车道一个 worker，一个候选的全部规划都在该车道的 worker 上进行。并行车道流程（示例配置 7 条车道）与 PYTHON 并行流程中每个 worker 的规划请求序列相同。只有一条车道时（PYTHON 顺序流程），PYTHON 把接近和带载返回分到两个 worker 并行规划，NATIVE 仍在一个 worker 上依次规划；若需要 OMPL，worker 的随机数历史可能因此不同。
+
 ### A.7 不得改变
 
 `allowed_pairs` 的构成规则；`clearance_policy.source_policy` 的 2.4 mm / 2.0 mm / 0.2 mm 值（`Clearance::Clearance` 校验 `UNSUPPORTED_ECO65_CLEARANCE_POLICY`）；IK 容差 2e-5 m / 2e-4 rad；分支数 `IK_BRANCHES_CHECKED=3`（离 q_start 近者优先）；`LIN_RETRY_SCALES=(0.5,0.25,0.1)`；`DETACH_ALTERNATIVES`；`SEND_SLOWDOWN_STEPS`；`TARGET_BLOCK_MARGIN_M=1e-4`；`PAYLOAD_REST_DEPTH_M=0.001`；"优先级最高、规划与最终检查都通过的候选被选中"。
@@ -131,7 +146,7 @@
 
 插值规则：保留原生非均匀节点，五次 Hermite（q、v、a），`v/s`、`a/s²`；位置 / 速度 / 加速度在节点和导数零点处全部检查（`INTERPOLATION_LIMIT:j:order`）；离散命令速度、加速度（`DISCRETE_COMMAND_LIMIT`）；相邻命令差 ≤ 0.002 rad（`COMMAND_DISCONTINUITY`）；网格点数 ≤ 120001（`TRAJECTORY_TOO_LARGE`）；检查路径点数 ≤ 500000（`COLLISION_PATH_RESOURCE_LIMIT`）。
 
-第 6 步（`sent_path_audit=ADAPTIVE`，实际实现）：`prepare` 输出不变；worker 沿与 SAMPLED 完全相同的 `collision_path` 采样点序列，只跳过由逐对力臂位移上界从上一个精确检查点证明通过的采样点（`docs/sent_path_adaptive_audit.md`），判定与首个失败与 SAMPLED 相同。原计划的 `geometric_path` 输出不需要，未实现。第 7 步把 prepare 移入 worker 时，C++ 与 Python 输出逐点误差 ≤ 1e-12，越限拒绝两边一致。
+第 6 步（`sent_path_audit=ADAPTIVE`，实际实现）：`prepare` 输出不变；worker 沿与 SAMPLED 完全相同的 `collision_path` 采样点序列，只跳过由逐对力臂位移上界从上一个精确检查点证明通过的采样点（`docs/sent_path_adaptive_audit.md`），判定与首个失败与 SAMPLED 相同。原计划的 `geometric_path` 输出不需要，未实现。第 7 步实际：`native_prepare.h` 按 scipy 1.14 / numpy 1.26 的运算顺序实现；越限拒绝两边一致，点数、细分数、检查状态数相同；q 与检查路径相差 ≤ 4e-14，v、a 受 numpy 在 AVX-512 上的数组 `pow`（与 libm 差 1 ulp）影响，最大相差 5.4e-12 与 8.4e-10（见第 7 步报告）。
 
 ### B.3 不得改变
 

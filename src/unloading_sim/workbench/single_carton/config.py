@@ -137,6 +137,8 @@ def issues(c):
             errors.append(f'{key}：可选开关，true 或 false（缺省 false，保持现行为）')
     if c.get('collision_check_mode','EXACT') not in ('EXACT','TWO_LEVEL'):
         errors.append('collision_check_mode：EXACT（缺省）或 TWO_LEVEL（保守代理只证明通过，其余仍由精确检查决定）')
+    if c.get('planning_module','PYTHON') not in ('PYTHON','NATIVE'):
+        errors.append('planning_module：PYTHON（缺省）或 NATIVE（复合原生请求、worker 内 prepare、二进制帧；结论由原 Python 流程回放给出）')
     if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE'):
         errors.append('sent_path_audit：SAMPLED（缺省）或 ADAPTIVE（只跳过由逐对位移上界证明通过的采样点；接触段和带支撑段始终 SAMPLED）')
     topology=c.get('topology',{})

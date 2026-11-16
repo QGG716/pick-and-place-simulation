@@ -697,3 +697,70 @@ Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装�
 - 任何示例配置都没有打开 ADAPTIVE。
 - 在截止时间下，ADAPTIVE 可能在 SAMPLED 会超时的地方完成。这属于预算差异，不是几何判定差异。
 - 实机运动、阀门命令或验收，均为 **NOT_RUN**。
+
+### 2026-11-17：实时化第 7 步，复合请求、二进制数据面、prepare 下沉
+
+新增开关 `planning_module`，取值 `PYTHON` 或 `NATIVE`，**缺省 `PYTHON`，旧协议和旧流程不变**；示例配置不改。worker 没有声明 `composite_requests`、`native_prepare`、`attempt_journal` 能力时，NATIVE 在发出任何请求之前就被拒绝。契约见 `docs/native_boundary.md`，报告见 `docs/evidence/realtime_20261116_native_planning/report.json`。
+
+**做法**：
+1. **prepare 下沉**：`native_prepare.h` 在 worker 中实现五次插值、位置 / 速度 / 加速度极值检查、5 ms 发送网格和检查路径，按 scipy / numpy 的运算顺序逐步计算。另有单独的 `sc_prepare` 操作。`SEND_SLOWDOWN_STEPS` 的逐级放慢规则不变。
+2. **复合请求**（只在 `PHYSICAL_SINGLE_CARTON` 范围；不复用仿真链路的 `eco65_transition` 和 `process_policy` 契约）：
+   - `sc_endpoint_screen`：一个目标的全部候选一次完成。内容包括带载起点校验、多种子 IK（本任务解及 J6 四分之一转变体，加 64 个固定种子）、最多 3 个分支的接近 / 接触 / 脱离终态校验，以及工具或载荷被挡、目标级被挡的判定。
+   - `sc_plan_candidate`：每个候选分两段。
+     - `CONTACT`：接近（终态预检已给出接近位形时跳过），接触直线及 0.5 / 0.25 / 0.1 降速重试。
+     - `DETACH_AND_VERIFY`：三种脱离方案依次尝试（含降速重试和目标被挡判定）、接近、带载返回（先直连再 OMPL）、prepare、未检查段按路径长短依次做发送路径检查，被拒时换下一种脱离方案。
+   - 两段之间的密封、附着、承接和脱离目标由 Python 计算。
+3. **结论来源**：worker 记录每个子请求和结果；Python 用回放客户端运行**原样不变**的 `screen_candidate`、`plan_candidate`。
+   - Python 发出的每个请求都必须与记录一致，否则报 `NATIVE_FLOW_DIVERGED`，不回退。
+   - TargetBlocked 判定、CLEAR 候选优先、"按优先级第一个规划和检查都通过的候选" 都由原代码给出。
+4. **并行**：每个 worker 一条车道，候选按固定轮转分配，按优先级收结果，首个通过即停止其余车道。
+5. **数据面**：NATIVE 客户端在 init 确认 `binary_protocol=2` 后改用二进制帧，轨迹和路径以 float64 块传输，不再以 JSON 传递。
+   - 取消帧为 kind 4。
+   - `Authority` 在签发和核对两端用同一函数，对规范二进制形式计算 SHA-256。
+   - 共享内存未实现。
+6. **证据**：复合请求在发出前落盘。worker 把每个子请求（IK、Pilz、OMPL、校验）的开始和结束追加写入自己的日志 `$M710_WORKER_JOURNAL_DIR/m710_worker_journal_<pid>.jsonl`，超时或崩溃后仍可查。
+
+**验收**：
+- 合成场景 A、B，新旧两条流程的候选、四段规划器、发送点数、时长、检查状态数、脱离方案、首末关节和每条失败原因，在 1e-12 内逐项一致（A 选中候选 0，B 选中候选 4）。两种配置都验证了：
+  - 缺省（EXACT + SAMPLED）；
+  - TWO_LEVEL + ADAPTIVE。
+- prepare 逐点比较：60 个原生规划结果，每个都在 5 级放慢和两种压缩时间轴下比较，另加构造的错误输入，共 424 例。
+  - 越限拒绝 292 例，错误串全部一致。
+  - 准备成功的 132 例，点数、细分数、检查状态数全部相同。
+  - **q 与检查路径最大相差 3.7e-14**，满足 1e-12。
+  - **v 最大相差 5.4e-12，a 最大相差 8.4e-10，未达到 1e-12**。原因：scipy 在数组上计算 `dx**s`，这台 AVX-512 服务器上 numpy 的 SIMD `pow` 与 libm 约 27% 的值相差 1 ulp（已实测），Python 自身的系数因此随 CPU 变化；幂基导数求值中的相消把这 1 ulp 放大到 v、a。Python 的 prepare 没有改动。
+- 二进制帧与 JSON 行：同一条 1094 状态的发送路径请求，两种格式的回复除计时字段外完全相同。驻留 worker 的二进制取消帧在 0.25 s 内以 `cancelled_by_request` 返回，worker 之后仍可用。
+- `tools/check_output_check_deferral_scope.py` PASS。
+- `m710_clearance_test` 的 optimized、reference、two_level、adaptive 都 PASS；原生组件检查 PASS。
+- 定向 pytest **540 passed，1 failed，0 skipped**。失败的仍是原有那一项；新增 14 项测试。
+
+**往返次数与传输字节（合成场景，每次 `plan_cycle`）**：
+
+| 配置 | 场景 | 往返次数 | 发送字节 | 接收字节 | 时长 |
+|---|---|---|---|---|---|
+| 缺省 | A | 2535 → 23 | 136.5 MB → 94.0 MB | 2.7 MB → 30.2 MB | 126.0 s → 238.0 s |
+| 缺省 | B | 2595 → 31 | 158.7 MB → 100.6 MB | 3.2 MB → 42.1 MB | 150.7 s → 386.2 s |
+| TWO_LEVEL + ADAPTIVE | A | 2530 → 23 | 135.2 MB → 94.0 MB | 2.5 MB → 76.7 MB | 51.8 s → 47.6 s |
+| TWO_LEVEL + ADAPTIVE | B | 2601 → 33 | 160.4 MB → 102.2 MB | 3.7 MB → 109.4 MB | 75.5 s → 66.1 s |
+
+接收字节变多，是因为复合请求的回复里带了每个子请求的完整结果（含规划点），供 Python 回放。
+
+**三个口径**：
+- **规划**：
+  - TWO_LEVEL + ADAPTIVE 下 NATIVE 比 PYTHON 快 8–12%。
+  - **缺省配置下 NATIVE 反而慢约一倍**。原因是发送路径检查：PYTHON 把每段分给 6 个检查 worker 并行；NATIVE 在每条车道的单个 worker 内依次做全部分块，而 7 条车道同时运行，抢占 CPU。排名 1 的候选，脱离段复合请求 165.5 s，其中约 90% 是发送路径检查。开启 ADAPTIVE 后检查只需毫秒级，这一差距消失。
+  - 终态预检复合请求：45.5 s（缺省）、14.7 s（TWO_LEVEL）。其中 2305 次 IK 只占约 1 s，其余是 132 次逐状态校验，每次都重建场景和碰撞工作区。
+  - 离 2.0 s 仍远。
+- 调度：除包摘要在 NATIVE 下改为规范二进制外未改动。
+- 视觉：**NOT_RUN**。
+
+**提交**：三个提交，分别是 prepare 下沉、二进制数据面、复合请求与 `planning_module`；测试、工具、报告和本节放在最后一个提交中。中间提交只做了 Python 编译检查，原生构建与全部检查在最终状态上进行。
+
+**未做或未验证**：
+- 现场记录上的等价检查：现场记录已删除，改用合成场景的记录。
+- v、a 的 1e-12：未达到，原因见上。
+- 共享内存。
+- 单车道时，NATIVE 把接近和返回放在同一个 worker 上依次规划，PYTHON 顺序流程用两个 worker；若需要 OMPL，结果可能不同。
+- 缺省配置下 NATIVE 的车道内发送路径检查未并行。
+- 任何示例配置都没有打开 NATIVE。
+- 实机运动、阀门命令或验收，均为 **NOT_RUN**。

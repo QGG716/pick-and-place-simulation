@@ -1,0 +1,632 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-17",
+ "step": "7_composite_binary_native_prepare",
+ "scope": "PLANNING_MODULE_SWITCH_DEFAULT_PYTHON; PHYSICAL_SINGLE_CARTON; SYNTHETIC_SCENES_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "base_commit": "c70e3bd",
+ "contract": "docs/native_boundary.md section 0, A and B; AGENTS.md 2026-11-16 3e and 3g",
+ "mechanism": {
+  "switch": "planning_module",
+  "values": [
+   "PYTHON",
+   "NATIVE"
+  ],
+  "default": "PYTHON",
+  "composites": {
+   "sc_endpoint_screen": "every candidate of a target in one request: loaded-start validate, multi-seed approach IK (task seeds incl. J6 quarter turns + 64 fixed seeds), up to 3 branches of approach / contact IK / contact / detach endpoint validation, tool-or-payload and target-blocked rules, solutions carried across candidates",
+   "sc_plan_candidate": "per candidate, CONTACT (approach unless screened, contact LIN with 0.5/0.25/0.1 retries) then DETACH_AND_VERIFY (OUTWARD / DIAGONAL_45 / LIFT_FIRST detach LIN with retries and target-blocked rule, approach, loaded return Pilz then OMPL, end-state checks, sent-path checks of unchecked segments by path length in the Python chunking, next profile on a detach/return rejection); seal, attachment, release and detach goals are computed by Python between the two",
+   "sc_prepare": "controlled/trajectory.py prepare in C++ (native_prepare.h)"
+  },
+  "decisions": "the worker records every sub-request (without world; probe path as length and end states) and result; Python runs its unchanged screen_candidate / plan_candidate against a replay client that serves them; a request the worker did not issue (or a recorded one not requested) raises NATIVE_FLOW_DIVERGED; no fallback",
+  "lanes": "one worker per lane, candidate rank k on lane k mod N, first verified candidate in priority order accepted, in-flight lane composites cancelled at exit",
+  "data_plane": "protocol-2 binary frames on the worker pipes for NATIVE clients after init declares binary_protocol=2; float arrays travel as float64 blocks; shared memory not implemented; JSONL remains the default",
+  "authority": "planning_module NATIVE: Authority digests packages as SHA-256 over the canonical binary form at register and at verify/claim (same function)",
+  "journal": "each worker appends START/END of every composite sub-request (IK, Pilz, OMPL, validate) to $M710_WORKER_JOURNAL_DIR/m710_worker_journal_<pid>.jsonl (default /tmp) while it runs; the path is in the composite record; composite requests are written before dispatch",
+  "files": [
+   "ros2/m710_moveit_backend/src/native_prepare.h",
+   "ros2/m710_moveit_backend/src/binary_frames.h",
+   "ros2/m710_moveit_backend/src/sc_composite.h",
+   "ros2/m710_moveit_backend/src/worker.cpp",
+   "src/unloading_sim/workbench/binary_frames.py",
+   "src/unloading_sim/workbench/single_carton/native_flow.py",
+   "single_carton/planner.py (plan_request, prepare hook, workers pass-through, NATIVE hooks)",
+   "single_carton/resident.py and moveit2_backend.py (binary option, counters)",
+   "controlled/trajectory.py (Authority digest)"
+  ]
+ },
+ "prepare_equivalence": {
+  "tool": "tools/check_native_prepare.py",
+  "recorded_native_plans": 60,
+  "cases": 424,
+  "prepared": 132,
+  "rejected": 292,
+  "rejection_errors": [
+   "INTERPOLATION_LIMIT:1:1",
+   "INTERPOLATION_LIMIT:1:2",
+   "INTERPOLATION_LIMIT:2:1",
+   "INTERPOLATION_LIMIT:2:2",
+   "INTERPOLATION_LIMIT:3:1",
+   "INTERPOLATION_LIMIT:3:2",
+   "INTERPOLATION_LIMIT:6:1",
+   "INTERPOLATION_LIMIT:6:2",
+   "INVALID_TIME_AXIS",
+   "INVALID_TIMING",
+   "NONZERO_ENDPOINT_VELOCITY"
+  ],
+  "rejections_identical": 292,
+  "counts_identical": "every prepared case: same send points, subdivisions and collision states",
+  "worst_max_abs": {
+   "t": 0.0,
+   "q": 3.6415315207705135e-14,
+   "v": 5.412585310504703e-12,
+   "a": 8.403193973993694e-10,
+   "collision_path": 3.730349362740526e-14,
+   "analytic_speed_bounds_rad_s": 1.9043694349533278e-13,
+   "send_duration_s": 0.0
+  },
+  "tolerance_1e_12": {
+   "q": "MET",
+   "collision_path": "MET",
+   "t": "MET",
+   "durations": "MET",
+   "v": "NOT_MET (max 5.4e-12; 109 of 132 within)",
+   "a": "NOT_MET (max 8.4e-10)"
+  },
+  "root_cause": "scipy PPoly.from_bernstein_basis computes dx**s on arrays; numpy 1.26 on this AVX-512 CPU uses a SIMD pow that differs from libm pow by 1 ulp in about 27 % of values (measured), so Python's own coefficients depend on the CPU; cancellation in the power-basis derivative evaluation amplifies these 1-ulp differences in v and a. Positions are well conditioned. Python prepare was not changed.",
+  "timing": {
+   "python_total_s": {
+    "total": 15.876174429198727,
+    "median": 0.02256927010603249
+   },
+   "native_total_s": {
+    "total": 3.7296629090000004,
+    "median": 0.0055858374999999995
+   }
+  }
+ },
+ "planning_equivalence": {
+  "tool": "tools/check_native_planning.py (A and B; outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason; floats within 1e-12)",
+  "default_exact_sampled": {
+   "schema": "eco65_native_planning_equivalence_v1",
+   "scope": "SYNTHETIC_SCENES_NOT_FIELD_DATA",
+   "tolerance": 1e-12,
+   "compared_fields": "outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason",
+   "rows": [
+    {
+     "scene": "A",
+     "identical_within_tolerance": true,
+     "differences": [],
+     "python": {
+      "elapsed_s": 126.02516927593388,
+      "candidate": 0,
+      "clients": 7,
+      "round_trips": 2535,
+      "sent_bytes": 136524860,
+      "received_bytes": 2693588,
+      "binary_frames": 0,
+      "composites": 0
+     },
+     "native": {
+      "elapsed_s": 238.00508904084563,
+      "candidate": 0,
+      "clients": 7,
+      "round_trips": 23,
+      "sent_bytes": 94011797,
+      "received_bytes": 30177675,
+      "binary_frames": 7,
+      "composites": 16
+     }
+    },
+    {
+     "scene": "B",
+     "identical_within_tolerance": true,
+     "differences": [],
+     "python": {
+      "elapsed_s": 150.68772390508093,
+      "candidate": 4,
+      "clients": 7,
+      "round_trips": 2595,
+      "sent_bytes": 158743412,
+      "received_bytes": 3205252,
+      "binary_frames": 0,
+      "composites": 0
+     },
+     "native": {
+      "elapsed_s": 386.22657542000525,
+      "candidate": 4,
+      "clients": 7,
+      "round_trips": 31,
+      "sent_bytes": 100580885,
+      "received_bytes": 42113521,
+      "binary_frames": 7,
+      "composites": 24
+     }
+    }
+   ],
+   "all_identical": true
+  },
+  "two_level_adaptive": {
+   "schema": "eco65_native_planning_equivalence_v1",
+   "scope": "SYNTHETIC_SCENES_NOT_FIELD_DATA",
+   "tolerance": 1e-12,
+   "compared_fields": "outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason",
+   "rows": [
+    {
+     "scene": "A",
+     "identical_within_tolerance": true,
+     "differences": [],
+     "python": {
+      "elapsed_s": 51.84926978009753,
+      "candidate": 0,
+      "clients": 7,
+      "round_trips": 2530,
+      "sent_bytes": 135188776,
+      "received_bytes": 2525707,
+      "binary_frames": 0,
+      "composites": 0
+     },
+     "native": {
+      "elapsed_s": 47.64451767480932,
+      "candidate": 0,
+      "clients": 7,
+      "round_trips": 23,
+      "sent_bytes": 94019548,
+      "received_bytes": 76664259,
+      "binary_frames": 7,
+      "composites": 16
+     }
+    },
+    {
+     "scene": "B",
+     "identical_within_tolerance": true,
+     "differences": [],
+     "python": {
+      "elapsed_s": 75.52665228606202,
+      "candidate": 4,
+      "clients": 7,
+      "round_trips": 2601,
+      "sent_bytes": 160368703,
+      "received_bytes": 3669354,
+      "binary_frames": 0,
+      "composites": 0
+     },
+     "native": {
+      "elapsed_s": 66.09227385302074,
+      "candidate": 4,
+      "clients": 7,
+      "round_trips": 33,
+      "sent_bytes": 102189957,
+      "received_bytes": 109387946,
+      "binary_frames": 7,
+      "composites": 26
+     }
+    }
+   ],
+   "all_identical": true
+  },
+  "python_rerun_vs_step4": {
+   "all_identical": true
+  },
+  "first_native_run_vs_step4": {
+   "all_identical": true,
+   "note": "before lane cancellation and the probe-path echo reduction"
+  }
+ },
+ "latency_and_transport": {
+  "runs": {
+   "s7-PYTHON:A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 126.0,
+    "transport": {
+     "clients": 7,
+     "round_trips": 2535,
+     "sent_bytes": 136524860,
+     "received_bytes": 2693588,
+     "binary_frames": 0,
+     "composites": 0
+    }
+   },
+   "s7-PYTHON:B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 150.7,
+    "transport": {
+     "clients": 7,
+     "round_trips": 2595,
+     "sent_bytes": 158743412,
+     "received_bytes": 3205252,
+     "binary_frames": 0,
+     "composites": 0
+    }
+   },
+   "s7-NATIVE:A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 238.0,
+    "transport": {
+     "clients": 7,
+     "round_trips": 23,
+     "sent_bytes": 94011797,
+     "received_bytes": 30177675,
+     "binary_frames": 7,
+     "composites": 16
+    }
+   },
+   "s7-NATIVE:B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 386.2,
+    "transport": {
+     "clients": 7,
+     "round_trips": 31,
+     "sent_bytes": 100580885,
+     "received_bytes": 42113521,
+     "binary_frames": 7,
+     "composites": 24
+    }
+   },
+   "s7-PYTHON-fast:A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 51.8,
+    "transport": {
+     "clients": 7,
+     "round_trips": 2530,
+     "sent_bytes": 135188776,
+     "received_bytes": 2525707,
+     "binary_frames": 0,
+     "composites": 0
+    }
+   },
+   "s7-PYTHON-fast:B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 75.5,
+    "transport": {
+     "clients": 7,
+     "round_trips": 2601,
+     "sent_bytes": 160368703,
+     "received_bytes": 3669354,
+     "binary_frames": 0,
+     "composites": 0
+    }
+   },
+   "s7-NATIVE-fast:A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 47.6,
+    "transport": {
+     "clients": 7,
+     "round_trips": 23,
+     "sent_bytes": 94019548,
+     "received_bytes": 76664259,
+     "binary_frames": 7,
+     "composites": 16
+    }
+   },
+   "s7-NATIVE-fast:B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 66.1,
+    "transport": {
+     "clients": 7,
+     "round_trips": 33,
+     "sent_bytes": 102189957,
+     "received_bytes": 109387946,
+     "binary_frames": 7,
+     "composites": 26
+    }
+   }
+  },
+  "native_breakdown": {
+   "s7-NATIVE:A": {
+    "composite_seconds": {
+     "contact-phase": 29.6,
+     "detach-phase": 1193.0,
+     "endpoint_screen": 45.55
+    },
+    "sub_requests": {
+     "ik:None": {
+      "count": 2305,
+      "seconds": 1.02
+     },
+     "plan:approach": {
+      "count": 1,
+      "seconds": 1.26
+     },
+     "plan:contact": {
+      "count": 28,
+      "seconds": 18.05
+     },
+     "plan:detach": {
+      "count": 4,
+      "seconds": 4.29
+     },
+     "plan:return": {
+      "count": 1,
+      "seconds": 0.67
+     },
+     "validate:approach": {
+      "count": 52,
+      "seconds": 49.52
+     },
+     "validate:contact": {
+      "count": 33,
+      "seconds": 20.46
+     },
+     "validate:detach": {
+      "count": 33,
+      "seconds": 111.7
+     },
+     "validate:return": {
+      "count": 35,
+      "seconds": 18.9
+     }
+    }
+   },
+   "s7-NATIVE:B": {
+    "composite_seconds": {
+     "contact-phase": 38.91,
+     "detach-phase": 2165.74,
+     "endpoint_screen": 50.83
+    },
+    "sub_requests": {
+     "ik:None": {
+      "count": 2297,
+      "seconds": 1.06
+     },
+     "plan:approach": {
+      "count": 1,
+      "seconds": 2.05
+     },
+     "plan:contact": {
+      "count": 44,
+      "seconds": 26.32
+     },
+     "plan:detach": {
+      "count": 52,
+      "seconds": 33.72
+     },
+     "plan:return": {
+      "count": 1,
+      "seconds": 3.06
+     },
+     "validate:approach": {
+      "count": 58,
+      "seconds": 119.19
+     },
+     "validate:contact": {
+      "count": 33,
+      "seconds": 21.53
+     },
+     "validate:detach": {
+      "count": 33,
+      "seconds": 105.14
+     },
+     "validate:return": {
+      "count": 39,
+      "seconds": 98.72
+     }
+    }
+   },
+   "s7-NATIVE-fast:A": {
+    "composite_seconds": {
+     "contact-phase": 18.39,
+     "detach-phase": 90.03,
+     "endpoint_screen": 14.66
+    },
+    "sub_requests": {
+     "ik:None": {
+      "count": 2305,
+      "seconds": 1.09
+     },
+     "plan:approach": {
+      "count": 1,
+      "seconds": 0.76
+     },
+     "plan:contact": {
+      "count": 28,
+      "seconds": 10.4
+     },
+     "plan:detach": {
+      "count": 4,
+      "seconds": 1.88
+     },
+     "plan:return": {
+      "count": 1,
+      "seconds": 0.29
+     },
+     "validate:approach": {
+      "count": 52,
+      "seconds": 4.3
+     },
+     "validate:contact": {
+      "count": 33,
+      "seconds": 5.72
+     },
+     "validate:detach": {
+      "count": 33,
+      "seconds": 2.99
+     },
+     "validate:return": {
+      "count": 35,
+      "seconds": 3.45
+     }
+    }
+   },
+   "s7-NATIVE-fast:B": {
+    "composite_seconds": {
+     "contact-phase": 25.84,
+     "detach-phase": 174.7,
+     "endpoint_screen": 14.67
+    },
+    "sub_requests": {
+     "ik:None": {
+      "count": 2297,
+      "seconds": 1.04
+     },
+     "plan:approach": {
+      "count": 3,
+      "seconds": 5.06
+     },
+     "plan:contact": {
+      "count": 48,
+      "seconds": 15.27
+     },
+     "plan:detach": {
+      "count": 60,
+      "seconds": 23.22
+     },
+     "plan:return": {
+      "count": 3,
+      "seconds": 11.17
+     },
+     "validate:approach": {
+      "count": 72,
+      "seconds": 6.38
+     },
+     "validate:contact": {
+      "count": 41,
+      "seconds": 16.31
+     },
+     "validate:detach": {
+      "count": 47,
+      "seconds": 4.42
+     },
+     "validate:return": {
+      "count": 53,
+      "seconds": 5.42
+     }
+    }
+   }
+  },
+  "vision": "NOT_RUN (no frozen frame)",
+  "scheduling": "unchanged except the package digest (canonical binary in NATIVE)"
+ },
+ "binary_protocol": {
+  "schema": "eco65_binary_protocol_check_v1",
+  "record": "outputs/single_carton_development/s4-off/A/synthetic-A-0/approach-sent-p0-native.json",
+  "probe_states": 1094,
+  "binary_active": true,
+  "identical_replies": true,
+  "json_round_trip_s": 4.9622073660138994,
+  "binary_round_trip_s": 5.867233472177759,
+  "json_bytes": [
+   10319615,
+   5739
+  ],
+  "binary_bytes": [
+   10073032,
+   5760
+  ],
+  "native_valid": [
+   true,
+   true
+  ],
+  "resident_binary_active": true,
+  "cancel": {
+   "error": "CANCELLED",
+   "cancelled_by_request": true,
+   "reply_after_s": 0.24698855890892446
+  },
+  "after_cancel": {
+   "status": "SUCCESS",
+   "native_valid": true,
+   "alive": true
+  },
+  "acceptance": {
+   "identical_replies": true,
+   "cancelled_by_request": true,
+   "usable_after_cancel": true
+  }
+ },
+ "behaviour_unchanged": {
+  "native_clearance_tests": {
+   "optimized": "PASS",
+   "reference": "PASS",
+   "two_level": "PASS",
+   "adaptive": "PASS"
+  },
+  "native_component_check": {
+   "status": "PASS",
+   "differences_vs_step1": [
+    [
+     "collision_check_mode",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "config.py",
+     "VALUE"
+    ],
+    [
+     "evidence.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "exact_candidates",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "implementation_commit",
+     "VALUE"
+    ],
+    [
+     "native_flow.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_constant_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_group_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_sphere_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_unvisited_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "resident.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "sent_path_audit",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "states_with_exact",
+     "MISSING_IN_BEFORE"
+    ]
+   ]
+  },
+  "output_check_deferral_scope": {
+   "command": "tools/check_output_check_deferral_scope.py",
+   "log_tail": "{\"scope\": \"NATIVE_DEFERRAL_SCOPE_CHECK_PLANNING_ONLY_NOT_EXECUTABLE\", \"hardware_execution\": \"NOT_RUN\", \"capability_single_carton_output_check_deferral\": false, \"policy_scope\": \"CONTROLLED_EMPTY_NO_CONTACT\", \"without_field\": {\"status\": \"SUCCESS\", \"native_output_status\": \"PASS\"}, \"with_field\": {\"error\": \"OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID\"}, \"result\": \"PASS\"}\n"
+  },
+  "directed_pytest": {
+   "passed": 540,
+   "failed": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_tests": [
+    "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+   ]
+  }
+ },
+ "not_run_or_not_verified": [
+  "Saved field records were deleted: prepare and planning equivalence ran on synthetic scene records",
+  "prepare 1e-12 not met for v (max 5.4e-12) and a (max 8.4e-10); see prepare_equivalence.root_cause",
+  "Shared memory transport was not implemented; blocks travel inside frames on the pipes",
+  "Single-lane NATIVE plans approach and return on one worker; PYTHON sequential uses two (OMPL history may differ)",
+  "Planning p95 on field records; vision latency",
+  "planning_module NATIVE is not enabled in any example configuration",
+  "Real SDK/serial/camera paths; any physical motion, valve command or acceptance: NOT_RUN"
+ ]
+}

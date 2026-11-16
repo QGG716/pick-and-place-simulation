@@ -99,6 +99,11 @@ class SinglePlanner(EmptyPlanner):
         self.hash_cache={};self.binding_evidence=None
         self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
         super().__init__(config['execution'],mapping,authority)
+        # planning_module NATIVE: packages are digested over the canonical binary form (AGENTS 3g).
+        if self.native_planning() and hasattr(authority,'use_canonical_binary_digest'):authority.use_canonical_binary_digest()
+    def native_planning(self):
+        """planning_module NATIVE (realtime step 7): composite native requests replayed by the unchanged Python flow."""
+        return self.site.get('planning_module','PYTHON')=='NATIVE'
     def enabled(self,name):
         """A step-4 mechanism switch of the single-carton config (default off)."""
         return self.site.get(name) is True
@@ -491,6 +496,7 @@ class SinglePlanner(EmptyPlanner):
         return fingerprint
     def scene_handle(self,client,folder):
         """This worker's handle for the task scene, uploading it once (thread safe per worker)."""
+        client=getattr(client,'target',client)  # a replay client (planning_module NATIVE) uses its worker's handle
         key=id(client)
         with self.scene_lock:
             entry=self.scene_handles.get(key)
@@ -605,7 +611,7 @@ class SinglePlanner(EmptyPlanner):
             try:
                 with timing.span('native.pool_worker_process_start',index=k):
                     client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
-                                                log_path=folder/f'moveit-check-{k}.log')
+                                                log_path=folder/f'moveit-check-{k}.log',binary=self.native_planning())
                 # Under a deadline the IPC wait also derives from it; this
                 # background start never blocks the planning result.
                 init_timeout=180 if deadline is None else max(1e-3,min(180.,deadline-time.monotonic()+DEADLINE_IPC_GRACE_S))
@@ -655,9 +661,8 @@ class SinglePlanner(EmptyPlanner):
         with self.pool_lock:return [c for c in [self.client]+list(self.pool)
                                     if alive(c) and id(c) not in abandoned and getattr(c,'retired',None) is None]
     # -- segments -----------------------------------------------------------------
-    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
-        """Native plan and send-grid preparation, without the final dense check."""
-        record=record or stage;progress('原生规划 '+record)
+    def plan_request(self,context,goal,linear):
+        """The first native plan request of a segment (Pilz PTP or LIN)."""
         req=dict(context,op='plan',pipeline_id='pilz_industrial_motion_planner',planner_id='LIN' if linear else 'PTP',
                  velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=25.)
         # The worker's own dense check of its linear-joint waypoint path is
@@ -667,6 +672,13 @@ class SinglePlanner(EmptyPlanner):
         if self.defer_output_check:req['defer_output_check_to_sent_path']=True
         if np.asarray(goal).shape==(4,4):req.update(goal_pose=np.asarray(goal).tolist(),flange_from_task_tcp=self.init['identity']['flange_from_task_tcp'])
         else:req['q_goal']=list(goal)
+        return req
+    def plan_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None,client=None):
+        """Native plan and send-grid preparation, without the final dense check."""
+        record=record or stage;progress('原生规划 '+record)
+        req=self.plan_request(context,goal,linear)
+        # planning_module NATIVE: the replay client serves the worker's own prepare results.
+        prepare_segment=getattr(client,'prepare_segment',None) or prepare
         result=self.native_call(req,folder,record+'-pilz',120,cancelled,client)
         if result.get('status')!='SUCCESS' and linear and not str(result.get('status','')).startswith('INVALID_START'):
             # Pilz LIN rejects a Cartesian profile whose joint acceleration
@@ -698,7 +710,7 @@ class SinglePlanner(EmptyPlanner):
         for factor in SEND_SLOWDOWN_STEPS:
             try:
                 with timing.span('plan.prepare_send_grid',stage=stage,record=record,factor=factor,source_points=len(result['points'])):
-                    prepared=prepare(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
+                    prepared=prepare_segment(result['points'],self.limits,scale*factor,self.config['period_s'],self.reach_bound+payload_reach)
                 break
             except ValueError as error:
                 if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
@@ -708,7 +720,7 @@ class SinglePlanner(EmptyPlanner):
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
                      native_output_check='DEFERRED_TO_SENT_PATH_CHECK' if result['native_output_status']==DEFERRED_OUTPUT else 'PASS')
         return dict(stage=stage,record=record,prepared=prepared,context=context,native_result=result,planner=planner)
-    def sent_check(self,segment,folder,progress,cancelled=None):
+    def sent_check(self,segment,folder,progress,cancelled=None,workers=None):
         """Final dense validation of the exact sent path, split across checkers.
 
         Chunks are contiguous and share their boundary state, so every edge of
@@ -716,7 +728,7 @@ class SinglePlanner(EmptyPlanner):
         checked by exactly one worker with the identical scene and policy.
         """
         stage,record,context=segment['stage'],segment['record'],segment['context']
-        path=segment['prepared']['collision_path'];workers=self.checkers()
+        path=segment['prepared']['collision_path'];workers=self.checkers() if workers is None else workers
         count=max(1,min(len(workers),(len(path)-1)//CHECK_CHUNK_MIN_STATES))
         edges=np.linspace(0,len(path)-1,count+1).round().astype(int)
         audit=self.audit_method(context)
@@ -884,7 +896,7 @@ class SinglePlanner(EmptyPlanner):
             if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
             return dict(r,extraction=extraction,returning=returning,profile=name)
         raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
-    def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None):
+    def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None,workers=None):
         """Final dense sent-path checks of a planned candidate, cheapest first.
 
         A segment checked in an earlier detach-profile attempt (approach and
@@ -892,7 +904,7 @@ class SinglePlanner(EmptyPlanner):
         """
         segments=[planned[k] for k in ('approach','contact','extraction','returning')]
         for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
-            if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled)
+            if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled,workers)
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
         return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
@@ -900,11 +912,11 @@ class SinglePlanner(EmptyPlanner):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
         if error.stage in ('approach','contact'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
-    def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None):
+    def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
         """Four native segments for one candidate, planned then densely checked; no permit."""
         planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients)
         while True:
-            try:return self.verify_candidate(planned,sub,progress,cancelled)
+            try:return self.verify_candidate(planned,sub,progress,cancelled,workers)
             except SegmentRejected as e:
                 planned=self.plan_candidate_segments(q,world,box,candidate,sub,screened,progress,cancelled,clients,self.replan_after(planned,e))
     def parallel_candidates(self,q,world,box,order,progress,cancelled,failures):
@@ -985,6 +997,11 @@ class SinglePlanner(EmptyPlanner):
             stop.set();idle.set()
             for rank in commands:commands[rank].put(('STOP',))
             for thread in threads:thread.join()
+    def native_screen(self,q,world,box,candidates,candidate_filter,folder):
+        """planning_module NATIVE: the sc_endpoint_screen composite; returns its replay client."""
+        from .native_flow import NativeFlow
+        considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
+        return NativeFlow(self).screen(q,world,box,candidates,considered,folder)
     def search_box(self,q,world,box,folder,progress=lambda _:None,cancelled=lambda:False,failures=None,candidate_filter=None):
         """Two-phase search for one target; returns the first complete plan.
 
@@ -1014,21 +1031,38 @@ class SinglePlanner(EmptyPlanner):
             considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter])
         screened=[];solutions=[]
         try:
-            for i,candidate in enumerate(candidates):
-                if candidate_filter is not None and i not in candidate_filter:continue
-                if cancelled():raise ValueError('CANCELLED')
-                sub=folder/(box['id']+'-'+str(i));sub.mkdir()
-                progress(f'预检候选 {i+1}/{len(candidates)}：带载返回起点及接近 / 接触 / 脱离终态')
-                try:
-                    with timing.span('search.screen_candidate',candidate=i):
-                        screened.append((i,candidate,sub,self.screen_candidate(q,world,box,candidate,sub,cancelled,solutions)))
-                except TargetBlocked:raise
-                except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)))
+            # planning_module NATIVE: one composite screens every candidate; the
+            # unchanged loop below then runs against its recorded results.
+            replay=self.native_screen(q,world,box,candidates,candidate_filter,folder) if self.native_planning() else None
+            main_client=self.client
+            if replay is not None:self.client=replay
+            try:
+                for i,candidate in enumerate(candidates):
+                    if candidate_filter is not None and i not in candidate_filter:continue
+                    if cancelled():raise ValueError('CANCELLED')
+                    sub=folder/(box['id']+'-'+str(i));sub.mkdir()
+                    progress(f'预检候选 {i+1}/{len(candidates)}：带载返回起点及接近 / 接触 / 脱离终态')
+                    try:
+                        with timing.span('search.screen_candidate',candidate=i):
+                            screened.append((i,candidate,sub,self.screen_candidate(q,world,box,candidate,sub,cancelled,solutions)))
+                    except TargetBlocked:raise
+                    except ValueError as e:failures.append(dict(target=box['id'],candidate=i,reason=str(e)))
+            finally:self.client=main_client
+            if replay is not None and replay.unused():
+                from .native_flow import NativeFlowDiverged
+                raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded screening results not requested')
             order=sorted(screened,key=lambda s:s[3]['screen']['conclusion']!='CLEAR')
             self.search_counts[box['id']].update(phase='PLANNING',screened=len(order))
             clear=sum(s[3]['screen']['conclusion']=='CLEAR' for s in order)
             progress(f'预检完成：{clear} 个候选终态全部通过，{len(order)-clear} 个逆解未定论，'
                      f'{len(candidates)-len(order)} 个已排除；按此顺序完整规划')
+            if self.native_planning() and order:
+                if int(self.site.get('native_check_workers',0))>0:self.wait_check_pool()
+                if self.deadline is not None and time.monotonic()>=self.deadline:
+                    raise PlanningBudgetExhausted('WAITING_FOR_CHECK_POOL')
+                from .native_flow import NativeFlow
+                with timing.span('search.native_candidates',candidates=len(order)):
+                    return NativeFlow(self).plan_ranks(q,world,box,order,progress,cancelled,failures)
             if int(self.site.get('parallel_candidate_lanes',1))>1 and len(order)>1:
                 self.wait_check_pool()
                 if self.deadline is not None and time.monotonic()>=self.deadline:
@@ -1234,7 +1268,7 @@ class SinglePlanner(EmptyPlanner):
                 logs=Path(self.site['record_root'])/'native-workers';logs.mkdir(parents=True,exist_ok=True)
                 command=lambda name:['env','ROS_LOG_DIR='+str(logs),str(ROOT/'ros2/m710_moveit_backend/worker.sh')]
                 self.build()
-                self.resident=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs)
+                self.resident=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs,binary=self.native_planning())
                 self.resident.start()
             return self.resident
     def prewarm(self):
@@ -1248,7 +1282,7 @@ class SinglePlanner(EmptyPlanner):
         if self.enabled('resident_workers'):return
         from unloading_sim.moveit2_backend import ResidentMoveItClient
         with timing.span('native.main_worker_process_start'):
-            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
+            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log',binary=self.native_planning())
     def acquire_workers(self,folder,boxes):
         """Main worker and checker pool for one task (resident or started for this task)."""
         if self.enabled('resident_workers'):
@@ -1273,6 +1307,7 @@ class SinglePlanner(EmptyPlanner):
         needed=[n for n in ('scene_handles','path_endpoint_reuse') if self.enabled(n)]
         if self.site.get('collision_check_mode')=='TWO_LEVEL':needed.append('two_level_collision')
         if self.site.get('sent_path_audit')=='ADAPTIVE':needed.append('adaptive_sent_path_audit')
+        if self.native_planning():needed+=['composite_requests','native_prepare','attempt_journal']
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
     def release_workers(self,folder):

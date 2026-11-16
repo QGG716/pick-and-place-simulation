@@ -35,6 +35,7 @@
 #include "native_timing.h"
 #include "native_prepare.h"
 #include "binary_frames.h"
+#include "sc_composite.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <random_numbers/random_numbers.h>
 #include <moveit/kinematic_constraints/utils.h>
@@ -1212,6 +1213,19 @@ class Worker {
       return {{"status","PREPARED"},{"prepared",preparedJson(out)},{"prepare_s",seconds(t)}};
     } catch(const std::runtime_error& e) {return {{"status","PREPARE_REJECTED"},{"error",e.what()},{"prepare_s",seconds(t)}};}
   }
+  // Step 7: composite requests (sc_composite.h). Every sub-request goes through
+  // dispatch() exactly as if Python had sent it; afterwards the composite's
+  // own deadline is registered again, so a cancel always reaches it.
+  J composite(const J& req) {
+    requireSingleCartonContext(req);
+    const auto own=native_deadline;const auto own_end=request_deadline;
+    m710::CompositeRunner runner([this](const J& sub){return dispatch(sub);},
+      [this,own,own_end]{
+        // A cancel that reached the sub-request cancels the whole composite.
+        if(native_deadline&&native_deadline!=own&&native_deadline->cancelled()&&own)own->cancel();
+        native_deadline=own;request_deadline=own_end;if(on_deadline)on_deadline(own);},own,req);
+    return runner.run();
+  }
   void requireSingleCartonContext(const J& req) const {
     if(!model || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")throw std::runtime_error("TASK_RESET_SCOPE_INVALID");
     if(req.at("identity")!=identity)throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
@@ -1396,7 +1410,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"binary_protocol",physical_single?2:0},{"composite_requests",physical_single},{"attempt_journal",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1404,6 +1418,7 @@ public:
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
     if(op=="sc_prepare")return prepareOp(req);
+    if(op=="sc_endpoint_screen"||op=="sc_plan_candidate")return composite(req);
     if(op=="sc_task_reset")return taskReset(req);
     if(op=="sc_scene_upload")return sceneUpload(req);
     if(op=="sc_scene_release") {
