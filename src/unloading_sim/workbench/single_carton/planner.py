@@ -361,7 +361,7 @@ class SinglePlanner(EmptyPlanner):
                           unsent_seeds=len(seeds)-len(replies),elapsed_s=time.monotonic()-started);raise
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),replies=replies,elapsed_s=time.monotonic()-started);raise
-        finally:timing.write_json(path,record,'ik-record:final')
+        finally:self.write_evidence(path,record,'ik-record:final')
     def payload_world_blocked(self,failure,box,world):
         """A payload/world failure bigger than the IK tolerance, at the box's rest pose."""
         pair=list((failure or {}).get('pair') or []);others={o['id'] for o in world}-{box['id']}
@@ -444,7 +444,7 @@ class SinglePlanner(EmptyPlanner):
                 solutions.append(qa)
                 return dict(conclusion='CLEAR',approach_q=qa,contact_q=qc,ik_branches=len(branches),record=record)
             return dict(conclusion='NOT_CONCLUSIVE',reason=notes[-1] if notes else 'NO_CHECKED_BRANCH',ik_branches=len(branches),record=record)
-        finally:timing.write_json(folder/'endpoint-precheck.json',record,'endpoint-precheck.json',ensure_ascii=False)
+        finally:self.write_evidence(folder/'endpoint-precheck.json',record,'endpoint-precheck.json',ensure_ascii=False)
     def context(self,q,world,box,candidate,stage,attachment=None,supports=()):
         loaded=attachment is not None;contact=stage=='contact'
         contact_ids=candidate['target_lip_contact_ids']
@@ -464,6 +464,48 @@ class SinglePlanner(EmptyPlanner):
             single_carton_contact=spec,stage=stage,planning_only=False,seed=6518)
         if self.site.get('site'):context['site_workspace_bounds_m']=self.site['site']['workspace_bounds_m']
         return context
+    # -- step 4: evidence writer and scene handles --------------------------------------
+    def write_evidence(self,path,value,name,**options):
+        """A finished record: through the async writer when enabled, else written now."""
+        if self.evidence is None:return timing.write_json(path,value,name,**options)
+        self.evidence.write_json(path,value,name,**options)
+    def register_scene(self,world,folder):
+        """Hash the task's world once and record it; workers get it uploaded on first use."""
+        with timing.span('context.digest_world',stage='register_scene',objects=len(world)):fingerprint=digest(world)
+        with self.scene_lock:self.scene_world,self.scene_fingerprint,self.scene_handles=world,fingerprint,{}
+        timing.write_json(folder/'native-scene.json',dict(scene_fingerprint=fingerprint,world=world,
+            scope='ONE_UPLOAD_PER_WORKER_PER_TASK_REQUESTS_CARRY_THE_HANDLE'),'native-scene.json')
+        return fingerprint
+    def scene_handle(self,client,folder):
+        """This worker's handle for the task scene, uploading it once (thread safe per worker)."""
+        key=id(client)
+        with self.scene_lock:
+            entry=self.scene_handles.get(key)
+            if entry is None:entry=self.scene_handles[key]=dict(lock=threading.Lock(),handle=None)
+        with entry['lock']:
+            if entry['handle'] is None:
+                upload=dict(op='sc_scene_upload',identity=self.init['identity'],world=self.scene_world,
+                            scene_fingerprint=self.scene_fingerprint)
+                started=time.monotonic()
+                kwargs=dict(timeout=120)
+                if self.deadline is not None:
+                    left=self.native_left()
+                    if left<=0:raise PlanningBudgetExhausted('BEFORE_DISPATCH','sc_scene_upload')
+                    upload.update(request_budget_s=left);kwargs['timeout']=left+DEADLINE_IPC_GRACE_S
+                reply=timing.native_request(client,upload,record='scene-upload',**kwargs)
+                if reply.get('status')!='SCENE_READY' or reply.get('scene_fingerprint')!=self.scene_fingerprint:
+                    raise RuntimeError('SCENE_UPLOAD_FAILED:'+str(reply)[:300])
+                entry['handle']=reply['scene_handle']
+                self.write_evidence(folder/f'scene-upload-{getattr(client,"name",key)}.json',dict(
+                    scene_fingerprint=self.scene_fingerprint,scene_handle=reply['scene_handle'],objects=reply.get('objects'),
+                    upload_s=time.monotonic()-started),'scene-upload.json')
+            return entry['handle']
+    def with_scene_handle(self,request,client,folder):
+        """The request with this task's world replaced by the worker's scene handle."""
+        if (self.scene_world is None or request.get('world') is not self.scene_world or
+                request.get('scene_fingerprint')!=self.scene_fingerprint):return request
+        handle=self.scene_handle(client,folder)
+        return {**{k:v for k,v in request.items() if k!='world'},'scene_handle':handle}
     def native_call(self,request,folder,name,timeout,cancelled=None,client=None):
         if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client)
         # Persist before dispatch: a timed-out worker cannot return its request
@@ -479,7 +521,7 @@ class SinglePlanner(EmptyPlanner):
         except Exception as error:
             record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
-        finally:timing.write_json(path,record,'native-record:final')
+        finally:self.write_evidence(path,record,'native-record:final')
     def deadline_native_call(self,request,folder,name,timeout,cancelled=None,client=None):
         """``native_call`` under the unified deadline.
 
@@ -513,7 +555,7 @@ class SinglePlanner(EmptyPlanner):
             record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
             if DEADLINE_EXPIRED in str(error):raise PlanningBudgetExhausted('NATIVE_DEADLINE',name) from error
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
-        finally:timing.write_json(path,record,'native-record:final')
+        finally:self.write_evidence(path,record,'native-record:final')
     # -- resident checker pool (final sent-path checks and concurrent plans) ----
     def worker_ready(self,ready,boxes=()):
         """Required capabilities of the main native worker; binds output-check deferral."""
@@ -627,7 +669,7 @@ class SinglePlanner(EmptyPlanner):
             req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault')
             progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（25 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
-        timing.write_json(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
+        self.write_evidence(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
         accepted={'PASS'}|({DEFERRED_OUTPUT} if req.get('defer_output_check_to_sent_path') else set())
         if result.get('status')!='SUCCESS' or result.get('native_output_status') not in accepted:
             raise SegmentRejected(stage,stage+':NATIVE_REJECTED:'+str(result.get('failure',result.get('status'))),result)
@@ -681,7 +723,7 @@ class SinglePlanner(EmptyPlanner):
                      legacy_intersection_valid=all(r.get('legacy_intersection_valid') for _,_,r in parts),
                      path_failure=path_failure,failure=failure,probe_states=len(path),parallel_checkers=count,
                      wall_s=time.monotonic()-started,chunks=[dict(states=[a,b],result=r) for a,b,r in parts])
-        timing.write_json(folder/(record+'-sent-check.json'),checked,'sent-check.json')
+        self.write_evidence(folder/(record+'-sent-check.json'),checked,'sent-check.json')
         if not valid:raise SegmentRejected(stage,stage+':SENT_PATH_REJECTED:'+str(path_failure or failure),checked)
         segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
@@ -717,7 +759,7 @@ class SinglePlanner(EmptyPlanner):
         release_supports=[dict(id=o['id'],top_world_m=self.object_top(o)) for o in world if o['id'] in release['region']['ids']]
         start_loaded=self.context(q,world,box,candidate,'return',attachment,release_supports)
         endcheck=self.native_call(dict(start_loaded,op='validate'),sub,'loaded-start',120,cancelled)
-        timing.write_json(sub/'loaded-start-check.json',dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
+        self.write_evidence(sub/'loaded-start-check.json',dict(request=start_loaded,result=endcheck),'loaded-start-check.json')
         if not endcheck.get('native_valid') or not endcheck.get('legacy_intersection_valid'):
             raise ValueError(self.loaded_start_failure(endcheck,world))
         screen=self.endpoint_precheck(q,world,box,candidate,attachment,sub,cancelled,solutions)
@@ -900,7 +942,7 @@ class SinglePlanner(EmptyPlanner):
         """
         failures=[] if failures is None else failures
         with timing.span('search.payload_rest_check'):rest=self.payload_rest_check(world,box)
-        timing.write_json(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
+        self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
             hit=rest['intersections'][0] if rest['intersections'] else None
             reason=('TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 '+
@@ -1034,19 +1076,12 @@ class SinglePlanner(EmptyPlanner):
         if scene and scene['observation_id']!=observation.frame.observation_id:raise ValueError('REAL_SCENE_CAPTURE_MISMATCH')
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         q=np.array(observation.q_start);failures=[]
-        from unloading_sim.moveit2_backend import ResidentMoveItClient
         # Unified deadline for every native request of this plan (None: unchanged).
         self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
-        with timing.span('native.main_worker_process_start'):
-            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
+        self.start_task_services(world,folder)
+        self.start_main_worker(folder)
         try:
-            if self.deadline is None:ready=timing.native_request(self.client,self.init,record='main-init')
-            else:
-                initialising=time.monotonic()
-                ready=self.bounded_request(self.client,self.init,120.,None,'main-init')
-                self.worker_init_s=time.monotonic()-initialising
-            self.worker_ready(ready,boxes)
-            self.start_check_pool(folder)
+            self.acquire_workers(folder,boxes)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
                 with timing.span('plan_cycle.search_box',target=box['id']):
@@ -1124,11 +1159,78 @@ class SinglePlanner(EmptyPlanner):
                                           for t in error.evidence['targets']))
             raise
         finally:
-            with timing.span('plan_cycle.close_workers'):
-                if self.deadline is None:
-                    self.close_check_pool()
-                    timing.write_json(folder/'native-check-pool.json',self.pool_status,'native-check-pool.json',ensure_ascii=False)
-                    self.client.close();self.client=None
-                else:self.background_close(folder)
+            with timing.span('plan_cycle.close_workers'):self.release_workers(folder)
             # A released search thread keeps its (past) deadline until it ends.
             if self.search_thread is None or not self.search_thread.is_alive():self.deadline=None;self.deadline_reference=None
+    # -- step 4: worker lifecycle per task -------------------------------------------------
+    def start_task_services(self,world,folder):
+        """Per-task evidence writer and scene registration (each only when enabled)."""
+        if self.enabled('async_evidence'):
+            from .evidence import EvidenceWriter
+            if self.evidence is not None:self.evidence.close()
+            self.evidence=EvidenceWriter('planning-evidence')
+        if self.enabled('scene_handles'):self.register_scene(world,folder)
+        else:self.scene_world=self.scene_fingerprint=None
+    def resident_pool(self):
+        """The resident main worker and checker pool, started on first use."""
+        with self.build_lock:
+            if self.resident is None:
+                from .resident import WorkerPool
+                logs=Path(self.site['record_root'])/'native-workers';logs.mkdir(parents=True,exist_ok=True)
+                command=lambda name:['env','ROS_LOG_DIR='+str(logs),str(ROOT/'ros2/m710_moveit_backend/worker.sh')]
+                self.build()
+                self.resident=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs)
+                self.resident.start()
+            return self.resident
+    def prewarm(self):
+        """Background build and resident worker start (resident_workers only)."""
+        if not self.enabled('resident_workers'):return None
+        thread=threading.Thread(target=self.resident_pool,daemon=True,name='resident-prewarm');thread.start()
+        return thread
+    def start_main_worker(self,folder):
+        """Default path: start this task's main worker process (outside the task's try block, as before)."""
+        self.task_start=None
+        if self.enabled('resident_workers'):return
+        from unloading_sim.moveit2_backend import ResidentMoveItClient
+        with timing.span('native.main_worker_process_start'):
+            self.client=ResidentMoveItClient(['env','ROS_LOG_DIR='+str(folder),str(ROOT/'ros2/m710_moveit_backend/worker.sh')],log_path=folder/'moveit.log')
+    def acquire_workers(self,folder,boxes):
+        """Main worker and checker pool for one task (resident or started for this task)."""
+        if self.enabled('resident_workers'):
+            pool=self.resident_pool()
+            wait=240. if self.deadline is None else max(0.,self.deadline-time.monotonic())
+            with timing.span('native.resident_wait_ready'):ready=pool.wait_ready(wait)
+            with timing.span('native.resident_begin_task'):self.task_start=pool.begin_task()
+            if self.deadline is not None and time.monotonic()>=self.deadline:raise PlanningBudgetExhausted('RESIDENT_TASK_START')
+            self.client=pool.main;self.pool=pool.checkers();self.pool_threads=[];self.pool_status=pool.snapshot()
+            self.worker_ready(ready,boxes)
+            if self.enabled('scene_handles') and not ready.get('capabilities',{}).get('scene_handles'):
+                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_SCENE_HANDLES')
+            return
+        if self.deadline is None:ready=timing.native_request(self.client,self.init,record='main-init')
+        else:
+            initialising=time.monotonic()
+            ready=self.bounded_request(self.client,self.init,120.,None,'main-init')
+            self.worker_init_s=time.monotonic()-initialising
+        self.worker_ready(ready,boxes)
+        for name in ('scene_handles','path_endpoint_reuse'):
+            if self.enabled(name) and not ready.get('capabilities',{}).get(name):
+                raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
+        self.start_check_pool(folder)
+    def release_workers(self,folder):
+        if self.enabled('resident_workers') and self.resident is not None:
+            # Workers stay; every one is reset in the background for the next task.
+            status=dict(resident=True,pool=self.resident.snapshot(),task_start=self.task_start)
+            self.write_evidence(folder/'native-check-pool.json',status,'native-check-pool.json',ensure_ascii=False)
+            self.client=None;self.pool=[];self.resident.end_task()
+        elif self.deadline is None:
+            self.close_check_pool()
+            timing.write_json(folder/'native-check-pool.json',self.pool_status,'native-check-pool.json',ensure_ascii=False)
+            if self.client is not None:self.client.close()
+            self.client=None
+        else:self.background_close(folder)
+        self.scene_world=None
+    def close(self):
+        super().close()
+        if self.resident is not None:self.resident.close();self.resident=None
+        if self.evidence is not None:self.evidence.close();self.evidence=None

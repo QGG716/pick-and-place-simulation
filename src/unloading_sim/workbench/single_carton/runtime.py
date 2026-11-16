@@ -39,6 +39,7 @@ class TaskManager:
         self.scene=None;self.self_filter=None
         self.task_id=None;self.folder=None;self.journal=None;self.phase='IDLE';self.reason=''
         self.stop_event=threading.Event();self.closing=threading.Event();self.busy=False;self.lock=threading.Lock()
+        self.evidence=None  # observation evidence writer (async_evidence only)
         self.thread=threading.Thread(target=self._monitor,daemon=True,name='single-carton-supervisor');self.thread.start()
     @property
     def active(self):return self.busy or (self.cycle is not None and self.cycle.active)
@@ -49,8 +50,18 @@ class TaskManager:
             self.busy=True
     def save_observation(self,observation,name):
         timing.write_json(self.folder/(name+'.json'),observation.metadata(),name+'.json',indent=2)
+        if self.evidence is not None:
+            self.evidence.write_npz(self.folder/(name+'.npz'),dict(rgb=observation.frame.rgb,depth=observation.frame.depth),name+'.npz')
+            return
         with timing.span('disk.write',file=name+'.npz'):
             np.savez_compressed(self.folder/(name+'.npz'),rgb=observation.frame.rgb,depth=observation.frame.depth)
+    def write_record(self,name,value,**options):
+        """Observation evidence: through the async writer when enabled, else written now."""
+        if self.evidence is not None:self.evidence.write_json(self.folder/name,value,name,**options)
+        else:timing.write_json(self.folder/name,value,name,**options)
+    def evidence_flush(self):
+        """async_evidence: every observation record on disk, or refuse (no motion without records)."""
+        if self.evidence is not None:self.evidence.flush(timeout=120)
     def observe(self):
         self._enter();self.stop_event.clear();self.planner.authority.invalidate();self.plan=None;self.cycle=None
         self.observation=None;self.result=None;self.boxes=[];self.scene=None;self.reason=''
@@ -60,6 +71,10 @@ class TaskManager:
             self.journal=None;self.folder=None
             self.task_id=uuid.uuid4().hex;folder=Path(self.config['record_root'])/self.task_id;folder.mkdir(parents=True)
             self.folder=folder;self.journal=Journal(folder,self.task_id)
+            if self.evidence is not None:self.evidence.close();self.evidence=None
+            if self.config.get('async_evidence') is True:
+                from .evidence import EvidenceWriter
+                self.evidence=EvidenceWriter('observation-evidence')
             timing.write_json(folder/'result.json',dict(task_id=self.task_id,physical_result='NOT_RUN'),'result.json')
             missing=issues(self.config)
             if missing:raise ValueError('缺少现场参数：\n'+'\n'.join(missing))
@@ -102,10 +117,13 @@ class TaskManager:
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                                            neighbor_depth_m=neighbor_depth)
                 if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
-                timing.write_json(self.folder/'site-scene.json',self.scene,'site-scene.json')
-            with timing.span('disk.write',file='segmentation.npz'):
-                np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
-            timing.write_json(self.folder/'geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),'geometry.json',indent=2)
+                self.write_record('site-scene.json',self.scene)
+            if self.evidence is not None:
+                self.evidence.write_npz(self.folder/'segmentation.npz',{f'mask_{i}':m for i,m in enumerate(self.result.masks)},'segmentation.npz')
+            else:
+                with timing.span('disk.write',file='segmentation.npz'):
+                    np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
+            self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
             if rejected and not self.config.get('site'):
@@ -167,6 +185,11 @@ class TaskManager:
             # No cycle starts without its task record or with a revoked observation.
             if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
                 raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
+            # async_evidence: every observation and plan record must be on disk first.
+            writers=[w for w in (getattr(self,'evidence',None),getattr(self.planner,'evidence',None)) if w is not None]
+            try:
+                for writer in writers:writer.flush(timeout=120)
+            except Exception as error:raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(error)) from error
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             recheck=pre_execute_visual_recheck(self.config)
             recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
@@ -273,4 +296,5 @@ class TaskManager:
         if self.vacuum.holding:raise ValueError('吸具可能仍持箱：保持真空，请现场处置，窗口暂时保留')
         self.closing.set();self.thread.join(.3)
         if self.journal:self.journal.close()
+        if self.evidence is not None:self.evidence.close();self.evidence=None
         self.planner.close();self.service.close()
