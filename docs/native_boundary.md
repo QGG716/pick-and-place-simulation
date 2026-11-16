@@ -131,7 +131,7 @@
 
 插值规则：保留原生非均匀节点，五次 Hermite（q、v、a），`v/s`、`a/s²`；位置 / 速度 / 加速度在节点和导数零点处全部检查（`INTERPOLATION_LIMIT:j:order`）；离散命令速度、加速度（`DISCRETE_COMMAND_LIMIT`）；相邻命令差 ≤ 0.002 rad（`COMMAND_DISCONTINUITY`）；网格点数 ≤ 120001（`TRAJECTORY_TOO_LARGE`）；检查路径点数 ≤ 500000（`COLLISION_PATH_RESOURCE_LIMIT`）。
 
-第 6 步新增（`sent_path_audit=ADAPTIVE`）：输出 `geometric_path`（分段多项式断点与系数），worker 按距离下界自适应步进；`collision_path` 保留供 SAMPLED。第 7 步把 prepare 移入 worker 时，C++ 与 Python 输出逐点误差 ≤ 1e-12，越限拒绝两边一致。
+第 6 步（`sent_path_audit=ADAPTIVE`，实际实现）：`prepare` 输出不变；worker 沿与 SAMPLED 完全相同的 `collision_path` 采样点序列，只跳过由逐对力臂位移上界从上一个精确检查点证明通过的采样点（`docs/sent_path_adaptive_audit.md`），判定与首个失败与 SAMPLED 相同。原计划的 `geometric_path` 输出不需要，未实现。第 7 步把 prepare 移入 worker 时，C++ 与 Python 输出逐点误差 ≤ 1e-12，越限拒绝两边一致。
 
 ### B.3 不得改变
 

@@ -61,7 +61,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
   // conservative AABB band and the same exact FCL distance, in pair order.
   bool two_level_=false;
   struct GroupSphere {std::vector<size_t> bodies;size_t reference=0;Eigen::Vector3d center_ref=Eigen::Vector3d::Zero();double radius=0.;Eigen::Vector3d world=Eigen::Vector3d::Zero();};
-  struct GroupPairs {std::vector<int> pairs;double band=0.;};
+  struct GroupPairs {std::vector<int> pairs;double band=0.,max_limit=0.;};
   std::vector<Eigen::Vector3d> sphere_local_,sphere_world_;std::vector<double> sphere_radius_;
   std::vector<int> group_;std::vector<GroupSphere> groups_;
   std::vector<int> constant_candidates_;size_t constant_cleared_=0;
@@ -105,9 +105,20 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
     if(!slot)slot=buildConvex(mesh);
     return slot;
   }
+  // -- adaptive sent-path audit (sent_path_audit ADAPTIVE, physical single carton) --
+  // Per rigid group: the planning-group joints that move it and, per joint, a
+  // configuration-independent bound of the distance from that joint's axis to
+  // any point of the group (the lever arm). Group 0 (static) has no joints.
+  bool adaptive_=false,recording_=false;
+  double margin_cap_=.05;
+  std::vector<std::string> adaptive_joints_;
+  std::vector<unsigned> group_mask_;
+  std::vector<std::vector<double>> group_lever_;
+  double max_limit_=0.;
+  std::vector<double> recorded_;std::vector<int> recorded_touched_;
   void prepareTwoLevel(const planning_scene::PlanningSceneConstPtr& scene) {
     if(!hierarchical_)throw std::runtime_error("TWO_LEVEL_REQUIRES_EXPLICIT_CONVEX_WORKSPACE");
-    two_level_=true;const size_t n=bodies_.size();
+    const size_t n=bodies_.size();
     sphere_local_.resize(n);sphere_world_.resize(n);sphere_radius_.resize(n);group_.assign(n,0);
     std::map<const moveit::core::LinkModel*,int> ids;
     // Group = the child link of the nearest movable joint up the chain; 0 when
@@ -153,6 +164,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
       // Widest band of any phase (search adds the payload reserve).
       const double band=p.limit+(payload?search_payload_reserve_:0.)+.001;
       const int ga=group_[p.a],gb=group_[p.b];
+      max_limit_=std::max(max_limit_,p.limit);
       if(ga==gb) {
         // Same rigid group (or both static): the true distance never changes,
         // so a conservative lower bound above the band clears it for good.
@@ -162,6 +174,7 @@ class ClearanceWorkspace : private collision_detection::CollisionEnvFCL {
         constant_candidates_.push_back(int(idx));
       } else if(ga&&gb) {
         auto& gp=moving_pairs_[std::minmax(ga,gb)];gp.pairs.push_back(int(idx));gp.band=std::max(gp.band,band);
+        gp.max_limit=std::max(gp.max_limit,p.limit);
       }
       // Moving/static pairs are found through the static hierarchy per state.
     }
@@ -217,7 +230,7 @@ public:
       const planning_scene::PlanningSceneConstPtr& scene,
       const std::function<double(const std::string&,BodyType,const std::string&,BodyType)>& required,
       bool explicit_convex_meshes=false,double search_payload_reserve=0.,NativeDeadlinePtr deadline={},bool tight_bounds=false,
-      bool two_level=false)
+      bool two_level=false,const std::string& adaptive_group=std::string())
     : CollisionEnvFCL(env,std::make_shared<collision_detection::World>(*scene->getWorld())),context_(scene->getCurrentState()),
       search_payload_reserve_(search_payload_reserve),deadline_(std::move(deadline)) {
     tight_bounds_=tight_bounds && !std::getenv("ECO65_DIAGNOSTIC_LOOSE_BOUNDS");
@@ -278,7 +291,11 @@ public:
       for(size_t i=0;i<pairs_.size();++i) {const auto& p=pairs_[i];pair_index_[p.a*bodies_.size()+p.b]=int(i);maximum_band_=std::max(maximum_band_,p.limit+search_payload_reserve_+.001);}
       std::vector<size_t> ids(bodies_.size());std::iota(ids.begin(),ids.end(),0);tree_.reserve(2*bodies_.size());buildTree(ids,0,ids.size());
     }
-    if(two_level)prepareTwoLevel(scene);
+    // The adaptive audit reads the same proxies; the check itself stays EXACT
+    // unless TWO_LEVEL was requested.
+    if(two_level || !adaptive_group.empty())prepareTwoLevel(scene);
+    two_level_=two_level;
+    if(!adaptive_group.empty())prepareAdaptive(adaptive_group);
     stats.pair_filter_s=elapsed(filtering);stats.prepared_objects=bodies_.size();stats.eligible_pairs=pairs_.size();stats.prepare_s=elapsed(t);
   }
   // A sphere containing the solid: centre of its local AABB, radius from the
@@ -294,6 +311,142 @@ public:
     return {c,r*(1.+1e-9)+1e-9};
   }
   bool twoLevel() const {return two_level_;}
+  // ---- adaptive sent-path audit --------------------------------------------
+  // Lever bound of a point set fixed to `link` whose points lie within `rho`
+  // of the link frame origin. Walking up to the root: at a revolute planning
+  // joint j whose child frame is the current link, every point lies within
+  // `reach` of that frame's origin, which is on j's axis, so it moves at most
+  // reach*|dq_j|. A prismatic planning joint moves every point below it by
+  // exactly |dq_j|. Going up adds the joint-origin translation (and, for a
+  // prismatic joint, its largest travel), so `reach` bounds every
+  // configuration. Returns the planning-variable mask that moves the set.
+  unsigned leverOf(const moveit::core::LinkModel* link,double rho,std::vector<double>& lever) const {
+    lever.assign(adaptive_joints_.size(),0.);unsigned mask=0;double reach=rho;
+    for(const auto* l=link;l;l=l->getParentLinkModel()) {
+      const auto* j=l->getParentJointModel();if(!j)break;
+      const auto type=j->getType();
+      if(type!=moveit::core::JointModel::FIXED && type!=moveit::core::JointModel::REVOLUTE && type!=moveit::core::JointModel::PRISMATIC)
+        throw std::runtime_error("ADAPTIVE_AUDIT_UNSUPPORTED_JOINT_TYPE");
+      const auto it=std::find(adaptive_joints_.begin(),adaptive_joints_.end(),j->getName());
+      if(it!=adaptive_joints_.end()) {
+        const size_t v=it-adaptive_joints_.begin();mask|=1u<<v;
+        lever[v]=type==moveit::core::JointModel::PRISMATIC?1.:reach;
+      }
+      reach+=l->getJointOriginTransform().translation().norm();
+      if(type==moveit::core::JointModel::PRISMATIC) {
+        const auto& b=j->getVariableBounds().at(0);
+        if(!b.position_bounded_)throw std::runtime_error("ADAPTIVE_AUDIT_UNBOUNDED_PRISMATIC");
+        reach+=std::max(std::abs(b.min_position_),std::abs(b.max_position_));
+      }
+    }
+    if(!std::isfinite(reach))throw std::runtime_error("ADAPTIVE_AUDIT_UNBOUNDED_LEVER");
+    return mask;
+  }
+  void prepareAdaptive(const std::string& group_name) {
+    const auto* group=context_.getRobotModel()->getJointModelGroup(group_name);
+    if(!group)throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_UNKNOWN");
+    // Same order as setJointGroupPositions: one variable per joint.
+    adaptive_joints_=group->getVariableNames();
+    if(adaptive_joints_.empty()||adaptive_joints_.size()>16)throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_SIZE");
+    for(const auto& name:adaptive_joints_) {
+      const auto* j=context_.getRobotModel()->getJointOfVariable(name);
+      if(!j||j->getVariableCount()!=1||j->getName()!=name||j->getMimic())throw std::runtime_error("ADAPTIVE_AUDIT_UNSUPPORTED_JOINT_TYPE");
+    }
+    group_mask_.assign(groups_.size(),0u);group_lever_.assign(groups_.size(),std::vector<double>(adaptive_joints_.size(),0.));
+    std::vector<char> seen(groups_.size(),0);
+    for(size_t i=0;i<moving_;++i) {
+      const moveit::core::LinkModel* link=bodies_[i].link;
+      if(!link)link=context_.getAttachedBody(bodies_[i].name)->getAttachedLink();
+      const double rho=(context_.getGlobalLinkTransform(link).inverse()*sphere_world_[i]).norm()+sphere_radius_[i];
+      if(!std::isfinite(rho))throw std::runtime_error("ADAPTIVE_AUDIT_UNBOUNDED_BODY");
+      std::vector<double> lever;const unsigned mask=leverOf(link,rho,lever);const int g=group_[i];
+      if(!g) {if(mask)throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_MASK_MISMATCH");continue;}
+      if(seen[g]&&group_mask_[g]!=mask)throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_MASK_MISMATCH");
+      seen[g]=1;group_mask_[g]=mask;
+      for(size_t v=0;v<lever.size();++v)group_lever_[g][v]=std::max(group_lever_[g][v],lever[v]);
+    }
+    recorded_.assign(pairs_.size(),std::numeric_limits<double>::quiet_NaN());recorded_touched_.clear();
+    adaptive_=true;
+  }
+  bool adaptive() const {return adaptive_;}
+  double marginCap() const {return margin_cap_;}
+  const std::vector<std::string>& adaptiveJoints() const {return adaptive_joints_;}
+  // While on, every exact FCL distance of check() is kept for the next
+  // adaptiveConstraints(); FCL starts from limit+cap+1 mm instead of
+  // limit+1 mm, so the returned value is min(true distance, that start).
+  // A distance below the limit is the same either way: decisions unchanged.
+  void recording(bool on) {recording_=on&&adaptive_;}
+  struct Constraint {double margin;std::vector<double> c;};
+  // True only when every constraint keeps margin - sum_v c_v*|q_v-anchor_v| >= epsilon.
+  static bool provenClear(const std::vector<Constraint>& constraints,const std::vector<double>& q,
+                          const std::vector<double>& anchor,double epsilon) {
+    if(q.size()!=anchor.size())return false;
+    for(const auto& c:constraints) {
+      if(c.c.size()!=q.size())return false;
+      double moved=0.;for(size_t v=0;v<q.size();++v)moved+=c.c[v]*std::abs(q[v]-anchor[v]);
+      if(!(c.margin-moved>=epsilon))return false;
+    }
+    return true;
+  }
+  // Test access: the per-joint displacement bound of one moving body, and its current FCL object.
+  size_t movingBodies() const {return moving_;}
+  double displacementBound(size_t body,const std::vector<double>& dq) const {
+    double s=0.;const auto& L=group_lever_.at(group_.at(body));for(size_t v=0;v<dq.size();++v)s+=L[v]*std::abs(dq[v]);return s;
+  }
+  const fcl::CollisionObjectd& object(size_t body) const {return *bodies_.at(body).object;}
+  // After a passing check of the current state: one constraint per pair of
+  // moving rigid groups and one per moving group against everything static.
+  // margin = min over its pairs of (distance lower bound - pair limit),
+  // capped at margin_cap_; c = per-joint lever bound of the pair's relative
+  // displacement (joints moving exactly one of the two sides; both sides for
+  // a moving pair, the moving side against static). The lower bound of a
+  // pair is the largest of its body-sphere distance, its conservative AABB
+  // distance and the exact distance computed by this state's check.
+  void adaptiveConstraints(std::vector<Constraint>& out,double& minimum_lower) {
+    if(!adaptive_)throw std::runtime_error("ADAPTIVE_AUDIT_NOT_PREPARED");
+    out.clear();minimum_lower=max_limit_+margin_cap_;
+    const size_t n=bodies_.size(),nv=adaptive_joints_.size();
+    for(size_t i=0;i<moving_;++i)if(group_[i])sphere_world_[i]=bodies_[i].object->getTransform()*sphere_local_[i];
+    for(size_t g=1;g<groups_.size();++g)groups_[g].world=bodies_[groups_[g].reference].object->getTransform()*groups_[g].center_ref;
+    auto sphere=[&](size_t a,size_t b){return (sphere_world_[a]-sphere_world_[b]).norm()-sphere_radius_[a]-sphere_radius_[b];};
+    auto lower=[&](int idx) {
+      const auto& p=pairs_[idx];
+      double lb=std::max(sphere(p.a,p.b),bodies_[p.a].bounds.distance(bodies_[p.b].bounds));
+      if(!std::isnan(recorded_[idx]))lb=std::max(lb,recorded_[idx]);
+      if(!std::isfinite(lb))throw std::runtime_error("ADAPTIVE_AUDIT_UNKNOWN_LOWER_BOUND");
+      minimum_lower=std::min(minimum_lower,lb);return lb-p.limit;
+    };
+    for(const auto& entry:moving_pairs_) {
+      const int ga=entry.first.first,gb=entry.first.second;
+      std::vector<double> c(nv,0.);bool moves=false;
+      for(size_t v=0;v<nv;++v) {
+        const bool ia=(group_mask_[ga]>>v)&1u,ib=(group_mask_[gb]>>v)&1u;
+        if(ia!=ib) {c[v]=ia?group_lever_[ga][v]:group_lever_[gb][v];moves=true;}
+      }
+      if(!moves)continue; // relative pose fixed along any path: decided at the anchor
+      const auto& A=groups_[ga];const auto& B=groups_[gb];const auto& gp=entry.second;double margin=margin_cap_;
+      if((A.world-B.world).norm()-A.radius-B.radius-gp.max_limit<margin)
+        for(int idx:gp.pairs) {
+          const auto& p=pairs_[idx];
+          if(sphere(p.a,p.b)-p.limit>=margin)continue;
+          margin=std::min(margin,lower(idx));
+        }
+      out.push_back({margin,c});
+    }
+    std::vector<size_t> statics;
+    for(size_t g=1;g<groups_.size();++g) {
+      if(!group_mask_[g])continue;
+      const auto& G=groups_[g];statics.clear();size_t visited=0;double margin=margin_cap_;
+      // Static bodies outside this reach are farther than limit+cap from every body of the group.
+      if(!static_tree_.empty())staticNear(0,G.world,G.radius+max_limit_+margin_cap_,statics,visited);
+      for(size_t s:statics)for(size_t m:G.bodies) {
+        const int idx=pair_index_[std::min(m,s)*n+std::max(m,s)];if(idx<0)continue;
+        if(sphere(m,s)-pairs_[idx].limit>=margin)continue;
+        margin=std::min(margin,lower(idx));
+      }
+      out.push_back({margin,group_lever_[g]});
+    }
+  }
   bool check(const moveit::core::RobotState& state,Failure& failure,const std::string& phase) {
     auto expired=[&](){if(!nativeExpired(deadline_))return false;
       failure.reason="NATIVE_ABSOLUTE_DEADLINE_EXPIRED";failure.distance=std::numeric_limits<double>::quiet_NaN();return true;};
@@ -313,6 +466,7 @@ public:
       }
     } timing_delta{NativeTiming::enabled(),stats,stats,phase};
     ++stats.queries;auto updating=Clock::now();
+    if(recording_) {for(int idx:recorded_touched_)recorded_[idx]=std::numeric_limits<double>::quiet_NaN();recorded_touched_.clear();}
     if(state.getRobotModel()!=context_.getRobotModel()) throw std::runtime_error("WORKSPACE_MODEL_CHANGED");
     std::vector<const moveit::core::AttachedBody*> current;state.getAttachedBodies(current);
     if(current.size()!=attached_.size()) throw std::runtime_error("WORKSPACE_ATTACHMENT_CHANGED");
@@ -413,8 +567,9 @@ public:
       if(skip) {++stats.aabb_skips;continue;}
       auto narrow=Clock::now();++stats.narrow_calls;
       if(p.self) ++stats.self_narrow;else ++stats.world_narrow;
-      fcl::DistanceResultd result;result.min_distance=limit+.001;
+      fcl::DistanceResultd result;result.min_distance=limit+(recording_?margin_cap_:0.)+.001;
       const double d=fcl::distance(a.object.get(),b.object.get(),fcl::DistanceRequestd(false),result);
+      if(recording_&&std::isfinite(d)) {if(std::isnan(recorded_[index]))recorded_touched_.push_back(index);recorded_[index]=d;}
       const double dt=elapsed(narrow);stats.narrow_s+=dt;(p.self?stats.self_s:stats.world_s)+=dt;
       if(expired()) {finish_broad();return false;}
       // Use the same FCL request/default solver and strict contact rejection as

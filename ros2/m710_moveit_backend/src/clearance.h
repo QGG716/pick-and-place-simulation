@@ -32,6 +32,12 @@ class Clearance {
   bool eco65_=false;
   bool path_endpoint_reuse_=false;
   bool two_level_=false;
+  // sent_path_audit ADAPTIVE: skip an output-phase path sample only when the
+  // per-pair displacement bound from the last exactly checked sample proves it
+  // passes; every other sample keeps the exact check.
+  bool adaptive_=false;
+  static constexpr double kAdaptiveProofEpsilon=1e-6;
+  struct AdaptiveAudit {size_t sampled=0,checked=0,skipped=0,anchors=0;double minimum_lower=INFINITY,minimum_workspace=INFINITY,constraint_s=0,proof_s=0;} audit_;
   NativeDeadlinePtr deadline_;
   std::unique_ptr<SingleCartonContact> single_carton_;
   struct Count {size_t queries=0,rejected=0,distance_api_calls=0,clearance_rejected=0,legacy_witness_checks=0;
@@ -64,6 +70,11 @@ public:
     if(check_mode!="EXACT"&&check_mode!="TWO_LEVEL")throw std::runtime_error("COLLISION_CHECK_MODE_INVALID");
     if(check_mode=="TWO_LEVEL"&&!single_carton_)throw std::runtime_error("COLLISION_CHECK_MODE_SCOPE_INVALID");
     two_level_=check_mode=="TWO_LEVEL";
+    // sent_path_audit (physical single carton, no contact, no support): SAMPLED (default) or ADAPTIVE.
+    const std::string audit=(!request.is_null()&&request.is_object())?request.value("sent_path_audit",std::string("SAMPLED")):std::string("SAMPLED");
+    if(audit!="SAMPLED"&&audit!="ADAPTIVE")throw std::runtime_error("SENT_PATH_AUDIT_INVALID");
+    if(audit=="ADAPTIVE"&&(!single_carton_||!single_carton_->adaptiveEligible()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
+    adaptive_=audit=="ADAPTIVE";
     if(policy.at("schema")=="eco65_native_empty_clearance_v1" &&
        (policy.at("source_policy").at("schema")!="eco65_pair_collision_policy_v1" ||
         request.is_null() || request.contains("process_policy") ||
@@ -153,9 +164,11 @@ public:
       const auto* fcl=dynamic_cast<const collision_detection::CollisionEnvFCL*>(env_.get());
       if(!fcl) throw std::runtime_error("FCL_REQUIRED");
       auto preparing=Clock::now();
-      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_),two_level_);
+      workspace_=std::make_unique<ClearanceWorkspace>(*fcl,scene,[this](const auto& a,auto ta,const auto& b,auto tb){return required(a,ta,b,tb);},eco65_,search_payload_reserve,deadline_,bool(single_carton_),two_level_,
+        adaptive_?m710::nativeFrames().planning_group:std::string());
       profile_["workspace_allocation_s"]=elapsed(preparing);
     }
+    if(adaptive_&&(!workspace_||!workspace_->adaptive()))throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
   }
   double required(const std::string& a, collision_detection::BodyType ta,
                   const std::string& b, collision_detection::BodyType tb) const {
@@ -267,6 +280,18 @@ public:
     // successful check of an exactly equal joint vector, only in controlled empty
     // mode. Keep every distinct endpoint/interior state and all legacy sampling.
     const bool reuse=policy_.at("schema")=="eco65_native_empty_clearance_v1" || path_endpoint_reuse_;
+    // ADAPTIVE walks exactly the same samples. A sample is skipped only when,
+    // for every constraint of the last exactly checked sample (the anchor),
+    // margin - sum_v c_v*|q_v - anchor_v| >= 1 µm: then every pair keeps at
+    // least its limit and every site-workspace box stays inside, and the
+    // remaining single-carton conditions do not depend on the state in this
+    // scope. Joint bounds and the deadline are still tested per sample.
+    const bool adaptive=adaptive_ && phase=="output";
+    if(adaptive && probe.getJointModelGroup(m710::nativeFrames().planning_group)->getVariableNames()!=workspace_->adaptiveJoints())
+      throw std::runtime_error("ADAPTIVE_AUDIT_GROUP_MISMATCH");
+    struct Recording {ClearanceWorkspace* w;bool on;~Recording(){if(on)w->recording(false);}} recording{workspace_.get(),adaptive};
+    if(adaptive)workspace_->recording(true);
+    std::vector<ClearanceWorkspace::Constraint> constraints;std::vector<double> anchor;bool anchored=false;
     std::vector<double> previous;
     for(size_t edge=0;edge<std::max(size_t(1),path.size()-1);++edge) {
       auto a=path.at(edge).get<std::vector<double>>();auto b=path.at(std::min(edge+1,path.size()-1)).get<std::vector<double>>();
@@ -277,12 +302,35 @@ public:
       for(size_t k=0;k<=samples;++k) {
         const double fraction=double(k)/samples;auto q=a;for(size_t i=0;i<q.size();++i) q[i]+=fraction*(b[i]-a[i]);
         if(reuse && q==previous && !nativeExpired(deadline_)) {++exact_repeated_path_states_reused;continue;}
+        if(adaptive) ++audit_.sampled;
+        if(adaptive && anchored && !nativeExpired(deadline_)) {
+          probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);
+          if(probe.satisfiesBounds() && proven(constraints,q,anchor)) {++audit_.skipped;previous=q;continue;}
+        }
         probe.setJointGroupPositions(m710::nativeFrames().planning_group,q);probe.update();
         if(!check(probe)) {Json failure=last_failure;failure["edge"]=edge;failure["fraction"]=fraction;failure["q_rad"]=q;return failure;}
         previous=q;
+        if(adaptive) {++audit_.checked;anchor=q;anchorConstraints(probe,constraints);anchored=true;}
       }
     }
     return nullptr;
+  }
+  bool proven(const std::vector<ClearanceWorkspace::Constraint>& constraints,const std::vector<double>& q,const std::vector<double>& anchor) {
+    const auto t=Clock::now();const bool ok=ClearanceWorkspace::provenClear(constraints,q,anchor,kAdaptiveProofEpsilon);
+    audit_.proof_s+=elapsed(t);return ok;
+  }
+  void anchorConstraints(const moveit::core::RobotState& state,std::vector<ClearanceWorkspace::Constraint>& constraints) {
+    const auto t=Clock::now();double lower=INFINITY;
+    workspace_->adaptiveConstraints(constraints,lower);
+    audit_.minimum_lower=std::min(audit_.minimum_lower,lower);++audit_.anchors;
+    std::vector<std::tuple<const moveit::core::LinkModel*,double,double>> margins;
+    single_carton_->workspaceMargins(state,margins);
+    for(const auto& [link,margin,rho]:margins) {
+      audit_.minimum_workspace=std::min(audit_.minimum_workspace,margin);
+      std::vector<double> lever;if(!workspace_->leverOf(link,rho,lever))continue; // fixed to the world
+      constraints.push_back({std::min(margin,workspace_->marginCap()),lever});
+    }
+    audit_.constraint_s+=elapsed(t);
   }
   Json workspaceEvidence() const {
     if(!workspace_) return nullptr;
@@ -311,6 +359,14 @@ public:
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
     {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
     {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},
-    {"mode",mode_},{"collision_check_mode",two_level_?"TWO_LEVEL":"EXACT"},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
+    {"mode",mode_},{"collision_check_mode",two_level_?"TWO_LEVEL":"EXACT"},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};
+    if(adaptive_)result["sent_path_audit"]={{"method","ADAPTIVE"},{"sampled_states",audit_.sampled},{"checked_states",audit_.checked},
+      {"skipped_states",audit_.skipped},{"anchors",audit_.anchors},
+      {"minimum_distance_lower_bound_m",std::isfinite(audit_.minimum_lower)?Json(audit_.minimum_lower):Json(nullptr)},
+      {"minimum_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
+      {"margin_cap_m",workspace_->marginCap()},{"proof_epsilon_m",kAdaptiveProofEpsilon},
+      {"constraint_s",audit_.constraint_s},{"proof_s",audit_.proof_s},
+      {"skip_rule","PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE"},{"samples","IDENTICAL_TO_SAMPLED"}};
+    result["evidence_materialization_s"]=elapsed(t);return result;}
 };
 }

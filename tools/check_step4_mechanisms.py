@@ -42,7 +42,7 @@ def box_of(name):
                 quality={}, scope='SYNTHETIC_STEP4_CHECK_NOT_FIELD_DATA')
 
 
-def planner_for(switches, record_root, check_mode=None):
+def planner_for(switches, record_root, check_mode=None, audit=None):
     from unloading_sim.workbench.single_carton.config import load
     from unloading_sim.workbench.single_carton.planner import SinglePlanner
     from unloading_sim.workbench.controlled.trajectory import Authority
@@ -50,6 +50,8 @@ def planner_for(switches, record_root, check_mode=None):
     from unloading_sim.workbench.coordinates import Installation, CoordinateModel
     config = load(ROOT/'configs/workbench/single_carton.example.json')
     config.pop('site', None); config['record_root'] = str(record_root)
+    if audit:
+        config['sent_path_audit'] = audit
     if check_mode:
         config['collision_check_mode'] = check_mode
     for key in SWITCHES:
@@ -94,12 +96,21 @@ def summary(plan, error, elapsed, folder):
 
 
 def run(planner, model, name, out, label):
+    from unloading_sim.workbench import timing
     folder = out/label; folder.mkdir()
     started = time.monotonic(); plan = error = None
     try:
-        plan = planner.plan_cycle(observation(model, name), [box_of(name)], folder)
+        with timing.span('prepare_plan.plan_cycle', scope='SYNTHETIC_PLAN_CYCLE_ONLY'):
+            plan = planner.plan_cycle(observation(model, name), [box_of(name)], folder)
     except Exception as e:
         error = e
+    # ECO65_TIMING=1: this plan's spans for tools/bench_planning_latency.py --timing
+    # (plan_cycle only; no observation, scene build or UI of the workbench entry).
+    writer = timing.write_later(folder/'timing-prepare_plan.json', 'prepare_plan',
+                                dict(task_id=f'synthetic-{label}', final_phase='PLAN_READY' if plan else 'NO_PLAN',
+                                     scope='SYNTHETIC_SCENE_NOT_FIELD_RECORD'), since=started)
+    if writer is not None:
+        writer.join()
     result = summary(plan, error, time.monotonic()-started, folder)
     (out/f'{label}.json').write_text(json.dumps(result, indent=1, default=str))
     print(label, json.dumps({k: result.get(k) for k in ('outcome', 'candidate', 'elapsed_s', 'error')}, default=str), flush=True)
@@ -118,6 +129,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--off', type=Path); parser.add_argument('--on', type=Path)
     parser.add_argument('--collision-check-mode', choices=('EXACT', 'TWO_LEVEL'))
+    parser.add_argument('--sent-path-audit', choices=('SAMPLED', 'ADAPTIVE'))
     args = parser.parse_args()
     if args.mode == 'compare':
         pairs = [('off', 'A', args.off/'A.json', args.on/'A-first.json'), ('resident-repeat', 'A', args.on/'A-first.json', args.on/'A-second.json'),
@@ -131,11 +143,11 @@ def main():
     out = args.output.resolve(); out.mkdir(parents=True, exist_ok=False)
     if args.mode == 'off':
         for name in ('A', 'B'):
-            planner, model = planner_for(False, out/'records', args.collision_check_mode)
+            planner, model = planner_for(False, out/'records', args.collision_check_mode, args.sent_path_audit)
             try: run(planner, model, name, out, name)
             finally: planner.close()
         return
-    planner, model = planner_for(True, out/'records')
+    planner, model = planner_for(True, out/'records', args.collision_check_mode, args.sent_path_audit)
     try:
         planner.prewarm().join()
         planner.resident.wait_ready(300)
@@ -143,7 +155,7 @@ def main():
             run(planner, model, name, out, label)
     finally:
         planner.close()
-    planner, model = planner_for(True, out/'records-fresh')
+    planner, model = planner_for(True, out/'records-fresh', args.collision_check_mode, args.sent_path_audit)
     try:
         planner.prewarm().join(); planner.resident.wait_ready(300)
         run(planner, model, 'B', out, 'B-alone')

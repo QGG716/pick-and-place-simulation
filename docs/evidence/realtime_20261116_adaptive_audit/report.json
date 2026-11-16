@@ -1,0 +1,961 @@
+{
+ "schema": "eco65_realtime_step_report_v1",
+ "date": "2026-11-16",
+ "step": "6_adaptive_sent_path_audit",
+ "scope": "SENT_PATH_AUDIT_SWITCH_DEFAULT_SAMPLED; PHYSICAL_SINGLE_CARTON_NO_CONTACT_NO_SUPPORT; SYNTHETIC_SCENES_ONLY",
+ "hardware_execution": "NOT_RUN",
+ "base_commit": "0cf6714",
+ "contract": "AGENTS.md 2026-11-16 3b; docs/sent_path_adaptive_audit.md",
+ "mechanism": {
+  "switch": "sent_path_audit",
+  "values": [
+   "SAMPLED",
+   "ADAPTIVE"
+  ],
+  "default": "SAMPLED",
+  "rule": "ADAPTIVE walks exactly the SAMPLED native sample sequence of the sent path; a sample is skipped only when, from the last exactly checked sample (anchor), every constraint keeps margin - sum_v c_v |q_v - anchor_v| >= 1 um; every other sample is checked exactly (EXACT or TWO_LEVEL), so decisions and the first failing sample equal SAMPLED",
+  "constraints": "one per pair of moving rigid groups (joints moving exactly one side), one per moving group against all static bodies, one per link box and payload corners against the site workspace; margin = min(distance lower bound - pair limit, 0.05 m); lower bound = max(body-sphere distance, conservative AABB distance, exact FCL distance of this check, FCL started at limit + 0.05 m + 1 mm while recording)",
+  "lever": "per joint: distance from the joint axis to the farthest point of the group, bounded by the chain of joint-origin translations (plus prismatic travel) and the body radius in its link frame; prismatic joints coefficient 1",
+  "scope": "physical single carton, no contact permission, no support (approach; loaded return without supports); contact and supported segments stay SAMPLED; the worker refuses ADAPTIVE elsewhere (SENT_PATH_AUDIT_SCOPE_INVALID)",
+  "continuous_guarantee": "every native sample is checked (>= 2.4 mm) or proven (>= its pair limit); consecutive probe states move any pair <= 1 mm (prepare), so every sent state keeps >= 1.4 mm: continuous_swept_proof=BOUNDED_DISPLACEMENT_1_4_MM per segment for SAMPLED and ADAPTIVE (null when rejected); the native checker evidence keeps continuous_swept_proof=false",
+  "time_scaling": "prepare chooses the send scale (SEND_SLOWDOWN_STEPS) before the audit, so each segment is audited once; uniform scaling keeps the probe-state bound (unit test)",
+  "files": [
+   "ros2/m710_moveit_backend/src/clearance_workspace.h (levers, constraints, provenClear)",
+   "ros2/m710_moveit_backend/src/clearance.h (checkPath ADAPTIVE, evidence)",
+   "ros2/m710_moveit_backend/src/eco65_single_carton.h (adaptiveEligible, workspaceMargins)",
+   "ros2/m710_moveit_backend/src/worker.cpp (scope, capability)",
+   "ros2/m710_moveit_backend/src/clearance_test.cpp (adaptive)",
+   "single_carton/config.py",
+   "single_carton/planner.py (audit_method, audit_summary)",
+   "docs/sent_path_adaptive_audit.md"
+  ]
+ },
+ "unit_tests": {
+  "native": {
+   "mode": "m710_clearance_test adaptive",
+   "status": "PASS",
+   "lever_bound": {
+    "body_displacements_checked": 12000,
+    "largest_displacement_to_bound_ratio": 1.0000000000002385,
+    "status": "PASS"
+   },
+   "proof_soundness": {
+    "anchors": 2782,
+    "proven_samples_rechecked_exactly": 10342,
+    "status": "PASS"
+   },
+   "path_equivalence": {
+    "adaptive_checks": 29641,
+    "invalid": 218,
+    "paths": 600,
+    "sampled_checks": 4018259,
+    "status": "PASS",
+    "valid": 382
+   },
+   "grazing_and_penetration": {
+    "cases": [
+     {
+      "adaptive_checks": 321,
+      "distance_m": null,
+      "first_failing_sample": -1,
+      "gap_m": 0.008,
+      "pair": [
+       "",
+       ""
+      ],
+      "sampled_checks": 3841,
+      "valid": true
+     },
+     {
+      "adaptive_checks": 23,
+      "distance_m": 0.004949861418379665,
+      "first_failing_sample": 1304,
+      "gap_m": 0.003,
+      "pair": [
+       "link2",
+       "post"
+      ],
+      "sampled_checks": 1305,
+      "valid": false
+     },
+     {
+      "adaptive_checks": 22,
+      "distance_m": 0.00492029020953971,
+      "first_failing_sample": 1293,
+      "gap_m": 0.0005,
+      "pair": [
+       "link2",
+       "post"
+      ],
+      "sampled_checks": 1294,
+      "valid": false
+     },
+     {
+      "adaptive_checks": 21,
+      "distance_m": 0.004981860097966937,
+      "first_failing_sample": 1292,
+      "gap_m": -0.001,
+      "pair": [
+       "link2",
+       "post"
+      ],
+      "sampled_checks": 1293,
+      "valid": false
+     }
+    ],
+    "status": "PASS"
+   },
+   "scope": "PASS"
+  },
+  "python": "tests/test_single_carton_adaptive.py (configuration, scope per segment, capability refusal, evidence, probe-state 1 mm bound and time scaling)"
+ },
+ "equivalence": {
+  "tool": "tools/check_adaptive_audit.py (every eligible recorded sent-path validate request of the step-4 synthetic plans A and B, sent with SAMPLED and with ADAPTIVE on the same worker; variants recorded / cluttered (seeded boxes near link origins) / bounded (generous and tight site workspace); constructed tool-axis obstacles binary-searched to the clearance threshold, then 0.5 mm closer (grazing), 12 mm closer (penetrating), 2 mm farther (clear))",
+  "exact": {
+   "collision_check_mode": "EXACT",
+   "totals": {
+    "requests": 228,
+    "identical": 228,
+    "valid": 116,
+    "sampled_checked": 868827,
+    "adaptive_checked": 1220,
+    "adaptive_skipped": 867607,
+    "sampled_check_s": 1288.3041892569995,
+    "adaptive_check_s": 2.8044148209999973,
+    "sampled_wall_s": 1413.0887467616703,
+    "adaptive_wall_s": 104.43097238685004
+   },
+   "by_variant": {
+    "recorded": {
+     "requests": 38,
+     "identical": 38,
+     "valid": 38,
+     "sampled_checked": 281763,
+     "adaptive_checked": 269,
+     "adaptive_skipped": 281494,
+     "sampled_check_s": 406.476579316,
+     "adaptive_check_s": 0.5176596600000002,
+     "sampled_wall_s": 430.02777670975775,
+     "adaptive_wall_s": 16.72543878434226
+    },
+    "cluttered": {
+     "requests": 114,
+     "identical": 114,
+     "valid": 40,
+     "sampled_checked": 305263,
+     "adaptive_checked": 644,
+     "adaptive_skipped": 304619,
+     "sampled_check_s": 469.56150527200026,
+     "adaptive_check_s": 1.2764798730000002,
+     "sampled_wall_s": 529.5556506037246,
+     "adaptive_wall_s": 52.88217265764251
+    },
+    "bounded": {
+     "requests": 76,
+     "identical": 76,
+     "valid": 38,
+     "sampled_checked": 281801,
+     "adaptive_checked": 307,
+     "adaptive_skipped": 281494,
+     "sampled_check_s": 412.26610466899956,
+     "adaptive_check_s": 1.010275287999999,
+     "sampled_wall_s": 453.50531944818795,
+     "adaptive_wall_s": 34.82336094486527
+    }
+   },
+   "by_stage_recorded": {
+    "approach": {
+     "requests": 14,
+     "identical": 14,
+     "valid": 14,
+     "sampled_checked": 91236,
+     "adaptive_checked": 131,
+     "adaptive_skipped": 91105,
+     "sampled_check_s": 132.53068777500008,
+     "adaptive_check_s": 0.24903135100000015,
+     "sampled_wall_s": 140.95494093513116,
+     "adaptive_wall_s": 6.162327129160985
+    },
+    "detach": {
+     "requests": 14,
+     "identical": 14,
+     "valid": 14,
+     "sampled_checked": 131082,
+     "adaptive_checked": 89,
+     "adaptive_skipped": 130993,
+     "sampled_check_s": 188.80500761200003,
+     "adaptive_check_s": 0.17363785300000015,
+     "sampled_wall_s": 198.25676467991434,
+     "adaptive_wall_s": 6.310983715346083
+    },
+    "return": {
+     "requests": 10,
+     "identical": 10,
+     "valid": 10,
+     "sampled_checked": 59445,
+     "adaptive_checked": 49,
+     "adaptive_skipped": 59396,
+     "sampled_check_s": 85.14088392899991,
+     "adaptive_check_s": 0.094990456,
+     "sampled_wall_s": 90.81607109471224,
+     "adaptive_wall_s": 4.252127939835191
+    }
+   },
+   "acceptance": {
+    "all_identical": true,
+    "adaptive_pass_implies_sampled_pass": true,
+    "adaptive_passes": 116,
+    "constructed_grazing_and_penetrating_rejected_by_both": true,
+    "constructed_cases_identical": true,
+    "constructed_cases": 12
+   },
+   "constructed": [
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.00281982421875,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002398395448363671,
+       "sampled_checks": 74,
+       "adaptive_checks": 20
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    },
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.0028472900390625,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002393294863512152,
+       "sampled_checks": 81,
+       "adaptive_checks": 21
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    },
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.0028747558593749997,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002399174201547873,
+       "sampled_checks": 86,
+       "adaptive_checks": 20
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    },
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.0029022216796875,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002393768941592666,
+       "sampled_checks": 92,
+       "adaptive_checks": 19
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    }
+   ]
+  },
+  "two_level": {
+   "collision_check_mode": "TWO_LEVEL",
+   "totals": {
+    "requests": 152,
+    "identical": 152,
+    "valid": 91,
+    "sampled_checked": 697045,
+    "adaptive_checked": 2828,
+    "adaptive_skipped": 694217,
+    "sampled_check_s": 317.08474889099995,
+    "adaptive_check_s": 2.941253444999999,
+    "sampled_wall_s": 366.17377703567035,
+    "adaptive_wall_s": 33.83793661533855
+   },
+   "by_variant": {
+    "recorded": {
+     "requests": 38,
+     "identical": 38,
+     "valid": 38,
+     "sampled_checked": 281763,
+     "adaptive_checked": 269,
+     "adaptive_skipped": 281494,
+     "sampled_check_s": 121.46253748299998,
+     "adaptive_check_s": 0.24245880199999933,
+     "sampled_wall_s": 135.8403958240524,
+     "adaptive_wall_s": 7.483051526593044
+    },
+    "cluttered": {
+     "requests": 38,
+     "identical": 38,
+     "valid": 15,
+     "sampled_checked": 133481,
+     "adaptive_checked": 2252,
+     "adaptive_skipped": 131229,
+     "sampled_check_s": 66.04168206299994,
+     "adaptive_check_s": 1.9405599169999985,
+     "sampled_wall_s": 77.71624811715446,
+     "adaptive_wall_s": 9.905080472584814
+    },
+    "bounded": {
+     "requests": 76,
+     "identical": 76,
+     "valid": 38,
+     "sampled_checked": 281801,
+     "adaptive_checked": 307,
+     "adaptive_skipped": 281494,
+     "sampled_check_s": 129.58052934499995,
+     "adaptive_check_s": 0.7582347260000016,
+     "sampled_wall_s": 152.6171330944635,
+     "adaptive_wall_s": 16.44980461616069
+    }
+   },
+   "by_stage_recorded": {
+    "approach": {
+     "requests": 14,
+     "identical": 14,
+     "valid": 14,
+     "sampled_checked": 91236,
+     "adaptive_checked": 131,
+     "adaptive_skipped": 91105,
+     "sampled_check_s": 41.070896678000004,
+     "adaptive_check_s": 0.11952241600000005,
+     "sampled_wall_s": 46.60548298037611,
+     "adaptive_wall_s": 2.912179135484621
+    },
+    "detach": {
+     "requests": 14,
+     "identical": 14,
+     "valid": 14,
+     "sampled_checked": 131082,
+     "adaptive_checked": 89,
+     "adaptive_skipped": 130993,
+     "sampled_check_s": 55.87292261999996,
+     "adaptive_check_s": 0.08031276499999965,
+     "sampled_wall_s": 61.64437230140902,
+     "adaptive_wall_s": 2.8336352929472923
+    },
+    "return": {
+     "requests": 10,
+     "identical": 10,
+     "valid": 10,
+     "sampled_checked": 59445,
+     "adaptive_checked": 49,
+     "adaptive_skipped": 59396,
+     "sampled_check_s": 24.518718184999997,
+     "adaptive_check_s": 0.042623620999999653,
+     "sampled_wall_s": 27.590540542267263,
+     "adaptive_wall_s": 1.7372370981611311
+    }
+   },
+   "acceptance": {
+    "all_identical": true,
+    "adaptive_pass_implies_sampled_pass": true,
+    "adaptive_passes": 91,
+    "constructed_grazing_and_penetrating_rejected_by_both": true,
+    "constructed_cases_identical": true,
+    "constructed_cases": 6
+   },
+   "constructed": [
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.00281982421875,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002398395448363671,
+       "sampled_checks": 74,
+       "adaptive_checks": 20
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    },
+    {
+     "stage": "approach",
+     "threshold_offset_m": 0.0028472900390625,
+     "status": null,
+     "cases": [
+      {
+       "case": "grazing",
+       "identical": true,
+       "reason": "CLEARANCE_INSUFFICIENT",
+       "surface_distance_m": 0.002393294863512152,
+       "sampled_checks": 81,
+       "adaptive_checks": 21
+      },
+      {
+       "case": "penetrating",
+       "identical": true,
+       "reason": "INTERSECTION_OR_CONTACT",
+       "surface_distance_m": -1.0,
+       "sampled_checks": 1,
+       "adaptive_checks": 1
+      },
+      {
+       "case": "clear",
+       "identical": true,
+       "reason": null,
+       "surface_distance_m": null,
+       "sampled_checks": 177,
+       "adaptive_checks": 3
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "synthetic_replans": {
+  "note": "tools/check_step4_mechanisms.py --mode off; compared fields: outcome, candidate, endpoint screen, total duration, per segment planner/points/send duration/probe states/detach profile/first and last q, every failure reason",
+  "sampled_exact": {
+   "A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 129.84,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      1905,
+      9.52,
+      7654
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      337,
+      1.68,
+      1687
+     ]
+    ]
+   },
+   "B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 166.84,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      3606,
+      18.025000000000002,
+      22760
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      3606,
+      18.025000000000002,
+      18130
+     ]
+    ]
+   }
+  },
+  "adaptive_exact": {
+   "A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 108.49,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      1905,
+      9.52,
+      7654
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      337,
+      1.68,
+      1687
+     ]
+    ]
+   },
+   "B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 105.02,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      3606,
+      18.025000000000002,
+      22760
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      3606,
+      18.025000000000002,
+      18130
+     ]
+    ]
+   },
+   "comparison": [
+    {
+     "scene": "A",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "scene": "B",
+     "identical": true,
+     "differences": null
+    }
+   ]
+  },
+  "adaptive_two_level": {
+   "A": {
+    "outcome": "PLAN_READY",
+    "candidate": 0,
+    "elapsed_s": 62.47,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      1905,
+      9.52,
+      7654
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      337,
+      1.68,
+      1687
+     ]
+    ]
+   },
+   "B": {
+    "outcome": "PLAN_READY",
+    "candidate": 4,
+    "elapsed_s": 65.75,
+    "failures": 0,
+    "segments": [
+     [
+      "approach",
+      "PTP",
+      3606,
+      18.025000000000002,
+      22760
+     ],
+     [
+      "contact",
+      "LIN",
+      1051,
+      5.25,
+      2125
+     ],
+     [
+      "detach",
+      "LIN",
+      6601,
+      33.0,
+      21848
+     ],
+     [
+      "return",
+      "PTP",
+      3606,
+      18.025000000000002,
+      18130
+     ]
+    ]
+   },
+   "comparison": [
+    {
+     "scene": "A",
+     "identical": true,
+     "differences": null
+    },
+    {
+     "scene": "B",
+     "identical": true,
+     "differences": null
+    }
+   ]
+  }
+ },
+ "bench": {
+  "command": "ECO65_TIMING=1 tools/check_step4_mechanisms.py --mode on --collision-check-mode TWO_LEVEL --sent-path-audit ADAPTIVE; tools/bench_planning_latency.py --timing <its timing-prepare_plan.json files>",
+  "scope": "SYNTHETIC_SCENES_PLAN_CYCLE_ONLY (no field record exists); four plans: A, A again, B after A (one resident planner), B in a fresh resident planner",
+  "planning": {
+   "samples": 4,
+   "p50_s": 76.72244393080473,
+   "p95_s": 105.15961440303363,
+   "max_s": 105.15961440303363,
+   "success_rate": 1.0,
+   "target_total_s": 2.0,
+   "gap_to_target_p95_s": 103.15961440303363
+  },
+  "stages": [
+   {
+    "name": "build",
+    "target_s": 0.02,
+    "count": 4,
+    "p50_s": 1.3432931154966354e-05,
+    "p95_s": 5.0756847485899925e-05,
+    "max_s": 5.0756847485899925e-05
+   },
+   {
+    "name": "worker_start",
+    "target_s": 0.05,
+    "count": 4,
+    "p50_s": 0.0,
+    "p95_s": 0.0,
+    "max_s": 0.0
+   },
+   {
+    "name": "rest_and_candidates",
+    "target_s": 0.02,
+    "count": 4,
+    "p50_s": 1.063238370930776,
+    "p95_s": 1.6092781191691756,
+    "max_s": 1.6092781191691756
+   },
+   {
+    "name": "endpoint_screening",
+    "target_s": 0.45,
+    "count": 4,
+    "p50_s": 40.49752848199569,
+    "p95_s": 40.94628128455952,
+    "max_s": 40.94628128455952
+   },
+   {
+    "name": "candidate_planning",
+    "target_s": 0.55,
+    "count": 4,
+    "p50_s": 10.07665483886376,
+    "p95_s": 21.596399575006217,
+    "max_s": 21.596399575006217
+   },
+   {
+    "name": "sent_path_check",
+    "target_s": 0.55,
+    "count": 4,
+    "p50_s": 6.046660584630445,
+    "p95_s": 10.571301586925983,
+    "max_s": 10.571301586925983
+   },
+   {
+    "name": "finalize",
+    "target_s": 0.15,
+    "count": 4,
+    "p50_s": 0.955098174745217,
+    "p95_s": 1.3826132651884109,
+    "max_s": 1.3826132651884109
+   },
+   {
+    "name": "worker_close",
+    "target_s": 0.01,
+    "count": 4,
+    "p50_s": 0.0008083800785243511,
+    "p95_s": 0.0012835850939154625,
+    "max_s": 0.0012835850939154625
+   },
+   {
+    "name": "reserve",
+    "target_s": 0.2,
+    "count": 4,
+    "p50_s": 0.0,
+    "p95_s": 0.0,
+    "max_s": 0.0
+   }
+  ],
+  "over_budget": [
+   {
+    "name": "endpoint_screening",
+    "p95_s": 40.94628128455952,
+    "target_s": 0.45,
+    "ratio": 90.99173618791004,
+    "above_flag_factor": true
+   },
+   {
+    "name": "rest_and_candidates",
+    "p95_s": 1.6092781191691756,
+    "target_s": 0.02,
+    "ratio": 80.46390595845878,
+    "above_flag_factor": true
+   },
+   {
+    "name": "candidate_planning",
+    "p95_s": 21.596399575006217,
+    "target_s": 0.55,
+    "ratio": 39.26618104546584,
+    "above_flag_factor": true
+   },
+   {
+    "name": "sent_path_check",
+    "p95_s": 10.571301586925983,
+    "target_s": 0.55,
+    "ratio": 19.220548339865424,
+    "above_flag_factor": true
+   },
+   {
+    "name": "finalize",
+    "p95_s": 1.3826132651884109,
+    "target_s": 0.15,
+    "ratio": 9.21742176792274,
+    "above_flag_factor": true
+   }
+  ],
+  "findings": [
+   "endpoint screening (about 2500 native round trips per plan, mostly multi-seed IK) is the largest stage: about 40 s against 0.45 s; step 7 composite requests and step 8 IK budget address it",
+   "candidate planning 10-22 s; Python prepare alone accounts for 38-55 s of lane time per plan (75-123 calls of about 0.5 s): step 7 moves prepare into the worker",
+   "sent-path checks 6-11 s although the checks themselves now take milliseconds: each validate request still imports the scene and builds the collision workspace (about 0.3-0.4 s per request)",
+   "second task of a resident planner waits 25-28 s in native.resident_begin_task for the previous task's worker resets (plans run back to back here; in the field the execution time between tasks normally covers it)"
+  ],
+  "vision": "NOT_RUN (no frozen frame)",
+  "scheduling": "unchanged by this step"
+ },
+ "behaviour_unchanged": {
+  "native_clearance_tests": {
+   "optimized": "PASS",
+   "reference": "PASS",
+   "two_level": "PASS"
+  },
+  "native_component_check": {
+   "status": "PASS",
+   "differences_vs_step1": [
+    [
+     "collision_check_mode",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "config.py",
+     "VALUE"
+    ],
+    [
+     "evidence.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "exact_candidates",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "implementation_commit",
+     "VALUE"
+    ],
+    [
+     "proxy_constant_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_group_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_sphere_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "proxy_unvisited_cleared",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "resident.py",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "sent_path_audit",
+     "MISSING_IN_BEFORE"
+    ],
+    [
+     "states_with_exact",
+     "MISSING_IN_BEFORE"
+    ]
+   ],
+   "interpretation": "only evidence counters added in steps 5-6, source hashes and the commit id differ"
+  },
+  "directed_pytest": {
+   "passed": 526,
+   "failed": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_tests": [
+    "tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+   ]
+  }
+ },
+ "not_run_or_not_verified": [
+  "Saved field records were deleted: equivalence ran on synthetic scene records, seeded clutter and constructed obstacles",
+  "Planning p95 on field records; vision latency",
+  "ADAPTIVE is not enabled in any example configuration",
+  "Under a planning deadline ADAPTIVE may finish where SAMPLED would expire: budget, not a geometric decision",
+  "Real SDK/serial/camera paths; any physical motion, valve command or acceptance: NOT_RUN"
+ ]
+}

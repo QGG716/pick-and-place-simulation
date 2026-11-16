@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <random>
+#include <cmath>
 using J=nlohmann::json;
 void require(bool value,const char* message) {if(!value) throw std::runtime_error(message);}
 planning_scene::PlanningScenePtr scene(double gap,bool cups=false) {
@@ -337,6 +339,16 @@ void physicalSingleCartonCases(J& out) {
   partial["site_workspace_bounds_m"]={{.5,.5,.5},{1.,1.,1.}};
   m710::SingleCartonContact site_outside(partial);require(!site_outside.check(s->getCurrentState()).is_null(),"UNOBSERVED_OUTSIDE_WORKSPACE_REJECTED");
   out["partial_observed_patch_and_complete_uncertainty_envelope"]="PASS";
+  // Step 6 scope: ADAPTIVE only without contact permission and without support.
+  require(!c.adaptiveEligible() && !supporting.adaptiveEligible() && held.adaptiveEligible(),"ADAPTIVE_SCOPE_ELIGIBILITY");
+  {
+    std::vector<std::tuple<const moveit::core::LinkModel*,double,double>> inside,outside,none;
+    site_inside.workspaceMargins(s->getCurrentState(),inside);site_outside.workspaceMargins(s->getCurrentState(),outside);
+    c.workspaceMargins(s->getCurrentState(),none);
+    require(!inside.empty() && none.empty(),"ADAPTIVE_WORKSPACE_MARGINS_PRESENT");
+    for(const auto& m:inside)require(std::get<1>(m)>=0 && std::get<2>(m)>0,"ADAPTIVE_WORKSPACE_MARGIN_INSIDE");
+    bool negative=false;for(const auto& m:outside)negative|=std::get<1>(m)<0;require(negative,"ADAPTIVE_WORKSPACE_MARGIN_OUTSIDE");
+  }
   m710::nativeFrames()=old;out["physical_single_carton_contact_and_loaded_support"]="PASS";
 }
 
@@ -445,9 +457,184 @@ J twoLevelCases() {
   out["status"]="PASS";return out;
 }
 
+// Step 6: adaptive sent-path audit. The lever bound must contain every body
+// displacement; a skipped sample must pass the exact check; on every path the
+// adaptive walk takes the same decision at the same first failing sample.
+planning_scene::PlanningScenePtr armScene(double post_gap=std::nan("")) {
+  const char* urdf_text=R"(<robot name="arm"><link name="world"/>
+    <link name="base"><collision><origin xyz="0 0 -0.05"/><geometry><box size="0.3 0.3 0.1"/></geometry></collision></link>
+    <joint name="fixed_base" type="fixed"><parent link="world"/><child link="base"/></joint>
+    <link name="link1"><collision><origin xyz="0 0 0.15"/><geometry><box size="0.1 0.1 0.3"/></geometry></collision></link>
+    <joint name="J1" type="revolute"><parent link="base"/><child link="link1"/><axis xyz="0 0 1"/><limit lower="-3" upper="3" effort="1" velocity="1"/></joint>
+    <link name="link2"><collision><origin xyz="0.25 0 0"/><geometry><box size="0.5 0.06 0.06"/></geometry></collision></link>
+    <joint name="J2" type="revolute"><parent link="link1"/><child link="link2"/><origin xyz="0 0 0.3"/><axis xyz="0 1 0"/><limit lower="-2" upper="2" effort="1" velocity="1"/></joint>
+    <link name="link3"><collision><origin xyz="0.175 0 0"/><geometry><box size="0.35 0.05 0.05"/></geometry></collision></link>
+    <joint name="J3" type="revolute"><parent link="link2"/><child link="link3"/><origin xyz="0.5 0 0"/><axis xyz="0 1 0"/><limit lower="-2.5" upper="2.5" effort="1" velocity="1"/></joint>
+    <link name="tool"><collision><origin xyz="0.03 0 0"/><geometry><box size="0.06 0.12 0.03"/></geometry></collision></link>
+    <joint name="fixed_tool" type="fixed"><parent link="link3"/><child link="tool"/><origin xyz="0.35 0 0"/></joint>
+  </robot>)";
+  auto urdf=urdf::parseURDF(urdf_text);auto srdf=std::make_shared<srdf::Model>();
+  require(bool(urdf),"ARM_URDF");
+  require(srdf->initString(*urdf,R"(<robot name="arm"><group name="manipulator"><joint name="J1"/><joint name="J2"/><joint name="J3"/></group>
+    <disable_collisions link1="base" link2="link1" reason="Adjacent"/><disable_collisions link1="link1" link2="link2" reason="Adjacent"/>
+    <disable_collisions link1="link2" link2="link3" reason="Adjacent"/><disable_collisions link1="link3" link2="tool" reason="Adjacent"/></robot>)"),"ARM_SRDF");
+  auto model=std::make_shared<moveit::core::RobotModel>(urdf,srdf);
+  auto result=std::make_shared<planning_scene::PlanningScene>(model);
+  result->getCurrentStateNonConst().setToDefaultValues();result->getCurrentStateNonConst().update();
+  if(std::isnan(post_gap)) {
+    result->processCollisionObjectMsg(obstacle("wall",.95,0,.3,.05,.8,.6));
+    result->processCollisionObjectMsg(obstacle("pillar",.35,.45,.2,.08,.08,.5));
+    result->processCollisionObjectMsg(obstacle("table",.5,-.3,.05,.4,.3,.1));
+  } else {
+    // A post under link2 at J1=0: vertical gap post_gap at its closest (link2 bottom at z=0.27).
+    result->processCollisionObjectMsg(obstacle("post",.3,0,.27-post_gap-.1,.04,.04,.2));
+  }
+  return result;
+}
+std::vector<std::vector<double>> sampledStates(const std::vector<std::vector<double>>& path,double resolution) {
+  // The same edge sampling as Clearance::checkPath.
+  std::vector<std::vector<double>> out;
+  for(size_t edge=0;edge+1<path.size();++edge) {
+    const auto& a=path[edge];const auto& b=path[edge+1];double maximum=0,sum=0;
+    for(size_t i=0;i<a.size();++i){maximum=std::max(maximum,std::abs(b[i]-a[i]));sum+=std::abs(b[i]-a[i]);}
+    const size_t samples=2*std::max({size_t(1),size_t(std::ceil(maximum/resolution)),size_t(std::ceil(4.*sum/.0025))});
+    for(size_t k=0;k<=samples;++k){auto q=a;for(size_t i=0;i<q.size();++i)q[i]+=double(k)/samples*(b[i]-a[i]);out.push_back(q);}
+  }
+  return out;
+}
+struct Walk {bool valid=true;long first=-1;std::string a,b;double distance=0;size_t checked=0;};
+Walk walkPath(const planning_scene::PlanningScenePtr& s,m710::ClearanceWorkspace& w,const std::vector<std::vector<double>>& samples,bool adaptive) {
+  Walk out;std::vector<m710::ClearanceWorkspace::Constraint> cs;std::vector<double> anchor;bool anchored=false;
+  w.recording(adaptive);auto state=s->getCurrentState();
+  for(size_t k=0;k<samples.size();++k) {
+    state.setJointGroupPositions("manipulator",samples[k]);
+    if(adaptive && anchored && state.satisfiesBounds() && m710::ClearanceWorkspace::provenClear(cs,samples[k],anchor,1e-6))continue;
+    state.update();++out.checked;m710::ClearanceWorkspace::Failure f;
+    if(!state.satisfiesBounds() || !w.check(state,f,"output")) {out.valid=false;out.first=long(k);out.a=f.a;out.b=f.b;out.distance=f.distance;break;}
+    if(adaptive) {double lower;w.adaptiveConstraints(cs,lower);anchor=samples[k];anchored=true;}
+  }
+  w.recording(false);return out;
+}
+J adaptiveCases() {
+  J out;out["mode"]="adaptive";out["scope"]="synthetic implementation checks only";
+  auto required=[](const std::string&,collision_detection::BodyType,const std::string&,collision_detection::BodyType){return .005;};
+  auto fclOf=[](const planning_scene::PlanningScenePtr& s) {
+    const auto* f=dynamic_cast<const collision_detection::CollisionEnvFCL*>(s->getCollisionEnvUnpadded().get());require(f,"FCL_ENV");return f;};
+  std::mt19937 rng(6518);std::uniform_real_distribution<double> unit(0.,1.);
+  // 1. Lever bound: every box corner of every moving body moves no more than
+  //    the bound, between two arbitrary configurations (prismatic + revolute
+  //    chain, and a 3-revolute arm).
+  {
+    size_t pairs=0;double worst=0.;
+    for(int scene_kind=0;scene_kind<2;++scene_kind) {
+      auto s=scene_kind?armScene():twoJointScene();
+      m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,false,"manipulator");
+      require(w.adaptive() && w.movingBodies()>0,"ADAPTIVE_PREPARED");
+      const auto* group=s->getRobotModel()->getJointModelGroup("manipulator");
+      auto state=s->getCurrentState();
+      auto random_q=[&]() {std::vector<double> q;for(const auto* j:group->getActiveJointModels()) {
+        const auto& b=j->getVariableBounds()[0];q.push_back(b.min_position_+unit(rng)*(b.max_position_-b.min_position_));}return q;};
+      auto corners=[&](std::vector<std::vector<Eigen::Vector3d>>& out_corners) {
+        out_corners.assign(w.movingBodies(),{});
+        for(size_t i=0;i<w.movingBodies();++i) {
+          const auto& o=w.object(i);const auto* box=dynamic_cast<const fcl::Boxd*>(o.collisionGeometry().get());
+          require(box,"ADAPTIVE_TEST_EXPECTS_BOXES");
+          for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})
+            out_corners[i].push_back(o.getTransform()*Eigen::Vector3d(x*box->side[0]/2,y*box->side[1]/2,z*box->side[2]/2));
+        }
+      };
+      for(int k=0;k<1000;++k) {
+        auto q0=random_q(),q1=random_q();
+        if(k%2) for(size_t v=0;v<q1.size();++v) q1[v]=q0[v]+(q1[v]-q0[v])*.02; // also small steps
+        m710::ClearanceWorkspace::Failure f;std::vector<std::vector<Eigen::Vector3d>> c0,c1;
+        state.setJointGroupPositions("manipulator",q0);state.update();w.check(state,f,"output");corners(c0);
+        state.setJointGroupPositions("manipulator",q1);state.update();w.check(state,f,"output");corners(c1);
+        std::vector<double> dq(q0.size());for(size_t v=0;v<dq.size();++v)dq[v]=q1[v]-q0[v];
+        for(size_t i=0;i<c0.size();++i) {
+          double moved=0.;for(size_t m=0;m<c0[i].size();++m)moved=std::max(moved,(c1[i][m]-c0[i][m]).norm());
+          const double bound=w.displacementBound(i,dq);
+          require(moved<=bound+1e-12,"ADAPTIVE_LEVER_BOUND_VIOLATED");
+          if(bound>1e-9)worst=std::max(worst,moved/bound);++pairs;
+        }
+      }
+    }
+    out["lever_bound"]={{"body_displacements_checked",pairs},{"largest_displacement_to_bound_ratio",worst},{"status","PASS"}};
+  }
+  // 2. Proof soundness: a sample proven clear from an anchor passes the exact check.
+  // 3. Paths: ADAPTIVE and SAMPLED take the same decision at the same first failing sample.
+  {
+    size_t proven=0,proof_checks=0,paths=0,valid_paths=0,invalid_paths=0,sampled=0,adaptive_checked=0;
+    for(int two_level=0;two_level<2;++two_level) {
+      auto s=armScene();
+      m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,bool(two_level),"manipulator"),
+                               ref(*fclOf(s),s,required,true,0.,{},true,false);
+      auto state=s->getCurrentState();
+      for(int k=0;k<1500;++k) {
+        std::vector<double> q0={-1.2+2.4*unit(rng),-1.2+1.6*unit(rng),-1.8+2.6*unit(rng)};
+        state.setJointGroupPositions("manipulator",q0);state.update();m710::ClearanceWorkspace::Failure f;
+        w.recording(true);const bool ok=w.check(state,f,"output");
+        if(!ok){w.recording(false);continue;}
+        std::vector<m710::ClearanceWorkspace::Constraint> cs;double lower;w.adaptiveConstraints(cs,lower);w.recording(false);
+        for(int m=0;m<6;++m) {
+          const double scale=std::pow(10.,-3.+2.5*unit(rng));auto q1=q0;
+          for(auto& x:q1)x+=scale*(2.*unit(rng)-1.);
+          if(!m710::ClearanceWorkspace::provenClear(cs,q1,q0,1e-6))continue;
+          ++proven;state.setJointGroupPositions("manipulator",q1);state.update();
+          require(ref.check(state,f,"output"),"ADAPTIVE_PROVEN_SAMPLE_FAILS_EXACT_CHECK");
+        }
+        ++proof_checks;
+      }
+      for(int k=0;k<300;++k) {
+        std::vector<std::vector<double>> path;
+        std::vector<double> q={-1.2+2.4*unit(rng),-1.+1.4*unit(rng),-1.5+2.3*unit(rng)};path.push_back(q);
+        for(int e=0;e<3;++e){for(auto& x:q)x+=.6*(2.*unit(rng)-1.);path.push_back(q);}
+        const auto samples=sampledStates(path,.02);
+        const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true);
+        require(a.valid==b.valid && a.first==b.first && a.a==b.a && a.b==b.b && a.distance==b.distance,"ADAPTIVE_PATH_DECISION_DIFFERS");
+        require(b.checked<=a.checked,"ADAPTIVE_CHECKS_MORE");
+        ++paths;(a.valid?valid_paths:invalid_paths)++;sampled+=a.checked;adaptive_checked+=b.checked;
+      }
+    }
+    require(proven>200 && valid_paths>20 && invalid_paths>20,"ADAPTIVE_CASES_MUST_COVER_BOTH_OUTCOMES");
+    require(adaptive_checked<sampled,"ADAPTIVE_NEVER_SKIPPED");
+    out["proof_soundness"]={{"anchors",proof_checks},{"proven_samples_rechecked_exactly",proven},{"status","PASS"}};
+    out["path_equivalence"]={{"paths",paths},{"valid",valid_paths},{"invalid",invalid_paths},
+      {"sampled_checks",sampled},{"adaptive_checks",adaptive_checked},{"status","PASS"}};
+  }
+  // 4. A grazing (gap below the 5 mm limit) and a penetrating post: both
+  //    methods reject at the same sample; a clear post passes with fewer checks.
+  {
+    J cases=J::array();
+    for(double gap:{.008,.003,.0005,-.001}) {
+      auto s=armScene(gap);
+      m710::ClearanceWorkspace w(*fclOf(s),s,required,true,0.,{},true,false,"manipulator"),ref(*fclOf(s),s,required,true,0.,{},true,false);
+      const auto samples=sampledStates({{-.6,0.,0.},{.6,0.,0.}},.02);
+      const auto a=walkPath(s,ref,samples,false),b=walkPath(s,w,samples,true);
+      require(a.valid==b.valid && a.first==b.first && a.a==b.a && a.b==b.b && a.distance==b.distance,"ADAPTIVE_GRAZING_DECISION_DIFFERS");
+      require(a.valid==(gap>.005),gap>.005?"CLEAR_POST_MUST_PASS":"GRAZING_OR_PENETRATING_POST_MUST_REJECT");
+      cases.push_back({{"gap_m",gap},{"valid",a.valid},{"first_failing_sample",a.first},{"sampled_checks",a.checked},{"adaptive_checks",b.checked},
+        {"pair",{a.a,a.b}},{"distance_m",a.valid?J(nullptr):J(a.distance)}});
+    }
+    out["grazing_and_penetration"]={{"cases",cases},{"status","PASS"}};
+  }
+  // Scope: ADAPTIVE refused outside the physical single-carton schema and for unknown values.
+  {
+    auto s=scene(.02);bool refused=false;
+    try {m710::Clearance c(s,policy(),"optimized",nullptr,J{{"sent_path_audit","ADAPTIVE"},{"attachment",nullptr}});}
+    catch(const std::exception& e) {refused=std::string(e.what())=="SENT_PATH_AUDIT_SCOPE_INVALID";}
+    require(refused,"ADAPTIVE_SCOPE_NOT_ENFORCED");refused=false;
+    try {m710::Clearance c(s,policy(),"optimized",nullptr,J{{"sent_path_audit","FAST"},{"attachment",nullptr}});}
+    catch(const std::exception& e) {refused=std::string(e.what())=="SENT_PATH_AUDIT_INVALID";}
+    require(refused,"UNKNOWN_AUDIT_NOT_REFUSED");
+    out["scope"]="PASS";
+  }
+  out["status"]="PASS";return out;
+}
+
 int main(int argc,char** argv) {
   const std::string mode=argc>1?argv[1]:"optimized";rclcpp::init(argc,argv);
   if(mode=="two_level") {auto result=twoLevelCases();std::cout<<result.dump(2)<<std::endl;rclcpp::shutdown();return 0;}
+  if(mode=="adaptive") {auto result=adaptiveCases();std::cout<<result.dump(2)<<std::endl;rclcpp::shutdown();return 0;}
   J out;out["mode"]=mode;out["scope"]="synthetic implementation checks only";out["threshold_cases"]=J::array();
   controlledRepeatedPathCases(out);
   conservativeBoundsCases(out);

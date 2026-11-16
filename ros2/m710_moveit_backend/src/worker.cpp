@@ -1366,7 +1366,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
@@ -1621,6 +1621,9 @@ public:
           req.at("clearance_policy").at("schema")=="eco65_native_process_clearance_v1") && !process && op!="build_static_prior")
         throw std::runtime_error("PROCESS_POLICY_REQUIRED");
       if(req.value("require_native_motion",false) && (op=="plan" || op=="diagnostic_connection") && !process) throw std::runtime_error("NATIVE_COLD_PROCESS_CONTEXT_REQUIRED");
+      // sent_path_audit ADAPTIVE only for the final audit of a sent path (validate with probe_path).
+      if(req.value("sent_path_audit",std::string("SAMPLED"))!="SAMPLED" && !(op=="validate" && req.contains("probe_path") && !req.contains("probe_states")))
+        throw std::runtime_error("SENT_PATH_AUDIT_SCOPE_INVALID");
       {m710::NativeSpan span("clearance.construct_and_workspace");
       clearance=std::make_shared<m710::Clearance>(scene,req.at("clearance_policy"),req.value("clearance_mode",std::string("optimized")),
         (cycle_binding || identity.value("policy_scope",std::string())=="PHYSICAL_SINGLE_CARTON")?native_deadline:nullptr,req);}

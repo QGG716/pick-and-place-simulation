@@ -719,11 +719,14 @@ class SinglePlanner(EmptyPlanner):
         path=segment['prepared']['collision_path'];workers=self.checkers()
         count=max(1,min(len(workers),(len(path)-1)//CHECK_CHUNK_MIN_STATES))
         edges=np.linspace(0,len(path)-1,count+1).round().astype(int)
-        progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行")
+        audit=self.audit_method(context)
+        progress(f"检查 {stage} 最终发送轨迹：{len(segment['prepared']['points'])} 点，{len(path)} 个检查状态，{count} 个进程并行"
+                 +('（自适应审计）' if audit=='ADAPTIVE' else ''))
         def run(k):
             a,b=int(edges[k]),int(edges[k+1]);name=record+'-sent'+('' if count==1 else f'-p{k}')
             check=dict(context,op='validate',probe_path=path[a:b+1])
             if self.enabled('path_endpoint_reuse'):check['path_endpoint_reuse']=True
+            if audit=='ADAPTIVE':check['sent_path_audit']='ADAPTIVE'
             return a,b,self.native_call(check,folder,name,600,cancelled,workers[k])
         started=time.monotonic()
         with timing.span('sent_check',stage=stage,record=record,states=len(path),checkers=count):
@@ -738,11 +741,48 @@ class SinglePlanner(EmptyPlanner):
                      legacy_intersection_valid=all(r.get('legacy_intersection_valid') for _,_,r in parts),
                      path_failure=path_failure,failure=failure,probe_states=len(path),parallel_checkers=count,
                      wall_s=time.monotonic()-started,chunks=[dict(states=[a,b],result=r) for a,b,r in parts])
+        checked['sent_path_audit']=self.audit_summary(audit,[r for _,_,r in parts],segment['prepared'],valid)
         self.write_evidence(folder/(record+'-sent-check.json'),checked,'sent-check.json')
         if not valid:raise SegmentRejected(stage,stage+':SENT_PATH_REJECTED:'+str(path_failure or failure),checked)
         segment['evidence']=dict(native_plan='PASS',sent_path_collision='PASS',planner=segment['planner'],
                                  native_result=segment['native_result'],collision_result=checked,context=context,hardware_execution='NOT_RUN')
         return segment
+    def audit_method(self,context):
+        """ADAPTIVE only when configured and the segment has no contact permission and no support.
+
+        Contact (seal/lip conditions) and loaded segments with supports (payload
+        against the support plane) keep the SAMPLED audit; the worker refuses
+        ADAPTIVE for them as well.
+        """
+        if self.site.get('sent_path_audit')!='ADAPTIVE':return 'SAMPLED'
+        spec=context['single_carton_contact']
+        return 'SAMPLED' if spec['allow_contact'] or spec['supports'] else 'ADAPTIVE'
+    @staticmethod
+    def audit_summary(method,results,prepared,valid):
+        """Method, checked/skipped samples and minimum distance lower bound of one segment's audit."""
+        sampling=prepared.get('collision_sampling') or {}
+        counts=[((r.get('clearance') or {}).get('counts') or {}).get('output') or {} for r in results]
+        out=dict(audit_method=method,probe_states=len(prepared['collision_path']),
+                 checked_states=sum(c.get('queries',0) for c in counts),
+                 maximum_pair_displacement_between_probe_states_m=sampling.get('maximum_pair_displacement_between_checks_m'))
+        if method=='ADAPTIVE':
+            audits=[(r.get('clearance') or {}).get('sent_path_audit') for r in results]
+            if any(a is None for a in audits):raise ValueError('NATIVE_WORKER_DID_NOT_REPORT_ADAPTIVE_AUDIT')
+            lows=[a['minimum_distance_lower_bound_m'] for a in audits if a['minimum_distance_lower_bound_m'] is not None]
+            work=[a['minimum_workspace_margin_m'] for a in audits if a['minimum_workspace_margin_m'] is not None]
+            out.update(sampled_states=sum(a['sampled_states'] for a in audits),skipped_states=sum(a['skipped_states'] for a in audits),
+                       minimum_distance_lower_bound_m=min(lows) if lows else None,
+                       minimum_workspace_margin_m=min(work) if work else None,margin_cap_m=audits[0]['margin_cap_m'],
+                       proof_epsilon_m=audits[0]['proof_epsilon_m'],skip_rule=audits[0]['skip_rule'])
+        else:
+            out.update(sampled_states=out['checked_states'],skipped_states=0,minimum_distance_lower_bound_m=None)
+        # Every native sample of the sent path is checked exactly (>= its pair
+        # limit, 2.4 mm) or, under ADAPTIVE, proven to keep its pair limit;
+        # consecutive probe states move any body pair <= 1 mm (prepare), so
+        # every state of the sent quintic keeps >= 1.4 mm, given prepare's
+        # reach bound and analytic joint-speed bounds.
+        out['continuous_swept_proof']='BOUNDED_DISPLACEMENT_1_4_MM' if valid else None
+        return out
     def checked_segment(self,context,goal,stage,scale,folder,progress,linear=False,cancelled=None,record=None):
         segment=self.plan_segment(context,goal,stage,scale,folder,progress,linear,cancelled,record)
         self.sent_check(segment,folder,progress,cancelled)
@@ -1232,6 +1272,7 @@ class SinglePlanner(EmptyPlanner):
         capabilities=ready.get('capabilities',{})
         needed=[n for n in ('scene_handles','path_endpoint_reuse') if self.enabled(n)]
         if self.site.get('collision_check_mode')=='TWO_LEVEL':needed.append('two_level_collision')
+        if self.site.get('sent_path_audit')=='ADAPTIVE':needed.append('adaptive_sent_path_audit')
         for name in needed:
             if not capabilities.get(name):raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_'+name.upper())
     def release_workers(self,folder):

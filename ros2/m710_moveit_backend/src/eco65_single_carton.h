@@ -1,6 +1,8 @@
 #pragma once
 #include <moveit/planning_scene/planning_scene.h>
 #include <nlohmann/json.hpp>
+#include <tuple>
+#include <vector>
 #include "native_robot.h"
 #include "native_deadline.h"
 namespace m710 {
@@ -108,6 +110,34 @@ class SingleCartonContact {
       }
     } else if(!spec_.at("supports").empty())throw std::runtime_error("SINGLE_CARTON_UNLOADED_SUPPORT_EXCEPTION");
     if(req.at("allowed_pairs")!=allowed)throw std::runtime_error("SINGLE_CARTON_EXTRA_COLLISION_PERMISSION");
+  }
+  // Adaptive sent-path audit scope: no contact permission and no support. Then
+  // every condition of check() other than the site workspace is either absent
+  // (unloaded) or independent of the state (the fixed loaded attachment).
+  bool adaptiveEligible() const {return !contact_ && spec_.at("supports").empty();}
+  // Site-workspace margin of each link's world box and of the payload corners
+  // (>= 0 when inside), with the radius of that point set about its link frame
+  // origin. A face of a world-aligned box moves no more than its corners.
+  void workspaceMargins(const moveit::core::RobotState& s,
+      std::vector<std::tuple<const moveit::core::LinkModel*,double,double>>& out) const {
+    out.clear();if(!bounded_workspace_)return;
+    for(const auto* link:s.getRobotModel()->getLinkModelsWithCollisionGeometry()) {
+      const auto T=s.getGlobalLinkTransform(link);
+      const Eigen::Vector3d c=T*link->getCenteredBoundingBoxOffset();
+      const Eigen::Vector3d half=T.linear().cwiseAbs()*(link->getShapeExtentsAtOrigin()/2);
+      out.emplace_back(link,std::min((c-half-workspace_lo_).minCoeff(),(workspace_hi_-c-half).minCoeff()),
+                       link->getCenteredBoundingBoxOffset().norm()+(link->getShapeExtentsAtOrigin()/2).norm());
+    }
+    if(loaded_) {
+      const auto* link=s.getRobotModel()->getLinkModel(nativeFrames().flange_link);
+      const auto flange=s.getGlobalLinkTransform(link);double margin=INFINITY,rho=0.;
+      for(const auto& p:corners_) {
+        const Eigen::Vector3d local=target_*p,world=flange*local;
+        margin=std::min(margin,std::min((world-workspace_lo_).minCoeff(),(workspace_hi_-world).minCoeff()));
+        rho=std::max(rho,local.norm());
+      }
+      out.emplace_back(link,margin,rho);
+    }
   }
   nlohmann::json check(const moveit::core::RobotState& s) const {
     const auto flange=s.getGlobalLinkTransform(nativeFrames().flange_link);

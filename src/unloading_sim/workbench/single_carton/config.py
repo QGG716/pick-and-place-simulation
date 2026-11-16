@@ -137,6 +137,8 @@ def issues(c):
             errors.append(f'{key}：可选开关，true 或 false（缺省 false，保持现行为）')
     if c.get('collision_check_mode','EXACT') not in ('EXACT','TWO_LEVEL'):
         errors.append('collision_check_mode：EXACT（缺省）或 TWO_LEVEL（保守代理只证明通过，其余仍由精确检查决定）')
+    if c.get('sent_path_audit','SAMPLED') not in ('SAMPLED','ADAPTIVE'):
+        errors.append('sent_path_audit：SAMPLED（缺省）或 ADAPTIVE（只跳过由逐对位移上界证明通过的采样点；接触段和带支撑段始终 SAMPLED）')
     topology=c.get('topology',{})
     if topology.get('mode')!='COMMON_GRIPPER_VALVE' or not topology.get('connected_cup_ids') or not topology.get('field_basis'):
         errors.append('topology：总阀下实际连通杯及物理封堵杯列表')
