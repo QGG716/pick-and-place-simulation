@@ -33,6 +33,7 @@
 #include "native_semantic_event.h"
 #include "static_prior.h"
 #include "native_timing.h"
+#include "native_prepare.h"
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <random_numbers/random_numbers.h>
 #include <moveit/kinematic_constraints/utils.h>
@@ -1182,6 +1183,34 @@ class Worker {
             {"scope","DEVELOPMENT_EQUIVALENCE_EVIDENCE_NOT_A_PLAN"}};
   }
   // -- resident ECO65 single-carton tasks (step 4) --------------------------------
+  // Step 7: controlled/trajectory.py prepare() in the worker (native_prepare.h).
+  static J preparedJson(const m710::PreparedTrajectory& p) {
+    auto rows=[](const std::vector<double>& flat) {J out=J::array();for(size_t i=0;i+5<flat.size();i+=6)out.push_back(std::vector<double>(flat.begin()+i,flat.begin()+i+6));return out;};
+    return {{"period_s",p.period},{"time_scale",p.time_scale},{"source_duration_s",p.source_duration},{"scaled_duration_s",p.scaled_duration},
+      {"send_duration_s",p.send_duration},{"terminal_hold_s",p.terminal_hold},{"reach_bound_m",p.reach_bound},
+      {"subdivisions_per_send",p.subdivisions},{"analytic_speed_bounds_rad_s",p.speed_bounds},
+      {"t",p.t},{"q",rows(p.q)},{"v",rows(p.v)},{"a",rows(p.a)},{"collision_path",rows(p.collision)}};
+  }
+  static m710::PreparedTrajectory prepareFrom(const J& points,const J& limits,double time_scale,double period,double reach) {
+    m710::PrepareInput in;
+    for(const auto& p:points) {
+      in.t.push_back(p.at("t").get<double>());
+      for(const char* key:{"q","v","a"}) {
+        auto& target=key[0]=='q'?in.q:key[0]=='v'?in.v:in.a;
+        for(const auto& x:p.at(key))target.push_back(x.get<double>());
+      }
+    }
+    m710::PrepareLimits L{limits.at("lower").get<std::vector<double>>(),limits.at("upper").get<std::vector<double>>(),
+                          limits.at("velocity").get<std::vector<double>>(),limits.at("acceleration").get<std::vector<double>>()};
+    return m710::nativePrepare(in,L,time_scale,period,reach);
+  }
+  J prepareOp(const J& req) {
+    requireSingleCartonContext(req);const auto t=Clock::now();
+    try {
+      const auto out=prepareFrom(req.at("points"),req.at("limits"),req.at("time_scale").get<double>(),req.at("period_s").get<double>(),req.at("reach_bound_m").get<double>());
+      return {{"status","PREPARED"},{"prepared",preparedJson(out)},{"prepare_s",seconds(t)}};
+    } catch(const std::runtime_error& e) {return {{"status","PREPARE_REJECTED"},{"error",e.what()},{"prepare_s",seconds(t)}};}
+  }
   void requireSingleCartonContext(const J& req) const {
     if(!model || identity.value("policy_scope",std::string())!="PHYSICAL_SINGLE_CARTON")throw std::runtime_error("TASK_RESET_SCOPE_INVALID");
     if(req.at("identity")!=identity)throw std::runtime_error("MODEL_OR_POLICY_MISMATCH");
@@ -1366,13 +1395,14 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"absolute_planning_deadline",physical_single},{"resident_task_reset",physical_single},{"scene_handles",physical_single},{"request_cancel",physical_single},{"path_endpoint_reuse",physical_single},{"two_level_collision",physical_single},{"adaptive_sent_path_audit",physical_single},{"native_prepare",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},
                 {"max_task_sessions",8},{"max_task_stages_per_session",4096}}}};
     }
     if(!model) throw std::runtime_error("NOT_INITIALIZED");
+    if(op=="sc_prepare")return prepareOp(req);
     if(op=="sc_task_reset")return taskReset(req);
     if(op=="sc_scene_upload")return sceneUpload(req);
     if(op=="sc_scene_release") {
