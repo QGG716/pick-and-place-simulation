@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-17",
+  "base_commit": "2bd36a93063eeae77c05ad263abfaa9f62bf7f2a",
+  "scope": "FIELD_COLLECTION_PREFLIGHT_NO_MOTION",
+  "code_change": "Collector skips execute-button refresh after parent destroys Tk root on close_done.",
+  "configuration": {
+    "experimental_options_enabled": [],
+    "motion_submission": "BLOCKED",
+    "vacuum_commands": "BLOCKED",
+    "timing": true
+  },
+  "verification": {
+    "directed_pytest": {
+      "passed": 568,
+      "failed": 0,
+      "duration_s": 128.19,
+      "xml": "outputs/realtime_review_20261117/pre-field-head-pytest.xml"
+    },
+    "collector_guards": {
+      "passed": 2,
+      "failed": 0
+    },
+    "inert_ui_smoke": "PASS_NO_CALLBACK_TRACEBACK",
+    "native_component": {
+      "status": "PASS",
+      "points": 491,
+      "hardware_execution": "NOT_RUN"
+    },
+    "clearance": {
+      "optimized": "PASS",
+      "reference": "PASS",
+      "two_level": "PASS",
+      "adaptive": "PASS"
+    }
+  },
+  "native_binary_sha256": "260ebd8abec97f7d53326c1a19f84ed908b018ccdd1f05312d28d89b8f6f1067",
+  "field_state": {
+    "existing_workbench": "ALL_THREE_DEVICES_DATA_VALID",
+    "new_collection_records": 0,
+    "status": "AWAITING_OLD_WORKBENCH_CLOSE_AND_OPERATOR_POSITIONING"
+  },
+  "physical_acceptance": "NOT_RUN"
+}

@@ -46,6 +46,7 @@ class CollectionWorkbench(ui.SingleWorkbench):
         self.notice.set(BLOCK)
     def _update_task_once(self):
         super()._update_task_once()
+        if self._closed:return
         self.execute_button.configure(state='disabled')
         if '核验采集：禁止执行' not in self.execute_blockers:
             self.execute_blockers.append('核验采集：禁止执行')

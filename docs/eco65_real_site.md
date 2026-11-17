@@ -828,3 +828,15 @@ F：补齐原生 prepare 的限值检查；内部 START/END 日志打开、写�
 新增 `tools/collect_realtime_field_records.py` 仅允许观测与规划，独立拒绝运动提交和真空序列，固定禁用执行按钮。新 20 条箱位/遮挡采集仍等待原设备会话正常退出及保存 GPU SSH 地址恢复。9 条历史数据已本地打包，服务器连接拒绝，尚未传输；没有用回放冒充新采集。未修订 2 s 目标或放宽容差、碰撞及监控规则。
 
 详见 [本轮复核与采集记录](realtime_review_followup_2026-11-17.md) 和 `docs/evidence/realtime_review_20261117/report.json`。物理抓放、真实执行时延及新现场 p95 验收均 NOT_RUN。第 8 步检查点尚未通过。
+
+## 2026-11-17 最新 HEAD 现场采集前检查
+
+基于 `2bd36a9` 重新编译安装现场主目录 worker，optimized/reference/two_level/adaptive 全部 PASS，原生单段组件 PASS（491 个发送点；不是完整物理周期）。定向 pytest 568 通过、0 失败，采集保护测试另有 2 项通过。专用采集入口修复父类处理 close_done 销毁窗口后仍刷新执行按钮的问题，无设备 UI 冒烟通过。报告：`docs/evidence/realtime_20261117_field_preflight/report.json`。
+
+当前普通工作台三类设备显示数据有效；须正常关闭其窗口释放设备，再从当前主目录启动下列入口。该入口启用计时，拒绝运动提交、任务执行及真空阀门命令，所有实验开关保持缺省关闭：
+
+```bash
+.venv/bin/python tools/collect_realtime_field_records.py
+```
+
+至少 20 个不同真实箱位/遮挡案例，每次只进行准备观测和规划，保留失败记录。输出：`outputs/realtime-field-20261117/<task_id>/`。采集结束正常关闭计时窗口。此检查时新采集数仍为 0，等待旧工作台关闭及操作者摆箱；没有物理抓放，验收为 NOT_RUN。旧隔离 worktree 和历史记录保留，不以旧固定审查版本替换当前 HEAD。

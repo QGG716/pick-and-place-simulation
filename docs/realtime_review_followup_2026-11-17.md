@@ -56,3 +56,9 @@ PYTHONPATH="$PWD/src" ECO65_TIMING=1 .venv/bin/python tools/collect_realtime_fie
 详见 `docs/evidence/realtime_review_20261117/report.json`。本页是实际操作记录，不把原审查文档中的建议、估算或未读代码结论自动当成新实验事实。
 
 本机合成全部开启 NATIVE 的四次 plan_cycle 耗时约 75.48、53.35、127.12、67.70 s；未达到 2 s 目标。两条历史现场回放的量具数据也已汇总，但存在并行编译/审计负载、样本仅 2 条且视觉不含采集和推理，不能据此修订现场预算或宣布现场 p95。
+
+## 2026-11-17 设备恢复及当前 HEAD 采集入口
+
+后续已恢复 GPU SSH 与真实权重自检，并完成历史输入归档传输及 SHA-256 核验；旧节中的 GPU 连接失败及未传输状态是当时记录。现普通工作台相机、机械臂、真空板均显示数据有效。当前 HEAD 已同步至 `2bd36a9`，主目录 native worker 已重编译安装，定向回归 568 项、采集保护测试 2 项及原生组件检查全部通过。
+
+下一批采集改从主目录运行 `.venv/bin/python tools/collect_realtime_field_records.py`，以保留合并后的最新修复和事故执行锁；旧 worktree 仅保留作离线比较。普通工作台正常退出后再启动，禁止双进程抢占设备。新现场案例尚未开始，需操作者变换箱位并逐次准备观测及规划；物理抓放 NOT_RUN。详见 `docs/evidence/realtime_20261117_field_preflight/report.json`。
