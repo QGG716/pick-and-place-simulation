@@ -74,6 +74,11 @@ class Supervisor:
         return sample is not None and sample.get('source')=='LIVE' and isinstance(sample.get('received_s'),(int,float)) and math.isfinite(sample['received_s']) and isinstance(sample.get('sequence'),int) and 0<=self.clock()-sample['received_s']<=self.c.feedback_timeout_s and len(sample.get('q',[]))==6 and np.isfinite(sample['q']).all()
     def submit(self, prepared, sample, task_id=None):
         if self.state not in {'READY','SUCCEEDED','CANCELLED','FAILED'}:raise RuntimeError('TASK_ACTIVE_OR_STOP_UNCONFIRMED')
+        lock=prepared.get('execution_lock')
+        if lock is not None:
+            # Fail closed on any lock marker, even a malformed one.
+            self.emit('submit_refused',reason='EXECUTION_LOCKED_BY_USER',execution_lock=lock)
+            raise ValueError('EXECUTION_LOCKED_BY_USER')
         if not self.fresh(sample):raise ValueError('FRESH_FEEDBACK_REQUIRED')
         if sample.get('alarm') or not sample.get('enabled',False):raise ValueError('CONTROLLER_NOT_READY')
         first=np.asarray(prepared['points'][0]['q'],float)
