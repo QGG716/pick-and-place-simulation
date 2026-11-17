@@ -211,7 +211,9 @@ def handoff_analysis(out, execution, vacuum_config):
     if detach_start and when.get('ATTACHMENT_CONFIRMED') is not None:
         pressure.append(dict(stage='ATTACHMENT_CONFIRMED_TO_DETACH_FIRST_SEND',
                              seconds=detach_start['first_send_s']-when['ATTACHMENT_CONFIRMED']))
-    return dict(motion_segments=segments, pressure=pressure, monitor_dwell_s=dwell,
+    from unloading_sim.workbench.single_carton.scheduling_metrics import read_handoffs
+    boundaries=read_handoffs(out/'cycle'/'events.jsonl',execution['record_root'])
+    return dict(boundaries=boundaries,motion_segments=segments, pressure=pressure, monitor_dwell_s=dwell,
                 note='Fake ideal follower: physical settling time is zero here; field values add real settling.')
 
 

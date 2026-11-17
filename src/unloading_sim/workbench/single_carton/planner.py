@@ -186,7 +186,7 @@ class SinglePlanner(EmptyPlanner):
             with self.pool_lock:self.abandoned.add(id(client))
             if cancelled is not None and cancelled():raise RuntimeError('CANCELLED')
             raise PlanningBudgetExhausted('NO_REPLY_BY_DEADLINE',name) from None
-    def bounded_search(self,q,world,box,folder,progress,cancelled,failures):
+    def bounded_search(self,q,world,box,folder,progress,cancelled,failures,candidate_filter=None):
         """``search_box`` on a helper thread; the caller is released at the deadline.
 
         Pure-Python steps between native calls (candidate generation, send-grid
@@ -197,7 +197,7 @@ class SinglePlanner(EmptyPlanner):
         """
         outcome={}
         def run():
-            try:outcome['found']=self.search_box(q,world,box,folder,progress,cancelled,failures)
+            try:outcome['found']=self.search_box(q,world,box,folder,progress,cancelled,failures,candidate_filter)
             except BaseException as error:outcome['error']=error
         thread=self.search_thread=threading.Thread(target=run,daemon=True,name='target-search')
         thread.start();thread.join(max(0.,self.deadline-time.monotonic()))

@@ -219,7 +219,9 @@ class TaskManager:
         except Exception as e:self.reject(e,background=True);raise
         finally:
             self.busy=False
-            if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase),since=entered)
+            timing.add('prepare_plan.entry_to_return',entered,timing.now()-entered)
+            outcome='PLANNING_BUDGET_EXHAUSTED' if 'PLANNING_BUDGET_EXHAUSTED' in self.reason else ('CANCELLED' if self.stop_event.is_set() else self.phase)
+            if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase,outcome=outcome),since=entered)
     def execute(self):
         self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
         try:

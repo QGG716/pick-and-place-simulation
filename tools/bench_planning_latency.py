@@ -62,7 +62,12 @@ def match(event, spec):
 
 
 def span_sum(events, specs):
-    return sum(e['duration_s'] for e in events if not e.get('aggregate') and any(match(e, s) for s in specs))
+    intervals=sorted((e['start_monotonic_s'],e['start_monotonic_s']+e['duration_s'])
+                     for e in events if not e.get('aggregate') and e.get('start_monotonic_s') is not None and any(match(e,s) for s in specs))
+    total=0.;end=-math.inf
+    for lo,hi in intervals:
+        total+=max(0.,hi-max(lo,end));end=max(end,hi)
+    return total
 
 
 def stage_values(events, section):
@@ -91,10 +96,11 @@ def samples_from_timing(doc, path):
     events = doc.get('events', []); phase = doc.get('phase')
     if phase == 'prepare_plan':
         ready = first(events, 'prepare_plan.entry_to_plan_ready')
-        whole = first(events, 'prepare_plan.plan_cycle')
+        whole = first(events, 'prepare_plan.entry_to_return')
         duration = ready['duration_s'] if ready else (whole['duration_s'] if whole else None)
         return [('planning', dict(source=str(path), task_id=doc.get('task_id'), seconds=duration,
-                                  success=doc.get('final_phase') == 'PLAN_READY', events=events))]
+                                  success=doc.get('final_phase') == 'PLAN_READY', events=events,
+                                  outcome=doc.get('outcome',doc.get('final_phase')),scope='PREPARE_PLAN_ENTRY_TO_PLAN_READY' if ready else 'PREPARE_PLAN_ENTRY_TO_FAILED_RETURN'))]
     if phase == 'observe':
         ready = first(events, 'observe.entry_to_target_ready')
         return [('vision', dict(source=str(path), task_id=doc.get('task_id'),
@@ -106,13 +112,21 @@ def samples_from_timing(doc, path):
         sends = sorted(x['monotonic_s'] for x in doc.get('fake_io_first_sends', []))
         entered = doc.get('entered_monotonic_s')
         return [('scheduling', dict(source=str(path), task_id=doc.get('task_id'),
-                                    seconds=(sends[0]-entered) if sends and entered else None,
+                                    **scheduling_values((sends[0]-entered) if sends and entered is not None else None,doc.get('handoffs',{}).get('boundaries',[])),
                                     success=doc.get('result') == 'COMPLETE', events=events, fake_io=True))]
     if phase == 'execute':
         return [('scheduling', dict(source=str(path), task_id=doc.get('task_id'),
-                                    seconds=field_first_send(path, events), success=doc.get('final_state') == 'COMPLETE',
+                                    **scheduling_values(field_first_send(path, events),field_handoffs(path)), success=doc.get('final_state') == 'COMPLETE',
                                     events=events, fake_io=False))]
     return []
+
+
+def scheduling_values(first_send,boundaries):
+    complete=first_send is not None and len(boundaries)==4 and all(b.get('excess_s') is not None for b in boundaries)
+    return dict(seconds=first_send+sum(b['excess_s'] for b in boundaries) if complete else None,
+                first_send_s=first_send,handoffs=boundaries,
+                partial_seconds=first_send if not complete else None,
+                scope='FULL_EXECUTE_AND_FOUR_HANDOFFS' if complete else 'PARTIAL_MISSING_HANDOFF_TIMESTAMPS')
 
 
 def field_first_send(path, events):
@@ -126,6 +140,11 @@ def field_first_send(path, events):
             if row.get('kind') == 'send':
                 sends.append(row['sent_s']); break
     return (min(sends)-entry['start_monotonic_s']) if entry and sends else None
+
+
+def field_handoffs(path):
+    from unloading_sim.workbench.single_carton.scheduling_metrics import read_handoffs
+    return read_handoffs(Path(path).parent/'events.jsonl',Path(path).parent/'motion')
 
 
 def replay(record, out, deadline):
@@ -150,9 +169,10 @@ def replay_samples(record, code, report, timing, log):
     found = bool(report and report.get('complete_plan'))
     budget = (report or {}).get('planning_budget') or {}
     planning = dict(source=str(record), task_id=Path(record).name, replay_exit=code, log=str(log),
-                    seconds=(entry['duration_s']+tail) if entry else None, success=found, events=events,
+                    seconds=entry['duration_s'] if entry else None, success=found, events=events,
                     budget_status=budget.get('status'), source_record_unchanged=(report or {}).get('source_record_unchanged'),
-                    definition='replay planning entry (worker start) to search end, plus the measured plan_cycle tail')
+                    scope='PARTIAL_REPLAY_NOT_PREPARE_PLAN',
+                    definition='replay worker start through search, measured tail and blocking cleanup; excludes prepare_plan/Cycle.ready')
     vision = dict(source=str(record), task_id=Path(record).name, seconds=None, success=bool(report and report.get('boxes')),
                   events=events, partial_seconds=span_sum(events, ['observe.reconstruct', 'observe.planner_build',
                                                                     'observe.self_filter_construct', 'observe.build_scene']),
@@ -178,9 +198,13 @@ def summarize(kind, samples, section, factor):
             over.append(dict(name=stage['name'], p95_s=row['p95_s'], target_s=row['target_s'],
                              ratio=row['p95_s']/row['target_s'] if row['target_s'] else None,
                              above_flag_factor=row['p95_s'] > factor*row['target_s']))
+    partial=any('PARTIAL' in s.get('scope','') for s in measured)
+    if partial:out['status']='PARTIAL_SCOPE'
+    out['outcomes']={name:sum((s.get('outcome') or s.get('budget_status') or ('SUCCESS' if s['success'] else 'FAILED'))==name for s in samples)
+                     for name in sorted({s.get('outcome') or s.get('budget_status') or ('SUCCESS' if s['success'] else 'FAILED') for s in samples})}
     out.update(stages=rows, over_budget=sorted(over, key=lambda x: -(x['ratio'] or math.inf)))
     if section.get('total_s') is not None and out['p95_s'] is not None:
-        out['target_total_s'] = section['total_s']; out['meets_total_p95'] = out['p95_s'] <= section['total_s']
+        out['target_total_s'] = section['total_s']; out['meets_total_p95'] = None if partial else out['p95_s'] <= section['total_s']
     out['per_sample'] = [{k: v for k, v in s.items() if k != 'events'} for s in samples]
     return out
 

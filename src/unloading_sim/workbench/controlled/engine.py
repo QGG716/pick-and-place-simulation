@@ -192,7 +192,7 @@ class Supervisor:
                 if self.stable_since is None:self.stable_since=sample['received_s']
                 if sample['received_s']-self.stable_since>=self.c.dwell_s and self.state=='EXECUTING':
                     self.state='SUCCEEDED';self.hold_command=list(pts[-1]['q'])
-                    self.emit('result',state=self.state);return
+                    self.emit('result',state=self.state,arrival_rule_satisfied_s=sample['received_s'],arrival_stable_since_s=self.stable_since,arrival_dwell_s=self.c.dwell_s);return
             elif new:self.stable_since=None
             if elapsed>self.prepared['send_duration_s']+self.c.completion_timeout_s:self.stop('ARRIVAL_TIMEOUT')
     def feedback(self,sample):

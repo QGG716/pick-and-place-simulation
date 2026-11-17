@@ -154,6 +154,9 @@ class Cycle:
                 if not met:self.stable_since=None;return
                 if self.stable_since is None:self.stable_since=pressure['received_s']
                 if pressure['received_s']-self.stable_since>=self.config[prefix+'_dwell_s']:
+                    self.record(kind='pressure_rule_satisfied',phase=prefix,valve_completed_s=self.vacuum_after_s,
+                                first_qualifying_s=self.stable_since,pressure_received_s=pressure['received_s'],
+                                rule_dwell_s=self.config[prefix+'_dwell_s'])
                     if gripping:
                         self.transition('ATTACHMENT_CONFIRMED',pressure=pressure)
                         self.vacuum.monitor_holding=True;self._motion(2)

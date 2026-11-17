@@ -22,6 +22,7 @@ def planning_doc(total, screening, sent, ok=True):
               span('native.main_worker_process_start', .01), span('native.request', 3.8, record='main-init'),
               span('json.dumps', .02, file='complete-plan.json'), span('disk.write', .01, file='complete-plan.json'),
               span('json.dumps', .5, file='site-scene.json')]
+    events.append(span('prepare_plan.entry_to_return',total))
     if ok:
         events.append(span('prepare_plan.entry_to_plan_ready', total))
     return dict(schema='eco65_timing_v1', phase='prepare_plan', task_id='synthetic',
@@ -54,9 +55,9 @@ def test_planning_summary_breakdown_success_and_over_budget(tmp_path):
     # Sent checks inside the sequential span are not counted twice.
     assert stages['candidate_planning']['p50_s'] == pytest.approx(1.0)
     assert stages['sent_path_check']['max_s'] == pytest.approx(.4)
-    assert stages['worker_start']['p50_s'] == pytest.approx(3.81)
+    assert stages['worker_start']['p50_s'] == pytest.approx(3.8)
     # Only complete-plan.json counts toward finalize; other writes do not.
-    assert stages['finalize']['max_s'] == pytest.approx(.03)
+    assert stages['finalize']['max_s'] == pytest.approx(.02)
     over = {o['name']: o for o in out['over_budget']}
     assert over['worker_start']['above_flag_factor'] and over['endpoint_screening']['above_flag_factor']
     assert 'sent_path_check' not in over
@@ -86,6 +87,6 @@ def test_fake_io_scheduling_sample_uses_first_send_after_execute_entry(tmp_path)
                fake_io_first_sends=[dict(monotonic_s=103.5), dict(monotonic_s=110.)],
                events=[span('execute.binding', 1.8), span('execute.cycle_start', 1.7)])
     (kind, sample), = bench.samples_from_timing(doc, tmp_path/'timing-scheduling.json')
-    assert kind == 'scheduling' and sample['seconds'] == pytest.approx(3.5) and sample['fake_io']
+    assert kind == 'scheduling' and sample['seconds'] is None and sample['partial_seconds'] == pytest.approx(3.5) and sample['fake_io']
     out = bench.summarize('scheduling', [sample], BUDGET['scheduling'], 1.2)
-    assert out['p50_s'] == pytest.approx(3.5) and out['over_budget'] == []
+    assert out['p50_s'] is None and out['status']=='NO_SAMPLES' and out['over_budget'] == []

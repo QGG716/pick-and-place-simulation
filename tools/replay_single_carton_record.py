@@ -158,7 +158,7 @@ def main():
             report['planning_s'] = round(time.monotonic()-planning, 2)
             if found and timing.ENABLED:
                 measure_plan_tail(planner, found, box, world, scene, obs, out)
-            timing.add('replay.planning_entry_to_search_end', planning_entered, timing.now()-planning_entered)
+            # The enclosing interval ends after blocking worker cleanup below.
     finally:
         with timing.span('plan_cycle.close_workers'):
             if planner.deadline is None:
@@ -167,6 +167,8 @@ def main():
             else:
                 report['native_check_pool'] = planner.pool_status
                 planner.background_close(out); planner.deadline = None
+        if 'planning_entered' in locals():
+            timing.add('replay.planning_entry_to_search_end',planning_entered,timing.now()-planning_entered,scope='PARTIAL_REPLAY_NOT_PREPARE_PLAN')
         if authority._plans: raise SystemExit('OFFLINE_REPLAY_MUST_NOT_REGISTER_PERMITS')
         report['failures'] = failures
         if found:
