@@ -147,12 +147,13 @@ class NativeFlow:
                     prepare=dict(limits=asdict(p.limits), period_s=p.config['period_s'], reach_bound_m=p.reach_bound,
                                  slowdown_steps=list(SEND_SLOWDOWN_STEPS)))
 
-    def handle(self, request, client, folder):
-        return self.p.with_scene_handle(request, client, folder) if self.p.enabled('scene_handles') else request
+    def handle(self, request, client, folder, cancelled=None):
+        return self.p.with_scene_handle(request, client, folder, cancelled=cancelled) if self.p.enabled('scene_handles') else request
 
     def send(self, client, request, folder, name, cancelled=None):
         """Persist, send and record one composite request (its sub-calls are replayed later)."""
         p = self.p
+        if cancelled and cancelled():raise moveit2_backend.MoveItUnavailable('CANCELLED')
         request = dict(request, request_budget_s=COMPOSITE_TIMEOUT_S if p.deadline is None else
                        max(1e-3, p.deadline-.1-time.monotonic()))
         path = folder/(name+'-composite.json')
@@ -173,12 +174,13 @@ class NativeFlow:
         return reply
 
     # -- endpoint screening ----------------------------------------------------------
-    def screen_request(self, q, world, box, candidates, considered, client, folder):
+    def screen_request(self, q, world, box, candidates, considered, client, folder, cancelled=None):
         p = self.p
         tool = sorted(p.clearance.get('tool_links', [])); ids = sorted({o['id'] for o in world})
         supports = p.detach_supports(world, box)
         rows = []
         for i in considered:
+            if cancelled and cancelled():raise moveit2_backend.MoveItUnavailable('CANCELLED')
             candidate = candidates[i]
             tcp = rigid(candidate['tcp_pose']); flange = tcp@np.linalg.inv(p.coordinate_model.tool.matrix)
             attachment = np.linalg.inv(flange)@rigid(box['pose'])
@@ -193,10 +195,10 @@ class NativeFlow:
                                                                ('detach', attachment, supports))}
             template = dict(op='ik', identity=p.init['identity'], seed=6518, planning_only=False,
                             position_tolerance_m=2e-5, orientation_tolerance_rad=2e-4, request_budget_s=110.)
-            rows.append(dict(index=i, loaded_start=self.handle(loaded, client, folder),
-                             approach_check=self.handle(checks['approach'], client, folder),
-                             contact_check=self.handle(checks['contact'], client, folder),
-                             detach_check=self.handle(checks['detach'], client, folder),
+            rows.append(dict(index=i, loaded_start=self.handle(loaded, client, folder, cancelled),
+                             approach_check=self.handle(checks['approach'], client, folder, cancelled),
+                             contact_check=self.handle(checks['contact'], client, folder, cancelled),
+                             detach_check=self.handle(checks['detach'], client, folder, cancelled),
                              approach_ik=dict(template, goal_pose=np.asarray(candidate['precontact_pose']).tolist()),
                              contact_ik=dict(template, goal_pose=np.asarray(candidate['tcp_pose']).tolist()),
                              tool_links=tool, box_id=box['id'], world_ids=ids))
@@ -204,12 +206,12 @@ class NativeFlow:
         return dict(self.common(), op='sc_endpoint_screen', q=list(map(float, q)), candidates=rows,
                     limits_lower=lower.tolist(), limits_upper=upper.tolist(), spread_seeds=p.spread_seeds())
 
-    def screen(self, q, world, box, candidates, considered, folder):
+    def screen(self, q, world, box, candidates, considered, folder, cancelled=None):
         """One composite for every candidate; returns the replay client for the unchanged screening loop."""
         p = self.p; client = p.client
         with timing.span('native.composite_screen', candidates=len(considered)):
-            reply = self.send(client, self.screen_request(q, world, box, candidates, considered, client, folder), folder,
-                              box['id']+'-endpoint-screen')
+            reply = self.send(client, self.screen_request(q, world, box, candidates, considered, client, folder, cancelled), folder,
+                              box['id']+'-endpoint-screen', cancelled)
         replay = ReplayClient(client, p.deadline); replay.add(reply)
         return replay
 

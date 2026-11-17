@@ -43,6 +43,7 @@ class CancellableWorkerClient:
 
     def __init__(self, command, *, log_path=None, name='worker', binary=False):
         self.name = name; self._ids = itertools.count(1); self._lock = threading.Lock()
+        self.last_cancellation = None
         self._replies = queue.Queue(); self.retired = None; self.cancelled_requests = 0; self.clean = False
         self._log = open(log_path, 'a', encoding='utf-8') if log_path else None
         env = dict(os.environ, M710_WORKER_CANCEL='1')
@@ -117,7 +118,10 @@ class CancellableWorkerClient:
                     elif now-started >= timeout: why = 'MOVEIT2_REQUEST_TIMEOUT'
                     if why:
                         cancel_sent = now
-                        try: self._send(dict(op='cancel', target_request_id=request['request_id']))
+                        self.last_cancellation=dict(request_id=request['request_id'],caller_result_invalid=True,cancel_sent=False,worker_finished=False)
+                        try:
+                            self._send(dict(op='cancel', target_request_id=request['request_id']))
+                            self.last_cancellation['cancel_sent']=True
                         except (BrokenPipeError, OSError):
                             self.retire('WORKER_EXITED'); raise WorkerRetired('WORKER_RETIRED:WORKER_EXITED')
                 elif now-cancel_sent >= CANCEL_GRACE_S:
@@ -134,6 +138,8 @@ class CancellableWorkerClient:
                 result['transport_and_worker_s'] = time.perf_counter()-started
                 if cancel_sent is not None:
                     # The worker stopped this request and replied: the process stays usable.
+                    self.last_cancellation['worker_finished']=True
+                    result['cancellation']=dict(self.last_cancellation)
                     self.cancelled_requests += 1
                     error = MoveItUnavailable(why); error.response = result
                     raise error

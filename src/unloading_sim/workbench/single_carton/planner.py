@@ -494,7 +494,7 @@ class SinglePlanner(EmptyPlanner):
         timing.write_json(folder/'native-scene.json',dict(scene_fingerprint=fingerprint,world=world,
             scope='ONE_UPLOAD_PER_WORKER_PER_TASK_REQUESTS_CARRY_THE_HANDLE'),'native-scene.json')
         return fingerprint
-    def scene_handle(self,client,folder):
+    def scene_handle(self,client,folder,cancelled=None):
         """This worker's handle for the task scene, uploading it once (thread safe per worker)."""
         client=getattr(client,'target',client)  # a replay client (planning_module NATIVE) uses its worker's handle
         key=id(client)
@@ -506,7 +506,7 @@ class SinglePlanner(EmptyPlanner):
                 upload=dict(op='sc_scene_upload',identity=self.init['identity'],world=self.scene_world,
                             scene_fingerprint=self.scene_fingerprint)
                 started=time.monotonic()
-                kwargs=dict(timeout=120)
+                kwargs=dict(timeout=120,cancelled=cancelled)
                 if self.deadline is not None:
                     left=self.native_left()
                     if left<=0:raise PlanningBudgetExhausted('BEFORE_DISPATCH','sc_scene_upload')
@@ -519,14 +519,14 @@ class SinglePlanner(EmptyPlanner):
                     scene_fingerprint=self.scene_fingerprint,scene_handle=reply['scene_handle'],objects=reply.get('objects'),
                     upload_s=time.monotonic()-started),'scene-upload.json')
             return entry['handle']
-    def with_scene_handle(self,request,client,folder):
+    def with_scene_handle(self,request,client,folder,cancelled=None):
         """The request with this task's world replaced by the worker's scene handle."""
         if (self.scene_world is None or request.get('world') is not self.scene_world or
                 request.get('scene_fingerprint')!=self.scene_fingerprint):return request
-        handle=self.scene_handle(client,folder)
+        handle=self.scene_handle(client,folder,cancelled)
         return {**{k:v for k,v in request.items() if k!='world'},'scene_handle':handle}
     def native_call(self,request,folder,name,timeout,cancelled=None,client=None):
-        if self.enabled('scene_handles'):request=self.with_scene_handle(request,client or self.client,folder)
+        if self.enabled('scene_handles'):request=self.with_scene_handle(request,client or self.client,folder,cancelled)
         if self.deadline is not None:return self.deadline_native_call(request,folder,name,timeout,cancelled,client)
         # Persist before dispatch: a timed-out worker cannot return its request
         # or profiling data. Keep every Pilz/OMPL attempt instead of overwriting.
@@ -997,11 +997,11 @@ class SinglePlanner(EmptyPlanner):
             stop.set();idle.set()
             for rank in commands:commands[rank].put(('STOP',))
             for thread in threads:thread.join()
-    def native_screen(self,q,world,box,candidates,candidate_filter,folder):
+    def native_screen(self,q,world,box,candidates,candidate_filter,folder,cancelled=None):
         """planning_module NATIVE: the sc_endpoint_screen composite; returns its replay client."""
         from .native_flow import NativeFlow
         considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
-        return NativeFlow(self).screen(q,world,box,candidates,considered,folder)
+        return NativeFlow(self).screen(q,world,box,candidates,considered,folder,cancelled)
     def search_box(self,q,world,box,folder,progress=lambda _:None,cancelled=lambda:False,failures=None,candidate_filter=None):
         """Two-phase search for one target; returns the first complete plan.
 
@@ -1033,7 +1033,7 @@ class SinglePlanner(EmptyPlanner):
         try:
             # planning_module NATIVE: one composite screens every candidate; the
             # unchanged loop below then runs against its recorded results.
-            replay=self.native_screen(q,world,box,candidates,candidate_filter,folder) if self.native_planning() else None
+            replay=self.native_screen(q,world,box,candidates,candidate_filter,folder,cancelled) if self.native_planning() else None
             main_client=self.client
             if replay is not None:self.client=replay
             try:

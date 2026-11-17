@@ -1925,7 +1925,7 @@ int main(int argc,char**argv) {
     m.binary=false;return bool(std::getline(std::cin,m.line));
   };
   std::mutex queue_mutex,running_mutex;std::condition_variable queue_cv;std::deque<Message> queued;bool input_closed=false;
-  std::string running_id;m710::NativeDeadlinePtr running_deadline;bool running_cancelled=false;std::set<std::string> early_cancels;
+  std::string running_id;m710::NativeDeadlinePtr running_deadline;bool running_cancelled=false;std::set<std::string> early_cancels,pending_ids;
   std::thread reader;
   if(async_cancel)reader=std::thread([&]{
     Message m;
@@ -1933,15 +1933,27 @@ int main(int argc,char**argv) {
       try {if(!read_message(m))break;} catch(...) {break;}
       std::string target;bool cancel=false;
       if(m.binary&&m.frame.kind==m710::kFrameCancel) {cancel=true;target=m.frame.value.value("target_request_id",std::string());}
-      else if(!m.binary&&m.line.size()<512 && m.line.find("\"op\":\"cancel\"")!=std::string::npos) {
-        cancel=true;try {target=J::parse(m.line).at("target_request_id").get<std::string>();} catch(...) {continue;}
+      else if(!m.binary) {
+        try {
+          const J parsed=J::parse(m.line);
+          if(parsed.value("op",std::string())=="cancel") {
+            cancel=true;
+            if(parsed.contains("target_request_id")&&parsed["target_request_id"].is_string())
+              target=parsed["target_request_id"].get<std::string>();
+          }
+        } catch(...) {} // malformed ordinary requests retain the normal error reply
       }
       if(cancel) {
         std::lock_guard<std::mutex> g(running_mutex);
-        if(target==running_id && running_deadline) {running_deadline->cancel();running_cancelled=true;}
-        else early_cancels.insert(target);
+        if(!target.empty()&&target==running_id) {if(running_deadline)running_deadline->cancel();running_cancelled=true;}
+        else if(pending_ids.count(target))early_cancels.insert(target);
         continue;
       }
+      try {
+        const J parsed=m.binary?m.frame.value:J::parse(m.line);
+        const auto id=parsed.value("request_id",std::string());
+        if(!id.empty()) {std::lock_guard<std::mutex> g(running_mutex);pending_ids.insert(id);}
+      } catch(...) {}
       {std::lock_guard<std::mutex> g(queue_mutex);queued.push_back(std::move(m));m=Message{};}
       queue_cv.notify_one();
     }
@@ -1975,7 +1987,7 @@ int main(int argc,char**argv) {
           running_id=req.value("request_id",std::string());running_cancelled=false;running_deadline=nullptr;
           workers.at(key)->on_deadline=[&](const m710::NativeDeadlinePtr& d) {
             std::lock_guard<std::mutex> h(running_mutex);running_deadline=d;
-            if(early_cancels.erase(running_id)) {d->cancel();running_cancelled=true;}
+            if(running_cancelled||early_cancels.erase(running_id)) {d->cancel();running_cancelled=true;}
           };
         }
         answer=workers.at(key)->dispatch(req);
@@ -1986,6 +1998,7 @@ int main(int argc,char**argv) {
     if(async_cancel) {
       std::lock_guard<std::mutex> g(running_mutex);
       if(running_cancelled)answer["cancelled_by_request"]=true;
+      pending_ids.erase(req.value("request_id",std::string()));early_cancels.erase(req.value("request_id",std::string()));
       running_id.clear();running_deadline=nullptr;running_cancelled=false;
     }
     if(timing) {
