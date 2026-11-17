@@ -1,0 +1,61 @@
+{
+  "issue": "R2-02",
+  "physical": "NOT_RUN",
+  "before": "14 failed, 4 passed using actual sc_composite.h output and actual Python replay",
+  "after": "18 composite cross-language cases passed; cancellation tests included: 21 passed",
+  "scene_upload_cancel_before": "2 failed: missing callback in CONTACT (known and unknown approach)",
+  "scene_upload_cancel_after": "all CONTACT and DETACH_AND_VERIFY handle calls forward the same callback",
+  "checks": {
+    "stage": "r2-02",
+    "head": "123033fbaf882a375bd296dc41d4e29f812225c0",
+    "physical": "NOT_RUN",
+    "checks": [
+      {
+        "name": "pytest",
+        "command": [
+          "bash",
+          "-c",
+          "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_start_boundary.py tests/test_review2_wrist_composite.py"
+        ],
+        "returncode": 0,
+        "elapsed_s": 154.64452725299998,
+        "log": "outputs/review2_20261117/r2-02/pytest.log"
+      },
+      {
+        "name": "optimized",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test optimized"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.09553962500012858,
+        "log": "outputs/review2_20261117/r2-02/optimized.log"
+      },
+      {
+        "name": "reference",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test reference"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.10860410199984472,
+        "log": "outputs/review2_20261117/r2-02/reference.log"
+      },
+      {
+        "name": "native_component",
+        "command": [
+          ".venv/bin/python",
+          "tools/check_eco65_single_carton_native.py",
+          "--output",
+          "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/r2-02/native-component"
+        ],
+        "returncode": 0,
+        "elapsed_s": 13.917022308000014,
+        "log": "outputs/review2_20261117/r2-02/native_component.log"
+      }
+    ]
+  },
+  "scope": "Scripted geometry/IK/plan replies; actual CompositeRunner/nativePrepare and real Python replay; no physical equivalence claim"
+}

@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iostream>
 #include <sys/stat.h>
-#include <sys/sysmacros.h>
 using J=nlohmann::json;
 int main(int argc,char**argv) {
   const std::string mode=argc>1?argv[1]:"limits";
@@ -33,7 +32,8 @@ int main(int argc,char**argv) {
       try {auto bad=req;bad["journal_directory"]=dir+"/missing";setenv("M710_WORKER_JOURNAL_DIR",(dir+"/missing").c_str(),1);m710::CompositeRunner runner([&](const J&){++calls;return J();},[]{},nullptr,bad);}catch(const std::runtime_error&e){rejected=std::string(e.what()).find("JOURNAL_OPEN_FAILED")!=std::string::npos;}
       assert(rejected&&calls==0);setenv("M710_WORKER_JOURNAL_DIR",dir.c_str(),1);
       auto filename=dir+"/m710_worker_journal_"+std::to_string(getpid())+".jsonl";
-      assert(mknod(filename.c_str(),S_IFCHR|0600,makedev(1,7))==0);rejected=false;
+      // Same ENOSPC device, without requiring CAP_MKNOD in developer containers.
+      assert(symlink("/dev/full",filename.c_str())==0);rejected=false;
       try {m710::CompositeRunner runner([&](const J&){++calls;return J{{"status","SUCCESS"}};},[]{},nullptr,req);runner.call(J{{"op","validate"}},"check",120);}catch(const std::runtime_error&e){rejected=std::string(e.what()).find("JOURNAL_WRITE_FAILED")!=std::string::npos;}
       assert(rejected&&calls==0);unlink(filename.c_str());
       m710::CompositeRunner* ptr=nullptr;

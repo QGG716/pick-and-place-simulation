@@ -87,6 +87,39 @@ class CompositeRunner {
   }
   static std::string status(const J& r) {return r.value("status",std::string());}
   static bool startsWith(const std::string& s,const char* p) {return s.rfind(p,0)==0;}
+  // config.wrist_branch_violation: frozen task q_start, degrees, same strict
+  // comparisons and priority (J5 first, then maximum J4/J6 travel). Applied
+  // after IK sorting and after preparation, before the next native call.
+  J wristViolation(const J& states) const {
+    const J limits=request.value("wrist_branch_limits",J());
+    const J reference=request.value("wrist_reference_q_start",J());
+    if(limits.is_null()||reference.is_null())return nullptr;
+    const double degrees=180./M_PI;
+    const auto q0=reference.get<std::vector<double>>();
+    if(q0.size()!=6||states.empty())throw std::runtime_error("WRIST_STATES_INVALID");
+    const double start=q0[4]*degrees,minimum=limits.at("j5_min_abs_deg").get<double>();
+    if(limits.at("keep_j5_sign").get<bool>()) {
+      if(std::abs(start)<minimum)return {{"reason","Q_START_J5_INSIDE_SINGULAR_BAND"},{"j5_deg",start}};
+      auto sign=[](double v){return (v>0)-(v<0);};
+      for(size_t k=0;k<states.size();++k) {
+        const double value=states.at(k).at(4).get<double>()*degrees;
+        if(sign(value)!=sign(start)||std::abs(value)<minimum)
+          return {{"reason","J5_WRIST_FLIP_OR_SINGULAR"},{"index",k},{"j5_deg",value},
+                  {"j5_start_deg",start},{"j5_min_abs_deg",minimum}};
+      }
+    }
+    for(const auto& [joint,key]:{std::pair<size_t,const char*>{3,"max_j4_travel_deg"},{5,"max_j6_travel_deg"}}) {
+      double maximum=-1.;size_t index=0;
+      for(size_t k=0;k<states.size();++k) {
+        const double travel=std::abs(states.at(k).at(joint).get<double>()*degrees-q0[joint]*degrees);
+        if(travel>maximum){maximum=travel;index=k;}
+      }
+      const double limit=limits.at(key).get<double>();
+      if(maximum>limit)return {{"reason","J"+std::to_string(joint+1)+"_TRAVEL_EXCEEDED"},
+                              {"index",index},{"travel_deg",maximum},{"limit_deg",limit}};
+    }
+    return nullptr;
+  }
   // ---- prepare (SinglePlanner.plan_segment's SEND_SLOWDOWN_STEPS loop) ----
   J prepare(const J& points,double scale,double reach,std::string& error) {
     const J& p=request.at("prepare");
@@ -141,6 +174,8 @@ class CompositeRunner {
     if(status(result)!="SUCCESS"||!accepted) {s.rejected=true;return s;}
     s.prepared=prepare(result.at("points"),scale,request.at("prepare").at("reach_bound_m").get<double>()+payload_reach,s.prepare_error);
     if(s.prepared.is_null())throw Stop{"PREPARE_FAILED:"+s.prepare_error};
+    const auto violation=wristViolation(s.prepared.at("collision_path"));
+    if(!violation.is_null()) {s.rejected=true;s.result={{"status","WRIST_BRANCH_REJECTED"},{"failure",violation}};}
     return s;
   }
   static std::vector<double> lastQ(const Segment& s) {return s.prepared.at("q").back().get<std::vector<double>>();}
@@ -261,6 +296,9 @@ class CompositeRunner {
     }
     auto norm=[&](const std::vector<double>& x){double s=0;for(size_t i=0;i<x.size();++i)s+=(x[i]-reference[i])*(x[i]-reference[i]);return std::sqrt(s);};
     std::stable_sort(solutions.begin(),solutions.end(),[&](const auto& a,const auto& b){return norm(a)<norm(b);});
+    solutions.erase(std::remove_if(solutions.begin(),solutions.end(),[&](const auto& qv){
+      return !wristViolation(J::array({qv})).is_null();
+    }),solutions.end());
     return solutions;
   }
   J screenPhase() {

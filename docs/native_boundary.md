@@ -117,7 +117,7 @@
 候选生成 `geometry.contact_candidates`（顺序即优先级）、密封检查 `candidate_contact_check`、原位包络检查 `payload_rest_check`、承接检查 `release_check`、许可签发 `Authority.register`、全部记录与 UI 进度。第 7 步若把候选级流程下沉，Python 仍保留旧流程（`planning_module=PYTHON`），结论必须逐项一致。
 
 第 7 步（`planning_module=NATIVE`）的结论来源：worker 按与 Python 相同的分支执行复合请求，并记录每个子请求和结果；Python 随后用回放客户端运行**原样不变**的 `screen_candidate` 和 `plan_candidate`。
-- Python 发出的每个请求都必须与记录一致：易变的预算和截止字段、world 除外；world 按 `scene_fingerprint` 核对，探测路径按长度和首末状态核对。
+- Python 发出的每个请求都必须与记录一致：易变的预算和截止字段、world 除外；world 按 `scene_fingerprint` 核对，探测路径按长度及完整规范二进制 SHA-256 核对。
 - 不一致即报 `NATIVE_FLOW_DIVERGED`，不回退。
 - 结论、失败信息和证据文件仍由原 Python 代码产生，prepare 结果来自 worker。
 - 候选按进程车道运行，每条车道一个 worker，一个候选的全部规划都在该车道的 worker 上进行。并行车道流程（示例配置 7 条车道）与 PYTHON 并行流程中每个 worker 的规划请求序列相同。只有一条车道时（PYTHON 顺序流程），PYTHON 把接近和带载返回分到两个 worker 并行规划，NATIVE 仍在一个 worker 上依次规划；若需要 OMPL，worker 的随机数历史可能因此不同。
@@ -264,3 +264,7 @@
 统计契约：成功规划是 `prepare_plan` 入口到 `PLAN_READY`；失败另外保留入口到返回及分类。局部回放标为 `PARTIAL_REPLAY_NOT_PREPARE_PLAN`，不能据此判定完整入口达标。调度为 execute 到首点，加四个交接区间扣除既有规则必要等待后的超额时间；重叠等待取区间并集。缺少任一交接证据时只报告部分口径。Python 调度和不可抢占调用不构成硬实时保证。
 
 合并说明：并行提交 `6477f32` 的事故执行锁、物理单箱工具—机器人 40 mm 策略及腕部限制保持原样。上述 A–F 修正不撤销这些保护，也不将其推广到 FANUC/M710/离线模式。具体条件和例外以该提交的现场配置与范围检查为准。
+
+### 2026-11-17 复审补充：复合腕部策略
+
+`sc_endpoint_screen` 和 `sc_plan_candidate` 的公共输入增加解析后的 `wrist_branch_limits` 及冻结 `wrist_reference_q_start`（弧度）。参考始终是任务 q_start，不是各段起点；无策略的历史请求保持无策略。C++ 在与 Python 相同的位置应用严格度数判据：IK 去重/排序后、最多三分支检查前过滤；每段 prepare 后在完整 collision_path 上检查，再决定是否尝试下一脱离方案。末次 Python 审计仍保留，回放未消费调用不得被普通候选拒绝掩盖。全部 scene handle 上传传播取消回调。

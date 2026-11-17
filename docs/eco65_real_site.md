@@ -873,3 +873,7 @@ xdg-open outputs/field-failures-20261117/index.html
 ```
 
 Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存采样切换、附着矩阵、715 碰撞实体、12 杯；Python/browser FK 最大矩阵误差 1.11e-16。概览中文及布局已逐图检查，源记录 SHA-256 前后保持一致。此步骤未改规划或设备控制代码，未重跑规划/碰撞验收或实机动作。报告：`docs/evidence/realtime_20261117_failure_visualization/report.json`。生成的原始照片、CAD 页面和 PNG 仅保留 outputs，不提交 Git。
+
+## 2026-11-17 复审 R2-02：复合原生腕部判据与取消传播
+
+复合请求绑定当前腕部策略与冻结 q_start；C++ 在 IK 排序后过滤，并在 prepare 后、下一请求前执行同一 J5/J4/J6 判据。实际 C++ 复合输出驱动实际 Python 回放：修复前 14 failed/4 passed，修复后 18 passed，覆盖全部解拒绝、部分保留、接触解拒绝、四段路径中间越界及正常链路；拒绝路径也检查未消费调用，禁止吞掉分歧。CONTACT/DETACH_AND_VERIFY 的 scene handle 全部传取消回调，相关 21 项通过。必需定向集 591 passed，重编译 worker 后 optimized/reference 与原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-02.json`。几何响应为 fake，实机与完整现场等价 NOT_RUN；默认模块/开关、限值及执行锁未改。

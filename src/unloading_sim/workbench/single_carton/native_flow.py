@@ -143,6 +143,7 @@ class NativeFlow:
                                                         reference_monotonic_s=p.deadline_reference)
         from .planner import SEND_SLOWDOWN_STEPS
         return dict(identity=p.init['identity'], deadline=deadline, check_workers=len(p.checkers()),
+                    wrist_branch_limits=p.wrist_limits, wrist_reference_q_start=p.wrist_reference,
                     sent_path_audit=p.site.get('sent_path_audit', 'SAMPLED'), path_endpoint_reuse=p.enabled('path_endpoint_reuse'),
                     scale=p.site['time_scale'],
                     prepare=dict(limits=asdict(p.limits), period_s=p.config['period_s'], reach_bound_m=p.reach_bound,
@@ -226,11 +227,11 @@ class NativeFlow:
         known = screened['screen'].get('approach_q')
         approach_context = p.context(q, world, box, candidate, 'approach')
         contact_context = p.context(q if known is None else list(known), world, box, candidate, 'contact')
-        phase = dict(contact=dict(request=self.handle(p.plan_request(contact_context, tcp, True), client, sub),
-                                  context=self.handle(contact_context, client, sub)))
+        phase = dict(contact=dict(request=self.handle(p.plan_request(contact_context, tcp, True), client, sub, cancelled),
+                                  context=self.handle(contact_context, client, sub, cancelled)))
         if known is None:
-            phase['approach'] = dict(request=self.handle(p.plan_request(approach_context, candidate['precontact_pose'], False), client, sub),
-                                     context=self.handle(approach_context, client, sub))
+            phase['approach'] = dict(request=self.handle(p.plan_request(approach_context, candidate['precontact_pose'], False), client, sub, cancelled),
+                                     context=self.handle(approach_context, client, sub, cancelled))
         else:
             phase['known_approach_q'] = list(known)
         progress('原生复合请求：接近 / 接触')
@@ -238,20 +239,25 @@ class NativeFlow:
             first = self.send(client, dict(self.common(), op='sc_plan_candidate', phase='CONTACT', contact_phase=phase), sub, 'contact-phase',
                               cancelled)
         replay.add(first)
-        detach = self.detach_request(q, world, box, candidate, screened, first, approach_context, client, sub) \
+        detach = self.detach_request(q, world, box, candidate, screened, first, approach_context, client, sub, cancelled) \
             if first.get('outcome') == 'PLANNED' and not first.get('stopped') else None
         if detach is not None:
             progress('原生复合请求：脱离 / 带载返回 / 发送路径检查')
             with timing.span('native.composite_detach_verify'):
                 replay.add(self.send(client, detach, sub, 'detach-phase', cancelled))
         with timing.span('native.replay_plan_candidate'):
-            result = p.plan_candidate(q, world, box, candidate, sub, screened, progress, cancelled,
-                                      clients=[replay], workers=[replay]*max(1, len(checkers)))
+            try:
+                result = p.plan_candidate(q, world, box, candidate, sub, screened, progress, cancelled,
+                                          clients=[replay], workers=[replay]*max(1, len(checkers)))
+            except ValueError:
+                if replay.unused() and not cancelled() and not replay.stopped:
+                    raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded results left after candidate rejection')
+                raise
         if replay.unused():
             raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded native results not requested by the Python flow')
         return result
 
-    def detach_request(self, q, world, box, candidate, screened, first, approach_context, client, sub):
+    def detach_request(self, q, world, box, candidate, screened, first, approach_context, client, sub, cancelled=None):
         """DETACH_AND_VERIFY inputs, computed exactly as plan_candidate_segments does (None when it would stop)."""
         p = self.p
         known = screened['screen'].get('approach_q')
@@ -279,21 +285,21 @@ class NativeFlow:
         for name, goal in p.detach_goals(actual, box, candidate):
             context = p.context(qc, world, box, candidate, 'detach', attachment, original)
             profiles.append(dict(name=name, record='detach' if name == 'OUTWARD' else 'detach-'+name.lower(),
-                                 request=self.handle(p.plan_request(context, goal, True), client, sub),
-                                 context=self.handle(context, client, sub)))
+                                 request=self.handle(p.plan_request(context, goal, True), client, sub, cancelled),
+                                 context=self.handle(context, client, sub, cancelled)))
         return_context = p.context(q, world, box, candidate, 'return', attachment, screened['release_supports'])
         a = return_context['attachment']
         phase = {'q': list(map(float, q)), 'payload_reach_m': float(np.linalg.norm(corners(a['pose'], a['size']), axis=1).max()),
                  'box_id': box['id'], 'world_ids': sorted({o['id'] for o in world}), 'profiles': profiles,
-                 'return': dict(request=self.handle(p.plan_request(return_context, q, False), client, sub),
-                                context=self.handle(return_context, client, sub)),
-                 'contact_planned': dict(context=self.handle(p.context(qpre, world, box, candidate, 'contact'), client, sub),
+                 'return': dict(request=self.handle(p.plan_request(return_context, q, False), client, sub, cancelled),
+                                context=self.handle(return_context, client, sub, cancelled)),
+                 'contact_planned': dict(context=self.handle(p.context(qpre, world, box, candidate, 'contact'), client, sub, cancelled),
                                          prepared=segments['contact'])}
         if known is None:
-            phase['approach_planned'] = dict(context=self.handle(approach_context, client, sub), prepared=segments['approach'])
+            phase['approach_planned'] = dict(context=self.handle(approach_context, client, sub, cancelled), prepared=segments['approach'])
         else:
-            phase['approach'] = dict(request=self.handle(p.plan_request(approach_context, list(known), False), client, sub),
-                                     context=self.handle(approach_context, client, sub))
+            phase['approach'] = dict(request=self.handle(p.plan_request(approach_context, list(known), False), client, sub, cancelled),
+                                     context=self.handle(approach_context, client, sub, cancelled))
             phase['qpre'] = qpre
         return dict(self.common(), op='sc_plan_candidate', phase='DETACH_AND_VERIFY', detach_phase=phase)
 
