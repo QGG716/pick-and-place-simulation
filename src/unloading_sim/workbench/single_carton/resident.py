@@ -182,53 +182,68 @@ class WorkerPool:
         self.lock = threading.Lock(); self.main = None; self.main_ready = None; self.pool = []
         self.status = []; self.ready = threading.Event(); self.closed = False; self.thread = None
         self.background = None; self.serial = itertools.count(); self.binary = binary
+        self.cleanup_threads = []; self.cleanup_errors = []
+
+    def is_closed(self):
+        with self.lock:return self.closed
+
+    def _dispose(self, client):
+        """Close rejected/retired resources outside the publication lock."""
+        try:client.close()
+        except Exception as error:
+            with self.lock:self.cleanup_errors.append(dict(worker=getattr(client,'name','unknown'),error=str(error)))
 
     # -- startup ---------------------------------------------------------------
     def start(self):
         """Start, initialise and reset every worker in the background."""
         with self.lock:
-            if self.thread is not None:
+            if self.closed or self.thread is not None:
                 return
             self.thread = threading.Thread(target=self._start_all, daemon=True, name='resident-pool-start')
-        self.thread.start()
+            self.thread.start()
 
     def _start_one(self, role):
+        if self.is_closed():return None, None
         name = f'{role}-{next(self.serial)}'
         status = dict(name=name, role=role, state='STARTING', started_monotonic_s=time.monotonic())
         with self.lock: self.status.append(status)
         client = None
         try:
             client = CancellableWorkerClient(self.command_for(name), log_path=self.log_dir/f'resident-{name}.log', name=name, binary=self.binary)
-            ready = client.request(self.init, timeout=180)
+            ready = client.request(self.init, timeout=180, cancelled=self.is_closed)
             capabilities = ready.get('capabilities', {})
             missing = [c for c in REQUIRED_CAPABILITIES if not capabilities.get(c)]
             if missing:
                 raise RuntimeError('NATIVE_WORKER_CAPABILITY_MISSING:'+','.join(missing))
-            client.reset(self.init['identity'])
+            client.reset(self.init['identity'], cancelled=self.is_closed)
             status.update(state='READY', init_and_reset_s=time.monotonic()-status['started_monotonic_s'])
             return client, ready
         except Exception as error:
             status.update(state='FAILED', error=str(error)[:300])
-            if client is not None: client.retire('INIT_FAILED')
+            if client is not None:
+                client.retire('INIT_FAILED');self._dispose(client)
             return None, None
 
     def _start_all(self):
         with ThreadPoolExecutor(max_workers=1+self.count, thread_name_prefix='resident-start') as executor:
             main = executor.submit(self._start_one, 'main')
             checks = [executor.submit(self._start_one, 'check') for _ in range(self.count)]
-            self.main, self.main_ready = main.result()
+            main_client, main_ready = main.result()
             started = [f.result()[0] for f in checks]
         with self.lock:
-            if self.closed:
-                for c in [self.main]+started:
-                    if c is not None: c.close()
-                return
-            self.pool = [c for c in started if c is not None]
+            closed = self.closed
+            if not closed:
+                self.main, self.main_ready = main_client, main_ready
+                self.pool = [c for c in started if c is not None]
+        if closed:
+            for c in [main_client]+started:
+                if c is not None:self._dispose(c)
         self.ready.set()
 
     def wait_ready(self, timeout):
         if not self.ready.wait(timeout):
             raise MoveItUnavailable('RESIDENT_POOL_NOT_READY_WITHIN_TIMEOUT')
+        if self.is_closed():raise MoveItUnavailable('RESIDENT_POOL_CLOSED')
         if self.main is None:
             raise MoveItUnavailable('RESIDENT_MAIN_WORKER_UNAVAILABLE: '+json.dumps(self.status, ensure_ascii=False, default=str)[:600])
         return self.main_ready
@@ -238,7 +253,8 @@ class WorkerPool:
         def one(client):
             started = time.monotonic()
             try:
-                reply = client.reset(self.init['identity'],timeout=60. if deadline is None else max(.001,deadline-time.monotonic()),cancelled=cancelled)
+                reply = client.reset(self.init['identity'],timeout=60. if deadline is None else max(.001,deadline-time.monotonic()),
+                                     cancelled=lambda:self.is_closed() or bool(cancelled and cancelled()))
                 return dict(worker=client.name, state='RESET', reset_s=time.monotonic()-started, ompl_seed=reply.get('ompl_seed_reapplied'))
             except Exception as error:
                 client.retire('RESET_FAILED')
@@ -250,6 +266,7 @@ class WorkerPool:
 
     def begin_task(self, deadline=None, cancelled=lambda:False):
         """Every live worker in the post-reset state; returns the evidence of this task start."""
+        if self.is_closed():raise MoveItUnavailable('RESIDENT_POOL_CLOSED')
         background = self.background
         if background is not None:
             while background.is_alive():
@@ -271,8 +288,11 @@ class WorkerPool:
         def run():
             self._reset_all([c for c in self.live() if not c.clean])
             self._replenish()
-        self.background = threading.Thread(target=run, daemon=True, name='resident-end-task')
-        self.background.start()
+        with self.lock:
+            if self.closed:return
+            if self.background is not None and self.background.is_alive():return
+            self.background = threading.Thread(target=run, daemon=True, name='resident-end-task')
+            self.background.start()
 
     def _replenish(self):
         with self.lock:
@@ -284,11 +304,17 @@ class WorkerPool:
         if main_dead:
             client, ready = self._start_one('main')
             if client is not None:
-                with self.lock: self.main, self.main_ready = client, ready
+                with self.lock:
+                    accepted=not self.closed and (self.main is None or not self.main.alive())
+                    if accepted:self.main, self.main_ready = client, ready
+                if not accepted:self._dispose(client)
         for _ in dead:
             client, _ready = self._start_one('check')
             if client is not None:
-                with self.lock: self.pool.append(client)
+                with self.lock:
+                    accepted=not self.closed and len(self.pool)<self.count
+                    if accepted:self.pool.append(client)
+                if not accepted:self._dispose(client)
 
     # -- access --------------------------------------------------------------------
     def all(self):
@@ -308,6 +334,18 @@ class WorkerPool:
 
     def close(self):
         with self.lock:
-            self.closed = True; clients = [c for c in [self.main]+list(self.pool) if c is not None]; self.pool = []
-        for client in clients:
-            threading.Thread(target=client.close, daemon=True, name='resident-close').start()
+            self.closed = True; clients = [c for c in [self.main]+list(self.pool) if c is not None]
+            self.main=None;self.main_ready=None;self.pool=[]
+            for client in clients:
+                thread=threading.Thread(target=self._dispose,args=(client,),daemon=True,name='resident-close')
+                self.cleanup_threads.append(thread);thread.start()
+        self.ready.set()
+
+    def wait_closed(self, timeout):
+        """Observable cleanup barrier, never used on the bounded caller path."""
+        end=time.monotonic()+timeout
+        for thread in (self.thread,self.background):
+            if thread is not None:thread.join(max(0.,end-time.monotonic()))
+        with self.lock:threads=list(self.cleanup_threads)
+        for thread in threads:thread.join(max(0.,end-time.monotonic()))
+        return not any(t is not None and t.is_alive() for t in [self.thread,self.background]+threads) and not self.cleanup_errors

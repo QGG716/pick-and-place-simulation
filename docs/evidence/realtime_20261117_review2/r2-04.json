@@ -1,0 +1,13 @@
+{
+  "issue": "R2-04",
+  "before": "5 deterministic creation/close races failed",
+  "after": "41 resident and race tests passed; expanded final race/cleanup set 7 passed",
+  "changes": [
+    "Same-lock planner closed state and generation invalidate prewarm and active tasks",
+    "Pool startup/replenishment recheck closed before publication; rejected resources close outside locks",
+    "Repeated close detaches resources once; cleanup failures remain observable; wait_closed provides a background cleanup barrier"
+  ],
+  "physical": "NOT_RUN",
+  "required_checks": "Shared merged-working-tree check: 609 passed; optimized/reference/native component PASS; final committed-SHA validation recorded separately",
+  "required_check_report": "r2-03.json"
+}

@@ -88,6 +88,7 @@ class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
         self.task_lock=threading.RLock();self.task_generation=0;self.last_task=None
         self.record_commit_lock=threading.Lock()
+        self.closed=False;self.prewarm_errors=[]
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
         self.defer_output_check=False
@@ -1265,31 +1266,43 @@ class SinglePlanner(EmptyPlanner):
     def resident_pool(self):
         """The resident main worker and checker pool, started on first use."""
         with self.build_lock:
+            with self.task_lock:
+                if self.closed:raise RuntimeError('PLANNER_CLOSED')
+                if self.resident is not None:return self.resident
             if self.resident is None:
                 from .resident import WorkerPool
                 logs=Path(self.site['record_root'])/'native-workers';logs.mkdir(parents=True,exist_ok=True)
                 command=lambda name:['env','ROS_LOG_DIR='+str(logs),str(ROOT/'ros2/m710_moveit_backend/worker.sh')]
                 self.build()
-                self.resident=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs,binary=self.native_planning())
-                self.resident.start()
+                pool=WorkerPool(command,self.init,int(self.site.get('native_check_workers',0)),logs,binary=self.native_planning())
+                with self.task_lock:
+                    if self.closed:
+                        pool.close();raise RuntimeError('PLANNER_CLOSED')
+                    self.resident=pool;pool.start()
             return self.resident
     def prewarm(self):
         """Build on isolated state; a late prewarm cannot overwrite an active task."""
         if not self.enabled('resident_workers'):return None
         import copy
         with self.task_lock:
+            if self.closed:return None
             generation=self.task_generation;warm=copy.copy(self)
             warm.files=dict(self.files);warm.hash_cache=dict(self.hash_cache)
             warm.build_lock=threading.RLock();warm.resident=None
         def run():
-            pool=warm.resident_pool()
-            with self.task_lock:
-                if self.task_generation==generation and self.resident is None:
-                    # A task can reuse the warming pool; acquire_workers applies
-                    # its remaining budget to readiness and reset.
-                    self.resident=pool
-                    return
-            pool.close()
+            pool=None
+            try:
+                pool=warm.resident_pool()
+                with self.task_lock:
+                    if not self.closed and self.task_generation==generation and self.resident is None:
+                        # A task may reuse it; acquire_workers bounds readiness.
+                        self.resident=pool
+                        return
+                pool.close()
+                if hasattr(pool,'wait_closed') and not pool.wait_closed(240.):
+                    raise RuntimeError('PREWARM_CLEANUP_INCOMPLETE:'+str(pool.cleanup_errors))
+            except Exception as error:
+                with self.task_lock:self.prewarm_errors.append(str(error))
         thread=threading.Thread(target=run,daemon=True,name='resident-prewarm');thread.start()
         return thread
     def start_main_worker(self,folder):
@@ -1340,6 +1353,14 @@ class SinglePlanner(EmptyPlanner):
         else:self.background_close(folder)
         self.scene_world=None
     def close(self):
-        super().close()
-        if self.resident is not None:self.resident.close();self.resident=None
-        if self.evidence is not None:self.evidence.close();self.evidence=None
+        with self.task_lock:
+            self.closed=True;self.task_generation+=1
+            resident,self.resident=self.resident,None
+            evidence,self.evidence=self.evidence,None
+            client,self.client=self.client,None
+        # No slow close holds the lifecycle lock. Late prewarm/task results
+        # see the closed state/generation and cannot publish resources.
+        if resident is not None:resident.close()
+        if client is not None:client.close()
+        self.close_check_pool()
+        if evidence is not None:evidence.close()

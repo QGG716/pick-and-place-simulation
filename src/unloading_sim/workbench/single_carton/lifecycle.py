@@ -23,6 +23,7 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
     from .planner import PlanningBudgetExhausted
     stop=threading.Event();done=threading.Event();settled=threading.Event();returned=threading.Event();outcome={};task=None
     def guard(stage):
+        if owner.closed:raise RuntimeError('PLANNER_CLOSED')
         if cancelled() or stop.is_set():raise RuntimeError('CANCELLED')
         if deadline is not None and time.monotonic()>=deadline:
             error=PlanningBudgetExhausted(stage)
@@ -71,7 +72,8 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
         record_locked=False;record_moved=False
         try:
             guard('BEFORE_DISPATCH')
-            result=task._plan_cycle(observation,boxes,folder,task_progress,selected,lambda:stop.is_set() or cancelled(),scene,deadline)
+            result=task._plan_cycle(observation,boxes,folder,task_progress,selected,
+                lambda:stop.is_set() or cancelled() or owner.closed or owner.task_generation!=generation,scene,deadline)
             guard('PLAN_EVIDENCE_COMPLETE')
             if finalize is not None:finalize(result,guard)
             guard('FINALIZE_COMPLETE')
