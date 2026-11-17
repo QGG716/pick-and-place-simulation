@@ -247,3 +247,18 @@
 | E | 周期与状态 | `single_carton/runtime.py TaskManager`、`single_carton/cycle.py Cycle`、AGENTS.md 2026-11-16 §6 |
 
 没有两套并行概念：截止时间只有一个（第 2 步）；通道只有一种（§0）；每个模块只有一个 PYTHON | NATIVE 开关；机制开关不改变判定。
+
+## 2026-11-17 审查修正
+
+本节修正上述契约中的证据与生命周期边界，不修改碰撞、接触、轨迹或执行判据。
+
+- `prepare_plan` 在入口建立绝对单调 deadline。`SinglePlanner.plan_cycle` 使用独立任务状态和代次，四段许可先写入任务私有 Authority；binding、摘要、必要证据、`Cycle.ready` 均完成后，检查代次、session、取消与剩余预算，再发布完整计划和四段许可。待提交文件含代次，不能作为可执行计划导入。
+- 调用者返回与后台工作结束分别记录。`last_task` 和 `planning-task-lifecycle.json` 表示清理完成/错误；旧任务的 worker、writer、场景和许可不交给新任务。正常成功的常驻池可复用，但下一任务必须按剩余预算等待 reset。后台尚未结束不能标成已确认空闲。
+- `M710_WORKER_CANCEL=1` 的 JSONL 读取端解析 JSON 识别取消；二进制 kind 4 保持原通道。取消不进入普通请求队列；仅作用于运行中或已接收的 request ID，错误/迟到 ID 不污染后续请求。客户端分别记录 `caller_result_invalid`、`cancel_sent`、`worker_finished`；无法在宽限期确认结束则退役。
+- 每次 composite 显式传递任务目录和 task ID。内部 journal 的 START/END 带 `task_id`、`composite_request_id`、`worker_pid`、`index`。打开/写入/flush 失败关闭成功通路；缺少 END 的 START 表示未确认结束。不同任务目录不串写；不增加逐条 fsync。
+- replay 保留完整 `probe_path`，用现有 `canonical_digest` 绑定所有中间状态。长度和首尾相同不能替代完整路径身份；不匹配报 `NATIVE_FLOW_DIVERGED`。
+- ADAPTIVE 报告 `anchor_dynamic_pair_distance_lower_bound_m` 和 `anchor_workspace_margin_m`，范围为 `EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS`；`whole_path_minimum_distance_status=NOT_COMPUTED`。它们不是整段最小净空。原跳点证明和碰撞通过/拒绝规则保持不变。
+- 原生 prepare 补齐限值长度、有限数、严格上下界与正速度/加速度检查。数值等价性仍按 `1e-12`，本轮存在未通过项，详见修复报告。
+- 启动前必须 flush 本次新写入的观测、规划和任务 journal；等待可取消。运行中记录设施失效仍进入原停止/持箱处理。
+
+统计契约：成功规划是 `prepare_plan` 入口到 `PLAN_READY`；失败另外保留入口到返回及分类。局部回放标为 `PARTIAL_REPLAY_NOT_PREPARE_PLAN`，不能据此判定完整入口达标。调度为 execute 到首点，加四个交接区间扣除既有规则必要等待后的超额时间；重叠等待取区间并集。缺少任一交接证据时只报告部分口径。Python 调度和不可抢占调用不构成硬实时保证。

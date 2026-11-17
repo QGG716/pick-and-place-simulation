@@ -1,0 +1,224 @@
+{
+  "schema": "eco65_realtime_review_fixes_v1",
+  "date": "2026-11-17",
+  "repository": "QGG716/pick-and-place-simulation",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "base_commit": "abe36ae01abdeb9010f4012eaa76689380a437c8",
+  "hardware_execution": "NOT_RUN",
+  "field_acceptance": "NOT_RUN",
+  "steps_1_to_7_accepted": false,
+  "verification": "verification.json",
+  "environment": {
+    "remote_worktree": "/root/m710-gap-search-20261107/rootfs/work-eco65-review-20261117",
+    "python": "existing /root/v05-gpu-venv",
+    "native": "existing Ubuntu 22.04 Humble/MoveIt chroot",
+    "dependency_upgrades": false,
+    "asset_hydration": "2524 pointer files restored from existing server copies with SHA-256 verification; three historical observation products remain absent as allowed by existing geometry-only loader",
+    "raw_evidence": "/root/autodl-tmp/eco65-review-20261117"
+  },
+  "incoming_commit": {
+    "sha": "6477f32c19bd2bf8aac91ba88fc5ea1522a5f67c",
+    "status": "INTEGRATION_PENDING",
+    "note": "Concurrent incident protection commit discovered at final fetch. Existing verification is scoped to abe36ae plus A-F fixes."
+  },
+  "acceptance": {
+    "directed_pytest": "575 passed; 1 preexisting failure",
+    "supplement": "36 passed",
+    "cancel_evidence": "53 passed",
+    "native_clearance": "optimized/reference/two_level/adaptive PASS",
+    "native_component": "PASS; 491 points; 2.45 s trajectory",
+    "deferral_scope": "PASS",
+    "native_cancellation": "four formats PASS; normal reuse; wrong/repeated/late IDs",
+    "native_limits_journal_path": "PASS",
+    "prepare_numeric": "FAIL: acceleration difference 9.315828276854907e-12 exceeds unchanged 1e-12",
+    "full_scheduling": "NO_COMPLETE_SAMPLES: both fake IO runs failed original timing monitors"
+  },
+  "issues": [
+    {
+      "theme": "A",
+      "cause": "Old evidence was flushed before enqueueing fresh NPZ.",
+      "fix": "Cancellable all-writer barrier after new evidence; runtime writer-health checks.",
+      "regressions": [
+        "test_new_observation_must_be_written_before_start",
+        "test_writer_barrier_fails_closed",
+        "test_real_journal_barrier_writes_prior_events"
+      ],
+      "before": "2 failed, 2 passed; disk fault still reached start.",
+      "after": "PASS",
+      "limits": "No physical execution."
+    },
+    {
+      "theme": "B",
+      "cause": "Literal JSON substring recognition and missing precheck cancellation callback.",
+      "fix": "Parsed out-of-band cancellation with running/pending IDs, callback propagation, separate caller/cancel/worker-finished evidence.",
+      "regressions": [
+        "test_review_cancellation.py",
+        "test_single_carton_resident.py",
+        "tools/check_review_cancellation.py"
+      ],
+      "before": "2 callback failures; actual original worker produced PROTOCOL_ERROR on spaced cancellation sequence.",
+      "after": "PASS: spaced/compact/reordered-padded JSON and binary; worker reuse; unresponsive worker retirement.",
+      "limits": "Caller invalidation does not imply worker completion."
+    },
+    {
+      "theme": "C",
+      "cause": "GC callback reentered aggregate's non-reentrant lock.",
+      "fix": "Bounded callback queue, bounded aggregation and observable background write errors.",
+      "regressions": [
+        "test_gc_reentry_and_concurrent_recording",
+        "test_background_timing_write_failure_is_observable"
+      ],
+      "before": "15-second subprocess timeout.",
+      "after": "PASS",
+      "limits": "Overflow recorded; GC remains enabled."
+    },
+    {
+      "theme": "D",
+      "cause": "Only search was bounded; late binding could issue usable permits.",
+      "fix": "Task-local state/generation, staged permits, pending plan and guarded commit; cleanup/prewarm isolated.",
+      "regressions": [
+        "test_entire_task_deadline_and_no_late_permits",
+        "test_tail_stages_are_transactional_and_bounded",
+        "test_prepare_plan_ready_and_journal_are_inside_deadline",
+        "test_late_old_task_cannot_revoke_new_task",
+        "test_previous_resident_reset_wait_uses_remaining_budget",
+        "test_late_prewarm_cannot_publish_into_new_task"
+      ],
+      "before": "250 ms binding under 100 ms budget failed to raise budget exhaustion. New finalize/isolation tests also failed on original API.",
+      "after": "Fake blocking cases passed deadline+50ms; native 0.5/3/6s returned +1.430/+1.050/+1.285 ms.",
+      "limits": "Native trials expired before candidate search; not a hard realtime guarantee for arbitrary GIL/FCL calls."
+    },
+    {
+      "theme": "E",
+      "cause": "Replay argument mismatch, repeated tail and incomplete metrics.",
+      "fix": "Candidate filter preserved; interval unions; explicit partial replay; four original-clock handoffs; failure/cancel/timeout/no-sample classifications.",
+      "regressions": [
+        "test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter",
+        "test_replay_ten_seconds_already_includes_two_second_tail",
+        "test_handoff_delay_increases_scheduling_total_without_double_subtraction",
+        "test_outcome_counts_keep_failed_cancelled_and_timeout_samples",
+        "test_partial_replay_cannot_claim_full_planning_target"
+      ],
+      "before": "Actual deadline replay TypeError; 10 s counted as 12 s.",
+      "after": "Regressions PASS.",
+      "limits": "Synthetic saved fixture only. Fake IO runs failed SEND_DEADLINE_MISSED and SEND_THREAD_STALLED; no complete scheduling p50/p95/max."
+    },
+    {
+      "theme": "F",
+      "cause": "Missing native Limits validation, ignored journal failure, endpoint-only path identity, misleading distance scope.",
+      "fix": "Strict Limits; fail-closed task/request/worker/attempt journal; full canonical binary path digest; explicit anchor-only distance fields.",
+      "regressions": [
+        "native_review_contracts.cpp limits|journal|path",
+        "test_invalid_stationary_limits_match_native_rejections",
+        "test_changed_middle_path_cannot_reuse_pass",
+        "test_single_carton_adaptive.py"
+      ],
+      "before": "Native header checks failed; modified middle state reused prior PASS.",
+      "after": "Correctness regressions PASS.",
+      "limits": "Whole path minimum distance NOT_COMPUTED. Numeric prepare equality still fails unchanged 1e-12 gate."
+    }
+  ],
+  "existing_failures": [
+    {
+      "test": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+      "baseline_failed": true,
+      "after_failed": true,
+      "observed_size_m": [
+        0.14007188,
+        0.18569301,
+        0.108
+      ],
+      "changed_by_this_work": false
+    }
+  ],
+  "pending": [
+    "real-record equivalence",
+    "single-lane OMPL equivalence",
+    "full binary trajectory layout",
+    "proxy asset delivery",
+    "shared memory",
+    "native prepare v/a numerical precision",
+    "whole-path minimum clearance",
+    "physical qualification"
+  ],
+  "next_workspace_reuse": {
+    "implemented": false,
+    "scope": "Per-worker same-task Clearance/ ClearanceWorkspace reuse keyed by full context.",
+    "identity": [
+      "model/tool/assets hashes",
+      "world version and complete geometry",
+      "target and uncertainty envelope",
+      "attachment transform",
+      "stage contact permissions",
+      "pair rules/margins",
+      "workspace bounds",
+      "collision mode/config version"
+    ],
+    "invalidate": [
+      "any identity change",
+      "scene reupload",
+      "task reset",
+      "worker restart/revocation"
+    ],
+    "tests": [
+      "uncached per-request verdict/path/selected candidate comparison",
+      "individual identity mutation",
+      "cancel/reset/parallel lanes",
+      "four clearance modes and scope checks"
+    ],
+    "expected_reduction": "N constructions to K distinct complete identities saves N-K. Historical review N=132 could save at most 131 only if K=1; this is not measured or implemented here."
+  },
+  "tested_sources_match_local_lf": true,
+  "commits": [
+    {
+      "sha": "60f3cbcc46068024725938dc67c1fd7fba7edff3",
+      "title": "fix(eco65): gate execution on all newly written task evidence",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/60f3cbcc46068024725938dc67c1fd7fba7edff3"
+    },
+    {
+      "sha": "2a95a2906a62d6df3a3e6767fdc6fc75fa412004",
+      "title": "fix(eco65): record GC pauses without reentering recorder locks",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/2a95a2906a62d6df3a3e6767fdc6fc75fa412004"
+    },
+    {
+      "sha": "9c0e1049e62b44d0248aaf1c300450e6ce2b730d",
+      "title": "fix(eco65): parse cancellation messages and propagate precheck cancellation",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/9c0e1049e62b44d0248aaf1c300450e6ce2b730d"
+    },
+    {
+      "sha": "6cc78ba5b81c3449d264fea99d3b4d591ec9cf70",
+      "title": "fix(eco65): expose background timing writer failures",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/6cc78ba5b81c3449d264fea99d3b4d591ec9cf70"
+    },
+    {
+      "sha": "27e8a4a69c228692922dfdf5521ad54928a6fdeb",
+      "title": "test(eco65): exercise native cancellation wire formats and worker reuse",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/27e8a4a69c228692922dfdf5521ad54928a6fdeb"
+    },
+    {
+      "sha": "e1ca1136e1dd3f24c7918738db1ad166a39ba49c",
+      "title": "fix(eco65): stage task permits and bound the full planning lifecycle",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/e1ca1136e1dd3f24c7918738db1ad166a39ba49c"
+    },
+    {
+      "sha": "53dc25582ccbff4e40be08f29497ac3e43ba49fc",
+      "title": "fix(eco65): validate native limits and bind complete path and journal evidence",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/53dc25582ccbff4e40be08f29497ac3e43ba49fc"
+    },
+    {
+      "sha": "29a6bd0a9aeffbefa8fd4715e246ca6f07b7a22d",
+      "title": "fix(eco65): preserve replay filters and measure complete planning and handoffs",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/29a6bd0a9aeffbefa8fd4715e246ca6f07b7a22d"
+    },
+    {
+      "sha": "f9bcb73a1ebd01f339dc1489771f061bf03b69e2",
+      "title": "fix(eco65): retain cleanup ownership and suppress stale task progress",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/f9bcb73a1ebd01f339dc1489771f061bf03b69e2"
+    },
+    {
+      "sha": "4ecc5ee638052304af2461f78f4d2815145bc84c",
+      "title": "fix(eco65): persist cancellation acknowledgement state in failure evidence",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/4ecc5ee638052304af2461f78f4d2815145bc84c"
+    }
+  ]
+}

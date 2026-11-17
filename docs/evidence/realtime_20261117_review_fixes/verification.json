@@ -1,0 +1,1014 @@
+{
+  "source_sha256_lf": {
+    "ros2/m710_moveit_backend/src/clearance.h": "40e613c89c638b9df0c992b0f1dcf20f8658ac29a259eb1ebf6ad4ce501a89e1",
+    "ros2/m710_moveit_backend/src/native_prepare.h": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451",
+    "ros2/m710_moveit_backend/src/sc_composite.h": "3621c52097e7b1b5fb368eb91a7a7f27d7e4287896fea5df7c94bce8839c588b",
+    "ros2/m710_moveit_backend/src/worker.cpp": "393ec1dd187cbcb4ec891ed3729a9f1ef9c8d1c2ac034782a10a709d34c47beb",
+    "src/unloading_sim/workbench/controlled/engine.py": "77f1d427e21a3aefd3b46b9e2ddcab78498417afb91872141ae09803938a23ac",
+    "src/unloading_sim/workbench/single_carton/budget.py": "e4169d2a0ef88001ff47b77ae357b74725268e8f25698602699c5f9a02fd3dee",
+    "src/unloading_sim/workbench/single_carton/cycle.py": "ad32c232da510f6afc0a5708a81a5146e8ac4e1ec0b679d4c14bfe48cda3bc8b",
+    "src/unloading_sim/workbench/single_carton/evidence.py": "a2b03d9a67a693b9353686e919e8f78edc3f9cdb00b983c40aeaa067c0d0b219",
+    "src/unloading_sim/workbench/single_carton/lifecycle.py": "d3ceeaadabaf0dc24140f3d190c63b42e749bbbd123b286100f7a9320f3d5d26",
+    "src/unloading_sim/workbench/single_carton/native_flow.py": "100b179ef85e9c64cbf31d80ff108a4a65122d38efb118654021085bac350eee",
+    "src/unloading_sim/workbench/single_carton/planner.py": "b809dcd2f8863f9d8693abd2efe294e30825bd05a45fecb973c9e6e7dd9f567b",
+    "src/unloading_sim/workbench/single_carton/resident.py": "6942d01bf40c3304f9e51e9ebf41b0af422b3e146214f6fa066d993cae33d90e",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "65b0056163d3dc524ffc29fef6c3cf175ac83b8dc08e61943e65d217210c67cc",
+    "src/unloading_sim/workbench/single_carton/scheduling_metrics.py": "cc011797e911112e9c25194cf3d6d14754e860996b506630f83908f9377863a4",
+    "src/unloading_sim/workbench/timing.py": "aaf29fdc9e6e526b2ec752ef7e36476c879aa81b0b0ec15872316514d36c3f42",
+    "tests/native_review_contracts.cpp": "68a2ebbe00d17d90a7c8cb4bd83661bb937703032ea2997c347a4e557377073b",
+    "tests/test_review_cancellation.py": "64311b0f0bb867dc165f4defa55245eedb432c995ea352e68effabe9047f3cbf",
+    "tests/test_review_evidence_gate.py": "7d30a2719f74ceb1fa958249d36ea6eb24867e843febf4f1baaedfb7b4392026",
+    "tests/test_review_lifecycle.py": "d3eebfb77c42f7c127f3c5a4d5870adc76c74b97df5789bdb5fa993f057bd389",
+    "tests/test_review_metrics.py": "3d04405f238cf2445832079b8626566901d7d032303a66c457edef1b9cec0a9e",
+    "tests/test_review_native_limits.py": "c1012fff35c1ff7cdec1d17a8720cd47b79f9d8f4e5ff29eb6f61cf86e96baf9",
+    "tests/test_review_path_identity.py": "aa0668761f0bf77587ce8c46f2c35ee0c46f1bcbc2db785415080128067ab9d0",
+    "tests/test_review_timing.py": "0cffa8d330032cb8fbce28416370e478c4cc9aa2b5dce0bbffcae84d35989c77",
+    "tests/test_single_carton_adaptive.py": "0e8f7909898b426f5b86050c3d3cc6f2800ed702cb1a8568024b7c0bea6ffa2a",
+    "tests/test_single_carton_bench.py": "efafd130ac07bb0ae2ecdcdbb6b5a3d59bf36588f63ed6fa965880c1c915b8e9",
+    "tests/test_single_carton_deadline.py": "aa6aaccc0cc271c3eb2408562c5abcc0012e4e992455ed2a7cc5f9eed5b53b33",
+    "tests/test_single_carton_native_flow.py": "7d96d1ccfb5fcf87b67f66d0b3e563a6c3ffd3815772f44a63805b7b90f91f52",
+    "tests/test_single_carton_pre_execute.py": "ead6539647584dc39b8dc243d3e0d0562c5cf6cbb5460156602a5812dcbbce66",
+    "tests/test_single_carton_review_fixes.py": "5f87973a132c6f27f0f03ac2b303dea7a8419dc8daf691df0505922a6e23f8f8",
+    "tools/bench_planning_latency.py": "97e0969e58f2658903342c160424948cee9960a7af6465bb6cfc19c4bdff4860",
+    "tools/check_adaptive_audit.py": "65c73cc5cb5f2d11f77e7db2ba6496a2c96118c639d95ac779d471695f3c85c1",
+    "tools/check_review_cancellation.py": "411453f36afb05b81c6ad84442ee35ef5d0a25091faccd9df081cbd6ae7dcf3a",
+    "tools/measure_scheduling_fake_io.py": "d0efed757c1d9f9cd6dfc3df9c7247d5099f4dd97b8d337052b86fbc14e732a2",
+    "tools/replay_single_carton_record.py": "9ffb5e4b9d3d4849f7da3cf40ff605614c19f58f164acbbe6bd49b8f4d534593"
+  },
+  "pytest": {
+    "A-before": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "4",
+          "time": "1.367",
+          "timestamp": "2026-11-17T10:35:28.389205+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_review_evidence_gate",
+            "name": "test_new_observation_must_be_written_before_start[True-True-False]",
+            "time": "0.004"
+          },
+          "reason": {
+            "message": "Failed: DID NOT RAISE <class 'ValueError'>"
+          }
+        },
+        {
+          "test": {
+            "classname": "tests.test_review_evidence_gate",
+            "name": "test_new_observation_must_be_written_before_start[True-False-False]",
+            "time": "0.004"
+          },
+          "reason": {
+            "message": "AssertionError: assert False\n +  where False = exists()\n +    where exists = (PosixPath('/tmp/pytest-of-root/pytest-0/test_new_observation_must_be_w1') / 'pre_execute_observation.npz').exists"
+          }
+        }
+      ]
+    },
+    "A-after": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "3",
+          "skipped": "0",
+          "tests": "68",
+          "time": "2.921",
+          "timestamp": "2026-11-17T10:35:59.930680+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_camera_session_change_stops_even_a_loaded_cycle_and_keeps_ticking[False]",
+            "time": "0.002"
+          },
+          "reason": {
+            "message": "assert (['CONNECTION_...ute 'thread'\"] == ['CONNECTION_...NFIG_CHANGED']\n  \n  Left contains one more item: \"SUPERVISOR_ERROR:AttributeError:'types.SimpleNamespace' object has no attribute 'thread'\"\n  Use -v to get more diff)"
+          }
+        },
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_camera_session_change_stops_even_a_loaded_cycle_and_keeps_ticking[True]",
+            "time": "0.001"
+          },
+          "reason": {
+            "message": "assert (['CONNECTION_...ute 'thread'\"] == ['CONNECTION_...NFIG_CHANGED']\n  \n  Left contains one more item: \"SUPERVISOR_ERROR:AttributeError:'types.SimpleNamespace' object has no attribute 'thread'\"\n  Use -v to get more diff)"
+          }
+        },
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.676"
+          },
+          "reason": {
+            "message": "assert (False)\n +  where False = <function all at 0x7fe5cdb9e7b0>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7fe5cdb9e7b0> = np.all"
+          }
+        }
+      ]
+    },
+    "C-before": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "1",
+          "time": "15.164",
+          "timestamp": "2026-11-17T10:36:35.530560+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_review_timing",
+            "name": "test_gc_reentry_and_concurrent_recording",
+            "time": "15.009"
+          },
+          "reason": {
+            "message": "subprocess.TimeoutExpired: Command '['/root/m710-gap-search-20261107/rootfs/work-eco65-review-20261117/.venv/bin/python', '-c', \"\\nimport gc,threading,time\\nfrom pathlib import Path\\nfrom unloading_sim.workbench import timing as t\\nassert gc.get_threshold()==(700,10,10)\\n# Deterministically interrupt an aggregate while it owns the lock.\\nreal=t._bin\\nonce=[False]\\ndef nested(v):\\n if not once[0]:\\n  once[0]=True;gc.collect()\\n return real(v)\\nt._bin=nested\\nt.aggregate('test','first',.001)\\ndef work():\\n for i in range(20000):t.aggregate('test',i,.001)\\nthreads=[threading.Thread(target=work) for _ in range(4)]\\nfor x in threads:x.start()\\nwriters=[]\\nwhile any(x.is_alive() for x in threads):\\n writers.append(t.write_later(Path(__import__('sys').argv[1])/'timing.json','stress'))\\n time.sleep(.01)\\nfor x in threads:x.join()\\nfor x in writers:x.join()\\nassert once[0]\\n\", '/tmp/pytest-of-root/pytest-2/test_gc_reentry_and_concurrent0']' timed out after 14.999981230124831 seconds"
+          }
+        }
+      ]
+    },
+    "AC-after": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "69",
+          "time": "8.189",
+          "timestamp": "2026-11-17T10:37:15.915628+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.416"
+          },
+          "reason": {
+            "message": "assert (False)\n +  where False = <function all at 0x7fb847fd8ab0>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7fb847fd8ab0> = np.all"
+          }
+        }
+      ]
+    },
+    "directed": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "559",
+          "time": "356.773",
+          "timestamp": "2026-11-17T11:15:03.498428+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.611"
+          },
+          "reason": {
+            "message": "assert (False)\n +  where False = <function all at 0x7ff940947fb0>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7ff940947fb0> = np.all"
+          }
+        },
+        {
+          "test": {
+            "classname": "tests.test_review_metrics",
+            "name": "test_handoff_delay_increases_scheduling_total_without_double_subtraction",
+            "time": "0.003"
+          },
+          "reason": {
+            "message": "assert 29.3 == 30.900000000000002 ± 3.1e-05\n  \n  comparison failed\n  Obtained: 29.3\n  Expected: 30.900000000000002 ± 3.1e-05"
+          }
+        }
+      ]
+    },
+    "tail-directed": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "61",
+          "time": "128.577",
+          "timestamp": "2026-11-17T11:22:09.786709+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": []
+    },
+    "final-directed": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "576",
+          "time": "412.101",
+          "timestamp": "2026-11-17T11:25:12.257742+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.843"
+          },
+          "reason": {
+            "message": "assert (False)\n +  where False = <function all at 0x7fe9d31a34f0>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7fe9d31a34f0> = np.all"
+          }
+        }
+      ]
+    },
+    "supplement": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "36",
+          "time": "76.516",
+          "timestamp": "2026-11-17T11:31:17.857482+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": []
+    },
+    "cancel-evidence": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "53",
+          "time": "18.145",
+          "timestamp": "2026-11-17T11:34:38.115664+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": []
+    }
+  },
+  "cancellation": {
+    "scope": "ACTUAL_NATIVE_PROTOCOL_SYNTHETIC_NO_DEVICES",
+    "hardware_execution": "NOT_RUN",
+    "cases": [
+      {
+        "format": "spaces",
+        "error": "CANCELLED",
+        "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+        "native_status": "ERROR",
+        "elapsed_s": 1.2820741271134466,
+        "cancellation": {
+          "request_id": "spaces-2",
+          "caller_result_invalid": true,
+          "cancel_sent": true,
+          "worker_finished": true
+        },
+        "binary_active": false,
+        "next_request": "RESET",
+        "worker_reused": true
+      },
+      {
+        "format": "compact",
+        "error": "CANCELLED",
+        "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+        "native_status": "ERROR",
+        "elapsed_s": 0.47069642203859985,
+        "cancellation": {
+          "request_id": "compact-2",
+          "caller_result_invalid": true,
+          "cancel_sent": true,
+          "worker_finished": true
+        },
+        "binary_active": false,
+        "next_request": "RESET",
+        "worker_reused": true
+      },
+      {
+        "format": "reordered_padded",
+        "error": "CANCELLED",
+        "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+        "native_status": "ERROR",
+        "elapsed_s": 0.7983177460264415,
+        "cancellation": {
+          "request_id": "reordered_padded-2",
+          "caller_result_invalid": true,
+          "cancel_sent": true,
+          "worker_finished": true
+        },
+        "binary_active": false,
+        "next_request": "RESET",
+        "worker_reused": true
+      },
+      {
+        "format": "binary",
+        "error": "CANCELLED",
+        "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+        "native_status": "ERROR",
+        "elapsed_s": 0.23614826309494674,
+        "cancellation": {
+          "request_id": "binary-2",
+          "caller_result_invalid": true,
+          "cancel_sent": true,
+          "worker_finished": true
+        },
+        "binary_active": true,
+        "next_request": "RESET",
+        "worker_reused": true
+      }
+    ],
+    "status": "PASS"
+  },
+  "native_component": {
+    "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+    "hardware_execution": "NOT_RUN",
+    "input_source": "SYNTHETIC_REGRESSION_FIXTURE",
+    "status": "PASS",
+    "native_plan": "PASS",
+    "sent_path": "PASS",
+    "points": 491,
+    "duration_s": 2.45,
+    "elapsed_s": 3.6145382940303534
+  },
+  "deferral_scope": {
+    "scope": "NATIVE_DEFERRAL_SCOPE_CHECK_PLANNING_ONLY_NOT_EXECUTABLE",
+    "hardware_execution": "NOT_RUN",
+    "capability_single_carton_output_check_deferral": false,
+    "policy_scope": "CONTROLLED_EMPTY_NO_CONTACT",
+    "without_field": {
+      "status": "SUCCESS",
+      "native_output_status": "PASS"
+    },
+    "with_field": {
+      "error": "OUTPUT_CHECK_DEFERRAL_SCOPE_INVALID"
+    },
+    "result": "PASS"
+  },
+  "native_prepare": {
+    "schema": "eco65_native_prepare_equivalence_v1",
+    "scope": "SYNTHETIC_SCENE_RECORDS_NOT_FIELD_DATA",
+    "inputs": [
+      "/root/autodl-tmp/eco65-review-20261117/native-component2"
+    ],
+    "recorded_native_plans": 1,
+    "cases": 11,
+    "identical": 8,
+    "prepared": 3,
+    "rejected": 8,
+    "rejection_errors": [
+      "INTERPOLATION_LIMIT:2:1",
+      "INTERPOLATION_LIMIT:2:2",
+      "INVALID_TIME_AXIS",
+      "INVALID_TIMING",
+      "NONZERO_ENDPOINT_VELOCITY"
+    ],
+    "worst_max_abs": {
+      "t": 0.0,
+      "q": 3.774758283725532e-15,
+      "v": 2.204125286736673e-13,
+      "a": 9.315828276854907e-12,
+      "collision_path": 3.774758283725532e-15,
+      "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+      "send_duration_s": 0.0
+    },
+    "tolerance": 1e-12,
+    "python_prepare_s": {
+      "total": 0.01897948095574975,
+      "median": 0.0017257421277463436
+    },
+    "native_prepare_s": {
+      "total": 0.0007308340000000001,
+      "median": 5.5115e-05
+    },
+    "acceptance": {
+      "all_identical": false
+    },
+    "mismatches": [
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1.25",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.003211140865460038,
+        "native_s": 0.000129106,
+        "native_round_trip_s": 0.0017042728140950203,
+        "max_abs": {
+          "t": 0.0,
+          "q": 3.774758283725532e-15,
+          "v": 2.204125286736673e-13,
+          "a": 9.315828276854907e-12,
+          "collision_path": 3.774758283725532e-15,
+          "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          63,
+          63
+        ],
+        "collision_states": [
+          63,
+          63
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1.5",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.0031806020997464657,
+        "native_s": 0.000123986,
+        "native_round_trip_s": 0.001871942076832056,
+        "max_abs": {
+          "t": 0.0,
+          "q": 3.1086244689504383e-15,
+          "v": 7.217313431712356e-14,
+          "a": 4.281781637826252e-12,
+          "collision_path": 3.1086244689504383e-15,
+          "analytic_speed_bounds_rad_s": 2.4057711439041196e-14,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          75,
+          75
+        ],
+        "collision_states": [
+          77,
+          77
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x2",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.0032082339748740196,
+        "native_s": 0.000143457,
+        "native_round_trip_s": 0.002253883983939886,
+        "max_abs": {
+          "t": 0.0,
+          "q": 2.6645352591003757e-15,
+          "v": 8.82025166495882e-14,
+          "a": 1.9622809777501976e-12,
+          "collision_path": 2.6645352591003757e-15,
+          "analytic_speed_bounds_rad_s": 8.82025166495882e-14,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          99,
+          99
+        ],
+        "collision_states": [
+          99,
+          99
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INTERPOLATION_LIMIT:2:2",
+        "python_s": 0.002489167032763362,
+        "native_s": 8.9631e-05,
+        "native_round_trip_s": 0.0010684709995985031,
+        "errors": [
+          "INTERPOLATION_LIMIT:2:2",
+          "INTERPOLATION_LIMIT:2:2"
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1.1",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INTERPOLATION_LIMIT:2:2",
+        "python_s": 0.0016301639843732119,
+        "native_s": 4.1242e-05,
+        "native_round_trip_s": 0.0004769668448716402,
+        "errors": [
+          "INTERPOLATION_LIMIT:2:2",
+          "INTERPOLATION_LIMIT:2:2"
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1.25",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.003211140865460038,
+        "native_s": 0.000129106,
+        "native_round_trip_s": 0.0017042728140950203,
+        "max_abs": {
+          "t": 0.0,
+          "q": 3.774758283725532e-15,
+          "v": 2.204125286736673e-13,
+          "a": 9.315828276854907e-12,
+          "collision_path": 3.774758283725532e-15,
+          "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          63,
+          63
+        ],
+        "collision_states": [
+          63,
+          63
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x1.5",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.0031806020997464657,
+        "native_s": 0.000123986,
+        "native_round_trip_s": 0.001871942076832056,
+        "max_abs": {
+          "t": 0.0,
+          "q": 3.1086244689504383e-15,
+          "v": 7.217313431712356e-14,
+          "a": 4.281781637826252e-12,
+          "collision_path": 3.1086244689504383e-15,
+          "analytic_speed_bounds_rad_s": 2.4057711439041196e-14,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          75,
+          75
+        ],
+        "collision_states": [
+          77,
+          77
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "recorded x2",
+        "identical": false,
+        "outcome": "PREPARED",
+        "error": null,
+        "python_s": 0.0032082339748740196,
+        "native_s": 0.000143457,
+        "native_round_trip_s": 0.002253883983939886,
+        "max_abs": {
+          "t": 0.0,
+          "q": 2.6645352591003757e-15,
+          "v": 8.82025166495882e-14,
+          "a": 1.9622809777501976e-12,
+          "collision_path": 2.6645352591003757e-15,
+          "analytic_speed_bounds_rad_s": 8.82025166495882e-14,
+          "send_duration_s": 0.0,
+          "scaled_duration_s": 0.0,
+          "source_duration_s": 0.0,
+          "terminal_hold_s": 0.0
+        },
+        "subdivisions": [
+          1,
+          1
+        ],
+        "points": [
+          99,
+          99
+        ],
+        "collision_states": [
+          99,
+          99
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "compressed x0.5",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INTERPOLATION_LIMIT:2:2",
+        "python_s": 0.0017257421277463436,
+        "native_s": 4.5169e-05,
+        "native_round_trip_s": 0.0005287299863994122,
+        "errors": [
+          "INTERPOLATION_LIMIT:2:2",
+          "INTERPOLATION_LIMIT:2:2"
+        ]
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+        "kind": "compressed x0.2",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INTERPOLATION_LIMIT:2:1",
+        "python_s": 0.0014878748916089535,
+        "native_s": 5.6217e-05,
+        "native_round_trip_s": 0.0005616140551865101,
+        "errors": [
+          "INTERPOLATION_LIMIT:2:1",
+          "INTERPOLATION_LIMIT:2:1"
+        ]
+      },
+      {
+        "source": "constructed",
+        "kind": "nonzero_endpoint_velocity",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "NONZERO_ENDPOINT_VELOCITY",
+        "python_s": 7.883808575570583e-05,
+        "native_s": 1.4552e-05,
+        "native_round_trip_s": 0.00047266483306884766,
+        "errors": [
+          "NONZERO_ENDPOINT_VELOCITY",
+          "NONZERO_ENDPOINT_VELOCITY"
+        ]
+      },
+      {
+        "source": "constructed",
+        "kind": "time_axis",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INVALID_TIME_AXIS",
+        "python_s": 5.783792585134506e-05,
+        "native_s": 1.33e-05,
+        "native_round_trip_s": 0.00046933884732425213,
+        "errors": [
+          "INVALID_TIME_AXIS",
+          "INVALID_TIME_AXIS"
+        ]
+      },
+      {
+        "source": "constructed",
+        "kind": "reach_bound",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INTERPOLATION_LIMIT:2:2",
+        "python_s": 0.00187834189273417,
+        "native_s": 5.5115e-05,
+        "native_round_trip_s": 0.0009774011559784412,
+        "errors": [
+          "INTERPOLATION_LIMIT:2:2",
+          "INTERPOLATION_LIMIT:2:2"
+        ]
+      },
+      {
+        "source": "constructed",
+        "kind": "timing",
+        "identical": true,
+        "outcome": "PREPARE_REJECTED",
+        "error": "INVALID_TIMING",
+        "python_s": 3.153807483613491e-05,
+        "native_s": 1.9059e-05,
+        "native_round_trip_s": 0.0005638801958411932,
+        "errors": [
+          "INVALID_TIMING",
+          "INVALID_TIMING"
+        ]
+      }
+    ]
+  },
+  "native_deadlines": {
+    "scope": "SYNTHETIC_SCENE_NOT_FIELD_DATA_NO_HARDWARE",
+    "mode": "deadline",
+    "result": [
+      {
+        "deadline_s": 0.5,
+        "outcome": "PLANNING_BUDGET_EXHAUSTED",
+        "where": "TASK_WAIT",
+        "evidence": {
+          "status": "PLANNING_BUDGET_EXHAUSTED",
+          "where": "TASK_WAIT",
+          "detail": "",
+          "deadline_monotonic_s": 1272413.82218197,
+          "classified_monotonic_s": 1272413.822822534,
+          "reply_reserve_s": 0.1,
+          "targets": [
+            {
+              "target": "synthetic-target",
+              "status": "NOT_STARTED",
+              "candidates": null,
+              "considered": null,
+              "screened": 0,
+              "searched": 0,
+              "unsearched": "ALL_NOT_GENERATED",
+              "infeasible_candidates": 0,
+              "target_reason": null
+            }
+          ],
+          "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+        },
+        "returned_after_entry_s": 0.5014296849258244,
+        "returned_after_deadline_s": 0.0014296849258244038,
+        "within_50_ms": true
+      },
+      {
+        "deadline_s": 3.0,
+        "outcome": "PLANNING_BUDGET_EXHAUSTED",
+        "where": "TASK_WAIT",
+        "evidence": {
+          "status": "PLANNING_BUDGET_EXHAUSTED",
+          "where": "TASK_WAIT",
+          "detail": "",
+          "deadline_monotonic_s": 1272416.82424515,
+          "classified_monotonic_s": 1272416.82439227,
+          "reply_reserve_s": 0.1,
+          "targets": [
+            {
+              "target": "synthetic-target",
+              "status": "NOT_STARTED",
+              "candidates": null,
+              "considered": null,
+              "screened": 0,
+              "searched": 0,
+              "unsearched": "ALL_NOT_GENERATED",
+              "infeasible_candidates": 0,
+              "target_reason": null
+            }
+          ],
+          "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+        },
+        "returned_after_entry_s": 3.0010499169584364,
+        "returned_after_deadline_s": 0.00104991695843637,
+        "within_50_ms": true
+      },
+      {
+        "deadline_s": 6.0,
+        "outcome": "PLANNING_BUDGET_EXHAUSTED",
+        "where": "TASK_WAIT",
+        "evidence": {
+          "status": "PLANNING_BUDGET_EXHAUSTED",
+          "where": "TASK_WAIT",
+          "detail": "",
+          "deadline_monotonic_s": 1272422.825794407,
+          "classified_monotonic_s": 1272422.826014468,
+          "reply_reserve_s": 0.1,
+          "targets": [
+            {
+              "target": "synthetic-target",
+              "status": "NOT_STARTED",
+              "candidates": null,
+              "considered": null,
+              "screened": 0,
+              "searched": 0,
+              "unsearched": "ALL_NOT_GENERATED",
+              "infeasible_candidates": 0,
+              "target_reason": null
+            }
+          ],
+          "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+        },
+        "returned_after_entry_s": 6.001285366015509,
+        "returned_after_deadline_s": 0.001285366015508771,
+        "within_50_ms": true
+      }
+    ]
+  },
+  "clearance": [
+    "optimized exit=0",
+    "reference exit=0",
+    "two_level exit=0",
+    "adaptive exit=0"
+  ],
+  "scheduling": {
+    "metric": "execute_first_send_plus_four_handoff_excess",
+    "samples": 2,
+    "timed_samples": 0,
+    "success_rate": 0.0,
+    "count": 0,
+    "p50_s": null,
+    "p95_s": null,
+    "max_s": null,
+    "status": "NO_SAMPLES",
+    "outcomes": {
+      "FAILED": 2
+    },
+    "stages": [],
+    "over_budget": [],
+    "per_sample": [
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/fake-scheduling/timing-scheduling.json",
+        "task_id": null,
+        "seconds": null,
+        "first_send_s": 4.046102717984468,
+        "handoffs": [],
+        "partial_seconds": 4.046102717984468,
+        "scope": "PARTIAL_MISSING_HANDOFF_TIMESTAMPS",
+        "success": false,
+        "fake_io": true
+      },
+      {
+        "source": "/root/autodl-tmp/eco65-review-20261117/fake-scheduling-idle/timing-scheduling.json",
+        "task_id": null,
+        "seconds": null,
+        "first_send_s": 3.1314625260420144,
+        "handoffs": [],
+        "partial_seconds": 3.1314625260420144,
+        "scope": "PARTIAL_MISSING_HANDOFF_TIMESTAMPS",
+        "success": false,
+        "fake_io": true
+      }
+    ]
+  },
+  "logs": {
+    "A-before.log": {
+      "sha256": "0e7d4d4c91db057bdd5d9e9892095b73a7ecb0335832fbea101fdf360ec14e89",
+      "bytes": 4259
+    },
+    "A-after.log": {
+      "sha256": "e00b22c31970194c5b1f19d645e7d4bf8ef98448bba51bd4ec21aa17e1f15c0b",
+      "bytes": 4079
+    },
+    "C-before.log": {
+      "sha256": "af68db2a198f974c9e9912cd828a51377a1eb9258560ea26f0c55cd909aabb1f",
+      "bytes": 4583
+    },
+    "AC-after.log": {
+      "sha256": "beeb3e8b370fa02d2ff2a7a3c8ca6ec2c11ad62ab3fa74da58bb91afc4af7af3",
+      "bytes": 1134
+    },
+    "B-before.log": {
+      "sha256": "dce143720ac4bdff9d92d8514c12744e87e65a9bdc23c9fb98bc82c8830c370d",
+      "bytes": 1932
+    },
+    "DF-before.log": {
+      "sha256": "5c667b89ff264ee66cf1835676b41d8dfb39880e00595044330d36eae0680635",
+      "bytes": 5258
+    },
+    "BDF-after.log": {
+      "sha256": "4370f2a46272d8fc90ac5dbe5db35839881ba95dcebf70d527a804c61bacf4d7",
+      "bytes": 35857
+    },
+    "configure.log": {
+      "sha256": "940b66d62824b22576e05881d4e06ebb69075ee612489f23044ddf422e992806",
+      "bytes": 3430
+    },
+    "build.log": {
+      "sha256": "f37d7b779e4db0772142fafaf6b1ec41a8be9822f83d14f26b9b618505a070a6",
+      "bytes": 2980
+    },
+    "BDF-after2.log": {
+      "sha256": "6362b4a9ef7881fcf9e901e54c48170b00451718edac68b4a74a78dd2488436e",
+      "bytes": 190
+    },
+    "native-run.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "clearance-optimized.log": {
+      "sha256": "eb8eb9d6fe3eaa3505cfef69c0a40a6b03d94393c5c72d56a1f1a5b593bbdbe7",
+      "bytes": 11598
+    },
+    "clearance-reference.log": {
+      "sha256": "fc1ec5975c8f11490193423b7d15fc74ec7e3e6c6d5f4641a55cf2bf3acbdd97",
+      "bytes": 7413
+    },
+    "clearance-two_level.log": {
+      "sha256": "bfa0a68af14dc86b716e032e84e6f20c9700090cb2604f95b3a9b97266d2201a",
+      "bytes": 1376
+    },
+    "clearance-adaptive.log": {
+      "sha256": "423a5dcb091387206351088ef7ba8797a4e8db8550c520fce1e460902a7525df",
+      "bytes": 3617
+    },
+    "E-before.log": {
+      "sha256": "3bcca50b8c5608ff270171c930cf591fd57e4764e6467f2988acf6c00fe6f02a",
+      "bytes": 12836
+    },
+    "F-before-limits.log": {
+      "sha256": "e508aa6e1702d0938307dc96202102647abfa8bd9765885fa6ce04e7e2ae0208",
+      "bytes": 31
+    },
+    "F-before-journal.log": {
+      "sha256": "d94b88aac52d56261537799e420c3600dd02b2f9f3bfcb3deee10d3b751d15b3",
+      "bytes": 150
+    },
+    "F-before-path.log": {
+      "sha256": "aa630e4ed6f997ed2a37bb8cb7bc79f7ded7a8d5321eb7ca1992360a600e79b8",
+      "bytes": 178
+    },
+    "F-after-limits.log": {
+      "sha256": "d1d9e68641c6ba6b971903c8d33acab8b39cfc0d49675cc097c22a339f0b104b",
+      "bytes": 12
+    },
+    "F-after-journal.log": {
+      "sha256": "ef73dd99fe36b8442e7bd1f04a4e1fc81e026ca5c3a57d3174cafab0e87d683c",
+      "bytes": 13
+    },
+    "F-after-path.log": {
+      "sha256": "146e4a07f41e4190b42da2ae7bdc1dc657507be781a6109d2c380693273f592b",
+      "bytes": 10
+    },
+    "directed.log": {
+      "sha256": "81352fff24ae5cc733752bc5997acf637d4708cd702061e09c00162fec942e9a",
+      "bytes": 4460
+    },
+    "native-tools.log": {
+      "sha256": "852f896bf8605fadd4d867b7c5a8faa48b6c40823849f885811c354451199acf",
+      "bytes": 4059
+    },
+    "native-tools2.log": {
+      "sha256": "433d48ecae5abd866f32c4e0146063e954eb5190cef80848848243008eec059d",
+      "bytes": 1977
+    },
+    "native-tools3.log": {
+      "sha256": "7c3c577acacc66b0dd50194eeb4fb48c87a18a894530c1742994973a16c6c9d0",
+      "bytes": 2860
+    },
+    "tail-directed.log": {
+      "sha256": "b9c2987c6345e5ccf3415980013a439b23e6ffa2b6ada164fd6dcca877aa2898",
+      "bytes": 192
+    },
+    "geometry-baseline.log": {
+      "sha256": "d6c225c1aa64cef5376e1ce5a2dbd6e48aa096ef0d42e8553d0c8dd854eec6cb",
+      "bytes": 1057
+    },
+    "final-directed.log": {
+      "sha256": "dbe7a519a8c51be48aec4ccfc6049399c04d43d616bc0a06e950418b89adb013",
+      "bytes": 3215
+    },
+    "native-deadlines.log": {
+      "sha256": "2b40bceadff2f34afc29201cc628c396767cfd04b684097c803e6fff88eb7317",
+      "bytes": 602
+    },
+    "cancel-native-before.log": {
+      "sha256": "24b9057fde0c911bec7491f481abfcc5b2562c4b505a12f9d2e6d9d68ba4408c",
+      "bytes": 1284
+    },
+    "supplement.log": {
+      "sha256": "a22919bd4785252802c3aead1e008fd5e1ae0e7a8180016952c14c5de3deb9fb",
+      "bytes": 191
+    },
+    "cancel-evidence.log": {
+      "sha256": "1687f2709e4bcda93f4b5c842157e7b1852c29872870fd48c5fffe662eb5380a",
+      "bytes": 183
+    }
+  },
+  "scope": "OFFLINE_ONLY_NOT_HARDWARE_VALIDATION"
+}
