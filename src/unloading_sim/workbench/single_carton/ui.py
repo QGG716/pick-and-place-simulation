@@ -490,6 +490,7 @@ class SingleWorkbench(Workbench):
         if joint and joint.raw.get('alarm'):blockers.append('控制器报警')
         if self.backend.device_state('robot')!='数据有效':blockers.append('机械臂数据无效')
         if self.backend.device_state('vacuum')!='数据有效':blockers.append('真空数据无效')
+        if self.config_single.get('execution_lock',{}).get('locked'):blockers.append('执行已锁定（2026-11-14 事故后待修复，需在配置中显式解锁并重启）')
         if not payload_ok:blockers.append('控制器负载未核对一致（点“刷新控制器负载（只读）”）')
         if m.phase!='PLAN_READY' or m.observation is None or stale:blockers.append('无有效计划')
         elif not self.previewed:blockers.append('未查看完整轨迹预览')

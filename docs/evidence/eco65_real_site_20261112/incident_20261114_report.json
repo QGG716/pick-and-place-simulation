@@ -1,0 +1,130 @@
+{
+  "incident": "2026-11-14 field task d99b1a8f5d71445395c158b3c353ca42: suction tool struck the J6 area during APPROACH; TCP connector broke",
+  "hardware_motion": "EXECUTED: approach 6433/6433 sent SUCCEEDED, contact 682/682 SUCCEEDED, then GRIP_PRESSURE_TIMEOUT stop confirmed",
+  "planned_equals_sent": true,
+  "controller_error_codes": "all zero during approach (no controller collision detection)",
+  "impact_time_s": 15.1,
+  "impact_q_deg": [
+    55.42,
+    9.42,
+    -67.34,
+    -71.21,
+    18.93,
+    41.66
+  ],
+  "tracking_error_peak_deg": {
+    "J6": 1.267,
+    "J4": 0.478,
+    "J5": 0.372
+  },
+  "model_check_of_executed_states": {
+    "states": 350,
+    "window_s": [
+      13.5,
+      17.0
+    ],
+    "invalid": 0
+  },
+  "model_distance_at_impact_mm": {
+    "link_3": 23.0,
+    "link_5": 28.9,
+    "link_4": 57.3
+  },
+  "tool_to_link5_model_mm": "28.9 at every J6 angle (nearest tool solid part_041_region_2 adapter)",
+  "tool_to_link3_model_min_mm": 13.0,
+  "tool_to_link3_min_t_s": 22.59,
+  "nearest_tool_parts_to_link3": [
+    [
+      12.557301175576548,
+      "part_027"
+    ],
+    [
+      15.573085310534553,
+      "part_028"
+    ],
+    [
+      48.118991516891825,
+      "part_037"
+    ],
+    [
+      48.850535423866106,
+      "part_000"
+    ]
+  ],
+  "unmodeled_items": [
+    "part_027 Omron E3Z-LS81 2M photoelectric sensor: 2 m cable and its exit not in CAD",
+    "part_037 PL1002 push-in fitting: attached vacuum hose not in CAD",
+    "any other cables, hoses, cable ties on the tool"
+  ],
+  "approach_motion": {
+    "J4": "-30.7 -> -117.1",
+    "J5": "+86.7 -> -57.8 (wrist flip through 0)",
+    "J6": "77.1 -> -0.8",
+    "duration_s": 32.2
+  },
+  "wrist_flip_origin": "since commit e2d31a2 (B: 64 fixed random IK seeds, nearest-in-joint-space approach branch); earlier plans kept J5 positive (87 -> 58)",
+  "rechecks_disabled": "not causal: arm unchanged (start difference 0.008 deg), scene unchanged",
+  "status": "UNDER_INVESTIGATION_DO_NOT_EXECUTE",
+  "fixes_2026_11_17": {
+    "execution_lock": "field config locked; runtime refuses before capture; every segment package carries the lock; motion engine refuses any package with a lock marker; stop paths unchanged",
+    "tool_robot_clearance": {
+      "clearance_m": 0.04,
+      "exempt_robot_links": [
+        "link_6"
+      ],
+      "exempt_pairs": [
+        [
+          "part_041_region_1",
+          "link_5"
+        ],
+        [
+          "part_041_region_2",
+          "link_5"
+        ]
+      ],
+      "invariant_pairs_mm": {
+        "part_041_region_2|link_5": 28.9,
+        "part_041_region_1|link_5": 36.9,
+        "part_039|link_4": 44.5
+      }
+    },
+    "wrist_branch_limits": {
+      "keep_j5_sign": true,
+      "j5_min_abs_deg": 10,
+      "max_j4_travel_deg": 90,
+      "max_j6_travel_deg": 180
+    },
+    "executed_states_recheck": {
+      "states": 326,
+      "rejected": 205,
+      "first_rejected_t_s": 8.29,
+      "first_failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_033"
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03933803400388093
+      },
+      "rejected_pairs": {
+        "link_3 / part_027": 123,
+        "link_3 / part_000": 54,
+        "link_3 / part_033": 28
+      },
+      "wrist_branch_violation": {
+        "reason": "J5_WRIST_FLIP_OR_SINGULAR",
+        "index": 171,
+        "j5_deg": 9.887,
+        "j5_start_deg": 86.737,
+        "j5_min_abs_deg": 10.0
+      }
+    },
+    "replay_of_incident_record": "complete plan without wrist flip (candidate 11, J5 87->58 deg), 40 mm clearance and all sent paths PASS, 476 s; offline, not executable",
+    "directed_tests": "463 passed",
+    "status": "LOCKED_UNTIL_TOOL_CABLES_AND_HOSES_MODELLED_AND_REPAIR_VERIFIED"
+  }
+}

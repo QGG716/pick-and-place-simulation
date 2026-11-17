@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import math
+import numpy as np
 import hashlib
 from ..controlled.planner import ROOT,load_config as load_execution
 
@@ -79,6 +80,78 @@ def start_joint_check(c):
     raise ValueError('START_JOINT_CHECK_POLICY_INVALID: ENABLED 或 DISABLED_BY_USER')
 
 
+def execution_lock(c):
+    """Hard lock after the 2026-11-14 incident: no motion may be submitted.
+
+    Absent or {"locked": false} = unlocked. Locked needs a basis. Planning and
+    preview stay available; stop paths are never affected. Unlocking is an
+    explicit configuration change followed by a restart.
+    """
+    lock=c.get('execution_lock')
+    if lock is None:return None
+    if not isinstance(lock,dict) or type(lock.get('locked'))!=bool:raise ValueError('EXECUTION_LOCK_INVALID')
+    if not lock['locked']:return None
+    if not isinstance(lock.get('basis'),str) or not lock['basis'].strip():raise ValueError('EXECUTION_LOCK_BASIS_REQUIRED')
+    return dict(locked=True,status='EXECUTION_LOCKED_BY_USER',basis=lock['basis'])
+
+
+def tool_robot_clearance(c,tool_links=None):
+    """Clearance between owned tool solids and non-tool robot links (metres).
+
+    Absent = the source policy's 2.4 mm. Exemptions must name the fixed mount
+    link and specific motion-invariant (tool part, link) pairs only.
+    """
+    t=c.get('tool_robot_clearance')
+    if t is None:return None
+    if (not isinstance(t,dict) or not isinstance(t.get('clearance_m'),(int,float)) or not math.isfinite(t['clearance_m'])
+            or not .0024<=t['clearance_m']<=.1 or not isinstance(t.get('basis'),str) or not t['basis'].strip()):
+        raise ValueError('TOOL_ROBOT_CLEARANCE_INVALID: clearance_m 0.0024～0.1 m，并须记录依据')
+    links=t.get('exempt_robot_links',[]);pairs=t.get('exempt_pairs',[])
+    if not isinstance(links,list) or not all(isinstance(x,str) for x in links) or not isinstance(pairs,list) or \
+            not all(isinstance(x,list) and len(x)==2 and all(isinstance(y,str) for y in x) for x in pairs):
+        raise ValueError('TOOL_ROBOT_CLEARANCE_EXEMPTIONS_INVALID')
+    if tool_links is not None:
+        tools=set(tool_links)
+        if any(x in tools for x in links) or any(a not in tools or b in tools for a,b in pairs):
+            raise ValueError('TOOL_ROBOT_CLEARANCE_EXEMPTIONS_NOT_TOOL_ROBOT')
+    return dict(clearance_m=float(t['clearance_m']),exempt_robot_links=sorted(links),exempt_pairs=[list(x) for x in pairs],basis=t['basis'])
+
+
+WRIST_DEFAULTS=dict(keep_j5_sign=True,j5_min_abs_deg=10.,max_j4_travel_deg=90.,max_j6_travel_deg=180.)
+
+
+def wrist_branch_limits(c):
+    """Wrist-branch limits relative to the frozen q_start, for every sent state.
+
+    Absent = no limit (historical). keep_j5_sign forbids crossing the wrist
+    singularity J5=0 (a wrist flip); travel limits bound J4/J6 rotation.
+    """
+    w=c.get('wrist_branch_limits')
+    if w is None:return None
+    if not isinstance(w,dict) or set(w)-set(WRIST_DEFAULTS)-{'basis'}:raise ValueError('WRIST_BRANCH_LIMITS_INVALID')
+    out=dict(WRIST_DEFAULTS,**{k:v for k,v in w.items() if k!='basis'})
+    if (type(out['keep_j5_sign'])!=bool or not all(isinstance(out[k],(int,float)) and math.isfinite(out[k]) and out[k]>=0
+            for k in ('j5_min_abs_deg','max_j4_travel_deg','max_j6_travel_deg')) or out['j5_min_abs_deg']>60
+            or not isinstance(w.get('basis'),str) or not w['basis'].strip()):
+        raise ValueError('WRIST_BRANCH_LIMITS_INVALID')
+    out['basis']=w['basis'];return out
+
+
+def wrist_branch_violation(limits,q_start,states):
+    """First violation of the wrist limits along states, or None."""
+    if not limits:return None
+    q0=np.rad2deg(np.asarray(q_start,float));q=np.rad2deg(np.asarray(states,float)).reshape(-1,6)
+    if limits['keep_j5_sign']:
+        if abs(q0[4])<limits['j5_min_abs_deg']:return dict(reason='Q_START_J5_INSIDE_SINGULAR_BAND',j5_deg=float(q0[4]))
+        bad=np.flatnonzero((np.sign(q[:,4])!=np.sign(q0[4]))|(abs(q[:,4])<limits['j5_min_abs_deg']))
+        if len(bad):k=int(bad[0]);return dict(reason='J5_WRIST_FLIP_OR_SINGULAR',index=k,j5_deg=float(q[k,4]),j5_start_deg=float(q0[4]),
+                                              j5_min_abs_deg=limits['j5_min_abs_deg'])
+    for j,key in ((3,'max_j4_travel_deg'),(5,'max_j6_travel_deg')):
+        travel=abs(q[:,j]-q0[j]);k=int(np.argmax(travel))
+        if travel[k]>limits[key]:return dict(reason=f'J{j+1}_TRAVEL_EXCEEDED',index=k,travel_deg=float(travel[k]),limit_deg=limits[key])
+    return None
+
+
 def issues(c):
     errors=[]
     try:release_policy_evidence(c)
@@ -87,6 +160,9 @@ def issues(c):
     except ValueError as e:errors.append('pre_execute_visual_recheck：'+str(e))
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
+    for name,check in (('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
+        try:check(c)
+        except ValueError as e:errors.append(name+'：'+str(e))
     geometry=c.get('geometry',{})
     prior=geometry.get('prior_size_m')
     if (not isinstance(prior,list) or len(prior)!=3 or
