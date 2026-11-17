@@ -20,3 +20,16 @@ def test_screen_passes_cancel_to_composite(tmp_path,monkeypatch):
     monkeypatch.setattr(f,'screen_request',templates);monkeypatch.setattr(f,'send',send)
     f.screen([],[],{'id':'box'},[],[],tmp_path,flag)
     assert seen==[flag]
+
+
+def test_composite_failure_records_cancel_ack_separately(tmp_path):
+    import json
+    from unloading_sim.workbench import timing
+    state=dict(request_id='test-1',caller_result_invalid=True,cancel_sent=True,worker_finished=False)
+    class Client:
+        last_cancellation=state
+        def request(self,*args,**kwargs):raise MoveItUnavailable('CANCELLED')
+    p=SimpleNamespace(deadline=None,write_evidence=lambda path,value,name:timing.write_json(path,value,name))
+    with pytest.raises(MoveItUnavailable):NativeFlow(p).send(Client(),{'op':'sc_endpoint_screen'},tmp_path,'cancel')
+    record=json.loads((tmp_path/'cancel-composite.json').read_text())
+    assert record['last_cancellation']==state and not record['last_cancellation']['worker_finished']

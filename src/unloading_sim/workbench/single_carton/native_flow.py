@@ -165,6 +165,7 @@ class NativeFlow:
             reply = timing.native_request(client, request, timeout=COMPOSITE_TIMEOUT_S, cancelled=cancelled, record=name)
         except Exception as error:
             p.write_evidence(path, dict(status='REQUEST_FAILED', request=request, error=str(error),
+                                        last_cancellation=getattr(client,'last_cancellation',None),
                                         elapsed_s=time.monotonic()-started), 'composite-record:final')
             raise
         summary = {k: v for k, v in reply.items() if k not in ('calls', 'prepares')}

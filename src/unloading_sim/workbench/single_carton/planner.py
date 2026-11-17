@@ -374,7 +374,7 @@ class SinglePlanner(EmptyPlanner):
             record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),replies=replies,
                           unsent_seeds=len(seeds)-len(replies),elapsed_s=time.monotonic()-started);raise
         except Exception as error:
-            record.update(status='REQUEST_FAILED',error=str(error),replies=replies,elapsed_s=time.monotonic()-started);raise
+            record.update(status='REQUEST_FAILED',error=str(error),replies=replies,last_cancellation=getattr(self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started);raise
         finally:self.write_evidence(path,record,'ik-record:final')
     def payload_world_blocked(self,failure,box,world):
         """A payload/world failure bigger than the IK tolerance, at the box's rest pose."""
@@ -540,7 +540,7 @@ class SinglePlanner(EmptyPlanner):
             record.update(status='REPLIED',result=result,elapsed_s=time.monotonic()-started)
             return result
         except Exception as error:
-            record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
+            record.update(status='REQUEST_FAILED',error=str(error),last_cancellation=getattr(client or self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started)
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
         finally:self.write_evidence(path,record,'native-record:final')
     def deadline_native_call(self,request,folder,name,timeout,cancelled=None,client=None):
@@ -571,9 +571,9 @@ class SinglePlanner(EmptyPlanner):
                 raise PlanningBudgetExhausted('NATIVE_DEADLINE',name)
             return result
         except PlanningBudgetExhausted as error:
-            record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),elapsed_s=time.monotonic()-started);raise
+            record.update(status='PLANNING_BUDGET_EXHAUSTED',error=str(error),last_cancellation=getattr(client,'last_cancellation',None),elapsed_s=time.monotonic()-started);raise
         except Exception as error:
-            record.update(status='REQUEST_FAILED',error=str(error),elapsed_s=time.monotonic()-started)
+            record.update(status='REQUEST_FAILED',error=str(error),last_cancellation=getattr(client or self.client,'last_cancellation',None),elapsed_s=time.monotonic()-started)
             if DEADLINE_EXPIRED in str(error):raise PlanningBudgetExhausted('NATIVE_DEADLINE',name) from error
             raise RuntimeError(f'{name}:{error}；详情：{path.name}') from error
         finally:self.write_evidence(path,record,'native-record:final')
