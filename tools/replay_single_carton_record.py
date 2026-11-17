@@ -147,7 +147,9 @@ def main():
                     with timing.span('plan_cycle.search_box', target=box['id']):
                         if deadline is None: found = planner.search_box(q, world, box, out, progress, lambda: False, failures, selected)
                         else: found = planner.bounded_search(q, world, box, out, progress, lambda: False, failures, selected)
-                    if box['id'] in planner.search_counts: planner.search_counts[box['id']]['phase'] = 'DONE'
+                    if box['id'] in planner.search_counts:
+                        planner.search_counts[box['id']].update(phase='DONE' if found is None else 'SEARCH_SUCCEEDED',
+                                                              accepted=None if found is None else found['index'])
                     if found: break
                 if deadline is not None:
                     report['planning_budget'] = planner.budget_summary(boxes, failures, None, None)

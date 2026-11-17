@@ -57,6 +57,9 @@ def test_deadline_replay_executes_actual_branch_and_keeps_candidate_filter(case,
     r.main()
     report=json.loads((out/'replay-report.json').read_text())
     assert report['complete_plan']['candidate_index']==0 and report['source_record_unchanged']
+    target=report['planning_budget']['targets'][0]
+    assert target['status']=='SEARCH_SUCCEEDED' and target['accepted_candidate']==0
+    assert target['searched']==1 and target['unsearched']==0
     assert not p.authority._plans and report['permits_issued']==0
 
 
