@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-17",
+  "scope": "TWO_OPERATOR_POSITIONED_REAL_RGBD_OBSERVATION_AND_PLANNING_CASES",
+  "source_commit": "3bc95a1da28a4778f29045e93e108aa9e6c5ed3a",
+  "requested_cases": 2,
+  "request_basis": "用户于2026-11-17明确要求本轮仅采集两条；不据此确认p95或20条验收。",
+  "cases": [
+    {
+      "case_number": 1,
+      "task_id": "313f32ad66a240798df17905025edc89",
+      "status": "REJECTED",
+      "planning_timing": {
+        "prepare_plan.entry_to_return": 119.26986509000017
+      },
+      "candidate_outcomes": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 13,
+        "INTERPOLATION_LIMIT": 10,
+        "NATIVE_SOLVER_BUDGET_EXHAUSTED": 9
+      },
+      "required_files_complete": true,
+      "observe_entry_to_target_ready_s": 21.01370661100009,
+      "stream": {
+        "width": 640,
+        "height": 480,
+        "fps": 30,
+        "color_capture_format": "BGR8",
+        "color_output_format": "RGB8",
+        "depth_format": "Z16",
+        "alignment_target": "color"
+      },
+      "boxes": 1,
+      "scene_objects": 39,
+      "imported_simulation_objects": 0,
+      "unknown_policy": "USER_CONFIRMED_CLEAR",
+      "stationary": true,
+      "input_sha256": {
+        "observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+        "observation.npz": "3d0f3e3bc2e2dae3150f731701c4d6afb31bab8e1458f8c91fba0371c918c8ff",
+        "segmentation.npz": "741623ef5148210c3e249276dd582b3022627aea2baac61566e5dfc356bd605e",
+        "geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+        "site-scene.json": "ecb710c61aba39ee00e0598a7a69be807335f1d123d68a115a38aebb135f9d4d",
+        "timing-observe.json": "ba93215b5a7465f751e606e3bda559f5aee4bc7164193268f0d7ff380d1f5c07",
+        "timing-prepare_plan.json": "3249abe7dc7981426f230a8306533831210e0cc4d1d4adfec8a7368a368d805d"
+      }
+    },
+    {
+      "case_number": 2,
+      "task_id": "6966ce4b0141495993727b6d72815637",
+      "status": "REJECTED",
+      "planning_timing": {
+        "prepare_plan.entry_to_return": 118.80072099900008
+      },
+      "candidate_outcomes": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 11,
+        "INTERPOLATION_LIMIT": 9,
+        "NATIVE_SOLVER_BUDGET_EXHAUSTED": 12
+      },
+      "required_files_complete": true,
+      "observe_entry_to_target_ready_s": 19.847587415999442,
+      "stream": {
+        "width": 640,
+        "height": 480,
+        "fps": 30,
+        "color_capture_format": "BGR8",
+        "color_output_format": "RGB8",
+        "depth_format": "Z16",
+        "alignment_target": "color"
+      },
+      "boxes": 1,
+      "scene_objects": 37,
+      "imported_simulation_objects": 0,
+      "unknown_policy": "USER_CONFIRMED_CLEAR",
+      "stationary": true,
+      "input_sha256": {
+        "observation.json": "bad31c6fd0c0e5ef5bf80081e2b7e5cde555e0899ea546c1cf1c17df2d3163e6",
+        "observation.npz": "f4cf11ad79565f333e4ccfa597e084314f0cb7f5f2246e228cc2d4e62482f4b7",
+        "segmentation.npz": "586065a2032a7879ede0ca72237dbc2c0cae46b5adf2ad3f5f45245c726599c1",
+        "geometry.json": "054ce2978752a9311f41d83f6ad4249a7a1dc99918cf81540e5fb6caa659a586",
+        "site-scene.json": "665ace5ab1c1222854027f732f53a52e97321a26da683d2a6671e9f76f45b05e",
+        "timing-observe.json": "f28704f68b1dac26d5537b802a6756d03cfd8649d043f467ef60abf31cfed2f2",
+        "timing-prepare_plan.json": "b35e5c9b07495cfacf3e7fd43a9dd83489c84be721416e87eed9c275681727af"
+      }
+    }
+  ],
+  "successful_complete_plans": 0,
+  "completed_physical_cycles": 0,
+  "hardware_motion": "NOT_RUN",
+  "valve_commands": "BLOCKED_BY_COLLECTOR",
+  "collector_shutdown": "NORMAL_EXIT_CONFIRMED",
+  "experimental_options_enabled": [],
+  "additional_observation_only_records_preserved": [
+    "fba38e2500aa45d48144df3b5c2c25f4"
+  ],
+  "interpretation": {
+    "geometry": "1 recovered carton per selected case; recovered center displacement approximately 0.06630 m",
+    "planning": "Both FAILED; entry-to-return durations are not PLAN_READY latencies.",
+    "solver_budget": "21 candidate searches exhausted their solver budget across both cases; not proof of physical infeasibility.",
+    "p95": "Two requested cases are insufficient for representative p95 acceptance; no successful PLAN_READY samples.",
+    "occlusion": "Real partial-visibility grasp-and-release acceptance NOT_RUN; no visibility class assumed."
+  },
+  "remaining": [
+    "Offline old-versus-new full planning replay on these new inputs",
+    "Native prepare/collision/adaptive equivalence on these new inputs",
+    "Measured failure analysis without changing collision or kinematic limits"
+  ],
+  "archive": {
+    "new-two-case-field-records.tar.gz": {
+      "bytes": 134558929,
+      "sha256": "f062c7513aad431ae801dc70434ec8ae64c06fb38ff7cb8b3bad922f9dc5e5fb"
+    },
+    "new-two-case-field-manifest.json": {
+      "bytes": 178931,
+      "sha256": "058188bd9577967c890775ac5ab57c575198e9b6389794ebc26aaeefa55f2312"
+    }
+  }
+}

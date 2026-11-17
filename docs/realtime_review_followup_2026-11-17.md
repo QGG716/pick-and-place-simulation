@@ -62,3 +62,9 @@ PYTHONPATH="$PWD/src" ECO65_TIMING=1 .venv/bin/python tools/collect_realtime_fie
 后续已恢复 GPU SSH 与真实权重自检，并完成历史输入归档传输及 SHA-256 核验；旧节中的 GPU 连接失败及未传输状态是当时记录。现普通工作台相机、机械臂、真空板均显示数据有效。当前 HEAD 已同步至 `2bd36a9`，主目录 native worker 已重编译安装，定向回归 568 项、采集保护测试 2 项及原生组件检查全部通过。
 
 下一批采集改从主目录运行 `.venv/bin/python tools/collect_realtime_field_records.py`，以保留合并后的最新修复和事故执行锁；旧 worktree 仅保留作离线比较。普通工作台正常退出后再启动，禁止双进程抢占设备。新现场案例尚未开始，需操作者变换箱位并逐次准备观测及规划；物理抓放 NOT_RUN。详见 `docs/evidence/realtime_20261117_field_preflight/report.json`。
+
+## 2026-11-17 本轮两条新现场记录
+
+按用户最新要求，本轮采集数量缩减至 2 个不同箱位。真实相机、机器人关节和压力反馈均有效；两个选定任务的原始数据、同帧分割、几何、现场场景、规划失败和计时完整保留，计时采集窗口已正常退出。另一个仅观测目录保留但不计为新箱位。
+
+两个箱位几何恢复均通过，规划分别在 119.270 / 118.801 秒失败，无运动及阀门命令。样本量及成功计划数均不足以确认 PLAN_READY p95 或通过第 8 步检查点；不能将失败返回耗时称为成功规划时延。新记录仍需离线新旧代码和 native 等价性比较。详细摘要：`docs/evidence/realtime_20261117_two_field_cases/report.json`。
