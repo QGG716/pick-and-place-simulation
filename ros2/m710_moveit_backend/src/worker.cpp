@@ -1240,7 +1240,7 @@ public:
       return {{"status","READY"},{"identity",identity},{"joint_names",names},{"cold_start_s",seconds(begin)},{"planning_only",planning_only},{"planning_mode",planning_mode},
               {"seed",seed},{"versions",{{"moveit",M710_MOVEIT_VERSION},{"mtc",M710_MTC_VERSION},{"pilz",M710_PILZ_VERSION}}},{"pipelines",{"pilz_industrial_motion_planner","ompl"}},
               {"capabilities",{{"partial_observed_contact_envelope",physical_single},{"bounded_single_carton_planning",physical_single},
-                {"single_carton_output_check_deferral",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
+                {"single_carton_output_check_deferral",physical_single},{"single_carton_tool_robot_clearance",physical_single},{"native_ik",true},{"native_task_session",true},{"semantic_place_event",planning_only&&planning_mode=="static_prior_fast"},
                 {"native_ik_batch",planning_only&&planning_mode=="static_prior_fast"},
                 {"static_prior_graph",planning_only&&planning_mode=="static_prior_fast"},{"process_policy_schema","m710_native_process_v1"},
                 {"process_geometry_bound",!bound_process_geometry.is_null()&&!bound_compliant.empty()},

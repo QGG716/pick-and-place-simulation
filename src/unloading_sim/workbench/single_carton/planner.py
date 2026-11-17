@@ -11,7 +11,7 @@ from ..controlled.planner import EmptyPlanner,ROOT
 from ..controlled.trajectory import digest,prepare
 from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
-from .config import release_policy_evidence,start_joint_check
+from .config import release_policy_evidence,start_joint_check,execution_lock,tool_robot_clearance,wrist_branch_limits,wrist_branch_violation
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1)
@@ -65,6 +65,7 @@ class SinglePlanner(EmptyPlanner):
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
         self.defer_output_check=False
+        self.wrist_limits=None;self.wrist_reference=None
         super().__init__(config['execution'],mapping,authority)
     def build_world(self,s):
         # Source snapshot supplies robot/tool/camera solids only. Its trailer,
@@ -92,6 +93,10 @@ class SinglePlanner(EmptyPlanner):
         self.init['identity']['model_tool_fingerprint']=self.model_hash
         self.init['compliant_tool_links']=[] # dedicated, source-bound contact gate below
         self.clearance['schema']='eco65_native_single_carton_clearance_v1'
+        trc=tool_robot_clearance(self.site,self.clearance.get('tool_links',[]))
+        if trc:self.clearance['tool_robot_clearance']=trc
+        else:self.clearance.pop('tool_robot_clearance',None)
+        self.wrist_limits=wrist_branch_limits(self.site)
         self.ready=True
     def binding(self):
         b=super().binding();b.update(physical_cycle=self.cycle_binding,camera_extrinsics=self.files.get(self.site['camera_extrinsics']),
@@ -214,6 +219,11 @@ class SinglePlanner(EmptyPlanner):
                     if not any(np.max(abs(np.asarray(q)-x))<1e-3 for x in solutions):solutions.append(q)
             reference=np.asarray(seeds[0] if q_reference is None else q_reference,float)
             solutions.sort(key=lambda x:float(np.linalg.norm(np.asarray(x)-reference)))
+            # Never a branch on the other wrist side, or with excessive J4/J6
+            # travel, relative to the frozen q_start (incident 2026-11-14).
+            if self.wrist_limits and self.wrist_reference is not None:
+                dropped=[x for x in solutions if wrist_branch_violation(self.wrist_limits,self.wrist_reference,[x])]
+                solutions=[x for x in solutions if x not in dropped];record['wrist_branch_rejected']=dropped
             record.update(status='REPLIED',replies=replies,distinct_solutions=solutions,elapsed_s=time.monotonic()-started)
             return solutions,[r['status'] for r in replies]
         except Exception as error:
@@ -344,6 +354,8 @@ class SinglePlanner(EmptyPlanner):
         if any(b.get('uncertainty') for b in boxes) and not capabilities.get('partial_observed_contact_envelope'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
+        if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
         return ready
     def start_check_pool(self,folder):
         """Extra resident native workers, initialised in the background.
@@ -437,6 +449,9 @@ class SinglePlanner(EmptyPlanner):
             except ValueError as error:
                 if not str(error).startswith(('INTERPOLATION_LIMIT','DISCRETE_COMMAND_LIMIT')) or factor==SEND_SLOWDOWN_STEPS[-1]:raise
                 progress(f'{record} 插值后超出关节限值（{error}），发送时间放大到 ×{scale*SEND_SLOWDOWN_STEPS[SEND_SLOWDOWN_STEPS.index(factor)+1]:g}')
+        if self.wrist_limits and self.wrist_reference is not None:
+            violation=wrist_branch_violation(self.wrist_limits,self.wrist_reference,prepared['collision_path'])
+            if violation:raise SegmentRejected(stage,stage+':WRIST_BRANCH_REJECTED:'+json.dumps(violation),dict(status='WRIST_BRANCH_REJECTED',failure=violation))
         planner=dict(pipeline_id=req['pipeline_id'],planner_id=req['planner_id'],velocity_scale=req['velocity_scale'],
                      acceleration_scale=req['acceleration_scale'],goal='JOINT' if 'q_goal' in req else 'POSE',
                      configured_time_scale=scale,send_time_scale=prepared['time_scale'],
@@ -679,6 +694,7 @@ class SinglePlanner(EmptyPlanner):
         Every failure is appended to ``failures``. No permit is issued here.
         """
         failures=[] if failures is None else failures
+        self.wrist_reference=list(q)
         rest=self.payload_rest_check(world,box);(folder/(box['id']+'-payload-rest-check.json')).write_text(json.dumps(rest))
         if rest['intersections'] or rest['outside_workspace']:
             hit=rest['intersections'][0] if rest['intersections'] else None
@@ -759,8 +775,18 @@ class SinglePlanner(EmptyPlanner):
                 # package (and therefore its digest), never applied implicitly.
                 start_policy=start_joint_check(self.site)
                 if not start_policy['enabled']:segments[0]['prepared']['start_joint_check']=start_policy
+                # Final audit of every sent state against the wrist limits.
+                for segment in segments:
+                    violation=wrist_branch_violation(self.wrist_limits,q,segment['prepared']['collision_path'])
+                    if violation:raise ValueError('WRIST_BRANCH_REJECTED_AT_AUDIT:'+segment['stage']+':'+json.dumps(violation))
+                # A configured execution lock travels inside every package, so
+                # the motion engine refuses it even if another path submits it.
+                lock=execution_lock(self.site)
+                if lock:
+                    for segment in segments:segment['prepared']['execution_lock']=lock
                 for segment in segments:segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
                 plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,start_joint_check=start_policy,
+                    execution_lock=lock,wrist_branch_limits=self.wrist_limits,tool_robot_clearance=self.clearance.get('tool_robot_clearance'),
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,

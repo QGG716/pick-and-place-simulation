@@ -7,7 +7,7 @@ import threading
 import time
 import uuid
 import numpy as np
-from .config import issues,pre_execute_visual_recheck
+from .config import issues,pre_execute_visual_recheck,execution_lock
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check
 from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged,same_session_start_and_camera
@@ -139,6 +139,10 @@ class TaskManager:
     def execute(self):
         self._enter()
         try:
+            lock=execution_lock(getattr(self,'config',None) or {}) or (getattr(self,'plan',None) or {}).get('execution_lock')
+            if lock:
+                if self.journal:self.journal(kind='execution_refused',reason='EXECUTION_LOCKED_BY_USER',execution_lock=lock)
+                raise ValueError('EXECUTION_LOCKED_BY_USER: 执行已锁定（'+str(lock.get('basis'))+'）；未发送任何运动指令')
             if not self.cycle or self.cycle.state!='PLAN_READY':raise ValueError('PLAN_NOT_READY')
             # No cycle starts without its task record or with a revoked observation.
             if self.journal is None or self.journal.error or not self.journal.thread.is_alive():

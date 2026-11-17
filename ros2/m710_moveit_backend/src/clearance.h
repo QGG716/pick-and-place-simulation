@@ -22,6 +22,10 @@ class Clearance {
   std::set<std::string> tools_, conveyors_;
   std::string payload_;
   double gap_, reserve_, query_range_;
+  // Physical single carton only: larger clearance between owned tool solids
+  // and non-tool robot links (incident 2026-11-14), with explicit exemptions
+  // for motion-invariant pairs (fixed mount, J6-coaxial adapter).
+  double tool_robot_gap_=0.;std::set<std::string> tool_robot_exempt_links_;std::set<std::pair<std::string,std::string>> tool_robot_exempt_pairs_;
   using Clock=std::chrono::steady_clock;
   std::map<std::string,double> profile_;
   static double elapsed(Clock::time_point t) {return std::chrono::duration<double>(Clock::now()-t).count();}
@@ -119,6 +123,20 @@ public:
     conveyors_=policy.at("conveyor_ids").get<std::set<std::string>>();
     payload_=policy.at("payload_id").get<std::string>();
     gap_=policy.at("source_policy").at("required_pair_clearance_m");
+    if(policy.contains("tool_robot_clearance")) {
+      const auto& t=policy.at("tool_robot_clearance");
+      if(!eco65_ || !single_carton_) throw std::runtime_error("TOOL_ROBOT_CLEARANCE_SCOPE_INVALID");
+      tool_robot_gap_=t.at("clearance_m");
+      if(!std::isfinite(tool_robot_gap_) || tool_robot_gap_<gap_ || tool_robot_gap_>.1 || t.value("basis",std::string()).empty())
+        throw std::runtime_error("TOOL_ROBOT_CLEARANCE_INVALID");
+      tool_robot_exempt_links_=t.at("exempt_robot_links").get<std::set<std::string>>();
+      for(const auto& pair:t.at("exempt_pairs")) {
+        const std::string tool=pair.at(0),link=pair.at(1);
+        if(!tools_.count(tool) || tools_.count(link)) throw std::runtime_error("TOOL_ROBOT_EXEMPT_PAIR_INVALID");
+        tool_robot_exempt_pairs_.insert({tool,link});
+      }
+      for(const auto& link:tool_robot_exempt_links_) if(tools_.count(link)) throw std::runtime_error("TOOL_ROBOT_EXEMPT_LINK_INVALID");
+    }
     reserve_=stage=="transit" ? policy.at("receiver_reserve_m").get<double>() : 0.;
     if(!std::isfinite(reserve_) || reserve_<0) throw std::runtime_error("INVALID_RESERVE");
     const double search_payload_reserve=policy.value("search_payload_reserve_m",0.);
@@ -127,7 +145,7 @@ public:
       throw std::runtime_error("INVALID_SEARCH_PAYLOAD_RESERVE");
     // Query range is deliberately larger than every acceptance threshold.
     // It is not padding and not an acceptance tolerance.
-    query_range_=gap_+reserve_+.001;
+    query_range_=std::max(gap_,tool_robot_gap_)+reserve_+.001;
     if(scene->getCollisionDetectorName()!="FCL") throw std::runtime_error("FCL_REQUIRED");
     if(mode!="reference" && mode!="optimized") throw std::runtime_error("UNKNOWN_CLEARANCE_MODE");
     if(eco65_ && mode!="optimized") throw std::runtime_error("ECO65_EXPLICIT_CONVEX_WORKSPACE_REQUIRED");
@@ -142,6 +160,10 @@ public:
   double required(const std::string& a, collision_detection::BodyType ta,
                   const std::string& b, collision_detection::BodyType tb) const {
     using namespace collision_detection;
+    if(eco65_ && tool_robot_gap_>0. && ta==BodyTypes::ROBOT_LINK && tb==BodyTypes::ROBOT_LINK && tools_.count(a)!=tools_.count(b)) {
+      const std::string& tool=tools_.count(a)?a:b;const std::string& link=tools_.count(a)?b:a;
+      if(!tool_robot_exempt_links_.count(link) && !tool_robot_exempt_pairs_.count({tool,link})) return tool_robot_gap_;
+    }
     if(eco65_) return gap_; // Source applies margin + two body reserves once, including self pairs.
     if(ta==BodyTypes::ROBOT_LINK && tb==BodyTypes::ROBOT_LINK && !tools_.count(a) && !tools_.count(b)) return 0.;
     if((a==payload_ && conveyors_.count(b)) || (b==payload_ && conveyors_.count(a))) return gap_+reserve_;
@@ -278,6 +300,6 @@ public:
     {"search_gap_witness",search_gap_witness},{"query_range_m",query_range_},{"policy",policy_},{"distance_method","MoveIt_FCL_unpadded_pair_minima"},
     {"search_payload_query_range_m",query_range_+policy_.value("search_payload_reserve_m",0.)},
     {"search_reserve_scope","ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED"},
-    {"mode",mode_},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
+    {"mode",mode_},{"tool_robot_clearance_m",tool_robot_gap_},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};result["evidence_materialization_s"]=elapsed(t);return result;}
 };
 }
