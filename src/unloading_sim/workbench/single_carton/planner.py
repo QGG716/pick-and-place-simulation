@@ -87,6 +87,7 @@ class PlanningBudgetExhausted(Exception):
 class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
         self.task_lock=threading.RLock();self.task_generation=0;self.last_task=None
+        self.record_commit_lock=threading.Lock()
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
         self.defer_output_check=False
@@ -1164,7 +1165,9 @@ class SinglePlanner(EmptyPlanner):
                 with timing.span('plan_cycle.search_box',target=box['id']):
                     if self.deadline is None:found=self.search_box(q,world,box,folder,progress,cancelled,failures)
                     else:found=self.bounded_search(q,world,box,folder,progress,cancelled,failures)
-                if box['id'] in self.search_counts:self.search_counts[box['id']]['phase']='DONE'
+                if box['id'] in self.search_counts:
+                    self.search_counts[box['id']].update(phase='DONE' if found is None else 'SEARCH_SUCCEEDED',
+                                                       accepted=None if found is None else found['index'])
                 if found is None:continue
                 i,candidate,screen,result=found['index'],found['candidate'],found['screen'],found
                 attachment,release=result['attachment'],result['release']

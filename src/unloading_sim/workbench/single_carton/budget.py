@@ -1,7 +1,7 @@
 """Pure deadline classification; no IO, waiting or permit mutation."""
 import time
 
-def snapshot(self,boxes,failures,selected,error):
+def snapshot(self,boxes,failures,selected,error,deadline=None):
     """Per-target searched / unsearched candidate counts under the unified deadline.
 
     A candidate is searched only when it was concluded: rejected (it has a
@@ -26,18 +26,20 @@ def snapshot(self,boxes,failures,selected,error):
                 infeasible_candidates=0,target_reason=level[0]['reason'][:300] if level else None))
             continue
         considered=counts['considered']
+        accepted=counts.get('accepted')
         if level:
             status,searched,infeasible='TARGET_BLOCKED',len(considered),len(considered)
         else:
-            infeasible=len(failed&set(considered));searched=infeasible
-            status=('SEARCHED_NO_PLAN' if counts['phase']=='DONE' else
+            infeasible=len(failed&set(considered));searched=len((failed|({accepted} if accepted is not None else set()))&set(considered))
+            status=(('SEARCH_SUCCEEDED_FINALIZATION_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_SUCCEEDED') if accepted is not None else
+                    'SEARCHED_NO_PLAN' if counts['phase']=='DONE' else
                     'BUDGET_EXHAUSTED_IN_'+counts['phase'] if error is not None else counts['phase'])
         targets.append(dict(target=ident,status=status,candidates=counts['candidates'],considered=len(considered),
                             screened=counts['screened'],searched=searched,unsearched=len(considered)-searched,
-                            infeasible_candidates=infeasible,
+                            infeasible_candidates=infeasible,accepted_candidate=accepted,
                             target_reason=level[0]['reason'][:300] if level else None))
     return dict(status='PLANNING_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_FINISHED_WITHIN_DEADLINE',
                 where=getattr(error,'where',None),detail=getattr(error,'detail',None),
-                deadline_monotonic_s=self.deadline,classified_monotonic_s=time.monotonic(),
+                deadline_monotonic_s=self.deadline if deadline is None else deadline,classified_monotonic_s=time.monotonic(),
                 reply_reserve_s=DEADLINE_REPLY_RESERVE_S,targets=targets,
                 rule='UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY')

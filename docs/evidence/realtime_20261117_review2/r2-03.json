@@ -1,0 +1,66 @@
+{
+  "issue": "R2-03",
+  "physical": "NOT_RUN",
+  "before": "4 failed: 250 ms rename (including failure) and both caller lock waits exceed the unchanged 100 ms + 50 ms budget",
+  "after": "New transaction/lock/winner-count tests and lifecycle/deadline tests passed; combined final focus 63 passed; later focused cleanup refinements 12 passed",
+  "retained_failure": "First combined run: 47 passed, 1 BEFORE_DISPATCH label mismatch; original label restored",
+  "transaction": "Background serialized persistence and rollback, bounded caller lock acquisition, only current durable result publishes permits",
+  "lifecycle_fields": [
+    "caller_returned_s",
+    "planning_thread_finished_s",
+    "worker_requests_finished_s",
+    "cleanup_completed_s"
+  ],
+  "checks": {
+    "stage": "r2-03",
+    "head": "a5321548878ff07ebabb2670b4bc9aa5e8bd1c01",
+    "physical": "NOT_RUN",
+    "checks": [
+      {
+        "name": "pytest",
+        "command": [
+          "bash",
+          "-c",
+          "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_*.py"
+        ],
+        "returncode": 0,
+        "elapsed_s": 156.6295777739997,
+        "log": "outputs/review2_20261117/r2-03/pytest.log"
+      },
+      {
+        "name": "optimized",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test optimized"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.09200110199981282,
+        "log": "outputs/review2_20261117/r2-03/optimized.log"
+      },
+      {
+        "name": "reference",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test reference"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.09247373699963646,
+        "log": "outputs/review2_20261117/r2-03/reference.log"
+      },
+      {
+        "name": "native_component",
+        "command": [
+          ".venv/bin/python",
+          "tools/check_eco65_single_carton_native.py",
+          "--output",
+          "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/r2-03/native-component"
+        ],
+        "returncode": 0,
+        "elapsed_s": 13.454669802000353,
+        "log": "outputs/review2_20261117/r2-03/native_component.log"
+      }
+    ]
+  }
+}

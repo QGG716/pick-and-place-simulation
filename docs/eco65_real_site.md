@@ -877,3 +877,7 @@ Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存
 ## 2026-11-17 复审 R2-02：复合原生腕部判据与取消传播
 
 复合请求绑定当前腕部策略与冻结 q_start；C++ 在 IK 排序后过滤，并在 prepare 后、下一请求前执行同一 J5/J4/J6 判据。实际 C++ 复合输出驱动实际 Python 回放：修复前 14 failed/4 passed，修复后 18 passed，覆盖全部解拒绝、部分保留、接触解拒绝、四段路径中间越界及正常链路；拒绝路径也检查未消费调用，禁止吞掉分歧。CONTACT/DETACH_AND_VERIFY 的 scene handle 全部传取消回调，相关 21 项通过。必需定向集 591 passed，重编译 worker 后 optimized/reference 与原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-02.json`。几何响应为 fake，实机与完整现场等价 NOT_RUN；默认模块/开关、限值及执行锁未改。
+
+## 2026-11-17 复审 R2-03：提交 I/O 与调用线程预算
+
+提交 rename、失败撤回和记录互斥等待转入任务后台；调用线程的任务锁/许可锁等待使用同一绝对截止时间，只发布已写入记录且仍有效的任务。复现前 4 项失败，100 ms 预算与原 +50 ms 阈值保留；修复后新提交/锁/胜出计数和既有生命周期等联合 63 项通过，必需定向集 609 passed、碰撞双模式及原生组件 PASS。首次定向组的错误标签兼容性失败保留并恢复 BEFORE_DISPATCH。已有胜出候选的收尾超时记 SEARCH_SUCCEEDED_FINALIZATION_BUDGET_EXHAUSTED，胜出候选计入已搜索；迟到结果不能覆盖新许可。调用返回、请求结束、清理结束分别记录。另将观测代次递增本身置于同一锁，防止两个设备失效丢一次递增。见 `docs/evidence/realtime_20261117_review2/r2-03.json`；这是 fake IO 应用预算检查，不是操作系统硬实时保证，物理验收 NOT_RUN。

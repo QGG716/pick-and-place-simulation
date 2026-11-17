@@ -169,6 +169,10 @@ class WorkbenchBackend:
         with self.observation_lock:
             self._observation_generation = value
 
+    def _advance_observation_generation(self):
+        with self.observation_lock:
+            self._observation_generation += 1
+
     def log(self, message):
         from datetime import datetime
         self.logs.append(datetime.now().strftime("%H:%M:%S") + "  " + str(message))
@@ -187,7 +191,7 @@ class WorkbenchBackend:
         self.workers[device].command(action, *args)
 
     def invalidate_device(self, device):
-        self.observation_generation += 1
+        self._advance_observation_generation()
         self.sample_cutoff[device] = monotonic_ns()
         self.manual_stationary = False
         self.detections = None
@@ -252,7 +256,7 @@ class WorkbenchBackend:
         return stamp.state(self.sample_active(stamp, device), self.config.max_age_s)
 
     def _clear_observations(self):
-        self.observation_generation += 1
+        self._advance_observation_generation()
         self.replay = None
         self.replay_active = self.replay_exhausted = self.manual_stationary = False
         self.frame = self.joint = self.pressure = self.detections = None
@@ -294,7 +298,7 @@ class WorkbenchBackend:
             self.replay_exhausted = True
             self.manual_stationary = False
             self.joint_history.clear()
-            self.observation_generation += 1
+            self._advance_observation_generation()
             self.log("Replay ended; retained last observation is HISTORICAL_END_OF_REPLAY")
             return False
         except Exception as exc:

@@ -93,3 +93,23 @@ def test_backend_transition_is_ordered_with_start(tmp_path):
         change.join(3)
     assert not errors and started == [1] and transitioned.is_set()
     assert backend.observation_generation == 2
+
+
+def test_two_device_transitions_cannot_lose_a_generation():
+    from unloading_sim.workbench.backend import WorkbenchBackend
+    barrier = threading.Barrier(2)
+    class InterleavedBackend(WorkbenchBackend):
+        @property
+        def observation_generation(self):
+            value = WorkbenchBackend.observation_generation.fget(self)
+            if threading.current_thread() is not threading.main_thread():barrier.wait(2)
+            return value
+    backend = InterleavedBackend.__new__(InterleavedBackend)
+    backend.observation_lock = threading.RLock()
+    backend._observation_generation = 0
+    backend.sample_cutoff = {}
+    threads = [threading.Thread(target=backend.invalidate_device, args=('camera',)) for _ in range(2)]
+    for thread in threads:thread.start()
+    for thread in threads:thread.join(3)
+    assert all(not t.is_alive() for t in threads)
+    assert backend.observation_generation == 2
