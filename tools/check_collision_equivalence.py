@@ -139,7 +139,7 @@ def main():
                           proxy_cleared_ratio_of_pairs=v['proxy_cleared']/v['pair_checks'] if v['pair_checks'] else None,
                           states_needing_exact_ratio=v['states_with_exact']/v['states'] if v['states'] else None)
                      for k, v in sorted(fallback.items())]
-    report = dict(schema='eco65_collision_equivalence_v1', scope='SYNTHETIC_SCENE_RECORDS_NOT_FIELD_DATA',
+    report = dict(schema='eco65_collision_equivalence_v1', scope='RECORDED_REQUEST_EQUIVALENCE_NOT_PHYSICAL_ACCEPTANCE',
                   inputs=[str(p) for p in args.records], totals=totals, mismatches=mismatches[:50],
                   sent_path_output_single_state_by_stage=stage_summary, timing=timing, fallback=fallback_rows,
                   records=[{k: v for k, v in r.items() if k != 'reply'} | dict(

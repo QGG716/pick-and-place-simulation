@@ -1,0 +1,16 @@
+{
+  "scope": "SAVED_FIELD_RECORD_OFFLINE_REVIEW",
+  "task": "4cde3b86824046f99bc8085d419deb83",
+  "baseline": "0783e86",
+  "review": "abe36ae",
+  "outcome_equal": true,
+  "complete_plan_equal": true,
+  "sorted_failures_equal": true,
+  "baseline_failure_count": 32,
+  "review_failure_count": 32,
+  "baseline_planning_s": 175.44,
+  "review_planning_s": 183.5,
+  "note": "Both rejected; this does not cover equivalence of a successful four-stage plan. Wall times have concurrent local build/replay load and are not an isolated p95 baseline.",
+  "physical_acceptance": "NOT_RUN",
+  "execution_permits": 0
+}

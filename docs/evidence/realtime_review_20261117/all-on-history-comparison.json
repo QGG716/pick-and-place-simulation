@@ -1,0 +1,14 @@
+[
+  {
+    "left": "A-first",
+    "right": "A-second",
+    "equal_within_1e_12": true,
+    "differences": []
+  },
+  {
+    "left": "B-after-A",
+    "right": "B-alone",
+    "equal_within_1e_12": true,
+    "differences": []
+  }
+]

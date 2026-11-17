@@ -1,0 +1,26 @@
+{
+  "scope": "SYNTHETIC_ALL_OFF_PYTHON_VS_ALL_ON_NATIVE_LOCAL_FIELD_PC",
+  "rows": [
+    {
+      "scene": "A",
+      "equal_within_1e_12": true,
+      "differences": [],
+      "off_python_s": 101.56970625999384,
+      "all_on_native_s": 75.48355759197148,
+      "off_candidate": 0,
+      "on_candidate": 0
+    },
+    {
+      "scene": "B",
+      "equal_within_1e_12": true,
+      "differences": [],
+      "off_python_s": 139.22854065801948,
+      "all_on_native_s": 127.12331809592433,
+      "off_candidate": 4,
+      "on_candidate": 4
+    }
+  ],
+  "all_equal": true,
+  "hardware_execution": "NOT_RUN",
+  "success_does_not_establish_field_latency": true
+}

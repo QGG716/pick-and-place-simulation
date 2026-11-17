@@ -131,7 +131,7 @@ def main():
     prepared = [r for r in rows if r['outcome'] == 'PREPARED']
     worst = {k: max((r['max_abs'][k] for r in prepared), default=0.) for k in
              ('t', 'q', 'v', 'a', 'collision_path', 'analytic_speed_bounds_rad_s', 'send_duration_s')}
-    report = dict(schema='eco65_native_prepare_equivalence_v1', scope='SYNTHETIC_SCENE_RECORDS_NOT_FIELD_DATA',
+    report = dict(schema='eco65_native_prepare_equivalence_v1', scope='RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE',
                   inputs=[str(p) for p in args.records], recorded_native_plans=len(sources), cases=len(rows),
                   identical=sum(r['identical'] for r in rows), prepared=len(prepared),
                   rejected=len(rows)-len(prepared), rejection_errors=sorted({r['error'] for r in rows if r['error']}),

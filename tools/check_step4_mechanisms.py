@@ -173,7 +173,7 @@ def main():
             try: run(planner, model, name, out, name)
             finally: planner.close()
         return
-    planner, model = planner_for(True, out/'records', args.collision_check_mode, args.sent_path_audit)
+    planner, model = planner_for(True, out/'records', args.collision_check_mode, args.sent_path_audit, args.planning_module)
     try:
         planner.prewarm().join()
         planner.resident.wait_ready(300)
@@ -181,7 +181,7 @@ def main():
             run(planner, model, name, out, label)
     finally:
         planner.close()
-    planner, model = planner_for(True, out/'records-fresh', args.collision_check_mode, args.sent_path_audit)
+    planner, model = planner_for(True, out/'records-fresh', args.collision_check_mode, args.sent_path_audit, args.planning_module)
     try:
         planner.prewarm().join(); planner.resident.wait_ready(300)
         run(planner, model, 'B', out, 'B-alone')
