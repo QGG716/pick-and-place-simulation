@@ -857,3 +857,19 @@ F：补齐原生 prepare 的限值检查；内部 START/END 日志打开、写�
 ## 2026-11-17 复审 R2-01：最终证据 barrier 后的启动边界
 
 真实 EvidenceWriter/NPZ 阻塞期间使观测、会话或许可失效，旧代码 3 项失败；最终 barrier 后重新验证取消、观测代次及全部许可，并用后台观测锁排序代次更新与首次启动。许可仍在 submit 原子领取；停止信号在等待锁前发出。定向集最终 573 passed；首轮 2 个缺少新锁的 fake fixture 失败保留，已补齐初始化。optimized/reference 和原生组件均 PASS。见 `docs/evidence/realtime_20261117_review2/r2-01.json`。实机、2 s p95 与物理验收 NOT_RUN；执行锁与保护配置未改。
+
+## 2026-11-17 两次失败规划的离线可视化
+
+`tools/visualize_field_planning_failures.py` 从原记录导出两张概览图和离线自包含三维页面，不连接设备、不重新规划。页面保留每次全部 32 个候选、39/37 个原现场物体及目标、715 个碰撞实体和 12 杯，可切换实测起点、保存的终态和局部原生输出采样。带载输出按原请求的 flange-to-carton 附着矩阵显示完整包络，不将目标重复加入环境。两条记录分别有 40/36 份含点列的原生输出记录，可能包含同一路径的别名或重试，不称为独立完整通过路径。
+
+静态图各选择一个真实终态阻挡例，并列出全部候选分类。箱位1所示为吸盘唇与支撑障碍相交/接触；原生负距离状态码不当作穿入深度。箱位2所示间隙 2.20 mm，小于要求 2.40 mm。这些位置不代表其他候选也在同处失败。原生局部轨迹未经整条发送路径审计，不能执行；搜索预算耗尽不证明物理不可行。
+
+```bash
+.venv/bin/python tools/visualize_field_planning_failures.py \
+  outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89 \
+  outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637 \
+  --output outputs/field-failures-20261117
+xdg-open outputs/field-failures-20261117/index.html
+```
+
+Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存采样切换、附着矩阵、715 碰撞实体、12 杯；Python/browser FK 最大矩阵误差 1.11e-16。概览中文及布局已逐图检查，源记录 SHA-256 前后保持一致。此步骤未改规划或设备控制代码，未重跑规划/碰撞验收或实机动作。报告：`docs/evidence/realtime_20261117_failure_visualization/report.json`。生成的原始照片、CAD 页面和 PNG 仅保留 outputs，不提交 Git。
