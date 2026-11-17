@@ -18,6 +18,7 @@ small objects in a process that also holds the source snapshot measurably
 lengthened Python's full garbage collections and moved them onto the 20 ms
 supervisor tick. ``gc_pauses`` reports every collection's pause while enabled.
 """
+from collections import deque
 from contextlib import contextmanager, nullcontext
 import gc
 import json
@@ -53,6 +54,8 @@ class Recorder:
         self.events = []
         self.aggregates = {}
         self.overhead_s = 0.
+        self.gc_events = deque(maxlen=8192)
+        self.gc_overflow = 0
 
     def add(self, name, start, duration, **attrs):
         if getattr(_local, 'suppressed', 0):
@@ -67,12 +70,20 @@ class Recorder:
         if getattr(_local, 'suppressed', 0):
             return
         with self._lock:
+            if (name,key) not in self.aggregates and len(self.aggregates)>=4096:
+                name,key,attrs='timing.aggregate_overflow','distinct_keys',{}
             a = self.aggregates.get((name, key))
             if a is None:
                 a = self.aggregates[(name, key)] = [0, 0., 0., [0]*_HIST_BINS, dict(attrs)]
             a[0] += 1; a[1] += value
             if value > a[2]: a[2] = value
             a[3][_bin(value)] += 1
+
+    def gc_pause(self, generation, duration):
+        # GC may interrupt any recorder operation while its lock is held.
+        # Only atomic deque append here; folding happens outside the callback.
+        if len(self.gc_events)==self.gc_events.maxlen:self.gc_overflow+=1
+        self.gc_events.append((generation,duration))
 
     def overhead(self, seconds):
         with self._lock:
@@ -84,6 +95,14 @@ class Recorder:
             taken, self.events = self.events, []
             aggregates, self.aggregates = self.aggregates, {}
             overhead, self.overhead_s = self.overhead_s, 0.
+            pauses, self.gc_events = self.gc_events, deque(maxlen=8192)
+            dropped, self.gc_overflow = self.gc_overflow, 0
+        for generation,duration in pauses:
+            key=('python.gc_pause',generation)
+            a=aggregates.setdefault(key,[0,0.,0.,[0]*_HIST_BINS,{}])
+            a[0]+=1;a[1]+=duration;a[2]=max(a[2],duration);a[3][_bin(duration)]+=1
+        if dropped:
+            taken.append(dict(name='python.gc_pause_overflow',count=dropped,duration_s=0.,start_monotonic_s=None))
         if since is not None:
             taken = [e for e in taken if e['start_monotonic_s'] >= since]
         taken.extend(_aggregate_rows(aggregates))
@@ -135,11 +154,8 @@ if ENABLED:
         if phase == 'start':
             _gc_start[0] = time.monotonic()
         else:
-            recorder.aggregate('python.gc_pause', info['generation'], time.monotonic()-_gc_start[0])
+            recorder.gc_pause(info['generation'], time.monotonic()-_gc_start[0])
     gc.callbacks.append(_gc_callback)
-
-
-recorder = Recorder()
 
 
 class _Span:
