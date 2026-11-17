@@ -31,9 +31,10 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
         # Transfer pool ownership. No subsequent task can take it until cleanup
         # completed and this task was successfully adopted by the owner.
         owner.resident=None
+        previous_evidence=owner.evidence;owner.evidence=None
         task.authority=StagedAuthority(owner.authority,guard)
         task.task_id=folder.name
-        task.complete_plan_path=folder/'complete-plan.pending.json'
+        task.complete_plan_path=folder/f'complete-plan.pending-{generation}.json'
         for key in ('pool','pool_status','pool_threads'):setattr(task,key,[])
         for key in ('ipc_executors','search_counts','scene_handles'):setattr(task,key,{})
         task.abandoned=set();task.search_thread=None;task.client=None;task.evidence=None;task.cleanup_threads=[]
@@ -44,10 +45,13 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
         owner.last_task=dict(task_id=folder.name,generation=generation,status='RUNNING',cleanup_finished=False)
         status=owner.last_task
         owner.last_task_context=task
+    def task_progress(message):
+        if not stop.is_set() and owner.task_generation==generation and (deadline is None or time.monotonic()<deadline):
+            progress(message)
     def run():
         try:
             guard('BEFORE_DISPATCH')
-            result=task._plan_cycle(observation,boxes,folder,progress,selected,lambda:stop.is_set() or cancelled(),scene,deadline)
+            result=task._plan_cycle(observation,boxes,folder,task_progress,selected,lambda:stop.is_set() or cancelled(),scene,deadline)
             guard('PLAN_EVIDENCE_COMPLETE')
             if finalize is not None:finalize(result,guard)
             guard('FINALIZE_COMPLETE')
@@ -57,6 +61,8 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
             done.set()
             settled.wait()
             try:
+                if previous_evidence is not None:
+                    previous_evidence.close();previous_evidence._thread.join()
                 search=task.search_thread
                 if search is not None and search.is_alive():search.join()
                 for cleanup in task.cleanup_threads:cleanup.join()
