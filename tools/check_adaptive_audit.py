@@ -91,7 +91,7 @@ def outcome(reply):
                 checked=output.get('queries', 0), check_s=output.get('seconds', 0.)+(audit['constraint_s']+audit['proof_s'] if audit else 0.),
                 sampled=audit['sampled_states'] if audit else output.get('queries', 0),
                 skipped=audit['skipped_states'] if audit else 0,
-                minimum_distance_lower_bound_m=audit['minimum_distance_lower_bound_m'] if audit else None,
+                anchor_dynamic_pair_distance_lower_bound_m=audit['anchor_dynamic_pair_distance_lower_bound_m'] if audit else None,
                 reused=clearance.get('exact_repeated_path_states_reused', 0))
 
 
@@ -238,7 +238,7 @@ def main():
             constructed_cases_identical=all(c['identical'] for c in graze_cases),
             constructed_cases=len(graze_cases)),
         mismatches=[r for r in results if not r['identical']][:20], graze=graze,
-        requests=[{k: (v if k not in ('sampled', 'adaptive') else {x: v[x] for x in ('native_valid', 'checked', 'skipped', 'sampled', 'check_s', 'minimum_distance_lower_bound_m')})
+        requests=[{k: (v if k not in ('sampled', 'adaptive') else {x: v[x] for x in ('native_valid', 'checked', 'skipped', 'sampled', 'check_s', 'anchor_dynamic_pair_distance_lower_bound_m')})
                    for k, v in r.items()} for r in results])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=1, default=str))

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def adaptive_reply(r):
     n = len(r['probe_path'])
     audit = dict(method='ADAPTIVE', sampled_states=2*n, checked_states=n//3+1, skipped_states=2*n-n//3-1, anchors=n//3+1,
-                 minimum_distance_lower_bound_m=.0031, minimum_workspace_margin_m=None, margin_cap_m=.05, proof_epsilon_m=1e-6,
+                 anchor_dynamic_pair_distance_lower_bound_m=.0031, anchor_workspace_margin_m=None, margin_cap_m=.05, proof_epsilon_m=1e-6,
                  constraint_s=0., proof_s=0., skip_rule='PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE', samples='IDENTICAL_TO_SAMPLED')
     clearance = dict(counts=dict(output=dict(queries=n//3+1, seconds=.01)))
     if r.get('sent_path_audit') == 'ADAPTIVE':
@@ -64,7 +64,7 @@ def test_adaptive_only_on_segments_without_contact_or_support(case):
     assert not [r for r in calls if 'sent_path_audit' in r and not (r.get('op') == 'validate' and 'probe_path' in r)]
     methods = {s['stage']: s['package']['evidence']['collision_result']['sent_path_audit'] for s in plan['segments']}
     assert methods['approach']['audit_method'] == 'ADAPTIVE' and methods['approach']['skipped_states'] > 0
-    assert methods['approach']['minimum_distance_lower_bound_m'] == pytest.approx(.0031)
+    assert methods['approach']['anchor_dynamic_pair_distance_lower_bound_m'] == pytest.approx(.0031)
     assert methods['contact']['audit_method'] == 'SAMPLED'
 
 

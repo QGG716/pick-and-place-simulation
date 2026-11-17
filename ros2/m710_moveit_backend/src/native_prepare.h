@@ -181,6 +181,11 @@ inline PreparedTrajectory nativePrepare(const PrepareInput& in,const PrepareLimi
   if(amax_end>1e-6)throw std::runtime_error("NONZERO_ENDPOINT_ACCELERATION");
   if(limits.lower.size()!=size_t(J)||limits.upper.size()!=size_t(J)||limits.velocity.size()!=size_t(J)||limits.acceleration.size()!=size_t(J))
     throw std::runtime_error("INVALID_LIMITS");
+  for(int j=0;j<J;++j)
+    if(!std::isfinite(limits.lower[j])||!std::isfinite(limits.upper[j])||
+       !std::isfinite(limits.velocity[j])||!std::isfinite(limits.acceleration[j])||
+       !(limits.lower[j]<limits.upper[j])||!(limits.velocity[j]>0)||!(limits.acceleration[j]>0))
+      throw std::runtime_error("INVALID_LIMITS");
   std::vector<double> t(n),v(in.v),a(in.a);const double s2=std::pow(time_scale,2);
   for(size_t i=0;i<n;++i)t[i]=in.t[i]*time_scale;
   for(auto& x:v)x=x/time_scale;for(auto& x:a)x=x/s2;

@@ -362,8 +362,10 @@ public:
     {"mode",mode_},{"collision_check_mode",two_level_?"TWO_LEVEL":"EXACT"},{"workspace",workspaceEvidence()},{"profile",profile_},{ "continuous_swept_proof",false}};
     if(adaptive_)result["sent_path_audit"]={{"method","ADAPTIVE"},{"sampled_states",audit_.sampled},{"checked_states",audit_.checked},
       {"skipped_states",audit_.skipped},{"anchors",audit_.anchors},
-      {"minimum_distance_lower_bound_m",std::isfinite(audit_.minimum_lower)?Json(audit_.minimum_lower):Json(nullptr)},
-      {"minimum_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
+      {"distance_evidence_scope","EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS"},
+      {"whole_path_minimum_distance_status","NOT_COMPUTED"},
+      {"anchor_dynamic_pair_distance_lower_bound_m",std::isfinite(audit_.minimum_lower)?Json(audit_.minimum_lower):Json(nullptr)},
+      {"anchor_workspace_margin_m",std::isfinite(audit_.minimum_workspace)?Json(audit_.minimum_workspace):Json(nullptr)},
       {"margin_cap_m",workspace_->marginCap()},{"proof_epsilon_m",kAdaptiveProofEpsilon},
       {"constraint_s",audit_.constraint_s},{"proof_s",audit_.proof_s},
       {"skip_rule","PER_GROUP_PAIR_LEVER_BOUND_FROM_LAST_EXACT_SAMPLE"},{"samples","IDENTICAL_TO_SAMPLED"}};

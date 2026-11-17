@@ -32,6 +32,7 @@ import numpy as np
 
 from ... import moveit2_backend
 from .. import timing
+from ..binary_frames import canonical_digest
 from .geometry import candidate_contact_check, corners, rigid
 
 VOLATILE = ('request_id', 'request_budget_s', 'absolute_deadline_monotonic_s', 'deadline_clock_reference_monotonic_s', 'world')
@@ -57,12 +58,12 @@ def canonical(value):
 
 
 def replay_key(request, deadline):
-    """Canonical request identity; a probe path by its length and end states (the worker echoes the same)."""
+    """Canonical request identity; every probe state bound by the existing canonical binary digest."""
     drop = set(VOLATILE) | ({'allowed_planning_time_s'} if deadline else set())
     key = {k: v for k, v in request.items() if k not in drop}
     path = key.get('probe_path')
     if isinstance(path, list):
-        key['probe_path'] = dict(length=len(path), first=list(path[0]), last=list(path[-1]))
+        key['probe_path'] = dict(length=len(path), canonical_binary_sha256=canonical_digest(path))
     return canonical(key)
 
 
@@ -156,6 +157,7 @@ class NativeFlow:
         if cancelled and cancelled():raise moveit2_backend.MoveItUnavailable('CANCELLED')
         request = dict(request, request_budget_s=COMPOSITE_TIMEOUT_S if p.deadline is None else
                        max(1e-3, p.deadline-.1-time.monotonic()))
+        request.update(task_id=getattr(p,'task_id',folder.name),journal_directory=str(folder.resolve()))
         path = folder/(name+'-composite.json')
         timing.write_json(path, dict(status='PENDING', request=request), 'composite-record:pending')
         started = time.monotonic()

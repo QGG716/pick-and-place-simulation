@@ -109,7 +109,7 @@ def test_replay_key_ignores_only_volatile_fields():
     assert replay_key(base, None) != replay_key(dict(base, q_start=[0.]*5+[1e-17]), None)
     # A probe path is identified by its length and end states, as the worker echoes it.
     path = [[float(i)]*6 for i in range(10)]
-    echoed = dict(base, probe_path=dict(length=10, first=path[0], last=path[-1]))
+    echoed = dict(base, probe_path=path)
     assert replay_key(dict(base, probe_path=path), None) == replay_key(echoed, None)
     assert replay_key(dict(base, probe_path=path[:-1]), None) != replay_key(echoed, None)
 

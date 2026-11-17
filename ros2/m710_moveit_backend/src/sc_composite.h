@@ -41,14 +41,17 @@ class CompositeRunner {
   CompositeRunner(std::function<J(const J&)> d,std::function<void()> r,NativeDeadlinePtr o,const J& req)
       :dispatch(std::move(d)),restore(std::move(r)),own(std::move(o)),request(req) {
     const char* dir=std::getenv("M710_WORKER_JOURNAL_DIR");
-    journal_path=std::string(dir&&*dir?dir:"/tmp")+"/m710_worker_journal_"+std::to_string(::getpid())+".jsonl";
+    journal_path=request.value("journal_directory",std::string(dir&&*dir?dir:"/tmp"))+"/m710_worker_journal_"+std::to_string(::getpid())+".jsonl";
     journal.open(journal_path,std::ios::app);
+    if(!journal)throw std::runtime_error("ATTEMPT_JOURNAL_OPEN_FAILED:"+journal_path);
   }
   static double nowS() {return std::chrono::duration<double>(Clock::now().time_since_epoch()).count();}
   void log(const J& entry) {
-    if(!journal)return;
+    if(!journal)throw std::runtime_error("ATTEMPT_JOURNAL_UNAVAILABLE:"+journal_path);
     J line=entry;line["monotonic_s"]=nowS();line["composite_request_id"]=request.value("request_id",std::string());
+    line["task_id"]=request.value("task_id",std::string());line["worker_pid"]=::getpid();
     line["composite_op"]=request.value("op",std::string());journal<<line.dump()<<"\n";journal.flush();
+    if(!journal)throw std::runtime_error("ATTEMPT_JOURNAL_WRITE_FAILED:"+journal_path);
   }
   // Budget fields as SinglePlanner.native_call / deadline_native_call set them.
   J budgeted(J sub,double timeout) {
@@ -75,10 +78,8 @@ class CompositeRunner {
     log({{"event","END"},{"index",index},{"name",name},{"status",result.value("status",J())},
          {"native_valid",result.value("native_valid",J())},{"elapsed_s",elapsed}});
     // The replay key compares the world through scene_fingerprint and a probe
-    // path through its length and end states (native_flow.replay_key does the same).
+    // full path through the canonical binary digest in native_flow.replay_key.
     J echoed=sub;echoed.erase("world");
-    if(echoed.contains("probe_path")) {const J path=echoed.at("probe_path");
-      echoed["probe_path"]={{"length",path.size()},{"first",path.front()},{"last",path.back()}};}
     calls.push_back({{"index",index},{"name",name},{"request",echoed},{"result",result},{"elapsed_s",elapsed}});
     if(result.value("status",std::string())=="ERROR")throw Stop{"SUB_REQUEST_ERROR"};
     if(own&&own->cancelled())throw Stop{"CANCELLED"};

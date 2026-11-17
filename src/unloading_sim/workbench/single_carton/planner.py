@@ -781,14 +781,16 @@ class SinglePlanner(EmptyPlanner):
         if method=='ADAPTIVE':
             audits=[(r.get('clearance') or {}).get('sent_path_audit') for r in results]
             if any(a is None for a in audits):raise ValueError('NATIVE_WORKER_DID_NOT_REPORT_ADAPTIVE_AUDIT')
-            lows=[a['minimum_distance_lower_bound_m'] for a in audits if a['minimum_distance_lower_bound_m'] is not None]
-            work=[a['minimum_workspace_margin_m'] for a in audits if a['minimum_workspace_margin_m'] is not None]
+            lows=[a['anchor_dynamic_pair_distance_lower_bound_m'] for a in audits if a['anchor_dynamic_pair_distance_lower_bound_m'] is not None]
+            work=[a['anchor_workspace_margin_m'] for a in audits if a['anchor_workspace_margin_m'] is not None]
             out.update(sampled_states=sum(a['sampled_states'] for a in audits),skipped_states=sum(a['skipped_states'] for a in audits),
-                       minimum_distance_lower_bound_m=min(lows) if lows else None,
-                       minimum_workspace_margin_m=min(work) if work else None,margin_cap_m=audits[0]['margin_cap_m'],
-                       proof_epsilon_m=audits[0]['proof_epsilon_m'],skip_rule=audits[0]['skip_rule'])
+                       anchor_dynamic_pair_distance_lower_bound_m=min(lows) if lows else None,
+                       anchor_workspace_margin_m=min(work) if work else None,margin_cap_m=audits[0]['margin_cap_m'],
+                       proof_epsilon_m=audits[0]['proof_epsilon_m'],skip_rule=audits[0]['skip_rule'],
+                       distance_evidence_scope='EXACT_ANCHORS_DYNAMIC_CONSTRAINTS_ONLY_EXCLUDES_SKIPPED_STATES_AND_FIXED_PAIRS',
+                       whole_path_minimum_distance_status='NOT_COMPUTED')
         else:
-            out.update(sampled_states=out['checked_states'],skipped_states=0,minimum_distance_lower_bound_m=None)
+            out.update(sampled_states=out['checked_states'],skipped_states=0,anchor_dynamic_pair_distance_lower_bound_m=None)
         # Every native sample of the sent path is checked exactly (>= its pair
         # limit, 2.4 mm) or, under ADAPTIVE, proven to keep its pair limit;
         # consecutive probe states move any body pair <= 1 mm (prepare), so
