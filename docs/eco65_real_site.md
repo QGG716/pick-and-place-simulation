@@ -885,3 +885,7 @@ Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存
 ## 2026-11-17 复审 R2-04：关闭与预热/补池的资源归属
 
 关闭在任务锁下更新 closed/代次；预热和 pool 创建结果发布前再次核对，拒收资源在锁外关闭。补池、初始启动和重复 close 均覆盖，清理异常可查询，wait_closed 供后台验证清理结束。5 个修复前失败均重现；resident 相关 41 项通过，扩充关闭/清理集 7 项通过；共同必需集 609 passed、optimized/reference/原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-04.json`。默认驻留开关未改，物理 NOT_RUN。
+
+## 2026-11-17 复审 R2-05：GC 溢出统计不参与时间戳比较
+
+8193 次 gc_pause 后带 since 的 write_later 原会同步 TypeError；溢出计数现作为本次 drain 的无时间戳 aggregate 单独追加，仍保持 8192 上限和原 GC 行为。overflow/重入/写失败可见性 3 项通过，共同必需集 609 passed，碰撞双模式及原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-05.json`；这是计时器正确性验证，物理 NOT_RUN。

@@ -101,10 +101,13 @@ class Recorder:
             key=('python.gc_pause',generation)
             a=aggregates.setdefault(key,[0,0.,0.,[0]*_HIST_BINS,{}])
             a[0]+=1;a[1]+=duration;a[2]=max(a[2],duration);a[3][_bin(duration)]+=1
-        if dropped:
-            taken.append(dict(name='python.gc_pause_overflow',count=dropped,duration_s=0.,start_monotonic_s=None))
         if since is not None:
             taken = [e for e in taken if e['start_monotonic_s'] >= since]
+        if dropped:
+            # An untimed aggregate belongs to this drain of the bounded queue,
+            # not to a fabricated event timestamp or a precise phase window.
+            taken.append(dict(name='python.gc_pause_overflow',aggregate=True,count=dropped,duration_s=0.,
+                              start_monotonic_s=None,scope='RECORDER_DRAIN_NOT_PHASE_TIMESTAMP'))
         taken.extend(_aggregate_rows(aggregates))
         return taken, overhead
 

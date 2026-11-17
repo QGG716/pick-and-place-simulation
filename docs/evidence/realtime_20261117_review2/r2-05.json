@@ -1,0 +1,12 @@
+{
+  "issue": "R2-05",
+  "before": "8193 actual gc_pause calls then write_later(since=...) raises TypeError synchronously",
+  "after": "3 tests passed: overflow+since, GC reentry/concurrency, observable writer failure",
+  "changes": [
+    "Report untimed bounded-queue overflow as an aggregate after timestamp filtering",
+    "No GC disabling, no buffer growth, no blanket exception suppression"
+  ],
+  "physical": "NOT_RUN",
+  "required_checks": "Shared merged-working-tree check: 609 passed; optimized/reference/native component PASS; final committed-SHA validation recorded separately",
+  "required_check_report": "r2-03.json"
+}
