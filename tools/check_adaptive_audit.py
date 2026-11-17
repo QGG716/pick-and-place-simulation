@@ -223,7 +223,7 @@ def main():
     passing = [r for r in results if r['adaptive']['native_valid'] and r['adaptive']['path_failure'] is None]
     graze_cases = [c for g in graze for c in g.get('cases', [])]
     report = dict(
-        schema='eco65_adaptive_audit_equivalence_v1', scope='SYNTHETIC_SCENE_RECORDS_AND_CONSTRUCTED_OBSTACLES_NOT_FIELD_DATA',
+        schema='eco65_adaptive_audit_equivalence_v1', scope='RECORDED_SENT_PATHS_NOT_PHYSICAL_ACCEPTANCE',
         collision_check_mode=args.collision_check_mode, inputs=[str(p) for p in args.records], seed=args.seed,
         totals=total(results), by_variant={k: total(v) for k, v in by_variant.items()},
         by_stage={s: total([r for r in results if r['stage'] == s and r['variant'] == 'recorded'])

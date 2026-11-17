@@ -1,0 +1,452 @@
+{
+  "task": "d99b1a8f5d71445395c158b3c353ca42",
+  "scope": "SUCCESSFUL_REAL_FIELD_RECORD_OFFLINE_FOUR_STAGE_COMPARISON",
+  "baseline": "0783e86",
+  "review": "abe36ae",
+  "complete_plan_equal_within_1e_12": true,
+  "plan_differences": [],
+  "failure_statistics_equal": true,
+  "failure_differences": [],
+  "baseline_planning_s": 432.9,
+  "review_planning_s": 430.69,
+  "baseline_plan": {
+    "candidate": 18,
+    "detach_profile": "DIAGONAL_45",
+    "active_seals": [
+      "part_008_seal",
+      "part_010_seal",
+      "part_014_seal",
+      "part_016_seal"
+    ],
+    "segments": [
+      {
+        "stage": "approach",
+        "points": 6433,
+        "send_duration_s": 32.160000000000004,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "PTP",
+          "velocity_scale": 1.0,
+          "acceleration_scale": 1.0,
+          "goal": "JOINT",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 1.25,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "contact",
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "LIN",
+          "velocity_scale": 0.25,
+          "acceleration_scale": 0.25,
+          "goal": "POSE",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 2.0,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "detach",
+        "points": 2454,
+        "send_duration_s": 12.265,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "LIN",
+          "velocity_scale": 0.1,
+          "acceleration_scale": 0.1,
+          "goal": "POSE",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 2.0,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "return",
+        "points": 6385,
+        "send_duration_s": 31.92,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "PTP",
+          "velocity_scale": 1.0,
+          "acceleration_scale": 1.0,
+          "goal": "JOINT",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 1.25,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      }
+    ],
+    "release": {
+      "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+      "pose": [
+        [
+          -0.17118365197042648,
+          -0.9832886264027919,
+          0.06196478423249869,
+          0.0084105673817951
+        ],
+        [
+          0.9820264617887939,
+          -0.16521277309962046,
+          0.09126208386464078,
+          -0.35105970868913033
+        ],
+        [
+          -0.07949959524834839,
+          0.07647363461772737,
+          0.9938971765548513,
+          0.29135879483032345
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "corners_m": [
+        [
+          0.09656696620720549,
+          -0.44154199288689666,
+          0.23933632043067266
+        ],
+        [
+          0.10332112768854786,
+          -0.43159442574565077,
+          0.3476711126751515
+        ],
+        [
+          -0.05232791310389483,
+          -0.46655940410349234,
+          0.2509163715887376
+        ],
+        [
+          -0.045573751622552464,
+          -0.4566118369622465,
+          0.35925116383321637
+        ],
+        [
+          0.062394886386142656,
+          -0.24550758041601417,
+          0.22346642582743054
+        ],
+        [
+          0.06914904786748502,
+          -0.23556001327476833,
+          0.3318012180719093
+        ],
+        [
+          -0.08649999292495765,
+          -0.2705249916326099,
+          0.23504647698549544
+        ],
+        [
+          -0.07974583144361529,
+          -0.260577424491364,
+          0.34338126922997425
+        ]
+      ],
+      "region": {
+        "ids": []
+      },
+      "q_return": [
+        1.5164467738877931,
+        0.2681523862764088,
+        -1.2080470950603952,
+        -0.5361127863350983,
+        1.5138462333023215,
+        1.3463469849884258
+      ],
+      "support_confirmed": false,
+      "qualification": {
+        "policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+        "qualification_deferred": true,
+        "basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
+        "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+        "support_confirmed": false
+      },
+      "basis": "SAME_LOCKED_Q_START_RECEIVING_NOT_QUALIFIED_COLLISION_CHECKS_REQUIRED"
+    },
+    "seal_check": {
+      "valid": true,
+      "observed_surface_covered": true,
+      "minimum_edge_margin_m": 0.021588975381514643,
+      "maximum_gap_m": 2.2505402754672307e-08,
+      "normal_error_rad": 3.407775350221791e-07,
+      "connected_cup_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_014_seal",
+        "part_016_seal"
+      ],
+      "terminal_lip_contact": {
+        "valid": true,
+        "minimum_plane_gap_m": -2.2681180300135928e-08,
+        "ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal",
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal",
+          "part_020_seal",
+          "part_022_seal",
+          "part_024_seal"
+        ]
+      }
+    }
+  },
+  "review_plan": {
+    "candidate": 18,
+    "detach_profile": "DIAGONAL_45",
+    "active_seals": [
+      "part_008_seal",
+      "part_010_seal",
+      "part_014_seal",
+      "part_016_seal"
+    ],
+    "segments": [
+      {
+        "stage": "approach",
+        "points": 6433,
+        "send_duration_s": 32.160000000000004,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "PTP",
+          "velocity_scale": 1.0,
+          "acceleration_scale": 1.0,
+          "goal": "JOINT",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 1.25,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "contact",
+        "points": 682,
+        "send_duration_s": 3.4050000000000002,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "LIN",
+          "velocity_scale": 0.25,
+          "acceleration_scale": 0.25,
+          "goal": "POSE",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 2.0,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "detach",
+        "points": 2454,
+        "send_duration_s": 12.265,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "LIN",
+          "velocity_scale": 0.1,
+          "acceleration_scale": 0.1,
+          "goal": "POSE",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 2.0,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      },
+      {
+        "stage": "return",
+        "points": 6385,
+        "send_duration_s": 31.92,
+        "planner": {
+          "pipeline_id": "pilz_industrial_motion_planner",
+          "planner_id": "PTP",
+          "velocity_scale": 1.0,
+          "acceleration_scale": 1.0,
+          "goal": "JOINT",
+          "configured_time_scale": 1.0,
+          "send_time_scale": 1.25,
+          "native_output_check": "DEFERRED_TO_SENT_PATH_CHECK"
+        },
+        "native_plan": "PASS",
+        "sent_path_collision": "PASS"
+      }
+    ],
+    "release": {
+      "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+      "pose": [
+        [
+          -0.17118365197042648,
+          -0.9832886264027919,
+          0.06196478423249869,
+          0.0084105673817951
+        ],
+        [
+          0.9820264617887939,
+          -0.16521277309962046,
+          0.09126208386464078,
+          -0.35105970868913033
+        ],
+        [
+          -0.07949959524834839,
+          0.07647363461772737,
+          0.9938971765548513,
+          0.29135879483032345
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "corners_m": [
+        [
+          0.09656696620720549,
+          -0.44154199288689666,
+          0.23933632043067266
+        ],
+        [
+          0.10332112768854786,
+          -0.43159442574565077,
+          0.3476711126751515
+        ],
+        [
+          -0.05232791310389483,
+          -0.46655940410349234,
+          0.2509163715887376
+        ],
+        [
+          -0.045573751622552464,
+          -0.4566118369622465,
+          0.35925116383321637
+        ],
+        [
+          0.062394886386142656,
+          -0.24550758041601417,
+          0.22346642582743054
+        ],
+        [
+          0.06914904786748502,
+          -0.23556001327476833,
+          0.3318012180719093
+        ],
+        [
+          -0.08649999292495765,
+          -0.2705249916326099,
+          0.23504647698549544
+        ],
+        [
+          -0.07974583144361529,
+          -0.260577424491364,
+          0.34338126922997425
+        ]
+      ],
+      "region": {
+        "ids": []
+      },
+      "q_return": [
+        1.5164467738877931,
+        0.2681523862764088,
+        -1.2080470950603952,
+        -0.5361127863350983,
+        1.5138462333023215,
+        1.3463469849884258
+      ],
+      "support_confirmed": false,
+      "qualification": {
+        "policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+        "qualification_deferred": true,
+        "basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
+        "status": "RECEIVER_QUALIFICATION_DEFERRED_BY_USER",
+        "support_confirmed": false
+      },
+      "basis": "SAME_LOCKED_Q_START_RECEIVING_NOT_QUALIFIED_COLLISION_CHECKS_REQUIRED"
+    },
+    "seal_check": {
+      "valid": true,
+      "observed_surface_covered": true,
+      "minimum_edge_margin_m": 0.021588975381514643,
+      "maximum_gap_m": 2.2505402754672307e-08,
+      "normal_error_rad": 3.407775350221791e-07,
+      "connected_cup_ids": [
+        "part_008_seal",
+        "part_010_seal",
+        "part_014_seal",
+        "part_016_seal"
+      ],
+      "terminal_lip_contact": {
+        "valid": true,
+        "minimum_plane_gap_m": -2.2681180300135928e-08,
+        "ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_006_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_012_seal",
+          "part_014_seal",
+          "part_016_seal",
+          "part_018_seal",
+          "part_020_seal",
+          "part_022_seal",
+          "part_024_seal"
+        ]
+      }
+    }
+  },
+  "source_record_unchanged": true,
+  "execution_permits": 0,
+  "physical_acceptance": "NOT_RUN",
+  "wall_time_qualification": "Concurrent local build/replay/audit load: not isolated p95; two historical field inputs, not 20 fresh cases",
+  "OMPL_success_coverage": false,
+  "winning_candidate_native_path_hashes": {
+    "baseline": {
+      "return": [
+        "3a5d3b1562520e0724eb7e79ade055e57b7eb8ec3e2b99503976f6b6cdf1b77c"
+      ],
+      "contact": [
+        "03ed38fe85aa780fbb14031c38b9ad2df50da7d560dfc86b923ffb6cdbad70d3"
+      ],
+      "approach": [
+        "1f19ecdae2011ad077d1fc8b0237f037edf7970a958765e62171c5e6ea0f8d99"
+      ],
+      "detach": [
+        "2a25b550c693d7dc40f627f67c412a248b7f0942aeefb417041823472af0ca28"
+      ]
+    },
+    "head": {
+      "return": [
+        "3a5d3b1562520e0724eb7e79ade055e57b7eb8ec3e2b99503976f6b6cdf1b77c"
+      ],
+      "contact": [
+        "03ed38fe85aa780fbb14031c38b9ad2df50da7d560dfc86b923ffb6cdbad70d3"
+      ],
+      "approach": [
+        "1f19ecdae2011ad077d1fc8b0237f037edf7970a958765e62171c5e6ea0f8d99"
+      ],
+      "detach": [
+        "2a25b550c693d7dc40f627f67c412a248b7f0942aeefb417041823472af0ca28"
+      ]
+    }
+  },
+  "winning_native_paths_exactly_identical": true
+}
