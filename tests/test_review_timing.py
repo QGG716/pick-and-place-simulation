@@ -28,3 +28,15 @@ for x in writers:x.join()
 assert once[0]
 '''
     subprocess.run([sys.executable,'-c',code,str(tmp_path)],env=dict(os.environ,ECO65_TIMING='1'),check=True,timeout=15)
+
+
+def test_background_timing_write_failure_is_observable(tmp_path):
+    code="""
+import sys
+from pathlib import Path
+from unloading_sim.workbench import timing as t
+thread=t.write_later(Path(sys.argv[1])/'missing'/'timing.json','fault')
+thread.join(2)
+assert not thread.is_alive() and isinstance(thread.error,FileNotFoundError)
+"""
+    subprocess.run([sys.executable,'-c',code,str(tmp_path)],env=dict(os.environ,ECO65_TIMING='1'),check=True,timeout=5)

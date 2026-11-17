@@ -305,8 +305,9 @@ def write_later(path, phase, extra=None, since=None):
     def run():
         try:
             Path(path).write_text(json.dumps(payload, default=str))
-        except Exception:
-            pass
+        except Exception as error:
+            thread.error = error
     thread = threading.Thread(target=run, daemon=True, name='timing-writer')
+    thread.error = None
     thread.start()
     return thread
