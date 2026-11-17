@@ -10,6 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def manager(tmp_path, policy, *, generation=1, binding_error=None):
+    import threading
+    from unloading_sim.workbench.controlled.trajectory import Authority
+    authority = Authority('eco65_single_carton_segment_v1')
+    binding_record = {}
+    segments = [dict(package=authority.register({}, binding_record,
+        dict(native_plan='PASS', sent_path_collision='PASS'))) for _ in range(4)]
     events = []; started = []; saved = []
     class Journal:
         error = None; thread = SimpleNamespace(is_alive=lambda: True)
@@ -21,10 +27,10 @@ def manager(tmp_path, policy, *, generation=1, binding_error=None):
     m = SimpleNamespace(
         cycle=SimpleNamespace(state='PLAN_READY', active=False, start=lambda: started.append(1)),
         journal=Journal(), _enter=lambda: None, busy=True, phase='PLAN_READY',
-        planner=SimpleNamespace(authority=SimpleNamespace(invalidate=lambda: None), binding=binding),
-        observation=SimpleNamespace(generation=1), backend=SimpleNamespace(observation_generation=generation),
+        planner=SimpleNamespace(authority=authority, binding=binding),
+        observation=SimpleNamespace(generation=1), backend=SimpleNamespace(observation_generation=generation, observation_lock=threading.RLock()),
         stop_event=SimpleNamespace(is_set=lambda: False), config=dict(policy), progress=lambda text: events.append(dict(progress=text)),
-        save_observation=lambda o, name: saved.append(name), result=SimpleNamespace(masks=[None]), plan=dict(target=dict(detection_index=0)),
+        save_observation=lambda o, name: saved.append(name), result=SimpleNamespace(masks=[None]), plan=dict(target=dict(detection_index=0), binding=binding_record, segments=segments),
         service=None, model=None, calibration=None, rejected=[])
     m.reject = lambda e: m.rejected.append(str(e))
     return m, events, started, saved

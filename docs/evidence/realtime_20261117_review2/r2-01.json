@@ -1,0 +1,65 @@
+{
+  "issue": "R2-01",
+  "base": "9ba28a6080b3b248028772b6a08c870e5107c231",
+  "physical": "NOT_RUN",
+  "before": "3 failed, 1 passed: actual NPZ barrier; stale observation/session/permit still started",
+  "after": "42 focused cases; required suite 573 passed",
+  "retained_failures": "First required suite: 571 passed, 2 missing-lock fake fixture failures; fixtures now initialize the production lock",
+  "checks": {
+    "stage": "r2-01-final",
+    "head": "9ba28a6080b3b248028772b6a08c870e5107c231",
+    "physical": "NOT_RUN",
+    "checks": [
+      {
+        "name": "pytest",
+        "command": [
+          "bash",
+          "-c",
+          "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_start_boundary.py"
+        ],
+        "returncode": 0,
+        "elapsed_s": 124.98425440000028,
+        "log": "outputs/review2_20261117/r2-01-final/pytest.log"
+      },
+      {
+        "name": "optimized",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test optimized"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.09946524099996168,
+        "log": "outputs/review2_20261117/r2-01-final/optimized.log"
+      },
+      {
+        "name": "reference",
+        "command": [
+          "bash",
+          "-c",
+          "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test reference"
+        ],
+        "returncode": 0,
+        "elapsed_s": 0.09936807100075384,
+        "log": "outputs/review2_20261117/r2-01-final/reference.log"
+      },
+      {
+        "name": "native_component",
+        "command": [
+          ".venv/bin/python",
+          "tools/check_eco65_single_carton_native.py",
+          "--output",
+          "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/r2-01-final/native-component"
+        ],
+        "returncode": 0,
+        "elapsed_s": 22.95623628999965,
+        "log": "outputs/review2_20261117/r2-01-final/native_component.log"
+      }
+    ]
+  },
+  "source_sha256": {
+    "src/unloading_sim/workbench/backend.py": "ccab614ac10e6cd330d68475bbb9f3688533ccef899e63112915425f597a360b",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "3b7ecea582dd23988a50a094b4fa07c1d9c973d58aaee5357cf8beb8baea1952",
+    "tests/test_review2_start_boundary.py": "1beac1a044e54005f4023583c6d89e7307bd2f9d6afccf8b00f6d1973065f5dd"
+  }
+}

@@ -151,10 +151,23 @@ class WorkbenchBackend:
         self.replay = None
         self.replay_active = False
         self.replay_exhausted = False
+        self.observation_lock = threading.RLock()
         self.observation_generation = 0
         self.manual_stationary = False
         self.sample_cutoff = {name: monotonic_ns() for name in self.workers}
         self.log("READ_ONLY_STAGE_1; all devices disconnected; physical execution unavailable")
+
+    @property
+    def observation_generation(self):
+        with self.observation_lock:
+            return self._observation_generation
+
+    @observation_generation.setter
+    def observation_generation(self, value):
+        # The single-carton startup boundary holds this same lock. A session
+        # transition is ordered either before that boundary or after startup.
+        with self.observation_lock:
+            self._observation_generation = value
 
     def log(self, message):
         from datetime import datetime

@@ -853,3 +853,7 @@ F：补齐原生 prepare 的限值检查；内部 START/END 日志打开、写�
 两条均为真实 640×480@30fps RGB-D，恢复 1 个箱体；现场碰撞物体分别 39 / 37，仿真设备导入数均为 0。恢复中心相差约 6.63 cm。每条原 RGB-D、分割、几何、现场场景及两阶段计时完整保留在 `outputs/realtime-field-20261117/`；另一个仅准备观测的目录 `fba38e2500aa45d48144df3b5c2c25f4` 保留但不额外计作不同箱位。
 
 两条均无完整可执行计划；119 秒左右是失败返回时间，不是 PLAN_READY 时延。21 个候选搜索预算耗尽不证明物理无解。两个样本不能确认有代表性的 p95，不修订预算或放宽限值。新输入的旧版/新版完整回放及 native 等价性检查仍待运行，物理抓放与部分遮挡实箱抓放验收均 NOT_RUN。摘要及输入 SHA-256：`docs/evidence/realtime_20261117_two_field_cases/report.json`。
+
+## 2026-11-17 复审 R2-01：最终证据 barrier 后的启动边界
+
+真实 EvidenceWriter/NPZ 阻塞期间使观测、会话或许可失效，旧代码 3 项失败；最终 barrier 后重新验证取消、观测代次及全部许可，并用后台观测锁排序代次更新与首次启动。许可仍在 submit 原子领取；停止信号在等待锁前发出。定向集最终 573 passed；首轮 2 个缺少新锁的 fake fixture 失败保留，已补齐初始化。optimized/reference 和原生组件均 PASS。见 `docs/evidence/realtime_20261117_review2/r2-01.json`。实机、2 s p95 与物理验收 NOT_RUN；执行锁与保护配置未改。

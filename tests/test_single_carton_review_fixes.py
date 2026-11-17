@@ -266,6 +266,7 @@ def test_camera_session_change_stops_even_a_loaded_cycle_and_keeps_ticking(holdi
 
 def bare_backend():
     b=object.__new__(SingleBackend);owner=SimpleNamespace(min_received_s=0.)
+    b.observation_lock=threading.RLock()
     b.workers={'camera':None,'robot':None,'vacuum':SimpleNamespace(device=SimpleNamespace(owner=owner))}
     b.observation_generation=0;b.sample_cutoff={k:0 for k in b.workers}
     b.manual_stationary=False;b.frame=b.joint=b.pressure=b.detections=None

@@ -266,9 +266,19 @@ class TaskManager:
             if self.stop_event.is_set():raise ValueError('CANCELLED')
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             flush_task_records(self)
-            if self.stop_event.is_set():raise ValueError('CANCELLED')
-            with timing.span('execute.cycle_start'):self.cycle.start()
-            self.phase=self.cycle.state
+            # Disk barriers may block across a device/session transition. Order
+            # the final check and startup against all backend generation writes.
+            with self.backend.observation_lock:
+                if self.stop_event.is_set():raise ValueError('CANCELLED')
+                if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+                with self.planner.authority._lock:
+                    for segment in self.plan['segments']:
+                        self.planner.authority.verify(segment['package'],self.plan['binding'])
+                # submit still claims its permit atomically; a revocation after
+                # verification is refused there. Never hold its lock across IO.
+                if self.stop_event.is_set():raise ValueError('CANCELLED')
+                with timing.span('execute.cycle_start'):self.cycle.start()
+                self.phase=self.cycle.state
         except Exception as e:
             self.planner.authority.invalidate()
             if self.cycle and self.cycle.active:self.cycle.stop(str(e))
@@ -298,11 +308,12 @@ class TaskManager:
             else:path.write_text(json.dumps(record,indent=2))
         self.notify('error',self.reason)
     def stop(self):
-        self.stop_event.set();self.service.request_stop();self.planner.authority.invalidate();self.vacuum.inhibit()
+        self.stop_event.set()
+        if self.cycle:self.cycle.stop_requested.set()
+        self.service.request_stop();self.planner.authority.invalidate();self.vacuum.inhibit()
         # A Cycle tick may currently hold its lock across an IPC read. Signal
         # immediately; the independent supervisor performs the locked transition.
         # Tk must not wait for either this lock or inference completion.
-        if self.cycle:self.cycle.stop_requested.set()
     def _monitor(self):
         # This thread is the cycle's only ticker: it must survive any error.
         # A failure stops an active cycle (never releasing a load) and the next
