@@ -233,14 +233,29 @@
       "url": "https://github.com/QGG716/pick-and-place-simulation/commit/55f8041eba107ecf39b8de34e3b0948a47d300d7"
     },
     {
+      "sha": "fa24d860982d1ead018cd3d3e51d3de71b5f8859",
+      "title": "test: record field-PC realtime review and guard observation-only collection",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/fa24d860982d1ead018cd3d3e51d3de71b5f8859"
+    },
+    {
       "sha": "b2bb3274c316ae3f32978a06575a2eb0e3172bbc",
       "title": "fix(eco65): report background worker cleanup failures",
       "url": "https://github.com/QGG716/pick-and-place-simulation/commit/b2bb3274c316ae3f32978a06575a2eb0e3172bbc"
+    },
+    {
+      "sha": "24b576f89c2f192889f7cdba876c75f83246d522",
+      "title": "docs(eco65): record merged validation and preserve all failed acceptance samples",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/24b576f89c2f192889f7cdba876c75f83246d522"
+    },
+    {
+      "sha": "62609f3c13d135412dc48f7881d76ca3da1fb664",
+      "title": "Merge commit 'fa24d860982d1ead018cd3d3e51d3de71b5f8859' into HEAD",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/62609f3c13d135412dc48f7881d76ca3da1fb664"
     }
   ],
   "verification_source_snapshot": "4ecc5ee (A-F before concurrent incident merge); verification.json remains immutable historical evidence",
   "code_status": "A_F_IMPLEMENTED_WITH_RECORDED_ACCEPTANCE_GAPS",
-  "final_code_commit": "b2bb3274c316ae3f32978a06575a2eb0e3172bbc",
+  "final_code_commit": "62609f3c13d135412dc48f7881d76ca3da1fb664",
   "merged_verification": "merged-verification.json",
   "premerge_acceptance": {
     "directed_pytest": "575 passed; 1 preexisting failure",
@@ -265,5 +280,14 @@
     "full_scheduling": "NO_COMPLETE_SAMPLES; both fake runs retained as failures",
     "physical": "NOT_RUN"
   },
-  "commit_inventory_note": "Includes all implementation, merge and prior evidence commits. The containing final evidence commit is available from Git history and the delivery response."
+  "commit_inventory_note": "Includes all implementation, merge and prior evidence commits. The containing final evidence commit is available from Git history and the delivery response.",
+  "second_incoming_commit": {
+    "sha": "fa24d860982d1ead018cd3d3e51d3de71b5f8859",
+    "merge_commit": "62609f3c13d135412dc48f7881d76ca3da1fb664",
+    "status": "MERGED_AND_TESTED",
+    "verification": "collection-merge.json",
+    "changes": "Reports, collection guards and tools only; src/ros2/configs unchanged from previously tested implementation.",
+    "tests": "2 PASSED",
+    "collector_started": false
+  }
 }

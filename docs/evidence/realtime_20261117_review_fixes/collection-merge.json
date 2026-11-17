@@ -1,0 +1,25 @@
+{
+  "scope": "SECOND_CONCURRENT_MERGE_TOOLS_FAKE_IO_ONLY",
+  "tests": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "2",
+      "time": "1.041",
+      "timestamp": "2026-11-17T11:49:53.635238+08:00",
+      "hostname": "autodl-container-76f241ba43-274ca81a"
+    }
+  ],
+  "source_sha256_lf": {
+    "tests/test_realtime_field_collection.py": "88119cc70171829b282a0dcd72640107493144747fdcafcda297dd2cfc7d9825",
+    "tools/check_adaptive_audit.py": "f8a55ea85a9b64c8c39d113562a947e2388fccaaf4dc2bdcfb61d19d2276cfd9",
+    "tools/check_collision_equivalence.py": "9a2c43545193f663255133a6967bf751d2096a21111fa2b293a390f65583923a",
+    "tools/check_native_prepare.py": "b11664b21d1eed6167355b4270409f75909562f378bac8fc133dda85b2bd48b6",
+    "tools/check_step4_mechanisms.py": "536f8da0df9a7f6e1e9b7bd0fc121fd9b497ba4eab441e0c9c3bfb1b93aa41bf",
+    "tools/collect_realtime_field_records.py": "70af58afdeb2f1c1044aba6142dc352d79426d2de556899be7be944bf82a4cea"
+  },
+  "collector_invoked": false,
+  "hardware_execution": "NOT_RUN"
+}
