@@ -905,3 +905,11 @@ Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存
 ### 2026-11-17 R2-03 离线回放计数补充
 
 最终复核发现回放入口还有一处独立的 DONE 赋值，现同步记录 accepted 与 SEARCH_SUCCEEDED；真实回放入口的 fake 回归断言胜出候选已搜索且 unsearched=0。相关 10 项通过，原生产规划修复保持不变。后续固定提交统一验证结果见本轮总报告；物理 NOT_RUN。
+
+## 2026-11-17 复审 R2 最终代码与独立验证
+
+固定代码 `48043b4e84a6c2e4f52b850590e2ccabbee29670`：本地完整定向集 656 passed；GPU 使用已有依赖环境的最终完整组 655 passed、1 个既有 prior 几何失败，无跳过/环境错误。本地与 GPU 的 optimized/reference/two_level/adaptive、实际 C++ limits/journal/path 契约、单箱原生组件均 PASS。GPU 首轮 167.733 ms 返回超过原 100 ms + 50 ms 门槛，虽最终组通过仍保留 NOT_STABLY_PASSED。
+
+两份真实保存帧各 32 候选的终态预检 PYTHON/NATIVE 一致，2413/2379 次回放调用均 unused=0；这是终态预检，没有完整四段规划或许可。本地 27 条保存轨迹的 193 个 prepare 案例在原 1e-12 门槛下通过；GPU 同一输入仅 160/193 一致，33 个数值不合格，最大加速度差 1.83836e-8；旧服务器样例的 9.31583e-12 失败亦重现。两端输入/构建/环境及失败分别保留，未放宽阈值。
+
+R2-01～R2-06 与三个集成补充项已实现；执行锁、40 mm 间隙、腕部限制及默认模块/优化开关未改。本轮未连接现场设备、未采集、未运动或写阀。steps_1_to_7_accepted=false、完整调度 NO_COMPLETE_SAMPLES、新 20 输入未完成、2 s 完整规划目标未证明、物理 NOT_RUN，跨请求工作区复用未开始。详见 [复审修复总报告](realtime_review2_fixes_2026-11-17.md) 与 [结构化证据](evidence/realtime_20261117_review2/report.json)。

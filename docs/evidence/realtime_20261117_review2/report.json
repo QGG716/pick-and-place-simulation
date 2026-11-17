@@ -1,0 +1,142 @@
+{
+  "schema": "eco65_review2_correctness_fixes_v1",
+  "date": "2026-11-17",
+  "repository": "QGG716/pick-and-place-simulation",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "review_base": "2bd36a93063eeae77c05ad263abfaa9f62bf7f2a",
+  "actual_start_head": "9ba28a6080b3b248028772b6a08c870e5107c231",
+  "final_code_sha": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+  "documentation_commit": "Containing commit in Git history; source and tests unchanged after final_code_sha",
+  "verification": "verification.json",
+  "human_report": "../../realtime_review2_fixes_2026-11-17.md",
+  "commits": [
+    {
+      "sha": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "title": "fix(eco65): retain accepted candidate counts in offline replay"
+    },
+    {
+      "sha": "4ce654b8d12a1d8862370fbc250c5aa0432bd41a",
+      "title": "fix(eco65): report full-cohort timing coverage and collector discovery"
+    },
+    {
+      "sha": "5b99ddcc62a0f952c71a4fb5f5442139bc34b7a6",
+      "title": "fix(eco65): retain bounded GC overflow outside timestamp filtering"
+    },
+    {
+      "sha": "1d65f9a8b8f4cabee8d731e6ae69dd69a8d91604",
+      "title": "fix(eco65): reject and close workers created across shutdown"
+    },
+    {
+      "sha": "a426c0285314dbc01498b1f53fde98291efdf0ee",
+      "title": "fix(eco65): bound durable plan publication and classify finishing timeouts"
+    },
+    {
+      "sha": "a5321548878ff07ebabb2670b4bc9aa5e8bd1c01",
+      "title": "fix(eco65): match native composite wrist decisions and cancellation"
+    },
+    {
+      "sha": "d3359038a25ca19e409283e8132f145189008fcb",
+      "title": "feat: visualize archived field planning failures without hardware IO"
+    },
+    {
+      "sha": "123033fbaf882a375bd296dc41d4e29f812225c0",
+      "title": "fix(eco65): revalidate execution after the final evidence barrier"
+    }
+  ],
+  "issues": [
+    {
+      "id": "R2-01",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-01.json"
+    },
+    {
+      "id": "R2-02",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-02.json"
+    },
+    {
+      "id": "R2-03",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-03.json"
+    },
+    {
+      "id": "R2-04",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-04.json"
+    },
+    {
+      "id": "R2-05",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-05.json"
+    },
+    {
+      "id": "R2-06",
+      "status": "IMPLEMENTED_WITH_DIRECTED_REGRESSIONS",
+      "evidence": "r2-06.json"
+    }
+  ],
+  "supplemental": [
+    "all NativeFlow scene handle uploads receive cancelled",
+    "separate caller return/request finish/cleanup timestamps",
+    "accepted candidate remains searched during finalization timeout, including offline replay",
+    "collector discovery paths and full-entry timing command aligned"
+  ],
+  "acceptance": {
+    "steps_1_to_7_accepted": false,
+    "local_directed": "656 PASSED",
+    "gpu_directed": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "656",
+        "time": "475.742",
+        "timestamp": "2026-11-17T21:06:33.474607+08:00",
+        "hostname": "autodl-container-76f241ba43-274ca81a"
+      }
+    ],
+    "native_clearance": "ALL FOUR MODES PASS LOCALLY AND ON GPU HOST",
+    "native_contracts": "LIMITS/JOURNAL/PATH PASS LOCALLY AND ON GPU HOST",
+    "native_component": "PASS LOCALLY AND ON GPU HOST; SYNTHETIC NOT FULL CYCLE",
+    "deadline_bound": "NOT_STABLY_PASSED",
+    "deadline_failure": {
+      "budget_s": 0.1,
+      "limit_s": 0.15,
+      "returned_s": 0.1677334059495479,
+      "test": "test_tail_stages_are_transactional_and_bounded[True-plan_record]",
+      "note": "Retained even if later full run passes; OS causality not established; subsequent assertions in failing case were not reached"
+    },
+    "prepare_numeric": "FAILED_UNCHANGED_1e-12",
+    "full_scheduling": "NO_COMPLETE_SAMPLES",
+    "new_field_20_samples": "NOT_COMPLETED",
+    "planning_p95_2s": "NOT_PROVEN; archived full-entry samples have zero successful PLAN_READY",
+    "success_rate_baseline": "NOT_COMPARED",
+    "physical": "NOT_RUN",
+    "workspace_reuse": "NOT_IMPLEMENTED"
+  },
+  "invariants": {
+    "config_and_assets_changed_from_start": false,
+    "execution_lock": "LOCKED",
+    "tool_robot_gap_m": 0.04,
+    "wrist_limits": "PRESERVED",
+    "module_defaults_and_optimization_switches": "UNCHANGED",
+    "hardware_connections": false,
+    "motion_or_valve_commands": false,
+    "new_device_collection": false,
+    "git_history_rewritten": false
+  },
+  "retained_failures": [
+    "per-issue before logs",
+    "R2-01 first required set: missing-lock fake fixtures, corrected",
+    "R2-03 first combined set: restored original BEFORE_DISPATCH label",
+    "GPU setup ENOSPC; only task-owned copies replaced with verified hardlinks",
+    "Host lacks MTC development and JSON headers; existing chroot reused",
+    "GPU first interrupted run: 66 passed / 1 failed (no request reached inside 5 s); retained",
+    "GPU first completed run: 636 passed / 2 failed / 18 missing-header errors",
+    "Existing prior-geometry failure",
+    "Deadline 167.733 ms exceeds unchanged 150 ms",
+    "GPU numeric old sample and same saved-record cohort both fail"
+  ],
+  "next_stage": "Separate worker-local complete-context collision workspace reuse design, construction-count/time and exact decision comparisons; no implementation in this round"
+}

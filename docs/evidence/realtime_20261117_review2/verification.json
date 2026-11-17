@@ -1,0 +1,2191 @@
+{
+  "schema": "eco65_review2_verification_v1",
+  "code_sha": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+  "physical": "NOT_RUN",
+  "source_sha256": {
+    "configs/workbench/planning_budget.json": "a54c42efe165e8c07ab0e4343b30433dfd80cbad466fa36ec47fe19d794799eb",
+    "configs/workbench/single_carton.example.json": "de2289fad56cad78b9c1372075d8384428768d9aa43f6f30c44963107b3714b1",
+    "outputs/workbench/scene_snapshot.json": "02c1384bae3638a04324714d2a6cc83689c2dba390587ceaf87a75331e848ed9",
+    "ros2/m710_moveit_backend/src/clearance.h": "0bdf7be5b15f51ec3300e992560f5adcfc5f7ddf3d8ac72e866bcae5be69ff09",
+    "ros2/m710_moveit_backend/src/native_prepare.h": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451",
+    "ros2/m710_moveit_backend/src/sc_composite.h": "a9709fba3e1e1614572e5bae2607807f9fafe6c2bef9d4afad4c82995b085e83",
+    "ros2/m710_moveit_backend/src/worker.cpp": "40aa8ee795daf826d3643f371076f62b8084c533a79d9868d49af94312f689d2",
+    "src/unloading_sim/workbench/backend.py": "cdbcae8e5fc221c244c20af1471efa346eaa158d14277e939e7dd0ab70321eb7",
+    "src/unloading_sim/workbench/single_carton/budget.py": "6bdd08931386f9418dbe9e15901451491442596a2940c5dc10db47a87d429d69",
+    "src/unloading_sim/workbench/single_carton/config.py": "376b3c519e8d5100d8833cdffc8881ea719c11ddfb924f54ad70a4f92b8ee483",
+    "src/unloading_sim/workbench/single_carton/lifecycle.py": "6f6dd92fdc13ef5fb9b6bab0bf5d40a61fb1a181447f92e9c0ce49f0cd07488c",
+    "src/unloading_sim/workbench/single_carton/native_flow.py": "90a9e4540ffe620479396d5478009269f15458219455197eed128fa184c3bce7",
+    "src/unloading_sim/workbench/single_carton/planner.py": "ba699df7a40e4afbfa9c049be92676d8273de3f1aa73042f11c4a730c6d489c7",
+    "src/unloading_sim/workbench/single_carton/resident.py": "3e0647ba8ee625cee28a9c4abfc81cc8e496b50567e10c00991ed9847b9be5ab",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "3b7ecea582dd23988a50a094b4fa07c1d9c973d58aaee5357cf8beb8baea1952",
+    "src/unloading_sim/workbench/timing.py": "b61efefd3f413c0f79dd28d8d5d51f970a3d6bff4f5aa63ad8a95a0d2f2a7fdc",
+    "tests/native_review2_composite.cpp": "a7ad9abb8e24e9e2ed10bc25ebee8a9ebadc81017b88a2e3a9489084f5575432",
+    "tests/native_review_contracts.cpp": "92202fd5408c18eeeb301a296bf3782c8808baa4399d21e69e80981c14b8a5ba",
+    "tests/test_review2_close_races.py": "1d6d5386f5a793430bd32a454bda3f831f718da30d00eb1033d441caf3c20ad1",
+    "tests/test_review2_commit_budget.py": "ec5955ad9f998f79562da05c2fb175a58bd53ec3cb64925958e72f2282b56ae0",
+    "tests/test_review2_metrics.py": "662c6cdc37db37b50eee378b9c9401c1c32298dcecae7bbca4a5e1f1e98107bf",
+    "tests/test_review2_start_boundary.py": "bf939215de5dfd355bc88ed8dff7ddfde6363dff03ecaf8ebcb4a162b03b27f1",
+    "tests/test_review2_timing.py": "98b69d460426cf150ccca7497fed01e51ef8530cddb4308a7bf6850b4b0062c0",
+    "tests/test_review2_wrist_composite.py": "4ac96f088b44c2dfddad16f7c21576427a73bb1fe90e1a9160243031f3deaaa9",
+    "tests/test_review_metrics.py": "20fd59975a7867136aa83694dd89bfc4e91797a789d4f5365bb84755d11b04a5",
+    "tests/test_single_carton_bench.py": "383da01a53f8dfd90943dab5ee533fcd73ce83d707057a2bc0311e304f1d1578",
+    "tests/test_single_carton_pre_execute.py": "ae6295f48ee190fb74fd0943674ec9869d278eea14210bd8397d1348ac481f3c",
+    "tests/test_single_carton_review_fixes.py": "ca78788394eb9b54ce1f3f73f7adfba7505a69723d633812cb602745baedfab5",
+    "tools/bench_planning_latency.py": "0483396e579067f30aed6cc54e97cf8e6df3fe034e637c249f44a942bd61ed0b",
+    "tools/replay_single_carton_record.py": "95db6bc672e40f3c58e91a095de57fbf0629d6e8a71409aa5a8f7ea1e2833b08",
+    "tools/search_replay/field_failures.html": "f7e6f9b2398a16df6d41b688fe3442dc54cebfa172ffb7c47a8669f163daef14",
+    "tools/visualize_field_planning_failures.py": "f3d93cfb02d96d040425fa9dd946578f2fb15aec7039ffc1a787133612ae8e64"
+  },
+  "local": {
+    "environment": {
+      "head": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "python": "3.10.12",
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "kernel": "6.8.0-149-generic",
+      "files": {
+        "install/moveit/lib/m710_moveit_backend/m710_moveit_worker": "2454edf98daad2c101b37f4a6e9974ff6a217371e041384df803157c5be11de6",
+        "build/moveit/m710_clearance_test": "2d8d72e41fd2fcc8086e0c2f9113a726c7197e2afbabd15113e872ccf9e70e90",
+        "ros2/m710_moveit_backend/src/sc_composite.h": "a9709fba3e1e1614572e5bae2607807f9fafe6c2bef9d4afad4c82995b085e83",
+        "ros2/m710_moveit_backend/src/native_prepare.h": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451"
+      }
+    },
+    "checks": {
+      "stage": "final-committed",
+      "head": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "physical": "NOT_RUN",
+      "checks": [
+        {
+          "name": "pytest",
+          "command": [
+            "bash",
+            "-c",
+            "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_*.py tests/test_review_*.py tests/test_realtime_field_collection.py"
+          ],
+          "returncode": 0,
+          "elapsed_s": 186.2340990069997,
+          "log": "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/final-committed/pytest.log"
+        },
+        {
+          "name": "optimized",
+          "command": [
+            "bash",
+            "-c",
+            "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test optimized"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.10019054599979427,
+          "log": "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/final-committed/optimized.log"
+        },
+        {
+          "name": "reference",
+          "command": [
+            "bash",
+            "-c",
+            "source /opt/ros/humble/setup.bash && exec build/moveit/m710_clearance_test reference"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.0901432480004587,
+          "log": "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/final-committed/reference.log"
+        },
+        {
+          "name": "native_component",
+          "command": [
+            ".venv/bin/python",
+            "tools/check_eco65_single_carton_native.py",
+            "--output",
+            "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/final-committed/native-component"
+          ],
+          "returncode": 0,
+          "elapsed_s": 13.068171910999808,
+          "log": "/home/jd/下载/code/eco65 pick and place/outputs/review2_20261117/final-committed/native_component.log"
+        }
+      ]
+    },
+    "native_contracts": {
+      "status": "PASS",
+      "modes": [
+        "limits",
+        "journal",
+        "path"
+      ],
+      "clearance_extra": [
+        "two_level",
+        "adaptive"
+      ],
+      "code_sha": "4ce654b8d12a1d8862370fbc250c5aa0432bd41a",
+      "note": "src/ and ros2/ are byte-identical to final code SHA"
+    }
+  },
+  "gpu": {
+    "environment": {
+      "head": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "python": "3.10.12",
+      "numpy": "1.26.4",
+      "scipy": "1.14.1",
+      "kernel": "5.15.0-78-generic",
+      "files": {
+        "install/moveit/lib/m710_moveit_backend/m710_moveit_worker": "8e59b2b14990392792aa0bb9312c1fc3b2b39450c13868ef8107ebd43c07a376",
+        "build/chroot-review2/m710_clearance_test": "2d8d72e41fd2fcc8086e0c2f9113a726c7197e2afbabd15113e872ccf9e70e90",
+        "ros2/m710_moveit_backend/src/sc_composite.h": "a9709fba3e1e1614572e5bae2607807f9fafe6c2bef9d4afad4c82995b085e83",
+        "ros2/m710_moveit_backend/src/native_prepare.h": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451"
+      }
+    },
+    "native": {
+      "head": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "physical": "NOT_RUN",
+      "environment_overrides": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "LD_LIBRARY_PATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/install/moveit/lib:/root/m710-gap-search-20261107/rootfs/opt/ros/humble/lib:/root/m710-gap-search-20261107/rootfs/opt/ros/humble/lib/x86_64-linux-gnu:/root/m710-gap-search-20261107/rootfs/usr/lib/x86_64-linux-gnu",
+        "AMENT_PREFIX_PATH": "/root/m710-gap-search-20261107/rootfs/opt/ros/humble"
+      },
+      "checks": [
+        {
+          "name": "clearance-optimized",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/build/chroot-review2/m710_clearance_test",
+            "optimized"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.07252676994539797,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/clearance-optimized.log"
+        },
+        {
+          "name": "clearance-reference",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/build/chroot-review2/m710_clearance_test",
+            "reference"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.05088624800555408,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/clearance-reference.log"
+        },
+        {
+          "name": "clearance-two_level",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/build/chroot-review2/m710_clearance_test",
+            "two_level"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.056358602829277515,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/clearance-two_level.log"
+        },
+        {
+          "name": "clearance-adaptive",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/build/chroot-review2/m710_clearance_test",
+            "adaptive"
+          ],
+          "returncode": 0,
+          "elapsed_s": 5.959523622877896,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/clearance-adaptive.log"
+        },
+        {
+          "name": "header-build",
+          "command": [
+            "g++",
+            "-std=c++17",
+            "-O1",
+            "-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src",
+            "-I/usr/include/eigen3",
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review_contracts.cpp",
+            "-o",
+            "/root/autodl-tmp/eco65-review2-20261117/native-review-contracts"
+          ],
+          "returncode": 0,
+          "elapsed_s": 12.91074086795561,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/header-build.log"
+        },
+        {
+          "name": "header-limits",
+          "command": [
+            "/root/autodl-tmp/eco65-review2-20261117/native-review-contracts",
+            "limits"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.004931289004161954,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/header-limits.log"
+        },
+        {
+          "name": "header-journal",
+          "command": [
+            "/root/autodl-tmp/eco65-review2-20261117/native-review-contracts",
+            "journal"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.005233098985627294,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/header-journal.log"
+        },
+        {
+          "name": "header-path",
+          "command": [
+            "/root/autodl-tmp/eco65-review2-20261117/native-review-contracts",
+            "path"
+          ],
+          "returncode": 0,
+          "elapsed_s": 0.004567628959193826,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/header-path.log"
+        },
+        {
+          "name": "native-component-final",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/.venv/bin/python",
+            "tools/check_eco65_single_carton_native.py",
+            "--output",
+            "/root/autodl-tmp/eco65-review2-20261117/native-component-final"
+          ],
+          "returncode": 0,
+          "elapsed_s": 23.943884049076587,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/native-component-final.log"
+        },
+        {
+          "name": "prepare-historical",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/.venv/bin/python",
+            "tools/check_native_prepare.py",
+            "--records",
+            "/root/autodl-tmp/eco65-review-20261117/native-component2",
+            "--output",
+            "/root/autodl-tmp/eco65-review2-20261117/prepare-historical.json"
+          ],
+          "returncode": 0,
+          "elapsed_s": 15.485575599828735,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/prepare-historical.log"
+        },
+        {
+          "name": "prepare-saved",
+          "command": [
+            "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/.venv/bin/python",
+            "tools/check_native_prepare.py",
+            "--records",
+            "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories",
+            "--output",
+            "/root/autodl-tmp/eco65-review2-20261117/prepare-saved.json"
+          ],
+          "returncode": 0,
+          "elapsed_s": 29.423725362867117,
+          "log": "/root/autodl-tmp/eco65-review2-20261117/prepare-saved.log"
+        }
+      ]
+    },
+    "pytest_interrupted_during_build": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "67",
+          "time": "48.398",
+          "timestamp": "2026-11-17T20:51:53.619266+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_deadline",
+            "name": "test_short_deadline_caps_solver_time_and_reports_it_as_budget_not_infeasible",
+            "time": "6.113"
+          },
+          "message": "assert ([])",
+          "trace": "case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7fdd1b9fc520>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...ts_it_as_budget_not_infeasible.<locals>.plan at 0x7fdd1a119360>, 'reject_loaded_start': False, 'reject_return': False})\n\n    def test_short_deadline_caps_solver_time_and_reports_it_as_budget_not_infeasible(case):\n        p, obs, box, folder, calls, opts = case\n        seen = []\n    \n        def plan(r):\n            seen.append(r['allowed_planning_time_s'])\n            if r['pipeline_id'] == 'ompl' or r['stage'] == 'approach':\n                # A worker solve that ended at the capped (deadline-derived) budget.\n                return dict(status='NATIVE_SOLVER_BUDGET_EXHAUSTED')\n        opts['plan'] = plan\n        deadline = time.monotonic()+5.\n        with pytest.raises(PlanningBudgetExhausted) as raised:\n            p.plan_cycle(obs, [box], folder, deadline=deadline)\n>       assert seen and all(0 < t < 5. for t in seen)\nE       assert ([])\n\ntests/test_single_carton_deadline.py:62: AssertionError"
+        }
+      ],
+      "errors": []
+    },
+    "pytest_without_host_json_headers": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "18",
+          "failures": "2",
+          "skipped": "0",
+          "tests": "656",
+          "time": "375.340",
+          "timestamp": "2026-11-17T20:56:14.414175+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.480"
+          },
+          "message": "assert (False)\n +  where False = <function all at 0x7fca7af01c30>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7fca7af01c30> = np.all",
+          "trace": "def test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior():\n        p,m=plane(width=.15,height=.1);box=recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])\n        size=np.asarray(box['size_m'])\n>       assert np.all(size>=[.15,.1,.1]) and np.all(size<=[.19,.145,.11])  # was 217 x 169 x 108 mm\nE       assert (False)\nE        +  where False = <function all at 0x7fca7af01c30>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\nE        +    where <function all at 0x7fca7af01c30> = np.all\n\ntests/test_single_carton_review_fixes.py:343: AssertionError"
+        },
+        {
+          "test": {
+            "classname": "tests.test_review_lifecycle",
+            "name": "test_tail_stages_are_transactional_and_bounded[True-plan_record]",
+            "time": "3.468"
+          },
+          "message": "assert (1307003.302722771 - 1307003.134989365) < 0.15\n +  where 1307003.302722771 = <built-in function monotonic>()\n +    where <built-in function monotonic> = time.monotonic",
+          "trace": "case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7fc92e262800>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...451888], [0.0, 0.0, 0.0, 1.0]]}}, ...], {'legacy_worker': False, 'reject_loaded_start': False, 'reject_return': False})\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc92a7bad70>\nstage = 'plan_record', failure = True\n\n    @pytest.mark.parametrize('stage',['register','plan_record','flush','cleanup','build','summary'])\n    @pytest.mark.parametrize('failure',[False,True])\n    def test_tail_stages_are_transactional_and_bounded(case,monkeypatch,stage,failure):\n        from unloading_sim.workbench.controlled.trajectory import Authority\n        from unloading_sim.workbench.single_carton.evidence import EvidenceWriter\n        from unloading_sim.workbench import timing\n        p,obs,box,folder,calls,opts=case\n        found=[];original=type(p).search_box\n        def capture(self,*a,**k):\n            value=original(self,*a,**k);found.append(copy.deepcopy(value));return value\n        monkeypatch.setattr(p,'search_box',types.MethodType(capture,p));p.plan_cycle(obs,[box],folder)\n        monkeypatch.setattr(p,'search_box',lambda *a,**k:copy.deepcopy(found[0]))\n        if stage=='register':target,name=Authority,'register'\n        elif stage=='plan_record':target,name=timing,'write_json'\n        elif stage=='flush':\n            p.site['async_evidence']=True;target,name=EvidenceWriter,'flush'\n        elif stage=='summary':\n            monkeypatch.setattr(p,'search_box',lambda *a,**k:None);target,name=type(p),'budget_summary'\n        else:target,name=type(p),('release_workers' if stage=='cleanup' else 'build')\n        original=getattr(target,name)\n        def injected(*a,**k):\n            active=stage!='plan_record' or (len(a)>2 and a[2]=='complete-plan.json')\n            if active:\n                if failure:raise OSError('TAIL_FAILURE_INJECTED')\n                time.sleep(.25)\n            return original(*a,**k)\n        monkeypatch.setattr(target,name,injected)\n        task_folder=folder.parent/('tail-'+stage);task_folder.mkdir()\n        started=time.monotonic()\n        with pytest.raises((PlanningBudgetExhausted,OSError)):\n            p.plan_cycle(obs,[box],task_folder,deadline=started+.1)\n>       assert time.monotonic()-started<.15\nE       assert (1307003.302722771 - 1307003.134989365) < 0.15\nE        +  where 1307003.302722771 = <built-in function monotonic>()\nE        +    where <built-in function monotonic> = time.monotonic\n\ntests/test_review_lifecycle.py:77: AssertionError"
+        }
+      ],
+      "errors": [
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[flip]",
+            "time": "0.141"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[band]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[j4]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[j6]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[partial]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[normal]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[contact_flip]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_endpoint_composite_replays_same_wrist_decisions[qstart_band]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[False-approach]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[False-contact]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[False-detach]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[False-return]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[False-None]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[True-approach]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[True-contact]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[True-detach]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[True-return]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        },
+        {
+          "test": {
+            "classname": "tests.test_review2_wrist_composite",
+            "name": "test_segment_middle_violation_preserves_composite_replay[True-None]",
+            "time": "0.000"
+          },
+          "message": "failed on setup with \"subprocess.CalledProcessError: Command '['g++', '-std=c++17', '-O1', '-I/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/ros2/m710_moveit_backend/src', '-I/usr/include/eigen3', '/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/tests/native_review2_composite.cpp', '-o', '/root/autodl-tmp/eco65-review2-20261117/pytest-final-tmp/composite0/runner']' returned non-zero exit status 1.\""
+        }
+      ]
+    },
+    "pytest_with_existing_chroot_headers": {
+      "suites": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "1",
+          "skipped": "0",
+          "tests": "656",
+          "time": "475.742",
+          "timestamp": "2026-11-17T21:06:33.474607+08:00",
+          "hostname": "autodl-container-76f241ba43-274ca81a"
+        }
+      ],
+      "failures": [
+        {
+          "test": {
+            "classname": "tests.test_single_carton_review_fixes",
+            "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+            "time": "0.762"
+          },
+          "message": "assert (False)\n +  where False = <function all at 0x7f74ce70da30>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7f74ce70da30> = np.all",
+          "trace": "def test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior():\n        p,m=plane(width=.15,height=.1);box=recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])\n        size=np.asarray(box['size_m'])\n>       assert np.all(size>=[.15,.1,.1]) and np.all(size<=[.19,.145,.11])  # was 217 x 169 x 108 mm\nE       assert (False)\nE        +  where False = <function all at 0x7f74ce70da30>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\nE        +    where <function all at 0x7f74ce70da30> = np.all\n\ntests/test_single_carton_review_fixes.py:343: AssertionError"
+        }
+      ],
+      "errors": []
+    },
+    "final_pytest_command": {
+      "head": "48043b4e84a6c2e4f52b850590e2ccabbee29670",
+      "command": "xvfb-run -a .venv/bin/pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_*.py tests/test_review_*.py tests/test_realtime_field_collection.py --basetemp=/root/autodl-tmp/eco65-review2-20261117/pytest-with-headers-tmp --junitxml=/root/autodl-tmp/eco65-review2-20261117/pytest-with-headers.xml",
+      "environment_overrides": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261117/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include"
+      },
+      "returncode": 1,
+      "elapsed_s": 476.66102945106104,
+      "reason": "Repeat the identical complete directed set using the existing chroot JSON headers; retain both prior functional failures and all initial setup errors",
+      "physical": "NOT_RUN"
+    },
+    "retained_deadline_failure_lifecycle": {
+      "task_id": "tail-plan_record",
+      "generation": 2,
+      "status": "INVALIDATED",
+      "worker_requests_finished": true,
+      "cleanup_finished": true,
+      "caller_returned_s": 1307003.30266379,
+      "planning_error": "PlanningBudgetExhausted:PLANNING_BUDGET_EXHAUSTED:SEARCH_STEP_RUNNING_AT_DEADLINE:real-observation-box-0",
+      "planning_thread_finished_s": 1307003.309836943,
+      "worker_requests_finished_s": 1307003.309912647,
+      "cleanup_errors": [],
+      "cleanup_completed_s": 1307003.309915776
+    },
+    "asset_reuse": {
+      "kind": "HASH_VERIFIED_HARDLINK_READ_ONLY_ASSETS",
+      "linked_files": 2378,
+      "required_snapshot_files": 2407,
+      "missing": [],
+      "nonrequired_mismatches": [
+        "assets/camera/derived/20261016_xd500_v1/camera_part_000.obj",
+        "assets/camera/derived/20261016_xd500_v1/camera_part_000_convex.obj",
+        "assets/camera/derived/20261016_xd500_v1/camera_part_002.obj",
+        "assets/camera/derived/20261016_xd500_v1/camera_part_002_convex.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_000.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_001.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_002_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_002_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_003.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_004_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_004_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_005.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_006_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_006_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_007.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_008_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_008_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_009.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_010_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_010_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_011.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_012_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_012_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_013.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_014_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_014_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_015.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_016_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_016_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_017.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_018_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_018_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_019.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_020_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_020_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_021.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_022_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_022_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_023.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_024_lip.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_024_rigid.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_025.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_026.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_027.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_028.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_029.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_030.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_031.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_032.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_033.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_034.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_035.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_036.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_037.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_038.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_039.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_040.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_041_region_0.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_041_region_1.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_041_region_2.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/part_042.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/robot_base_link.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/robot_link_4.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/robot_link_5.obj",
+        "outputs/transverse_process_20261023/scene02/model/collision/robot_link_6.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_000.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_001.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_002_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_002_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_003.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_004_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_004_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_005.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_006_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_006_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_007.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_008_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_008_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_009.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_010_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_010_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_011.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_012_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_012_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_013.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_014_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_014_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_015.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_016_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_016_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_017.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_018_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_018_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_019.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_020_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_020_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_021.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_022_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_022_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_023.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_024_lip.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_024_rigid.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_025.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_026.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_027.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_028.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_029.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_030.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_031.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_032.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_033.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_034.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_035.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_036.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_037.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_038.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_039.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_040.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_041_region_0.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_041_region_1.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_041_region_2.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/part_042.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/robot_base_link.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/robot_link_4.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/robot_link_5.obj",
+        "outputs/transverse_process_20261023/scene03/model/collision/robot_link_6.obj"
+      ],
+      "required_mismatches": [],
+      "source_snapshot_sha256": "02c1384bae3638a04324714d2a6cc83689c2dba390587ceaf87a75331e848ed9",
+      "initial_setup_failure": "ENOSPC copying geometry into task-owned checkout; only those new copies replaced",
+      "packages_installed_or_upgraded": false
+    },
+    "input_transfer": {
+      "verified_files": 68,
+      "all_identical": true,
+      "archive_sha256": "476c4c2cf08f4722793310a628ab143687191262ce0ef5d841ce75384984b274"
+    }
+  },
+  "saved_record_endpoints": [
+    {
+      "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+      "physical": "NOT_RUN",
+      "sha": "4ce654b8d12a1d8862370fbc250c5aa0432bd41a",
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/4cde3b86824046f99bc8085d419deb83",
+      "input_sha256": {
+        "observation.json": "74ca01e8a4dc5ae46786f2de8f4af0fe376454d02b01daf0948b5438b2fe8ef1",
+        "observation.npz": "4b7ca7636cc1a1b64f3edaf52016c9355f69d851892541961d54319bb8a09cdf",
+        "segmentation.npz": "5f09ed36a3c3670d2d3b8a5d8c3d013750e94780d9a676541e3976c50c10d960",
+        "geometry.json": "9935ddb8e10a029a77fbe7f6e68b18bc3cf60371d9092b6dec7ca8d3c5539826",
+        "site-scene.json": "bcfcbea0fd8d73b4f797a5bd2367ff6997b4fc5ca0b30725f2d95d7ca2b4a0af"
+      },
+      "boxes": 1,
+      "scene_objects": 36,
+      "targets": [
+        {
+          "id": "e5af52c5-a940-44cf-9942-e0812648daec-carton-0",
+          "candidates": 32,
+          "identical": true,
+          "outcomes": {
+            "PYTHON": {
+              "CLEAR": 11,
+              "REJECTED": 13,
+              "NOT_CONCLUSIVE": 8
+            },
+            "NATIVE": {
+              "CLEAR": 11,
+              "REJECTED": 13,
+              "NOT_CONCLUSIVE": 8
+            }
+          }
+        }
+      ],
+      "replay": {
+        "recorded": 2413,
+        "served": 2413,
+        "unused": 0
+      },
+      "all_identical": true,
+      "source_record_unchanged": true,
+      "permits_issued": 0,
+      "raw_report_sha256": "868b59915bebbfc8e3791795d2e67bf40983f89cbd53692642c2e458586c973f"
+    },
+    {
+      "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+      "physical": "NOT_RUN",
+      "sha": "4ce654b8d12a1d8862370fbc250c5aa0432bd41a",
+      "source": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89",
+      "input_sha256": {
+        "observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+        "observation.npz": "3d0f3e3bc2e2dae3150f731701c4d6afb31bab8e1458f8c91fba0371c918c8ff",
+        "segmentation.npz": "741623ef5148210c3e249276dd582b3022627aea2baac61566e5dfc356bd605e",
+        "geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+        "site-scene.json": "ecb710c61aba39ee00e0598a7a69be807335f1d123d68a115a38aebb135f9d4d"
+      },
+      "boxes": 1,
+      "scene_objects": 40,
+      "targets": [
+        {
+          "id": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+          "candidates": 32,
+          "identical": true,
+          "outcomes": {
+            "PYTHON": {
+              "NOT_CONCLUSIVE": 9,
+              "REJECTED": 13,
+              "CLEAR": 10
+            },
+            "NATIVE": {
+              "NOT_CONCLUSIVE": 9,
+              "REJECTED": 13,
+              "CLEAR": 10
+            }
+          }
+        }
+      ],
+      "replay": {
+        "recorded": 2379,
+        "served": 2379,
+        "unused": 0
+      },
+      "all_identical": true,
+      "source_record_unchanged": true,
+      "permits_issued": 0,
+      "raw_report_sha256": "6ca780f5973ecbd5c94568b497e1bc7361e159e3e6435103b05ad91d5893b06a"
+    }
+  ],
+  "prepare_numeric": {
+    "local_saved": {
+      "schema": "eco65_native_prepare_equivalence_v1",
+      "scope": "RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE",
+      "inputs": [
+        "outputs/single_carton/d99b1a8f5d71445395c158b3c353ca42"
+      ],
+      "recorded_native_plans": 27,
+      "cases": 193,
+      "identical": 193,
+      "prepared": 33,
+      "rejected": 160,
+      "rejection_errors": [
+        "INTERPOLATION_LIMIT:1:1",
+        "INTERPOLATION_LIMIT:1:2",
+        "INTERPOLATION_LIMIT:2:2",
+        "INTERPOLATION_LIMIT:3:2",
+        "INTERPOLATION_LIMIT:4:2",
+        "INTERPOLATION_LIMIT:5:1",
+        "INTERPOLATION_LIMIT:5:2",
+        "INVALID_TIME_AXIS",
+        "INVALID_TIMING",
+        "NONZERO_ENDPOINT_VELOCITY"
+      ],
+      "worst_max_abs": {
+        "t": 0.0,
+        "q": 0.0,
+        "v": 0.0,
+        "a": 0.0,
+        "collision_path": 0.0,
+        "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+        "send_duration_s": 0.0
+      },
+      "tolerance": 1e-12,
+      "python_prepare_s": {
+        "total": 1.5384684839991678,
+        "median": 0.0028160209994894103
+      },
+      "native_prepare_s": {
+        "total": 0.26398252599999983,
+        "median": 0.000220941
+      },
+      "acceptance": {
+        "all_identical": true
+      },
+      "mismatches": [],
+      "raw_report_sha256": "cab7d797a4c78a6ad7ff862c5a87ec05622a128d7c5c51cb6198db9e0c834718",
+      "decision_match_count": 193
+    },
+    "gpu_old_sample": {
+      "schema": "eco65_native_prepare_equivalence_v1",
+      "scope": "RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE",
+      "inputs": [
+        "/root/autodl-tmp/eco65-review-20261117/native-component2"
+      ],
+      "recorded_native_plans": 1,
+      "cases": 11,
+      "identical": 8,
+      "prepared": 3,
+      "rejected": 8,
+      "rejection_errors": [
+        "INTERPOLATION_LIMIT:2:1",
+        "INTERPOLATION_LIMIT:2:2",
+        "INVALID_TIME_AXIS",
+        "INVALID_TIMING",
+        "NONZERO_ENDPOINT_VELOCITY"
+      ],
+      "worst_max_abs": {
+        "t": 0.0,
+        "q": 3.774758283725532e-15,
+        "v": 2.204125286736673e-13,
+        "a": 9.315828276854907e-12,
+        "collision_path": 3.774758283725532e-15,
+        "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+        "send_duration_s": 0.0
+      },
+      "tolerance": 1e-12,
+      "python_prepare_s": {
+        "total": 0.04431786644272506,
+        "median": 0.0042743319645524025
+      },
+      "native_prepare_s": {
+        "total": 0.001852606,
+        "median": 0.000194089
+      },
+      "acceptance": {
+        "all_identical": false
+      },
+      "mismatches": [
+        {
+          "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 3.774758283725532e-15,
+            "v": 2.204125286736673e-13,
+            "a": 9.315828276854907e-12,
+            "collision_path": 3.774758283725532e-15,
+            "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 3.1086244689504383e-15,
+            "v": 7.217313431712356e-14,
+            "a": 4.281781637826252e-12,
+            "collision_path": 3.1086244689504383e-15,
+            "analytic_speed_bounds_rad_s": 2.4057711439041196e-14,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 2.6645352591003757e-15,
+            "v": 8.82025166495882e-14,
+            "a": 1.9622809777501976e-12,
+            "collision_path": 2.6645352591003757e-15,
+            "analytic_speed_bounds_rad_s": 8.82025166495882e-14,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        }
+      ],
+      "raw_report_sha256": "d93c00144ce1ce4fae2f0118edc090a084c2f50c42e7e2d1a37994b67260d27d",
+      "decision_match_count": 11
+    },
+    "gpu_same_saved": {
+      "schema": "eco65_native_prepare_equivalence_v1",
+      "scope": "RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE",
+      "inputs": [
+        "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories"
+      ],
+      "recorded_native_plans": 27,
+      "cases": 193,
+      "identical": 160,
+      "prepared": 33,
+      "rejected": 160,
+      "rejection_errors": [
+        "INTERPOLATION_LIMIT:1:1",
+        "INTERPOLATION_LIMIT:1:2",
+        "INTERPOLATION_LIMIT:2:2",
+        "INTERPOLATION_LIMIT:3:2",
+        "INTERPOLATION_LIMIT:4:2",
+        "INTERPOLATION_LIMIT:5:1",
+        "INTERPOLATION_LIMIT:5:2",
+        "INVALID_TIME_AXIS",
+        "INVALID_TIMING",
+        "NONZERO_ENDPOINT_VELOCITY"
+      ],
+      "worst_max_abs": {
+        "t": 0.0,
+        "q": 1.6653345369377348e-14,
+        "v": 9.708311086466248e-12,
+        "a": 1.8383592925719228e-08,
+        "collision_path": 1.8207657603852567e-14,
+        "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+        "send_duration_s": 0.0
+      },
+      "tolerance": 1e-12,
+      "python_prepare_s": {
+        "total": 4.682678053155541,
+        "median": 0.010174696100875735
+      },
+      "native_prepare_s": {
+        "total": 0.8998732199999999,
+        "median": 0.001394987
+      },
+      "acceptance": {
+        "all_identical": false
+      },
+      "mismatches": [
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.329070518200751e-15,
+            "v": 1.7602586055431857e-13,
+            "a": 4.400499256756568e-12,
+            "collision_path": 5.995204332975845e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.6653345369377348e-14,
+            "v": 3.4419689320941416e-13,
+            "a": 4.747562343254788e-12,
+            "collision_path": 1.8207657603852567e-14,
+            "analytic_speed_bounds_rad_s": 3.6914915568786455e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.354472090042691e-14,
+            "v": 2.427780199099061e-13,
+            "a": 3.735021891770896e-12,
+            "collision_path": 1.4210854715202004e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.995204332975845e-15,
+            "v": 1.2138207106104915e-13,
+            "a": 1.867506149721976e-12,
+            "collision_path": 6.439293542825908e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 3.3306690738754696e-15,
+            "v": 6.743824249033636e-14,
+            "a": 1.0375068859591607e-12,
+            "collision_path": 3.552713678800501e-15,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 9.325873406851315e-15,
+            "v": 1.888211809131235e-13,
+            "a": 2.9050095662341846e-12,
+            "collision_path": 9.992007221626409e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.199040866595169e-14,
+            "v": 2.4277628518643013e-13,
+            "a": 4.174549594893051e-12,
+            "collision_path": 1.2656542480726785e-14,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.021405182655144e-14,
+            "v": 2.037276597421922e-13,
+            "a": 3.0558888752807434e-12,
+            "collision_path": 1.021405182655144e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.329070518200751e-15,
+            "v": 1.7601892166041466e-13,
+            "a": 4.400499165065251e-12,
+            "collision_path": 5.995204332975845e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.532107773982716e-14,
+            "v": 9.708311086466248e-12,
+            "a": 1.8383592925719228e-08,
+            "collision_path": 1.532107773982716e-14,
+            "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.021405182655144e-14,
+            "v": 6.383191989301623e-12,
+            "a": 6.043584799275692e-09,
+            "collision_path": 1.0658141036401503e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.554312234475219e-14,
+            "v": 3.0695584962714406e-13,
+            "a": 7.5417658229604e-12,
+            "collision_path": 1.554312234475219e-14,
+            "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.329070518200751e-15,
+            "v": 1.078998002057574e-13,
+            "a": 1.660012405313438e-12,
+            "collision_path": 5.551115123125783e-15,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 8.881784197001252e-15,
+            "v": 1.8882465036007545e-13,
+            "a": 2.9050199745750405e-12,
+            "collision_path": 9.325873406851315e-15,
+            "analytic_speed_bounds_rad_s": 8.673617379884035e-19,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.329070518200751e-15,
+            "v": 1.7601978902215265e-13,
+            "a": 4.400499165065251e-12,
+            "collision_path": 6.217248937900877e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.6431300764452317e-14,
+            "v": 1.7367270815915603e-12,
+            "a": 1.281830197541467e-10,
+            "collision_path": 1.6431300764452317e-14,
+            "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.199040866595169e-14,
+            "v": 2.943456025791824e-13,
+            "a": 2.2167476187995305e-11,
+            "collision_path": 1.2878587085651816e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 9.325873406851315e-15,
+            "v": 1.8882638508355143e-13,
+            "a": 2.9050373218098002e-12,
+            "collision_path": 9.769962616701378e-15,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 5.88418203051333e-15,
+            "v": 1.2138814259321506e-13,
+            "a": 1.8675113538924037e-12,
+            "collision_path": 6.217248937900877e-15,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 9.769962616701378e-15,
+            "v": 9.729855809936794e-13,
+            "a": 6.385703077427252e-11,
+            "collision_path": 9.769962616701378e-15,
+            "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.6653345369377348e-14,
+            "v": 3.4419689320941416e-13,
+            "a": 7.286948822127215e-12,
+            "collision_path": 1.7985612998927536e-14,
+            "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.176836406102666e-14,
+            "v": 1.888281198070274e-13,
+            "a": 6.477268374438516e-12,
+            "collision_path": 1.2434497875801753e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 9.325873406851315e-15,
+            "v": 1.8882465036007545e-13,
+            "a": 2.9050095662341846e-12,
+            "collision_path": 9.769962616701378e-15,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 4.6629367034256575e-15,
+            "v": 9.441319254177571e-14,
+            "a": 1.4525065178405683e-12,
+            "collision_path": 4.884981308350689e-15,
+            "analytic_speed_bounds_rad_s": 8.673617379884035e-19,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+          "kind": "recorded x1.25",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 7.549516567451064e-15,
+            "v": 5.764598867696868e-13,
+            "a": 4.54883908318493e-11,
+            "collision_path": 8.43769498715119e-15,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+          "kind": "recorded x1.5",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.5765166949677223e-14,
+            "v": 3.513647706121503e-13,
+            "a": 2.103939245046149e-11,
+            "collision_path": 1.709743457922741e-14,
+            "analytic_speed_bounds_rad_s": 4.427014310692812e-15,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.021405182655144e-14,
+            "v": 1.888211809131235e-13,
+            "a": 2.905017026932919e-12,
+            "collision_path": 1.0880185641326534e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 9.325873406851315e-15,
+            "v": 1.8882638508355143e-13,
+            "a": 2.9050373218098002e-12,
+            "collision_path": 9.769962616701378e-15,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.021405182655144e-14,
+            "v": 2.1580128092488216e-13,
+            "a": 3.320019172775579e-12,
+            "collision_path": 1.1102230246251565e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 7.993605777301127e-15,
+            "v": 1.6185094714113446e-13,
+            "a": 2.490014704842336e-12,
+            "collision_path": 8.881784197001252e-15,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 7.549516567451064e-15,
+            "v": 1.6185094714113446e-13,
+            "a": 2.4900145964221188e-12,
+            "collision_path": 7.993605777301127e-15,
+            "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.021405182655144e-14,
+            "v": 2.0372592501871623e-13,
+            "a": 3.0559443864319746e-12,
+            "collision_path": 1.021405182655144e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        },
+        {
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+          "kind": "recorded x2",
+          "identical": false,
+          "outcome": "PREPARED",
+          "max_abs": {
+            "t": 0.0,
+            "q": 1.0658141036401503e-14,
+            "v": 2.1580122671477353e-13,
+            "a": 3.3200195522463394e-12,
+            "collision_path": 1.1102230246251565e-14,
+            "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+            "send_duration_s": 0.0,
+            "scaled_duration_s": 0.0,
+            "source_duration_s": 0.0,
+            "terminal_hold_s": 0.0
+          }
+        }
+      ],
+      "raw_report_sha256": "9fa6c96c5f033033e1d99f95ed49855361f376d23f18fd2723839ff78d12ceeb",
+      "decision_match_count": 193
+    }
+  },
+  "archived_timing": {
+    "schema": "eco65_latency_bench_v1",
+    "generated": "2026-11-17T20:42:14",
+    "hardware_execution": "NOT_RUN",
+    "budget_file": "/home/jd/下载/code/eco65 pick and place/configs/workbench/planning_budget.json",
+    "budget_status": "ALLOCATION_AND_REPORTING_ONLY_NOT_ENFORCED",
+    "planning_deadline_s": null,
+    "records_requested": [],
+    "replays": [],
+    "timing_inputs": [
+      "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/timing-observe.json",
+      "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/timing-prepare_plan.json",
+      "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/timing-observe.json",
+      "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/timing-prepare_plan.json",
+      "outputs/realtime-field-20261117/fba38e2500aa45d48144df3b5c2c25f4/timing-observe.json"
+    ],
+    "planning": {
+      "metric": "prepare_plan entry to PLAN_READY",
+      "samples": 2,
+      "timed_samples": 2,
+      "success_rate": 0.0,
+      "count": 2,
+      "p50_s": 118.80072099900008,
+      "p95_s": 119.26986509000017,
+      "max_s": 119.26986509000017,
+      "status": "MEASURED",
+      "coverage": {
+        "full": 2,
+        "partial": 0,
+        "missing": 0,
+        "untimed": 0,
+        "full_timed": 2,
+        "full_timed_fraction": 1.0
+      },
+      "statistics_scope": "FULL_INPUT_COHORT_RETURN_LATENCY",
+      "successful_full_samples": {
+        "scope": "SUCCESSFUL_FULL_SCOPE_ONLY",
+        "count": 0,
+        "p50_s": null,
+        "p95_s": null,
+        "max_s": null
+      },
+      "outcomes": {
+        "FAILED": 2
+      },
+      "stages": [
+        {
+          "name": "build",
+          "target_s": 0.02,
+          "count": 2,
+          "p50_s": 4.4930002331966534e-06,
+          "p95_s": 5.046000296715647e-06,
+          "max_s": 5.046000296715647e-06
+        },
+        {
+          "name": "worker_start",
+          "target_s": 0.05,
+          "count": 2,
+          "p50_s": 2.3708797189992765,
+          "p95_s": 2.3895732440005304,
+          "max_s": 2.3895732440005304
+        },
+        {
+          "name": "rest_and_candidates",
+          "target_s": 0.02,
+          "count": 2,
+          "p50_s": 5.530375225999705,
+          "p95_s": 5.881880807000016,
+          "max_s": 5.881880807000016
+        },
+        {
+          "name": "endpoint_screening",
+          "target_s": 0.45,
+          "count": 2,
+          "p50_s": 29.649087342999337,
+          "p95_s": 29.900494866999907,
+          "max_s": 29.900494866999907
+        },
+        {
+          "name": "candidate_planning",
+          "target_s": 0.55,
+          "count": 2,
+          "p50_s": 79.62167365200185,
+          "p95_s": 79.63388891900013,
+          "max_s": 79.63388891900013
+        },
+        {
+          "name": "sent_path_check",
+          "target_s": 0.55,
+          "count": 2,
+          "p50_s": 0.0,
+          "p95_s": 0.0,
+          "max_s": 0.0
+        },
+        {
+          "name": "finalize",
+          "target_s": 0.15,
+          "count": 2,
+          "p50_s": 0.0,
+          "p95_s": 0.0,
+          "max_s": 0.0
+        },
+        {
+          "name": "worker_close",
+          "target_s": 0.01,
+          "count": 2,
+          "p50_s": 1.1612223900001482,
+          "p95_s": 1.1620979529998294,
+          "max_s": 1.1620979529998294
+        },
+        {
+          "name": "reserve",
+          "target_s": 0.2,
+          "count": 2,
+          "p50_s": 0.0,
+          "p95_s": 0.0,
+          "max_s": 0.0
+        }
+      ],
+      "over_budget": [
+        {
+          "name": "rest_and_candidates",
+          "p95_s": 5.881880807000016,
+          "target_s": 0.02,
+          "ratio": 294.0940403500008,
+          "above_flag_factor": true
+        },
+        {
+          "name": "candidate_planning",
+          "p95_s": 79.63388891900013,
+          "target_s": 0.55,
+          "ratio": 144.78888894363658,
+          "above_flag_factor": true
+        },
+        {
+          "name": "worker_close",
+          "p95_s": 1.1620979529998294,
+          "target_s": 0.01,
+          "ratio": 116.20979529998294,
+          "above_flag_factor": true
+        },
+        {
+          "name": "endpoint_screening",
+          "p95_s": 29.900494866999907,
+          "target_s": 0.45,
+          "ratio": 66.44554414888869,
+          "above_flag_factor": true
+        },
+        {
+          "name": "worker_start",
+          "p95_s": 2.3895732440005304,
+          "target_s": 0.05,
+          "ratio": 47.79146488001061,
+          "above_flag_factor": true
+        }
+      ],
+      "target_total_s": 2.0,
+      "meets_total_p95": null,
+      "target_assessment": "LATENCY_ONLY_SUCCESS_RATE_BASELINE_NOT_COMPARED",
+      "per_sample": [
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/timing-prepare_plan.json",
+          "task_id": "313f32ad66a240798df17905025edc89",
+          "seconds": 119.26986509000017,
+          "success": false,
+          "outcome": "FAILED",
+          "scope": "PREPARE_PLAN_ENTRY_TO_FAILED_RETURN"
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/timing-prepare_plan.json",
+          "task_id": "6966ce4b0141495993727b6d72815637",
+          "seconds": 118.80072099900008,
+          "success": false,
+          "outcome": "FAILED",
+          "scope": "PREPARE_PLAN_ENTRY_TO_FAILED_RETURN"
+        }
+      ]
+    },
+    "vision": {
+      "metric": "observe entry to TARGET_READY",
+      "samples": 3,
+      "timed_samples": 3,
+      "success_rate": 1.0,
+      "count": 3,
+      "p50_s": 19.847587415999442,
+      "p95_s": 21.01370661100009,
+      "max_s": 21.01370661100009,
+      "status": "MEASURED",
+      "coverage": {
+        "full": 3,
+        "partial": 0,
+        "missing": 0,
+        "untimed": 0,
+        "full_timed": 3,
+        "full_timed_fraction": 1.0
+      },
+      "statistics_scope": "FULL_INPUT_COHORT_RETURN_LATENCY",
+      "successful_full_samples": {
+        "scope": "SUCCESSFUL_FULL_SCOPE_ONLY",
+        "count": 3,
+        "p50_s": 19.847587415999442,
+        "p95_s": 21.01370661100009,
+        "max_s": 21.01370661100009
+      },
+      "outcomes": {
+        "SUCCESS": 3
+      },
+      "stages": [
+        {
+          "name": "freeze",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 0.40418959599992377,
+          "p95_s": 0.40870291400005954,
+          "max_s": 0.40870291400005954
+        },
+        {
+          "name": "detection_and_segmentation",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 5.932903107000129,
+          "p95_s": 8.04088824199971,
+          "max_s": 8.04088824199971
+        },
+        {
+          "name": "reconstruct",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 0.2720137260002957,
+          "p95_s": 0.27266940900062764,
+          "max_s": 0.27266940900062764
+        },
+        {
+          "name": "scene_model",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 4.696999894804321e-06,
+          "p95_s": 7.819232500999533,
+          "max_s": 7.819232500999533
+        },
+        {
+          "name": "build_scene",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 10.548671177999495,
+          "p95_s": 11.05778926000039,
+          "max_s": 11.05778926000039
+        },
+        {
+          "name": "records",
+          "target_s": null,
+          "count": 3,
+          "p50_s": 0.07125580699994316,
+          "p95_s": 0.07849876000000222,
+          "max_s": 0.07849876000000222
+        }
+      ],
+      "over_budget": [],
+      "per_sample": [
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/timing-observe.json",
+          "task_id": "313f32ad66a240798df17905025edc89",
+          "seconds": 21.01370661100009,
+          "success": true,
+          "scope": "OBSERVE_ENTRY_TO_TARGET_READY"
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/timing-observe.json",
+          "task_id": "6966ce4b0141495993727b6d72815637",
+          "seconds": 19.847587415999442,
+          "success": true,
+          "scope": "OBSERVE_ENTRY_TO_TARGET_READY"
+        },
+        {
+          "source": "outputs/realtime-field-20261117/fba38e2500aa45d48144df3b5c2c25f4/timing-observe.json",
+          "task_id": "fba38e2500aa45d48144df3b5c2c25f4",
+          "seconds": 17.00549356099964,
+          "success": true,
+          "scope": "OBSERVE_ENTRY_TO_TARGET_READY"
+        }
+      ]
+    },
+    "scheduling": {
+      "metric": "execute click to first point sent, plus handoff waits beyond the rules",
+      "samples": 0,
+      "timed_samples": 0,
+      "success_rate": null,
+      "count": 0,
+      "p50_s": null,
+      "p95_s": null,
+      "max_s": null,
+      "status": "NO_SAMPLES",
+      "coverage": {
+        "full": 0,
+        "partial": 0,
+        "missing": 0,
+        "untimed": 0,
+        "full_timed": 0,
+        "full_timed_fraction": null
+      },
+      "statistics_scope": "TIMED_SUBSET_ONLY_MAY_MIX_SCOPES",
+      "successful_full_samples": {
+        "scope": "SUCCESSFUL_FULL_SCOPE_ONLY",
+        "count": 0,
+        "p50_s": null,
+        "p95_s": null,
+        "max_s": null
+      },
+      "outcomes": {},
+      "stages": [
+        {
+          "name": "execute_binding",
+          "target_s": null,
+          "count": 0,
+          "p50_s": null,
+          "p95_s": null,
+          "max_s": null
+        },
+        {
+          "name": "first_submit",
+          "target_s": null,
+          "count": 0,
+          "p50_s": null,
+          "p95_s": null,
+          "max_s": null
+        }
+      ],
+      "over_budget": [],
+      "per_sample": []
+    }
+  },
+  "numeric_warning": "Checker exit code 0 means report generated; acceptance.all_identical is false for both GPU inputs. Threshold stays 1e-12.",
+  "inputs": "inputs.sha256.json",
+  "raw_artifacts": {
+    "outputs/review2_20261117/check_field_endpoints.py": {
+      "bytes": 5116,
+      "sha256": "e20e4005e8118a25716df4429c5e611dae198712d907a8065b40c76216a7fcc6"
+    },
+    "outputs/review2_20261117/field-timing.log": {
+      "bytes": 597,
+      "sha256": "7501c327ddf4e79423653fc6e0dd56a528ae65495c3e1ebcfe7f0f2e4c0e7f0f"
+    },
+    "outputs/review2_20261117/final-committed/native_component.log": {
+      "bytes": 409,
+      "sha256": "07f5e94f56d133c0d772ab24ce82590b4bcfa9b1821f28dee8e5d61cba3c75a8"
+    },
+    "outputs/review2_20261117/final-committed/optimized.log": {
+      "bytes": 11642,
+      "sha256": "b9010b97b9f6c4d754d6078ff4ef12835e9a838ec7f6408ab76737baa8d3a994"
+    },
+    "outputs/review2_20261117/final-committed/pytest.log": {
+      "bytes": 832,
+      "sha256": "edff6c3fd4f695d54649a99476b4159f087ce27ac5dee9aca9a08124208bafa7"
+    },
+    "outputs/review2_20261117/final-committed/reference.log": {
+      "bytes": 7461,
+      "sha256": "3f91e23658acba4f1bc93bcc4b8af8b7ec1f4f447fe7375d057636412206ef64"
+    },
+    "outputs/review2_20261117/final-committed-checks.log": {
+      "bytes": 1645,
+      "sha256": "c3a4be9cbd3a27f7376291686fd1da35d28492e76eb5077dcceec66804e59594"
+    },
+    "outputs/review2_20261117/final-local-checks.log": {
+      "bytes": 1626,
+      "sha256": "ff1d8237f3636b8d493b8f9906f18942ae06b6858bfde4f0da8a2e3075c5103f"
+    },
+    "outputs/review2_20261117/final-native-contracts.log": {
+      "bytes": 5028,
+      "sha256": "a3ce18c9dfe684c45c0d03a86a5c1b3520d0001e1e8babe54fafe3d4458b6307"
+    },
+    "outputs/review2_20261117/lifecycle-final-focus.log": {
+      "bytes": 100,
+      "sha256": "9c9c03571b2354dd1ec162cdae0a761557bdd8ad50d4bc2d38eec1c415449367"
+    },
+    "outputs/review2_20261117/local-field-endpoints/report.json": {
+      "bytes": 83958,
+      "sha256": "868b59915bebbfc8e3791795d2e67bf40983f89cbd53692642c2e458586c973f"
+    },
+    "outputs/review2_20261117/local-field-endpoints.log": {
+      "bytes": 468,
+      "sha256": "20f0de90961b981152cb3e2b2dd929a23d4b2d51a07ed142ef54221c1d749a7e"
+    },
+    "outputs/review2_20261117/local-new-field-endpoints/report.json": {
+      "bytes": 77520,
+      "sha256": "6ca780f5973ecbd5c94568b497e1bc7361e159e3e6435103b05ad91d5893b06a"
+    },
+    "outputs/review2_20261117/local-new-field-endpoints.log": {
+      "bytes": 478,
+      "sha256": "a52f169059fc23049a562ce4a0580f56f81ae27cf79c3f6163e0a6f1baeef25d"
+    },
+    "outputs/review2_20261117/local-saved-prepare.json": {
+      "bytes": 101218,
+      "sha256": "cab7d797a4c78a6ad7ff862c5a87ec05622a128d7c5c51cb6198db9e0c834718"
+    },
+    "outputs/review2_20261117/local-saved-prepare.log": {
+      "bytes": 804,
+      "sha256": "0802749c6a9af47143a8a5329de75d5fc7280ae0639d2fb405e7c29cad68a521"
+    },
+    "outputs/review2_20261117/r2-01/native_component.log": {
+      "bytes": 411,
+      "sha256": "199ad85bb239579667077f42e16dc4017a6ade03c7a78b9f9ee95a9a89f9d0d3"
+    },
+    "outputs/review2_20261117/r2-01/optimized.log": {
+      "bytes": 11642,
+      "sha256": "da7af36a93ebd5aa5fd7a5c962319cd0e14ca246c97198366a721ea8958d4b64"
+    },
+    "outputs/review2_20261117/r2-01/pytest.log": {
+      "bytes": 3213,
+      "sha256": "a5e52853ba999cf2c56821e972be3e56e90fb80fc093c1e0458efa74c7f61fb0"
+    },
+    "outputs/review2_20261117/r2-01/reference.log": {
+      "bytes": 7457,
+      "sha256": "fa6e0ae46c6ec7c3903bde035ebcf4a690f54865d9eec8af61fd2976c7e8cb62"
+    },
+    "outputs/review2_20261117/r2-01-after.log": {
+      "bytes": 99,
+      "sha256": "67684258e9341d0493e0178411e398ac74c2fa273424a43502008f157a307417"
+    },
+    "outputs/review2_20261117/r2-01-before.log": {
+      "bytes": 8082,
+      "sha256": "49ac9378d6e5fbe25886cf45a0d8c1532b4d40deaf6bc8bbd58e188b8d5afb29"
+    },
+    "outputs/review2_20261117/r2-01-final/native_component.log": {
+      "bytes": 410,
+      "sha256": "c3694873decbabd6cf3c5011e292e98689764f49080773d7a0529bef8aae3d1a"
+    },
+    "outputs/review2_20261117/r2-01-final/optimized.log": {
+      "bytes": 11646,
+      "sha256": "e89dc90ee409c92e123b73ee201ad1a1cfc81ed0f76287244374060b09bc0a28"
+    },
+    "outputs/review2_20261117/r2-01-final/pytest.log": {
+      "bytes": 672,
+      "sha256": "295a99e47324f335b3fa15ae1af06bc8cee7ea7048a54bb6b0024385d669b585"
+    },
+    "outputs/review2_20261117/r2-01-final/reference.log": {
+      "bytes": 7458,
+      "sha256": "17dff0683c11820c92823ece3500774f37ae82773e3cbaab53e9a0b89dbef6e9"
+    },
+    "outputs/review2_20261117/r2-02/native_component.log": {
+      "bytes": 410,
+      "sha256": "dfc588f1e6a1a07078ae0e6527e3cc34d28de07c6d26b6f994bc72b390e3e88a"
+    },
+    "outputs/review2_20261117/r2-02/optimized.log": {
+      "bytes": 11643,
+      "sha256": "fc41b9f2fa6751cc35de7486ef1c731b209fb5d2dcaf929933e33f45f380edd5"
+    },
+    "outputs/review2_20261117/r2-02/pytest.log": {
+      "bytes": 752,
+      "sha256": "4585a92913e263318ea97630cad9872935f947b96dd1bf566f406b4259593254"
+    },
+    "outputs/review2_20261117/r2-02/reference.log": {
+      "bytes": 7447,
+      "sha256": "361e67ce1ce3b060b9b7e88de4642c15b0ba9f890007a8ec29dafe7bf7688838"
+    },
+    "outputs/review2_20261117/r2-02-after.log": {
+      "bytes": 100,
+      "sha256": "6ffd4631645f6d42b0e3fb9ccf168f6185aad4eff6f52767c93dca34df94046c"
+    },
+    "outputs/review2_20261117/r2-02-before.log": {
+      "bytes": 69222,
+      "sha256": "a9b7ea71d4cfaf8feb70d2edf2cb49a61a4db7224fafe83266f69c2defe90b91"
+    },
+    "outputs/review2_20261117/r2-02-build.log": {
+      "bytes": 2935,
+      "sha256": "b2a1f40a7e8695b906c28fe4461e8a9a564be02506d5d196e77918f9475ba553"
+    },
+    "outputs/review2_20261117/r2-02-checks.log": {
+      "bytes": 1585,
+      "sha256": "636ad32b833a4013460f3e186877acd230cc26c02f40e31ac01a852675ebdd19"
+    },
+    "outputs/review2_20261117/r2-02-final-focus.log": {
+      "bytes": 100,
+      "sha256": "92a822bde2eacdeb89e74bdc2e3581c22e1db4ba6e3455e075ceff009b6801c2"
+    },
+    "outputs/review2_20261117/r2-03/native_component.log": {
+      "bytes": 410,
+      "sha256": "58201aec870c2fc523a5f59b4b9761a087f66d28eec9e06e499406fe18c742fd"
+    },
+    "outputs/review2_20261117/r2-03/optimized.log": {
+      "bytes": 11638,
+      "sha256": "e549d3b7ab38b6e8f685e408f0458004c58d29483aca9df7f72ae07566293ea7"
+    },
+    "outputs/review2_20261117/r2-03/pytest.log": {
+      "bytes": 752,
+      "sha256": "3a4c187518e9aafd3e7cee9a23ab2ce144a06e084edd32694fdf7afbc9a52420"
+    },
+    "outputs/review2_20261117/r2-03/reference.log": {
+      "bytes": 7461,
+      "sha256": "78410000ce1ae3cb67f09bcfbe086bec283c49cf0ea6b9aaf27c670123bc3020"
+    },
+    "outputs/review2_20261117/r2-03-04-final-focus.log": {
+      "bytes": 99,
+      "sha256": "ec2a20e553803c6d3431f26af54b290c23d10925e7de883afde6afb1f3620997"
+    },
+    "outputs/review2_20261117/r2-03-after.log": {
+      "bytes": 1080,
+      "sha256": "d8afceab3a1b442705cd5850c49a6d49de6ee5134d8f8d574c34bae6e47fd262"
+    },
+    "outputs/review2_20261117/r2-03-before.log": {
+      "bytes": 7573,
+      "sha256": "f7b0fa64e2d87d4edc840d94791441d8df263e5b882eb05690d3cb7c35a97e37"
+    },
+    "outputs/review2_20261117/r2-03-checks.log": {
+      "bytes": 1533,
+      "sha256": "38ebee200185b5809e07fd9e6543f609f8ea70957d237293d9ddbfb992abaaff"
+    },
+    "outputs/review2_20261117/r2-04-after.log": {
+      "bytes": 99,
+      "sha256": "ba5e8d2b4b8b209a50eae74089c28a0cf1742a3ff100b2cc7cf1fd2e05a2c9ab"
+    },
+    "outputs/review2_20261117/r2-04-before.log": {
+      "bytes": 9883,
+      "sha256": "ce1fd5bcc3bd8d2630dce1ac3f2ac46b10217de868b690980f626d78d151c277"
+    },
+    "outputs/review2_20261117/r2-04-final-focus.log": {
+      "bytes": 98,
+      "sha256": "38a73f94fd6ce3e5dbf14dd466c8d41522f82207d545cf0814beaaf1ca5ee20b"
+    },
+    "outputs/review2_20261117/r2-05-06-before.log": {
+      "bytes": 3297,
+      "sha256": "3442d37512c6bd4096942e6c8afb958e2014e6747fefbfcdc7871951d743a271"
+    },
+    "outputs/review2_20261117/r2-05-after.log": {
+      "bytes": 98,
+      "sha256": "f5917c86e8ba32186fef8c04872b6add9484c227ffe57a5034bfe25d7e642521"
+    },
+    "outputs/review2_20261117/r2-06-after.log": {
+      "bytes": 99,
+      "sha256": "3815bdabae9b23ea5cf4428f96932d627a061783d82b1bf52d68540199e4a941"
+    },
+    "outputs/review2_20261117/remote/chroot-build.log": {
+      "bytes": 6440,
+      "sha256": "bda34aa13a9426e2a2519485faca5a06746201fabea62035c1a7c7326b8ad0c4"
+    },
+    "outputs/review2_20261117/remote/clearance-adaptive.log": {
+      "bytes": 3617,
+      "sha256": "743c3eb590a75197d59263c27209a1c42ec4679c9b0ed6e79b9dcc6db8e8e8d7"
+    },
+    "outputs/review2_20261117/remote/clearance-optimized.log": {
+      "bytes": 11658,
+      "sha256": "3457a371d434f0f6c5cc4e2ca6da676e85ffec034bd90815e470aaa069c17b30"
+    },
+    "outputs/review2_20261117/remote/clearance-reference.log": {
+      "bytes": 7457,
+      "sha256": "bc103025b9fb8c865a075275984661c4c214a02116993ba0793d5a52b066b4db"
+    },
+    "outputs/review2_20261117/remote/clearance-two_level.log": {
+      "bytes": 1376,
+      "sha256": "071f0d940fa03fac70c3280f9d5c9b544430aa314fc479d96b79b85d54973804"
+    },
+    "outputs/review2_20261117/remote/configure-final.log": {
+      "bytes": 1623,
+      "sha256": "05635c063d4f2d4fb4ec3f6f349501cd3ec73cda6ca70954c297b062343ad870"
+    },
+    "outputs/review2_20261117/remote/configure.log": {
+      "bytes": 21516,
+      "sha256": "cebe8262a6457fcee2303d23db81f2b508831bf09fe69dcbdaca94e56aac5ff9"
+    },
+    "outputs/review2_20261117/remote/header-build.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "outputs/review2_20261117/remote/header-journal.log": {
+      "bytes": 13,
+      "sha256": "ef73dd99fe36b8442e7bd1f04a4e1fc81e026ca5c3a57d3174cafab0e87d683c"
+    },
+    "outputs/review2_20261117/remote/header-limits.log": {
+      "bytes": 12,
+      "sha256": "d1d9e68641c6ba6b971903c8d33acab8b39cfc0d49675cc097c22a339f0b104b"
+    },
+    "outputs/review2_20261117/remote/header-path.log": {
+      "bytes": 10,
+      "sha256": "146e4a07f41e4190b42da2ae7bdc1dc657507be781a6109d2c380693273f592b"
+    },
+    "outputs/review2_20261117/remote/native-component-final.log": {
+      "bytes": 410,
+      "sha256": "01d61023137baf1a820c2159e025d1017555e1bad939e12b183ad4787f5037ef"
+    },
+    "outputs/review2_20261117/remote/native-verification-driver.log": {
+      "bytes": 3610,
+      "sha256": "6144ab76487e74b39230151e46a59b1072d3f471a9690707832a2a0878a09031"
+    },
+    "outputs/review2_20261117/remote/prepare-historical.json": {
+      "bytes": 8819,
+      "sha256": "d93c00144ce1ce4fae2f0118edc090a084c2f50c42e7e2d1a37994b67260d27d"
+    },
+    "outputs/review2_20261117/remote/prepare-historical.log": {
+      "bytes": 718,
+      "sha256": "f7e315ce769612b54144f95c345b6b26199c31d84ed220c2ed1c1c9712013e98"
+    },
+    "outputs/review2_20261117/remote/prepare-saved.json": {
+      "bytes": 122628,
+      "sha256": "9fa6c96c5f033033e1d99f95ed49855361f376d23f18fd2723839ff78d12ceeb"
+    },
+    "outputs/review2_20261117/remote/prepare-saved.log": {
+      "bytes": 876,
+      "sha256": "a3a89b10ae06906c121e3282584d5fc3755f3df7d8cad96b7cedf74e8acbaea6"
+    },
+    "outputs/review2_20261117/remote/pytest-final.log": {
+      "bytes": 102756,
+      "sha256": "5866f8fc51fa6649935f8e4c74f6d8fd18669bdf1fa9547ab13ef59abd8793b7"
+    },
+    "outputs/review2_20261117/remote/pytest-final.xml": {
+      "bytes": 199002,
+      "sha256": "f6c3c3123920d7538e9b7b1c4dd2e9a5ae991191aededc38e1c65ced013e3884"
+    },
+    "outputs/review2_20261117/remote/pytest-with-headers.log": {
+      "bytes": 3212,
+      "sha256": "c9b0ce7da7e7f9cad650032a0c4618fb885673acead7fa8b020785e5d97dac32"
+    },
+    "outputs/review2_20261117/remote/pytest-with-headers.xml": {
+      "bytes": 94533,
+      "sha256": "7f60d27dc740927136e03d96541d2fb5657f67bed855980c699b7f479bf0ef7b"
+    },
+    "outputs/review2_20261117/remote/pytest.log": {
+      "bytes": 1871,
+      "sha256": "206c00f31141ce7fc49f8389f60b31329873105226e42752ad0519c1cd6edd65"
+    },
+    "outputs/review2_20261117/remote/pytest.xml": {
+      "bytes": 10866,
+      "sha256": "f4c1939bf04eaa37ded4d45e10adbf661b3db61bad715855e47d45009cfc36bd"
+    },
+    "outputs/review2_20261117/remote_pytest.py": {
+      "bytes": 1566,
+      "sha256": "379681fd7c2978b3494c18a34f1058ea0ba7c7de33656c77415cb508a7cfef61"
+    },
+    "outputs/review2_20261117/remote_verify.py": {
+      "bytes": 3008,
+      "sha256": "e99cdf0f0bdaec30326d26921844ba06b87c64936e4ac453fa4ebb67c613b0c0"
+    },
+    "outputs/review2_20261117/replay-budget-followup.log": {
+      "bytes": 99,
+      "sha256": "ed2851d33b4ca32fe5b941a7e4e25751cd3a9a5d75a822d4d7fcb418807cbf75"
+    },
+    "outputs/review2_20261117/scene-cancel-before.log": {
+      "bytes": 10406,
+      "sha256": "2226958491421a419b791df106961cdce512c984342ed54ec3337c583d9d9ca6"
+    }
+  }
+}
