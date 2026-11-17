@@ -18,20 +18,15 @@
   },
   "incoming_commit": {
     "sha": "6477f32c19bd2bf8aac91ba88fc5ea1522a5f67c",
-    "status": "INTEGRATION_PENDING",
-    "note": "Concurrent incident protection commit discovered at final fetch. Existing verification is scoped to abe36ae plus A-F fixes."
-  },
-  "acceptance": {
-    "directed_pytest": "575 passed; 1 preexisting failure",
-    "supplement": "36 passed",
-    "cancel_evidence": "53 passed",
-    "native_clearance": "optimized/reference/two_level/adaptive PASS",
-    "native_component": "PASS; 491 points; 2.45 s trajectory",
-    "deferral_scope": "PASS",
-    "native_cancellation": "four formats PASS; normal reuse; wrong/repeated/late IDs",
-    "native_limits_journal_path": "PASS",
-    "prepare_numeric": "FAIL: acceleration difference 9.315828276854907e-12 exceeds unchanged 1e-12",
-    "full_scheduling": "NO_COMPLETE_SAMPLES: both fake IO runs failed original timing monitors"
+    "status": "MERGED_AND_DIRECTED_TESTED",
+    "note": "Concurrent incident protection commit discovered at final fetch. Existing verification is scoped to abe36ae plus A-F fixes.",
+    "merge_commit": "55f8041eba107ecf39b8de34e3b0948a47d300d7",
+    "preserved": [
+      "execution lock",
+      "40 mm tool-robot clearance and original explicit exemptions",
+      "wrist branch limits",
+      "all incoming regressions/configuration"
+    ]
   },
   "issues": [
     {
@@ -85,7 +80,7 @@
         "test_late_prewarm_cannot_publish_into_new_task"
       ],
       "before": "250 ms binding under 100 ms budget failed to raise budget exhaustion. New finalize/isolation tests also failed on original API.",
-      "after": "Fake blocking cases passed deadline+50ms; native 0.5/3/6s returned +1.430/+1.050/+1.285 ms.",
+      "after": "Functional isolation regressions pass. Post-merge lifecycle run: 18 PASS, 1 deadline-bound FAIL; isolated recheck PASS. Bound is NOT_STABLY_PASSED; no threshold change.",
       "limits": "Native trials expired before candidate search; not a hard realtime guarantee for arbitrary GIL/FCL calls."
     },
     {
@@ -139,7 +134,9 @@
     "shared memory",
     "native prepare v/a numerical precision",
     "whole-path minimum clearance",
-    "physical qualification"
+    "physical qualification",
+    "stable deadline + 50 ms acceptance",
+    "complete scheduling measurement with four handoffs"
   ],
   "next_workspace_reuse": {
     "implemented": false,
@@ -186,6 +183,11 @@
       "url": "https://github.com/QGG716/pick-and-place-simulation/commit/9c0e1049e62b44d0248aaf1c300450e6ce2b730d"
     },
     {
+      "sha": "6477f32c19bd2bf8aac91ba88fc5ea1522a5f67c",
+      "title": "fix: after 2026-11-14 tool/J6 impact, lock execution, 40 mm tool-robot clearance, no wrist flips",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/6477f32c19bd2bf8aac91ba88fc5ea1522a5f67c"
+    },
+    {
       "sha": "6cc78ba5b81c3449d264fea99d3b4d591ec9cf70",
       "title": "fix(eco65): expose background timing writer failures",
       "url": "https://github.com/QGG716/pick-and-place-simulation/commit/6cc78ba5b81c3449d264fea99d3b4d591ec9cf70"
@@ -219,6 +221,49 @@
       "sha": "4ecc5ee638052304af2461f78f4d2815145bc84c",
       "title": "fix(eco65): persist cancellation acknowledgement state in failure evidence",
       "url": "https://github.com/QGG716/pick-and-place-simulation/commit/4ecc5ee638052304af2461f78f4d2815145bc84c"
+    },
+    {
+      "sha": "cb6e0da5d916b3f2c1f3340138e6ac950c3ff158",
+      "title": "docs(eco65): record A-F repair evidence and remaining acceptance gaps",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/cb6e0da5d916b3f2c1f3340138e6ac950c3ff158"
+    },
+    {
+      "sha": "55f8041eba107ecf39b8de34e3b0948a47d300d7",
+      "title": "Merge commit '6477f32c19bd2bf8aac91ba88fc5ea1522a5f67c' into HEAD",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/55f8041eba107ecf39b8de34e3b0948a47d300d7"
+    },
+    {
+      "sha": "b2bb3274c316ae3f32978a06575a2eb0e3172bbc",
+      "title": "fix(eco65): report background worker cleanup failures",
+      "url": "https://github.com/QGG716/pick-and-place-simulation/commit/b2bb3274c316ae3f32978a06575a2eb0e3172bbc"
     }
-  ]
+  ],
+  "verification_source_snapshot": "4ecc5ee (A-F before concurrent incident merge); verification.json remains immutable historical evidence",
+  "code_status": "A_F_IMPLEMENTED_WITH_RECORDED_ACCEPTANCE_GAPS",
+  "final_code_commit": "b2bb3274c316ae3f32978a06575a2eb0e3172bbc",
+  "merged_verification": "merged-verification.json",
+  "premerge_acceptance": {
+    "directed_pytest": "575 passed; 1 preexisting failure",
+    "supplement": "36 passed",
+    "cancel_evidence": "53 passed",
+    "native_clearance": "optimized/reference/two_level/adaptive PASS",
+    "native_component": "PASS; 491 points; 2.45 s trajectory",
+    "deferral_scope": "PASS",
+    "native_cancellation": "four formats PASS; normal reuse; wrong/repeated/late IDs",
+    "native_limits_journal_path": "PASS",
+    "prepare_numeric": "FAIL: acceleration difference 9.315828276854907e-12 exceeds unchanged 1e-12",
+    "full_scheduling": "NO_COMPLETE_SAMPLES: both fake IO runs failed original timing monitors"
+  },
+  "acceptance": {
+    "directed_pytest": "611 PASSED; 1 PREEXISTING GEOMETRY FAILURE",
+    "native_clearance": "ALL FOUR MODES PASS",
+    "native_cancellation": "ALL FOUR WIRE FORMATS PASS",
+    "native_component": "PASS",
+    "deferral_scope": "PASS",
+    "deadline_bound": "NOT_STABLY_PASSED: one 184.526 ms return for 100 ms budget; isolated recheck PASS; original failure retained",
+    "prepare_numeric": "FAILED unchanged 1e-12 gate; numerical implementation unchanged by merge",
+    "full_scheduling": "NO_COMPLETE_SAMPLES; both fake runs retained as failures",
+    "physical": "NOT_RUN"
+  },
+  "commit_inventory_note": "Includes all implementation, merge and prior evidence commits. The containing final evidence commit is available from Git history and the delivery response."
 }
