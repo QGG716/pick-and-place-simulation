@@ -256,7 +256,8 @@ def test_camera_session_change_stops_even_a_loaded_cycle_and_keeps_ticking(holdi
     c=SimpleNamespace(state='DETACH' if holding else 'APPROACH',active=True,reason='',
                       stop=lambda reason='OPERATOR_SOFTWARE_STOP',cancelled=False:stops.append(reason),tick=lambda:ticks.append(1))
     m=SimpleNamespace(cycle=c,stop_event=threading.Event(),busy=False,observation=SimpleNamespace(generation=1),
-                      backend=SimpleNamespace(observation_generation=2),journal=SimpleNamespace(error=None),
+                      backend=SimpleNamespace(observation_generation=2),journal=SimpleNamespace(error=None,thread=SimpleNamespace(is_alive=lambda:True)),
+                      planner=SimpleNamespace(evidence=None),
                       vacuum=SimpleNamespace(holding=holding),_save_result=lambda cycle,saved:None)
     TaskManager._monitor_once(m,[None])
     # Stopped, and still ticked so the stop is confirmed or latched; no release.

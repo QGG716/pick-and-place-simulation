@@ -14,6 +14,7 @@ def manager(tmp_path, policy, *, generation=1, binding_error=None):
     class Journal:
         error = None; thread = SimpleNamespace(is_alive=lambda: True)
         def __call__(self, **e): events.append(e)
+        def flush(self, **kwargs): pass
     def binding():
         if binding_error: raise ValueError(binding_error)
         return {}

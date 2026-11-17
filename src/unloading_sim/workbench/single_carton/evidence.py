@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import queue
 import threading
+import time
 
 import numpy as np
 
@@ -61,14 +62,24 @@ class EvidenceWriter:
     def write_npz(self, path, arrays, name):
         self._put(('npz', Path(path), arrays, name, {}))
 
-    def flush(self, timeout=None):
-        """Block until every earlier submission is written; raise on any failure."""
+    def flush(self, timeout=None, cancelled=lambda: False):
+        """Wait for prior writes, checking cancellation and writer health."""
         done = threading.Event()
         self._put(('flush', None, done, 'flush', {}))
-        if not done.wait(timeout):
-            raise EvidenceWriteFailed('EVIDENCE_FLUSH_TIMEOUT')
-        if self.error is not None:
-            raise EvidenceWriteFailed('EVIDENCE_WRITE_FAILED: '+self.error)
+        end = None if timeout is None else time.monotonic()+timeout
+        while True:
+            if cancelled():
+                raise EvidenceWriteFailed('CANCELLED')
+            if self.error is not None:
+                raise EvidenceWriteFailed('EVIDENCE_WRITE_FAILED: '+self.error)
+            if not self.alive:
+                raise EvidenceWriteFailed('EVIDENCE_WRITER_UNAVAILABLE')
+            if done.is_set():
+                return
+            left = None if end is None else end-time.monotonic()
+            if left is not None and left <= 0:
+                raise EvidenceWriteFailed('EVIDENCE_FLUSH_TIMEOUT')
+            done.wait(.01 if left is None else min(.01,left))
 
     @property
     def alive(self):

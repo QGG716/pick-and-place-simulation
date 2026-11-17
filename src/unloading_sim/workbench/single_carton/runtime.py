@@ -26,9 +26,29 @@ class Journal:
                 while True:
                     event=self.events.get()
                     if event is None:break
+                    if isinstance(event,threading.Event):
+                        f.flush();event.set();continue
                     f.write(json.dumps(event,allow_nan=False)+'\n')
         except Exception as e:self.error=str(e)
+    def flush(self,timeout=120,cancelled=lambda:False):
+        done=threading.Event();self.events.put(done);end=time.monotonic()+timeout
+        while True:
+            if cancelled():raise ValueError('CANCELLED')
+            if self.error or not self.thread.is_alive():raise ValueError('TASK_RECORD_UNAVAILABLE:'+str(self.error))
+            if done.is_set():return
+            left=end-time.monotonic()
+            if left<=0:raise ValueError('TASK_RECORD_FLUSH_TIMEOUT')
+            done.wait(min(.01,left))
     def close(self):self.events.put(None);self.thread.join(2)
+
+
+def flush_task_records(manager):
+    """One startup barrier covers observation, planning and task journal writes."""
+    try:
+        for writer in (getattr(manager,'evidence',None),getattr(manager.planner,'evidence',None),manager.journal):
+            if writer is not None:writer.flush(timeout=120,cancelled=manager.stop_event.is_set)
+    except Exception as error:
+        raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(error)) from error
 
 
 class TaskManager:
@@ -189,10 +209,7 @@ class TaskManager:
             if self.journal is None or self.journal.error or not self.journal.thread.is_alive():
                 raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(getattr(self.journal,'error','')))
             # async_evidence: every observation and plan record must be on disk first.
-            writers=[w for w in (getattr(self,'evidence',None),getattr(self.planner,'evidence',None)) if w is not None]
-            try:
-                for writer in writers:writer.flush(timeout=120)
-            except Exception as error:raise ValueError('TASK_RECORD_UNAVAILABLE_NO_MOTION:'+str(error)) from error
+            flush_task_records(self)
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             recheck=pre_execute_visual_recheck(self.config)
             recheck_timing=timing.span('execute.pre_execute_recheck',enabled=recheck['enabled']);recheck_timing.__enter__()
@@ -223,6 +240,8 @@ class TaskManager:
                                                files=[(r['file'],r['status']) for r in hashed['files']])
             if self.stop_event.is_set():raise ValueError('CANCELLED')
             if self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
+            flush_task_records(self)
+            if self.stop_event.is_set():raise ValueError('CANCELLED')
             with timing.span('execute.cycle_start'):self.cycle.start()
             self.phase=self.cycle.state
         except Exception as e:
@@ -278,7 +297,9 @@ class TaskManager:
                 # motion too). The stop never releases a held load.
                 if self.observation.generation!=self.backend.observation_generation:
                     c.stop('CONNECTION_OR_CONFIG_CHANGED')
-                if self.journal.error:c.stop('LOG_WRITE_FAILED:'+self.journal.error)
+                if self.journal.error or not self.journal.thread.is_alive():c.stop('LOG_WRITE_FAILED:'+str(self.journal.error))
+                for writer in (getattr(self,'evidence',None),getattr(self.planner,'evidence',None)):
+                    if writer is not None and not writer.alive:c.stop('LOG_WRITE_FAILED:'+str(writer.error))
             except Exception as e:c.stop(f'SUPERVISOR_ERROR:{type(e).__name__}:{e}')
             c.tick();self.phase=c.state;self.reason=c.reason
         self._save_result(c,saved)
