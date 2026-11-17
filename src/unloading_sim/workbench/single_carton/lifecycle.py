@@ -37,7 +37,7 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
         task.complete_plan_path=folder/f'complete-plan.pending-{generation}.json'
         for key in ('pool','pool_status','pool_threads'):setattr(task,key,[])
         for key in ('ipc_executors','search_counts','scene_handles'):setattr(task,key,{})
-        task.abandoned=set();task.search_thread=None;task.client=None;task.evidence=None;task.cleanup_threads=[]
+        task.abandoned=set();task.search_thread=None;task.client=None;task.evidence=None;task.cleanup_threads=[];task.cleanup_errors=[]
         task.pool_lock=threading.Lock();task.scene_lock=threading.Lock();task.build_lock=threading.RLock()
         task.files=dict(owner.files);task.hash_cache=dict(owner.hash_cache)
         for key,value in owner.__dict__.items():
@@ -80,7 +80,8 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
                     writer=task.evidence
                     task.close()
                     if writer is not None:writer._thread.join()
-                status['cleanup_finished']=True
+                status['cleanup_errors']=list(task.cleanup_errors)
+                status['cleanup_finished']=not task.cleanup_errors
             except Exception as error:status['cleanup_error']=str(error)
             status['cleanup_completed_s']=time.monotonic()
             try:

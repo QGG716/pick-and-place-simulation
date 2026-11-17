@@ -135,3 +135,12 @@ def test_late_prewarm_cannot_publish_into_new_task(case,monkeypatch):
     p.task_generation+=1
     release.set();thread.join(2)
     assert p.resident is None and closed==[True]
+
+
+def test_background_close_failure_remains_observable(case):
+    from types import SimpleNamespace
+    p,obs,box,folder,calls,opts=case
+    def fail():raise OSError('CLOSE_FAILURE_INJECTED')
+    p.client=SimpleNamespace(name='failing',close=fail);p.background_close(folder)
+    for thread in p.cleanup_threads:thread.join(1)
+    assert p.cleanup_errors==[dict(worker='failing',error='CLOSE_FAILURE_INJECTED')]

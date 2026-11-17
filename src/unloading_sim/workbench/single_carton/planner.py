@@ -1118,11 +1118,14 @@ class SinglePlanner(EmptyPlanner):
         threading.Thread(target=timing.write_json,args=(folder/'native-check-pool.json',status,'native-check-pool.json'),
                          kwargs=dict(ensure_ascii=False),daemon=True,name='native-pool-record').start()
         clients=[c for c in [self.client]+pool if c is not None];self.client=None
+        self.cleanup_errors=[]
         def close(client):
-            entry=executors.get(id(client))
-            if entry is not None:entry[1].shutdown(wait=True)
-            try:client.close()
-            except Exception:pass
+            try:
+                entry=executors.get(id(client))
+                if entry is not None:entry[1].shutdown(wait=True)
+                client.close()
+            except Exception as error:
+                self.cleanup_errors.append(dict(worker=getattr(client,'name','worker'),error=str(error)))
         self.cleanup_threads=[]
         for client in clients:
             thread=threading.Thread(target=close,args=(client,),daemon=True,name='native-close')
