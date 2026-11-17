@@ -502,7 +502,7 @@ Python 跑在主机上，原生 worker 通过仓库外的测试用 `env` 包装�
 按 AGENTS.md 11-16 节 §3d 实现，未发现冲突。报告见 `docs/evidence/realtime_20261116_deadline/report.json`。
 
 **量具** `tools/bench_planning_latency.py`：
-- `--discover` 用 `ECO65_TIMING=1` 回放 `outputs/single_carton/` 下每条完整记录；`--timing` 读入已有的 `timing-*.json`。
+- `--discover` 用 `ECO65_TIMING=1` 部分回放 `outputs/single_carton/` 和 `outputs/realtime-field-*/` 下完整输入；也可用 `--discover-root DIR` 指定发现根。完整入口基线使用 `--timing` 读已有 `timing-*.json`，回放不等于 prepare_plan 入口计时。
 - 按规划、视觉、调度三个口径分别给出 p50 / p95 / max（最近秩，不插值）、成功率、逐环节分解，以及超出预算的环节。
 - 没有输入时报 `NO_SAMPLES`，不编数字。不连接设备，不改记录。
 
@@ -889,3 +889,15 @@ Edge 软件渲染浏览器定向检查通过：两箱位、64 个候选及保存
 ## 2026-11-17 复审 R2-05：GC 溢出统计不参与时间戳比较
 
 8193 次 gc_pause 后带 since 的 write_later 原会同步 TypeError；溢出计数现作为本次 drain 的无时间戳 aggregate 单独追加，仍保持 8192 上限和原 GC 行为。overflow/重入/写失败可见性 3 项通过，共同必需集 609 passed，碰撞双模式及原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-05.json`；这是计时器正确性验证，物理 NOT_RUN。
+
+## 2026-11-17 复审 R2-06：全样本口径与采集目录
+
+完整/部分/缺失、无计时、成功/失败/取消/超时均按全部输入统计；部分或缺失计时不能给出全组达标。成功完整样本 p95 单列，失败返回耗时保留但不叫 PLAN_READY 时延；成功率基线仍需另行比较。原有及新增统计检查 13 项通过，新增发现目录和成功子集用例也纳入共同 609 项必需集，碰撞双模式及原生组件 PASS。见 `docs/evidence/realtime_20261117_review2/r2-06.json`。
+
+保存现场完整入口计时（只读，不回放、不连接设备）：
+
+```bash
+.venv/bin/python tools/bench_planning_latency.py --timing outputs/realtime-field-20261117 --output outputs/review2-field-timing
+```
+
+另行离线部分回放：`--records TASK_DIR` 或 `--discover-root outputs/realtime-field-20261117`。该根目录包含仅观测任务时，观测数与规划数分别报告，不能追加为新的完整箱位案例。默认优化开关、2 s 目标及原验收阈值未改，物理 NOT_RUN。

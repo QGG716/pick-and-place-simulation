@@ -1,0 +1,14 @@
+{
+  "issue": "R2-06",
+  "before": "Both mixed-scope and untimed-full-failure cohorts incorrectly set meets_total_p95=true",
+  "after": "13 original/focused metrics cases passed; expanded discovery/success-subset cases included in the 609-pass merged suite",
+  "changes": [
+    "Classify all samples into full/partial/missing; report untimed coverage and outcomes",
+    "Report successful full-entry latency separately from failed-return and mixed timed subsets",
+    "No unconditional target result on incomplete coverage or no successful samples",
+    "Default discovery includes collector roots; repeatable --discover-root; full-entry baseline uses --timing"
+  ],
+  "physical": "NOT_RUN",
+  "required_checks": "Shared merged-working-tree check: 609 passed; optimized/reference/native component PASS; final committed-SHA validation recorded separately",
+  "required_check_report": "r2-03.json"
+}

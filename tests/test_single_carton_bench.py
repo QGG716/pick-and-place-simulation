@@ -89,4 +89,5 @@ def test_fake_io_scheduling_sample_uses_first_send_after_execute_entry(tmp_path)
     (kind, sample), = bench.samples_from_timing(doc, tmp_path/'timing-scheduling.json')
     assert kind == 'scheduling' and sample['seconds'] is None and sample['partial_seconds'] == pytest.approx(3.5) and sample['fake_io']
     out = bench.summarize('scheduling', [sample], BUDGET['scheduling'], 1.2)
-    assert out['p50_s'] is None and out['status']=='NO_SAMPLES' and out['over_budget'] == []
+    assert out['p50_s'] is None and out['status']=='PARTIAL_SCOPE' and out['over_budget'] == []
+    assert out['coverage']['partial'] == 1 and out['coverage']['untimed'] == 1

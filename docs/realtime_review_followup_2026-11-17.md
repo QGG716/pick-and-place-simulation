@@ -49,7 +49,7 @@ PYTHONPATH="$PWD/src" ECO65_TIMING=1 .venv/bin/python tools/collect_realtime_fie
 - 旧工作台仍在占用设备，采集等待其正常退出。
 - 保存的 GPU 地址 `connect.westc.seetacloud.com:20042` 返回 `Connection refused`，需恢复实例或提供当前可用地址；不静默切换本地模型。
 - 9 条历史记录已打包为 `outputs/realtime_review_20261117/historical-field-inputs.tar.gz`，附独立 SHA-256 清单。SSH 连接失败，尚未传输到开发服务器。`outputs/` 不提交 Git。
-- 新 20 条采集、`bench_planning_latency.py --discover` 的新现场基线、预算修订及后续第 8 步检查点尚未完成。
+- 新 20 条采集、`bench_planning_latency.py --timing outputs/realtime-field-20261117` 的新现场完整入口基线（离线回放另列）、预算修订及后续第 8 步检查点尚未完成。
 - R3 工作区跨请求复用、R5/R7/R8/R9/R12/R13 的完整开发与验证仍是后续工作；本轮没有据此削弱检查、改限值或打开缺省开关。
 - 实机运动、真空抓放、真实 SDK/压力时延以及物理验收均为 **NOT_RUN**。
 

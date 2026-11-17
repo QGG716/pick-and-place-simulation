@@ -1,6 +1,7 @@
 """Latency bench for the ECO65 real-site chain: planning, vision and scheduling.
 
-Replays every available saved task record (outputs/single_carton/<task_id>/
+Replays available saved task records (outputs/single_carton/<task_id>/ or
+outputs/realtime-field-*/<task_id>/
 with observation.json, observation.npz and segmentation.npz) through
 tools/replay_single_carton_record.py with ECO65_TIMING=1, and/or reads timing
 files already written with ECO65_TIMING=1 (timing-observe.json,
@@ -14,7 +15,9 @@ replay tool hashes each record before and after. With no input it reports
 NO_SAMPLES instead of inventing numbers.
 
 Usage:
+  python tools/bench_planning_latency.py --timing outputs/realtime-field-20261117
   python tools/bench_planning_latency.py --discover [--planning-deadline-s 2.0]
+  python tools/bench_planning_latency.py --discover-root SAVED_RECORD_ROOT
   python tools/bench_planning_latency.py --records DIR [DIR ...] --timing FILE_OR_DIR [...]
 """
 import argparse
@@ -36,6 +39,12 @@ def discover(root):
     if not root.is_dir():
         return []
     return sorted(p for p in root.iterdir() if p.is_dir() and all((p/n).is_file() for n in RECORD_FILES))
+
+
+def discover_roots(roots=None):
+    """Discovery is partial offline replay; --timing measures saved full entries."""
+    roots = roots or [ROOT/'outputs/single_carton', *sorted((ROOT/'outputs').glob('realtime-field-*'))]
+    return sorted({p.resolve() for root in roots for p in discover(root)})
 
 
 def quantile(values, q):
@@ -105,7 +114,8 @@ def samples_from_timing(doc, path):
         ready = first(events, 'observe.entry_to_target_ready')
         return [('vision', dict(source=str(path), task_id=doc.get('task_id'),
                                 seconds=ready['duration_s'] if ready else None,
-                                success=doc.get('final_phase') == 'TARGET_READY', events=events))]
+                                success=doc.get('final_phase') == 'TARGET_READY', events=events,
+                                scope='OBSERVE_ENTRY_TO_TARGET_READY'))]
     if phase == 'offline_replay':
         return []  # replay files are read through their replay report (see replay_samples)
     if phase == 'scheduling_fake_io':
@@ -174,6 +184,7 @@ def replay_samples(record, code, report, timing, log):
                     scope='PARTIAL_REPLAY_NOT_PREPARE_PLAN',
                     definition='replay worker start through search, measured tail and blocking cleanup; excludes prepare_plan/Cycle.ready')
     vision = dict(source=str(record), task_id=Path(record).name, seconds=None, success=bool(report and report.get('boxes')),
+                  scope='PARTIAL_REPLAY_NOT_OBSERVE',
                   events=events, partial_seconds=span_sum(events, ['observe.reconstruct', 'observe.planner_build',
                                                                     'observe.self_filter_construct', 'observe.build_scene']),
                   definition='REPLAY_PARTIAL: reconstruct, scene model and build_scene only; no freeze or live inference')
@@ -198,13 +209,26 @@ def summarize(kind, samples, section, factor):
             over.append(dict(name=stage['name'], p95_s=row['p95_s'], target_s=row['target_s'],
                              ratio=row['p95_s']/row['target_s'] if row['target_s'] else None,
                              above_flag_factor=row['p95_s'] > factor*row['target_s']))
-    partial=any('PARTIAL' in s.get('scope','') for s in measured)
-    if partial:out['status']='PARTIAL_SCOPE'
+    # Classify every input, including untimed failures. Partial scope and
+    # missing timing must never disappear by filtering to the timed subset.
+    partial_samples=[s for s in samples if 'PARTIAL' in s.get('scope','')]
+    full=[s for s in samples if 'PARTIAL' not in s.get('scope','') and s.get('scope') and s.get('seconds') is not None]
+    missing=len(samples)-len(partial_samples)-len(full)
+    complete=bool(samples) and len(full)==len(samples)
+    if partial_samples:out['status']='PARTIAL_SCOPE'
+    elif samples and not complete:out['status']='INCOMPLETE_COVERAGE'
+    out['coverage']=dict(full=len(full),partial=len(partial_samples),missing=missing,
+                         untimed=len(samples)-len(measured),full_timed=len(full),
+                         full_timed_fraction=len(full)/len(samples) if samples else None)
+    out['statistics_scope']='FULL_INPUT_COHORT_RETURN_LATENCY' if complete else 'TIMED_SUBSET_ONLY_MAY_MIX_SCOPES'
+    out['successful_full_samples']=dict(scope='SUCCESSFUL_FULL_SCOPE_ONLY',**stats([s['seconds'] for s in full if s['success']]))
     out['outcomes']={name:sum((s.get('outcome') or s.get('budget_status') or ('SUCCESS' if s['success'] else 'FAILED'))==name for s in samples)
                      for name in sorted({s.get('outcome') or s.get('budget_status') or ('SUCCESS' if s['success'] else 'FAILED') for s in samples})}
     out.update(stages=rows, over_budget=sorted(over, key=lambda x: -(x['ratio'] or math.inf)))
-    if section.get('total_s') is not None and out['p95_s'] is not None:
-        out['target_total_s'] = section['total_s']; out['meets_total_p95'] = None if partial else out['p95_s'] <= section['total_s']
+    if section.get('total_s') is not None:
+        out['target_total_s'] = section['total_s']
+        out['meets_total_p95'] = out['p95_s'] <= section['total_s'] if complete and any(s['success'] for s in full) else None
+        out['target_assessment']='LATENCY_ONLY_SUCCESS_RATE_BASELINE_NOT_COMPARED'
     out['per_sample'] = [{k: v for k, v in s.items() if k != 'events'} for s in samples]
     return out
 
@@ -212,7 +236,8 @@ def summarize(kind, samples, section, factor):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--records', nargs='*', default=[], type=Path, help='saved task record folders to replay')
-    parser.add_argument('--discover', action='store_true', help='replay every record under outputs/single_carton')
+    parser.add_argument('--discover', action='store_true', help='partial replay under outputs/single_carton and outputs/realtime-field-*; use --timing for full entry measurements')
+    parser.add_argument('--discover-root', action='append', type=Path, default=[], help='explicit partial-replay discovery root (repeatable; implies discovery)')
     parser.add_argument('--timing', nargs='*', default=[], help='timing-*.json files or folders containing them')
     parser.add_argument('--budget', type=Path, default=ROOT/'configs/workbench/planning_budget.json')
     parser.add_argument('--planning-deadline-s', type=float, help='passed to every replay')
@@ -224,7 +249,7 @@ def main():
     allocated = sum(s['target_s'] for s in budget['planning']['stages'])
     if abs(allocated-budget['planning']['total_s']) > 1e-9:
         raise SystemExit(f'PLANNING_BUDGET_ALLOCATION_{allocated}_NOT_EQUAL_TOTAL')
-    records = list(args.records)+(discover(ROOT/'outputs/single_carton') if args.discover else [])
+    records = list(dict.fromkeys([p.resolve() for p in args.records]+(discover_roots(args.discover_root) if args.discover or args.discover_root else [])))
     out = (args.output or ROOT/'outputs/single_carton_development'/f'bench-{datetime.now():%Y%m%dT%H%M%S}').resolve()
     out.mkdir(parents=True, exist_ok=False)
     samples = defaultdict(list); replays = []
