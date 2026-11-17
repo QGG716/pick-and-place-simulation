@@ -128,7 +128,7 @@ def test_expiry_during_candidate_generation_is_classified_not_infeasible(case, m
     # (measured up to 83 ms for the real generation), reported, not asserted.
     assert target['status'] == 'BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION'
     assert target['unsearched'] == 'ALL_NOT_GENERATED' and target['infeasible_candidates'] == 0
-    p.search_thread.join(5)
+    p.last_task_context.search_thread.join(5)
     assert not [r for r in calls if r.get('op') in ('ik', 'plan', 'validate')]  # nothing dispatched after it
 
 
@@ -145,8 +145,8 @@ def test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused(case, 
         with pytest.raises(PlanningBudgetExhausted, match='NO_REPLY_BY_DEADLINE|SEARCH_STEP_RUNNING_AT_DEADLINE'):
             p.plan_cycle(obs, [box], folder, deadline=entered+.4)
         assert time.monotonic()-(entered+.4) <= ON_TIME_S
-        p.search_thread.join(1)  # the released search records the unanswered worker
-        assert p.abandoned and not any(id(c) in p.abandoned for c in p.checkers() if c is not None)
+        p.last_task_context.search_thread.join(1)  # the released search records the unanswered worker
+        assert p.last_task_context.abandoned and not any(id(c) in p.last_task_context.abandoned for c in p.checkers() if c is not None)
     finally:
         release.set()
 

@@ -186,18 +186,37 @@ class TaskManager:
             # from this entry; absent keeps every request and timeout unchanged.
             budget=self.config.get('planning_deadline_s')
             deadline=None if budget is None else entered+float(budget)
+            prepared_cycle={}
+            journal=self.journal;task_id=self.task_id
+            observation=self.observation;generation=observation.generation
+            def finish(plan,guard):
+                guard('CYCLE_READY')
+                def pending_record(**event):
+                    if event.get('state')=='PLAN_READY':event=dict(event,state='PREPARED_PENDING_COMMIT')
+                    journal(**event)
+                cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],pending_record,self.check_contact,self.check_release,physical_io=True)
+                with timing.span('prepare_plan.cycle_ready'):cycle.ready(task_id,plan)
+                guard('TASK_EVIDENCE')
+                for writer in (getattr(self,'evidence',None),journal):
+                    if writer is not None:
+                        remaining=120 if deadline is None else max(0.,deadline-time.monotonic())
+                        writer.flush(timeout=remaining,cancelled=self.stop_event.is_set)
+                guard('READY_TO_PUBLISH')
+                if generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
+                cycle.record=journal;prepared_cycle['cycle']=cycle
             with timing.span('prepare_plan.plan_cycle'):
-                self.plan=self.planner.plan_cycle(self.observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,
-                                                  scene=self.scene,**({} if deadline is None else dict(deadline=deadline)))
-            if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
-            with timing.span('prepare_plan.cycle_ready'):
-                self.cycle=Cycle(self.service,self.vacuum,self.config['vacuum'],self.journal,self.check_contact,self.check_release,physical_io=True)
-                self.cycle.ready(self.task_id,self.plan)
+                self.plan=self.planner.plan_cycle(observation,self.boxes,self.folder,self.progress,selected,self.stop_event.is_set,
+                                                  scene=self.scene,finalize=finish,**({} if deadline is None else dict(deadline=deadline)))
+            if self.stop_event.is_set() or generation!=self.backend.observation_generation:raise ValueError('PLAN_INVALIDATED')
+            if deadline is not None and time.monotonic()>=deadline:
+                from .planner import PlanningBudgetExhausted
+                raise PlanningBudgetExhausted('PLAN_READY_PUBLICATION')
+            self.cycle=prepared_cycle['cycle']
             self.phase='PLAN_READY'
             timing.add('prepare_plan.entry_to_plan_ready',entered,timing.now()-entered)
             self.journal(kind='planning',duration_s=time.monotonic()-start,full_path='PASS')
             self.notify('plan',self.plan)
-        except Exception as e:self.reject(e);raise
+        except Exception as e:self.reject(e,background=True);raise
         finally:
             self.busy=False
             if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase),since=entered)
@@ -257,11 +276,20 @@ class TaskManager:
     def check_release(self,q,plan):
         b=plan['binding']['physical_cycle'];result=self.planner.release_check(q,np.asarray(b['attachment']),plan['target'],b.get('release_world',[]))
         self.journal(kind='actual_return_release_pose',q_actual=q.tolist(),check=result)
-    def reject(self,error):
+    def reject(self,error,background=False):
         self.reason=str(error);self.phase='FAILED';self.planner.authority.invalidate()
         evidence=getattr(error,'evidence',None)
         if self.journal:self.journal(kind='rejected',reason=self.reason,evidence=evidence,physical_result='NOT_RUN')
-        if self.folder:(self.folder/'result.json').write_text(json.dumps(dict(task_id=self.task_id,state='REJECTED',reason=self.reason,evidence=evidence,physical_result='NOT_RUN'),indent=2))
+        if self.folder:
+            path=self.folder/'result.json'
+            record=dict(task_id=self.task_id,state='REJECTED',reason=self.reason,evidence=evidence,physical_result='NOT_RUN')
+            def write():
+                try:path.write_text(json.dumps(record,indent=2))
+                except Exception as failure:self.rejection_record_error=str(failure)
+            if background:
+                self.rejection_record_thread=threading.Thread(target=write,daemon=True,name='planning-rejection-record')
+                self.rejection_record_thread.start()
+            else:path.write_text(json.dumps(record,indent=2))
         self.notify('error',self.reason)
     def stop(self):
         self.stop_event.set();self.service.request_stop();self.planner.authority.invalidate();self.vacuum.inhibit()

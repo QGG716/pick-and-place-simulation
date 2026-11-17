@@ -86,6 +86,7 @@ class PlanningBudgetExhausted(Exception):
 
 class SinglePlanner(EmptyPlanner):
     def __init__(self,config,mapping,authority,coordinate_model):
+        self.task_lock=threading.RLock();self.task_generation=0;self.last_task=None
         self.site=config;self.coordinate_model=coordinate_model;self.cycle_binding=None
         self.pool=[];self.pool_status=[];self.pool_threads=[];self.pool_lock=threading.Lock();self.pool_closed=False
         self.defer_output_check=False
@@ -1083,44 +1084,8 @@ class SinglePlanner(EmptyPlanner):
             progress(str(e));failures.append(dict(target=box['id'],reason=str(e)))
         return None
     def budget_summary(self,boxes,failures,selected,error):
-        """Per-target searched / unsearched candidate counts under the unified deadline.
-
-        A candidate is searched only when it was concluded: rejected (it has a
-        recorded failure) or accepted. Candidates screened but not planned, in
-        flight at expiry, or never reached are unsearched and are never counted
-        as infeasible. A target-level verdict (rest intersection, TargetBlocked)
-        concludes every candidate of that target.
-        """
-        targets=[]
-        for box in boxes:
-            if selected is not None and box['detection_index']!=selected:continue
-            ident=box['id'];counts=self.search_counts.get(ident)
-            level=[f for f in failures if f.get('target')==ident and 'candidate' not in f]
-            failed={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f}
-            if counts is None or counts['considered'] is None:
-                # Candidates never generated: a target-level verdict, or not reached.
-                status='TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
-                    'BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION' if error is not None else 'CANDIDATE_GENERATION')
-                targets.append(dict(target=ident,status=status,candidates=None,considered=None,screened=0,
-                    searched='ALL_BY_TARGET_VERDICT' if level else 0,unsearched=None if level else 'ALL_NOT_GENERATED',
-                    infeasible_candidates=0,target_reason=level[0]['reason'][:300] if level else None))
-                continue
-            considered=counts['considered']
-            if level:
-                status,searched,infeasible='TARGET_BLOCKED',len(considered),len(considered)
-            else:
-                infeasible=len(failed&set(considered));searched=infeasible
-                status=('SEARCHED_NO_PLAN' if counts['phase']=='DONE' else
-                        'BUDGET_EXHAUSTED_IN_'+counts['phase'] if error is not None else counts['phase'])
-            targets.append(dict(target=ident,status=status,candidates=counts['candidates'],considered=len(considered),
-                                screened=counts['screened'],searched=searched,unsearched=len(considered)-searched,
-                                infeasible_candidates=infeasible,
-                                target_reason=level[0]['reason'][:300] if level else None))
-        return dict(status='PLANNING_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_FINISHED_WITHIN_DEADLINE',
-                    where=getattr(error,'where',None),detail=getattr(error,'detail',None),
-                    deadline_monotonic_s=self.deadline,classified_monotonic_s=time.monotonic(),
-                    reply_reserve_s=DEADLINE_REPLY_RESERVE_S,targets=targets,
-                    rule='UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY')
+        from .budget import snapshot
+        return snapshot(self,boxes,failures,selected,error)
     def background_close(self,folder):
         """Under a deadline: record the pool, then close every worker off this thread.
 
@@ -1140,20 +1105,22 @@ class SinglePlanner(EmptyPlanner):
             if entry is not None:entry[1].shutdown(wait=True)
             try:client.close()
             except Exception:pass
-        for client in clients:threading.Thread(target=close,args=(client,),daemon=True,name='native-close').start()
-    def plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None,deadline=None):
+        self.cleanup_threads=[]
+        for client in clients:
+            thread=threading.Thread(target=close,args=(client,),daemon=True,name='native-close')
+            self.cleanup_threads.append(thread);thread.start()
+    def plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None,deadline=None,finalize=None):
+        from .lifecycle import run_task
+        return run_task(self,observation,boxes,folder,progress,selected,cancelled,scene,deadline,finalize)
+    def _plan_cycle(self,observation,boxes,folder,progress=lambda _:None,selected=None,cancelled=lambda:False,scene=None,deadline=None):
         """Full search and permit registration; ``deadline`` is the optional absolute
         time.monotonic() planning deadline (None keeps the original behaviour)."""
+        self.task_cancelled=cancelled
         from ..contracts import Source,HOST_SESSION
         if (observation.frame.stamp.source!=Source.LIVE or observation.frame.stamp.host_session!=HOST_SESSION or
                 observation.robot_sample.get('source')!='LIVE'):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
-        # A search thread released at an earlier deadline may still finish its
-        # last pure-Python step (it dispatches nothing more); it must end
-        # before any planner state of this request is set.
-        stale=getattr(self,'search_thread',None)
-        if stale is not None and stale.is_alive():stale.join()
-        self.deadline=None;self.abandoned=set();self.search_counts={};self.search_thread=None
+        self.deadline=deadline;self.abandoned=set();self.search_counts={};self.search_thread=None
         self.authority.invalidate();self.cycle_binding=None
         qualification=release_policy_evidence(self.site)
         with timing.span('plan_cycle.build'):self.build()
@@ -1164,7 +1131,7 @@ class SinglePlanner(EmptyPlanner):
         world=deepcopy(scene['world']) if scene else [deepcopy(x) for x in self.world if x.get('category')!='carton']
         if scene and scene['observation_id']!=observation.frame.observation_id:raise ValueError('REAL_SCENE_CAPTURE_MISMATCH')
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
-        q=np.array(observation.q_start);failures=[]
+        q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # Unified deadline for every native request of this plan (None: unchanged).
         self.deadline=deadline;self.deadline_reference=None if deadline is None else time.monotonic()
         self.start_task_services(world,folder)
@@ -1209,11 +1176,12 @@ class SinglePlanner(EmptyPlanner):
                 if self.binding_evidence is not None:plan['binding_hash_evidence']=self.binding_evidence
                 if self.task_start is not None:plan['resident_task_start']=self.task_start
                 if self.evidence is None:
-                    timing.write_json(folder/'complete-plan.json',plan,'complete-plan.json');return plan
+                    timing.write_json(getattr(self,'complete_plan_path',folder/'complete-plan.json'),plan,'complete-plan.json');return plan
                 # PLAN_READY needs the plan evidence on disk: everything queued
                 # for this task, then the plan itself, before returning.
-                self.evidence.write_json(folder/'complete-plan.json',plan,'complete-plan.json')
-                with timing.span('plan_cycle.evidence_flush'):self.evidence.flush(timeout=120)
+                self.evidence.write_json(getattr(self,'complete_plan_path',folder/'complete-plan.json'),plan,'complete-plan.json')
+                with timing.span('plan_cycle.evidence_flush'):
+                    self.evidence.flush(timeout=120 if deadline is None else max(0.,deadline-time.monotonic()),cancelled=cancelled)
                 return plan
             # Keep every concrete failure on disk; one task-status label must
             # not grow into 32 copies of the full native collision JSON.
@@ -1272,9 +1240,23 @@ class SinglePlanner(EmptyPlanner):
                 self.resident.start()
             return self.resident
     def prewarm(self):
-        """Background build and resident worker start (resident_workers only)."""
+        """Build on isolated state; a late prewarm cannot overwrite an active task."""
         if not self.enabled('resident_workers'):return None
-        thread=threading.Thread(target=self.resident_pool,daemon=True,name='resident-prewarm');thread.start()
+        import copy
+        with self.task_lock:
+            generation=self.task_generation;warm=copy.copy(self)
+            warm.files=dict(self.files);warm.hash_cache=dict(self.hash_cache)
+            warm.build_lock=threading.RLock();warm.resident=None
+        def run():
+            pool=warm.resident_pool()
+            with self.task_lock:
+                if self.task_generation==generation and self.resident is None:
+                    # A task can reuse the warming pool; acquire_workers applies
+                    # its remaining budget to readiness and reset.
+                    self.resident=pool
+                    return
+            pool.close()
+        thread=threading.Thread(target=run,daemon=True,name='resident-prewarm');thread.start()
         return thread
     def start_main_worker(self,folder):
         """Default path: start this task's main worker process (outside the task's try block, as before)."""
@@ -1289,7 +1271,7 @@ class SinglePlanner(EmptyPlanner):
             pool=self.resident_pool()
             wait=240. if self.deadline is None else max(0.,self.deadline-time.monotonic())
             with timing.span('native.resident_wait_ready'):ready=pool.wait_ready(wait)
-            with timing.span('native.resident_begin_task'):self.task_start=pool.begin_task()
+            with timing.span('native.resident_begin_task'):self.task_start=pool.begin_task(deadline=self.deadline,cancelled=getattr(self,'task_cancelled',lambda:False))
             if self.deadline is not None and time.monotonic()>=self.deadline:raise PlanningBudgetExhausted('RESIDENT_TASK_START')
             self.client=pool.main;self.pool=pool.checkers();self.pool_threads=[];self.pool_status=pool.snapshot()
             self.worker_ready(ready,boxes);self.require_mechanism_capabilities(ready)

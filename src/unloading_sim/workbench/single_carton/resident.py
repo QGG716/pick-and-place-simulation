@@ -150,8 +150,8 @@ class CancellableWorkerClient:
                     self._wire.activate(result)
                 return result
 
-    def reset(self, identity, seed=TASK_SEED):
-        reply = self.request(dict(op='sc_task_reset', identity=identity, seed=seed), timeout=60)
+    def reset(self, identity, seed=TASK_SEED, timeout=60., cancelled=None):
+        reply = self.request(dict(op='sc_task_reset', identity=identity, seed=seed), timeout=timeout, cancelled=cancelled)
         if reply.get('status') != 'RESET':
             raise MoveItUnavailable('TASK_RESET_FAILED:'+str(reply)[:200])
         self.clean = True
@@ -234,11 +234,11 @@ class WorkerPool:
         return self.main_ready
 
     # -- task boundaries ---------------------------------------------------------
-    def _reset_all(self, clients):
+    def _reset_all(self, clients, deadline=None, cancelled=None):
         def one(client):
             started = time.monotonic()
             try:
-                reply = client.reset(self.init['identity'])
+                reply = client.reset(self.init['identity'],timeout=60. if deadline is None else max(.001,deadline-time.monotonic()),cancelled=cancelled)
                 return dict(worker=client.name, state='RESET', reset_s=time.monotonic()-started, ompl_seed=reply.get('ompl_seed_reapplied'))
             except Exception as error:
                 client.retire('RESET_FAILED')
@@ -248,14 +248,19 @@ class WorkerPool:
         with ThreadPoolExecutor(max_workers=len(clients), thread_name_prefix='resident-reset') as executor:
             return list(executor.map(one, clients))
 
-    def begin_task(self):
+    def begin_task(self, deadline=None, cancelled=lambda:False):
         """Every live worker in the post-reset state; returns the evidence of this task start."""
         background = self.background
         if background is not None:
-            background.join()
+            while background.is_alive():
+                if cancelled():raise MoveItUnavailable('CANCELLED')
+                if deadline is not None and time.monotonic()>=deadline:
+                    from .planner import PlanningBudgetExhausted
+                    raise PlanningBudgetExhausted('RESIDENT_PREVIOUS_RESET')
+                background.join(.01 if deadline is None else max(0.,min(.01,deadline-time.monotonic())))
         clients = self.live()
         stale = [c for c in clients if not c.clean]
-        report = dict(already_reset=[c.name for c in clients if c.clean], reset_now=self._reset_all(stale),
+        report = dict(already_reset=[c.name for c in clients if c.clean], reset_now=self._reset_all(stale,deadline,cancelled),
                       retired=[dict(worker=c.name, reason=c.retired) for c in self.all() if not c.alive()])
         if self.main is None or not self.main.alive():
             raise MoveItUnavailable('RESIDENT_MAIN_WORKER_RETIRED: '+json.dumps(report, ensure_ascii=False, default=str)[:600])
