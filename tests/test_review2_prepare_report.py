@@ -48,7 +48,9 @@ def test_prepare_cli_reports_failure_and_closes_worker(tmp_path, monkeypatch, mo
         assert code == (0 if mode == 'identical' else 1)
         assert report['acceptance']['all_identical'] == (mode == 'identical')
         assert report['tolerance'] == 1e-12
-        assert all(r['time_scale'] >= 1. and r['period_s'] == .005 for r in report['rows'])
+        assert all(r['period_s'] == .005 for r in report['rows'])
+        assert [r['time_scale'] for r in report['rows'] if r['kind'] == 'timing'] == [.5]
+        assert all(r['time_scale'] >= 1. for r in report['rows'] if r['kind'] != 'timing')
         if mode == 'decision_mismatch':
             assert report['numeric_compared'] == 0
             assert report['worst_max_abs']['a'] is None
