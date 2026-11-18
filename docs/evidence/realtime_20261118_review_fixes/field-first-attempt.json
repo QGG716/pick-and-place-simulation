@@ -1,0 +1,28 @@
+[
+  {
+    "name": "field-endpoints-313f32ad",
+    "command": [
+      ".venv/bin/python",
+      "docs/evidence/realtime_20261117_review2/check_field_endpoints.py",
+      "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/313f32ad66a240798df17905025edc89",
+      "/root/autodl-tmp/eco65-review2-20261118/field-endpoints-313f32ad"
+    ],
+    "returncode": 1,
+    "elapsed_s": 142.14929593913257,
+    "log_sha256": "95adc4d6e237f59091d66c1b283f43d6b1750aff8ca8dc3279634cb161eb924a",
+    "failure": "unloading_sim.moveit2_backend.MoveItUnavailable: ATTEMPT_JOURNAL_OPEN_FAILED:/root/autodl-tmp/eco65-review2-20261118/field-endpoints-313f32ad/NATIVE/m710_worker_journal_8782.jsonl"
+  },
+  {
+    "name": "field-endpoints-6966ce4b",
+    "command": [
+      ".venv/bin/python",
+      "docs/evidence/realtime_20261117_review2/check_field_endpoints.py",
+      "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/6966ce4b0141495993727b6d72815637",
+      "/root/autodl-tmp/eco65-review2-20261118/field-endpoints-6966ce4b"
+    ],
+    "returncode": 1,
+    "elapsed_s": 122.93026546761394,
+    "log_sha256": "141fd4e719e79c37cc3c2a01885afbb895b21605d35fbc8982486fde4150d712",
+    "failure": "unloading_sim.moveit2_backend.MoveItUnavailable: ATTEMPT_JOURNAL_OPEN_FAILED:/root/autodl-tmp/eco65-review2-20261118/field-endpoints-6966ce4b/NATIVE/m710_worker_journal_9010.jsonl"
+  }
+]

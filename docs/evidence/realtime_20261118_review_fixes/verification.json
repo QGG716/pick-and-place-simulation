@@ -1,0 +1,155 @@
+{
+  "head": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+  "checks": [
+    {
+      "name": "pytest-final",
+      "command": [
+        "bash",
+        "-c",
+        "xvfb-run -a .venv/bin/python -m pytest -q tests/test_single_carton_*.py tests/test_controlled_status_ui.py tests/test_controlled_read_ui.py tests/test_controlled_execution.py tests/test_controlled_payload_setting.py tests/test_controlled_goal_planning.py tests/test_workbench_readonly.py tests/test_workbench_coordinates.py tests/test_workbench_installation.py tests/test_review2_*.py tests/test_review_*.py tests/test_realtime_field_collection.py --basetemp=/root/autodl-tmp/eco65-review2-20261118/pytest-final-tmp --junitxml=/root/autodl-tmp/eco65-review2-20261118/pytest-final.xml"
+      ],
+      "returncode": 1,
+      "elapsed_s": 500.99400910548866,
+      "log": "pytest-final.log",
+      "log_sha256": "8e09e30a3b32ddff106921fd9ff2afb256e04e17078f0705bbbe126f2cd57d66"
+    },
+    {
+      "name": "header-build",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-I/usr/include/eigen3",
+        "-Iros2/m710_moveit_backend/src",
+        "tests/native_review_contracts.cpp",
+        "-o",
+        "/root/autodl-tmp/eco65-review2-20261118/native-review-contracts"
+      ],
+      "returncode": 0,
+      "elapsed_s": 13.977154944092035,
+      "log": "header-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "header-limits",
+      "command": [
+        "/root/autodl-tmp/eco65-review2-20261118/native-review-contracts",
+        "limits"
+      ],
+      "returncode": 0,
+      "elapsed_s": 0.005448322743177414,
+      "log": "header-limits.log",
+      "log_sha256": "d1d9e68641c6ba6b971903c8d33acab8b39cfc0d49675cc097c22a339f0b104b"
+    },
+    {
+      "name": "header-journal",
+      "command": [
+        "/root/autodl-tmp/eco65-review2-20261118/native-review-contracts",
+        "journal"
+      ],
+      "returncode": 0,
+      "elapsed_s": 0.0055375657975673676,
+      "log": "header-journal.log",
+      "log_sha256": "ef73dd99fe36b8442e7bd1f04a4e1fc81e026ca5c3a57d3174cafab0e87d683c"
+    },
+    {
+      "name": "header-path",
+      "command": [
+        "/root/autodl-tmp/eco65-review2-20261118/native-review-contracts",
+        "path"
+      ],
+      "returncode": 0,
+      "elapsed_s": 0.004730692133307457,
+      "log": "header-path.log",
+      "log_sha256": "146e4a07f41e4190b42da2ae7bdc1dc657507be781a6109d2c380693273f592b"
+    },
+    {
+      "name": "native-component",
+      "command": [
+        ".venv/bin/python",
+        "tools/check_eco65_single_carton_native.py",
+        "--output",
+        "/root/autodl-tmp/eco65-review2-20261118/native-component"
+      ],
+      "returncode": 0,
+      "elapsed_s": 27.017417512834072,
+      "log": "native-component.log",
+      "log_sha256": "160251b5085521696e027f68a19dae8943b6236b511f8a6db95a8e6dda0a5a67"
+    },
+    {
+      "name": "deferral-scope",
+      "command": [
+        ".venv/bin/python",
+        "tools/check_output_check_deferral_scope.py",
+        "/root/autodl-tmp/eco65-review2-20261118/deferral-scope"
+      ],
+      "returncode": 0,
+      "elapsed_s": 22.604312639683485,
+      "log": "deferral-scope.log",
+      "log_sha256": "84e7da1381765376679dbcb89fc2116c2660d5cd772ae04b1b281fe5f8d776ae"
+    },
+    {
+      "name": "cancellation",
+      "command": [
+        ".venv/bin/python",
+        "tools/check_review_cancellation.py",
+        "--output",
+        "/root/autodl-tmp/eco65-review2-20261118/cancellation"
+      ],
+      "returncode": 0,
+      "elapsed_s": 35.12730837240815,
+      "log": "cancellation.log",
+      "log_sha256": "ef03b6d8cb23c04162ae45c87d692adb4bcb22cfa3375f1b281ffb37d9f4836b"
+    },
+    {
+      "name": "prepare-saved",
+      "command": [
+        ".venv/bin/python",
+        "tools/check_native_prepare.py",
+        "--records",
+        "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories",
+        "--output",
+        "/root/autodl-tmp/eco65-review2-20261118/prepare-saved.json"
+      ],
+      "returncode": 1,
+      "elapsed_s": 33.96372766792774,
+      "log": "prepare-saved.log",
+      "log_sha256": "694d4ca78eedc96d5ba0b8e8b2981005e21f504cefd30212087579285ada5e93"
+    },
+    {
+      "name": "prepare-historical",
+      "command": [
+        ".venv/bin/python",
+        "tools/check_native_prepare.py",
+        "--records",
+        "/root/autodl-tmp/eco65-review-20261117/native-component2",
+        "--output",
+        "/root/autodl-tmp/eco65-review2-20261118/prepare-historical.json"
+      ],
+      "returncode": 1,
+      "elapsed_s": 16.994055151939392,
+      "log": "prepare-historical.log",
+      "log_sha256": "0753c71faf493ef7940e53965a22aa4f12cc3d30f9443689ad5e53950809f608"
+    },
+    {
+      "name": "rounding",
+      "command": [
+        ".venv/bin/python",
+        "docs/evidence/realtime_20261118_review_fixes/diagnose_rounding.py",
+        "--comparison",
+        "/root/autodl-tmp/eco65-review2-20261118/prepare-saved.json",
+        "--output",
+        "/root/autodl-tmp/eco65-review2-20261118/rounding"
+      ],
+      "returncode": 0,
+      "elapsed_s": 10.244660876691341,
+      "log": "rounding.log",
+      "log_sha256": "4854032dbf927044d2561b40e72d7f3b793593fc8246f744455f6a06d60de307"
+    }
+  ],
+  "physical": "NOT_RUN",
+  "environment_overrides": {
+    "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+    "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include"
+  }
+}

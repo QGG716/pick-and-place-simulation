@@ -942,3 +942,17 @@ xdg-open outputs/field-posture-20261118/posture-comparison.png
 ```
 
 定向核验：444 个保存逆解的 Python FK 全部满足原 2e-5 m / 2e-4 rad 容差（最大误差 1.372e-6 m / 6.209e-7 rad）；两条记录的腕部过滤结果与归档完全一致；6 次原生静态查询完成；源文件 SHA-256 前后不变，中文对比图已检查。摘要：[姿态诊断证据](evidence/realtime_20261118_posture_diagnosis/report.json)。这不是生产规划改动，未重跑完整规划回归，未修改腕部阈值、40 mm 间隙或执行锁；未运行顶吸实测、替代分支的完整路径及实机抓放，物理验收 NOT_RUN。
+
+## 2026-11-18 复审续修：返回路径与验收工具
+
+从实际 HEAD `2d5b5b5` 保留已完成的 R2 六项修复，新增 `b64ed90`：超时证据复用既有任务线程，完整 prepare_plan 的拒绝和计时复用任务 journal，避免在已过期调用者上等待新线程启动；回执失败及 journal 接收后死亡可查询。实际线程启动延迟 250 ms 的反例原返回约 351–352 ms、完整入口约 603 ms，保留 100 ms + 50 ms 原门槛，修复后的启动门/计时定向组 22 passed。
+
+`f1d2a98` 使 native prepare 比较失败返回 1，保留判定分歧及缺失数值统计，并在 worker 异常时关闭 client；`8041a3c` 加入只读插值系数诊断及工具回归（4 passed）。没有修改 Python 参考或 native 数值算法，也没有放宽 1e-12。
+
+同一固定代码 SHA `8041a3c687f5e0b72d7e5c02cd0668d647c2d09b` 在新 GPU 端口对应的已有隔离环境运行：完整定向集 663 passed / 2 failed / 0 errors / 0 skipped；保留既有 prior 几何失败，以及一次在 SCREENING 到期、未进入注入 plan 请求的 unanswered-request 用例失败。后者原用例单独复测通过且确实进入阻塞 plan，但不覆盖完整组失败。四种碰撞模式、limits/journal/path、实际四格式取消协议、单箱原生组件与 deferral 范围均通过。
+
+当前源码对两份保存现场帧各 32 个候选完成 PYTHON/NATIVE 端点预检等价；分别消费 2412 / 2405 次回放调用，unused=0，源记录哈希未变，许可数为 0。首次 chroot 外目录不可见导致的 journal 拒绝已保留；改用共享 checkout 内新目录完成比较。当前环境的调用数单独记录，不作为跨环境一致性、完整路径或现场验收依据。
+
+27 条保存轨迹的 193 案例仍为 160 一致、33 数值失败，最大加速度差 1.83836e-8；旧服务器组件仍为 8/11 一致、最大差 9.31583e-12。只读诊断将最大差定位到约 1.584 ms 末区间的数组/标量幂舍入及系数相消；诊断副本重现 C++ 系数和加速度差，不计作通过。
+
+执行锁、40 mm 间隙、腕部限制及默认模块/优化开关未改；无新设备采集或实机动作。steps_1_to_7_accepted=false、稳定 deadline 门槛与数值等价仍未验收，完整调度/新 20 输入/2 s 目标未完成，物理 NOT_RUN；本轮未实施工作区缓存。详见 [续修报告](realtime_review2_gpu_followup_2026-11-18.md) 和 [结构化证据](evidence/realtime_20261118_review_fixes/report.json)。

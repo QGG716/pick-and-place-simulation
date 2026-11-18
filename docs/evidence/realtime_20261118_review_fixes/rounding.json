@@ -1,0 +1,61 @@
+{
+  "scope": "READ_ONLY_COEFFICIENT_DIAGNOSIS_NOT_NUMERIC_ACCEPTANCE",
+  "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+  "source_sha256": "472172c0ff75dfaeac96c2a04bcc644045c7e883a7d85302a957095b3d56dc4a",
+  "comparison_sha256": "5cc652c1f834906561b82ad5034e8302738c67fc9c533505cf3d549d5fb64dd7",
+  "time_scale": 1.5,
+  "period_s": 0.005,
+  "worker_max_abs": {
+    "t": 0.0,
+    "q": 1.532107773982716e-14,
+    "v": 9.708311086466248e-12,
+    "a": 1.8383592925719228e-08,
+    "collision_path": 1.532107773982716e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+  },
+  "coefficient_max_abs": 0.0006103515625,
+  "coefficient_max_index": [
+    1,
+    240,
+    2
+  ],
+  "interval_duration_s": 0.0015842895000020008,
+  "scalar_power_diagnostic_vs_native_coeff_max_abs": 0.0,
+  "coefficient_only_evaluation_max_abs": {
+    "q": 1.532107773982716e-14,
+    "v": 9.708311086466248e-12,
+    "a": 1.8383592925719228e-08
+  },
+  "array_vs_scalar_power_differences": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 89,
+    "4": 3,
+    "5": 76
+  },
+  "compiler_command": [
+    "g++",
+    "-std=c++17",
+    "-O3",
+    "-I/usr/include/eigen3",
+    "-I/root/autodl-tmp/system-disk-relocated-20261118/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/ros2/m710_moveit_backend/src",
+    "/root/autodl-tmp/system-disk-relocated-20261118/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/docs/evidence/realtime_20261118_review_fixes/prepare_coefficients.cpp",
+    "-o",
+    "/root/autodl-tmp/eco65-review2-20261118/rounding/prepare_coefficients"
+  ],
+  "probe_sha256": "28feb661f944f92470167f13078f478bd54a21ccc837fa507ffb3a7f93dafc42",
+  "native_header_sha256": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451",
+  "environment": {
+    "python": "3.10.12",
+    "numpy": "1.26.4",
+    "scipy": "1.14.1"
+  },
+  "python_reference_changed": false,
+  "tolerance": 1e-12,
+  "physical": "NOT_RUN"
+}

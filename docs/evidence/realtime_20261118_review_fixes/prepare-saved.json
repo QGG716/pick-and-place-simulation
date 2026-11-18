@@ -1,0 +1,4736 @@
+{
+ "schema": "eco65_native_prepare_equivalence_v1",
+ "scope": "RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE",
+ "inputs": [
+  "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories"
+ ],
+ "recorded_native_plans": 27,
+ "cases": 193,
+ "identical": 160,
+ "prepared": 33,
+ "numeric_compared": 33,
+ "rejected": 160,
+ "rejection_errors": [
+  "INTERPOLATION_LIMIT:1:1",
+  "INTERPOLATION_LIMIT:1:2",
+  "INTERPOLATION_LIMIT:2:2",
+  "INTERPOLATION_LIMIT:3:2",
+  "INTERPOLATION_LIMIT:4:2",
+  "INTERPOLATION_LIMIT:5:1",
+  "INTERPOLATION_LIMIT:5:2",
+  "INVALID_TIME_AXIS",
+  "INVALID_TIMING",
+  "NONZERO_ENDPOINT_VELOCITY"
+ ],
+ "worst_max_abs": {
+  "t": 0.0,
+  "q": 1.6653345369377348e-14,
+  "v": 9.708311086466248e-12,
+  "a": 1.8383592925719228e-08,
+  "collision_path": 1.8207657603852567e-14,
+  "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+  "send_duration_s": 0.0
+ },
+ "tolerance": 1e-12,
+ "environment": {
+  "python": "3.10.12",
+  "numpy": "1.26.4",
+  "scipy": "1.14.1"
+ },
+ "python_prepare_s": {
+  "total": 4.893694771453738,
+  "median": 0.009769376367330551
+ },
+ "native_prepare_s": {
+  "total": 0.9531883830000001,
+  "median": 0.001394007
+ },
+ "acceptance": {
+  "all_identical": false
+ },
+ "mismatches": [
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.31450709141790867,
+   "native_s": 0.037259763,
+   "native_round_trip_s": 0.3032322246581316,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7602586055431857e-13,
+    "a": 4.400499256756568e-12,
+    "collision_path": 5.995204332975845e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6275,
+    6275
+   ],
+   "collision_states": [
+    39621,
+    39621
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0876790676265955,
+   "native_s": 0.029523616,
+   "native_round_trip_s": 0.4835286010056734,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.6653345369377348e-14,
+    "v": 3.4419689320941416e-13,
+    "a": 4.747562343254788e-12,
+    "collision_path": 1.8207657603852567e-14,
+    "analytic_speed_bounds_rad_s": 3.6914915568786455e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7529,
+    7529
+   ],
+   "collision_states": [
+    37847,
+    37847
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.09741904772818089,
+   "native_s": 0.033660901,
+   "native_round_trip_s": 0.35368266329169273,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.354472090042691e-14,
+    "v": 2.427780199099061e-13,
+    "a": 3.735021891770896e-12,
+    "collision_path": 1.4210854715202004e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    10039,
+    10039
+   ],
+   "collision_states": [
+    40319,
+    40319
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0094520952552557,
+   "native_s": 0.004262236,
+   "native_round_trip_s": 0.04354773461818695,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.995204332975845e-15,
+    "v": 1.2138207106104915e-13,
+    "a": 1.867506149721976e-12,
+    "collision_path": 6.439293542825908e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2729,
+    2729
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.027097288519144058,
+   "native_s": 0.010300203,
+   "native_round_trip_s": 0.08120615966618061,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.3306690738754696e-15,
+    "v": 6.743824249033636e-14,
+    "a": 1.0375068859591607e-12,
+    "collision_path": 3.552713678800501e-15,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.009499788284301758,
+   "native_s": 0.003992746,
+   "native_round_trip_s": 0.03975321538746357,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.888211809131235e-13,
+    "a": 2.9050095662341846e-12,
+    "collision_path": 9.992007221626409e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2244,
+    2244
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.01592235080897808,
+   "native_s": 0.006760648,
+   "native_round_trip_s": 0.059124868363142014,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.199040866595169e-14,
+    "v": 2.4277628518643013e-13,
+    "a": 4.174549594893051e-12,
+    "collision_path": 1.2656542480726785e-14,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    1102,
+    1102
+   ],
+   "collision_states": [
+    4415,
+    4415
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.011975916102528572,
+   "native_s": 0.004345081,
+   "native_round_trip_s": 0.04370169900357723,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 2.037276597421922e-13,
+    "a": 3.0558888752807434e-12,
+    "collision_path": 1.021405182655144e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    681,
+    681
+   ],
+   "collision_states": [
+    2728,
+    2728
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.08021826855838299,
+   "native_s": 0.028521456,
+   "native_round_trip_s": 0.4204236529767513,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7601892166041466e-13,
+    "a": 4.400499165065251e-12,
+    "collision_path": 5.995204332975845e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6002,
+    6002
+   ],
+   "collision_states": [
+    37880,
+    37880
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.08390804752707481,
+   "native_s": 0.029753819,
+   "native_round_trip_s": 0.31092103011906147,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.532107773982716e-14,
+    "v": 9.708311086466248e-12,
+    "a": 1.8383592925719228e-08,
+    "collision_path": 1.532107773982716e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7202,
+    7202
+   ],
+   "collision_states": [
+    36204,
+    36204
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.2905854806303978,
+   "native_s": 0.032878545,
+   "native_round_trip_s": 0.33404375799000263,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 6.383191989301623e-12,
+    "a": 6.043584799275692e-09,
+    "collision_path": 1.0658141036401503e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    9602,
+    9602
+   ],
+   "collision_states": [
+    38570,
+    38570
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.016218459233641624,
+   "native_s": 0.006564009,
+   "native_round_trip_s": 0.0491827167570591,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.554312234475219e-14,
+    "v": 3.0695584962714406e-13,
+    "a": 7.5417658229604e-12,
+    "collision_path": 1.554312234475219e-14,
+    "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    1051,
+    1051
+   ],
+   "collision_states": [
+    2125,
+    2125
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.02211715653538704,
+   "native_s": 0.007379937,
+   "native_round_trip_s": 0.059158703312277794,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.078998002057574e-13,
+    "a": 1.660012405313438e-12,
+    "collision_path": 5.551115123125783e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    1401,
+    1401
+   ],
+   "collision_states": [
+    2813,
+    2813
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.029818926006555557,
+   "native_s": 0.013974048,
+   "native_round_trip_s": 0.08874642476439476,
+   "max_abs": {
+    "t": 0.0,
+    "q": 8.881784197001252e-15,
+    "v": 1.8882465036007545e-13,
+    "a": 2.9050199745750405e-12,
+    "collision_path": 9.325873406851315e-15,
+    "analytic_speed_bounds_rad_s": 8.673617379884035e-19,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.07794822379946709,
+   "native_s": 0.028819676,
+   "native_round_trip_s": 0.27958125062286854,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7601978902215265e-13,
+    "a": 4.400499165065251e-12,
+    "collision_path": 6.217248937900877e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6131,
+    6131
+   ],
+   "collision_states": [
+    38710,
+    38710
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.2730791252106428,
+   "native_s": 0.030124422,
+   "native_round_trip_s": 0.29251580126583576,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.6431300764452317e-14,
+    "v": 1.7367270815915603e-12,
+    "a": 1.281830197541467e-10,
+    "collision_path": 1.6431300764452317e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7357,
+    7357
+   ],
+   "collision_states": [
+    36985,
+    36985
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.09306872636079788,
+   "native_s": 0.032124927,
+   "native_round_trip_s": 0.3337129224091768,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.199040866595169e-14,
+    "v": 2.943456025791824e-13,
+    "a": 2.2167476187995305e-11,
+    "collision_path": 1.2878587085651816e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    9809,
+    9809
+   ],
+   "collision_states": [
+    39401,
+    39401
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.011678596958518028,
+   "native_s": 0.004296194,
+   "native_round_trip_s": 0.18657064251601696,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.8882638508355143e-13,
+    "a": 2.9050373218098002e-12,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2729,
+    2729
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.02462199330329895,
+   "native_s": 0.009021878,
+   "native_round_trip_s": 0.08166821487247944,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.88418203051333e-15,
+    "v": 1.2138814259321506e-13,
+    "a": 1.8675113538924037e-12,
+    "collision_path": 6.217248937900877e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0897037535905838,
+   "native_s": 0.029514893,
+   "native_round_trip_s": 0.2895486932247877,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.769962616701378e-15,
+    "v": 9.729855809936794e-13,
+    "a": 6.385703077427252e-11,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6433,
+    6433
+   ],
+   "collision_states": [
+    40620,
+    40620
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.06419266201555729,
+   "native_s": 0.014084076,
+   "native_round_trip_s": 0.0394343975931406,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0539406668394804,
+   "native_s": 0.014117237,
+   "native_round_trip_s": 0.03611086495220661,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:2",
+    "INTERPOLATION_LIMIT:5:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.31450709141790867,
+   "native_s": 0.037259763,
+   "native_round_trip_s": 0.3032322246581316,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7602586055431857e-13,
+    "a": 4.400499256756568e-12,
+    "collision_path": 5.995204332975845e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6275,
+    6275
+   ],
+   "collision_states": [
+    39621,
+    39621
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0876790676265955,
+   "native_s": 0.029523616,
+   "native_round_trip_s": 0.4835286010056734,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.6653345369377348e-14,
+    "v": 3.4419689320941416e-13,
+    "a": 4.747562343254788e-12,
+    "collision_path": 1.8207657603852567e-14,
+    "analytic_speed_bounds_rad_s": 3.6914915568786455e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7529,
+    7529
+   ],
+   "collision_states": [
+    37847,
+    37847
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.09741904772818089,
+   "native_s": 0.033660901,
+   "native_round_trip_s": 0.35368266329169273,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.354472090042691e-14,
+    "v": 2.427780199099061e-13,
+    "a": 3.735021891770896e-12,
+    "collision_path": 1.4210854715202004e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    10039,
+    10039
+   ],
+   "collision_states": [
+    40319,
+    40319
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.03249906003475189,
+   "native_s": 0.004407165,
+   "native_round_trip_s": 0.03636454790830612,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.033555714413523674,
+   "native_s": 0.003704852,
+   "native_round_trip_s": 0.02702428586781025,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0033885929733514786,
+   "native_s": 0.000308912,
+   "native_round_trip_s": 0.0025480035692453384,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003733918070793152,
+   "native_s": 0.000266794,
+   "native_round_trip_s": 0.002355063334107399,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003701644018292427,
+   "native_s": 0.000380041,
+   "native_round_trip_s": 0.003153996542096138,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004418982192873955,
+   "native_s": 0.000661343,
+   "native_round_trip_s": 0.003456767648458481,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0094520952552557,
+   "native_s": 0.004262236,
+   "native_round_trip_s": 0.04354773461818695,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.995204332975845e-15,
+    "v": 1.2138207106104915e-13,
+    "a": 1.867506149721976e-12,
+    "collision_path": 6.439293542825908e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2729,
+    2729
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00632268562912941,
+   "native_s": 0.000485984,
+   "native_round_trip_s": 0.004958700388669968,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005239691585302353,
+   "native_s": 0.000449132,
+   "native_round_trip_s": 0.004047363996505737,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.013674503192305565,
+   "native_s": 0.001381844,
+   "native_round_trip_s": 0.011007197201251984,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.014927040785551071,
+   "native_s": 0.003294963,
+   "native_round_trip_s": 0.013237537816166878,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.015373874455690384,
+   "native_s": 0.003313972,
+   "native_round_trip_s": 0.012734930962324142,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.014492247253656387,
+   "native_s": 0.003289852,
+   "native_round_trip_s": 0.012810740619897842,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.027097288519144058,
+   "native_s": 0.010300203,
+   "native_round_trip_s": 0.08120615966618061,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.3306690738754696e-15,
+    "v": 6.743824249033636e-14,
+    "a": 1.0375068859591607e-12,
+    "collision_path": 3.552713678800501e-15,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.011588063091039658,
+   "native_s": 0.001382204,
+   "native_round_trip_s": 0.012056168168783188,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622757057,
+   "python_s": 0.009769376367330551,
+   "native_s": 0.001396555,
+   "native_round_trip_s": 0.010929783806204796,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003498803824186325,
+   "native_s": 0.000380806,
+   "native_round_trip_s": 0.003075152635574341,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0033130869269371033,
+   "native_s": 0.000473224,
+   "native_round_trip_s": 0.0032169558107852936,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0033183004707098007,
+   "native_s": 0.000416436,
+   "native_round_trip_s": 0.0033804625272750854,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003947071731090546,
+   "native_s": 0.000663178,
+   "native_round_trip_s": 0.003687579184770584,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.009499788284301758,
+   "native_s": 0.003992746,
+   "native_round_trip_s": 0.03975321538746357,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.888211809131235e-13,
+    "a": 2.9050095662341846e-12,
+    "collision_path": 9.992007221626409e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2244,
+    2244
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.007940094918012619,
+   "native_s": 0.000485668,
+   "native_round_trip_s": 0.004982564598321915,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0052331555634737015,
+   "native_s": 0.000416833,
+   "native_round_trip_s": 0.0037812236696481705,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.006911592558026314,
+   "native_s": 0.000648814,
+   "native_round_trip_s": 0.005475128069519997,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.006603572517633438,
+   "native_s": 0.000724987,
+   "native_round_trip_s": 0.005525233224034309,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.00719820149242878,
+   "native_s": 0.000633752,
+   "native_round_trip_s": 0.005610223859548569,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.00898255780339241,
+   "native_s": 0.001094211,
+   "native_round_trip_s": 0.0060116928070783615,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.01592235080897808,
+   "native_s": 0.006760648,
+   "native_round_trip_s": 0.059124868363142014,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.199040866595169e-14,
+    "v": 2.4277628518643013e-13,
+    "a": 4.174549594893051e-12,
+    "collision_path": 1.2656542480726785e-14,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    1102,
+    1102
+   ],
+   "collision_states": [
+    4415,
+    4415
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.008552027866244316,
+   "native_s": 0.000691805,
+   "native_round_trip_s": 0.006578119471669197,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492622770424,
+   "python_s": 0.005955178290605545,
+   "native_s": 0.000662675,
+   "native_round_trip_s": 0.005581259727478027,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003809640184044838,
+   "native_s": 0.00042903,
+   "native_round_trip_s": 0.0035350508987903595,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00513111986219883,
+   "native_s": 0.000432309,
+   "native_round_trip_s": 0.003835955634713173,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.008003965020179749,
+   "native_s": 0.000499932,
+   "native_round_trip_s": 0.0040026456117630005,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005571834743022919,
+   "native_s": 0.000675956,
+   "native_round_trip_s": 0.003874499350786209,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.011975916102528572,
+   "native_s": 0.004345081,
+   "native_round_trip_s": 0.04370169900357723,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 2.037276597421922e-13,
+    "a": 3.0558888752807434e-12,
+    "collision_path": 1.021405182655144e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    681,
+    681
+   ],
+   "collision_states": [
+    2728,
+    2728
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.007775621488690376,
+   "native_s": 0.000506788,
+   "native_round_trip_s": 0.0047891996800899506,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005186242982745171,
+   "native_s": 0.00050782,
+   "native_round_trip_s": 0.003865256905555725,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.012385617941617966,
+   "native_s": 0.00135301,
+   "native_round_trip_s": 0.01095292903482914,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.015949539840221405,
+   "native_s": 0.003066612,
+   "native_round_trip_s": 0.012589676305651665,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.017443452030420303,
+   "native_s": 0.003310235,
+   "native_round_trip_s": 0.013236194849014282,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.014844059944152832,
+   "native_s": 0.003278686,
+   "native_round_trip_s": 0.01273372769355774,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.0162856113165617,
+   "native_s": 0.003213342,
+   "native_round_trip_s": 0.012715339660644531,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.01447838544845581,
+   "native_s": 0.001393731,
+   "native_round_trip_s": 0.011418461799621582,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.449937234076268,
+   "python_s": 0.01451699435710907,
+   "native_s": 0.001404412,
+   "native_round_trip_s": 0.010794069617986679,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.04992925375699997,
+   "native_s": 0.013632046,
+   "native_round_trip_s": 0.036445315927267075,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.07493272610008717,
+   "native_s": 0.014188033,
+   "native_round_trip_s": 0.03670859336853027,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:2",
+    "INTERPOLATION_LIMIT:5:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.08021826855838299,
+   "native_s": 0.028521456,
+   "native_round_trip_s": 0.4204236529767513,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7601892166041466e-13,
+    "a": 4.400499165065251e-12,
+    "collision_path": 5.995204332975845e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6002,
+    6002
+   ],
+   "collision_states": [
+    37880,
+    37880
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.08390804752707481,
+   "native_s": 0.029753819,
+   "native_round_trip_s": 0.31092103011906147,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.532107773982716e-14,
+    "v": 9.708311086466248e-12,
+    "a": 1.8383592925719228e-08,
+    "collision_path": 1.532107773982716e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7202,
+    7202
+   ],
+   "collision_states": [
+    36204,
+    36204
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.2905854806303978,
+   "native_s": 0.032878545,
+   "native_round_trip_s": 0.33404375799000263,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 6.383191989301623e-12,
+    "a": 6.043584799275692e-09,
+    "collision_path": 1.0658141036401503e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    9602,
+    9602
+   ],
+   "collision_states": [
+    38570,
+    38570
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.031301114708185196,
+   "native_s": 0.004145356,
+   "native_round_trip_s": 0.03409172035753727,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.03126360476016998,
+   "native_s": 0.003615443,
+   "native_round_trip_s": 0.02538415603339672,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006597358733415604,
+   "native_s": 0.001255407,
+   "native_round_trip_s": 0.006015252321958542,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.008320432156324387,
+   "native_s": 0.001007069,
+   "native_round_trip_s": 0.005487600341439247,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.008575208485126495,
+   "native_s": 0.001926947,
+   "native_round_trip_s": 0.00772172212600708,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.016218459233641624,
+   "native_s": 0.006564009,
+   "native_round_trip_s": 0.0491827167570591,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.554312234475219e-14,
+    "v": 3.0695584962714406e-13,
+    "a": 7.5417658229604e-12,
+    "collision_path": 1.554312234475219e-14,
+    "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    1051,
+    1051
+   ],
+   "collision_states": [
+    2125,
+    2125
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.02211715653538704,
+   "native_s": 0.007379937,
+   "native_round_trip_s": 0.059158703312277794,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.078998002057574e-13,
+    "a": 1.660012405313438e-12,
+    "collision_path": 5.551115123125783e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    1401,
+    1401
+   ],
+   "collision_states": [
+    2813,
+    2813
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.010097524151206017,
+   "native_s": 0.000903843,
+   "native_round_trip_s": 0.007969072088599205,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006728967651724815,
+   "native_s": 0.00082796,
+   "native_round_trip_s": 0.006521841511130333,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.012678278610110283,
+   "native_s": 0.001417366,
+   "native_round_trip_s": 0.012742890045046806,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.014601236209273338,
+   "native_s": 0.003340677,
+   "native_round_trip_s": 0.01292666420340538,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.01633535325527191,
+   "native_s": 0.00334881,
+   "native_round_trip_s": 0.012941509485244751,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.016943883150815964,
+   "native_s": 0.003436006,
+   "native_round_trip_s": 0.013270478695631027,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.029818926006555557,
+   "native_s": 0.013974048,
+   "native_round_trip_s": 0.08874642476439476,
+   "max_abs": {
+    "t": 0.0,
+    "q": 8.881784197001252e-15,
+    "v": 1.8882465036007545e-13,
+    "a": 2.9050199745750405e-12,
+    "collision_path": 9.325873406851315e-15,
+    "analytic_speed_bounds_rad_s": 8.673617379884035e-19,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.01104610227048397,
+   "native_s": 0.001423271,
+   "native_round_trip_s": 0.01160990446805954,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982766348823,
+   "python_s": 0.009734120219945908,
+   "native_s": 0.001391267,
+   "native_round_trip_s": 0.01062588021159172,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0460163913667202,
+   "native_s": 0.013440782,
+   "native_round_trip_s": 0.03599802404642105,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.04700443148612976,
+   "native_s": 0.014000523,
+   "native_round_trip_s": 0.037088628858327866,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:2",
+    "INTERPOLATION_LIMIT:5:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.07794822379946709,
+   "native_s": 0.028819676,
+   "native_round_trip_s": 0.27958125062286854,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.329070518200751e-15,
+    "v": 1.7601978902215265e-13,
+    "a": 4.400499165065251e-12,
+    "collision_path": 6.217248937900877e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6131,
+    6131
+   ],
+   "collision_states": [
+    38710,
+    38710
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.2730791252106428,
+   "native_s": 0.030124422,
+   "native_round_trip_s": 0.29251580126583576,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.6431300764452317e-14,
+    "v": 1.7367270815915603e-12,
+    "a": 1.281830197541467e-10,
+    "collision_path": 1.6431300764452317e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7357,
+    7357
+   ],
+   "collision_states": [
+    36985,
+    36985
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.09306872636079788,
+   "native_s": 0.032124927,
+   "native_round_trip_s": 0.3337129224091768,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.199040866595169e-14,
+    "v": 2.943456025791824e-13,
+    "a": 2.2167476187995305e-11,
+    "collision_path": 1.2878587085651816e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    9809,
+    9809
+   ],
+   "collision_states": [
+    39401,
+    39401
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.033759498968720436,
+   "native_s": 0.0040244,
+   "native_round_trip_s": 0.03482482023537159,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0318780243396759,
+   "native_s": 0.003608659,
+   "native_round_trip_s": 0.025857778266072273,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0035613588988780975,
+   "native_s": 0.000315734,
+   "native_round_trip_s": 0.0024241451174020767,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003401653841137886,
+   "native_s": 0.000310926,
+   "native_round_trip_s": 0.0026811733841896057,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003760436549782753,
+   "native_s": 0.000303552,
+   "native_round_trip_s": 0.0026743970811367035,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004947878420352936,
+   "native_s": 0.000745756,
+   "native_round_trip_s": 0.0038553979247808456,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.011678596958518028,
+   "native_s": 0.004296194,
+   "native_round_trip_s": 0.18657064251601696,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.8882638508355143e-13,
+    "a": 2.9050373218098002e-12,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2729,
+    2729
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.007502956315875053,
+   "native_s": 0.000487227,
+   "native_round_trip_s": 0.004705963656306267,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004964226856827736,
+   "native_s": 0.000410225,
+   "native_round_trip_s": 0.0035481788218021393,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.011435061693191528,
+   "native_s": 0.001351872,
+   "native_round_trip_s": 0.011995647102594376,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.01296301744878292,
+   "native_s": 0.003080906,
+   "native_round_trip_s": 0.01231425628066063,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.013286996632814407,
+   "native_s": 0.005900403,
+   "native_round_trip_s": 0.016936443746089935,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.017094165086746216,
+   "native_s": 0.001965565,
+   "native_round_trip_s": 0.010103944689035416,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.02462199330329895,
+   "native_s": 0.009021878,
+   "native_round_trip_s": 0.08166821487247944,
+   "max_abs": {
+    "t": 0.0,
+    "q": 5.88418203051333e-15,
+    "v": 1.2138814259321506e-13,
+    "a": 1.8675113538924037e-12,
+    "collision_path": 6.217248937900877e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.013168929144740105,
+   "native_s": 0.001404788,
+   "native_round_trip_s": 0.011720243841409683,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804732437475,
+   "python_s": 0.01067160815000534,
+   "native_s": 0.001385418,
+   "native_round_trip_s": 0.010457534343004227,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.05418892949819565,
+   "native_s": 0.014094924,
+   "native_round_trip_s": 0.03848493844270706,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.056866275146603584,
+   "native_s": 0.014143776,
+   "native_round_trip_s": 0.038583217188715935,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:2",
+    "INTERPOLATION_LIMIT:5:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0897037535905838,
+   "native_s": 0.029514893,
+   "native_round_trip_s": 0.2895486932247877,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.769962616701378e-15,
+    "v": 9.729855809936794e-13,
+    "a": 6.385703077427252e-11,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 1.3877787807814457e-17,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    6433,
+    6433
+   ],
+   "collision_states": [
+    40620,
+    40620
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.2514962814748287,
+   "native_s": 0.030964515,
+   "native_round_trip_s": 0.3042944837361574,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.6653345369377348e-14,
+    "v": 3.4419689320941416e-13,
+    "a": 7.286948822127215e-12,
+    "collision_path": 1.7985612998927536e-14,
+    "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    7719,
+    7719
+   ],
+   "collision_states": [
+    38800,
+    38800
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.10000931657850742,
+   "native_s": 0.033864488,
+   "native_round_trip_s": 0.3625807147473097,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.176836406102666e-14,
+    "v": 1.888281198070274e-13,
+    "a": 6.477268374438516e-12,
+    "collision_path": 1.2434497875801753e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    10291,
+    10291
+   ],
+   "collision_states": [
+    41331,
+    41331
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.03492755629122257,
+   "native_s": 0.004201146,
+   "native_round_trip_s": 0.03604513220489025,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.033337028697133064,
+   "native_s": 0.003858684,
+   "native_round_trip_s": 0.029674194753170013,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003994271159172058,
+   "native_s": 0.00025475,
+   "native_round_trip_s": 0.002433212473988533,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004473578184843063,
+   "native_s": 0.000226843,
+   "native_round_trip_s": 0.002190306782722473,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004079597070813179,
+   "native_s": 0.000305827,
+   "native_round_trip_s": 0.002695973962545395,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004488931968808174,
+   "native_s": 0.000651559,
+   "native_round_trip_s": 0.0036082323640584946,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.009037462994456291,
+   "native_s": 0.004017614,
+   "native_round_trip_s": 0.042167339473962784,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.8882465036007545e-13,
+    "a": 2.9050095662341846e-12,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2244,
+    2244
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.008224895223975182,
+   "native_s": 0.000486229,
+   "native_round_trip_s": 0.004690324887633324,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005182910710573196,
+   "native_s": 0.000414225,
+   "native_round_trip_s": 0.0036793556064367294,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.012515839189291,
+   "native_s": 0.001367766,
+   "native_round_trip_s": 0.011078871786594391,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.015433484688401222,
+   "native_s": 0.003170101,
+   "native_round_trip_s": 0.01316966861486435,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.015906140208244324,
+   "native_s": 0.003284875,
+   "native_round_trip_s": 0.013338770717382431,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.01528126373887062,
+   "native_s": 0.003266031,
+   "native_round_trip_s": 0.012981530278921127,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.036358851939439774,
+   "native_s": 0.011784254,
+   "native_round_trip_s": 0.08875901624560356,
+   "max_abs": {
+    "t": 0.0,
+    "q": 4.6629367034256575e-15,
+    "v": 9.441319254177571e-14,
+    "a": 1.4525065178405683e-12,
+    "collision_path": 4.884981308350689e-15,
+    "analytic_speed_bounds_rad_s": 8.673617379884035e-19,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.011408191174268723,
+   "native_s": 0.001395706,
+   "native_round_trip_s": 0.012091472744941711,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.009871415793895721,
+   "native_s": 0.001395606,
+   "native_round_trip_s": 0.010822530835866928,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.049386102706193924,
+   "native_s": 0.013994867,
+   "native_round_trip_s": 0.036789560690522194,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.049565497785806656,
+   "native_s": 0.014362543,
+   "native_round_trip_s": 0.03719679266214371,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:2",
+    "INTERPOLATION_LIMIT:5:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.26868763752281666,
+   "native_s": 0.031253967,
+   "native_round_trip_s": 0.31580719351768494,
+   "max_abs": {
+    "t": 0.0,
+    "q": 7.549516567451064e-15,
+    "v": 5.764598867696868e-13,
+    "a": 4.54883908318493e-11,
+    "collision_path": 8.43769498715119e-15,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    7,
+    7
+   ],
+   "points": [
+    6385,
+    6385
+   ],
+   "collision_states": [
+    45724,
+    45724
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.13077788054943085,
+   "native_s": 0.032200031,
+   "native_round_trip_s": 0.5528699215501547,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.5765166949677223e-14,
+    "v": 3.513647706121503e-13,
+    "a": 2.103939245046149e-11,
+    "collision_path": 1.709743457922741e-14,
+    "analytic_speed_bounds_rad_s": 4.427014310692812e-15,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    6,
+    6
+   ],
+   "points": [
+    7662,
+    7662
+   ],
+   "collision_states": [
+    48293,
+    48293
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.0989320520311594,
+   "native_s": 0.034940033,
+   "native_round_trip_s": 0.39236149936914444,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 1.888211809131235e-13,
+    "a": 2.905017026932919e-12,
+    "collision_path": 1.0880185641326534e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    5,
+    5
+   ],
+   "points": [
+    10215,
+    10215
+   ],
+   "collision_states": [
+    51238,
+    51238
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.03295452520251274,
+   "native_s": 0.003845942,
+   "native_round_trip_s": 0.0415048785507679,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4419400960627524,
+   "python_s": 0.032746559008955956,
+   "native_s": 0.003995335,
+   "native_round_trip_s": 0.02822599746286869,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003709135577082634,
+   "native_s": 0.00029161,
+   "native_round_trip_s": 0.0026809778064489365,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00449175201356411,
+   "native_s": 0.000371104,
+   "native_round_trip_s": 0.00328211672604084,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004577774554491043,
+   "native_s": 0.000439266,
+   "native_round_trip_s": 0.003326861187815666,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00541064515709877,
+   "native_s": 0.000726444,
+   "native_round_trip_s": 0.0045061372220516205,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.013015767559409142,
+   "native_s": 0.004577665,
+   "native_round_trip_s": 0.04222394526004791,
+   "max_abs": {
+    "t": 0.0,
+    "q": 9.325873406851315e-15,
+    "v": 1.8882638508355143e-13,
+    "a": 2.9050373218098002e-12,
+    "collision_path": 9.769962616701378e-15,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    681,
+    681
+   ],
+   "collision_states": [
+    2243,
+    2243
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006490059196949005,
+   "native_s": 0.000509524,
+   "native_round_trip_s": 0.005019325762987137,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005261847749352455,
+   "native_s": 0.000417944,
+   "native_round_trip_s": 0.003713572397828102,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.007093152031302452,
+   "native_s": 0.000663417,
+   "native_round_trip_s": 0.0056996773928403854,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.007136311382055283,
+   "native_s": 0.000619643,
+   "native_round_trip_s": 0.005594903603196144,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.008155589923262596,
+   "native_s": 0.001466472,
+   "native_round_trip_s": 0.0063737500458955765,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.007012862712144852,
+   "native_s": 0.001587923,
+   "native_round_trip_s": 0.006605198606848717,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.009624021127820015,
+   "native_s": 0.001556967,
+   "native_round_trip_s": 0.006993299350142479,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.006312649697065353,
+   "native_s": 0.000682483,
+   "native_round_trip_s": 0.00580965168774128,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4505492544786023,
+   "python_s": 0.007611563429236412,
+   "native_s": 0.000649334,
+   "native_round_trip_s": 0.005815483629703522,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00607665441930294,
+   "native_s": 0.000463291,
+   "native_round_trip_s": 0.004156017675995827,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006212323904037476,
+   "native_s": 0.000491698,
+   "native_round_trip_s": 0.004145069047808647,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.007081847637891769,
+   "native_s": 0.000746568,
+   "native_round_trip_s": 0.004655381664633751,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006461458280682564,
+   "native_s": 0.000689618,
+   "native_round_trip_s": 0.004147734493017197,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.012764198705554008,
+   "native_s": 0.003963267,
+   "native_round_trip_s": 0.040304988622665405,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 2.1580128092488216e-13,
+    "a": 3.320019172775579e-12,
+    "collision_path": 1.1102230246251565e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2244,
+    2244
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006912747398018837,
+   "native_s": 0.000513204,
+   "native_round_trip_s": 0.004937661811709404,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005429698154330254,
+   "native_s": 0.000417645,
+   "native_round_trip_s": 0.003683023154735565,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.007211202755570412,
+   "native_s": 0.000651799,
+   "native_round_trip_s": 0.005628928542137146,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.0059082284569740295,
+   "native_s": 0.000677625,
+   "native_round_trip_s": 0.005563538521528244,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.006788730621337891,
+   "native_s": 0.001154444,
+   "native_round_trip_s": 0.006034819409251213,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.008370285853743553,
+   "native_s": 0.001098411,
+   "native_round_trip_s": 0.006137721240520477,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:4:2",
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.011679807677865028,
+   "native_s": 0.001883756,
+   "native_round_trip_s": 0.006876012310385704,
+   "errors": [
+    "INTERPOLATION_LIMIT:4:2",
+    "INTERPOLATION_LIMIT:4:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.0075723957270383835,
+   "native_s": 0.000614306,
+   "native_round_trip_s": 0.005606053397059441,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4605804738691461,
+   "python_s": 0.008661188185214996,
+   "native_s": 0.000647661,
+   "native_round_trip_s": 0.0059791449457407,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004475343972444534,
+   "native_s": 0.0004313,
+   "native_round_trip_s": 0.0035606324672698975,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00493817962706089,
+   "native_s": 0.000417514,
+   "native_round_trip_s": 0.0036907829344272614,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006999250501394272,
+   "native_s": 0.000750513,
+   "native_round_trip_s": 0.004467284306883812,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0064585525542497635,
+   "native_s": 0.000768073,
+   "native_round_trip_s": 0.0044606756418943405,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.012671466916799545,
+   "native_s": 0.004256989,
+   "native_round_trip_s": 0.04250463657081127,
+   "max_abs": {
+    "t": 0.0,
+    "q": 7.993605777301127e-15,
+    "v": 1.6185094714113446e-13,
+    "a": 2.490014704842336e-12,
+    "collision_path": 8.881784197001252e-15,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2729,
+    2729
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00745464488863945,
+   "native_s": 0.000476202,
+   "native_round_trip_s": 0.004743224009871483,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00506165437400341,
+   "native_s": 0.000434372,
+   "native_round_trip_s": 0.003670414909720421,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.013728637248277664,
+   "native_s": 0.002400036,
+   "native_round_trip_s": 0.012107929214835167,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.012684836983680725,
+   "native_s": 0.002477089,
+   "native_round_trip_s": 0.011889820918440819,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.013202888891100883,
+   "native_s": 0.002417943,
+   "native_round_trip_s": 0.012142831459641457,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.01497592031955719,
+   "native_s": 0.002411613,
+   "native_round_trip_s": 0.011924875900149345,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.029824148863554,
+   "native_s": 0.012490265,
+   "native_round_trip_s": 0.08778432197868824,
+   "max_abs": {
+    "t": 0.0,
+    "q": 7.549516567451064e-15,
+    "v": 1.6185094714113446e-13,
+    "a": 2.4900145964221188e-12,
+    "collision_path": 7.993605777301127e-15,
+    "analytic_speed_bounds_rad_s": 3.469446951953614e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    2,
+    2
+   ],
+   "points": [
+    2454,
+    2454
+   ],
+   "collision_states": [
+    4935,
+    4935
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.011626675724983215,
+   "native_s": 0.001412034,
+   "native_round_trip_s": 0.011868828907608986,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4718982754147194,
+   "python_s": 0.009925048798322678,
+   "native_s": 0.001394007,
+   "native_round_trip_s": 0.010881423950195312,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0032667387276887894,
+   "native_s": 0.000472378,
+   "native_round_trip_s": 0.003585750237107277,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.003890492022037506,
+   "native_s": 0.000429626,
+   "native_round_trip_s": 0.0035542678087949753,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004588240757584572,
+   "native_s": 0.000417528,
+   "native_round_trip_s": 0.0035545844584703445,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005493815988302231,
+   "native_s": 0.000689935,
+   "native_round_trip_s": 0.003882959485054016,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.012338884174823761,
+   "native_s": 0.004186077,
+   "native_round_trip_s": 0.04504169337451458,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.021405182655144e-14,
+    "v": 2.0372592501871623e-13,
+    "a": 3.0559443864319746e-12,
+    "collision_path": 1.021405182655144e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    4,
+    4
+   ],
+   "points": [
+    681,
+    681
+   ],
+   "collision_states": [
+    2728,
+    2728
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006317637860774994,
+   "native_s": 0.000489602,
+   "native_round_trip_s": 0.004872173070907593,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005122171714901924,
+   "native_s": 0.000415945,
+   "native_round_trip_s": 0.003658253699541092,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.013128386810421944,
+   "native_s": 0.001362593,
+   "native_round_trip_s": 0.011038487777113914,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.015291327610611916,
+   "native_s": 0.003231484,
+   "native_round_trip_s": 0.013322202488780022,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.014728231355547905,
+   "native_s": 0.003208255,
+   "native_round_trip_s": 0.012799687683582306,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.016099587082862854,
+   "native_s": 0.00320227,
+   "native_round_trip_s": 0.012891419231891632,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.01777680218219757,
+   "native_s": 0.003082253,
+   "native_round_trip_s": 0.012814924120903015,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.013626275584101677,
+   "native_s": 0.001429309,
+   "native_round_trip_s": 0.01108475960791111,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.4499372340767605,
+   "python_s": 0.01477268896996975,
+   "native_s": 0.001394505,
+   "native_round_trip_s": 0.010924825444817543,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005700243636965752,
+   "native_s": 0.000470802,
+   "native_round_trip_s": 0.003918981179594994,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0055800750851631165,
+   "native_s": 0.000426315,
+   "native_round_trip_s": 0.00379335880279541,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006271166726946831,
+   "native_s": 0.000414908,
+   "native_round_trip_s": 0.0037963874638080597,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0064579155296087265,
+   "native_s": 0.000663397,
+   "native_round_trip_s": 0.004015643149614334,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.14830412529408932,
+   "native_s": 0.004019155,
+   "native_round_trip_s": 0.042943527922034264,
+   "max_abs": {
+    "t": 0.0,
+    "q": 1.0658141036401503e-14,
+    "v": 2.1580122671477353e-13,
+    "a": 3.3200195522463394e-12,
+    "collision_path": 1.1102230246251565e-14,
+    "analytic_speed_bounds_rad_s": 6.938893903907228e-18,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    3,
+    3
+   ],
+   "points": [
+    682,
+    682
+   ],
+   "collision_states": [
+    2244,
+    2244
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.005720652639865875,
+   "native_s": 0.000483848,
+   "native_round_trip_s": 0.004425231367349625,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004155468195676804,
+   "native_s": 0.00041201,
+   "native_round_trip_s": 0.003515651449561119,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.005898516625165939,
+   "native_s": 0.000637199,
+   "native_round_trip_s": 0.0053079016506671906,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.006072092801332474,
+   "native_s": 0.000710344,
+   "native_round_trip_s": 0.006011473014950752,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "recorded x1.25",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.007754631340503693,
+   "native_s": 0.001560495,
+   "native_round_trip_s": 0.006374513730406761,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "recorded x1.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.008330488577485085,
+   "native_s": 0.001525918,
+   "native_round_trip_s": 0.006585467606782913,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "recorded x2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:3:2",
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.010096600279211998,
+   "native_s": 0.001445429,
+   "native_round_trip_s": 0.006344057619571686,
+   "errors": [
+    "INTERPOLATION_LIMIT:3:2",
+    "INTERPOLATION_LIMIT:3:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.006527388468384743,
+   "native_s": 0.000610026,
+   "native_round_trip_s": 0.005457539111375809,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:2",
+    "INTERPOLATION_LIMIT:1:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:1:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.450549255215049,
+   "python_s": 0.007445428520441055,
+   "native_s": 0.000585463,
+   "native_round_trip_s": 0.005600094795227051,
+   "errors": [
+    "INTERPOLATION_LIMIT:1:1",
+    "INTERPOLATION_LIMIT:1:1"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "nonzero_endpoint_velocity",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "NONZERO_ENDPOINT_VELOCITY",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0009950343519449234,
+   "native_s": 0.000127162,
+   "native_round_trip_s": 0.025796204805374146,
+   "errors": [
+    "NONZERO_ENDPOINT_VELOCITY",
+    "NONZERO_ENDPOINT_VELOCITY"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "time_axis",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INVALID_TIME_AXIS",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0012012757360935211,
+   "native_s": 0.000153753,
+   "native_round_trip_s": 0.024374743923544884,
+   "errors": [
+    "INVALID_TIME_AXIS",
+    "INVALID_TIME_AXIS"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "reach_bound",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:5:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 0.0,
+   "python_s": 0.05884363315999508,
+   "native_s": 0.014024351,
+   "native_round_trip_s": 0.03711707890033722,
+   "errors": [
+    "INTERPOLATION_LIMIT:5:1",
+    "INTERPOLATION_LIMIT:5:1"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "timing",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INVALID_TIMING",
+   "time_scale": 0.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 2.9472634196281433e-05,
+   "native_s": 8.8959e-05,
+   "native_round_trip_s": 0.012353381142020226,
+   "errors": [
+    "INVALID_TIMING",
+    "INVALID_TIMING"
+   ]
+  }
+ ]
+}
