@@ -1,0 +1,1644 @@
+{
+  "scope": "ARCHIVED_IK_POSTURE_DIAGNOSIS_NOT_A_NEW_PLAN",
+  "hardware_execution": "NOT_RUN",
+  "executable": false,
+  "planner_selection_changed": false,
+  "native_static_checks": "COMPLETED_NOT_PATH_ACCEPTANCE",
+  "source_head": "e041b2fcda44b9867560b9c6ba99d1ce60d17f1e",
+  "config_sha256": "de2289fad56cad78b9c1372075d8384428768d9aa43f6f30c44963107b3714b1",
+  "wrist_limits": {
+    "keep_j5_sign": true,
+    "j5_min_abs_deg": 10.0,
+    "max_j4_travel_deg": 90.0,
+    "max_j6_travel_deg": 180.0,
+    "basis": "INCIDENT_2026_11_14_APPROACH_FLIPPED_WRIST_J5_PLUS_87_TO_MINUS_58_DEG"
+  },
+  "metric_basis": {
+    "upper": "link_2 origin to link_3 origin, angle to base +Z",
+    "forearm": "link_3 origin to link_4 origin, angle to base XY plane",
+    "scope": "geometric directional diagnostic, not CAD centreline certification or planner cost"
+  },
+  "cases": [
+    {
+      "task_id": "313f32ad66a240798df17905025edc89",
+      "q_start": {
+        "upper_from_up_deg": 11.99300000181961,
+        "forearm_from_horizontal_deg": 23.284812125356414,
+        "diagnostic_angle_sum_deg": 35.27781212717602,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.013112280694291191,
+            -0.08499451802907125,
+            0.1625
+          ],
+          [
+            -0.021350651970075955,
+            -0.13838866093475932,
+            0.4168249786043229
+          ],
+          [
+            0.0034156065614169527,
+            -0.36402322081419347,
+            0.5145108641066065
+          ],
+          [
+            -0.013184514594343149,
+            -0.47162310946948055,
+            0.5302175486384834
+          ],
+          [
+            -0.020690695672397955,
+            -0.48191992864055555,
+            0.45174537038031576
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.9931584248472255,
+            0.06871541081083503,
+            -0.09441681773961298,
+            -0.034168737363169936
+          ],
+          [
+            0.08069121925346305,
+            0.9882886700430472,
+            -0.12951614493928368,
+            -0.5004084145153272
+          ],
+          [
+            0.08441131612744042,
+            -0.13624865864162528,
+            -0.9870719491141416,
+            0.31084042144800006
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          1.417730951394994,
+          -0.20931733719167994,
+          -0.9422858098592186,
+          -0.2759191014477836,
+          1.497160885653256,
+          -0.08096582400001695
+        ],
+        "q_deg": [
+          81.23,
+          -11.993,
+          -53.989000000000004,
+          -15.809000000000003,
+          85.781,
+          -4.639
+        ]
+      },
+      "faces": [
+        {
+          "center_m": [
+            -0.5197768515490897,
+            -0.039950119321851864,
+            0.40594653058720187
+          ],
+          "normal": [
+            0.9391245825802297,
+            -0.34136409139291607,
+            -0.038930393023951376
+          ],
+          "size_m": [
+            0.12864854201740977,
+            0.172678031150978
+          ],
+          "observed": true
+        }
+      ],
+      "candidate_count": 32,
+      "distinct_ik_per_pose_total": 225,
+      "wrist_allowed_count": 29,
+      "wrist_filter_reproduces_archive": true,
+      "wrist_rejection_counts": {
+        "J4_TRAVEL_EXCEEDED": 61,
+        "J5_WRIST_FLIP_OR_SINGULAR": 105,
+        "J6_TRAVEL_EXCEEDED": 30
+      },
+      "precontact_tcp_z_range_m": [
+        0.35950727984478803,
+        0.45004995774817846
+      ],
+      "best_raw": {
+        "upper_from_up_deg": 1.507535277234877,
+        "forearm_from_horizontal_deg": 8.95606050580321,
+        "diagnostic_angle_sum_deg": 10.463595783038087,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08257550077505872,
+            -0.02402679070846281,
+            0.1625
+          ],
+          [
+            -0.07600794642025333,
+            -0.02211487741554307,
+            0.4224100071512389
+          ],
+          [
+            -0.2870219878617407,
+            -0.1448338815738175,
+            0.4608804468800963
+          ],
+          [
+            -0.29211526841817714,
+            -0.14631626093800174,
+            0.35100842567090007
+          ],
+          [
+            -0.3667756862721111,
+            -0.11917781953463885,
+            0.3541030991709999
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.03425879177519373,
+            -0.34186452458531746,
+            -0.9391245827983413,
+            -0.5008361278630622
+          ],
+          [
+            0.019705324674672287,
+            -0.9397245642491848,
+            0.3413640923210069,
+            -0.07044794727052928
+          ],
+          [
+            -0.9992187124776882,
+            -0.006811033455654081,
+            0.038930379624353695,
+            0.35966042775055096
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.28314967733939594,
+          0.026311453921372015,
+          -1.436120704198502,
+          -1.683544580392678,
+          -0.9395618666082687,
+          -1.603976666438837
+        ],
+        "q_deg": [
+          16.22328148203843,
+          1.5075352625475562,
+          -82.28365522192989,
+          -96.45999907862358,
+          -53.83292954808743,
+          -91.9010934244084
+        ],
+        "candidate": 15,
+        "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-15/approach-endpoint-ik-native.json",
+        "position_error_m": 6.131697077292357e-07,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J5_WRIST_FLIP_OR_SINGULAR",
+          "index": 0,
+          "j5_deg": -53.83292954808743,
+          "j5_start_deg": 85.781,
+          "j5_min_abs_deg": 10.0
+        }
+      },
+      "best_wrist_allowed": {
+        "upper_from_up_deg": 104.07179185967684,
+        "forearm_from_horizontal_deg": 70.00088315581846,
+        "diagnostic_angle_sum_deg": 174.0726750154953,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08560709956470748,
+            -0.008211242544113382,
+            0.1625
+          ],
+          [
+            -0.3366528493966042,
+            -0.03229029502211248,
+            0.0992842525702458
+          ],
+          [
+            -0.27067738751032355,
+            -0.08511167666788141,
+            0.331499657894535
+          ],
+          [
+            -0.26595672983794016,
+            -0.08465849365579417,
+            0.44139738314987287
+          ],
+          [
+            -0.34061712206494027,
+            -0.05752004784106263,
+            0.4444926361720634
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.034258616886879104,
+            -0.341864527384725,
+            -0.9391245881591093,
+            -0.4746775644211433
+          ],
+          [
+            0.019705661898257842,
+            -0.9397245604995915,
+            0.34136408317660005,
+            -0.008790176882321095
+          ],
+          [
+            -0.9992187118234669,
+            -0.006811410270116148,
+            0.03893033048899748,
+            0.45004995773752104
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.09562523365869491,
+          -1.8163954264032844,
+          2.071791596371105,
+          -0.21227410807552452,
+          1.1268924233903161,
+          1.547575352457512
+        ],
+        "q_deg": [
+          5.478922303595562,
+          -104.07179185977374,
+          118.70491450273569,
+          -12.16241049263146,
+          64.56617982553456,
+          88.66953617428626
+        ],
+        "candidate": 25,
+        "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/approach-endpoint-ik-native.json",
+        "position_error_m": 1.560061617160775e-11,
+        "orientation_error_rad": 3.710359215137006e-07,
+        "wrist_rejection": null
+      },
+      "shown": {
+        "upper_from_up_deg": 122.13216888789952,
+        "forearm_from_horizontal_deg": 75.92058173318097,
+        "diagnostic_angle_sum_deg": 198.0527506210805,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08488758457677724,
+            -0.013787602573344245,
+            0.1625
+          ],
+          [
+            -0.30221375949084006,
+            -0.04908582758173702,
+            0.024212730128623045
+          ],
+          [
+            -0.2808027076076782,
+            -0.1052589542285774,
+            0.2639062867795572
+          ],
+          [
+            -0.2759611065923851,
+            -0.10447218151731606,
+            0.37379686821540875
+          ],
+          [
+            -0.3506214980552225,
+            -0.07733373416364454,
+            0.37689212617685003
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.3418645242305709,
+            -0.034258801122057134,
+            -0.9391245825865085,
+            -0.4846819396159343
+          ],
+          [
+            0.9397245643124937,
+            0.019705337701704323,
+            0.34136409139473745,
+            -0.02860386203176031
+          ],
+          [
+            0.0068110425265352145,
+            -0.9992187119003229,
+            0.03893039285648942,
+            0.38244945664529423
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.16101581057188555,
+          -2.131608469699865,
+          2.1821657765958795,
+          -0.005954272848884875,
+          1.0615646727143058,
+          -0.026447163805315314
+        ],
+        "q_deg": [
+          9.225526380646984,
+          -122.1321688881423,
+          125.02888919683157,
+          -0.3411547043104403,
+          60.82317542671626,
+          -1.5153108661357175
+        ],
+        "candidate": 3,
+        "wrist_rejection": null,
+        "archived_collision_failure": {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "part_006_lip",
+            "rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0"
+          ],
+          "query_range_m": 0.0034,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "INTERSECTION_OR_CONTACT",
+          "required_pair_clearance_m": 0.0024,
+          "surface_distance_m": -1.0
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "INTERSECTION_OR_CONTACT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": -1.0
+          },
+          "evidence": "outputs/field-posture-20261118/case-1-shown-static.json"
+        }
+      },
+      "same_pose_preferred": {
+        "upper_from_up_deg": 7.349488972053673,
+        "forearm_from_horizontal_deg": 14.847754079851752,
+        "diagnostic_angle_sum_deg": 22.197243051905424,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08488758451273258,
+            -0.01378760296765481,
+            0.1625
+          ],
+          [
+            -0.052058391634639024,
+            -0.00845458717629113,
+            0.4203639234897778
+          ],
+          [
+            -0.2711199936707226,
+            -0.10368548941670075,
+            0.48368804347467864
+          ],
+          [
+            -0.2759611271900873,
+            -0.10447218622130844,
+            0.373797440899275
+          ],
+          [
+            -0.3506215441383259,
+            -0.07733374245558153,
+            0.3768921155331656
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.34186453164168873,
+            -0.0342588028887926,
+            -0.9391245798242295,
+            -0.4846819853047212
+          ],
+          [
+            0.9397245616242733,
+            0.01970533751355304,
+            0.34136409880587015,
+            -0.028603869265754887
+          ],
+          [
+            0.006811041438409484,
+            -0.9992187118434597,
+            0.03893039450635525,
+            0.3824494462371289
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.16101581521697667,
+          0.12827278084904567,
+          -1.432058044905986,
+          -1.7932086653930255,
+          -1.0615646602027158,
+          -3.168044129980347
+        ],
+        "q_deg": [
+          9.225526646791101,
+          7.349488969056849,
+          -82.05088199086913,
+          -102.7432883133074,
+          -60.82317470985496,
+          -181.51555795906867
+        ],
+        "candidate": 3,
+        "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/approach-endpoint-ik-native.json",
+        "position_error_m": 5.151749056376034e-16,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J5_WRIST_FLIP_OR_SINGULAR",
+          "index": 0,
+          "j5_deg": -60.82317470985496,
+          "j5_start_deg": 85.781,
+          "j5_min_abs_deg": 10.0
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "INTERSECTION_OR_CONTACT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": -1.0
+          },
+          "evidence": "outputs/field-posture-20261118/case-1-same_pose_preferred-static.json"
+        }
+      },
+      "same_pose_positive_j5": {
+        "upper_from_up_deg": 5.896545313241742,
+        "forearm_from_horizontal_deg": 39.50969579846242,
+        "diagnostic_angle_sum_deg": 45.40624111170416,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08488758458245604,
+            -0.013787602538381027,
+            0.1625
+          ],
+          [
+            -0.11125271672532563,
+            -0.018068815493415047,
+            0.4211243434457064
+          ],
+          [
+            -0.2808027502478337,
+            -0.10525896103143431,
+            0.26390628133586025
+          ],
+          [
+            -0.2759611520822975,
+            -0.10447218878507146,
+            0.37379686290059594
+          ],
+          [
+            -0.3506215436162782,
+            -0.07733374141932432,
+            0.3768921190401219
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.34186452370753106,
+            -0.034258781812881216,
+            -0.9391245834812972,
+            -0.48468198530472145
+          ],
+          [
+            0.9397245645498745,
+            0.019705323749696357,
+            0.3413640915466475,
+            -0.028603869265754867
+          ],
+          [
+            0.006811036027748731,
+            -0.9992187128374932,
+            0.03893036993931153,
+            0.382449446237129
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.16101581016000888,
+          -0.10291413014378771,
+          -2.1821656116904444,
+          2.329682749605877,
+          1.0615646727896453,
+          6.256738162716082
+        ],
+        "q_deg": [
+          9.225526357048189,
+          -5.89654530949912,
+          -125.02887974844612,
+          133.4809891568497,
+          60.8231754310329,
+          358.48469024206844
+        ],
+        "candidate": 3,
+        "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/approach-endpoint-ik-native.json",
+        "position_error_m": 2.2530044628618934e-16,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J4_TRAVEL_EXCEEDED",
+          "index": 0,
+          "travel_deg": 149.28998915684969,
+          "limit_deg": 90.0
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_support_145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "INTERSECTION_OR_CONTACT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": -1.0
+          },
+          "evidence": "outputs/field-posture-20261118/case-1-same_pose_positive_j5-static.json"
+        }
+      },
+      "detach_outputs": [
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-10/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 101.82634638719378,
+          "forearm_from_horizontal_deg": 75.26033148392419
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-10/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 101.82634638719378,
+          "forearm_from_horizontal_deg": 75.26033148392419
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-12/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 100.48444280581691,
+          "forearm_from_horizontal_deg": 70.74712207347123
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-12/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 100.48444280581691,
+          "forearm_from_horizontal_deg": 70.74712207347123
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-24/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 95.27002314429802,
+          "forearm_from_horizontal_deg": 70.09112834147778
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-24/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 95.27002314429802,
+          "forearm_from_horizontal_deg": 70.09112834147778
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 94.21938883949976,
+          "forearm_from_horizontal_deg": 67.160349458918
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 94.21938883949976,
+          "forearm_from_horizontal_deg": 67.160349458918
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 98.2577780594345,
+          "forearm_from_horizontal_deg": 64.81110246868916
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 98.2577780594345,
+          "forearm_from_horizontal_deg": 64.81110246868916
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-29/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 99.45759706821235,
+          "forearm_from_horizontal_deg": 67.83294286206204
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-29/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 99.45759706821235,
+          "forearm_from_horizontal_deg": 67.83294286206204
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-31/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 101.28638975537419,
+          "forearm_from_horizontal_deg": 73.32602919295486
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-31/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 101.28638975537419,
+          "forearm_from_horizontal_deg": 73.32602919295486
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-4/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 100.48443669805846,
+          "forearm_from_horizontal_deg": 70.74712448829692
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-4/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 100.48443669805846,
+          "forearm_from_horizontal_deg": 70.74712448829692
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-6/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 101.82634914997082,
+          "forearm_from_horizontal_deg": 75.26033244834358
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-6/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 101.82634914997082,
+          "forearm_from_horizontal_deg": 75.26033244834358
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-7/detach-lift_first-native.json",
+          "upper_from_up_deg": 94.29435991372327,
+          "forearm_from_horizontal_deg": 75.2310344370146
+        },
+        {
+          "source": "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-7/detach-lift_first-pilz-s0.25-native.json",
+          "upper_from_up_deg": 94.29435991372327,
+          "forearm_from_horizontal_deg": 75.2310344370146
+        }
+      ],
+      "detach_output_note": "Includes aliases/retries, not distinct complete paths; final saved samples only; no sent-path audit."
+    },
+    {
+      "task_id": "6966ce4b0141495993727b6d72815637",
+      "q_start": {
+        "upper_from_up_deg": 11.98700000182053,
+        "forearm_from_horizontal_deg": 23.286743667807535,
+        "diagnostic_angle_sum_deg": 35.27374366962806,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.013101896557158167,
+            -0.08499611936203633,
+            0.1625
+          ],
+          [
+            -0.02132968687341918,
+            -0.13836494613176384,
+            0.41683063479599636
+          ],
+          [
+            0.0034646574260545175,
+            -0.36399310835404547,
+            0.5145241724684284
+          ],
+          [
+            -0.01312223427409,
+            -0.47159448235952894,
+            0.5302346573705483
+          ],
+          [
+            -0.020627574622557793,
+            -0.4818949257185087,
+            0.45176287433446516
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.9931678268056794,
+            0.06859394351575929,
+            -0.09440624296645052,
+            -0.034104106759873444
+          ],
+          [
+            0.08057279374493219,
+            0.9882923567791639,
+            -0.12956173215892808,
+            -0.5003899191886606
+          ],
+          [
+            0.08441381821846633,
+            -0.13628311870823184,
+            -0.9870669778940725,
+            0.3108586350459709
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          1.4178531244426333,
+          -0.20921261743656028,
+          -0.9423556230292984,
+          -0.2759191014477836,
+          1.497160885653256,
+          -0.08096582400001695
+        ],
+        "q_deg": [
+          81.237,
+          -11.987,
+          -53.993,
+          -15.809000000000003,
+          85.781,
+          -4.639
+        ]
+      },
+      "faces": [
+        {
+          "center_m": [
+            -0.5267759672976335,
+            -0.1004943356836245,
+            0.4057038635150607
+          ],
+          "normal": [
+            0.9688271126540373,
+            -0.245677505218927,
+            -0.031883996233952216
+          ],
+          "size_m": [
+            0.12914559656055788,
+            0.17290931270556215
+          ],
+          "observed": true
+        }
+      ],
+      "candidate_count": 32,
+      "distinct_ik_per_pose_total": 219,
+      "wrist_allowed_count": 30,
+      "wrist_filter_reproduces_archive": true,
+      "wrist_rejection_counts": {
+        "J5_WRIST_FLIP_OR_SINGULAR": 119,
+        "J4_TRAVEL_EXCEEDED": 40,
+        "J6_TRAVEL_EXCEEDED": 30
+      },
+      "precontact_tcp_z_range_m": [
+        0.35947983329058447,
+        0.45001485396549973
+      ],
+      "best_raw": {
+        "upper_from_up_deg": 1.2242667371081224,
+        "forearm_from_horizontal_deg": 9.3538127311263,
+        "diagnostic_angle_sum_deg": 10.578079468234423,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08115903900486884,
+            -0.028446623486912747,
+            0.1625
+          ],
+          [
+            -0.075916923928504,
+            -0.026608247442053985,
+            0.42244064823156047
+          ],
+          [
+            -0.2797377429315312,
+            -0.16043938685311726,
+            0.46260473996624
+          ],
+          [
+            -0.2837079820423304,
+            -0.1618313857306891,
+            0.3526852260456994
+          ],
+          [
+            -0.3607297480378115,
+            -0.14230002776030704,
+            0.3552197119442876
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.0293129940348328,
+            -0.24599750848567997,
+            -0.9688271126468082,
+            -0.49903023864972285
+          ],
+          [
+            0.014115634200070367,
+            -0.9692488391996266,
+            0.24567750524072318,
+            -0.10722945731118183
+          ],
+          [
+            -0.9994706084982404,
+            -0.006474065879618781,
+            0.03188399628563986,
+            0.35977116624548433
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.3371243575732291,
+          0.02136748516950955,
+          -1.4240231919575859,
+          -1.7006840945269945,
+          -0.9856653542510798,
+          -1.596290269374472
+        ],
+        "q_deg": [
+          19.31580286000526,
+          1.2242667190212757,
+          -81.59051882791755,
+          -97.44202090142474,
+          -56.47446481085405,
+          -91.46069531295853
+        ],
+        "candidate": 0,
+        "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-0/approach-endpoint-ik-native.json",
+        "position_error_m": 3.947248820392849e-16,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J5_WRIST_FLIP_OR_SINGULAR",
+          "index": 0,
+          "j5_deg": -56.47446481085405,
+          "j5_start_deg": 85.781,
+          "j5_min_abs_deg": 10.0
+        }
+      },
+      "best_wrist_allowed": {
+        "upper_from_up_deg": 104.55919159577878,
+        "forearm_from_horizontal_deg": 72.63726507575689,
+        "diagnostic_angle_sum_deg": 177.19645667153566,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.0840039180497203,
+            -0.01842123102009951,
+            0.1625
+          ],
+          [
+            -0.32981418007676044,
+            -0.0723242974501935,
+            0.09714118642730171
+          ],
+          [
+            -0.2738311014741594,
+            -0.12032613343117263,
+            0.33299828946350485
+          ],
+          [
+            -0.26999994485553785,
+            -0.11948559991585543,
+            0.4429283387783906
+          ],
+          [
+            -0.3470216903371291,
+            -0.09995423639177423,
+            0.44546340521917055
+          ]
+        ],
+        "tcp_pose": [
+          [
+            -0.029312896843058735,
+            -0.24599751033012135,
+            -0.9688271151191269,
+            -0.485322181301965
+          ],
+          [
+            0.01411585887238188,
+            -0.9692488371169198,
+            0.24567750054857157,
+            -0.0648836666124557
+          ],
+          [
+            -0.9994706081756294,
+            -0.006474307598517677,
+            0.031883957316440246,
+            0.45001485395749713
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.21587311610827037,
+          -1.8249021565716759,
+          2.010982086303265,
+          -0.15041897839199345,
+          1.1068340948961815,
+          1.5504796871461943
+        ],
+        "q_deg": [
+          12.368618463341479,
+          -104.55919159587917,
+          115.22078622159015,
+          -8.618372620530751,
+          63.41692225873365,
+          88.8359422942412
+        ],
+        "candidate": 25,
+        "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/approach-endpoint-ik-native.json",
+        "position_error_m": 1.168519206806666e-11,
+        "orientation_error_rad": 2.4119636500237414e-07,
+        "wrist_rejection": null
+      },
+      "shown": {
+        "upper_from_up_deg": 121.82219223581583,
+        "forearm_from_horizontal_deg": 76.20330220692048,
+        "diagnostic_angle_sum_deg": 198.02549444273632,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08270467073917852,
+            -0.023578325596277355,
+            0.1625
+          ],
+          [
+            -0.2951586448513735,
+            -0.08414663995070733,
+            0.02540591486064131
+          ],
+          [
+            -0.2814133868837106,
+            -0.14145311601182858,
+            0.26539318553318875
+          ],
+          [
+            -0.2775135163376888,
+            -0.14034089513579823,
+            0.37531840545312883
+          ],
+          [
+            -0.3545352615443158,
+            -0.12080953056234431,
+            0.3778534721631492
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.2459975076609438,
+            -0.029312957691937945,
+            -0.9688271139558152,
+            -0.49283575234308846
+          ],
+          [
+            0.9692488393540415,
+            0.01411563343243222,
+            0.24567750467562993,
+            -0.08573896019388638
+          ],
+          [
+            0.006474074099583908,
+            -0.9994706095749647,
+            0.031883960864378794,
+            0.3824049214079456
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.27772296453413237,
+          -2.126198356516645,
+          2.1158117784256825,
+          0.047258260951502845,
+          1.0450248777659807,
+          -0.022864548229085336
+        ],
+        "q_deg": [
+          15.91235374166723,
+          -121.8221922360557,
+          121.22708514786049,
+          2.707698899649015,
+          59.87551498216544,
+          -1.3100421139999103
+        ],
+        "candidate": 3,
+        "wrist_rejection": null,
+        "archived_collision_failure": {
+          "numerical_gap_tolerance_m": 1e-09,
+          "pair": [
+            "part_006_lip",
+            "rgbd_observed_7_18_10"
+          ],
+          "query_range_m": 0.0034,
+          "query_scope": "robot_tool_payload_to_world",
+          "reason": "CLEARANCE_INSUFFICIENT",
+          "required_pair_clearance_m": 0.0024,
+          "surface_distance_m": 0.002196721711973117
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_observed_7_18_10"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": 0.002196721711973117
+          },
+          "evidence": "outputs/field-posture-20261118/case-2-shown-static.json"
+        }
+      },
+      "same_pose_preferred": {
+        "upper_from_up_deg": 3.5753853536593545,
+        "forearm_from_horizontal_deg": 14.83004290793803,
+        "diagnostic_angle_sum_deg": 18.405428261597383,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08270467073635664,
+            -0.023578325606175544,
+            0.1625
+          ],
+          [
+            -0.06711214617281333,
+            -0.019132113935643364,
+            0.4219939390034305
+          ],
+          [
+            -0.2736140683062639,
+            -0.1392287947482695,
+            0.48524421815681074
+          ],
+          [
+            -0.27751349592241265,
+            -0.14034088935147784,
+            0.3753189812461726
+          ],
+          [
+            -0.3545352617305794,
+            -0.12080953063968318,
+            0.37785346712364704
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.2459975084568316,
+            -0.029312994023330086,
+            -0.9688271126544814,
+            -0.4928357523435861
+          ],
+          [
+            0.9692488392085868,
+            0.014115633943230744,
+            0.24567750522013024,
+            -0.08573896019349761
+          ],
+          [
+            0.006474065634323476,
+            -0.9994706085022053,
+            0.031883996211164466,
+            0.3824049214142124
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.27772296465381346,
+          0.062402246340968984,
+          -1.3665064698119282,
+          -1.8006209371751727,
+          -1.0450248774536164,
+          -3.164461444732282
+        ],
+        "q_deg": [
+          15.91235374852445,
+          3.575385347473207,
+          -78.29505339754472,
+          -103.16798020302835,
+          -59.87551496426828,
+          -181.31028521503077
+        ],
+        "candidate": 3,
+        "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-3/approach-endpoint-ik-native.json",
+        "position_error_m": 3.1242287930221996e-15,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J5_WRIST_FLIP_OR_SINGULAR",
+          "index": 0,
+          "j5_deg": -59.87551496426828,
+          "j5_start_deg": 85.781,
+          "j5_min_abs_deg": 10.0
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_observed_7_18_10"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": 0.0021967215579072534
+          },
+          "evidence": "outputs/field-posture-20261118/case-2-same_pose_preferred-static.json"
+        }
+      },
+      "same_pose_positive_j5": {
+        "upper_from_up_deg": 8.720650806717991,
+        "forearm_from_horizontal_deg": 38.57915633711768,
+        "diagnostic_angle_sum_deg": 47.29980714383567,
+        "joint_origins_m": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.1625
+          ],
+          [
+            -0.08270467073569067,
+            -0.023578325608511516,
+            0.1625
+          ],
+          [
+            -0.12061490814409664,
+            -0.03438504640749342,
+            0.41949421916691265
+          ],
+          [
+            -0.2814133908053511,
+            -0.14145311717745468,
+            0.2653931789516149
+          ],
+          [
+            -0.2775135165783449,
+            -0.1403408952514016,
+            0.37531839873033873
+          ],
+          [
+            -0.3545352616954647,
+            -0.12080953063547892,
+            0.3778534678326142
+          ]
+        ],
+        "tcp_pose": [
+          [
+            0.2459975083866995,
+            -0.02931298880877094,
+            -0.9688271128300613,
+            -0.4928357523335355
+          ],
+          [
+            0.9692488392230919,
+            0.01411563312715911,
+            0.2456775052097929,
+            -0.085738960190769
+          ],
+          [
+            0.006474066127572452,
+            -0.9994706086666658,
+            0.03188399095564273,
+            0.38240492137295157
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "q": [
+          0.27772296468205826,
+          -0.15220406944994772,
+          -2.1158117739519855,
+          2.3048875610844957,
+          1.0450248773812076,
+          -0.02286455776562538
+        ],
+        "q_deg": [
+          15.91235375014276,
+          -8.720650804198073,
+          -121.22708489153653,
+          132.06032950234334,
+          59.87551496011956,
+          -1.310042660403406
+        ],
+        "candidate": 3,
+        "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-3/approach-endpoint-ik-native.json",
+        "position_error_m": 4.255635661968491e-11,
+        "orientation_error_rad": 0.0,
+        "wrist_rejection": {
+          "reason": "J4_TRAVEL_EXCEEDED",
+          "index": 0,
+          "travel_deg": 147.86932950234333,
+          "limit_deg": 90.0
+        },
+        "static_collision": {
+          "status": "SUCCESS",
+          "native_valid": false,
+          "legacy_intersection_valid": false,
+          "failure": {
+            "numerical_gap_tolerance_m": 1e-09,
+            "pair": [
+              "part_006_lip",
+              "rgbd_observed_7_18_10"
+            ],
+            "query_range_m": 0.0034,
+            "query_scope": "robot_tool_payload_to_world",
+            "reason": "CLEARANCE_INSUFFICIENT",
+            "required_pair_clearance_m": 0.0024,
+            "surface_distance_m": 0.00219672151065944
+          },
+          "evidence": "outputs/field-posture-20261118/case-2-same_pose_positive_j5-static.json"
+        }
+      },
+      "detach_outputs": [
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-10/detach-native.json",
+          "upper_from_up_deg": 104.97652328522426,
+          "forearm_from_horizontal_deg": 66.1173513628522
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-10/detach-pilz-s0.25-native.json",
+          "upper_from_up_deg": 104.97652328522426,
+          "forearm_from_horizontal_deg": 66.1173513628522
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-12/detach-native.json",
+          "upper_from_up_deg": 99.00408907418874,
+          "forearm_from_horizontal_deg": 53.8963995916729
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-12/detach-pilz-s0.1-native.json",
+          "upper_from_up_deg": 99.00408907418874,
+          "forearm_from_horizontal_deg": 53.8963995916729
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-24/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 95.7081460691784,
+          "forearm_from_horizontal_deg": 72.67106838215399
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-24/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 95.7081460691784,
+          "forearm_from_horizontal_deg": 72.67106838215399
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 94.91336829853557,
+          "forearm_from_horizontal_deg": 70.16021959805302
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 94.91336829853557,
+          "forearm_from_horizontal_deg": 70.16021959805302
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-27/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 99.16678223623457,
+          "forearm_from_horizontal_deg": 68.08102660998136
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-27/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 99.16678223623457,
+          "forearm_from_horizontal_deg": 68.08102660998136
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-29/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 100.11017643237044,
+          "forearm_from_horizontal_deg": 70.77305824066434
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-29/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 100.11017643237044,
+          "forearm_from_horizontal_deg": 70.77305824066434
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-31/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 101.40307878373049,
+          "forearm_from_horizontal_deg": 75.10878027442173
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-31/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 101.40307878373049,
+          "forearm_from_horizontal_deg": 75.10878027442173
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-4/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 100.86965446911721,
+          "forearm_from_horizontal_deg": 73.20969587839771
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-4/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 100.86965446911721,
+          "forearm_from_horizontal_deg": 73.20969587839771
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-6/detach-diagonal_45-native.json",
+          "upper_from_up_deg": 101.67935768371831,
+          "forearm_from_horizontal_deg": 76.12611950022018
+        },
+        {
+          "source": "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-6/detach-diagonal_45-pilz-s0.25-native.json",
+          "upper_from_up_deg": 101.67935768371831,
+          "forearm_from_horizontal_deg": 76.12611950022018
+        }
+      ],
+      "detach_output_note": "Includes aliases/retries, not distinct complete paths; final saved samples only; no sent-path audit."
+    }
+  ],
+  "sources": {
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/planning-failures.json": "0283c5f8e3f6aaf3d667b4d9b68f9def4fc426cefe95b05c98b2b795202e3287",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-0/approach-endpoint-ik-native.json": "1eeb7020679cb49f8c7c6b943948704a30a71a9d866e9093c3793f4e63a110c4",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-1/approach-endpoint-ik-native.json": "9b0e731facc63893f4f3937dd6c2b7d8c9c2a3c779ee9bb9df8fca50a1db05ad",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-10/approach-endpoint-ik-native.json": "0b4136d999a50e832790f5a0d228ece0542884e0671bd97a28f32ec0f75b7522",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-11/approach-endpoint-ik-native.json": "fc290e07cca9bef28d879d5bbeb699b21d66de8fe493cbedcc28871bcabe95e1",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-12/approach-endpoint-ik-native.json": "1058a9e6fd7b3c380162c535811a3f5222956255758fcfcdb7f58b7039cccd65",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-13/approach-endpoint-ik-native.json": "c167bab5adabcef3557978558ec65e8b0c2efe4cb6b21632a6da66881bf7eac3",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-14/approach-endpoint-ik-native.json": "9a0751c88795b94bb8333df874dd0bd7028a90388900304e1c5cdcbcd864b038",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-15/approach-endpoint-ik-native.json": "e1c42d11a461a6f81ec51b53ac95c3e29a5fd24fbe5ad2e8c41f0364249752eb",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-16/approach-endpoint-ik-native.json": "b3fcb6578fde1838b4f1452c6601bfc7ae6d20c79e8bd738bf9ea85098992a33",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-17/approach-endpoint-ik-native.json": "4353ebff3e414bb61fcadf07b645a9a5e7e26ffed0737430e63eb9eb80ce862c",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-18/approach-endpoint-ik-native.json": "e63cf06b0443aea0e3117e1653ffce598d09c46077d5f6f4ccb9dab5c48e81a6",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-19/approach-endpoint-ik-native.json": "46f9081e23f5b07abe5ef17cd2ae3ede5db692ea434bdbc5bb9b229933641222",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-2/approach-endpoint-ik-native.json": "fa31d040e538b4d836226650ec3774138cb434328f46a50977952289acc938ee",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-20/approach-endpoint-ik-native.json": "cdc6f05c9b7e512b334265b56bfb75d8f0a8b55daba7ca939552f365d4f47d04",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-21/approach-endpoint-ik-native.json": "2b97a230b66d02d8fd2190a138f727e09b487ef41e2087e14217026f55bbf576",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-22/approach-endpoint-ik-native.json": "d9822112c92be4a5d54181293013edbba275b67b011e2b85033cae1a33cc629f",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-23/approach-endpoint-ik-native.json": "b3b241d0c8509f947e4fc7b53dbd6a0c0842ae3e0b770a329b19800aaed82558",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-24/approach-endpoint-ik-native.json": "bdc74dccc9816f9937909284e4782951000e1776c21957dd18b144f7962169e6",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/approach-endpoint-ik-native.json": "5e55c7740cf8d866ed0011ad47200d77ba87066aa0c6a09fb97400a041199ad2",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-26/approach-endpoint-ik-native.json": "1be7cf78a597f3c2a433f1976cf213def2ea8d70eadfb31f8e5f9dcf0f7dfac3",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/approach-endpoint-ik-native.json": "e86e6a39ee513cecbaab3afd3eb613e947adee04f62b8ef70fee700e4d939f26",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-28/approach-endpoint-ik-native.json": "173fef22fe4c13dcb3a1f35b852698ba8dfde7a546daa1ee1ec68693ff70ba17",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-29/approach-endpoint-ik-native.json": "04b7ec9dcbff062db80e808b69cab8739b6a018cef431ec69155649035d8acdf",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/approach-endpoint-ik-native.json": "78e5ddbe68bacb6deccf4c8d6d332a95d8ecb27326b881b49470780dd477366a",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-30/approach-endpoint-ik-native.json": "8117d3fe3c82c0c0a7cbefe2386acd2694bde2e6c72dc79ac73208dec753e816",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-31/approach-endpoint-ik-native.json": "c61e75d90a5c6a1695ceb3e7d39eaa83313409e9e96eb7374d71ec0f96c016c0",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-4/approach-endpoint-ik-native.json": "0f09815d36722449309c021a62797bc8d85ce2774a19e29e29c47fbc4c130ff3",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-5/approach-endpoint-ik-native.json": "f1a5e602d9af7ca2ab34d76052b960577ca1f2998f31b5dc8bbecb43bdfaef68",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-6/approach-endpoint-ik-native.json": "baa949de4199229300b26e03f76e53f296cb9872bce3571c7b55c8d45819e17d",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-7/approach-endpoint-ik-native.json": "f26ca063d07376118d8b70d3cd3d904af66c15be08c60267e447f429859695b7",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-8/approach-endpoint-ik-native.json": "03a53418438f5f97537c205321413c5e85a2b73250150ea1f810e557b94bb985",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-9/approach-endpoint-ik-native.json": "0b1fa7902828cf07c01e9fd3bc21ae53b1178e79b37e98dad76a674a221b2b0b",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/approach-endpoint-native.json": "33eb5d444ca5ee2b977020449a1637817e4705b1f8f54dc4ab129ab38075d732",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-10/detach-diagonal_45-native.json": "cfc764410f9e82bcce0b2d1dfaa122bc379af1ca0fa6300d289b826d1248fb7f",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-10/detach-diagonal_45-pilz-s0.25-native.json": "b367a1c06abce05f3a8dd29607a5ae52dd45fbbeabb4038124ac15832680f54e",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-12/detach-diagonal_45-native.json": "14ce9762bb2dc888290c05cf62c238091d1b000df96a26acf7e5573d7570dcc0",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-12/detach-diagonal_45-pilz-s0.25-native.json": "07b5e9417a32c3cf2558eb2ca414db2acec633e950f23b6a3f20c46d32911fdb",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-24/detach-diagonal_45-native.json": "b901ae2cfcf41d7e55a16861fe2678b844508e6786c7a05349408fb25d30c171",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-24/detach-diagonal_45-pilz-s0.25-native.json": "5298730e6f263bd54412748681ba09ddec831e85fffee2d3affc708c9b9f39d3",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/detach-diagonal_45-native.json": "660b6757c2768736e1787ee2e522323f4f3ff7c36876afd37dcb0a4f95c0f919",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-25/detach-diagonal_45-pilz-s0.25-native.json": "66b3f63cbde4e39db15d73e4de8577747ec4a661851a4415b7021a887342641a",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-native.json": "5173829fe5152be761963e6647d1724c0fd043dabefe4b4b4ba3d92a0c0eb968",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-pilz-s0.25-native.json": "134f30a62fbc00777f031a477daa79623f2f56ef7406182ac44ed0ad73fe0324",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-29/detach-diagonal_45-native.json": "d7ceb9ff4572c5a8fe2443c23384d3f6f75f05b532fed447860c78dca9f98ac9",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-29/detach-diagonal_45-pilz-s0.25-native.json": "98c544953e875911c82aac5001c39568765b1c845b09ed8e065bb6d5fe883a0f",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-31/detach-diagonal_45-native.json": "57a4ef19a6aa5d97731e91dcb9675ec286fc9bc820c6fdae649213e108a75a9d",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-31/detach-diagonal_45-pilz-s0.25-native.json": "288c0b57f8c43429e1dd5285abedc085c4bc53452fc26283089e8a9703bc2df2",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-4/detach-diagonal_45-native.json": "311e1ecab606c3c898f6aaa2beb7cc8a650d2e3ad5b9633c9fba618145f68c29",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-4/detach-diagonal_45-pilz-s0.25-native.json": "c720e9947eb1500443cbe861d9651af547ade17af93c651a751570d61b286a8a",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-6/detach-diagonal_45-native.json": "556205695d5b8d036bea8d509fdefa33f8ef8e976706efa8dd2c8a6307832822",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-6/detach-diagonal_45-pilz-s0.25-native.json": "37dfb91031ebc4ea0e2cb4c1b21f2a4dffa7a2ba851b2f56695ed1f093edad2e",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-7/detach-lift_first-native.json": "81c7aef52cc5e74bcbc1c0f373a382373d401b47c1e9d261a79b8b68b2a4ebbc",
+    "outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-7/detach-lift_first-pilz-s0.25-native.json": "b2851947395a667c551fe8bd166013e2d0d93baedf32a260a5b064b51cd5b404",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/observation.json": "bad31c6fd0c0e5ef5bf80081e2b7e5cde555e0899ea546c1cf1c17df2d3163e6",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/geometry.json": "054ce2978752a9311f41d83f6ad4249a7a1dc99918cf81540e5fb6caa659a586",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/planning-failures.json": "ffb0177ce47e6abb3bcdb4c758b84126ad6b1bf2c134f8730cb049761f7e53a9",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-0/approach-endpoint-ik-native.json": "b34e292668dd9794747275d04a64495004873681c2b78d2a063a9542fd1add41",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-1/approach-endpoint-ik-native.json": "539c30a8f34d5eaf47e20801b5ffa015c79271cfc4a5690cb019c1ed8079a56f",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-10/approach-endpoint-ik-native.json": "fbb8eb4d8ae0843c90161f68a8d4bf22c38df79093e2531ddac3029754fab3ee",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-11/approach-endpoint-ik-native.json": "8d60fbbe5ad8d954099dde964b128d759407d8462a94f467627a27749c3d7a24",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-12/approach-endpoint-ik-native.json": "7b6a2056a275e56ad5bfc2f1a8991b77f86ae4b158424cc185458df7442e0e76",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-13/approach-endpoint-ik-native.json": "1156e058d2e12bbcc8e3b190a3d3160fe42e598ec145fb1f9b92dc171e6a1a9d",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-14/approach-endpoint-ik-native.json": "9ba2f8af6474540fb900db98725b71cc1bd433e30dfeb7b86b438b22d06e1c71",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-15/approach-endpoint-ik-native.json": "3f5b4c22d1e3c215edb64047cbedbd7dfde2ee378e2878ffe7d82f97c5515db1",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-16/approach-endpoint-ik-native.json": "344bff94e7cd8a07fb87dd04e559ec111d45488a49d10ee8cff8e92b247ba59b",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-17/approach-endpoint-ik-native.json": "5d53a0697f9e19874501914b8fdc671313241f44b95c38dfef80508ce0079a28",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-18/approach-endpoint-ik-native.json": "eacc1429562eb8816ae1c8d7eb138aae6a02ccf0a41d0f3f172aec00aa6b0aff",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-19/approach-endpoint-ik-native.json": "8ff10b72e12f216d2c3b484e47dcbd712de6b65b18052e64d305c101c4d959e0",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-2/approach-endpoint-ik-native.json": "065109fdbc761e14f21653db22cd4dbc44e656cd6eb72085789e0530a913a167",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-20/approach-endpoint-ik-native.json": "04c81b5b76d33c09ab3dccdb6899500bd77a8bceea1265a4979dbe827a9da62a",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-21/approach-endpoint-ik-native.json": "69c0171a80d79b4bcdc3e20f5ff27d107e459559a8984ebfaddc5083919ac112",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-22/approach-endpoint-ik-native.json": "7eadd123f979262f538d83199985588bad7f7dea1fe6cd883cc54e2d1aa7e3f9",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-23/approach-endpoint-ik-native.json": "a9216344f7c2afe506eb7da3c815de92758938bc7a16b684270015f9ad05c0b3",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-24/approach-endpoint-ik-native.json": "b408a8b0ad019dcbc11f3b83fd22deddbfcf2986c8e41920d5adf33411a3d03c",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/approach-endpoint-ik-native.json": "66ef5d7e77932996c10c3ddeb7d01042b23bea518099a83721e82c6993c24df3",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-26/approach-endpoint-ik-native.json": "99872cdf57a88531692310d431cceb5ba6aca0ce140c36b94239802ca5f75e89",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-27/approach-endpoint-ik-native.json": "2b7c2c5d8c136ee5020c366409f5cad2479c1f1ba74b704c39c56deea878878d",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-28/approach-endpoint-ik-native.json": "9e5db778c804b766d209107d397a86adbdcb89f996a7a737e2c9a86020d04894",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-29/approach-endpoint-ik-native.json": "c2fd3c24a5b00507a6008251635a76655926ef7a3b8a8f8efddc2ced5585ae66",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-3/approach-endpoint-ik-native.json": "4162aef62a0afc2d632f8a3c2f75fa38bfa70dfdd39e9eb41f67968ae48510d9",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-30/approach-endpoint-ik-native.json": "986a94ab90e92e1d8df5206369416956840962ebb1474f97621a772afb85c3f0",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-31/approach-endpoint-ik-native.json": "c9006d439dbfe3c2beb5da76bf76ecbdd8b41e3fd8af28e508a0cf7c40b7406b",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-4/approach-endpoint-ik-native.json": "fae63e1709d047d037947ff86ef41575a4ba28ffc9779c8681885fd302f5707f",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-5/approach-endpoint-ik-native.json": "c66d5bff8953935a7622eb84c9533579c405d5f6dce7b205b42bc635846cb6ab",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-6/approach-endpoint-ik-native.json": "ead0f70b548ad56321f71b631731ed9ab173c6b1d9a690afb47a89554c04f034",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-7/approach-endpoint-ik-native.json": "b396a2283445aa45540a356903007cdb480bb406cd9d3731eb9e80075ea32ae3",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-8/approach-endpoint-ik-native.json": "aeca7bcfa288cae1751b590b341796116375e875ec4ce84e7317e82d4193370c",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-9/approach-endpoint-ik-native.json": "f8bb22a4366f02180babe11ffa0cd5d853467f313f8d2dff8dfc3e9b432fed4b",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-3/approach-endpoint-native.json": "3d95427080eb504e4b94f236166f7b8c2e41e1bf90eb321608e3cb663e263d00",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-10/detach-native.json": "1bdfd9be1377af7b9458bc6347cc5a7ebc794a7b9c171e25d2a760fc2e4df559",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-10/detach-pilz-s0.25-native.json": "3ff0f64dae28e5289af8f934fc0c9169c366201677217c38c5af3363e7aff451",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-12/detach-native.json": "54991517e0acb449d776b60d111a51441c7eacae155256c5d406d3b82257603c",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-12/detach-pilz-s0.1-native.json": "34d5458f52f5347e253524764f6b42a27c48a9ba19e727aafed507868ab29e48",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-24/detach-diagonal_45-native.json": "f0b1502cade0cb46041c57d030b57fba4f80a42552eecb1a81c818ad2cf1fe71",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-24/detach-diagonal_45-pilz-s0.25-native.json": "53bdaea0f61f688d2c909acafab75b8014dc68926e98336b1725ba9ba7f8905c",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/detach-diagonal_45-native.json": "097e89151c591cd030e6b97c1bb68ce4a6ff3d184ada52de144bf4308df3f6fd",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-25/detach-diagonal_45-pilz-s0.25-native.json": "17723f4cc9dfae3ef15470c97bd263993f66c06ace63bc5b736eeb5913fccfa3",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-27/detach-diagonal_45-native.json": "3822d000e9426ff435e1a486cadff0372cecd9eb67ed530b7452bb099705af3c",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-27/detach-diagonal_45-pilz-s0.25-native.json": "1842554f92547a5cea9741ab40d61af70848dcc330e29774715739c020113ffb",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-29/detach-diagonal_45-native.json": "0a3b8d85cb21ba1e17bcef88dffd3034ea1589f95d4bb57110f30b01516cb2ff",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-29/detach-diagonal_45-pilz-s0.25-native.json": "f47cbca31b9339c9bd8a2869e2902d7d825097c6e29d44d4ace27ff7cb32fbe5",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-31/detach-diagonal_45-native.json": "e9c60b7956e5b98f7a33bfe886f69e51e29a39ac2e2c9a7d1c7893ac022bc19b",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-31/detach-diagonal_45-pilz-s0.25-native.json": "dd0b646a4e5876914dce0174482bb9151e40c1784c3c0f2e283f97eca8909d28",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-4/detach-diagonal_45-native.json": "23389177b9496464e7b46b4ab2628b6727c533f3e6de9b550f1c7800746a8f39",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-4/detach-diagonal_45-pilz-s0.25-native.json": "4ae65863b7769e6208af5913a031fb22ffac197cb5bfd4564dacf52dbf98f6ef",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-6/detach-diagonal_45-native.json": "79b3518560169dcdc42bf7c2d4c327325c13197a4b3033b400fd125d8aa15b99",
+    "outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-6/detach-diagonal_45-pilz-s0.25-native.json": "452ab57f6c1ebef6e09dbe123176acf45b61f4c9ae9016a8c88cbe0dd1b7c933"
+  },
+  "fk_validation": {
+    "checked": 444,
+    "max_position_error_m": 1.3714664448382117e-06,
+    "max_orientation_error_rad": 6.208618478775022e-07
+  },
+  "archived_evidence_unchanged": true,
+  "derived_outputs": {
+    "outputs/field-posture-20261118/report.json": "07de60858942916dad4933cd03d5ae9e8511e396c87ddd2089f845de7daf1e03",
+    "outputs/field-posture-20261118/posture-comparison.png": "2799ef444e645d57b014a214906908c007ae7122702c00f34692ad8cd0252c24",
+    "outputs/field-posture-20261118/case-1-same_pose_positive_j5-static.json": "0c214e6368a344c179f8c0e9d1926678f29fd140489f9d350e9eb2c4bdd56879",
+    "outputs/field-posture-20261118/case-1-same_pose_preferred-static.json": "34ef6853bd425fb73c0535fbf9f4074ad97cbd1d14fa8a5f1a4dbf29dc08aaaf",
+    "outputs/field-posture-20261118/case-1-shown-static.json": "3e766e9f4e29d64b92084ed7e723969de835a1f4ac68bcff2cd1e7463f329e6b",
+    "outputs/field-posture-20261118/case-2-same_pose_positive_j5-static.json": "d36b6795b90321534f8b07be09a5b070410456f8acb935ed21f9f5921d90d449",
+    "outputs/field-posture-20261118/case-2-same_pose_preferred-static.json": "ff984c012c3f752989ddf9021a750d7f24b91d811de5794884ba5989057b8746",
+    "outputs/field-posture-20261118/case-2-shown-static.json": "c8b5a7aefffd5c8a87dc302278693513d97b69ef33a7be17e8ddb7e20de4b5c0"
+  },
+  "tool_sha256": "998e04b47fc7c9444df17fa18ade76da3883b412377ce3f15614ec43a923eaaa",
+  "native_worker_sha256": "2454edf98daad2c101b37f4a6e9974ff6a217371e041384df803157c5be11de6",
+  "validation_scope": "444 archived native IK replies checked by Python FK; archive wrist filtering reproduced; 6 exact native static state queries; 38 saved detach outputs inspected (includes aliases/retries). No new path planning, sent path audit, device connection or physical execution.",
+  "not_run": [
+    "new soft posture ranking in production",
+    "top suction with a measured top face",
+    "complete alternative branch paths and loaded return",
+    "physical motion and grasp/release"
+  ]
+}
