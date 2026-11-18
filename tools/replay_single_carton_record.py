@@ -5,7 +5,9 @@ search (the same SinglePlanner.search_box used by the workbench) on the
 record's original RGB-D, SAM masks, q_capture and q_start. With
 --detector config, detection and SAM are re-run on the saved RGB with the
 configured backend (local or the remote GPU server) and compared with the
-record's own masks. --frozen-scene reuses the saved geometry and obstacles
+record's own masks when available. A capture whose inference failed can be
+retried explicitly with --detector config; no mask or box is invented.
+--frozen-scene reuses the saved geometry and obstacles
 instead, for a planning-policy comparison with unchanged field input.
 
 Development diagnostic only: no device import or connection, no permit is
@@ -62,17 +64,23 @@ def main():
     if args.frozen_scene:
         before['site-scene.json']=hashlib.sha256((record/'site-scene.json').read_bytes()).hexdigest()
         if args.detector!='saved':raise SystemExit('FROZEN_SCENE_REQUIRES_SAVED_DETECTOR')
-    if not {'observation.json', 'observation.npz', 'segmentation.npz'} <= set(before):
+    required = {'observation.json', 'observation.npz'}
+    if args.detector == 'saved': required.add('segmentation.npz')
+    if not required <= set(before):
         raise SystemExit('RECORD_HAS_NO_FROZEN_OBSERVATION_AND_MASKS: '+str(record))
     out = (args.output or ROOT/'outputs/single_carton_development'/f'replay-{record.name[:8]}-{datetime.now():%Y%m%dT%H%M%S}').resolve()
     out.mkdir(parents=True, exist_ok=False)
     for name in ('observation.json','observation.npz','segmentation.npz'):
-        shutil.copyfile(record/name,out/name)
+        if (record/name).is_file(): shutil.copyfile(record/name,out/name)
     replay_started = timing.now()
     config = load(args.config)
     obs = json.loads((record/'observation.json').read_text())
-    arrays = np.load(record/'observation.npz'); saved = np.load(record/'segmentation.npz')
-    masks = tuple(saved[f'mask_{i}'] for i in range(len(saved.files)))
+    with np.load(record/'observation.npz', allow_pickle=False) as saved_rgbd:
+        arrays = {k: saved_rgbd[k] for k in ('rgb', 'depth')}
+    masks = ()
+    if (record/'segmentation.npz').is_file():
+        with np.load(record/'segmentation.npz', allow_pickle=False) as saved:
+            masks = tuple(saved[f'mask_{i}'].astype(bool) for i in range(len(saved.files)))
     old = json.loads((record/'geometry.json').read_text()) if (record/'geometry.json').is_file() else {}
     detections = old.get('detections') or [dict(label='saved-mask')]*len(masks)
     frame = SimpleNamespace(observation_id=obs['observation_id'], rgb=arrays['rgb'], depth=arrays['depth'],
@@ -93,16 +101,21 @@ def main():
             segment_s = time.monotonic()-segmenting
         finally:
             if hasattr(model, 'close'): model.close()
-        field = [saved[f'mask_{i}'] for i in range(len(saved.files))]
+        field = masks
         def iou(a, b): return float((a & b).sum()/max(1, (a | b).sum()))
         detection_report = dict(backend=config['detector'].get('backend', 'local'), description=getattr(model, 'description', ''),
             model_load_and_verify_s=round(load_s, 2), detect_s=round(detect_s, 3), segment_s=round(segment_s, 3),
             remote=getattr(model, 'info', None), provenance=result.provenance,
             detections=[dict(label=d['label'], score=d['score'], bbox_xyxy=d['bbox_xyxy'], inference=d.get('inference')) for d in result.detections],
             field_detections=[dict(label=d['label'], score=d['score'], bbox_xyxy=d['bbox_xyxy']) for d in old.get('detections', [])],
-            mask_iou_vs_field_record=[max((iou(m, f) for f in field), default=0.) for m in result.masks])
+            field_mask_comparison='AVAILABLE' if field else 'NOT_AVAILABLE',
+            mask_iou_vs_field_record=[max(iou(m, f) for f in field) for m in result.masks] if field else None)
         print(json.dumps(dict(detection={k: v for k, v in detection_report.items() if k != 'remote'}), ensure_ascii=False, default=str), flush=True)
         detections, masks = result.detections, tuple(result.masks)
+        # The output scene and viewer must use the newly inferred masks, not a
+        # copy of older masks used only for the optional comparison above.
+        np.savez_compressed(out/'segmentation.npz', **{f'mask_{i}': m for i, m in enumerate(masks)})
+        timing.write_json(out/'inference.json', detection_report, 'inference.json', indent=2)
     started = time.monotonic()
     with timing.span('observe.reconstruct'):
         if args.frozen_scene:boxes,rejected=old['boxes'],old.get('rejected',[])
@@ -120,7 +133,7 @@ def main():
             scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
                                 SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
                                 self_filter)
-    timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected), 'geometry.json', indent=2)
+    timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected, detections=detections), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
     report = dict(scope='OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE', record=str(record), task_id=record.name,
                   hardware_execution='NOT_RUN', physical_result='NOT_RUN', permits_issued=0,
@@ -189,7 +202,7 @@ def main():
         (out/'planning-failures.json').write_text(json.dumps(failures,indent=2,ensure_ascii=False,default=str))
         if found:
             report['complete_plan'] = dict(
-                status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', candidate_index=found['index'],
+                status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', target_id=box['id'], candidate_index=found['index'],
                 endpoint_screen=found['screen']['conclusion'], active_seal_ids=found['candidate']['active_ids'],
                 candidate_lanes=found.get('lanes', 1),
                 detach_profile=found['segments'][2]['evidence'].get('detach_profile'),

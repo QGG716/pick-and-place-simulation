@@ -1056,3 +1056,32 @@ xdg-open outputs/tool-rotation-new/index.html
 10个前后姿态分别通过原生 IK/FK 核对，并独立执行静态碰撞查询；9个静态查询通过。箱位2新接触姿态通过，原脱垛输出末点的新朝向为 `link_3 ↔ part_027` 间隙37.372 mm，小于保留的40 mm要求，显示拒绝。箱位1的新增正向旋转相对实测起点 J6 旅行量为接近183.118°、接触183.252°，仍超过现有180°策略，未放宽或通过角度绕回隐藏。这些结论不证明原位转动或完整抓放路径可行；物理执行 NOT_RUN，许可数0。
 
 浏览器核对2箱位、10个前后姿态，FK最大矩阵误差2.220e-16，箱体世界姿态误差1.249e-16；全部715个碰撞实体及12杯保留，截图已检查。定向回归及证据见 `docs/evidence/realtime_20261118_additional_rotation/report.json`。首次工具导出因展示用字段与原生初始化字典共享而被 CAD 绑定检查拒绝；已通过深拷贝隔离修复，首次失败目录与日志保留。未改变原生校验规则，也未重新规划完整路径。
+
+## 2026-11-18 新现场帧重规划与实测起点顺时针半周预览
+
+用户确认“实测起点处再顺时针180°”仅指三维预览。本轮使用当前工作台最新保存的现场记录 `outputs/single_carton/a9a1eaac54624c93ad96c5e35d33166b`：2026-11-18 21:13:51（北京时间），RGB/depth 帧号3608/3605、640×480@30fps。原始 RGB-D、q_capture、相机外参及 q_start 全部保持原值，并核对源文件哈希。本轮没有连接机器人或真空板，没有运动、阀门命令或执行许可；这是已保存新现场帧的离线重规划，不是新一次实机执行准备。
+
+实测 q_start（度）为 `[80.998, -12.253, -54.206, -15.759, 85.987, -5.147]`。只在独立预览中令 J6 减去180°，得到 -185.147°，J1～J5 不变、不作360°绕回。顺时针从 J6 正轴端朝轴心看定义。两个端点分别通过原生 FK 与静态机器人/现场碰撞查询；全部715个碰撞实体、12杯、40 mm工具/机器人预留及既有对规则均保留。没有验证两端点之间的旋转路径，旋转预览不能作为实测起点或可执行轨迹。
+
+原记录的检测失败原因是旧 GPU 端口拒绝连接。离线回放现支持对**尚无分割结果**的真实冻结帧显式使用 `--detector config`；缺失旧掩码的比较结果标记 `NOT_AVAILABLE`。重新推理后把真正用于几何恢复的新掩码与检测写入输出，避免查看器仍读到旧掩码。生产 GPU 选择不变；本轮独立的 `outputs/field-replan-20261118-new-start/offline-cpu.json` 明确选择本机 CPU、相同已保存权重和适配器，没有演示输出。模型加载2.26 s，检测9.344 s，分割7.713 s；这些是该冻结帧离线数据，不是实时刷新率。
+
+CPU 重规划结果：两个箱体均恢复出可信局部观测面，但它们的完整不确定性包络在原位检查中相交102.026 mm，返回 `TARGET_PAYLOAD_INTERSECTS_AT_REST`。没有进入候选生成、IK 或路径搜索，未生成完整计划。该相交量描述保守模型包络，不能解释为真实纸箱互相穿入102 mm，也不能据此声称现场物理上无解。没有缩小包络、移除邻箱或放宽碰撞规则。25个现场物体加两个箱体全部保留。原报告的0.25 s是早期拒绝检查返回时间，不是成功 PLAN_READY 时延。
+
+查看器现在可显示候选生成前的目标级失败；每个目标使用自己的同帧掩码，其他恢复箱体作为邻箱保留，不伪造缺失逆解或轨迹。新增“实测起点”“顺时针180°”“查看本次规划拒绝位置”按钮，灰/粉箭头显示旋转前/后的工具+Y，青点显示实际平面的深度支持，黄色/红色透明体显示含推断部分的不确定性包络。页面已生成并打开：
+
+```bash
+xdg-open outputs/field-replan-20261118-new-start/viewer/index.html
+# 对另一份已经完成离线回放的记录生成同类起点预览：
+.venv-workbench/bin/python tools/preview_field_start_rotation.py \
+  outputs/field-replan-20261118-new-start/replay --j6-deg -180 \
+  --output outputs/field-start-preview-new
+# 重新推理必须显式选择配置；输出目录必须是新目录。
+ECO65_TIMING=1 .venv-workbench/bin/python tools/replay_single_carton_record.py \
+  outputs/single_carton/a9a1eaac54624c93ad96c5e35d33166b \
+  --config outputs/field-replan-20261118-new-start/offline-cpu.json \
+  --detector config --planning-deadline-s 120 --output outputs/field-replay-new
+```
+
+随后按用户提供的新地址验证 GPU SSH 与已有密钥，将端口41684保存到被忽略的 `outputs/workbench/remote_detector.local.json`，旧配置已备份；没有保存密码。当前已打开工作台仍持有启动时配置，需要正常关闭并重启才能应用新端口。用户后续要求“不用GPU复算”，因此不再启动 GPU 复算，也不以 GPU 结果替换本轮 CPU 交付；已经启动的那次进程在检查停止请求时已结束，原始产物和说明保留在 `gpu-replay/user-cancellation.json`，不作为本轮结果依据。
+
+验证：规定 Python 定向集605 passed；离线回放及指标补充组8 passed（与前组有重叠，不相加）；`m710_clearance_test optimized/reference`、单箱原生组件与配置静态检查通过。浏览器核对两个目标、六个显示状态，FK最大矩阵差1.110e-16，q_start不变，715实体/12杯/27现场物体与箱体保留，起点和包络截图已检查。证据见 [本轮记录](evidence/realtime_20261118_new_start/report.json)。原位旋转路径、完整新箱位抓放、完整规划2 s目标和实机验收仍未验证 / NOT_RUN。

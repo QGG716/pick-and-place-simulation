@@ -98,25 +98,31 @@ def add_posture_branches(case, diagnosis, coordinates):
     case['posture_mechanism']=mechanism
 
 
-def read_case(record,coordinates):
+def read_case(record,coordinates,target_id=None):
     retry=(record/'replay-report.json').exists()
     files=[record/n for n in ('observation.json','observation.npz','segmentation.npz','geometry.json','site-scene.json','planning-failures.json','replay-report.json' if retry else 'timing-prepare_plan.json')]
     sources={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     obs=json.loads(files[0].read_text());arr=np.load(files[1]);masks=np.load(files[2]);geo=json.loads(files[3].read_text());scene=json.loads(files[4].read_text())
-    failures=sorted((x for x in json.loads(files[5].read_text()) if 'candidate' in x),key=lambda x:x['candidate']);timing=json.loads(files[6].read_text())
+    box=next((b for b in geo['boxes'] if target_id is None or b['id']==target_id),None)
+    if box is None:raise ValueError('NO_RECOVERED_TARGET_FOR_VIEWER')
+    all_failures=[x for x in json.loads(files[5].read_text()) if x.get('target')==box['id']]
+    target_failures=[x for x in all_failures if 'candidate' not in x]
+    failures=sorted((x for x in all_failures if 'candidate' in x),key=lambda x:x['candidate']);timing=json.loads(files[6].read_text())
     candidate_meta={};priority=[];complete=None
     if retry:
-        target=geo['boxes'][0]['id'];manifest=record/(target+'-candidates.json')
-        sources[str(manifest.relative_to(ROOT))]=hashlib.sha256(manifest.read_bytes()).hexdigest()
-        candidate_meta={x['index']:x for x in json.loads(manifest.read_text())}
+        target=box['id'];manifest=record/(target+'-candidates.json')
+        if manifest.exists():
+            sources[str(manifest.relative_to(ROOT))]=hashlib.sha256(manifest.read_bytes()).hexdigest()
+            candidate_meta={x['index']:x for x in json.loads(manifest.read_text())}
         failures_by_id={x['candidate']:x for x in failures};complete=timing.get('complete_plan')
+        if complete and complete.get('target_id',geo['boxes'][0]['id'])!=target:complete=None
         failures=[failures_by_id.get(i,dict(target=target,candidate=i,reason=
             'COMPLETE_OFFLINE_PLAN_NOT_EXECUTABLE' if complete and complete['candidate_index']==i else
             'SEARCH_NOT_COMPLETED_OR_NOT_SELECTED: 未取得该候选的完整通过或失败结论')) for i in candidate_meta]
         p=record/'candidate-priority.json'
         if p.exists():
             sources[str(p.relative_to(ROOT))]=hashlib.sha256(p.read_bytes()).hexdigest();priority=json.loads(p.read_text())
-    rgb=arr['rgb'].copy();mask=masks['mask_0'].astype(bool);rgb[mask]=(rgb[mask]*.6+np.array([30,220,160])*.4).astype(np.uint8)
+    rgb=arr['rgb'].copy();mask=masks[f"mask_{box.get('detection_index',0)}"].astype(bool);rgb[mask]=(rgb[mask]*.6+np.array([30,220,160])*.4).astype(np.uint8)
     image=io.BytesIO();Image.fromarray(rgb).save(image,format='PNG')
     candidates=[]
     for failure in failures:
@@ -161,6 +167,12 @@ def read_case(record,coordinates):
                     source=str(f.relative_to(ROOT)),attachment=request.get('attachment'),audited=False))
         candidates.append(dict(index=failure['candidate'],reason=failure['reason'],kind=kind(failure['reason']),states=states,paths=paths,
                                contact=candidate_meta.get(failure['candidate']),preferred_ik=preferred))
+    if not candidates:
+        # A target can be rejected before candidate generation. Represent that
+        # verdict, never invent a candidate, IK solution or missing trajectory.
+        reason='\n'.join(f['reason'] for f in target_failures) or 'NO_SAVED_CANDIDATE_SEARCH: 未保存该目标的候选搜索'
+        candidates=[dict(index=None,reason=reason,kind='TARGET_LEVEL_REJECTION' if target_failures else 'NOT_SEARCHED',
+                         target_level=True,states=[],paths=[],contact=None,preferred_ik=None)]
     sent=record/'measurement-segments-NOT-EXECUTABLE.json'
     if retry and complete and sent.exists():
         sources[str(sent.relative_to(ROOT))]=hashlib.sha256(sent.read_bytes()).hexdigest();saved=json.loads(sent.read_text())
@@ -176,7 +188,9 @@ def read_case(record,coordinates):
                 max_acceleration_rad_s2=max(abs(v) for p in points for v in p.get('a',[0])),source=str(sent.relative_to(ROOT)),
                 attachment=context.get('attachment'),audited=True))
     return dict(task_id=timing['task_id'] if retry else record.name,observation_id=obs['observation_id'],q_start=obs['q_start'],q_capture=obs['q_capture'],
-        stream=obs['stream'],world=scene['world'],box=geo['boxes'][0],candidates=candidates,
+        stream=obs['stream'],world=scene['world']+[dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton')
+            for b in geo['boxes'] if b['id']!=box['id'] and not any(w['id']==b['id'] for w in scene['world'])],
+        box=box,candidates=candidates,target_failures=target_failures,record=str(record.relative_to(ROOT)),
         duration_s=timing['planning_s'] if retry else next(e['duration_s'] for e in timing['events'] if e['name']=='prepare_plan.entry_to_return'),
         retry=timing if retry else None,default_candidate=complete['candidate_index'] if complete else priority[0]['candidate'] if priority else None,
         image='data:image/png;base64,'+base64.b64encode(image.getvalue()).decode(),sources=sources,

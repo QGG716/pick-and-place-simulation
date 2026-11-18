@@ -1,0 +1,346 @@
+{
+  "schema": "eco65_new_start_offline_preview_evidence_v1",
+  "date": "2026-11-18",
+  "base_head": "3a3bfd9369a66b5c72ebfc9b86fb5daad9a01b60",
+  "scope": "CPU_REPLAY_OF_LATEST_SAVED_FIELD_FRAME_AND_SEPARATE_CLOCKWISE_START_PREVIEW",
+  "hardware_execution": "NOT_RUN",
+  "physical_result": "NOT_RUN",
+  "permits_issued": 0,
+  "source_record": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/a9a1eaac54624c93ad96c5e35d33166b",
+  "source_record_hashes": {
+    "observation.json": "4bfd1e9831d950ec7369671e66cd03c78cdc5af1b3fd660c94747b7d79b0fc81",
+    "observation.npz": "1ef0eb044205467ca9c031895ed5e6bf959ee27eb20f852148d4c88aaaac3ec5"
+  },
+  "source_record_unchanged": true,
+  "observation": {
+    "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7",
+    "received_utc_ns": 1795007631779206055,
+    "rgb_number": 3608,
+    "depth_number": 3605,
+    "stream": {
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "color_capture_format": "BGR8",
+      "color_output_format": "RGB8",
+      "depth_format": "Z16",
+      "alignment_target": "color"
+    },
+    "q_start": [
+      1.413681787530367,
+      -0.2138551932468652,
+      -0.9460731743360463,
+      -0.2750464368217864,
+      1.5007562639123642,
+      -0.08983209660014814
+    ],
+    "q_capture": [
+      1.413681787530367,
+      -0.21383773995434527,
+      -0.9460557210435263,
+      -0.2750464368217864,
+      1.5008086237899239,
+      -0.08986700318518803
+    ]
+  },
+  "inference": {
+    "backend": "local",
+    "description": "本地 cpu",
+    "model_load_and_verify_s": 2.26,
+    "detect_s": 9.344,
+    "segment_s": 7.713,
+    "remote": null,
+    "provenance": "HF_GROUNDING_DINO_SAM_ACTUAL_INFERENCE",
+    "detections": [
+      {
+        "label": "box",
+        "score": 0.4639345109462738,
+        "bbox_xyxy": [
+          145.85446166992188,
+          161.95855712890625,
+          435.43206787109375,
+          365.43536376953125
+        ],
+        "inference": null
+      },
+      {
+        "label": "box",
+        "score": 0.4422535002231598,
+        "bbox_xyxy": [
+          184.6031951904297,
+          331.6750793457031,
+          405.10693359375,
+          474.30084228515625
+        ],
+        "inference": null
+      }
+    ],
+    "field_detections": [],
+    "field_mask_comparison": "NOT_AVAILABLE",
+    "mask_iou_vs_field_record": null
+  },
+  "model_weights": {
+    "dino_directory": {
+      "directory": "models/huggingface/IDEA-Research/grounding-dino-base/12bdfa3120f3e7ec7b434d90674b3396eccf88eb",
+      "safetensors_sha256": "5548f844c928c4b6f411fa8cbcc2bfa8dbbba437cb1d513975519f93c2a9ed21"
+    },
+    "sam_directory": {
+      "directory": "models/huggingface/facebook/sam-vit-base/70c1a07f894ebb5b307fd9eaaee97b9dfc16068f",
+      "safetensors_sha256": "892c410e496344e527255ccdcb2cb7244a609acb5389c7c4fdba1288f861c579"
+    }
+  },
+  "planning": {
+    "status": "TARGET_LEVEL_REJECTION_BEFORE_IK_AND_PATH_SEARCH",
+    "complete_plan": false,
+    "scene_objects": {
+      "observed_support": 1,
+      "workspace_boundary": 6,
+      "observed": 18
+    },
+    "scene_object_and_carton_count": 27,
+    "failures": [
+      {
+        "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+        "reason": "TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1 相交 102.0 mm（共 1 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划",
+        "evidence": {
+          "intersections": [
+            {
+              "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+              "category": "carton",
+              "overlap_depth_m": 0.10202609053454184
+            }
+          ],
+          "outside_workspace": false,
+          "supports": []
+        }
+      },
+      {
+        "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+        "reason": "TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0 相交 102.0 mm（共 1 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划",
+        "evidence": {
+          "intersections": [
+            {
+              "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+              "category": "carton",
+              "overlap_depth_m": 0.10202609053454184
+            }
+          ],
+          "outside_workspace": false,
+          "supports": [
+            "rgbd_support_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1"
+          ]
+        }
+      }
+    ],
+    "budget": {
+      "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+      "where": null,
+      "detail": null,
+      "deadline_monotonic_s": 96128.624708438,
+      "classified_monotonic_s": 96011.498246828,
+      "reply_reserve_s": 0.1,
+      "targets": [
+        {
+          "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+          "status": "TARGET_REJECTED",
+          "candidates": null,
+          "considered": null,
+          "screened": 0,
+          "searched": "ALL_BY_TARGET_VERDICT",
+          "unsearched": null,
+          "infeasible_candidates": 0,
+          "target_reason": "TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1 相交 102.0 mm（共 1 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划"
+        },
+        {
+          "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+          "status": "TARGET_REJECTED",
+          "candidates": null,
+          "considered": null,
+          "screened": 0,
+          "searched": "ALL_BY_TARGET_VERDICT",
+          "unsearched": null,
+          "infeasible_candidates": 0,
+          "target_reason": "TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0 相交 102.0 mm（共 1 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划"
+        }
+      ],
+      "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+    },
+    "reported_search_s": 0.25,
+    "latency_scope": "EARLY_FAILURE_NOT_PLAN_READY"
+  },
+  "preview": {
+    "j6_delta_deg": -180,
+    "variants": [
+      {
+        "name": "measured",
+        "q": [
+          1.413681787530367,
+          -0.2138551932468652,
+          -0.9460731743360463,
+          -0.2750464368217864,
+          1.5007562639123642,
+          -0.08983209660014814
+        ],
+        "tcp_pose": [
+          [
+            -0.9938581878522749,
+            0.06403448577406333,
+            -0.09025235216127844,
+            -0.03547714005979184
+          ],
+          [
+            0.07488350789630932,
+            0.9896445125115635,
+            -0.12245896905042353,
+            -0.5008303750870916
+          ],
+          [
+            0.08147614794610458,
+            -0.12846526179244125,
+            -0.9883614287437889,
+            0.3076658214244532
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "j6_delta_deg": 0.0,
+        "static_valid": true,
+        "failure": null,
+        "native_position_error_m": 2.7132761032412845e-16,
+        "native_orientation_error_rad": 1.8371696240517996e-16,
+        "wrist_rejection": null,
+        "native_evidence": "outputs/field-replan-20261118-new-start/viewer/measured.json",
+        "path_checked": false,
+        "executable": false
+      },
+      {
+        "name": "rotated-preview",
+        "q": [
+          1.413681787530367,
+          -0.2138551932468652,
+          -0.9460731743360463,
+          -0.2750464368217864,
+          1.5007562639123642,
+          -3.2314247501899414
+        ],
+        "tcp_pose": [
+          [
+            0.9938581878522749,
+            -0.06403448577406336,
+            -0.09025235216127844,
+            -0.03547714005979177
+          ],
+          [
+            -0.07488350789630935,
+            -0.9896445125115635,
+            -0.12245896905042353,
+            -0.5008303750870916
+          ],
+          [
+            -0.08147614794610458,
+            0.12846526179244125,
+            -0.9883614287437889,
+            0.3076658214244532
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "j6_delta_deg": -180.0,
+        "static_valid": true,
+        "failure": null,
+        "native_position_error_m": 2.7511642410880956e-16,
+        "native_orientation_error_rad": 1.8371696240517996e-16,
+        "wrist_rejection": null,
+        "native_evidence": "outputs/field-replan-20261118-new-start/viewer/rotated-preview.json",
+        "path_checked": false,
+        "executable": false
+      }
+    ],
+    "native_collision_checks": "2_OF_2_PASS",
+    "full_turn_path_checked": false,
+    "collision_shapes": 715,
+    "cups": 12,
+    "browser_checks": {
+      "start-after": {
+        "targets": 2,
+        "shapes": 715,
+        "cups": 12,
+        "states": 6,
+        "maxFK": 1.1102230246251565e-16,
+        "qStartUnchanged": true,
+        "missingPathsInvented": false
+      },
+      "rejection": {
+        "targets": 2,
+        "shapes": 715,
+        "cups": 12,
+        "states": 6,
+        "maxFK": 1.1102230246251565e-16,
+        "qStartUnchanged": true,
+        "missingPathsInvented": false
+      }
+    },
+    "screenshots_reviewed": true
+  },
+  "device_configuration": {
+    "gpu_endpoint_saved_to_ignored_local_file": true,
+    "ssh_existing_key_verified": true,
+    "password_stored": false,
+    "current_workbench_restart_required": true,
+    "gpu_recomputation_user_request": "DO_NOT_RECOMPUTE_ON_GPU",
+    "gpu_process_outcome": "FINISHED_BEFORE_CANCELLATION_OBSERVED_NOT_USED_FOR_DELIVERY",
+    "production_motion_geometry_config_unchanged": true
+  },
+  "tests": {
+    "directed_pytest": "605 passed in 223.50s",
+    "replay_and_metrics_group": "8 passed; overlaps directed set",
+    "m710_optimized": "PASS",
+    "m710_reference": "PASS",
+    "native_single_carton": "PASS; 491 sent states; offline component only",
+    "configuration": "PASS",
+    "hardware_motion_and_valves": "NOT_RUN"
+  },
+  "not_verified": [
+    "ROTATION_PATH",
+    "COMPLETE_NEW_SCENE_PICK_RETURN_RELEASE",
+    "PHYSICAL_ACCEPTANCE",
+    "PREPARE_PLAN_P95_2_SECONDS"
+  ],
+  "artifact_sha256": {
+    "outputs/field-replan-20261118-new-start/replay/replay-report.json": "f18de89ef4e117447e5b8e857af1c5f935466366063c43deefd1cc3b747b1f66",
+    "outputs/field-replan-20261118-new-start/replay/geometry.json": "d8929aec93a97f8f6623b48148ffe95b7cdedbca67fa03e613ef5b69728c35e1",
+    "outputs/field-replan-20261118-new-start/replay/site-scene.json": "2d0fdcafe04dd1c12c9f37fe0e59604a8999ca1db2e05cb696afab3bf4186605",
+    "outputs/field-replan-20261118-new-start/replay/segmentation.npz": "2cb3a9cefbfeeb3138a6eba5aa2b5adb3a97352dcda3fc0f202e65451cede8ff",
+    "outputs/field-replan-20261118-new-start/replay/inference.json": "9ac25c00a79f7128e2cc01e7e531b9926fb8e143e365541a39fe8191c0aa36e9",
+    "outputs/field-replan-20261118-new-start/replay/planning-failures.json": "a367f74d1fbc08cf0548b3daf9ed84b225efa3cfc2967925634a52871cd13113",
+    "outputs/field-replan-20261118-new-start/viewer/report.json": "c5096cff64519c9d110a5c2ba4f80310e8a0a473d10cf15cdf98347478b404d7",
+    "outputs/field-replan-20261118-new-start/viewer/measured.json": "27f31f95e7510aa0ea22bcd40224bdd5a5a81911c343cd8a7bde21a77ce35bd9",
+    "outputs/field-replan-20261118-new-start/viewer/rotated-preview.json": "a723ae6ee32c9a309d4f5c9485fdf3d420b857ec5bad6796c7e5646b358b5eaf",
+    "outputs/field-replan-20261118-new-start/viewer/index.html": "dbc6e479860d62023576aa3aeca7b64b46f84bdc8ea5475cf32ef5ff5d9966a7",
+    "outputs/field-replan-20261118-new-start/viewer/start-after.png": "12252af519a0f2e80c101ef486e552eedf9272e445f87116cbb5a1ae90cf6ce7",
+    "outputs/field-replan-20261118-new-start/viewer/rejection.png": "d94560801ad99a94742ae0368474fa1b9e5d3dab68ff067966d114f89ebe2dad",
+    "outputs/field-replan-20261118-new-start/viewer/browser-checks.json": "5cae7b29f12d05f8008b364c1625a779c7e1c58605657c940755b8af8dfff95f",
+    "outputs/field-replan-20261118-new-start/pytest.log": "05c53bf73ace92b379ecc4b0c1a6be882134e9990eb9b0be7b2bcf5a8acd3976",
+    "outputs/field-replan-20261118-new-start/replay-directed.log": "14306dd3e816aab9800e2316c240c7a6667fb848180208e14870699aa261ec14",
+    "outputs/field-replan-20261118-new-start/clearance-optimized.log": "0c16025db4616a60386734acfa920e58d598c67cf043c820109b5d7a6ebe4c59",
+    "outputs/field-replan-20261118-new-start/clearance-reference.log": "9bdb08f8015c429a118cca766986b9269544896b4c36e4a6ba49dd191d88ee25",
+    "outputs/field-replan-20261118-new-start/native-check.log": "c61a143e2e59e6be4e3a1d36a85c54439f399ec71dd7514ca2712ef4c4c07257",
+    "outputs/field-replan-20261118-new-start/config-check.json": "1dfd74d3a7329444bb9bc4aaa5ad89a2fb7f85344d10e51d8cffba2bb762804e",
+    "outputs/field-replan-20261118-new-start/gpu-replay/user-cancellation.json": "6b6e5a0d4aecee23b26bf4d23bd77210896efc80354daf20d01c9ef9c6b3827e"
+  },
+  "code_sha256": {
+    "tools/replay_single_carton_record.py": "0745470242199713248e7df02150c04925104cbdd2e0a1650aec7dd8f0e75d06",
+    "tools/visualize_field_planning_failures.py": "f64ae8e970164c9ca2acfd412d1a66dfa54bdaa96be9b060ceebe96c89f53fb3",
+    "tools/preview_field_start_rotation.py": "8e77778f70fea3e3f4e499d28caf0b8fd358e8421c414b574081e9b2bbdd13dc",
+    "tools/search_replay/start_rotation.js": "a4ff6d10c814fa4ed5a6fd6c36cfab0c433a832957775c21dca82a61cb676fa3",
+    "tests/test_single_carton_offline_replay.py": "dafc667be74d044f5beef52111629696a9d4052431a64680a11762f26855c215"
+  }
+}
