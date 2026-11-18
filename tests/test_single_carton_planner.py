@@ -16,6 +16,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def case(tmp_path,monkeypatch):
     config=load(ROOT/'configs/workbench/single_carton.example.json')
     # Retained pre-site native chain fixture explicitly uses its historical policy.
+    config.pop('contact_search',None);config.pop('posture_preference',None)
     config.pop('site');config['release_policy']='USER_DEFERRED_RECEIVER_QUALIFICATION'
     # Exact call-sequence tests below use the sequential search; the parallel
     # lane search has its own directed tests at the end of this file.

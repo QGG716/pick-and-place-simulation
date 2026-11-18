@@ -120,10 +120,24 @@
     "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
   },
   "wrist_branch_limits": {
-    "keep_j5_sign": true,
-    "j5_min_abs_deg": 10.0,
-    "max_j4_travel_deg": 90.0,
+    "keep_j5_sign": false,
+    "j5_min_abs_deg": 0.0,
+    "max_j4_travel_deg": null,
     "max_j6_travel_deg": 180.0,
-    "basis": "INCIDENT_2026_11_14_APPROACH_FLIPPED_WRIST_J5_PLUS_87_TO_MINUS_58_DEG"
+    "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_ZERO_BAND_AND_CONFIRMED_J4_RELATIVE_TRAVEL_GATE_RETAIN_J6_LIMIT_AND_OFFICIAL_BOUNDS"
+  },
+  "posture_preference": {
+    "mode": "SOFT_LINK_DIRECTIONS",
+    "upper_up_weight": 4.0,
+    "forearm_horizontal_weight": 2.0,
+    "joint_travel_weight": 0.05,
+    "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+  },
+  "contact_search": {
+    "reference_face_roll_deg": 90,
+    "j6_rotation_deg": 180,
+    "lift_offsets_m": [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06],
+    "max_candidates": 32,
+    "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
   }
 }

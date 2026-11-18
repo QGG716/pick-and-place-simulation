@@ -155,6 +155,8 @@ def main():
     parser.add_argument('records', nargs=2, type=Path)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--validate', action='store_true', help='offline exact static collision queries only')
+    parser.add_argument('--wrist-policy-report', type=Path,
+                        help='use wrist_limits from a previous diagnosis report to reproduce historical filtering')
     args = parser.parse_args(); out = args.output.resolve(); out.mkdir(parents=True, exist_ok=True)
     config_path = ROOT/'configs/workbench/single_carton.example.json'
     config = load(config_path)
@@ -162,6 +164,10 @@ def main():
     coordinates = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     assert np.allclose(installation.world_from_base, np.eye(4)), 'BASE_FRAME_REQUIRED_FOR_DIRECTION_METRICS'
     sources = {}; cases = []; requests = []
+    if args.wrist_policy_report:
+        policy_path=args.wrist_policy_report.resolve()
+        config['wrist_branch_limits']=json.loads(policy_path.read_text())['wrist_limits']
+        sources[str(policy_path.relative_to(ROOT))]=hashlib.sha256(policy_path.read_bytes()).hexdigest()
     for record in args.records:
         case, request = compare(record.resolve(), coordinates, config['wrist_branch_limits'], sources)
         cases.append(case); requests.append(request)

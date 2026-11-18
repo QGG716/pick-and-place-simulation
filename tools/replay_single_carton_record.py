@@ -5,7 +5,8 @@ search (the same SinglePlanner.search_box used by the workbench) on the
 record's original RGB-D, SAM masks, q_capture and q_start. With
 --detector config, detection and SAM are re-run on the saved RGB with the
 configured backend (local or the remote GPU server) and compared with the
-record's own masks.
+record's own masks. --frozen-scene reuses the saved geometry and obstacles
+instead, for a planning-policy comparison with unchanged field input.
 
 Development diagnostic only: no device import or connection, no permit is
 registered, no motion or valve command exists in this path. A complete plan
@@ -19,6 +20,7 @@ import hashlib
 import json
 from pathlib import Path
 import time
+import shutil
 from types import SimpleNamespace
 import numpy as np
 from unloading_sim.workbench.single_carton.config import load
@@ -46,6 +48,7 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('--candidates', help='comma-separated candidate indices (default: all)')
     parser.add_argument('--scene-only', action='store_true', help='rebuild geometry and scene, no native planning')
+    parser.add_argument('--frozen-scene', action='store_true', help='reuse saved geometry and site-scene for a controlled planning-policy comparison')
     parser.add_argument('--detector', choices=('saved', 'config'), default='saved',
                         help="saved: the record's own SAM masks; config: re-run detection + SAM on the saved RGB "
                              "with the configured backend (e.g. the remote GPU server)")
@@ -56,10 +59,15 @@ def main():
     if not record.is_dir(): record = ROOT/'outputs/single_carton'/args.record
     record = record.resolve()
     before = digest(record)
+    if args.frozen_scene:
+        before['site-scene.json']=hashlib.sha256((record/'site-scene.json').read_bytes()).hexdigest()
+        if args.detector!='saved':raise SystemExit('FROZEN_SCENE_REQUIRES_SAVED_DETECTOR')
     if not {'observation.json', 'observation.npz', 'segmentation.npz'} <= set(before):
         raise SystemExit('RECORD_HAS_NO_FROZEN_OBSERVATION_AND_MASKS: '+str(record))
     out = (args.output or ROOT/'outputs/single_carton_development'/f'replay-{record.name[:8]}-{datetime.now():%Y%m%dT%H%M%S}').resolve()
     out.mkdir(parents=True, exist_ok=False)
+    for name in ('observation.json','observation.npz','segmentation.npz'):
+        shutil.copyfile(record/name,out/name)
     replay_started = timing.now()
     config = load(args.config)
     obs = json.loads((record/'observation.json').read_text())
@@ -97,18 +105,21 @@ def main():
         detections, masks = result.detections, tuple(result.masks)
     started = time.monotonic()
     with timing.span('observe.reconstruct'):
-        boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
+        if args.frozen_scene:boxes,rejected=old['boxes'],old.get('rejected',[])
+        else:boxes, rejected = recover_boxes(frame, obs['T_world_camera'], detections, masks, config.get('geometry'))
     installation = Installation.load(config['execution']['installation'])
     model = CoordinateModel(URDF, URDF_SHA, installation.world_from_base, installation.tool)
     authority = Authority('eco65_single_carton_segment_v1')
     planner = SinglePlanner(config, load_mapping(config['execution']['mapping']), authority, model)
     with timing.span('observe.planner_build'): planner.build()
-    with timing.span('observe.self_filter_construct'):
-        self_filter = RobotSelfFilter(planner.init['parameters']['robot_description'], model)
-    with timing.span('observe.build_scene'):
-        scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
-                            SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
-                            self_filter)
+    if args.frozen_scene:scene=json.loads((record/'site-scene.json').read_text())
+    else:
+        with timing.span('observe.self_filter_construct'):
+            self_filter = RobotSelfFilter(planner.init['parameters']['robot_description'], model)
+        with timing.span('observe.build_scene'):
+            scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
+                                SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
+                                self_filter)
     timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
     report = dict(scope='OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE', record=str(record), task_id=record.name,
@@ -120,6 +131,8 @@ def main():
                   rejected=rejected, scene={k: v for k, v in scene.items() if k != 'world'},
                   scene_objects={c: sum(o['category'] == c for o in scene['world']) for c in {o['category'] for o in scene['world']}},
                   perception_and_scene_s=round(time.monotonic()-started, 2), detector=args.detector, detection=detection_report)
+    report.update(frozen_scene=args.frozen_scene,source_hashes=before,q_start=obs['q_start'],q_capture=obs['q_capture'],
+                  planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock')})
     print(json.dumps(dict(boxes=report['boxes'], rejected=rejected, scene_objects=report['scene_objects']), ensure_ascii=False))
     failures = []; found = None
     try:
@@ -173,6 +186,7 @@ def main():
             timing.add('replay.planning_entry_to_search_end',planning_entered,timing.now()-planning_entered,scope='PARTIAL_REPLAY_NOT_PREPARE_PLAN')
         if authority._plans: raise SystemExit('OFFLINE_REPLAY_MUST_NOT_REGISTER_PERMITS')
         report['failures'] = failures
+        (out/'planning-failures.json').write_text(json.dumps(failures,indent=2,ensure_ascii=False,default=str))
         if found:
             report['complete_plan'] = dict(
                 status='COMPLETE_FOUR_STAGE_NATIVE_PLAN_OFFLINE_NOT_EXECUTABLE', candidate_index=found['index'],
@@ -189,6 +203,7 @@ def main():
                                sent_check_wall_s=s['evidence']['collision_result'].get('wall_s'))
                           for s in found['segments']])
         after = digest(record)
+        if args.frozen_scene:after['site-scene.json']=hashlib.sha256((record/'site-scene.json').read_bytes()).hexdigest()
         report['source_record_unchanged'] = before == after
         (out/'replay-report.json').write_text(json.dumps(report, indent=2, ensure_ascii=False, default=str))
         print('report', out/'replay-report.json')

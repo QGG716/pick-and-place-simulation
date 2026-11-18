@@ -1,0 +1,1102 @@
+{
+  "scope": "USER_REQUESTED_SOFT_POSTURE_ROTATED_RAISED_CONTACT_RETRY",
+  "base_head": "3549db93247c40de12e7e67b2853dd56dcf5ac40",
+  "user_confirmation": "同时取消J4相对起点限幅，再离线试算",
+  "invariants": {
+    "robot_tool_collision_solids": 715,
+    "cups": 12,
+    "pair_clearance_m": 0.0024,
+    "tool_robot_clearance_m": 0.04,
+    "velocity_rad_s": 0.1,
+    "acceleration_rad_s2": 0.2,
+    "canfd_period_s": 0.005,
+    "execution_locked": true,
+    "calibration_and_tcp_changed": false,
+    "pressure_gate_changed": false,
+    "default_modules_changed": false
+  },
+  "config": {
+    "path": "configs/workbench/single_carton.example.json",
+    "sha256": "d9eff8ea32f85c138d02de128a4cd665bdb6c8df441ee5128989a322f59da56a",
+    "posture": {
+      "mode": "SOFT_LINK_DIRECTIONS",
+      "upper_up_weight": 4.0,
+      "forearm_horizontal_weight": 2.0,
+      "joint_travel_weight": 0.05,
+      "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE",
+      "chain": [
+        {
+          "name": "joint_1",
+          "child": "link_1",
+          "origin": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.1625
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        },
+        {
+          "name": "joint_2",
+          "child": "link_2",
+          "origin": [
+            [
+              1.3492435731251315e-11,
+              0.9999999999932537,
+              3.6732051033217936e-06,
+              -0.086
+            ],
+            [
+              3.6732051033217936e-06,
+              -3.673205103346574e-06,
+              0.9999999999865075,
+              0.0
+            ],
+            [
+              0.9999999999932537,
+              0.0,
+              -3.673205103346574e-06,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        },
+        {
+          "name": "joint_3",
+          "child": "link_3",
+          "origin": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.26
+            ],
+            [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        },
+        {
+          "name": "joint_4",
+          "child": "link_4",
+          "origin": [
+            [
+              -3.673205103346574e-06,
+              -0.9999999999932537,
+              0.0,
+              0.24
+            ],
+            [
+              0.9999999999932537,
+              -3.673205103346574e-06,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0,
+              -0.05888
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        },
+        {
+          "name": "joint_5",
+          "child": "link_5",
+          "origin": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -3.673205103346574e-06,
+              -0.9999999999932537,
+              -0.11
+            ],
+            [
+              0.0,
+              0.9999999999932537,
+              -3.673205103346574e-06,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        },
+        {
+          "name": "joint_6",
+          "child": "link_6",
+          "origin": [
+            [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -3.673205103346574e-06,
+              0.9999999999932537,
+              0.0795
+            ],
+            [
+              0.0,
+              -0.9999999999932537,
+              -3.673205103346574e-06,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "axis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "revolute"
+        }
+      ],
+      "base": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "metric_links": [
+        "link_2",
+        "link_3",
+        "link_4"
+      ],
+      "frame": "base_link",
+      "hard_constraint": false
+    }
+  },
+  "initial_j5_only_retries": [
+    {
+      "record": "outputs/field-posture-retry-20261118/case-1",
+      "report_sha256": "121395f2d371bcf9701b70246e3fb0539df88735dde7fe7c757b876bf78c501d",
+      "task_id": "313f32ad66a240798df17905025edc89",
+      "planning_s": 70.05,
+      "total_deadline_s": 120,
+      "timing_scope": "PARTIAL_OFFLINE_REPLAY_FAILED_NOT_PREPARE_PLAN_TO_PLAN_READY",
+      "complete_plan": null,
+      "original_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89",
+      "source_hashes": {
+        "observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+        "observation.npz": "3d0f3e3bc2e2dae3150f731701c4d6afb31bab8e1458f8c91fba0371c918c8ff",
+        "segmentation.npz": "741623ef5148210c3e249276dd582b3022627aea2baac61566e5dfc356bd605e",
+        "geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+        "site-scene.json": "ecb710c61aba39ee00e0598a7a69be807335f1d123d68a115a38aebb135f9d4d"
+      },
+      "source_record_unchanged": true,
+      "planning_policy": {
+        "wrist_branch_limits": {
+          "keep_j5_sign": false,
+          "j5_min_abs_deg": 0.0,
+          "max_j4_travel_deg": 90.0,
+          "max_j6_travel_deg": 180.0,
+          "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_AND_ZERO_BAND_RETAIN_J4_J6_TRAVEL_LIMITS"
+        },
+        "posture_preference": {
+          "mode": "SOFT_LINK_DIRECTIONS",
+          "upper_up_weight": 4.0,
+          "forearm_horizontal_weight": 2.0,
+          "joint_travel_weight": 0.05,
+          "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+        },
+        "contact_search": {
+          "reference_face_roll_deg": 90,
+          "j6_rotation_deg": 180,
+          "lift_offsets_m": [
+            0.0,
+            0.01,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "max_candidates": 32,
+          "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+        },
+        "tool_robot_clearance": {
+          "clearance_m": 0.04,
+          "exempt_robot_links": [
+            "link_6"
+          ],
+          "exempt_pairs": [
+            [
+              "part_041_region_1",
+              "link_5"
+            ],
+            [
+              "part_041_region_2",
+              "link_5"
+            ]
+          ],
+          "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+        },
+        "execution_lock": {
+          "locked": true,
+          "basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED"
+        }
+      },
+      "world_objects": 39,
+      "imported_simulation_objects": 0,
+      "outcome_counts": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 10,
+        "INTERPOLATION_LIMIT": 22
+      },
+      "budget": {
+        "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+        "where": null,
+        "detail": null,
+        "deadline_monotonic_s": 92374.864930402,
+        "classified_monotonic_s": 92327.148653212,
+        "reply_reserve_s": 0.1,
+        "targets": [
+          {
+            "target": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+            "status": "SEARCHED_NO_PLAN",
+            "candidates": 32,
+            "considered": 32,
+            "screened": 22,
+            "searched": 32,
+            "unsearched": 0,
+            "infeasible_candidates": 32,
+            "accepted_candidate": null,
+            "target_reason": null
+          }
+        ],
+        "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+      },
+      "budget_note": "SOLVER_BUDGET_EXHAUSTED and unsearched counts are NOT physical infeasibility proofs.",
+      "highest_priority_screened_candidate": {
+        "index": 27,
+        "lift_mm": 60.0,
+        "anticipated_seals": 3,
+        "sealing_ids": [
+          "part_008_seal",
+          "part_014_seal",
+          "part_020_seal"
+        ],
+        "commanded_cups": 12,
+        "states": [
+          {
+            "stage": "approach",
+            "q_deg": [
+              -142.21846084101506,
+              85.27434187002193,
+              -45.62135157352096,
+              -43.8301964611673,
+              -147.68834300859518,
+              -183.8007023165228
+            ],
+            "score": 5.123137643321014,
+            "upper_from_up_deg": 85.27434187005387,
+            "forearm_from_horizontal_deg": 48.39585986199459,
+            "raw_joint_travel_rad": 6.688328626770293,
+            "collision_failure": null
+          },
+          {
+            "stage": "contact",
+            "q_deg": [
+              -146.52788277620886,
+              80.04849460755625,
+              -32.625797365384585,
+              -51.16608647768784,
+              -143.389165391449,
+              -183.27491006205847
+            ],
+            "score": 4.506294653273061,
+            "upper_from_up_deg": 80.04849460762408,
+            "forearm_from_horizontal_deg": 41.07901865875808,
+            "raw_joint_travel_rad": 6.679882686692201,
+            "collision_failure": null
+          },
+          {
+            "stage": "detach",
+            "q_deg": [
+              -146.52788277620886,
+              80.04849460755625,
+              -32.625797365384585,
+              -51.16608647768784,
+              -143.389165391449,
+              -183.27491006205847
+            ],
+            "score": 4.506294653273061,
+            "upper_from_up_deg": 80.04849460762408,
+            "forearm_from_horizontal_deg": 41.07901865875808,
+            "raw_joint_travel_rad": 6.679882686692201,
+            "collision_failure": null
+          }
+        ],
+        "detach_output_samples": [
+          {
+            "source": "outputs/field-posture-retry-20261118/case-1/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-native.json",
+            "sha256": "5e5e562dac11ce1bcd154bbe5ec3a763c7d93f6943b52c29943e48fd6763cf7b",
+            "score": 4.51364147161206,
+            "upper_from_up_deg": 76.43271383463929,
+            "forearm_from_horizontal_deg": 48.41865337962783,
+            "raw_joint_travel_rad": 6.658789255507453,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          },
+          {
+            "source": "outputs/field-posture-retry-20261118/case-1/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-27/detach-diagonal_45-pilz-s0.25-native.json",
+            "sha256": "c418f510a838fb81d84c3b910050fd463d4e396edb41ab46a5150b601bcb7f95",
+            "score": 4.51364147161206,
+            "upper_from_up_deg": 76.43271383463929,
+            "forearm_from_horizontal_deg": 48.41865337962783,
+            "raw_joint_travel_rad": 6.658789255507453,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          }
+        ]
+      },
+      "physical_result": "NOT_RUN",
+      "permits_issued": 0
+    },
+    {
+      "record": "outputs/field-posture-retry-20261118/case-2",
+      "report_sha256": "8feed7fb55e3634f27061516a21845d38559e677a3fad194f4f6075dd485ecaa",
+      "task_id": "6966ce4b0141495993727b6d72815637",
+      "planning_s": 66.14,
+      "total_deadline_s": 120,
+      "timing_scope": "PARTIAL_OFFLINE_REPLAY_FAILED_NOT_PREPARE_PLAN_TO_PLAN_READY",
+      "complete_plan": null,
+      "original_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637",
+      "source_hashes": {
+        "observation.json": "bad31c6fd0c0e5ef5bf80081e2b7e5cde555e0899ea546c1cf1c17df2d3163e6",
+        "observation.npz": "f4cf11ad79565f333e4ccfa597e084314f0cb7f5f2246e228cc2d4e62482f4b7",
+        "segmentation.npz": "586065a2032a7879ede0ca72237dbc2c0cae46b5adf2ad3f5f45245c726599c1",
+        "geometry.json": "054ce2978752a9311f41d83f6ad4249a7a1dc99918cf81540e5fb6caa659a586",
+        "site-scene.json": "665ace5ab1c1222854027f732f53a52e97321a26da683d2a6671e9f76f45b05e"
+      },
+      "source_record_unchanged": true,
+      "planning_policy": {
+        "wrist_branch_limits": {
+          "keep_j5_sign": false,
+          "j5_min_abs_deg": 0.0,
+          "max_j4_travel_deg": 90.0,
+          "max_j6_travel_deg": 180.0,
+          "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_AND_ZERO_BAND_RETAIN_J4_J6_TRAVEL_LIMITS"
+        },
+        "posture_preference": {
+          "mode": "SOFT_LINK_DIRECTIONS",
+          "upper_up_weight": 4.0,
+          "forearm_horizontal_weight": 2.0,
+          "joint_travel_weight": 0.05,
+          "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+        },
+        "contact_search": {
+          "reference_face_roll_deg": 90,
+          "j6_rotation_deg": 180,
+          "lift_offsets_m": [
+            0.0,
+            0.01,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "max_candidates": 32,
+          "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+        },
+        "tool_robot_clearance": {
+          "clearance_m": 0.04,
+          "exempt_robot_links": [
+            "link_6"
+          ],
+          "exempt_pairs": [
+            [
+              "part_041_region_1",
+              "link_5"
+            ],
+            [
+              "part_041_region_2",
+              "link_5"
+            ]
+          ],
+          "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+        },
+        "execution_lock": {
+          "locked": true,
+          "basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED"
+        }
+      },
+      "world_objects": 37,
+      "imported_simulation_objects": 0,
+      "outcome_counts": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9,
+        "contact": 4,
+        "INTERPOLATION_LIMIT": 19
+      },
+      "budget": {
+        "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+        "where": null,
+        "detail": null,
+        "deadline_monotonic_s": 92234.924049273,
+        "classified_monotonic_s": 92183.427979098,
+        "reply_reserve_s": 0.1,
+        "targets": [
+          {
+            "target": "3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0",
+            "status": "SEARCHED_NO_PLAN",
+            "candidates": 32,
+            "considered": 32,
+            "screened": 23,
+            "searched": 32,
+            "unsearched": 0,
+            "infeasible_candidates": 32,
+            "accepted_candidate": null,
+            "target_reason": null
+          }
+        ],
+        "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+      },
+      "budget_note": "SOLVER_BUDGET_EXHAUSTED and unsearched counts are NOT physical infeasibility proofs.",
+      "highest_priority_screened_candidate": {
+        "index": 27,
+        "lift_mm": 60.0,
+        "anticipated_seals": 3,
+        "sealing_ids": [
+          "part_008_seal",
+          "part_014_seal",
+          "part_020_seal"
+        ],
+        "commanded_cups": 12,
+        "states": [
+          {
+            "stage": "approach",
+            "q_deg": [
+              -137.07227857401176,
+              81.45783214159059,
+              -36.23435711637885,
+              -48.59028931300414,
+              -147.11168654729542,
+              -183.07730605590115
+            ],
+            "score": 4.672716133049566,
+            "upper_from_up_deg": 81.45783214164865,
+            "forearm_from_horizontal_deg": 43.16163879144071,
+            "raw_joint_travel_rad": 6.619840649153537,
+            "collision_failure": null
+          },
+          {
+            "stage": "contact",
+            "q_deg": [
+              -141.1499000174209,
+              73.31340004302677,
+              -17.23340197803376,
+              -59.120343461657555,
+              -143.04041185058816,
+              -182.67938116965777
+            ],
+            "score": 3.770076362399994,
+            "upper_from_up_deg": 73.31340004314265,
+            "forearm_from_horizontal_deg": 32.81744030158618,
+            "raw_joint_travel_rad": 6.623446279505407,
+            "collision_failure": null
+          },
+          {
+            "stage": "detach",
+            "q_deg": [
+              -141.1499000174209,
+              73.31340004302677,
+              -17.23340197803376,
+              -59.120343461657555,
+              -143.04041185058816,
+              -182.67938116965777
+            ],
+            "score": 3.770076362399994,
+            "upper_from_up_deg": 73.31340004314265,
+            "forearm_from_horizontal_deg": 32.81744030158618,
+            "raw_joint_travel_rad": 6.623446279505407,
+            "collision_failure": null
+          }
+        ],
+        "detach_output_samples": []
+      },
+      "physical_result": "NOT_RUN",
+      "permits_issued": 0
+    }
+  ],
+  "final_j4_and_j5_retries": [
+    {
+      "record": "outputs/field-posture-retry-20261118/j4-free/case-1",
+      "report_sha256": "7f7b03eb26c20c36470789c1d1d5f41cefb4c29843bc61b749887eaf548c1e67",
+      "task_id": "313f32ad66a240798df17905025edc89",
+      "planning_s": 117.62,
+      "total_deadline_s": 120,
+      "timing_scope": "PARTIAL_OFFLINE_REPLAY_FAILED_NOT_PREPARE_PLAN_TO_PLAN_READY",
+      "complete_plan": null,
+      "original_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89",
+      "source_hashes": {
+        "observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+        "observation.npz": "3d0f3e3bc2e2dae3150f731701c4d6afb31bab8e1458f8c91fba0371c918c8ff",
+        "segmentation.npz": "741623ef5148210c3e249276dd582b3022627aea2baac61566e5dfc356bd605e",
+        "geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+        "site-scene.json": "ecb710c61aba39ee00e0598a7a69be807335f1d123d68a115a38aebb135f9d4d"
+      },
+      "source_record_unchanged": true,
+      "planning_policy": {
+        "wrist_branch_limits": {
+          "keep_j5_sign": false,
+          "j5_min_abs_deg": 0.0,
+          "max_j4_travel_deg": null,
+          "max_j6_travel_deg": 180.0,
+          "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_ZERO_BAND_AND_CONFIRMED_J4_RELATIVE_TRAVEL_GATE_RETAIN_J6_LIMIT_AND_OFFICIAL_BOUNDS"
+        },
+        "posture_preference": {
+          "mode": "SOFT_LINK_DIRECTIONS",
+          "upper_up_weight": 4.0,
+          "forearm_horizontal_weight": 2.0,
+          "joint_travel_weight": 0.05,
+          "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+        },
+        "contact_search": {
+          "reference_face_roll_deg": 90,
+          "j6_rotation_deg": 180,
+          "lift_offsets_m": [
+            0.0,
+            0.01,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "max_candidates": 32,
+          "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+        },
+        "tool_robot_clearance": {
+          "clearance_m": 0.04,
+          "exempt_robot_links": [
+            "link_6"
+          ],
+          "exempt_pairs": [
+            [
+              "part_041_region_1",
+              "link_5"
+            ],
+            [
+              "part_041_region_2",
+              "link_5"
+            ]
+          ],
+          "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+        },
+        "execution_lock": {
+          "locked": true,
+          "basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED"
+        }
+      },
+      "world_objects": 39,
+      "imported_simulation_objects": 0,
+      "outcome_counts": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 10,
+        "INTERPOLATION_LIMIT": 8,
+        "NATIVE_SOLVER_BUDGET_EXHAUSTED": 5
+      },
+      "budget": {
+        "status": "PLANNING_BUDGET_EXHAUSTED",
+        "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+        "detail": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+        "deadline_monotonic_s": 92885.728862982,
+        "classified_monotonic_s": 92885.760236777,
+        "reply_reserve_s": 0.1,
+        "targets": [
+          {
+            "target": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+            "status": "BUDGET_EXHAUSTED_IN_PLANNING",
+            "candidates": 32,
+            "considered": 32,
+            "screened": 22,
+            "searched": 23,
+            "unsearched": 9,
+            "infeasible_candidates": 23,
+            "accepted_candidate": null,
+            "target_reason": null
+          }
+        ],
+        "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY",
+        "returned_after_deadline_s": 0.031375641003251076
+      },
+      "budget_note": "SOLVER_BUDGET_EXHAUSTED and unsearched counts are NOT physical infeasibility proofs.",
+      "highest_priority_screened_candidate": {
+        "index": 3,
+        "lift_mm": 30.0,
+        "anticipated_seals": 6,
+        "sealing_ids": [
+          "part_002_seal",
+          "part_004_seal",
+          "part_008_seal",
+          "part_010_seal",
+          "part_014_seal",
+          "part_016_seal"
+        ],
+        "commanded_cups": 12,
+        "states": [
+          {
+            "stage": "approach",
+            "q_deg": [
+              9.338835098270515,
+              5.344158630108393,
+              -72.72757404119733,
+              -110.0584363285051,
+              -60.70997949568813,
+              -1.5213504538157445
+            ],
+            "score": 0.46234578497207784,
+            "upper_from_up_deg": 5.344158634240424,
+            "forearm_from_horizontal_deg": 21.930882373495546,
+            "raw_joint_travel_rad": 3.3194461907912505,
+            "collision_failure": null
+          },
+          {
+            "stage": "contact",
+            "q_deg": [
+              6.654111532367142,
+              0.0780703669970456,
+              -67.45028546620836,
+              -110.13246952897927,
+              -63.39209356842831,
+              -1.3873671407071155
+            ],
+            "score": 0.4472224617135729,
+            "upper_from_up_deg": 0.0780706506685223,
+            "forearm_from_horizontal_deg": 21.941706889969034,
+            "raw_joint_travel_rad": 3.3594111747389777,
+            "collision_failure": null
+          },
+          {
+            "stage": "detach",
+            "q_deg": [
+              6.654111532367142,
+              0.0780703669970456,
+              -67.45028546620836,
+              -110.13246952897927,
+              -63.39209356842831,
+              -1.3873671407071155
+            ],
+            "score": 0.4472224617135729,
+            "upper_from_up_deg": 0.0780706506685223,
+            "forearm_from_horizontal_deg": 21.941706889969034,
+            "raw_joint_travel_rad": 3.3594111747389777,
+            "collision_failure": null
+          }
+        ],
+        "detach_output_samples": [
+          {
+            "source": "outputs/field-posture-retry-20261118/j4-free/case-1/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/detach-diagonal_45-native.json",
+            "sha256": "516d6d0101732dc6e16b2519fde79762968bc53e67d2b5c819f5b00a54650829",
+            "score": 0.7349073741382184,
+            "upper_from_up_deg": 2.522046686101467,
+            "forearm_from_horizontal_deg": 32.020060832150115,
+            "raw_joint_travel_rad": 3.37548964191385,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          },
+          {
+            "source": "outputs/field-posture-retry-20261118/j4-free/case-1/145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0-3/detach-diagonal_45-pilz-s0.25-native.json",
+            "sha256": "d5b1814e485eb29494a822f30e823a22b18bad368767441fcd4d92bdeb625a78",
+            "score": 0.7349073741382184,
+            "upper_from_up_deg": 2.522046686101467,
+            "forearm_from_horizontal_deg": 32.020060832150115,
+            "raw_joint_travel_rad": 3.37548964191385,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          }
+        ]
+      },
+      "physical_result": "NOT_RUN",
+      "permits_issued": 0
+    },
+    {
+      "record": "outputs/field-posture-retry-20261118/j4-free/case-2",
+      "report_sha256": "6677db63d04c2fed81ee73b4ec811f87e56189799f3dd0b10bc06872dd092e29",
+      "task_id": "6966ce4b0141495993727b6d72815637",
+      "planning_s": 117.36,
+      "total_deadline_s": 120,
+      "timing_scope": "PARTIAL_OFFLINE_REPLAY_FAILED_NOT_PREPARE_PLAN_TO_PLAN_READY",
+      "complete_plan": null,
+      "original_record": "/home/jd/下载/code/eco65 pick and place/outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637",
+      "source_hashes": {
+        "observation.json": "bad31c6fd0c0e5ef5bf80081e2b7e5cde555e0899ea546c1cf1c17df2d3163e6",
+        "observation.npz": "f4cf11ad79565f333e4ccfa597e084314f0cb7f5f2246e228cc2d4e62482f4b7",
+        "segmentation.npz": "586065a2032a7879ede0ca72237dbc2c0cae46b5adf2ad3f5f45245c726599c1",
+        "geometry.json": "054ce2978752a9311f41d83f6ad4249a7a1dc99918cf81540e5fb6caa659a586",
+        "site-scene.json": "665ace5ab1c1222854027f732f53a52e97321a26da683d2a6671e9f76f45b05e"
+      },
+      "source_record_unchanged": true,
+      "planning_policy": {
+        "wrist_branch_limits": {
+          "keep_j5_sign": false,
+          "j5_min_abs_deg": 0.0,
+          "max_j4_travel_deg": null,
+          "max_j6_travel_deg": 180.0,
+          "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_ZERO_BAND_AND_CONFIRMED_J4_RELATIVE_TRAVEL_GATE_RETAIN_J6_LIMIT_AND_OFFICIAL_BOUNDS"
+        },
+        "posture_preference": {
+          "mode": "SOFT_LINK_DIRECTIONS",
+          "upper_up_weight": 4.0,
+          "forearm_horizontal_weight": 2.0,
+          "joint_travel_weight": 0.05,
+          "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+        },
+        "contact_search": {
+          "reference_face_roll_deg": 90,
+          "j6_rotation_deg": 180,
+          "lift_offsets_m": [
+            0.0,
+            0.01,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "max_candidates": 32,
+          "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+        },
+        "tool_robot_clearance": {
+          "clearance_m": 0.04,
+          "exempt_robot_links": [
+            "link_6"
+          ],
+          "exempt_pairs": [
+            [
+              "part_041_region_1",
+              "link_5"
+            ],
+            [
+              "part_041_region_2",
+              "link_5"
+            ]
+          ],
+          "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+        },
+        "execution_lock": {
+          "locked": true,
+          "basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED"
+        }
+      },
+      "world_objects": 37,
+      "imported_simulation_objects": 0,
+      "outcome_counts": {
+        "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED": 9,
+        "INTERPOLATION_LIMIT": 19,
+        "NATIVE_SOLVER_BUDGET_EXHAUSTED": 2
+      },
+      "budget": {
+        "status": "PLANNING_BUDGET_EXHAUSTED",
+        "where": "SEARCH_STEP_RUNNING_AT_DEADLINE",
+        "detail": "3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0",
+        "deadline_monotonic_s": 92728.029426571,
+        "classified_monotonic_s": 92728.034944885,
+        "reply_reserve_s": 0.1,
+        "targets": [
+          {
+            "target": "3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0",
+            "status": "BUDGET_EXHAUSTED_IN_PLANNING",
+            "candidates": 32,
+            "considered": 32,
+            "screened": 23,
+            "searched": 30,
+            "unsearched": 2,
+            "infeasible_candidates": 30,
+            "accepted_candidate": null,
+            "target_reason": null
+          }
+        ],
+        "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY",
+        "returned_after_deadline_s": 0.005519370999536477
+      },
+      "budget_note": "SOLVER_BUDGET_EXHAUSTED and unsearched counts are NOT physical infeasibility proofs.",
+      "highest_priority_screened_candidate": {
+        "index": 13,
+        "lift_mm": 60.0,
+        "anticipated_seals": 3,
+        "sealing_ids": [
+          "part_002_seal",
+          "part_008_seal",
+          "part_014_seal"
+        ],
+        "commanded_cups": 12,
+        "states": [
+          {
+            "stage": "approach",
+            "q_deg": [
+              16.27821076231672,
+              2.9273717582654415,
+              -105.39705546053858,
+              104.59017551934791,
+              59.50990758664618,
+              -181.32569484841818
+            ],
+            "score": 0.294997523892243,
+            "upper_from_up_deg": 2.9273717658242955,
+            "forearm_from_horizontal_deg": 12.104974169831832,
+            "raw_joint_travel_rad": 4.036534903790577,
+            "collision_failure": null
+          },
+          {
+            "stage": "contact",
+            "q_deg": [
+              13.616750752421188,
+              -2.180772391967919,
+              -100.0929344454389,
+              104.3399083783032,
+              62.16959120219005,
+              -181.21433062312113
+            ],
+            "score": 0.2889853640253175,
+            "upper_from_up_deg": 2.1807724021186363,
+            "forearm_from_horizontal_deg": 11.914900981269374,
+            "raw_joint_travel_rad": 4.016759543108586,
+            "collision_failure": null
+          },
+          {
+            "stage": "detach",
+            "q_deg": [
+              13.616750752421188,
+              -2.180772391967919,
+              -100.0929344454389,
+              104.3399083783032,
+              62.16959120219005,
+              -181.21433062312113
+            ],
+            "score": 0.2889853640253175,
+            "upper_from_up_deg": 2.1807724021186363,
+            "forearm_from_horizontal_deg": 11.914900981269374,
+            "raw_joint_travel_rad": 4.016759543108586,
+            "collision_failure": null
+          }
+        ],
+        "detach_output_samples": [
+          {
+            "source": "outputs/field-posture-retry-20261118/j4-free/case-2/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-13/detach-native.json",
+            "sha256": "c3a5c30a9b7036c823da9bb336da54e307b60cedd6fbabad809b99ef1723d211",
+            "score": 0.6335227802389962,
+            "upper_from_up_deg": 26.592388004903192,
+            "forearm_from_horizontal_deg": 3.143765105039301,
+            "raw_joint_travel_rad": 4.087249148377406,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          },
+          {
+            "source": "outputs/field-posture-retry-20261118/j4-free/case-2/3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0-13/detach-pilz-s0.1-native.json",
+            "sha256": "fcb80290d98e9f96c6e841ea4b27359f0749a3454c45666387123050374ea384",
+            "score": 0.6335227802389962,
+            "upper_from_up_deg": 26.592388004903192,
+            "forearm_from_horizontal_deg": 3.143765105039301,
+            "raw_joint_travel_rad": 4.087249148377406,
+            "scope": "LAST_NATIVE_OUTPUT_SAMPLE_NOT_FINAL_AUDITED_PATH"
+          }
+        ]
+      },
+      "physical_result": "NOT_RUN",
+      "permits_issued": 0
+    }
+  ],
+  "tests": {
+    "required_pytest": {
+      "status": "PASS",
+      "passed": 592,
+      "log": "outputs/field-posture-20261118/retry-j4-required-pytest.log",
+      "sha256": "853f1301d775a5ccd9bf0794985c03c1a87ca506bfea35f4070961d9836c4c1d"
+    },
+    "final_posture_and_cpp_composite": {
+      "status": "PASS",
+      "passed": 34,
+      "overlaps_required_set": true,
+      "extra_relative_j4_disabled_cases": 10,
+      "log": "outputs/field-posture-20261118/retry-j4-equivalence-pytest.log",
+      "scope": "128 source-chain scoring samples and actual C++ composite with fake replies; NOT full real-record PYTHON/NATIVE equivalence",
+      "sha256": "428fb3140ff9f855166b988c8019b129fe61cc4556340e68a4f657281c392444"
+    },
+    "native_optimized": {
+      "status": "PASS",
+      "path": "outputs/field-posture-20261118/retry-j4-clearance-optimized.json",
+      "sha256": "2dd26c685e076c394d3a01def32eb1624749202cca66269cfeaddc06d10b6de2"
+    },
+    "native_reference": {
+      "status": "PASS",
+      "path": "outputs/field-posture-20261118/retry-j4-clearance-reference.json",
+      "sha256": "506fd860747bc29fa6f8feebbdf6f17aa7b29c39b60be724d01e902a291fcc56"
+    },
+    "native_component": {
+      "status": "PASS",
+      "sent_path_points": 491,
+      "log": "outputs/field-posture-20261118/retry-j4-native-component.log",
+      "sha256": "c78fae5931c2aeebb96c79d2285ce35a41337cd7f4dbfe9fbd1746732963b729"
+    },
+    "config": {
+      "status": "PASS",
+      "issues": [],
+      "path": "outputs/field-posture-20261118/retry-config-check.json",
+      "sha256": "1dfd74d3a7329444bb9bc4aaa5ad89a2fb7f85344d10e51d8cffba2bb762804e"
+    },
+    "historical_diagnosis": {
+      "status": "PASS",
+      "checked_archived_ik": 444,
+      "hardware_execution": "NOT_RUN",
+      "log": "outputs/field-posture-20261118/retry-historical-check.log",
+      "sha256": "81ccb3757d77cd918aae3fcfc4440d75a48caa19dafa4076968ae161457b52ed"
+    }
+  },
+  "viewer": {
+    "path": "outputs/field-posture-retry-20261118/j4-free-viewer/index.html",
+    "browser": {
+      "ready": true,
+      "cases": 2,
+      "candidates": 64,
+      "poses": 448,
+      "preferred": 64,
+      "attached": 125,
+      "max_fk_error": 4.440892098500626e-16,
+      "errors": [],
+      "status": "PASS"
+    },
+    "report_sha256": "f8adefb64489f880bfbf04549bcff6d87939b2076396b8d2df4d39fd142ec75f",
+    "screenshot": "outputs/field-posture-retry-20261118/j4-free-viewer/contact.png",
+    "screenshot_review": "PASS",
+    "all_source_hashes_checked_by_exporter": true,
+    "detach_screenshot": "outputs/field-posture-retry-20261118/j4-free-viewer/detach.png",
+    "detach_screenshot_review": "PASS",
+    "desktop_open_command_exit": 0,
+    "browser_evidence": "outputs/field-posture-retry-20261118/j4-free-viewer/browser-checks-final.json"
+  },
+  "physical_acceptance": "NOT_RUN",
+  "executable": false,
+  "complete_cycle_plans": 0,
+  "latency_p95_2s": "NOT_VERIFIED_NO_COMPLETE_PLAN",
+  "retained_limitations": [
+    "No new field capture or physical motion/valve commands.",
+    "No complete approach/contact/detach/loaded-return plan accepted.",
+    "Native prepare numerical equivalence and prior GPU failures remain as previously recorded; no tolerances changed.",
+    "No claim that a solver timeout or interpolation rejection proves physical infeasibility."
+  ],
+  "code_file_sha256": {
+    "configs/workbench/single_carton.example.json": "d9eff8ea32f85c138d02de128a4cd665bdb6c8df441ee5128989a322f59da56a",
+    "ros2/m710_moveit_backend/src/sc_composite.h": "bd07a14278d023779a11792b43d592f77dc784369a27365987e1edd39067bd76",
+    "ros2/m710_moveit_backend/src/worker.cpp": "1ae298d029e9ad1f50722232ed697b503ad63e5ff1d44aa9761341002a9d9290",
+    "src/unloading_sim/workbench/single_carton/config.py": "73f90f3392ded026ca37f708950864ed8ae462a565620024f90278a739772f70",
+    "src/unloading_sim/workbench/single_carton/geometry.py": "d1a43ceb37d64c7d819f44f411593fb6434990170e19c3230cfe4dee2bf5676a",
+    "src/unloading_sim/workbench/single_carton/native_flow.py": "9178f75a819fbe3d76fda58623c8e0a0b0fce3d7e49b38001fe40c4643e2f487",
+    "src/unloading_sim/workbench/single_carton/planner.py": "81072017f9a1ebcfb6eea6f22d30a746b81c49bde444669d549d39c59baac2e8",
+    "tests/test_review2_wrist_composite.py": "43c21a871be487851c8f0ed8b4bc721e4a8485d20c9f8cee1f9b53f56bd5dc35",
+    "tests/test_single_carton_incident_fixes.py": "35edc81c610890df4c0fcee47bf263fe960caa3b9dd4ab026973dccfb7a80dff",
+    "tests/test_single_carton_planner.py": "20ad6c74c6d28068264fdef8de40728aa4d6f75148055d362a96b54060d89093",
+    "tools/diagnose_field_postures.py": "9337820225492b1e4629ffcace7893ca1193ba60fe7d41cd152538a035aab84a",
+    "tools/replay_single_carton_record.py": "7aaeee6eee1930fed8d9ba512ae7ce61f90f535c39bfe71de20aae04e55e24f4",
+    "tools/search_replay/field_failures.html": "6915696717d0703405521a8d375c203b9a23c35b956c0f5686e4d4664164da68",
+    "tools/visualize_field_planning_failures.py": "b83e36897434831f73b8fd897e0d649f19c5470c223d50b6959f361b2eee571d",
+    "src/unloading_sim/workbench/single_carton/posture.py": "940d31556762e596916a339f50bb807485c39fde83265ff9c03bdd66de3472ca",
+    "ros2/m710_moveit_backend/src/sc_posture.h": "911bc42757cb686c595d2143686918244e031578c9f070c372744b126be253cd",
+    "tests/test_single_carton_posture_retry.py": "0b22a28ca625850d58eb136433555fcf0d528da0e061af61a3fc8746fd7055f4"
+  }
+}

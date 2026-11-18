@@ -244,7 +244,22 @@ def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
                              hidden_extent_measured=False))
 
 
-def contact_candidates(box, tool, topology, *, margin_m=.003, precontact_m=.03):
+def contact_search_settings(value):
+    if value is None:return None
+    keys={'reference_face_roll_deg','j6_rotation_deg','lift_offsets_m','max_candidates','basis'}
+    if (not isinstance(value,dict) or set(value)!=keys or value['reference_face_roll_deg'] not in (0,90,180,270)
+            or value['j6_rotation_deg']!=180 or type(value['max_candidates']) is not int or not 1<=value['max_candidates']<=128
+            or not isinstance(value['basis'],str) or not value['basis'].strip()):
+        raise ValueError('CONTACT_SEARCH_INVALID')
+    lifts=value['lift_offsets_m']
+    if (not isinstance(lifts,list) or not 1<=len(lifts)<=16 or lifts[0]!=0
+            or any(type(x) not in (float,int) or not np.isfinite(x) or not 0<=x<=.15 for x in lifts)
+            or lifts!=sorted(set(lifts))):raise ValueError('CONTACT_LIFT_OFFSETS_INVALID')
+    return dict(value)
+
+
+def contact_candidates(box, tool, topology, search=None, *, margin_m=.003, precontact_m=.03):
+    search=contact_search_settings(search)
     ids = topology.get('connected_cup_ids')
     all_ids = [s['id'] for s in tool['seals']]
     capped = topology.get('physically_capped_cup_ids', [])
@@ -277,6 +292,7 @@ def contact_candidates(box, tool, topology, *, margin_m=.003, precontact_m=.03):
         u,v,n = (np.asarray(face[k]) for k in ('u','v','normal'))
         tree=cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None
         for turn in (0,1,2,3):
+            if search and turn*90!=search['reference_face_roll_deg']:continue
             angle=turn*np.pi/2; ux=u*np.cos(angle)+v*np.sin(angle)
             R=np.column_stack((ux,np.cross(-n,ux),-n))@physical.T
             for offset in offsets:
@@ -295,6 +311,42 @@ def contact_candidates(box, tool, topology, *, margin_m=.003, precontact_m=.03):
                     target_lip_rings_tcp={k:p.tolist() for k,p in rings.items()},
                     passive_lip_contact_ids=[i for i in ids if i not in sealing],
                     commanded_cup_ids=ids,expected_passively_closed_ids=[i for i in ids if i not in sealing]))
+    if search and candidates:
+        # Rotate about the actual flange/J6 axis; leave the saved TCP and CAD
+        # installation unchanged. Each shifted contact is checked anew below.
+        flange_tcp=np.asarray(tool['T_flange_tcp']);turn=np.diag([-1.,-1.,1.,1.])
+        spin=np.linalg.inv(flange_tcp)@turn@flange_tcp
+        groups={float(h):[] for h in search['lift_offsets_m']}
+        for base in sorted(candidates,key=lambda c:-len(c['active_ids'])):
+            face=base['face'];n=np.asarray(face['normal']);up=np.array([0.,0.,1.])-n*n[2]
+            length=float(np.linalg.norm(up));up=up/length if length>1e-9 else up
+            tree=cKDTree(face['support_points_uv_m']) if face.get('support_points_uv_m') else None
+            for height,group in groups.items():
+                if height and length<1e-9:continue
+                T=np.asarray(base['tcp_pose'])@spin;T[:3,3]+=up*height
+                sealing={k:p for k,p in rings.items() if seal_check(T,face,{k:p},normal,margin_m,support_tree=tree)['valid']}
+                if not sealing or (not passive and len(sealing)!=len(rings)):continue
+                pre=T.copy();pre[:3,3]+=n*precontact_m
+                candidate=dict(base,tcp_pose=T.tolist(),precontact_pose=pre.tolist(),active_ids=list(sealing),
+                    seal_check=seal_check(T,face,sealing,normal,margin_m,support_tree=tree),
+                    rings_tcp={k:p.tolist() for k,p in sealing.items()},
+                    passive_lip_contact_ids=[i for i in ids if i not in sealing],
+                    expected_passively_closed_ids=[i for i in ids if i not in sealing],
+                    contact_search=dict(search,reference_tcp_pose=base['tcp_pose'],lift_along_face_m=height,
+                                        base_z_lift_m=float(up[2]*height)))
+                if candidate_contact_check(T,candidate)['valid']:group.append(candidate)
+        # Round-robin height bands prevents the maximum-seal-count truncation
+        # from removing every raised, partial-cup contact before collision tests.
+        from itertools import zip_longest
+        candidates=[];seen=set()
+        for row in zip_longest(*(groups[h] for h in groups)):
+            for candidate in row:
+                if candidate is None:continue
+                identity=tuple(np.round(np.asarray(candidate['tcp_pose']).ravel(),8))
+                if identity in seen:continue
+                seen.add(identity);candidates.append(candidate)
+                if len(candidates)>=search['max_candidates']:return candidates
+        if candidates:return candidates
     if not candidates: raise ValueError('CONNECTED_CUP_SEALS_DO_NOT_FIT_VISIBLE_FACE')
     return sorted(candidates,key=lambda c:-len(c["active_ids"]))[:32]
 

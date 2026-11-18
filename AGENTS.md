@@ -1,4 +1,25 @@
-# November 16 real-time refactor and continuous multi-carton job (current active override)
+# November 18 user-requested posture retry (current active override)
+
+The user requests removal of the J5 wrist-flip restriction, a 180-degree
+rotation about J6 relative to the displayed grasp orientation, and upward
+contact shifts with partially sealing passive cups, followed by an offline
+retry and 3D display. Disable the J5 same-sign/zero-band rule explicitly with
+the user basis. The subsequent explicit reply also removes J4's relative
+travel gate (max_j4_travel_deg=null); retain J6's travel limit, official joint bounds, 40 mm
+tool/robot reserve, all collision geometry, seal contours, pressure gates and
+the existing execution lock. No physical motion is authorized by this retry.
+
+For this request only, the prior candidate and closest-q_start ordering may
+include bounded rotated/raised contacts and a soft source-URDF link-direction
+cost (upper arm toward base +Z, forearm toward the base XY plane, plus raw
+joint continuity). These are preferences, not fixed joint commands or new
+state rejection thresholds. Recheck actual CAD seals after each transform;
+unsealed cups retain geometry and common-valve passive semantics. Keep TCP,
+calibration, attachment transforms, frozen observations and q_start unchanged.
+Python and native composite ordering must agree. Archived retries remain
+NOT_EXECUTABLE / physical NOT_RUN, even if all four path audits pass.
+
+# November 16 real-time refactor and continuous multi-carton job (in force where not superseded)
 
 Work from the actual latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration`;
 preserve prior commits and LFS assets. The user authorizes development, commit

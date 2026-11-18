@@ -14,6 +14,7 @@ from ..coordinates import rigid
 from .geometry import corners,contact_candidates,candidate_contact_check,transform,obb_overlap_depth
 from .config import release_policy_evidence,start_joint_check,execution_lock,tool_robot_clearance,wrist_branch_limits,wrist_branch_violation
 from .. import timing
+from . import posture
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
 LIN_RETRY_SCALES=(.5,.25,.1)
@@ -101,7 +102,7 @@ class SinglePlanner(EmptyPlanner):
         self.resident=None;self.task_start=None;self.evidence=None;self.build_lock=threading.RLock()
         self.hash_cache={};self.binding_evidence=None
         self.scene_world=None;self.scene_fingerprint=None;self.scene_handles={};self.scene_lock=threading.Lock()
-        self.wrist_limits=None;self.wrist_reference=None
+        self.wrist_limits=None;self.wrist_reference=None;self.posture_policy=None
         super().__init__(config['execution'],mapping,authority)
         # planning_module NATIVE: packages are digested over the canonical binary form (AGENTS 3g).
         if self.native_planning() and hasattr(authority,'use_canonical_binary_digest'):authority.use_canonical_binary_digest()
@@ -249,6 +250,7 @@ class SinglePlanner(EmptyPlanner):
         if trc:self.clearance['tool_robot_clearance']=trc
         else:self.clearance.pop('tool_robot_clearance',None)
         self.wrist_limits=wrist_branch_limits(self.site)
+        self.posture_policy=posture.bind(self.site,self.coordinate_model)
         self.ready=True
     def binding(self):
         b=super().binding();b.update(physical_cycle=self.cycle_binding,camera_extrinsics=self.files.get(self.site['camera_extrinsics']),
@@ -350,7 +352,7 @@ class SinglePlanner(EmptyPlanner):
         lower,upper,_,_=self.limits.arrays()
         return (lower+np.random.default_rng(6518).random((IK_RANDOM_SEEDS,6))*(upper-lower)).tolist()
     def endpoint_ik(self,pose,seeds,folder,name,cancelled=None,q_reference=None):
-        """Distinct native IK solutions of one pose, closest to q_reference first.
+        """Distinct native IK solutions; optional soft posture, then continuity.
 
         One record per pose: the request and all seeds are persisted before
         dispatch, every reply after. IK never checks collision; callers do.
@@ -374,9 +376,11 @@ class SinglePlanner(EmptyPlanner):
                     q=list(map(float,reply['q']))
                     if not any(np.max(abs(np.asarray(q)-x))<1e-3 for x in solutions):solutions.append(q)
             reference=np.asarray(seeds[0] if q_reference is None else q_reference,float)
-            solutions.sort(key=lambda x:float(np.linalg.norm(np.asarray(x)-reference)))
-            # Never a branch on the other wrist side, or with excessive J4/J6
-            # travel, relative to the frozen q_start (incident 2026-11-14).
+            solutions.sort(key=lambda x:posture.key(self.posture_policy,x,reference))
+            if self.posture_policy:
+                record['posture_ranking']=[dict(q=x,**posture.metrics(self.posture_policy,x,reference)) for x in solutions]
+            # Apply the explicitly configured wrist policy relative to frozen
+            # q_start. The user may disable J5 flip/band without removing travel limits.
             if self.wrist_limits and self.wrist_reference is not None:
                 dropped=[x for x in solutions if wrist_branch_violation(self.wrist_limits,self.wrist_reference,[x])]
                 solutions=[x for x in solutions if x not in dropped];record['wrist_branch_rejected']=dropped
@@ -427,7 +431,8 @@ class SinglePlanner(EmptyPlanner):
         branch: a (tool or payload) vs world failure rejects the candidate, and
         a payload vs world failure at detach rejects the whole target. IK is
         searched from many deterministic seeds; up to IK_BRANCHES_CHECKED
-        distinct approach branches (closest to q_start first) are checked.
+        distinct approach branches (optional soft posture, then continuity)
+        are checked.
         Contact and detach share one TCP pose, so detach reuses the contact
         configuration with the payload attached. Returns CLEAR with checked
         approach/contact configurations, or NOT_CONCLUSIVE with the reason.
@@ -600,6 +605,8 @@ class SinglePlanner(EmptyPlanner):
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
+        if getattr(self,'posture_policy',None) and self.native_planning() and not capabilities.get('single_carton_posture_preference'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_POSTURE_PREFERENCE')
         return ready
     def start_check_pool(self,folder):
         """Extra resident native workers, initialised in the background.
@@ -1045,8 +1052,15 @@ class SinglePlanner(EmptyPlanner):
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=None,phase='CANDIDATE_GENERATION',screened=0,considered=None)
         try:
-            with timing.span('search.contact_candidates'):candidates=contact_candidates(box,self.source['tool'],self.site['topology'])
+            with timing.span('search.contact_candidates'):
+                candidates=contact_candidates(box,self.source['tool'],self.site['topology'],self.site.get('contact_search'))
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
+        self.write_evidence(folder/(box['id']+'-candidates.json'),[
+            dict(index=i,active_ids=c['active_ids'],commanded_cup_ids=c['commanded_cup_ids'],
+                 expected_passively_closed_ids=c['expected_passively_closed_ids'],tcp_pose=c['tcp_pose'],
+                 precontact_pose=c['precontact_pose'],seal_check=c['seal_check'],
+                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'])
+            for i,c in enumerate(candidates)],'contact-candidates.json')
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=len(candidates),phase='SCREENING',screened=0,
             considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter])
@@ -1072,7 +1086,16 @@ class SinglePlanner(EmptyPlanner):
             if replay is not None and replay.unused():
                 from .native_flow import NativeFlowDiverged
                 raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded screening results not requested')
-            order=sorted(screened,key=lambda s:s[3]['screen']['conclusion']!='CLEAR')
+            def candidate_priority(row):
+                screen=row[3]['screen'];clear=screen['conclusion']=='CLEAR'
+                preferred=posture.key(self.posture_policy,screen['approach_q'],q) if self.posture_policy and clear else ()
+                return (not clear,preferred)
+            order=sorted(screened,key=candidate_priority)
+            self.write_evidence(folder/'candidate-priority.json',[
+                dict(candidate=i,screen=s['screen']['conclusion'],
+                     posture=posture.metrics(self.posture_policy,s['screen']['approach_q'],q)
+                     if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None)
+                for i,c,sub,s in order],'candidate-priority.json')
             self.search_counts[box['id']].update(phase='PLANNING',screened=len(order))
             clear=sum(s[3]['screen']['conclusion']=='CLEAR' for s in order)
             progress(f'预检完成：{clear} 个候选终态全部通过，{len(order)-clear} 个逆解未定论，'
@@ -1203,7 +1226,8 @@ class SinglePlanner(EmptyPlanner):
                     with timing.span('plan_cycle.register',stage=segment['stage']):
                         segment['package']=self.authority.register(segment.pop('prepared'),binding,segment.pop('evidence'))
                 plan=dict(binding=binding,segments=segments,target=box,candidate=candidate,release=release,start_joint_check=start_policy,
-                    execution_lock=lock,wrist_branch_limits=self.wrist_limits,tool_robot_clearance=self.clearance.get('tool_robot_clearance'),
+                    execution_lock=lock,wrist_branch_limits=self.wrist_limits,posture_preference=self.posture_policy,
+                    contact_search=self.site.get('contact_search'),tool_robot_clearance=self.clearance.get('tool_robot_clearance'),
                     q_start=q.tolist(),T_world_tcp_start=observation.world_tcp_start,full_path_validated=True,
                     candidate_index=i,endpoint_screen=screen['conclusion'],candidate_lanes=found.get('lanes',1),
                     native_output_check=native_checks,

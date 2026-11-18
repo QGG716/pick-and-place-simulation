@@ -125,12 +125,15 @@ def wrist_branch_limits(c):
 
     Absent = no limit (historical). keep_j5_sign forbids crossing the wrist
     singularity J5=0 (a wrist flip); travel limits bound J4/J6 rotation.
+    Explicit max_j4_travel_deg=null disables only that relative travel gate.
+    Official joint bounds are checked independently in native FK/planning.
     """
     w=c.get('wrist_branch_limits')
     if w is None:return None
     if not isinstance(w,dict) or set(w)-set(WRIST_DEFAULTS)-{'basis'}:raise ValueError('WRIST_BRANCH_LIMITS_INVALID')
     out=dict(WRIST_DEFAULTS,**{k:v for k,v in w.items() if k!='basis'})
-    if (type(out['keep_j5_sign'])!=bool or not all(isinstance(out[k],(int,float)) and math.isfinite(out[k]) and out[k]>=0
+    if (type(out['keep_j5_sign'])!=bool or not all((k=='max_j4_travel_deg' and out[k] is None) or
+            (type(out[k]) in (int,float) and math.isfinite(out[k]) and out[k]>=0)
             for k in ('j5_min_abs_deg','max_j4_travel_deg','max_j6_travel_deg')) or out['j5_min_abs_deg']>60
             or not isinstance(w.get('basis'),str) or not w['basis'].strip()):
         raise ValueError('WRIST_BRANCH_LIMITS_INVALID')
@@ -147,6 +150,7 @@ def wrist_branch_violation(limits,q_start,states):
         if len(bad):k=int(bad[0]);return dict(reason='J5_WRIST_FLIP_OR_SINGULAR',index=k,j5_deg=float(q[k,4]),j5_start_deg=float(q0[4]),
                                               j5_min_abs_deg=limits['j5_min_abs_deg'])
     for j,key in ((3,'max_j4_travel_deg'),(5,'max_j6_travel_deg')):
+        if key=='max_j4_travel_deg' and limits[key] is None:continue
         travel=abs(q[:,j]-q0[j]);k=int(np.argmax(travel))
         if travel[k]>limits[key]:return dict(reason=f'J{j+1}_TRAVEL_EXCEEDED',index=k,travel_deg=float(travel[k]),limit_deg=limits[key])
     return None
@@ -161,6 +165,11 @@ def issues(c):
     try:start_joint_check(c)
     except ValueError as e:errors.append('start_joint_check：'+str(e))
     for name,check in (('execution_lock',execution_lock),('tool_robot_clearance',tool_robot_clearance),('wrist_branch_limits',wrist_branch_limits)):
+        try:check(c)
+        except ValueError as e:errors.append(name+'：'+str(e))
+    from .posture import settings as posture_settings
+    from .geometry import contact_search_settings
+    for name,check in (('posture_preference',posture_settings),('contact_search',lambda x:contact_search_settings(x.get('contact_search')))):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     geometry=c.get('geometry',{})

@@ -35,7 +35,9 @@ def test_field_config_is_locked_with_40_mm_tool_clearance_and_wrist_limits():
     assert t['clearance_m'] == .04 and t['exempt_robot_links'] == ['link_6']
     assert t['exempt_pairs'] == [['part_041_region_1', 'link_5'], ['part_041_region_2', 'link_5']]
     w = wrist_branch_limits(c)
-    assert w['keep_j5_sign'] and w['j5_min_abs_deg'] == 10. and w['max_j4_travel_deg'] == 90. and w['max_j6_travel_deg'] == 180.
+    assert not w['keep_j5_sign'] and w['j5_min_abs_deg'] == 0.
+    assert w['max_j4_travel_deg'] is None and w['max_j6_travel_deg'] == 180.
+    assert 'USER_REQUEST_2026_11_18' in w['basis']
 
 
 @pytest.mark.parametrize('lock,ok,locked', [(None, True, False), (dict(locked=False), True, False), (LOCK, True, True),

@@ -937,8 +937,9 @@ R2-01～R2-06 与三个集成补充项已实现；执行锁、40 mm 间隙、腕
 .venv-workbench/bin/python tools/diagnose_field_postures.py \
   outputs/realtime-field-20261117/313f32ad66a240798df17905025edc89 \
   outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637 \
-  --output outputs/field-posture-20261118 --validate
-xdg-open outputs/field-posture-20261118/posture-comparison.png
+  --wrist-policy-report docs/evidence/realtime_20261118_posture_diagnosis/report.json \
+  --output outputs/field-posture-historical-recheck --validate
+xdg-open outputs/field-posture-historical-recheck/posture-comparison.png
 ```
 
 定向核验：444 个保存逆解的 Python FK 全部满足原 2e-5 m / 2e-4 rad 容差（最大误差 1.372e-6 m / 6.209e-7 rad）；两条记录的腕部过滤结果与归档完全一致；6 次原生静态查询完成；源文件 SHA-256 前后不变，中文对比图已检查。摘要：[姿态诊断证据](evidence/realtime_20261118_posture_diagnosis/report.json)。这不是生产规划改动，未重跑完整规划回归，未修改腕部阈值、40 mm 间隙或执行锁；未运行顶吸实测、替代分支的完整路径及实机抓放，物理验收 NOT_RUN。
@@ -982,3 +983,56 @@ J4 的约 148°是箱位 2 的绝对关节差值，不是指定动作幅度，�
 27 条保存轨迹的 193 案例仍为 160 一致、33 数值失败，最大加速度差 1.83836e-8；旧服务器组件仍为 8/11 一致、最大差 9.31583e-12。只读诊断将最大差定位到约 1.584 ms 末区间的数组/标量幂舍入及系数相消；诊断副本重现 C++ 系数和加速度差，不计作通过。
 
 执行锁、40 mm 间隙、腕部限制及默认模块/优化开关未改；无新设备采集或实机动作。steps_1_to_7_accepted=false、稳定 deadline 门槛与数值等价仍未验收，完整调度/新 20 输入/2 s 目标未完成，物理 NOT_RUN；本轮未实施工作区缓存。详见 [续修报告](realtime_review2_gpu_followup_2026-11-18.md) 和 [结构化证据](evidence/realtime_20261118_review_fixes/report.json)。
+
+## 2026-11-18 旋转、上移与偏好构型重试
+
+本轮按用户要求取消 J5 翻侧/零位带限制；随后用户明确回复“同时取消 J4 相对起点限幅，再离线试算”，因此 `max_j4_travel_deg` 改为显式 `null`。J6 相对起点 180°限幅、官方关节范围、0.10 rad/s / 0.20 rad/s²、2.4 mm 碰撞规则、40 mm 工具/机器人预留间隙、全部 715 碰撞实体/12 杯、压力门与事故执行锁均保留。本轮没有设备连接、运动或阀门动作。
+
+配置仍为 `configs/workbench/single_carton.example.json`：
+
+- `wrist_branch_limits`：`keep_j5_sign=false`、`j5_min_abs_deg=0`、`max_j4_travel_deg=null`；依据保存在 `basis`。历史数值限幅配置继续支持。
+- `contact_search`：以此前查看器候选 3 的面内基准（`reference_face_roll_deg=90`）为参考，绕实际 flange/J6 轴旋转 180°；随后沿观测面上的向上方向搜索 0～60 mm、间隔 10 mm 的接触位置。最多 32 个候选，按高度组交错保留，避免较少密封杯的上移候选全部被截断。没有转动 CAD 安装、改 TCP 或改标定。
+- `posture_preference`：基于源 URDF 的 link_2→link_3 向上方向和 link_3→link_4 水平方向软评分，并保留原始关节角的连续性代价；用于端点 IK 分支和候选的优先级，仍最多检查三个 IK 分支。不是固定关节命令或必须满足的姿态阈值。每次保存实际评分和候选顺序。
+
+每个变换后的候选重新检查实际 CAD 密封轮廓、观测深度支持、3 mm 边缘余量及接触法向/间隙。只需实际覆盖的杯形成密封；其余杯按既有共同阀门、被动自闭规则处理，保留刚性件和唇部全部几何。绿色只表示**预计密封**，不能代替实测压力。带载仍使用原完整不确定性包络。
+
+离线入口新增 `--frozen-scene`，复用保存记录的原 RGB-D、掩码、几何、现场障碍、q_capture 与 q_start，隔离本轮规划策略变化；源文件前后 SHA-256 核对。重试各使用 120 s 总预算，失败返回时间不称为 PLAN_READY 时延。默认模块保持 PYTHON，未启用原生加速或改变监控阈值。
+
+```bash
+ECO65_TIMING=1 .venv-workbench/bin/python tools/replay_single_carton_record.py \
+  outputs/realtime-field-20261117/6966ce4b0141495993727b6d72815637 \
+  --frozen-scene --planning-deadline-s 120 \
+  --output outputs/posture-retry-new-case2
+# 对箱位 1 使用原目录 313f32ad66a240798df17905025edc89，输出另一个新目录。
+.venv-workbench/bin/python tools/visualize_field_planning_failures.py \
+  outputs/field-posture-retry-20261118/j4-free/case-1 \
+  outputs/field-posture-retry-20261118/j4-free/case-2 \
+  --output outputs/field-posture-retry-20261118/j4-free-viewer
+xdg-open outputs/field-posture-retry-20261118/j4-free-viewer/index.html
+```
+
+查看器可切换偏好逆解、实际预检接近/接触姿态、实测起点和保存的脱垛输出末点，并显示上移量、预计密封杯数、关节角与偏好角度。被腕部规则排除的分支明确标注；未经查询的分支不标作碰撞通过。`detach 起始带载检查` 是吸附后的原位检查，不冒充脱垛终点；没有输出点列时“脱垛输出末点”不可用。所有搜索输出仍与完整发送路径审计区分，无执行许可。
+
+普通现场入口在下次启动时读取新配置（本轮未启动它）：
+
+```bash
+.venv-workbench/bin/python -m unloading_sim.workbench.single_carton.ui \
+  --config configs/workbench/single_carton.example.json
+```
+
+执行锁仍保持。新现场观测/规划与实际抓放是独立步骤，不能执行保存帧重试输出；实机及部分遮挡箱完整抓放验收仍为 NOT_RUN。
+
+本轮最终重试结果（接近/接触均为实际保存且通过静态检查的姿态，非完整路径通过）：
+
+| 箱位 | 优先候选 | 沿面上移 / 预计密封杯 | 接近：大臂 / 小臂偏角 | 接触：大臂 / 小臂偏角 |
+|---|---:|---|---|---|
+| 1 | 3 | 30 mm / 6 杯 | 5.34° / 21.93° | 0.08° / 21.94° |
+| 2 | 13 | 60 mm / 3 杯 | 2.93° / 12.10° | 2.18° / 11.91° |
+
+箱位 1 的 32 个候选：10 个工具/环境终态阻挡、8 个插值加速度限值拒绝、5 个接近搜索单次预算耗尽，另有 9 个未取得最终结论；箱位 2：9 个终态阻挡、19 个插值加速度限值拒绝、2 个接近搜索单次预算耗尽，另有 2 个未取得最终结论。总预算各 120 s，原计时口径下搜索阶段返回 117.62 / 117.36 s；不是成功 PLAN_READY 时延，也不能证明全局无解。两次均没有完整通过的四段计划，未签发许可。箱位 2 候选 13 的脱垛原生输出末点大臂/小臂偏角为 26.59° / 3.14°，但该候选最终为 `INTERPOLATION_LIMIT:1:2`；末点展示不能替代发送轨迹审计。
+
+仅取消 J5、尚保留 J4=90° 的第一次重试也保留在 `outputs/field-posture-retry-20261118/case-1`、`case-2` 与 `viewer` 中；该阶段箱位 2 上移 30 mm 的偏好解要求 J4 相对起点 94.83°，因此提出澄清，随后按用户明确回复取消该限幅。本轮没有通过增加 J6 限幅、清空障碍或提高速度/加速度阈值来制造通过。
+
+验证：规定 Python 定向集 **592 passed**；最终补充的姿态与实际 C++ 复合回放组 **34 passed**（与前组重叠，新增覆盖四阶段 J4 相对限幅取消，共 10 项）。包括 128 个源 URDF 随机状态的 Python/C++ 评分与排序一致、实际 C++ 复合输出驱动 Python 回放且未消费调用为 0；这不是完整现场记录的原生数值等价验收。重新构建/安装 worker 后，`m710_clearance_test optimized/reference` 与单箱原生组件 **PASS**，后者检查 491 个最终发送点；配置静态检查无问题。
+
+最终浏览器检查覆盖 2 个箱位、64 个候选、448 次保存姿态显示、125 次附着姿态核对；64 个偏好逆解的浏览器/Python TCP 最大矩阵误差 4.441e-16。715 个碰撞实体、12 杯和 39/37 个原现场环境物体保持不变。接触及脱垛 CAD 截图已检查；源记录哈希不变。代码、配置、测试日志与重试结果的绑定见 [本轮证据](evidence/realtime_20261118_posture_retry/report.json)。既有 native prepare 数值分歧、2 s 完整规划目标及实机抓放验收仍未完成。

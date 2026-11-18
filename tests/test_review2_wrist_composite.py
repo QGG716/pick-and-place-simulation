@@ -78,8 +78,10 @@ def test_endpoint_composite_replays_same_wrist_decisions(case, composite, scenar
 
 @pytest.mark.parametrize('stage', ['approach', 'contact', 'detach', 'return', None])
 @pytest.mark.parametrize('known', [False, True])
-def test_segment_middle_violation_preserves_composite_replay(case, composite, stage, known, monkeypatch):
+@pytest.mark.parametrize('disable_j4', [False, True])
+def test_segment_middle_violation_preserves_composite_replay(case, composite, stage, known, disable_j4, monkeypatch):
     p, q, world, box, candidate, folder = setup_case(case)
+    if disable_j4:p.wrist_limits['max_j4_travel_deg']=None
     replies = []
     class Client:
         def request(self, request, **kwargs):
@@ -132,6 +134,7 @@ def test_segment_middle_violation_preserves_composite_replay(case, composite, st
     actual = outcome(lambda: flow.plan_one(q, world, box, candidate, folder, screened,
         lambda _:None, cancelled, client, [client]))
     assert actual == expected
+    assert expected[0] == ('PASS' if stage is None or disable_j4 else 'REJECTED')
     assert offset == len(replies)
     assert all(r['stopped'] is None for r in collected)
     assert replays and all(r.unused() == 0 for r in replays)

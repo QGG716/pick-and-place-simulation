@@ -144,6 +144,7 @@ class NativeFlow:
         from .planner import SEND_SLOWDOWN_STEPS
         return dict(identity=p.init['identity'], deadline=deadline, check_workers=len(p.checkers()),
                     wrist_branch_limits=p.wrist_limits, wrist_reference_q_start=p.wrist_reference,
+                    posture_preference=getattr(p,'posture_policy',None),
                     sent_path_audit=p.site.get('sent_path_audit', 'SAMPLED'), path_endpoint_reuse=p.enabled('path_endpoint_reuse'),
                     scale=p.site['time_scale'],
                     prepare=dict(limits=asdict(p.limits), period_s=p.config['period_s'], reach_bound_m=p.reach_bound,

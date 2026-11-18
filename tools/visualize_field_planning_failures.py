@@ -1,7 +1,8 @@
 """Export saved failed field plans as PNG and a self-contained offline 3D viewer.
 
 Reads archived requests/replies only. Never connects devices or reruns planning.
-Native output points are displayed as diagnostic samples, never audited paths.
+Native output points remain diagnostic samples; only saved final-audit PASS
+segments from an offline replay are labelled audited, never executable.
 """
 import argparse
 import base64
@@ -19,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from export_eco65_search_replay import export_model
-from unloading_sim.workbench.single_carton.config import load
+from unloading_sim.workbench.single_carton.config import load, wrist_branch_violation
 from unloading_sim.workbench.single_carton.planner import SinglePlanner
 from unloading_sim.workbench.controlled.trajectory import Authority
 from unloading_sim.workbench.coordinates import Installation, CoordinateModel
@@ -98,15 +99,28 @@ def add_posture_branches(case, diagnosis, coordinates):
 
 
 def read_case(record,coordinates):
-    files=[record/n for n in ('observation.json','observation.npz','segmentation.npz','geometry.json','site-scene.json','planning-failures.json','timing-prepare_plan.json')]
+    retry=(record/'replay-report.json').exists()
+    files=[record/n for n in ('observation.json','observation.npz','segmentation.npz','geometry.json','site-scene.json','planning-failures.json','replay-report.json' if retry else 'timing-prepare_plan.json')]
     sources={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     obs=json.loads(files[0].read_text());arr=np.load(files[1]);masks=np.load(files[2]);geo=json.loads(files[3].read_text());scene=json.loads(files[4].read_text())
-    failures=sorted(json.loads(files[5].read_text()),key=lambda x:x['candidate']);timing=json.loads(files[6].read_text())
+    failures=sorted((x for x in json.loads(files[5].read_text()) if 'candidate' in x),key=lambda x:x['candidate']);timing=json.loads(files[6].read_text())
+    candidate_meta={};priority=[];complete=None
+    if retry:
+        target=geo['boxes'][0]['id'];manifest=record/(target+'-candidates.json')
+        sources[str(manifest.relative_to(ROOT))]=hashlib.sha256(manifest.read_bytes()).hexdigest()
+        candidate_meta={x['index']:x for x in json.loads(manifest.read_text())}
+        failures_by_id={x['candidate']:x for x in failures};complete=timing.get('complete_plan')
+        failures=[failures_by_id.get(i,dict(target=target,candidate=i,reason=
+            'COMPLETE_OFFLINE_PLAN_NOT_EXECUTABLE' if complete and complete['candidate_index']==i else
+            'SEARCH_NOT_COMPLETED_OR_NOT_SELECTED: 未取得该候选的完整通过或失败结论')) for i in candidate_meta]
+        p=record/'candidate-priority.json'
+        if p.exists():
+            sources[str(p.relative_to(ROOT))]=hashlib.sha256(p.read_bytes()).hexdigest();priority=json.loads(p.read_text())
     rgb=arr['rgb'].copy();mask=masks['mask_0'].astype(bool);rgb[mask]=(rgb[mask]*.6+np.array([30,220,160])*.4).astype(np.uint8)
     image=io.BytesIO();Image.fromarray(rgb).save(image,format='PNG')
     candidates=[]
     for failure in failures:
-        folder=record/(failure['target']+'-'+str(failure['candidate']));states=[];paths=[]
+        folder=record/(failure['target']+'-'+str(failure['candidate']));states=[];paths=[];preferred=None
         precheck=folder/'endpoint-precheck.json'
         if precheck.exists():
             sources[str(precheck.relative_to(ROOT))]=hashlib.sha256(precheck.read_bytes()).hexdigest()
@@ -116,7 +130,21 @@ def read_case(record,coordinates):
                     if native.exists():
                         sources[str(native.relative_to(ROOT))]=hashlib.sha256(native.read_bytes()).hexdigest()
                         attachment=json.loads(native.read_text()).get('request',{}).get('attachment')
-                    states.append(dict(q=check['q'],stage=check['stage'],failure=check.get('failure'),label=check['stage']+' 终态',attachment=attachment))
+                    label='detach 起始带载检查' if check['stage']=='detach' else check['stage']+' 终态'
+                    states.append(dict(q=check['q'],stage=check['stage'],failure=check.get('failure'),label=label,attachment=attachment))
+        ik=folder/'approach-endpoint-ik-native.json'
+        if retry and ik.exists():
+            sources[str(ik.relative_to(ROOT))]=hashlib.sha256(ik.read_bytes()).hexdigest()
+            saved=json.loads(ik.read_text());rank=saved.get('posture_ranking',[])
+            if rank:
+                value=rank[0];actual=coordinates.tcp(value['q']);goal=np.asarray(saved['request']['goal_pose'])
+                pe=float(np.linalg.norm(actual[:3,3]-goal[:3,3]))
+                re=float(np.arccos(np.clip((np.trace(actual[:3,:3].T@goal[:3,:3])-1)/2,-1,1)))
+                assert pe<2e-5 and re<2e-4,'RETRY_PREFERRED_IK_FK_MISMATCH'
+                checked=next((s for s in states if s['stage']=='approach' and np.array_equal(s['q'],value['q'])),None)
+                preferred=dict(value,source=str(ik.relative_to(ROOT)),position_error_m=pe,orientation_error_rad=re,
+                    tcp_pose=actual.tolist(),static_check=checked,
+                    wrist_rejection=wrist_branch_violation(timing['planning_policy']['wrist_branch_limits'],obs['q_start'],[value['q']]))
         for f in sorted(folder.glob('*native.json')):
             d=json.loads(f.read_text());reply=d.get('result',{});request=d.get('request',{})
             if not isinstance(reply,dict):continue
@@ -131,10 +159,26 @@ def read_case(record,coordinates):
                     max_velocity_rad_s=max(abs(v) for p in points for v in p.get('v',[0])),
                     max_acceleration_rad_s2=max(abs(v) for p in points for v in p.get('a',[0])),
                     source=str(f.relative_to(ROOT)),attachment=request.get('attachment'),audited=False))
-        candidates.append(dict(index=failure['candidate'],reason=failure['reason'],kind=kind(failure['reason']),states=states,paths=paths))
-    return dict(task_id=record.name,observation_id=obs['observation_id'],q_start=obs['q_start'],q_capture=obs['q_capture'],
+        candidates.append(dict(index=failure['candidate'],reason=failure['reason'],kind=kind(failure['reason']),states=states,paths=paths,
+                               contact=candidate_meta.get(failure['candidate']),preferred_ik=preferred))
+    sent=record/'measurement-segments-NOT-EXECUTABLE.json'
+    if retry and complete and sent.exists():
+        sources[str(sent.relative_to(ROOT))]=hashlib.sha256(sent.read_bytes()).hexdigest();saved=json.loads(sent.read_text())
+        selected=next(c for c in candidates if c['index']==complete['candidate_index'])
+        for segment in saved['segments']:
+            assert segment['evidence']['sent_path_collision']=='PASS','UNVERIFIED_SENT_PATH'
+            points=segment['prepared']['points'];shown=points[::max(1,len(points)//180)]
+            if shown[-1]!=points[-1]:shown.append(points[-1])
+            context=segment['evidence']['context']
+            selected['paths'].append(dict(name='最终发送轨迹 · '+segment['stage'],stage=segment['stage'],status='OFFLINE_AUDIT_PASS',
+                q=[p['q'] for p in shown],tcp=[coordinates.tcp(p['q'])[:3,3].tolist() for p in shown],
+                samples=len(points),displayed_samples=len(shown),max_velocity_rad_s=max(abs(v) for p in points for v in p.get('v',[0])),
+                max_acceleration_rad_s2=max(abs(v) for p in points for v in p.get('a',[0])),source=str(sent.relative_to(ROOT)),
+                attachment=context.get('attachment'),audited=True))
+    return dict(task_id=timing['task_id'] if retry else record.name,observation_id=obs['observation_id'],q_start=obs['q_start'],q_capture=obs['q_capture'],
         stream=obs['stream'],world=scene['world'],box=geo['boxes'][0],candidates=candidates,
-        duration_s=next(e['duration_s'] for e in timing['events'] if e['name']=='prepare_plan.entry_to_return'),
+        duration_s=timing['planning_s'] if retry else next(e['duration_s'] for e in timing['events'] if e['name']=='prepare_plan.entry_to_return'),
+        retry=timing if retry else None,default_candidate=complete['candidate_index'] if complete else priority[0]['candidate'] if priority else None,
         image='data:image/png;base64,'+base64.b64encode(image.getvalue()).decode(),sources=sources,
         camera=obs['T_world_camera'],intrinsics=obs['intrinsics'],
         fk_fixture={k:v.tolist() for k,v in coordinates.frames(obs['q_start']).items()})
@@ -206,8 +250,9 @@ def main():
         for requestfile in args.records[cases.index(case)].glob('*/*endpoint-native.json'):
             request=json.loads(requestfile.read_text()).get('request',{})
             if 'identity' in request:assert request['identity']==planner.init['identity'],'MODEL_CHANGED';break
-    for i,case in enumerate(cases,1):overview(case,model,coordinates,args.output/f'case-{i}.png',i)
-    data=dict(model=model,cases=cases,physical_execution='NOT_RUN',executable=False,posture_comparison=bool(args.posture_report))
+    for i,case in enumerate(cases,1):
+        if not case['retry']:overview(case,model,coordinates,args.output/f'case-{i}.png',i)
+    data=dict(model=model,cases=cases,physical_execution='NOT_RUN',executable=False,posture_comparison=bool(args.posture_report),retry=any(c['retry'] for c in cases))
     template=(ROOT/'tools/search_replay/field_failures.html').read_text();vendor=ROOT/'tools/search_replay/vendor';js=(vendor/'three.min.js').read_text()+'\n'+(vendor/'OrbitControls.js').read_text()
     (args.output/'index.html').write_text(template.replace('/*__VENDOR__*/',js).replace('/*__DATA__*/',json.dumps(data,separators=(',',':')).replace('</','<\\/')))
     report=dict(cases=[dict(task_id=c['task_id'],candidates=len(c['candidates']),native_output_paths=sum(len(x['paths']) for x in c['candidates']),sources=c['sources']) for c in cases],collision_shapes=sum(x['layer']=='collision' for x in model['links']),cups=len(model['cup_ids']),hardware_execution='NOT_RUN')

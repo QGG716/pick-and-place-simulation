@@ -26,6 +26,7 @@
 #include <vector>
 #include "native_deadline.h"
 #include "native_prepare.h"
+#include "sc_posture.h"
 
 namespace m710 {
 class CompositeRunner {
@@ -109,6 +110,7 @@ class CompositeRunner {
       }
     }
     for(const auto& [joint,key]:{std::pair<size_t,const char*>{3,"max_j4_travel_deg"},{5,"max_j6_travel_deg"}}) {
+      if(joint==3&&limits.at(key).is_null())continue;
       double maximum=-1.;size_t index=0;
       for(size_t k=0;k<states.size();++k) {
         const double travel=std::abs(states.at(k).at(joint).get<double>()*degrees-q0[joint]*degrees);
@@ -294,8 +296,9 @@ class CompositeRunner {
         if(distinct)solutions.push_back(qv);
       }
     }
-    auto norm=[&](const std::vector<double>& x){double s=0;for(size_t i=0;i<x.size();++i)s+=(x[i]-reference[i])*(x[i]-reference[i]);return std::sqrt(s);};
-    std::stable_sort(solutions.begin(),solutions.end(),[&](const auto& a,const auto& b){return norm(a)<norm(b);});
+    const J preference=request.value("posture_preference",J());
+    std::stable_sort(solutions.begin(),solutions.end(),[&](const auto& a,const auto& b){
+      return singleCartonPostureKey(preference,a,reference)<singleCartonPostureKey(preference,b,reference);});
     solutions.erase(std::remove_if(solutions.begin(),solutions.end(),[&](const auto& qv){
       return !wristViolation(J::array({qv})).is_null();
     }),solutions.end());
