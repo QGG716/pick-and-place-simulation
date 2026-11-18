@@ -54,6 +54,49 @@ def full_frames(model,q):
     return frames
 
 
+def add_posture_branches(case, diagnosis, coordinates):
+    """Show archived alternatives, without making a new plan or altering q."""
+    assert case['task_id'] == diagnosis['task_id'], 'POSTURE_TASK_MISMATCH'
+    assert np.array_equal(case['q_start'], diagnosis['q_start']['q']), 'POSTURE_START_MISMATCH'
+    candidate = next(c for c in case['candidates'] if c['index'] == diagnosis['shown']['candidate'])
+    target = np.asarray(diagnosis['shown']['tcp_pose'])
+    alternatives = []
+    for key, label in [('same_pose_preferred', 'A · 更接近偏好 / J5 负侧'),
+                       ('same_pose_positive_j5', 'B · J5 正侧 / J4 转动较大')]:
+        value = diagnosis[key]
+        assert value['candidate'] == candidate['index'], 'POSTURE_CANDIDATE_MISMATCH'
+        source = json.loads((ROOT/value['source']).read_text())
+        assert any(r.get('status') == 'SUCCESS' and np.array_equal(r.get('q'), value['q'])
+                   for r in source['replies']), 'POSTURE_NOT_AN_ARCHIVED_IK'
+        actual = coordinates.tcp(value['q'])
+        position_error = float(np.linalg.norm(actual[:3, 3]-target[:3, 3]))
+        orientation_error = float(np.arccos(np.clip((np.trace(actual[:3, :3].T@target[:3, :3])-1)/2, -1, 1)))
+        assert position_error < 2e-5 and orientation_error < 2e-4, 'POSTURE_DIFFERENT_TCP'
+        alternatives.append(dict(value, label=label, diagnostic_only=True, position_error_to_shown_m=position_error,
+                                 orientation_error_to_shown_rad=orientation_error))
+    candidate['posture_branches'] = alternatives
+    case['posture_reference'] = dict(q_start=diagnosis['q_start'], shown=diagnosis['shown'])
+    mechanism=[]
+    for value in alternatives:
+        frames=coordinates.frames(value['q'])
+        axes=[frames[f'link_{i}'][:3,2] for i in (2,3,4)]
+        parallel_error=max(float(np.linalg.norm(np.cross(axes[0],a))) for a in axes[1:])
+        assert parallel_error < 1e-10, 'J234_AXES_NOT_PARALLEL'
+        q_zero=np.asarray(value['q']).copy();q_zero[4]=0.
+        zero_frames=coordinates.frames(q_zero)
+        dot=float(zero_frames['link_4'][:3,2]@zero_frames['link_6'][:3,2])
+        assert abs(dot-1.) < 1e-10, 'J5_ZERO_AXIS_RELATION_CHANGED'
+        degrees=np.rad2deg(value['q']);start=np.rad2deg(case['q_start'])
+        mechanism.append(dict(label=value['label'],q_deg=degrees.tolist(),
+                              j2_plus_j3_deg=float(sum(degrees[1:3])),
+                              j2_plus_j3_plus_j4_deg=float(sum(degrees[1:4])),
+                              j4_delta_from_start_deg=float(degrees[3]-start[3]),
+                              j234_axis_parallel_error=parallel_error,
+                              j4_dot_j6_at_hypothetical_j5_zero=dot,
+                              zero_joint_scope='OFFLINE_FRAME_CALCULATION_ONLY_NOT_A_SAVED_POSE_OR_PATH'))
+    case['posture_mechanism']=mechanism
+
+
 def read_case(record,coordinates):
     files=[record/n for n in ('observation.json','observation.npz','segmentation.npz','geometry.json','site-scene.json','planning-failures.json','timing-prepare_plan.json')]
     sources={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
@@ -141,21 +184,38 @@ def overview(case,model,coordinates,output,number):
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('records',nargs='+',type=Path);parser.add_argument('--output',type=Path,required=True);args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('records',nargs='+',type=Path);parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--posture-report',type=Path,help='Add verified archived alternative IK branches from diagnose_field_postures.py')
+    args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
     config=load(ROOT/'configs/workbench/single_carton.example.json');installation=Installation.load(config['execution']['installation']);coordinates=CoordinateModel(URDF,URDF_SHA,installation.world_from_base,installation.tool)
     planner=SinglePlanner(config,load_mapping(config['execution']['mapping']),Authority('eco65_single_carton_segment_v1'),coordinates);planner.build()
     snapshot=deepcopy(load_snapshot(config['execution']['snapshot'],geometry_only=True));snapshot['native_model']['init']=planner.init;snapshot['scene']['mesh_obstacles']=[]
     snapshot['native_model']['init']['process_geometry']['expected_contour_ids']=planner.init['process_geometry']['connected_cup_ids'];model=export_model(snapshot)
     cases=[read_case(p.resolve(),coordinates) for p in args.records]
+    posture_sources={}
+    if args.posture_report:
+        path=args.posture_report.resolve();diagnosis=json.loads(path.read_text())
+        posture_sources[str(path.relative_to(ROOT))]=hashlib.sha256(path.read_bytes()).hexdigest()
+        for name,digest in diagnosis['sources'].items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'POSTURE_SOURCE_CHANGED'
+            posture_sources[name]=digest
+        for case in cases:
+            saved=next(c for c in diagnosis['cases'] if c['task_id']==case['task_id'])
+            add_posture_branches(case,saved,coordinates)
     for case in cases:
         for requestfile in args.records[cases.index(case)].glob('*/*endpoint-native.json'):
             request=json.loads(requestfile.read_text()).get('request',{})
             if 'identity' in request:assert request['identity']==planner.init['identity'],'MODEL_CHANGED';break
     for i,case in enumerate(cases,1):overview(case,model,coordinates,args.output/f'case-{i}.png',i)
-    data=dict(model=model,cases=cases,physical_execution='NOT_RUN',executable=False)
+    data=dict(model=model,cases=cases,physical_execution='NOT_RUN',executable=False,posture_comparison=bool(args.posture_report))
     template=(ROOT/'tools/search_replay/field_failures.html').read_text();vendor=ROOT/'tools/search_replay/vendor';js=(vendor/'three.min.js').read_text()+'\n'+(vendor/'OrbitControls.js').read_text()
     (args.output/'index.html').write_text(template.replace('/*__VENDOR__*/',js).replace('/*__DATA__*/',json.dumps(data,separators=(',',':')).replace('</','<\\/')))
     report=dict(cases=[dict(task_id=c['task_id'],candidates=len(c['candidates']),native_output_paths=sum(len(x['paths']) for x in c['candidates']),sources=c['sources']) for c in cases],collision_shapes=sum(x['layer']=='collision' for x in model['links']),cups=len(model['cup_ids']),hardware_execution='NOT_RUN')
+    report['posture_sources']=posture_sources
+    report['posture_branches']=sum(len(x.get('posture_branches',[])) for c in cases for x in c['candidates'])
+    report['posture_mechanism']=[dict(task_id=c['task_id'],branches=c['posture_mechanism']) for c in cases if 'posture_mechanism' in c]
+    for name,digest in posture_sources.items():
+        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'POSTURE_EVIDENCE_CHANGED'
     for case in cases:
         for name,digest in case['sources'].items():
             assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'SAVED_EVIDENCE_CHANGED'
