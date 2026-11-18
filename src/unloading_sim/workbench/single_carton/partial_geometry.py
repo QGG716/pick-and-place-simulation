@@ -7,13 +7,14 @@ centres. Collision geometry is the union's enclosing box, not the visible sheet.
 from itertools import permutations, product
 import cv2
 import numpy as np
+from scipy.ndimage import distance_transform_edt
 from .geometry import _visible_planes, corners, rigid, transform, GeometryRejected
 
 # Plane-support boundary noise allowed beyond the configured carton tolerance.
 PATCH_EDGE_NOISE_M=.003
 
 
-def credible_edges(points,mask,plane,R,origin,seed):
+def _direct_edges(points,mask,plane,R,origin,seed):
     """Only a visible plane-to-farther-background break can constrain an edge.
 
     Occluders are closer than the extrapolated plane; image borders have no
@@ -44,6 +45,57 @@ def credible_edges(points,mask,plane,R,origin,seed):
                           span_m=float(span),support_count=int(best.sum()),
                           basis='OBSERVED_PLANE_TO_FARTHER_DEPTH_BREAK'))
         xy=xy[~best]
+    return edges
+
+
+def credible_edges(points,mask,plane,R,origin,seed):
+    """Retain direct breaks and bound edges across short missing-depth bands.
+
+    The interval between a plane return and a farther-background ray contains
+    the edge; its midpoint is NOT an exact measured edge. Every added line
+    carries the full projected interval as position and angular uncertainty.
+    A closer occluder on the search ray vetoes it. An image border alone never
+    supplies a background ray. Existing direct evidence is never weakened.
+    """
+    edges=_direct_edges(points,mask,plane,R,origin,seed)
+    n=plane['normal'];denom=points@n;offset=plane['center']@n
+    ratio=np.divide(offset,denom,out=np.zeros_like(denom),where=abs(denom)>1e-9)
+    predicted=points[...,2]*ratio
+    valid=np.isfinite(points).all(-1)&(points[...,2]>.1)&(predicted>.1)
+    farther=(~mask)&valid&(points[...,2]-predicted>.015)
+    if not farther.any():return edges
+    on_plane=mask&valid&(abs(denom-offset)<.002)
+    boundary=on_plane&~cv2.erode(on_plane.astype('uint8'),np.ones((3,3),'uint8')).astype(bool)
+    distance,indices=distance_transform_edt(~farther,return_indices=True)
+    # A finite evidence search, not permission to bridge an unobserved face.
+    ys,xs=np.nonzero(boundary&(distance>2)&(distance<=12))
+    ey,ex=indices[:,ys,xs];keep=np.ones(len(ys),bool)
+    for t in np.linspace(0.,1.,25):
+        yy=np.rint(ys+(ey-ys)*t).astype(int);xx=np.rint(xs+(ex-xs)*t).astype(int)
+        keep &= ~((~mask[yy,xx])&valid[yy,xx]&(predicted[yy,xx]-points[yy,xx,2]>.008))
+    ys,xs,ey,ex=[v[keep] for v in (ys,xs,ey,ex)]
+    near=(points[ys,xs]-origin)@R[:,:2]
+    far=(points[ey,ex]*ratio[ey,ex,None]-origin)@R[:,:2]
+    xy=(near+far)/2;radii=np.linalg.norm(far-near,axis=1)/2
+    rng=np.random.default_rng(seed)
+    for _ in range(4):
+        if len(xy)<25:break
+        best=None;direction=None
+        for _ in range(120):
+            a,b=xy[rng.choice(len(xy),2,replace=False)];d=b-a;length=np.linalg.norm(d)
+            if length<.025:continue
+            d/=length;normal=np.array([-d[1],d[0]])
+            inliers=abs((xy-a)@normal)<.002
+            if best is None or inliers.sum()>best.sum():best=inliers;direction=d
+        if best is None or best.sum()<25:break
+        sample=xy[best];span=np.ptp(sample@direction)
+        if span<.025:break
+        normal=np.array([-direction[1],direction[0]])
+        band=float(np.max(abs((sample-sample.mean(0))@normal)+radii[best]))
+        edges.append(dict(center_uv_m=sample.mean(0).tolist(),direction_uv=direction.tolist(),
+            span_m=float(span),support_count=int(best.sum()),position_uncertainty_m=band,
+            basis='PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP'))
+        xy=xy[~best];radii=radii[~best]
     return edges
 
 
@@ -87,6 +139,8 @@ def resting_check(plane,edges,W,face_center,R,prior,tolerance):
     k=plane['vertical_face_axis'];g=(W[:3,:3]@R)[2];c0=float((W[:3,:3]@face_center+W[:3,3])[2])
     heights=[]
     for edge in edges:
+        # An interval across missing depth does not certify a resting height.
+        if edge.get('position_uncertainty_m',0.):continue
         direction=np.asarray(edge['direction_uv'])
         if abs(direction[k])>np.sin(np.deg2rad(5)):continue
         at=np.zeros(3);at[:2]=edge['center_uv_m'];z=c0+g@at
@@ -196,29 +250,39 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
             if not np.any(np.all(cell_extents<=face_limit,axis=1)):continue
             minimum=projected.max(0)-H
             maximum=projected.min(0)+H
+            edge_bounds=[]
             for edge in edges:
                 direction=np.asarray(edge['direction_uv'])@rot
                 tangent=int(np.argmax(abs(direction)));axis=1-tangent
-                angular_error=np.arctan2(.004,edge['span_m'])+half_step
+                band=edge.get('position_uncertainty_m',0.)
+                angular_error=np.arctan2(.004+2*band,edge['span_m'])+half_step
                 if abs(direction[tangent])<np.cos(angular_error):
                     minimum[:]=1.;maximum[:]=-1.;break
                 edge_at=(np.asarray(edge['center_uv_m'])@rot)[axis]
                 inward=1 if projected[:,axis].mean()>edge_at else -1
                 center_at=edge_at+inward*dims[axis]/2
-                edge_error=dimension_tolerance_m+growth[axis]+.003
+                edge_error=dimension_tolerance_m+growth[axis]+.003+band
                 minimum[axis]=max(minimum[axis],center_at-edge_error)
                 maximum[axis]=min(maximum[axis],center_at+edge_error)
+                edge_bounds.append((axis,inward,edge_at,edge_error))
             if np.any(minimum>maximum):continue
             # All valid observed depths must fit behind the plane and in the
             # prior depth; side evidence can exclude a thin-face interpretation.
             if np.mean((all_local[:,2]>=-dims[2]-dimension_tolerance_m)&(all_local[:,2]<=3*residual_m))<.95:continue
+            # Keep the observed outer edge bound when enclosing centre/size
+            # intervals. Taking their independent extremes again would lose
+            # this constraint and add phantom volume past the observed edge.
+            cell_low=minimum-H;cell_high=maximum+H
+            for axis,inward,at,error in edge_bounds:
+                if inward>0:cell_low[axis]=max(cell_low[axis],at-error)
+                else:cell_high[axis]=min(cell_high[axis],at+error)
+            if np.any(cell_low>cell_high):continue
             hypotheses.append(dict(yaw_center_rad=float(angle),yaw_half_width_rad=half_step,
                 dimensions_m=dims.tolist(),center_interval_uv_m=[minimum.tolist(),maximum.tolist()],
-                bound_half_size_m=H.tolist()))
-            for c in product(*zip(minimum,maximum)):
-                for sign in product((-1,1),repeat=2):
-                    point=(np.asarray(c)+np.asarray(sign)*H)@rot.T
-                    vertices.append([*point,-dims[2]-dimension_tolerance_m])
+                bound_half_size_m=H.tolist(),constrained_envelope_uv_m=[cell_low.tolist(),cell_high.tolist()]))
+            for point in product(*zip(cell_low,cell_high)):
+                point=np.asarray(point)@rot.T
+                vertices.append([*point,-dims[2]-dimension_tolerance_m])
     if not hypotheses:
         raise GeometryRejected('DIMENSION_PRIOR_CONFLICT_WITH_OBSERVED_SURFACE',
             dict(prior_m=size_prior.tolist(),observed_patch_m=patch_size.tolist()))

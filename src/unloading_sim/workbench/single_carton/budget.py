@@ -7,8 +7,9 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
     A candidate is searched only when it was concluded: rejected (it has a
     recorded failure) or accepted. Candidates screened but not planned, in
     flight at expiry, or never reached are unsearched and are never counted
-    as infeasible. A target-level verdict (rest intersection, TargetBlocked)
-    concludes every candidate of that target.
+    as infeasible. A definite target-level verdict concludes every candidate
+    of that target. Overlapping uncertainty envelopes do not establish that
+    every underlying geometry hypothesis is infeasible; keep those unsearched.
     """
     from .planner import DEADLINE_REPLY_RESERVE_S
     targets=[]
@@ -16,18 +17,22 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
         if selected is not None and box['detection_index']!=selected:continue
         ident=box['id'];counts=self.search_counts.get(ident)
         level=[f for f in failures if f.get('target')==ident and 'candidate' not in f]
+        unresolved=any(f['reason'].startswith('GEOMETRY_UNCERTAINTY_') for f in level)
         failed={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f}
         if counts is None or counts['considered'] is None:
             # Candidates never generated: a target-level verdict, or not reached.
-            status='TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
+            status='GEOMETRY_UNRESOLVED' if unresolved else 'TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
                 'BUDGET_EXHAUSTED_IN_CANDIDATE_GENERATION' if error is not None else 'CANDIDATE_GENERATION')
             targets.append(dict(target=ident,status=status,candidates=None,considered=None,screened=0,
-                searched='ALL_BY_TARGET_VERDICT' if level else 0,unsearched=None if level else 'ALL_NOT_GENERATED',
+                searched='ALL_BY_TARGET_VERDICT' if level and not unresolved else 0,
+                unsearched=None if level and not unresolved else 'ALL_NOT_GENERATED',
                 infeasible_candidates=0,target_reason=level[0]['reason'][:300] if level else None))
             continue
         considered=counts['considered']
         accepted=counts.get('accepted')
-        if level:
+        if unresolved:
+            status,searched,infeasible='GEOMETRY_UNRESOLVED',len(failed&set(considered)),len(failed&set(considered))
+        elif level:
             status,searched,infeasible='TARGET_BLOCKED',len(considered),len(considered)
         else:
             infeasible=len(failed&set(considered));searched=len((failed|({accepted} if accepted is not None else set()))&set(considered))

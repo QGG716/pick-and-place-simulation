@@ -1,0 +1,48 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>两箱恢复诊断 · 包络不是实物</title>
+<style>*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:#101a25;color:#e6eef6;font:14px/1.55 system-ui,'Noto Sans CJK SC',sans-serif}header{height:85px;padding:13px 22px;border-bottom:1px solid #394b5d}h1{font-size:22px;margin:0}small{color:#aabccd}main{display:grid;grid-template-columns:380px minmax(0,1fr);height:calc(100vh - 85px)}aside{padding:16px;overflow:auto;min-width:0;scrollbar-gutter:stable}button{width:100%;margin:4px 0;padding:10px;border-radius:5px;background:#23364b;color:#eef5fc;border:1px solid #50677d;font:inherit}button[aria-pressed=true]{background:#315e84;border-color:#8dd9e8}button:disabled{opacity:.45}#metric{height:160px;overflow:auto;white-space:pre-wrap;background:#192b3b;border-left:3px solid #f3b267;padding:10px;margin:12px 0}#image{width:100%;height:210px;object-fit:contain}p{margin:12px 0}#view{position:relative;min-height:0}canvas{display:block}#hud,#legend{position:absolute;left:16px;max-width:90%;background:#101a25e8;padding:12px;white-space:pre-line;pointer-events:none}#hud{top:16px}#legend{bottom:16px}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:12px}td,th{padding:5px 3px;text-align:left;border-bottom:1px solid #34475b}#error{color:#ff8994;overflow-wrap:anywhere}</style>
+<header><h1 id="heading">两个不确定性包络相交：几何恢复诊断</h1><small>同一真实 RGB-D 与分割 · 几何诊断 · 无模型推理、运动或执行许可</small></header>
+<main><aside><button data-mode="original">原包络</button><button data-mode="updated">补入边界区间约束后</button><button id="witness" data-mode="witness">一组不穿透的假设 · 非唯一解</button><button data-mode="observed">只看实际观测的局部平面</button>
+<div id="metric"></div><img id="image"><small>同帧掩码：青色为上箱，橙色为下箱。</small>
+<p>原程序分别保留每个箱子的尺寸、朝向和位置假设，再用一个大盒子包住所有假设。红色体是这些假设的共同外包盒，不能当作纸箱实测外形。</p>
+<table><thead><tr><th>高度范围 / mm</th><th>上箱</th><th>下箱</th></tr></thead><tbody id="ranges"></tbody></table>
+<p>新约束保留短深度缺口两端的边界区间，不把区间中点当成精确箱边。当前仍未联合恢复上下箱的叠放关系，剩余几何歧义保持显式；完整路径没有得到验证。</p>
+<label><input id="points" type="checkbox" checked> 显示实际深度支持点</label><button id="reset">恢复观察角度</button><small>左键旋转 · 滚轮缩放 · 右键平移<br>仅比较两箱几何；不是碰撞场景或执行预览。</small><div id="error"></div></aside>
+<div id="view"><div id="hud"></div><div id="legend">青 / 橙点：上 / 下箱的实际观测面
+红：旧保守包络　黄：保留边界约束后的包络　蓝：非唯一假设</div></div></main>
+<script>/*__VENDOR__*/</script><script>
+const DATA=/*__DATA__*/;const T=THREE,$=id=>document.getElementById(id),view=$('view');
+$('heading').textContent=`${(DATA.report.original_overlap_m*1000).toFixed(3)} mm 从哪里来：两个不确定性包络相交`;
+document.querySelector('[data-mode="original"]').textContent=`原包络：${(DATA.report.original_overlap_m*1000).toFixed(3)} mm 的来源`;
+window.onerror=m=>$('error').textContent=m;
+const scene=new T.Scene();scene.background=new T.Color('#101a25');
+const camera=new T.PerspectiveCamera(43,1,.002,10);camera.up.set(0,0,1);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));view.prepend(renderer.domElement);
+const controls=new T.OrbitControls(camera,renderer.domElement);scene.add(new T.HemisphereLight(0xffffff,0x344c62,1.2));
+const center=new T.Vector3(-.58,-.02,.31);const axis=new T.AxesHelper(.08);axis.position.set(-.59,-.17,.18);scene.add(axis);
+const clouds=DATA.clouds.map((p,i)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p.flat(),3));const o=new T.Points(g,new T.PointsMaterial({color:i?0xf5b43c:0x3ce6dc,size:.0015}));scene.add(o);return o;});
+let boxes=[],modeName;const matrix=a=>new T.Matrix4().set(...a.flat());
+function render(){renderer.render(scene,camera);}
+function selectMode(name){
+ modeName=name;for(const o of boxes){scene.remove(o);o.geometry.dispose();o.material.dispose();}boxes=[];
+ const source=name==='original'?DATA.original:name==='updated'?DATA.updated:name==='witness'?DATA.report.witness?.boxes:[];
+ for(const b of source||[]){
+   const g=new T.BoxGeometry(...b.size_m),color=name==='original'?0xef7183:name==='updated'?0xeeb552:0x67b4f7;
+   const surface=new T.Mesh(g,new T.MeshBasicMaterial({color,transparent:true,opacity:.12,depthWrite:false,side:T.DoubleSide}));surface.matrixAutoUpdate=false;surface.matrix.copy(matrix(b.pose));scene.add(surface);boxes.push(surface);
+   const line=new T.LineSegments(new T.EdgesGeometry(g),new T.LineBasicMaterial({color}));line.matrixAutoUpdate=false;line.matrix.copy(matrix(b.pose));scene.add(line);boxes.push(line);
+ }
+ const r=DATA.report;
+ const texts={original:`旧包络 SAT 重叠：${(r.original_overlap_m*1000).toFixed(3)} mm\n保留假设：上箱 ${r.boxes[0].old_hypotheses} 组、下箱 ${r.boxes[1].old_hypotheses} 组。\n包络重叠不是实物穿入证据，也不能证明全部几何假设均相交。`,
+ updated:`新包络 SAT 重叠：${(r.updated_overlap_m*1000).toFixed(3)} mm\n保留假设：上箱 ${r.boxes[0].new_hypotheses} 组、下箱 ${r.boxes[1].new_hypotheses} 组。\n仍为几何未解；未生成计划，不以此宣称两箱实物相交。`,
+ witness:`原编码约束内存在不穿透组合。\n找到 ${r.witness?.feasible_stored_yaw_pairs} 对可行的朝向分组；当前只显示其中一组。\n满足原尺寸容差、可见面和下方支撑高度约束。不是实测唯一解，不满足完整碰撞/路径认证。`,
+ observed:'仅显示原深度帧中可信局部平面的支持点。\n这些点可以验证接触区域，但不会自动给出完整箱体边界或隐藏部分的唯一位置。'};
+ $('metric').textContent=texts[name];$('hud').textContent=({original:'原保守包络 · 不是实物外形',updated:'边界信息保留后 · 歧义仍未消除',witness:'一组互不穿透的假设 · 不是实测唯一解',observed:'实际观测到的局部面'})[name]+'\n坐标：base_link；无实际动作';
+ for(const b of document.querySelectorAll('[data-mode]'))b.setAttribute('aria-pressed',b.dataset.mode===name);render();
+}
+function reset(){camera.position.copy(center).add(new T.Vector3(.65,-.48,.34));controls.target.copy(center);controls.update();render();}
+for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>selectMode(b.dataset.mode);
+$('witness').disabled=!DATA.report.witness;$('points').onchange=()=>{for(const c of clouds)c.visible=$('points').checked;render();};$('reset').onclick=reset;
+$('image').src=DATA.image;
+for(const [name,key] of [['观测平面点','observed_plane_z_m'],['旧包络','old_envelope_z_m'],['新包络','new_envelope_z_m']]){const tr=document.createElement('tr');for(const s of [name,...DATA.report.boxes.map(b=>b[key].map(x=>(x*1000).toFixed(1)).join('–'))]){const td=document.createElement('td');td.textContent=s;tr.append(td);}$('ranges').append(tr);}
+function resize(){renderer.setSize(view.clientWidth,view.clientHeight);camera.aspect=view.clientWidth/view.clientHeight;camera.updateProjectionMatrix();render();}
+controls.addEventListener('change',render);window.onresize=resize;selectMode('original');reset();resize();window.GEOMETRY_VIEWER_READY=true;
+</script></html>

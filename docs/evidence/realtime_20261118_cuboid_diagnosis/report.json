@@ -1,0 +1,438 @@
+{
+  "scope": "GEOMETRY_DIAGNOSIS_ONLY",
+  "source_record": "outputs/field-replan-20261118-new-start/replay",
+  "source_hashes": {
+    "observation.json": "4bfd1e9831d950ec7369671e66cd03c78cdc5af1b3fd660c94747b7d79b0fc81",
+    "observation.npz": "1ef0eb044205467ca9c031895ed5e6bf959ee27eb20f852148d4c88aaaac3ec5",
+    "segmentation.npz": "2cb3a9cefbfeeb3138a6eba5aa2b5adb3a97352dcda3fc0f202e65451cede8ff",
+    "geometry.json": "d8929aec93a97f8f6623b48148ffe95b7cdedbca67fa03e613ef5b69728c35e1",
+    "planning-failures.json": "a367f74d1fbc08cf0548b3daf9ed84b225efa3cfc2967925634a52871cd13113"
+  },
+  "recovery_config": "configs/workbench/single_carton.example.json",
+  "recovery_config_sha256": "d9eff8ea32f85c138d02de128a4cd665bdb6c8df441ee5128989a322f59da56a",
+  "recovery_geometry_config": {
+    "prior_size_m": [
+      0.17,
+      0.128,
+      0.101
+    ],
+    "dimension_tolerance_m": 0.008,
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT"
+  },
+  "original_overlap_m": 0.10202609053454184,
+  "updated_overlap_m": 0.08865265961977538,
+  "boxes": [
+    {
+      "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+      "observed_plane_z_m": [
+        0.31808612519559226,
+        0.4295671868853064
+      ],
+      "old_envelope_z_m": [
+        0.2736638025886735,
+        0.47239562865052953
+      ],
+      "new_envelope_z_m": [
+        0.28547372823651535,
+        0.46719739564212187
+      ],
+      "old_hypotheses": 12,
+      "new_hypotheses": 6,
+      "old_edges": [],
+      "new_edges": [
+        {
+          "center_uv_m": [
+            0.055965781234846614,
+            0.03673182982282291
+          ],
+          "direction_uv": [
+            -0.00803217547761018,
+            -0.9999677415582449
+          ],
+          "span_m": 0.10104757242508249,
+          "support_count": 213,
+          "position_uncertainty_m": 0.005646008576761255,
+          "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+        },
+        {
+          "center_uv_m": [
+            -0.05727915714838128,
+            -0.017863211923243735
+          ],
+          "direction_uv": [
+            -0.020420173657841004,
+            0.9997914865149552
+          ],
+          "span_m": 0.13636637170027305,
+          "support_count": 180,
+          "position_uncertainty_m": 0.005456928651889945,
+          "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+        },
+        {
+          "center_uv_m": [
+            0.05456327124408727,
+            0.0002318582430368718
+          ],
+          "direction_uv": [
+            -0.10211815556470417,
+            0.9947722766060899
+          ],
+          "span_m": 0.12376375458936135,
+          "support_count": 71,
+          "position_uncertainty_m": 0.005996572808083586,
+          "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+        }
+      ]
+    },
+    {
+      "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+      "observed_plane_z_m": [
+        0.2198039986686654,
+        0.3095499204041354
+      ],
+      "old_envelope_z_m": [
+        0.15053866749034628,
+        0.37746605757851437
+      ],
+      "new_envelope_z_m": [
+        0.15145689652182234,
+        0.3759964975069643
+      ],
+      "old_hypotheses": 16,
+      "new_hypotheses": 16,
+      "old_edges": [
+        {
+          "center_uv_m": [
+            -0.07319299029730651,
+            -0.018466910867827844
+          ],
+          "direction_uv": [
+            -0.02634572874038349,
+            0.9996528910462562
+          ],
+          "span_m": 0.030107473305321777,
+          "support_count": 30,
+          "basis": "OBSERVED_PLANE_TO_FARTHER_DEPTH_BREAK"
+        }
+      ],
+      "new_edges": [
+        {
+          "center_uv_m": [
+            -0.07319299029730651,
+            -0.018466910867827844
+          ],
+          "direction_uv": [
+            -0.02634572874038349,
+            0.9996528910462562
+          ],
+          "span_m": 0.030107473305321777,
+          "support_count": 30,
+          "basis": "OBSERVED_PLANE_TO_FARTHER_DEPTH_BREAK"
+        },
+        {
+          "center_uv_m": [
+            -0.07415956361838999,
+            -0.009088404418288289
+          ],
+          "direction_uv": [
+            0.02526814439836624,
+            -0.9996807094661091
+          ],
+          "span_m": 0.0711981332884707,
+          "support_count": 132,
+          "position_uncertainty_m": 0.005730382938625015,
+          "basis": "PLANE_TO_FARTHER_BACKGROUND_WITH_BOUNDED_DEPTH_GAP"
+        }
+      ]
+    }
+  ],
+  "witness": {
+    "boxes": [
+      {
+        "hypothesis": 0,
+        "center_uv_m": [
+          -0.0024702011673206,
+          -0.0059700587180063075
+        ],
+        "size_m": [
+          0.10900000000000001,
+          0.17800000000000002,
+          0.128
+        ],
+        "pose": [
+          [
+            -0.004055828956931107,
+            0.32989994245171833,
+            0.9440071918273859,
+            -0.5954727105030663
+          ],
+          [
+            0.011671389189468301,
+            0.9439662723143494,
+            -0.32983549749434404,
+            -0.020301056636909783
+          ],
+          [
+            -0.9999236615491518,
+            0.009680118971712877,
+            -0.007678956363556139,
+            0.37680345279878624
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "z_m": [
+          0.3209546294486074,
+          0.43265227614896506
+        ],
+        "observed_face_excess_m": 0.0030000000000000027,
+        "old_envelope_excess_m": 5.551115123125783e-17
+      },
+      {
+        "hypothesis": 0,
+        "center_uv_m": [
+          -0.00394750352012813,
+          -0.004627642966985251
+        ],
+        "size_m": [
+          0.162,
+          0.09823650305828123,
+          0.128
+        ],
+        "pose": [
+          [
+            -0.07667551602774786,
+            -0.01894532550893737,
+            0.996876090536452,
+            -0.6200823975717151
+          ],
+          [
+            -0.9968206655555892,
+            -0.02026970092955146,
+            -0.0770564724441731,
+            -0.0065740325372773845
+          ],
+          [
+            0.02166624017201989,
+            -0.9996150328329346,
+            -0.017330902204484938,
+            0.26899114363858856
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "z_m": [
+          0.21702765782856967,
+          0.3209546294486074
+        ],
+        "observed_face_excess_m": -0.0002924291743005708,
+        "old_envelope_excess_m": 1.6653345369377348e-16
+      }
+    ],
+    "obb_overlap_m": -0.0010610217405607747,
+    "lower_support_top_m": 0.21702765782856967,
+    "scope": "EXISTENCE_ONLY_NOT_UNIQUE_NOT_EXECUTABLE",
+    "feasible_stored_yaw_pairs": 8
+  },
+  "geometry_status": "UNRESOLVED_NOT_PHYSICAL_PENETRATION_PROOF",
+  "hardware_execution": "NOT_RUN",
+  "permits_issued": 0,
+  "inference_rerun": false,
+  "stack_relation_joint_recovery": "NOT_IMPLEMENTED",
+  "source_unchanged": true,
+  "date": "2026-11-18",
+  "base_commit": "99d9754742eb78c05f9d789b6126b07916a79e32",
+  "source_raw_record": "outputs/single_carton/a9a1eaac54624c93ad96c5e35d33166b",
+  "test_results": {
+    "directed_pytest": {
+      "passed": 610,
+      "failed": 0,
+      "duration_s": 197.55
+    },
+    "m710_clearance_optimized": "PASS",
+    "m710_clearance_reference": "PASS",
+    "single_carton_native": {
+      "status": "PASS",
+      "audited_points": 491
+    },
+    "browser": {
+      "original": {
+        "modes": [
+          {
+            "name": "original",
+            "objects": 4
+          },
+          {
+            "name": "updated",
+            "objects": 4
+          },
+          {
+            "name": "witness",
+            "objects": 4
+          },
+          {
+            "name": "observed",
+            "objects": 0
+          }
+        ],
+        "cloud_points": [
+          7704,
+          10197
+        ],
+        "original_overlap_mm": 102.02609053454184,
+        "updated_overlap_mm": 88.65265961977538,
+        "physical_execution": "NOT_RUN",
+        "source_unchanged": true
+      },
+      "witness": {
+        "modes": [
+          {
+            "name": "original",
+            "objects": 4
+          },
+          {
+            "name": "updated",
+            "objects": 4
+          },
+          {
+            "name": "witness",
+            "objects": 4
+          },
+          {
+            "name": "observed",
+            "objects": 0
+          }
+        ],
+        "cloud_points": [
+          7704,
+          10197
+        ],
+        "original_overlap_mm": 102.02609053454184,
+        "updated_overlap_mm": 88.65265961977538,
+        "physical_execution": "NOT_RUN",
+        "source_unchanged": true
+      }
+    },
+    "source_files_unchanged": true
+  },
+  "contact_geometry_only": [
+    {
+      "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+      "diagnostic_candidates": 32,
+      "anticipated_seal_counts": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "all_observed_coverage": true,
+      "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+    },
+    {
+      "id": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+      "diagnostic_candidates": 32,
+      "anticipated_seal_counts": [
+        1,
+        2,
+        3
+      ],
+      "all_observed_coverage": true,
+      "scope": "CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+    }
+  ],
+  "classification_check": {
+    "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+    "where": null,
+    "detail": null,
+    "deadline_monotonic_s": null,
+    "classified_monotonic_s": 97460.155071124,
+    "reply_reserve_s": 0.1,
+    "targets": [
+      {
+        "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+        "status": "GEOMETRY_UNRESOLVED",
+        "candidates": null,
+        "considered": null,
+        "screened": 0,
+        "searched": 0,
+        "unsearched": "ALL_NOT_GENERATED",
+        "infeasible_candidates": 0,
+        "target_reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1 的模型包络重叠 88.653 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索"
+      },
+      {
+        "target": "9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-1",
+        "status": "GEOMETRY_UNRESOLVED",
+        "candidates": null,
+        "considered": null,
+        "screened": 0,
+        "searched": 0,
+        "unsearched": "ALL_NOT_GENERATED",
+        "infeasible_candidates": 0,
+        "target_reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0 的模型包络重叠 88.653 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索"
+      }
+    ],
+    "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+  },
+  "changes": [
+    "Retain bounded edge intervals across missing depth, veto intervening nearer occluders",
+    "Keep observed outer-edge constraints when enclosing correlated center/size ranges",
+    "Keep the envelope collision gate but classify ambiguity as GEOMETRY_UNRESOLVED, not proof of physical penetration or all-hypotheses infeasibility"
+  ],
+  "limitations": [
+    "Side-plane intercept and intersection are not yet applied to position constraints",
+    "Joint stacked-carton reconstruction is not implemented; remaining envelope overlap is unresolved",
+    "Witness uses the old encoded constraints only; not a unique recovery and not a 2.4 mm clearance certificate",
+    "No full plan passed for this record; no new inference, GPU computation, motion, valve command or permit",
+    "Configured 170x128x101 mm prior and 8 mm tolerance preserved, not remeasured in this investigation",
+    "Full prepare_plan p95 <= 2 s and physical cycle acceptance not verified"
+  ],
+  "retained_rules": {
+    "all_715_robot_tool_solids": true,
+    "all_12_cups": true,
+    "required_pair_clearance_m": 0.0024,
+    "tool_robot_reserve_m": 0.04,
+    "prior_configuration_unchanged": true,
+    "calibration_unchanged": true,
+    "q_start_unchanged": true,
+    "execution_lock_unchanged": true
+  },
+  "initial_test_failure": {
+    "log": "outputs/field-geometry-diagnosis-20261118/directed-geometry.log",
+    "reason": "New fake worker lacked required partial_observed_contact_envelope capability; corrected fixture, production gate unchanged"
+  },
+  "bound_files_sha256": {
+    "src/unloading_sim/workbench/single_carton/partial_geometry.py": "207368b17b0c4c4865441f878c1d20e5cc550c67e3079fc5186cbb51b976d306",
+    "src/unloading_sim/workbench/single_carton/budget.py": "e585bc985fbd27cc4acc9c9d7da4edae67d6c6a1ae4eb941f12a34c043d4df3f",
+    "src/unloading_sim/workbench/single_carton/planner.py": "5ffa3f6a24d71142261cc0bd482ad5cc8e7a0d2119b44585e24d3065a7bf2d0e",
+    "tests/test_single_carton_geometry_uncertainty.py": "63bfe1af4ea225ed20474455c9c03d323321125434d06a4179cc127961d633d4",
+    "tools/diagnose_field_envelopes.py": "6a18c45b3b75952781a5fa9e38a33dd5b099aa720cec6badf5e79838a95bac81",
+    "tools/search_replay/envelope_diagnosis.html": "414eafb52b040109c6fe964b9c485bf7b912e74b1b123cb88a9f635ea20b6846",
+    "docs/eco65_real_site.md": "426ea8576c3f1202650f434ab2e011712e7b21e43263cd98a73400e288fb2673",
+    "configs/workbench/single_carton.example.json": "d9eff8ea32f85c138d02de128a4cd665bdb6c8df441ee5128989a322f59da56a",
+    "outputs/field-geometry-diagnosis-20261118/pytest.log": "d2c02c62835cadc09d861b0c143eb2a76939bc006465574cf288d71bdf90f936",
+    "outputs/field-geometry-diagnosis-20261118/geometry-tests.log": "3bba921a99201d10f7fa17b9928b37db668bc7d90e31ff15be559db6fc9f1db9",
+    "outputs/field-geometry-diagnosis-20261118/new-regressions.log": "68b06c1c997b22534cbab1356c69017c7e90acd4faed505e9d48799041033104",
+    "outputs/field-geometry-diagnosis-20261118/directed-geometry.log": "dd9251b2e16e7a6aa1ecb9de837c8a9201a72f6ea836db3eec79b3d80845c23b",
+    "outputs/field-geometry-diagnosis-20261118/clearance-optimized.log": "a0ac794d884fd5359e29386515b6d697db46e270551d98c615abf09e5fecdc23",
+    "outputs/field-geometry-diagnosis-20261118/clearance-reference.log": "d25d43e99e3b37296be9afe427ec880d9c6e236374ca78fbb98f4c45d657562d",
+    "outputs/field-geometry-diagnosis-20261118/native-check.log": "ff3480d0fa665a749c23aa727ab13601ec8752d5931a5a36540db0ddf41f4f0d",
+    "outputs/field-geometry-diagnosis-20261118/contact-geometry-check.json": "c848285d187638925c0b8c165628aea690f72781c316e0022186376f89d4f89c",
+    "outputs/field-geometry-diagnosis-20261118/current-precheck/budget.json": "811291c9f691f0cfec33d626560909ab706a8124b0cae57d4b3ee62ed8214621",
+    "outputs/field-geometry-diagnosis-20261118/current-precheck/failures.json": "a6ea468b72ac76e28000061efec373b88e4c1b32740739320b94b24ac86b06a2",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/report.json": "69caf2e1c76ee7041d0d8dd4ce92820b9734ee0085d025d6a863ada6cfd18799",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/geometry.json": "76d83151de3cf6aefcec6349be9875898f987b39988556c7d9353a20151fbb48",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/index.html": "6d3ce4862d35e758822e42d5209e707590ba46624d4dc3778608b30c10df81ef",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/same-frame-segmentation.png": "8f9a13e05bb73fbeda83638ef551a9a813c04243ebd6338c2eb6f1ec0cdb09f1",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/browser-checks.json": "6d9d934c3521ebd23d9a8ed7af0f242932c77e5e50b1461bf7ecb9b52b26d79d",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/original.png": "1009c0778ca494329f8c4297129c5fcbb4101d26edf67c5524d231ec032d6e58",
+    "outputs/field-geometry-diagnosis-20261118/viewer-final/witness.png": "7278cb6fa2c95e9872134a3dfbf9f92dd5ca6d493fae35640e54e0aaa6d57a9c"
+  }
+}

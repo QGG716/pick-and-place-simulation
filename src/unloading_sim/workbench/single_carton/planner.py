@@ -401,16 +401,19 @@ class SinglePlanner(EmptyPlanner):
     def target_blocked_message(self,failure,box,source):
         pair=failure['pair'];other=pair[1] if pair[0]==box['id'] else pair[0];distance=failure.get('surface_distance_m')
         gap=f'间隙 {distance*1000:.2f} mm（要求 {failure.get("required_pair_clearance_m",0)*1000:.1f} mm）' if distance>=0 else '相交'
+        if box.get('uncertainty',{}).get('hypotheses'):
+            return (f'GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST: 保守不确定性包络与 {other} {gap}；'
+                    f'当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（{source}）')
         return (f'TARGET_PAYLOAD_BLOCKED_AT_REST: 箱体在原位时碰撞包络与 {other} {gap}；带箱脱离的起点与吸取候选无关，'
                 f'本目标所有候选都无法脱离，停止搜索（{source}）')
     def payload_rest_check(self,world,box):
         """Candidate-independent payload geometry at the box's rest pose.
 
-        At contact the attached box is exactly the observed envelope, whatever
-        the grasp; any definite intersection with a non-support world object
-        (or leaving the site workspace) rejects every candidate. Only certain
-        overlaps deeper than PAYLOAD_REST_DEPTH_M are reported here; anything
-        closer is left to the native clearance checks.
+        At contact the attached collision object is this complete envelope,
+        whatever the grasp. An intersection blocks planning with that envelope,
+        but does not prove every underlying geometry hypothesis infeasible.
+        Only model overlaps deeper than PAYLOAD_REST_DEPTH_M are reported here;
+        anything closer is left to the native clearance checks.
         """
         supports={s['id'] for s in self.detach_supports(world,box)};hits=[]
         for o in world:
@@ -422,7 +425,11 @@ class SinglePlanner(EmptyPlanner):
         if bounds:
             lo,hi=np.asarray(bounds,float);c=np.asarray(box['corners_m'],float)
             outside=bool(np.any(c<lo) or np.any(c>hi))
-        return dict(intersections=sorted(hits,key=lambda h:-h['overlap_depth_m']),outside_workspace=outside,supports=sorted(supports))
+        result=dict(intersections=sorted(hits,key=lambda h:-h['overlap_depth_m']),outside_workspace=outside,supports=sorted(supports))
+        if box.get('uncertainty',{}).get('hypotheses'):
+            result.update(geometry_basis='CONSERVATIVE_UNCERTAINTY_ENVELOPE',
+                          measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
+        return result
     def endpoint_precheck(self,q,world,box,candidate,attachment,folder,cancelled=None,solutions=None):
         """Classify a candidate's task endpoints before any path search.
 
@@ -1045,7 +1052,11 @@ class SinglePlanner(EmptyPlanner):
         self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
             hit=rest['intersections'][0] if rest['intersections'] else None
-            reason=('TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 '+
+            if rest.get('geometry_basis')=='CONSERVATIVE_UNCERTAINTY_ENVELOPE':
+                reason=('GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 '+
+                        (f"{hit['id']} 的模型包络重叠 {hit['overlap_depth_m']*1000:.3f} mm" if hit else '现场工作范围边界重叠')+
+                        '；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索')
+            else:reason=('TARGET_PAYLOAD_INTERSECTS_AT_REST: 箱体在原位时碰撞包络已与 '+
                     (f"{hit['id']} 相交 {hit['overlap_depth_m']*1000:.1f} mm" if hit else '现场工作范围边界相交')+
                     f"（共 {len(rest['intersections'])} 处）；带箱脱离的起点与吸取候选无关，本目标所有候选都无法脱离，未进行路径规划")
             progress(reason);failures.append(dict(target=box['id'],reason=reason,evidence=rest));return None
