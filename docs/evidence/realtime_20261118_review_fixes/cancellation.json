@@ -1,0 +1,71 @@
+{
+  "scope": "ACTUAL_NATIVE_PROTOCOL_SYNTHETIC_NO_DEVICES",
+  "hardware_execution": "NOT_RUN",
+  "cases": [
+    {
+      "format": "spaces",
+      "error": "CANCELLED",
+      "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+      "native_status": "ERROR",
+      "elapsed_s": 0.6261730212718248,
+      "cancellation": {
+        "request_id": "spaces-2",
+        "caller_result_invalid": true,
+        "cancel_sent": true,
+        "worker_finished": true
+      },
+      "binary_active": false,
+      "next_request": "RESET",
+      "worker_reused": true
+    },
+    {
+      "format": "compact",
+      "error": "CANCELLED",
+      "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+      "native_status": "ERROR",
+      "elapsed_s": 0.5320039335638285,
+      "cancellation": {
+        "request_id": "compact-2",
+        "caller_result_invalid": true,
+        "cancel_sent": true,
+        "worker_finished": true
+      },
+      "binary_active": false,
+      "next_request": "RESET",
+      "worker_reused": true
+    },
+    {
+      "format": "reordered_padded",
+      "error": "CANCELLED",
+      "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+      "native_status": "ERROR",
+      "elapsed_s": 0.6600065845996141,
+      "cancellation": {
+        "request_id": "reordered_padded-2",
+        "caller_result_invalid": true,
+        "cancel_sent": true,
+        "worker_finished": true
+      },
+      "binary_active": false,
+      "next_request": "RESET",
+      "worker_reused": true
+    },
+    {
+      "format": "binary",
+      "error": "CANCELLED",
+      "native_detail": "NATIVE_ABSOLUTE_DEADLINE_EXPIRED",
+      "native_status": "ERROR",
+      "elapsed_s": 0.19618150033056736,
+      "cancellation": {
+        "request_id": "binary-2",
+        "caller_result_invalid": true,
+        "cancel_sent": true,
+        "worker_finished": true
+      },
+      "binary_active": true,
+      "next_request": "RESET",
+      "worker_reused": true
+    }
+  ],
+  "status": "PASS"
+}

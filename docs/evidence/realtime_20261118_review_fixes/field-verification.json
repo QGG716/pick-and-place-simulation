@@ -1,0 +1,112 @@
+[
+  {
+    "name": "field-contained-313f32ad",
+    "command": [
+      ".venv/bin/python",
+      "docs/evidence/realtime_20261117_review2/check_field_endpoints.py",
+      "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/313f32ad66a240798df17905025edc89",
+      "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/outputs/review18-field/field-contained-313f32ad"
+    ],
+    "returncode": 0,
+    "elapsed_s": 183.43814684823155,
+    "acceptance": true,
+    "summary": {
+      "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+      "physical": "NOT_RUN",
+      "sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+      "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/313f32ad66a240798df17905025edc89",
+      "boxes": 1,
+      "scene_objects": 40,
+      "replay": {
+        "recorded": 2412,
+        "served": 2412,
+        "unused": 0
+      },
+      "all_identical": true,
+      "source_record_unchanged": true,
+      "permits_issued": 0
+    },
+    "targets": [
+      {
+        "id": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+        "candidates": 32,
+        "identical": true,
+        "outcomes": {
+          "PYTHON": {
+            "REJECTED": 13,
+            "CLEAR": 12,
+            "NOT_CONCLUSIVE": 7
+          },
+          "NATIVE": {
+            "REJECTED": 13,
+            "CLEAR": 12,
+            "NOT_CONCLUSIVE": 7
+          }
+        }
+      }
+    ],
+    "input_sha256": {
+      "observation.json": "4ace556eff21bc157eb8ed4339fdf06b110524d7caebfa819ef9d2eb7f04d42a",
+      "observation.npz": "3d0f3e3bc2e2dae3150f731701c4d6afb31bab8e1458f8c91fba0371c918c8ff",
+      "segmentation.npz": "741623ef5148210c3e249276dd582b3022627aea2baac61566e5dfc356bd605e",
+      "geometry.json": "2b41f9ba192fdd98299782dc3e60163e7602db3b8b0554adabd28dac3d63e8ea",
+      "site-scene.json": "ecb710c61aba39ee00e0598a7a69be807335f1d123d68a115a38aebb135f9d4d"
+    },
+    "report_sha256": "41542b595e02e1d2f51e0026b03283efd3ebdebbfa45c8d55c8a58020d2721ba"
+  },
+  {
+    "name": "field-contained-6966ce4b",
+    "command": [
+      ".venv/bin/python",
+      "docs/evidence/realtime_20261117_review2/check_field_endpoints.py",
+      "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/6966ce4b0141495993727b6d72815637",
+      "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/outputs/review18-field/field-contained-6966ce4b"
+    ],
+    "returncode": 0,
+    "elapsed_s": 183.31283865869045,
+    "acceptance": true,
+    "summary": {
+      "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+      "physical": "NOT_RUN",
+      "sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+      "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/6966ce4b0141495993727b6d72815637",
+      "boxes": 1,
+      "scene_objects": 38,
+      "replay": {
+        "recorded": 2405,
+        "served": 2405,
+        "unused": 0
+      },
+      "all_identical": true,
+      "source_record_unchanged": true,
+      "permits_issued": 0
+    },
+    "targets": [
+      {
+        "id": "3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0",
+        "candidates": 32,
+        "identical": true,
+        "outcomes": {
+          "PYTHON": {
+            "REJECTED": 11,
+            "CLEAR": 11,
+            "NOT_CONCLUSIVE": 10
+          },
+          "NATIVE": {
+            "REJECTED": 11,
+            "CLEAR": 11,
+            "NOT_CONCLUSIVE": 10
+          }
+        }
+      }
+    ],
+    "input_sha256": {
+      "observation.json": "bad31c6fd0c0e5ef5bf80081e2b7e5cde555e0899ea546c1cf1c17df2d3163e6",
+      "observation.npz": "f4cf11ad79565f333e4ccfa597e084314f0cb7f5f2246e228cc2d4e62482f4b7",
+      "segmentation.npz": "586065a2032a7879ede0ca72237dbc2c0cae46b5adf2ad3f5f45245c726599c1",
+      "geometry.json": "054ce2978752a9311f41d83f6ad4249a7a1dc99918cf81540e5fb6caa659a586",
+      "site-scene.json": "665ace5ab1c1222854027f732f53a52e97321a26da683d2a6671e9f76f45b05e"
+    },
+    "report_sha256": "a58fc58ebe4b9408267806dc43a33336ca90986bc67934fcf135420df5e1650b"
+  }
+]

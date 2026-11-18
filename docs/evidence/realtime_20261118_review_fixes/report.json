@@ -1,0 +1,373 @@
+{
+  "schema": "eco65_review2_gpu_followup_v1",
+  "date": "2026-11-18",
+  "repository": "QGG716/pick-and-place-simulation",
+  "branch": "feat/v0.6-eco65-ubuntu-real-integration",
+  "review_base": "2bd36a93063eeae77c05ad263abfaa9f62bf7f2a",
+  "actual_start_head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+  "final_code_sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+  "commits": [
+    {
+      "sha": "b64ed900cd9a207aeea1c25ac8584eb25717293e",
+      "title": "fix(eco65): keep evidence thread startup off expired planning callers"
+    },
+    {
+      "sha": "f1d2a982f7dda3883a0a213a92d65a3f09c1f0ef",
+      "title": "fix(eco65): fail numeric acceptance CLI on mismatches and close workers"
+    },
+    {
+      "sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+      "title": "test(eco65): retain invalid timing cases and diagnose coefficient rounding"
+    }
+  ],
+  "delivery_commit": "The containing Git commit adds documentation and evidence only.",
+  "prior_r2_fixes": "Preserved all six R2 fixes and supplemental cancellation/count/discovery fixes; latest source also retains field-posture diagnosis.",
+  "changes": [
+    {
+      "id": "R2-03-followup",
+      "commit": "b64ed90",
+      "cause": "Starting evidence threads on an expired caller can block on thread startup/GIL scheduling.",
+      "before": {
+        "budget_s": 0.1,
+        "unchanged_limit_s": 0.15,
+        "planner_returns_s": [
+          0.35239813290536404,
+          0.3511482309550047
+        ],
+        "manager_return_s": 0.6033726669847965
+      },
+      "fix": "Reuse existing task thread after rollback/cleanup, and existing task journal for rejection/timing. Receipts and lifecycle fields expose completion and write/dispatch failures.",
+      "tests": "tests/test_review2_deadline_record.py",
+      "focused": "22 passed including existing evidence/start/timing gates; 5 new regressions"
+    },
+    {
+      "id": "F-acceptance-tool-followup",
+      "commit": "f1d2a98",
+      "cause": "CLI returned 0 for non-equivalent values, crashed while summarizing a decision mismatch, and leaked the client on worker errors.",
+      "fix": "Return 1 on failed acceptance, retain mismatched outcomes/null unavailable numeric statistics, close client in finally, record actual scales and versions.",
+      "tests": "tests/test_review2_prepare_report.py",
+      "focused": "4 passed; all original numeric thresholds retained"
+    },
+    {
+      "id": "numeric-diagnosis",
+      "commit": "8041a3c",
+      "scope": "Read-only coefficient probe and diagnostic reconstruction; no production arithmetic changes.",
+      "report": "rounding.json"
+    }
+  ],
+  "verification": "verification.json",
+  "collection": "collection.json",
+  "field": "field-verification.json",
+  "acceptance": {
+    "steps_1_to_7_accepted": false,
+    "gpu_directed": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "665",
+        "time": "499.312",
+        "timestamp": "2026-11-18T12:38:01.916960+08:00",
+        "hostname": "autodl-container-1b1ts70xtl-649162c4"
+      }
+    ],
+    "gpu_failures": [
+      {
+        "name": "test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused",
+        "message": "assert (set())\n +  where set() = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080>.abandoned\n +    where <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080> = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5d536b0730>.last_task_context"
+      },
+      {
+        "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+        "message": "assert (False)\n +  where False = <function all at 0x7f5ea17d2670>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7f5ea17d2670> = np.all"
+      }
+    ],
+    "deadline_bound": "NOT_STABLY_PASSED; current directed results do not erase prior 167.733 ms failure or prove OS causality",
+    "prepare_numeric": "FAILED_UNCHANGED_1e-12",
+    "numeric_saved": {
+      "cases": 193,
+      "identical": 160,
+      "prepared": 33,
+      "worst_max_abs": {
+        "t": 0.0,
+        "q": 1.6653345369377348e-14,
+        "v": 9.708311086466248e-12,
+        "a": 1.8383592925719228e-08,
+        "collision_path": 1.8207657603852567e-14,
+        "analytic_speed_bounds_rad_s": 9.499345754448996e-15,
+        "send_duration_s": 0.0
+      }
+    },
+    "numeric_historical": {
+      "cases": 11,
+      "identical": 8,
+      "prepared": 3,
+      "worst_max_abs": {
+        "t": 0.0,
+        "q": 3.774758283725532e-15,
+        "v": 2.204125286736673e-13,
+        "a": 9.315828276854907e-12,
+        "collision_path": 3.774758283725532e-15,
+        "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+        "send_duration_s": 0.0
+      }
+    },
+    "saved_endpoint_equivalence": [
+      {
+        "name": "field-contained-313f32ad",
+        "accepted": true,
+        "summary": {
+          "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+          "physical": "NOT_RUN",
+          "sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/313f32ad66a240798df17905025edc89",
+          "boxes": 1,
+          "scene_objects": 40,
+          "replay": {
+            "recorded": 2412,
+            "served": 2412,
+            "unused": 0
+          },
+          "all_identical": true,
+          "source_record_unchanged": true,
+          "permits_issued": 0
+        },
+        "targets": [
+          {
+            "id": "145f9d64-5c2f-409f-9880-8724fc5815fa-carton-0",
+            "candidates": 32,
+            "identical": true,
+            "outcomes": {
+              "PYTHON": {
+                "REJECTED": 13,
+                "CLEAR": 12,
+                "NOT_CONCLUSIVE": 7
+              },
+              "NATIVE": {
+                "REJECTED": 13,
+                "CLEAR": 12,
+                "NOT_CONCLUSIVE": 7
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "field-contained-6966ce4b",
+        "accepted": true,
+        "summary": {
+          "scope": "SAVED_REAL_RGBD_ENDPOINT_SCREENING_ONLY_NO_PLAN_NO_PERMIT",
+          "physical": "NOT_RUN",
+          "sha": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+          "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/new-field/6966ce4b0141495993727b6d72815637",
+          "boxes": 1,
+          "scene_objects": 38,
+          "replay": {
+            "recorded": 2405,
+            "served": 2405,
+            "unused": 0
+          },
+          "all_identical": true,
+          "source_record_unchanged": true,
+          "permits_issued": 0
+        },
+        "targets": [
+          {
+            "id": "3d7caa95-ea4e-4f31-9047-ea20d0adf38d-carton-0",
+            "candidates": 32,
+            "identical": true,
+            "outcomes": {
+              "PYTHON": {
+                "REJECTED": 11,
+                "CLEAR": 11,
+                "NOT_CONCLUSIVE": 10
+              },
+              "NATIVE": {
+                "REJECTED": 11,
+                "CLEAR": 11,
+                "NOT_CONCLUSIVE": 10
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "full_scheduling": "NO_COMPLETE_SAMPLES",
+    "new_field_20_samples": "NOT_COMPLETED",
+    "planning_p95_2s": "NOT_PROVEN",
+    "success_rate_baseline": "NOT_COMPARED",
+    "physical": "NOT_RUN",
+    "workspace_reuse": "NOT_IMPLEMENTED"
+  },
+  "invariants": {
+    "execution_lock": "LOCKED",
+    "tool_robot_gap_m": 0.04,
+    "wrist_limits": "PRESERVED",
+    "configs_and_assets_changed": false,
+    "python_prepare_reference_changed": false,
+    "native_prepare_arithmetic_changed": false,
+    "module_defaults_and_optimization_switches": "UNCHANGED",
+    "hardware_connections": false,
+    "motion_or_valve_commands": false,
+    "new_device_collection": false,
+    "dependencies_upgraded": false,
+    "git_history_rewritten": false
+  },
+  "retained_failures": [
+    "Prior review2 deadline and numeric failures remain historical evidence.",
+    "New before tests: 2 planner return failures, 1 complete manager return failure.",
+    "CLI before: four regression failures including compatibility-control metadata; three functional paths targeted.",
+    "CLI first after: 3 failed/1 passed because fixture incorrectly excluded intentional scale=.5 case; corrected to assert that retained invalid value explicitly.",
+    "First field endpoint attempts rejected ATTEMPT_JOURNAL_OPEN_FAILED: output directory outside chroot was not visible to native process. Retried with new output directories inside the shared checkout; original attempts retained.",
+    "test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused",
+    "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior"
+  ],
+  "numeric_diagnosis": {
+    "scope": "READ_ONLY_COEFFICIENT_DIAGNOSIS_NOT_NUMERIC_ACCEPTANCE",
+    "source": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+    "source_sha256": "472172c0ff75dfaeac96c2a04bcc644045c7e883a7d85302a957095b3d56dc4a",
+    "comparison_sha256": "5cc652c1f834906561b82ad5034e8302738c67fc9c533505cf3d549d5fb64dd7",
+    "time_scale": 1.5,
+    "period_s": 0.005,
+    "worker_max_abs": {
+      "t": 0.0,
+      "q": 1.532107773982716e-14,
+      "v": 9.708311086466248e-12,
+      "a": 1.8383592925719228e-08,
+      "collision_path": 1.532107773982716e-14,
+      "analytic_speed_bounds_rad_s": 1.4849232954361469e-15,
+      "send_duration_s": 0.0,
+      "scaled_duration_s": 0.0,
+      "source_duration_s": 0.0,
+      "terminal_hold_s": 0.0
+    },
+    "coefficient_max_abs": 0.0006103515625,
+    "coefficient_max_index": [
+      1,
+      240,
+      2
+    ],
+    "interval_duration_s": 0.0015842895000020008,
+    "scalar_power_diagnostic_vs_native_coeff_max_abs": 0.0,
+    "coefficient_only_evaluation_max_abs": {
+      "q": 1.532107773982716e-14,
+      "v": 9.708311086466248e-12,
+      "a": 1.8383592925719228e-08
+    },
+    "array_vs_scalar_power_differences": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 89,
+      "4": 3,
+      "5": 76
+    },
+    "compiler_command": [
+      "g++",
+      "-std=c++17",
+      "-O3",
+      "-I/usr/include/eigen3",
+      "-I/root/autodl-tmp/system-disk-relocated-20261118/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/ros2/m710_moveit_backend/src",
+      "/root/autodl-tmp/system-disk-relocated-20261118/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/docs/evidence/realtime_20261118_review_fixes/prepare_coefficients.cpp",
+      "-o",
+      "/root/autodl-tmp/eco65-review2-20261118/rounding/prepare_coefficients"
+    ],
+    "probe_sha256": "28feb661f944f92470167f13078f478bd54a21ccc837fa507ffb3a7f93dafc42",
+    "native_header_sha256": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451",
+    "environment": {
+      "python": "3.10.12",
+      "numpy": "1.26.4",
+      "scipy": "1.14.1"
+    },
+    "python_reference_changed": false,
+    "tolerance": 1e-12,
+    "physical": "NOT_RUN"
+  },
+  "next_stage": "Separate worker-local collision workspace reuse: complete model/scene/attachment/stage-contact/pair-policy/margin/mode keys, reset invalidation, same-record EXACT comparisons, construct-count/time/memory/cancel evidence. Measure N to K; expected reduction N-K, not a claimed result here.",
+  "directed_groups": {
+    "tests.test_single_carton_deadline": {
+      "tests": 24,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_close_races": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_commit_budget": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_deadline_record": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_metrics": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_prepare_report": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_start_boundary": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_timing": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review2_wrist_composite": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "tests.test_review_lifecycle": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "unanswered_failure_scope": {
+    "stage": "BUDGET_EXHAUSTED_IN_SCREENING",
+    "recorded_plan_requests": 0,
+    "deadline": 9651071.061438084,
+    "caller_returned": 9651071.06166652,
+    "cleanup_finished": true,
+    "interpretation": "Full-set failure occurred before the injected blocking plan request; retained, not evidence of a confirmed missed worker quarantine."
+  },
+  "unanswered_isolated_recheck": {
+    "result": "1 passed, same code and unchanged test",
+    "requests": [
+      {
+        "file": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/real-observation-box-0-0/contact-pilz-native.json",
+        "stage": "contact",
+        "status": "REQUEST_FAILED"
+      }
+    ],
+    "does_not_replace_full_set_failure": true
+  },
+  "raw_junit_evidence": {
+    "path": "pytest-final.xml",
+    "sha256": "36872e477b8a68c826c8b4b6b3ce642062f54f67d8cffa68ec1374db3f4f567b",
+    "preservation": "Unmodified JUnit bytes, including the original whitespace-only source line in the failure trace. This one raw evidence artifact is excluded from the source-format whitespace check."
+  }
+}

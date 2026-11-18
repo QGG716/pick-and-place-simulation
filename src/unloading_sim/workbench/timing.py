@@ -296,7 +296,37 @@ def native_request(client, payload, *, record=None, **kwargs):
     return result
 
 
-def write_later(path, phase, extra=None, since=None):
+class WriteReceipt:
+    """Observable completion of a write dispatched to an existing worker."""
+    def __init__(self, write):
+        self.write = write
+        self.error = None
+        self.done = threading.Event()
+
+    def __call__(self):
+        try:self.write()
+        except Exception as error:self.error = error
+        finally:self.done.set()
+
+    def fail(self, error):
+        self.error = error
+        self.done.set()
+
+    def join(self, timeout=None):
+        self.done.wait(timeout)
+
+    def is_alive(self):
+        return not self.done.is_set()
+
+
+def dispatch_write(write, dispatch):
+    receipt = WriteReceipt(write)
+    try:dispatch(receipt)
+    except Exception as error:receipt.fail(error)
+    return receipt
+
+
+def write_later(path, phase, extra=None, since=None, dispatch=None):
     """Hand this phase's events to a background writer; returns immediately."""
     if not ENABLED:
         return None
@@ -304,6 +334,9 @@ def write_later(path, phase, extra=None, since=None):
     payload = dict(schema='eco65_timing_v1', phase=phase, clock='time.monotonic',
                    written_after_phase=True, measurement_overhead_s=overhead,
                    events=events, **(extra or {}))
+
+    if dispatch is not None:
+        return dispatch_write(lambda: Path(path).write_text(json.dumps(payload, default=str)), dispatch)
 
     def run():
         try:

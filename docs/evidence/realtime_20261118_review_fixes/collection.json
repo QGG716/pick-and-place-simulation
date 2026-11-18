@@ -1,0 +1,614 @@
+{
+  "head": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+  "hostname": "autodl-container-1b1ts70xtl-649162c4",
+  "python": "3.10.12",
+  "checks": [
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "lifecycle-baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review_lifecycle.py",
+        "tests/test_review2_commit_budget.py",
+        "--junitxml=/root/autodl-tmp/eco65-review2-20261118/lifecycle-baseline.xml"
+      ],
+      "returncode": 0,
+      "elapsed_s": 70.03586362116039,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "deadline-record-before",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_deadline_record.py",
+        "--junitxml=/root/autodl-tmp/eco65-review2-20261118/deadline-record-before.xml"
+      ],
+      "returncode": 1,
+      "elapsed_s": 4.7327531185001135,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "manager-record-before",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_deadline_record.py",
+        "-k",
+        "prepare_plan"
+      ],
+      "returncode": 1,
+      "elapsed_s": 3.4178391117602587,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "deadline-record-after",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_deadline_record.py",
+        "tests/test_single_carton_deadline.py"
+      ],
+      "returncode": 0,
+      "elapsed_s": 36.28314984217286,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "deadline-record-final",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_deadline_record.py",
+        "tests/test_review2_start_boundary.py",
+        "tests/test_review2_timing.py",
+        "tests/test_review_evidence_gate.py",
+        "tests/test_review_timing.py",
+        "--junitxml=/root/autodl-tmp/eco65-review2-20261118/deadline-record-final.xml"
+      ],
+      "returncode": 0,
+      "elapsed_s": 11.937532739713788,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "prepare-report-before",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_prepare_report.py"
+      ],
+      "returncode": 1,
+      "elapsed_s": 1.361793164163828,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "prepare-report-after",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_prepare_report.py"
+      ],
+      "returncode": 1,
+      "elapsed_s": 1.3204030133783817,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "2d5b5b5195dc0b165184e1439e89aa9a1d60a8cc",
+      "name": "prepare-report-final",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_review2_prepare_report.py"
+      ],
+      "returncode": 0,
+      "elapsed_s": 1.1486828029155731,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    },
+    {
+      "head": "8041a3c687f5e0b72d7e5c02cd0668d647c2d09b",
+      "name": "unanswered-isolated",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_single_carton_deadline.py::test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused",
+        "--basetemp=/root/autodl-tmp/eco65-review2-20261118/unanswered-isolated-tmp",
+        "--junitxml=/root/autodl-tmp/eco65-review2-20261118/unanswered-isolated.xml"
+      ],
+      "returncode": 0,
+      "elapsed_s": 4.011206571012735,
+      "environment": {
+        "PYTHONPATH": "/root/m710-gap-search-20261107/rootfs/work-eco65-review2-20261118/src",
+        "CPLUS_INCLUDE_PATH": "/root/autodl-tmp/eco65-review2-20261117/include",
+        "OPENBLAS_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null
+      }
+    }
+  ],
+  "artifacts": {
+    "verification.json": {
+      "sha256": "ec60a7ca61edbe581bc3d9331e85f2c13b5563c93815dcc08c881c2699940f45",
+      "bytes": 5527
+    },
+    "native-build-checks.json": {
+      "sha256": "2cb9336cffd489bad7b838130e745a561b569e4ebbb35c418a3d34e31371515b",
+      "bytes": 1931
+    },
+    "pytest-final.xml": {
+      "sha256": "36872e477b8a68c826c8b4b6b3ce642062f54f67d8cffa68ec1374db3f4f567b",
+      "bytes": 97950
+    },
+    "prepare-saved.json": {
+      "sha256": "5cc652c1f834906561b82ad5034e8302738c67fc9c533505cf3d549d5fb64dd7",
+      "bytes": 140636
+    },
+    "prepare-historical.json": {
+      "sha256": "f212f5d4afd8f3e16765e72eda7b4b06d2c1a1b2bedcb24ef43ab9143530eca3",
+      "bytes": 10104
+    },
+    "rounding/report.json": {
+      "sha256": "69d973d7394ab8671f1e3c8b6bf88354ed16d43837b044c40c4e1a7fe496ac30",
+      "bytes": 2139
+    },
+    "cancellation/report.json": {
+      "sha256": "3d53ddb199ea0b5f41658d78ccdbbdf72e464007aad8b20f7fcbcc3caae91f9c",
+      "bytes": 1966
+    },
+    "native-component/result.json": {
+      "sha256": "cad218c2ab9c0c21096a468c0157bf47864d4f0022c65bd5b96dea21be3997e0",
+      "bytes": 233143
+    },
+    "deferral-scope/report.json": {
+      "sha256": "8412a2b1e6b9887638e59f9a1f1e1e59a0250a56c36c8cdceafd348594d981f5",
+      "bytes": 396
+    }
+  },
+  "inputs": [
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-native.json",
+      "sha256": "c4ef2a28509c8fe78e18abee465c239da4d8db521d11cdf3e511c7ce89ace28a",
+      "bytes": 811147
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/approach-pilz-native.json",
+      "sha256": "679041dc64aba3e6968f19c0bdf1740e89112b4322e6281bedb19f3d0c1b851e",
+      "bytes": 811250
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-native.json",
+      "sha256": "eb47296dcaf034c94549b7bdcd792f37161271449853fd31b8cce1e5b2149bf2",
+      "bytes": 741783
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/contact-pilz-s0.25-native.json",
+      "sha256": "cf4275fe9951510ac41f5274796f80c2175a0c57c46998f54c7f84f4b963c15a",
+      "bytes": 741886
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-native.json",
+      "sha256": "850eab868e130808d22b72a6e0b73d4492e33548a96adc986ad0dbc2b3e1c198",
+      "bytes": 762569
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-0/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "a527b8d261499b3e54bf97cbb9ee208973eab48780e1f667210e059dd9a37181",
+      "bytes": 762672
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-native.json",
+      "sha256": "218034d37d518b3f8c3f206777770aadefb71d89b9e7a20daca65db303953da3",
+      "bytes": 741744
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/contact-pilz-s0.25-native.json",
+      "sha256": "963d8d8fa5cb48c9f2e9bd0c146df09fd1c1dd800be9899368766dead4233706",
+      "bytes": 741847
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-native.json",
+      "sha256": "80046b6e46795063832ac23210267bf79f9cb904cd115eb013ba2000a1193234",
+      "bytes": 747438
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-10/detach-diagonal_45-pilz-s0.25-native.json",
+      "sha256": "3388fe2873b0d3460db4d75b08553633af9d05fad2d2069d1cd8763899d7245a",
+      "bytes": 747541
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-native.json",
+      "sha256": "a758cd5e3040d13835c1e3925e6f7c900d7002594b82d7ec08737ee0060bc124",
+      "bytes": 741746
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/contact-pilz-s0.25-native.json",
+      "sha256": "4c9339a4034fabff4661ef7c75f1ccd33b3509a6d28fdbd88ed40c444099f902",
+      "bytes": 741849
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-native.json",
+      "sha256": "3b9f66b517781b6ea84bc02bc127c686cd203fbacfad7d8f75e29428a118aacd",
+      "bytes": 762308
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-11/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "28459cd66e6a9b66bba41e7baafb6eaf2b44393b6e26f7fd7e64e0660ae4ff5e",
+      "bytes": 762411
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-native.json",
+      "sha256": "472172c0ff75dfaeac96c2a04bcc644045c7e883a7d85302a957095b3d56dc4a",
+      "bytes": 809160
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/approach-pilz-native.json",
+      "sha256": "53d9be3c19201b572220e03575f668d55c21ac863bda531a4b25935b76b7c55c",
+      "bytes": 809263
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-native.json",
+      "sha256": "5347a569ddf6762236983f95f8d151033555ba75b0d25c4b9d8505ecb83e8192",
+      "bytes": 749627
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/contact-pilz-s0.1-native.json",
+      "sha256": "ce908c4bf9fb7ee341eecd69bf523cce610b3134baf5a4b21347579e266a1e74",
+      "bytes": 749730
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-native.json",
+      "sha256": "861bf9410868a9d0354d0ed17662f97760c64a2c643394f0ad11425d0775bd33",
+      "bytes": 762521
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-14/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "34164769e9d538b5c86d4dc86c7cecda25e849b3879749cc02ac805aba113695",
+      "bytes": 762624
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-native.json",
+      "sha256": "f664cd5aa57911ea966c27791f610ea1b46ff5bca7c8d05e3bdefbb6ff0d20f8",
+      "bytes": 810490
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/approach-pilz-native.json",
+      "sha256": "bed58d02c9acba7f3d5fe4c242eba5b1e863c8010e1aae06f6a6a3c7d51da2bf",
+      "bytes": 810593
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-native.json",
+      "sha256": "3a79a7fdd08c39c526e6466658248a95b01154d5e236287a3c05d2553bbdfa5d",
+      "bytes": 741830
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/contact-pilz-s0.25-native.json",
+      "sha256": "eafd8dd3a3464244641bc051d29f43f9fbbaa4d6bab1ad22fa54fee31546e56c",
+      "bytes": 741933
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-native.json",
+      "sha256": "0ff6cc906a1e8edbcbb1a17c7134d5bd4041e536dd875b101633536fb037106b",
+      "bytes": 762653
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-16/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "c8bf811192a2dccdde283bd4a2a6b2da2e6bbc671155d7f7cafec5413ef977e2",
+      "bytes": 762756
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-native.json",
+      "sha256": "de4953b5c087f13b4c41f20336e15fe1615dab55e5cea9da89c6a206e4ba46c8",
+      "bytes": 814472
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/approach-pilz-native.json",
+      "sha256": "8cc5b426c0b099e7cf92078594e09ac5f2bc31f764349c3be5c1b2519530a0fa",
+      "bytes": 814574
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-native.json",
+      "sha256": "5269427a7fc95b4f2bff158ea950099a4543d31b494993f75bad9e1e0c243bad",
+      "bytes": 741703
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/contact-pilz-s0.25-native.json",
+      "sha256": "bd9d6cbb12999763ea2e12b7fe1dc7f5391dd52ac0e519042ab5cb53572e3288",
+      "bytes": 741806
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-native.json",
+      "sha256": "1fb7fa4f77fdf5ef0184d9070b0504fe35b5d86ab5954ff646e9e8cb524a596e",
+      "bytes": 762607
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "963d931a3814c9f8dbfb19a63169e3e6fb739d7be52264f9cb011abc5c7e0932",
+      "bytes": 762709
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-native.json",
+      "sha256": "8f7f9297714909e9c984148667caa61c1ac44ace50e2d1f849e9b0e4e2bef017",
+      "bytes": 814189
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-18/return-pilz-native.json",
+      "sha256": "4f258ed3c058132a455e046bf5421aea2f7ddf5e354e018a59651b861aa4e647",
+      "bytes": 814291
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-native.json",
+      "sha256": "d1fb988b764c13651d405fb7593fcb5cae5a2278e7948c7c00fd33a79ddb1283",
+      "bytes": 741765
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/contact-pilz-s0.25-native.json",
+      "sha256": "5f91528edc1f2084047cc429eb88f8bb26eb73ed555172ff19715da69a978e6d",
+      "bytes": 741868
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-native.json",
+      "sha256": "f4551780163992043224d9850d341bbc4b298f2cbd4f7ececed760b1aec442ee",
+      "bytes": 747456
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-2/detach-diagonal_45-pilz-s0.25-native.json",
+      "sha256": "ee126689e95730026e4b4220392cf8746749e9e3ebb09e7ee97d6aa52f4b25cf",
+      "bytes": 747559
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-native.json",
+      "sha256": "544c38fbd791ccbd9b58c9bddd7c60344df74c5a8dbf2361d1ee22d4b695f0bb",
+      "bytes": 741540
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/contact-pilz-s0.25-native.json",
+      "sha256": "9817e0b3b260450b6d536506daf6686a30b9945f34c2d49311055a68d1140987",
+      "bytes": 741643
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-native.json",
+      "sha256": "a447f686fc5ccdd6ed3b2e35c7b2ca3b1fff86f810ed98116221a2235ba61857",
+      "bytes": 747330
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-20/detach-diagonal_45-pilz-s0.25-native.json",
+      "sha256": "98d8065252ef02acd8d0ff188089d92d9fd8bb0ea1f8054d172e8309022ca28b",
+      "bytes": 747433
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-native.json",
+      "sha256": "5e52d16be2dfda621776d2f23b72db82334c8bfcbdeb9c677c37571a46bdddd3",
+      "bytes": 741584
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/contact-pilz-s0.25-native.json",
+      "sha256": "07730d74ca8cc6a36a4e33774d6ab64f266c1778d8857b0938f988fb22334c85",
+      "bytes": 741686
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-native.json",
+      "sha256": "70aed874482f50fb84f576d6dde96cee19884c780260ee930b108da2079a077c",
+      "bytes": 762273
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-22/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "4cd46bf472084209185713b137b5defedab698d3b2d8f1d15c1fae50d02bcc9e",
+      "bytes": 762376
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-native.json",
+      "sha256": "1aa1be1c4a9436ad80c2d4ba4b95dca648160c0da78a531acb789aa257b800e7",
+      "bytes": 741753
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/contact-pilz-s0.25-native.json",
+      "sha256": "f6fa1c91f4b2a674d2fbae4f24706ed4c5a1d0a5f55d7aa6396db95f7f77550a",
+      "bytes": 741856
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-native.json",
+      "sha256": "036dc0c80f0e5f23ae2b017c9af637684ec8a4dfea4349444593ab31a287782d",
+      "bytes": 762396
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-6/detach-diagonal_45-pilz-s0.1-native.json",
+      "sha256": "cd05fe54ae68c1ea54ad66384f15f9990b11bc93530d7bc8eba0742d4a20e4b8",
+      "bytes": 762499
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-native.json",
+      "sha256": "14276aee4d1777750062ff4665e447208974056c661835534a68ca92b5a8e699",
+      "bytes": 741677
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/contact-pilz-s0.25-native.json",
+      "sha256": "6805ee413cf20b0a3223b5020f57f4154e2a9599542754ee89082f134a3d08ae",
+      "bytes": 741780
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-native.json",
+      "sha256": "dfc2997370156a351f1c82939925a608eb1286c8fa3b74a901907a08ccad9de5",
+      "bytes": 747424
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review2-20261117/inputs/saved-trajectories/847f8edd-78fa-4936-8d58-0714ef3bc5a0-carton-0-8/detach-diagonal_45-pilz-s0.25-native.json",
+      "sha256": "9047e5b72f91d58c223748b89f4c9e0de9cbbe167548dcf89ad954440016798b",
+      "bytes": 747527
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+      "sha256": "8bb8669a77ae95e705ea6882587f5f254838fddc64d38c799966771d340cb101",
+      "bytes": 274408
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-pilz-native.json",
+      "sha256": "0978da5fb5af7c34415c6927fcaed0373a6bf3a382f478c8cba485baff8257e2",
+      "bytes": 274511
+    },
+    {
+      "path": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-sent-native.json",
+      "sha256": "213f60dccd85fb2a1574160c23c14344573f69168fbf7a24071b3918e611841e",
+      "bytes": 332159
+    }
+  ],
+  "source": {
+    "src/unloading_sim/workbench/single_carton/lifecycle.py": {
+      "sha256": "b6af2ba8eac7d5d7c3a2c844beb91fe1b1185ed26c021a39e03672d7f41f9679",
+      "matches_commit": true
+    },
+    "src/unloading_sim/workbench/single_carton/runtime.py": {
+      "sha256": "7496dc8a5bba63b3cc48fb1513a66b6a1da1c71298bf6c37816b2702e9e0b572",
+      "matches_commit": true
+    },
+    "src/unloading_sim/workbench/timing.py": {
+      "sha256": "61a251b72c9a630d1c1ab06fb7202b3a00c11ac24adbd02b8c342775f078e2cd",
+      "matches_commit": true
+    },
+    "src/unloading_sim/workbench/controlled/trajectory.py": {
+      "sha256": "c09144cef49d2984c6790920aebe89952c438be687b8e4dd3e5f5610566eb2af",
+      "matches_commit": true
+    },
+    "ros2/m710_moveit_backend/src/native_prepare.h": {
+      "sha256": "92b5c5f18828937458857541cb6a44bfb53a119548e7a1c98bdcf5c3514d5451",
+      "matches_commit": true
+    },
+    "ros2/m710_moveit_backend/src/sc_composite.h": {
+      "sha256": "a9709fba3e1e1614572e5bae2607807f9fafe6c2bef9d4afad4c82995b085e83",
+      "matches_commit": true
+    },
+    "ros2/m710_moveit_backend/src/worker.cpp": {
+      "sha256": "40aa8ee795daf826d3643f371076f62b8084c533a79d9868d49af94312f689d2",
+      "matches_commit": true
+    },
+    "tools/check_native_prepare.py": {
+      "sha256": "8b04e430472da9cf04d0c0e76d7b1fb5b723e188f1a44e4bcab333bc4e4f176e",
+      "matches_commit": true
+    },
+    "tests/test_review2_deadline_record.py": {
+      "sha256": "f2b6354ac9005f7a18e237123450844bad8cd992bbf41d0e795b795fc96119f3",
+      "matches_commit": true
+    },
+    "tests/test_review2_prepare_report.py": {
+      "sha256": "8c5fb9c9c9c46de7d5970299a4abf270a5546d8dc11ab70d33e163e16640288e",
+      "matches_commit": true
+    },
+    "install/moveit/lib/m710_moveit_backend/m710_moveit_worker": {
+      "sha256": "fdc2f410522fa4ce67237952671ee1e07340e716c887819913d65f67fa1b9c44"
+    },
+    "build/moveit/m710_clearance_test": {
+      "sha256": "2d8d72e41fd2fcc8086e0c2f9113a726c7197e2afbabd15113e872ccf9e70e90"
+    }
+  },
+  "pytest": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "2",
+      "skipped": "0",
+      "tests": "665",
+      "time": "499.312",
+      "timestamp": "2026-11-18T12:38:01.916960+08:00",
+      "hostname": "autodl-container-1b1ts70xtl-649162c4"
+    }
+  ],
+  "pytest_failures": [
+    {
+      "name": "test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused",
+      "classname": "tests.test_single_carton_deadline",
+      "message": "assert (set())\n +  where set() = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080>.abandoned\n +    where <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080> = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5d536b0730>.last_task_context",
+      "details": "case = (<test_single_carton_planner.case.<locals>.Planner object at 0x7f5d536b0730>, namespace(q_start=(0.0, 0.0, 0.0, 0.0, 0...<function test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused.<locals>.plan at 0x7f5d484f4ee0>, ...})\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f5ea1955240>\n\n    def test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused(case, monkeypatch):\n        # Two IK-reachable candidates screen in milliseconds; the first plan hangs.\n        p, obs, box, folder, calls, opts, cands = lanes_case(case, monkeypatch, count=2, lanes=1)\n        release = threading.Event()\n    \n        def plan(r):\n            release.wait(5)  # a worker that does not reply in time\n        opts['plan'] = plan\n        entered = time.monotonic()\n        try:\n            with pytest.raises(PlanningBudgetExhausted, match='NO_REPLY_BY_DEADLINE|SEARCH_STEP_RUNNING_AT_DEADLINE'):\n                p.plan_cycle(obs, [box], folder, deadline=entered+.4)\n            assert time.monotonic()-(entered+.4) <= ON_TIME_S\n            p.last_task_context.search_thread.join(1)  # the released search records the unanswered worker\n>           assert p.last_task_context.abandoned and not any(id(c) in p.last_task_context.abandoned for c in p.checkers() if c is not None)\nE           assert (set())\nE            +  where set() = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080>.abandoned\nE            +    where <test_single_carton_planner.case.<locals>.Planner object at 0x7f5e9e8f6080> = <test_single_carton_planner.case.<locals>.Planner object at 0x7f5d536b0730>.last_task_context\n\ntests/test_single_carton_deadline.py:149: AssertionError"
+    },
+    {
+      "name": "test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior",
+      "classname": "tests.test_single_carton_review_fixes",
+      "message": "assert (False)\n +  where False = <function all at 0x7f5ea17d2670>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\n +    where <function all at 0x7f5ea17d2670> = np.all",
+      "details": "def test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior():\n        p,m=plane(width=.15,height=.1);box=recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])\n        size=np.asarray(box['size_m'])\n>       assert np.all(size>=[.15,.1,.1]) and np.all(size<=[.19,.145,.11])  # was 217 x 169 x 108 mm\nE       assert (False)\nE        +  where False = <function all at 0x7f5ea17d2670>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])\nE        +    where <function all at 0x7f5ea17d2670> = np.all\n\ntests/test_single_carton_review_fixes.py:343: AssertionError"
+    }
+  ],
+  "unanswered_failure_scope": {
+    "stage": "BUDGET_EXHAUSTED_IN_SCREENING",
+    "recorded_plan_requests": 0,
+    "deadline": 9651071.061438084,
+    "caller_returned": 9651071.06166652,
+    "cleanup_finished": true,
+    "interpretation": "Full-set failure occurred before the injected blocking plan request; retained, not evidence of a confirmed missed worker quarantine."
+  },
+  "unanswered_recheck_requests": [
+    {
+      "file": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/real-observation-box-0-0/contact-pilz-native.json",
+      "stage": "contact",
+      "status": "REQUEST_FAILED"
+    }
+  ],
+  "asset_summary": {
+    "linked": 2378,
+    "missing": 0,
+    "mismatch": 1542,
+    "required_unavailable": []
+  },
+  "asset_manifest_sha256": "b101f34b242b4fe478d53e55186e2591a4184a1d5469f2fa9aab4720043528a0",
+  "host_rootfs_actual_path": "/root/autodl-tmp/system-disk-relocated-20261118/m710-gap-search-20261107/rootfs",
+  "environment_note": "Existing host Python and Humble/MoveIt chroot reused; host rootfs had been relocated before this session. Task-created chroot path alias corrected and verified before native component/protocol checks. No dependency upgrades."
+}

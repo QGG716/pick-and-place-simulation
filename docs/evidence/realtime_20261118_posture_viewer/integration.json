@@ -1,0 +1,12 @@
+{
+  "local_visualization_commit": "ab496204651129aac62fefa9b94941d9705ecaa3",
+  "remote_parent": "e3bf929df453e04df7fd74579f4a22fa6319a9f3",
+  "conflict": "Only concurrent appended sections in docs/eco65_real_site.md; both original sections preserved byte-for-byte.",
+  "directed_command": ".venv-workbench/bin/python -m pytest -q tests/test_review2_deadline_record.py tests/test_review2_prepare_report.py",
+  "result": "9 passed in 2.20s",
+  "log": "outputs/field-posture-viewer-20261118/merge-directed-tests.log",
+  "log_sha256": "422eba1a2e4fd02a74dde86d1d53648a514168d645d814642e1d6117cd3c93a5",
+  "retained_upstream_evidence": "Existing trailing whitespace in the upstream pytest-final.xml is retained without editing raw test evidence.",
+  "hardware_execution": "NOT_RUN",
+  "production_posture_policy_changed": false
+}

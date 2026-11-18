@@ -13,12 +13,15 @@ Usage: python tools/check_native_prepare.py --records DIR [DIR ...] --output OUT
 """
 import argparse
 import copy
+from contextlib import closing
 import json
+import platform
 from pathlib import Path
 import sys
 import time
 
 import numpy as np
+import scipy
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'tools'))
@@ -91,11 +94,6 @@ def main():
     sources = collect(args.records)
     if not sources:
         raise SystemExit('NO_RECORDED_NATIVE_PLANS')
-    client = ResidentMoveItClient(['env', 'ROS_LOG_DIR=/tmp/native-prepare', str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
-                                  log_path='/tmp/native-prepare.log')
-    ready = client.request(planner.init, timeout=180)
-    if not ready.get('capabilities', {}).get('native_prepare'):
-        raise SystemExit('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NATIVE_PREPARE')
     limits = planner.limits; period = planner.config['period_s']; scale = planner.site['time_scale']
     cases = []
     for s in sources:
@@ -118,24 +116,33 @@ def main():
               dict(source='constructed', kind='reach_bound', points=first, scale=scale, reach=0.),
               dict(source='constructed', kind='timing', points=first, scale=.5, reach=planner.reach_bound)]
     rows = []
-    for case in cases:
-        py, py_s = python_prepare(case['points'], limits, case['scale'], period, case['reach'])
-        started = time.perf_counter()
-        nat = client.request(dict(op='sc_prepare', identity=planner.init['identity'], points=case['points'], limits=asdict(limits),
-                                  time_scale=case['scale'], period_s=period, reach_bound_m=case['reach']), timeout=600)
-        round_trip = time.perf_counter()-started
-        ok, detail = compare(py, nat)
-        rows.append(dict(source=case['source'], kind=case['kind'], identical=ok, outcome=py['status'], error=py.get('error'),
-                         python_s=py_s, native_s=nat.get('prepare_s'), native_round_trip_s=round_trip, **detail))
-    client.close()
+    with closing(ResidentMoveItClient(['env', 'ROS_LOG_DIR=/tmp/native-prepare', str(ROOT/'ros2/m710_moveit_backend/worker.sh')],
+                                     log_path='/tmp/native-prepare.log')) as client:
+        ready = client.request(planner.init, timeout=180)
+        if not ready.get('capabilities', {}).get('native_prepare'):
+            raise SystemExit('NATIVE_WORKER_UPDATE_REQUIRED_FOR_NATIVE_PREPARE')
+        for case in cases:
+            py, py_s = python_prepare(case['points'], limits, case['scale'], period, case['reach'])
+            started = time.perf_counter()
+            nat = client.request(dict(op='sc_prepare', identity=planner.init['identity'], points=case['points'], limits=asdict(limits),
+                                      time_scale=case['scale'], period_s=period, reach_bound_m=case['reach']), timeout=600)
+            round_trip = time.perf_counter()-started
+            ok, detail = compare(py, nat)
+            rows.append(dict(source=case['source'], kind=case['kind'], identical=ok, outcome=py['status'], error=py.get('error'),
+                             time_scale=case['scale'], period_s=period, reach_bound_m=case['reach'],
+                             python_s=py_s, native_s=nat.get('prepare_s'), native_round_trip_s=round_trip, **detail))
     prepared = [r for r in rows if r['outcome'] == 'PREPARED']
-    worst = {k: max((r['max_abs'][k] for r in prepared), default=0.) for k in
+    # A native rejection of a Python-prepared input has no numeric arrays.
+    # Preserve that decision mismatch instead of crashing during aggregation.
+    numeric = [r for r in prepared if 'max_abs' in r]
+    worst = {k: max((r['max_abs'][k] for r in numeric), default=None) for k in
              ('t', 'q', 'v', 'a', 'collision_path', 'analytic_speed_bounds_rad_s', 'send_duration_s')}
     report = dict(schema='eco65_native_prepare_equivalence_v1', scope='RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE',
                   inputs=[str(p) for p in args.records], recorded_native_plans=len(sources), cases=len(rows),
-                  identical=sum(r['identical'] for r in rows), prepared=len(prepared),
+                  identical=sum(r['identical'] for r in rows), prepared=len(prepared), numeric_compared=len(numeric),
                   rejected=len(rows)-len(prepared), rejection_errors=sorted({r['error'] for r in rows if r['error']}),
                   worst_max_abs=worst, tolerance=TOLERANCE,
+                  environment=dict(python=platform.python_version(), numpy=np.__version__, scipy=scipy.__version__),
                   python_prepare_s=dict(total=sum(r['python_s'] for r in rows), median=float(np.median([r['python_s'] for r in rows]))),
                   native_prepare_s=dict(total=sum(r['native_s'] or 0 for r in rows), median=float(np.median([r['native_s'] or 0 for r in rows]))),
                   acceptance=dict(all_identical=all(r['identical'] for r in rows)),
@@ -144,7 +151,8 @@ def main():
     args.output.write_text(json.dumps(report, indent=1, default=str))
     print(json.dumps({k: report[k] for k in ('recorded_native_plans', 'cases', 'identical', 'prepared', 'rejected', 'rejection_errors',
                                              'worst_max_abs', 'python_prepare_s', 'native_prepare_s', 'acceptance')}, indent=1))
+    return 0 if report['acceptance']['all_identical'] else 1
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

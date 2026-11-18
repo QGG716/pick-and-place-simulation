@@ -268,3 +268,9 @@
 ### 2026-11-17 复审补充：复合腕部策略
 
 `sc_endpoint_screen` 和 `sc_plan_candidate` 的公共输入增加解析后的 `wrist_branch_limits` 及冻结 `wrist_reference_q_start`（弧度）。参考始终是任务 q_start，不是各段起点；无策略的历史请求保持无策略。C++ 在与 Python 相同的位置应用严格度数判据：IK 去重/排序后、最多三分支检查前过滤；每段 prepare 后在完整 collision_path 上检查，再决定是否尝试下一脱离方案。末次 Python 审计仍保留，回放未消费调用不得被普通候选拒绝掩盖。全部 scene handle 上传传播取消回调。
+
+### 2026-11-18 超时返回的证据调度
+
+截止报告不再由已超时的规划调用者启动新线程；由该任务的既有后台线程在记录回滚和资源清理之后写入。`last_task.deadline_record_status` 为 `PENDING_TASK_CLEANUP`、`WRITTEN` 或 `FAILED`，并保留写入完成时间或错误。异常上的 `record_thread` 此时是任务线程，等待它也包含任务收尾，不能据调用者返回推断记录、worker 或清理已经完成。
+
+真实 TaskManager 的拒绝记录与 prepare_plan 计时写入使用已经启动的任务 journal。回执提供 `join`、`is_alive`、`error`，journal 在接收后失效或关闭拒收均可观察。计时写失败不改变规划判定；执行前必要证据的 flush、许可事务和记录设施失效后的原停止行为保持不变。100 ms + 50 ms 回归覆盖新线程启动延迟，但不构成操作系统硬实时保证。

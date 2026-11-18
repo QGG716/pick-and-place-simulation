@@ -1,0 +1,408 @@
+{
+ "schema": "eco65_native_prepare_equivalence_v1",
+ "scope": "RECORDED_NATIVE_PLANS_NOT_PHYSICAL_ACCEPTANCE",
+ "inputs": [
+  "/root/autodl-tmp/eco65-review-20261117/native-component2"
+ ],
+ "recorded_native_plans": 1,
+ "cases": 11,
+ "identical": 8,
+ "prepared": 3,
+ "numeric_compared": 3,
+ "rejected": 8,
+ "rejection_errors": [
+  "INTERPOLATION_LIMIT:2:1",
+  "INTERPOLATION_LIMIT:2:2",
+  "INVALID_TIME_AXIS",
+  "INVALID_TIMING",
+  "NONZERO_ENDPOINT_VELOCITY"
+ ],
+ "worst_max_abs": {
+  "t": 0.0,
+  "q": 3.774758283725532e-15,
+  "v": 2.204125286736673e-13,
+  "a": 9.315828276854907e-12,
+  "collision_path": 3.774758283725532e-15,
+  "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+  "send_duration_s": 0.0
+ },
+ "tolerance": 1e-12,
+ "environment": {
+  "python": "3.10.12",
+  "numpy": "1.26.4",
+  "scipy": "1.14.1"
+ },
+ "python_prepare_s": {
+  "total": 0.03760316036641598,
+  "median": 0.0030081216245889664
+ },
+ "native_prepare_s": {
+  "total": 0.0013185389999999999,
+  "median": 0.000119387
+ },
+ "acceptance": {
+  "all_identical": false
+ },
+ "mismatches": [
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006938386708498001,
+   "native_s": 0.000186631,
+   "native_round_trip_s": 0.0032943878322839737,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.774758283725532e-15,
+    "v": 2.204125286736673e-13,
+    "a": 9.315828276854907e-12,
+    "collision_path": 3.774758283725532e-15,
+    "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    63,
+    63
+   ],
+   "collision_states": [
+    63,
+    63
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00620671734213829,
+   "native_s": 0.000191503,
+   "native_round_trip_s": 0.0038947109133005142,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.1086244689504383e-15,
+    "v": 7.217313431712356e-14,
+    "a": 4.281781637826252e-12,
+    "collision_path": 3.1086244689504383e-15,
+    "analytic_speed_bounds_rad_s": 2.4057711439041196e-14,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    75,
+    75
+   ],
+   "collision_states": [
+    77,
+    77
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0058533381670713425,
+   "native_s": 0.000282255,
+   "native_round_trip_s": 0.00475076399743557,
+   "max_abs": {
+    "t": 0.0,
+    "q": 2.6645352591003757e-15,
+    "v": 8.82025166495882e-14,
+    "a": 1.9622809777501976e-12,
+    "collision_path": 2.6645352591003757e-15,
+    "analytic_speed_bounds_rad_s": 8.82025166495882e-14,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    99,
+    99
+   ],
+   "collision_states": [
+    99,
+    99
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0054717473685741425,
+   "native_s": 0.000124732,
+   "native_round_trip_s": 0.0017202012240886688,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1.1",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.1,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.004245879128575325,
+   "native_s": 6.3353e-05,
+   "native_round_trip_s": 0.0008991826325654984,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1.25",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.25,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.006938386708498001,
+   "native_s": 0.000186631,
+   "native_round_trip_s": 0.0032943878322839737,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.774758283725532e-15,
+    "v": 2.204125286736673e-13,
+    "a": 9.315828276854907e-12,
+    "collision_path": 3.774758283725532e-15,
+    "analytic_speed_bounds_rad_s": 1.2759728392427967e-13,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    63,
+    63
+   ],
+   "collision_states": [
+    63,
+    63
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x1.5",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 1.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00620671734213829,
+   "native_s": 0.000191503,
+   "native_round_trip_s": 0.0038947109133005142,
+   "max_abs": {
+    "t": 0.0,
+    "q": 3.1086244689504383e-15,
+    "v": 7.217313431712356e-14,
+    "a": 4.281781637826252e-12,
+    "collision_path": 3.1086244689504383e-15,
+    "analytic_speed_bounds_rad_s": 2.4057711439041196e-14,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    75,
+    75
+   ],
+   "collision_states": [
+    77,
+    77
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "recorded x2",
+   "identical": false,
+   "outcome": "PREPARED",
+   "error": null,
+   "time_scale": 2.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0058533381670713425,
+   "native_s": 0.000282255,
+   "native_round_trip_s": 0.00475076399743557,
+   "max_abs": {
+    "t": 0.0,
+    "q": 2.6645352591003757e-15,
+    "v": 8.82025166495882e-14,
+    "a": 1.9622809777501976e-12,
+    "collision_path": 2.6645352591003757e-15,
+    "analytic_speed_bounds_rad_s": 8.82025166495882e-14,
+    "send_duration_s": 0.0,
+    "scaled_duration_s": 0.0,
+    "source_duration_s": 0.0,
+    "terminal_hold_s": 0.0
+   },
+   "subdivisions": [
+    1,
+    1
+   ],
+   "points": [
+    99,
+    99
+   ],
+   "collision_states": [
+    99,
+    99
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "compressed x0.5",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0030081216245889664,
+   "native_s": 0.000119387,
+   "native_round_trip_s": 0.001132359728217125,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "/root/autodl-tmp/eco65-review-20261117/native-component2/offline-small-PTP-native.json",
+   "kind": "compressed x0.2",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:1",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.0027874335646629333,
+   "native_s": 0.000102179,
+   "native_round_trip_s": 0.0010099802166223526,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:1",
+    "INTERPOLATION_LIMIT:2:1"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "nonzero_endpoint_velocity",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "NONZERO_ENDPOINT_VELOCITY",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00015582330524921417,
+   "native_s": 3.3246e-05,
+   "native_round_trip_s": 0.0009075663983821869,
+   "errors": [
+    "NONZERO_ENDPOINT_VELOCITY",
+    "NONZERO_ENDPOINT_VELOCITY"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "time_axis",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INVALID_TIME_AXIS",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 0.00011194124817848206,
+   "native_s": 3.2688e-05,
+   "native_round_trip_s": 0.0008762683719396591,
+   "errors": [
+    "INVALID_TIME_AXIS",
+    "INVALID_TIME_AXIS"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "reach_bound",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INTERPOLATION_LIMIT:2:2",
+   "time_scale": 1.0,
+   "period_s": 0.005,
+   "reach_bound_m": 0.0,
+   "python_s": 0.002811027690768242,
+   "native_s": 0.000139613,
+   "native_round_trip_s": 0.0011923499405384064,
+   "errors": [
+    "INTERPOLATION_LIMIT:2:2",
+    "INTERPOLATION_LIMIT:2:2"
+   ]
+  },
+  {
+   "source": "constructed",
+   "kind": "timing",
+   "identical": true,
+   "outcome": "PREPARE_REJECTED",
+   "error": "INVALID_TIMING",
+   "time_scale": 0.5,
+   "period_s": 0.005,
+   "reach_bound_m": 1.1559871807755624,
+   "python_s": 1.2744218111038208e-05,
+   "native_s": 4.2952e-05,
+   "native_round_trip_s": 0.0010947491973638535,
+   "errors": [
+    "INVALID_TIMING",
+    "INVALID_TIMING"
+   ]
+  }
+ ]
+}

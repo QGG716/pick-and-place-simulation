@@ -1,7 +1,7 @@
 """Task-bound observation, native planning, pre-execution recheck and records."""
 from dataclasses import asdict
 from pathlib import Path
-from queue import SimpleQueue
+from queue import SimpleQueue,Empty
 import json
 import threading
 import time
@@ -17,6 +17,7 @@ from .. import timing
 class Journal:
     def __init__(self,folder,task_id):
         self.folder=folder;self.task_id=task_id;self.events=SimpleQueue();self.error=None
+        self.post_lock=threading.Lock();self.closed=False
         self.thread=threading.Thread(target=self._write,daemon=True,name='single-carton-records');self.thread.start()
     def __call__(self,**event):
         self.events.put(dict(task_id=self.task_id,host_monotonic_s=time.monotonic(),host_utc_ns=time.time_ns(),**event))
@@ -28,8 +29,23 @@ class Journal:
                     if event is None:break
                     if isinstance(event,threading.Event):
                         f.flush();event.set();continue
+                    if callable(event):event();continue
                     f.write(json.dumps(event,allow_nan=False)+'\n')
-        except Exception as e:self.error=str(e)
+        except Exception as e:
+            with self.post_lock:self.error=str(e)
+            # Accepted writes must finish with an observable error if the
+            # journal dies before dispatching them, rather than wait forever.
+            while True:
+                try:pending=self.events.get_nowait()
+                except Empty:break
+                if isinstance(pending,timing.WriteReceipt):pending.fail(ValueError('TASK_RECORD_UNAVAILABLE:'+self.error))
+    def defer(self,write):
+        # Only queue operations hold this lock. Never wait for disk IO or
+        # start a thread on a planning caller that has exhausted its budget.
+        with self.post_lock:
+            if self.closed or self.error or not self.thread.is_alive():
+                raise ValueError('TASK_RECORD_UNAVAILABLE:'+str(self.error))
+            self.events.put(write)
     def flush(self,timeout=120,cancelled=lambda:False):
         done=threading.Event();self.events.put(done);end=time.monotonic()+timeout
         while True:
@@ -39,7 +55,10 @@ class Journal:
             left=end-time.monotonic()
             if left<=0:raise ValueError('TASK_RECORD_FLUSH_TIMEOUT')
             done.wait(min(.01,left))
-    def close(self):self.events.put(None);self.thread.join(2)
+    def close(self):
+        with self.post_lock:
+            if not self.closed:self.closed=True;self.events.put(None)
+        self.thread.join(2)
 
 
 def flush_task_records(manager):
@@ -221,7 +240,10 @@ class TaskManager:
             self.busy=False
             timing.add('prepare_plan.entry_to_return',entered,timing.now()-entered)
             outcome='PLANNING_BUDGET_EXHAUSTED' if 'PLANNING_BUDGET_EXHAUSTED' in self.reason else ('CANCELLED' if self.stop_event.is_set() else self.phase)
-            if self.folder:timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',dict(task_id=self.task_id,final_phase=self.phase,outcome=outcome),since=entered)
+            if self.folder:
+                self.planning_timing_write=timing.write_later(self.folder/'timing-prepare_plan.json','prepare_plan',
+                    dict(task_id=self.task_id,final_phase=self.phase,outcome=outcome),since=entered,
+                    dispatch=getattr(self.journal,'defer',None))
     def execute(self):
         self._enter();self.execute_entered=timing.now();timing.add('execute.entry',self.execute_entered,0.)
         try:
@@ -303,8 +325,13 @@ class TaskManager:
                 try:path.write_text(json.dumps(record,indent=2))
                 except Exception as failure:self.rejection_record_error=str(failure)
             if background:
-                self.rejection_record_thread=threading.Thread(target=write,daemon=True,name='planning-rejection-record')
-                self.rejection_record_thread.start()
+                dispatch=getattr(self.journal,'defer',None)
+                if dispatch is not None:
+                    self.rejection_record_thread=timing.dispatch_write(write,dispatch)
+                    if self.rejection_record_thread.error is not None:self.rejection_record_error=str(self.rejection_record_thread.error)
+                else:
+                    self.rejection_record_thread=threading.Thread(target=write,daemon=True,name='planning-rejection-record')
+                    self.rejection_record_thread.start()
             else:path.write_text(json.dumps(record,indent=2))
         self.notify('error',self.reason)
     def stop(self):

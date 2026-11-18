@@ -1,0 +1,62 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "chroot",
+      "/root/m710-gap-search-20261107/rootfs",
+      "bash",
+      "-c",
+      "source /opt/ros/humble/setup.bash && cmake -S /work-eco65-review2-20261118/ros2/m710_moveit_backend -B /work-eco65-review2-20261118/build/moveit -DCMAKE_BUILD_TYPE=Release && cmake --build /work-eco65-review2-20261118/build/moveit --target m710_moveit_worker m710_clearance_test -j2 && cmake --install /work-eco65-review2-20261118/build/moveit --prefix /work-eco65-review2-20261118/install/moveit"
+    ],
+    "returncode": 0,
+    "elapsed_s": 139.89671267196536
+  },
+  {
+    "name": "clearance-optimized",
+    "command": [
+      "chroot",
+      "/root/m710-gap-search-20261107/rootfs",
+      "bash",
+      "-c",
+      "source /opt/ros/humble/setup.bash && /work-eco65-review2-20261118/build/moveit/m710_clearance_test optimized"
+    ],
+    "returncode": 0,
+    "elapsed_s": 0.47973552346229553
+  },
+  {
+    "name": "clearance-reference",
+    "command": [
+      "chroot",
+      "/root/m710-gap-search-20261107/rootfs",
+      "bash",
+      "-c",
+      "source /opt/ros/humble/setup.bash && /work-eco65-review2-20261118/build/moveit/m710_clearance_test reference"
+    ],
+    "returncode": 0,
+    "elapsed_s": 0.19348549842834473
+  },
+  {
+    "name": "clearance-two_level",
+    "command": [
+      "chroot",
+      "/root/m710-gap-search-20261107/rootfs",
+      "bash",
+      "-c",
+      "source /opt/ros/humble/setup.bash && /work-eco65-review2-20261118/build/moveit/m710_clearance_test two_level"
+    ],
+    "returncode": 0,
+    "elapsed_s": 0.22142979875206947
+  },
+  {
+    "name": "clearance-adaptive",
+    "command": [
+      "chroot",
+      "/root/m710-gap-search-20261107/rootfs",
+      "bash",
+      "-c",
+      "source /opt/ros/humble/setup.bash && /work-eco65-review2-20261118/build/moveit/m710_clearance_test adaptive"
+    ],
+    "returncode": 0,
+    "elapsed_s": 6.988312499597669
+  }
+]

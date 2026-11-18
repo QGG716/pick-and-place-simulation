@@ -126,6 +126,18 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
                 status['cleanup_finished']=not task.cleanup_errors
             except Exception as error:status['cleanup_error']=str(error)
             status['cleanup_completed_s']=time.monotonic()
+            # Reuse this task's thread after rollback and resource cleanup.
+            # Starting a writer on the expired caller path can itself wait for
+            # startup/GIL scheduling, extending the deadline before IO begins.
+            deadline_record=outcome.get('deadline_record')
+            if deadline_record is not None:
+                try:
+                    from .. import timing
+                    timing.write_json(folder/'planning-deadline-return.json',deadline_record,'planning-deadline-return.json')
+                    status['deadline_record_written_s']=time.monotonic()
+                    status['deadline_record_status']='WRITTEN'
+                except Exception as error:
+                    status['deadline_record_error']=str(error);status['deadline_record_status']='FAILED'
             try:
                 from .. import timing
                 timing.write_json(folder/'planning-task-lifecycle.json',dict(status),'planning-task-lifecycle.json')
@@ -155,10 +167,10 @@ def run_task(owner,observation,boxes,folder,progress,selected,cancelled,scene,de
                 error.args=('PLANNING_BUDGET_EXHAUSTED:'+error.where,)
             from .budget import snapshot
             error.evidence=snapshot(task,boxes,list(getattr(task,'task_failures',[])),selected,error,deadline=deadline)
-            from .. import timing
             record=dict(failures=list(getattr(task,'task_failures',[])),planning_budget=error.evidence)
-            error.record_thread=threading.Thread(target=timing.write_json,args=(folder/'planning-deadline-return.json',record,'planning-deadline-return.json'),daemon=True)
-            error.record_thread.start()
+            outcome['deadline_record']=record
+            status['deadline_record_status']='PENDING_TASK_CLEANUP'
+            error.record_thread=thread
         # Local permits were never visible. Do not globally revoke a newer task.
         raise
     finally:
