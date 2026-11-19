@@ -37,7 +37,7 @@ from unloading_sim.workbench.coordinates import Installation, CoordinateModel
 from unloading_sim.moveit2_backend import ResidentMoveItClient
 from unloading_sim.workbench import timing
 
-INPUTS = ('observation.json', 'observation.npz', 'segmentation.npz', 'geometry.json')
+INPUTS = ('observation.json', 'observation.npz', 'segmentation.npz', 'geometry.json', 'detections.json')
 
 
 def digest(folder):
@@ -71,7 +71,7 @@ def main():
         raise SystemExit('RECORD_HAS_NO_FROZEN_OBSERVATION_AND_MASKS: '+str(record))
     out = (args.output or ROOT/'outputs/single_carton_development'/f'replay-{record.name[:8]}-{datetime.now():%Y%m%dT%H%M%S}').resolve()
     out.mkdir(parents=True, exist_ok=False)
-    for name in ('observation.json','observation.npz','segmentation.npz'):
+    for name in ('observation.json','observation.npz','segmentation.npz','detections.json'):
         if (record/name).is_file(): shutil.copyfile(record/name,out/name)
     replay_started = timing.now()
     config = load(args.config)
@@ -83,6 +83,10 @@ def main():
         with np.load(record/'segmentation.npz', allow_pickle=False) as saved:
             masks = tuple(saved[f'mask_{i}'].astype(bool) for i in range(len(saved.files)))
     old = json.loads((record/'geometry.json').read_text()) if (record/'geometry.json').is_file() else {}
+    if not old and (record/'detections.json').is_file():
+        old=json.loads((record/'detections.json').read_text())
+        if old.get('observation_id')!=obs['observation_id']:
+            raise ValueError('SAVED_DETECTIONS_FRAME_MISMATCH')
     detections = old.get('detections') or [dict(label='saved-mask')]*len(masks)
     frame = SimpleNamespace(observation_id=obs['observation_id'], rgb=arrays['rgb'], depth=arrays['depth'],
                             intrinsics=obs['intrinsics'], depth_scale_m=obs['depth_scale_m'],

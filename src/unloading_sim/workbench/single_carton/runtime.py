@@ -141,6 +141,16 @@ class TaskManager:
             self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
             with timing.span('observe.reconstruct'):
                 self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
+            # Persist the verified same-frame inference before scene/model work.
+            # A later scene failure must not lose the original masks or require
+            # another inference just to diagnose the failed frozen observation.
+            self.write_record('detections.json',dict(observation_id=self.observation.frame.observation_id,
+                detections=self.result.detections,provenance=getattr(self.result,'provenance','EXISTING_DETECTOR_OUTPUT')))
+            if self.evidence is not None:
+                self.evidence.write_npz(self.folder/'segmentation.npz',{f'mask_{i}':m for i,m in enumerate(self.result.masks)},'segmentation.npz')
+            else:
+                with timing.span('disk.write',file='segmentation.npz'):
+                    np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
             if self.config.get('site'):
                 from .site_scene import build_scene
                 from .self_filter import RobotSelfFilter
@@ -173,11 +183,6 @@ class TaskManager:
                         except ValueError as e:evidence['contact_candidate_check']=dict(count=0,reason=str(e))
                 if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
                 self.write_record('site-scene.json',self.scene)
-            if self.evidence is not None:
-                self.evidence.write_npz(self.folder/'segmentation.npz',{f'mask_{i}':m for i,m in enumerate(self.result.masks)},'segmentation.npz')
-            else:
-                with timing.span('disk.write',file='segmentation.npz'):
-                    np.savez_compressed(self.folder/'segmentation.npz',**{f'mask_{i}':m for i,m in enumerate(self.result.masks)})
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))

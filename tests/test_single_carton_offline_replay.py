@@ -9,8 +9,10 @@ import numpy as np
 import pytest
 
 
-@pytest.mark.parametrize('has_old_mask', [False, True])
-def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, monkeypatch, has_old_mask):
+@pytest.mark.parametrize('record_kind', ['no_mask','old_mask','detections_only','wrong_detection_frame'])
+def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, monkeypatch, record_kind):
+    saved_only=record_kind in ('detections_only','wrong_detection_frame')
+    has_old_mask=record_kind=='old_mask'
     spec = importlib.util.spec_from_file_location('offline_replay', Path(__file__).resolve().parents[1]/'tools/replay_single_carton_record.py')
     replay = importlib.util.module_from_spec(spec); spec.loader.exec_module(replay)
     record = tmp_path/'field'; record.mkdir(); out = tmp_path/'retry'
@@ -20,12 +22,17 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     rgb = np.arange(27, dtype=np.uint8).reshape(3, 3, 3)
     np.savez(record/'observation.npz', rgb=rgb, depth=np.ones((3, 3), np.uint16))
     if has_old_mask: np.savez(record/'segmentation.npz', mask_0=np.zeros((3, 3), bool))
-    source_hashes = replay.digest(record)
     mask = np.eye(3, dtype=bool)
     detections = [dict(label='box', score=.8, bbox_xyxy=[0, 0, 3, 3])]
+    if saved_only:
+        np.savez(record/'segmentation.npz',mask_0=mask)
+        (record/'detections.json').write_text(json.dumps(dict(
+            observation_id='wrong' if record_kind=='wrong_detection_frame' else 'new-field',detections=detections)))
+    source_hashes = replay.digest(record)
     seen = []
     class Detector:
         def detect_boxes(self, frame):
+            assert not saved_only,'A saved inference must not load or run a model'
             np.testing.assert_array_equal(frame.rgb, rgb)
             return SimpleNamespace(observation_id=frame.observation_id, detections=detections)
         def segment(self, frame, boxes):
@@ -44,6 +51,7 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     monkeypatch.setattr(replay, 'SinglePlanner', lambda *a: planner)
     monkeypatch.setattr(replay, 'RobotSelfFilter', lambda *a: None)
     def recover(frame, camera, boxes, masks, policy):
+        assert boxes==detections
         np.testing.assert_array_equal(masks[0], mask); seen.append('recover')
         return [], []
     def scene(observation, result, *args, **kwargs):
@@ -52,14 +60,19 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
         return dict(world=[])
     monkeypatch.setattr(replay, 'recover_boxes', recover)
     monkeypatch.setattr(replay, 'build_scene', scene)
-    monkeypatch.setattr(sys, 'argv', ['replay', str(record), '--output', str(out), '--detector', 'config', '--scene-only'])
+    monkeypatch.setattr(sys, 'argv', ['replay', str(record), '--output', str(out), '--detector', 'saved' if saved_only else 'config', '--scene-only'])
+    if record_kind=='wrong_detection_frame':
+        with pytest.raises(ValueError,match='SAVED_DETECTIONS_FRAME_MISMATCH'):replay.main()
+        assert not seen and source_hashes==replay.digest(record)
+        return
     replay.main()
     with np.load(out/'segmentation.npz') as saved: np.testing.assert_array_equal(saved['mask_0'], mask)
     assert seen == ['recover', 'scene'] and source_hashes == replay.digest(record)
     report = json.loads((out/'replay-report.json').read_text())
     assert report['q_start'] == observed['q_start'] and report['q_capture'] == observed['q_capture']
     assert report['physical_result'] == 'NOT_RUN' and report['permits_issued'] == 0
-    assert report['detection']['mask_iou_vs_field_record'] == ([0.] if has_old_mask else None)
+    if saved_only:assert report['detection'] is None
+    else:assert report['detection']['mask_iou_vs_field_record'] == ([0.] if has_old_mask else None)
     assert json.loads((out/'geometry.json').read_text())['detections'] == detections
 
 

@@ -1,0 +1,90 @@
+[
+  {
+    "task_id": "87736fb9b25b45f68bf30aca08e2b809",
+    "result": {
+      "task_id": "87736fb9b25b45f68bf30aca08e2b809",
+      "state": "REJECTED",
+      "reason": "Object of type int64 is not JSON serializable",
+      "evidence": null,
+      "physical_result": "NOT_RUN"
+    },
+    "observation_id": "d5439627-fb06-49f4-83f9-d73487962277",
+    "capture_checks": {
+      "stationary": true,
+      "window_s": 0.4000358850171324,
+      "samples": 37,
+      "max_gap_s": 0.015057921002153307,
+      "range_deg": 0.010999999999999953,
+      "speed_deg_s": 0.01,
+      "speed_source": "MEASURED_UDP_SPEED",
+      "elapsed_s": 0.39938899999833666,
+      "waiting": "已锁定",
+      "frame_age_s": 0.016730893,
+      "pair_skew_s": 0.0008319000189658254,
+      "rgb_number": 14019,
+      "depth_number": 14016
+    },
+    "q_start": [
+      1.4162474215307987,
+      -0.21837559600953052,
+      -0.9463175204313254,
+      -0.27490681048162685,
+      1.5008086237899239,
+      -0.08991936306274786
+    ],
+    "q_capture": [
+      1.4162474215307987,
+      -0.21841050259457043,
+      -0.9463349737238455,
+      -0.27490681048162685,
+      1.5008086237899239,
+      -0.0899717229403077
+    ],
+    "saved_same_frame_masks": false,
+    "motion_evidence_exists": false
+  },
+  {
+    "task_id": "ac5706f3be634550bec81ff0f1a7e096",
+    "result": {
+      "task_id": "ac5706f3be634550bec81ff0f1a7e096",
+      "state": "REJECTED",
+      "reason": "Object of type int64 is not JSON serializable",
+      "evidence": null,
+      "physical_result": "NOT_RUN"
+    },
+    "observation_id": "e911a4eb-3b55-4af0-984e-4a9ef61827c8",
+    "capture_checks": {
+      "stationary": true,
+      "window_s": 0.40987092701834626,
+      "samples": 38,
+      "max_gap_s": 0.015114027017261833,
+      "range_deg": 0.005000000000000484,
+      "speed_deg_s": 0.0,
+      "speed_source": "MEASURED_UDP_SPEED",
+      "elapsed_s": 0.4081539570179302,
+      "waiting": "已锁定",
+      "frame_age_s": 0.017462493,
+      "pair_skew_s": 0.0016316969995386899,
+      "rgb_number": 17711,
+      "depth_number": 17708
+    },
+    "q_start": [
+      1.416142701775679,
+      -0.21844540917961028,
+      -0.9462651605537656,
+      -0.2750115302367465,
+      1.5008086237899239,
+      -0.08983209660014814
+    ],
+    "q_capture": [
+      1.4161252484831592,
+      -0.21841050259457043,
+      -0.9463175204313254,
+      -0.27495917035918666,
+      1.5008086237899239,
+      -0.08986700318518803
+    ],
+    "saved_same_frame_masks": false,
+    "motion_evidence_exists": false
+  }
+]

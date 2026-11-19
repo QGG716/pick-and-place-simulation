@@ -359,7 +359,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                                 member=pts[which==j]
                                 world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}_s{j}',np.maximum(lower,member.min(0)-MEASURED_EXTENT_PAD_M),
                                                   np.minimum(upper,member.max(0)+MEASURED_EXTENT_PAD_M),kind))
-                            refined_runs+=1;refined_boxes+=which.max()+1
+                            refined_runs+=1;refined_boxes+=int(which.max())+1
                             continue
                     elif kind=='observed' and cleared_unknown:
                         # Camera-facing sides only: between the camera and the

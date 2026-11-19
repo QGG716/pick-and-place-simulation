@@ -68,8 +68,9 @@ def test_incomplete_neighbor_volume_cannot_be_used_as_a_clear_planning_scene(cas
     assert not calls and not p.authority._plans
 
 
-@pytest.mark.parametrize('has_measured_neighbor',[False,True])
-def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path,has_measured_neighbor):
+@pytest.mark.parametrize('has_measured_neighbor,scene_failure,async_evidence',[
+    (False,False,False),(True,False,False),(True,True,False),(True,True,True)])
+def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path,has_measured_neighbor,scene_failure,async_evidence):
     from unloading_sim.workbench.single_carton import runtime,site_scene,self_filter
     from unloading_sim.workbench.controlled.trajectory import Authority
     from test_single_carton_observation import observation
@@ -78,7 +79,7 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     rejected=[dict(detection_index=0,reason='INSTANCE_FULL_EXTENT_UNBOUNDED',evidence=e)]
     c=use_synthetic_remote_detector(load(Path('configs/workbench/single_carton.example.json')),tmp_path)
     if not has_measured_neighbor:c['geometry']=dict(UNKNOWN)
-    c.update(record_root=str(tmp_path/'records'),async_evidence=False)
+    c.update(record_root=str(tmp_path/'records'),async_evidence=async_evidence)
     result=SimpleNamespace(detections=[dict(label='box')],masks=[np.ones(obs.frame.rgb.shape[:2],bool)])
     vision=SimpleNamespace(infer_frozen=lambda *a,**k:result)
     backend=SimpleNamespace(vision=vision,observation_generation=obs.generation)
@@ -86,6 +87,7 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
         init=dict(parameters=dict(robot_description='fake')),source=dict(tool=json.loads(Path('configs/local/eco65_desktop/tool.json').read_text())))
     seen=[]
     def scene(*args,**kwargs):
+        if scene_failure:raise TypeError('SYNTHETIC_SCENE_SERIALIZATION_FAILURE')
         seen.append(kwargs['neighbor_depth_m']);return dict(world=[dict(id='observed-obstacle')])
     monkeypatch.setattr(runtime,'freeze',lambda *a,**k:obs)
     measured=[dict(id='measured-other',detection_index=1)] if has_measured_neighbor else []
@@ -94,6 +96,15 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     monkeypatch.setattr(self_filter,'RobotSelfFilter',lambda *a:None)
     manager=runtime.TaskManager(backend,None,SimpleNamespace(holding=False),planner,None,None,c)
     try:
+        if scene_failure:
+            with pytest.raises(TypeError,match='SYNTHETIC_SCENE_SERIALIZATION_FAILURE'):manager.observe()
+            manager.evidence_flush()
+            with np.load(manager.folder/'segmentation.npz',allow_pickle=False) as saved:
+                np.testing.assert_array_equal(saved['mask_0'],result.masks[0])
+            saved=json.loads((manager.folder/'detections.json').read_text())
+            assert saved['observation_id']==obs.frame.observation_id and saved['detections']==result.detections
+            assert not planner.authority._plans and manager.plan is None and manager.phase=='FAILED'
+            return
         manager.observe();manager.journal.flush()
         assert manager.phase=='GEOMETRY_UNRESOLVED' and not manager.busy and seen==[None]
         assert manager.scene['world']==[dict(id='observed-obstacle')]
@@ -106,4 +117,5 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
         assert not planner.authority._plans
     finally:
         manager.closing.set();manager.thread.join(1)
+        if manager.evidence is not None:manager.evidence.close()
         if manager.journal:manager.journal.close()

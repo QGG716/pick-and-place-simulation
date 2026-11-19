@@ -288,6 +288,9 @@ def test_points_inside_target_envelope_stay_obstacles_by_default():
     assert rest['intersections'] and all(h['category']=='observed' for h in rest['intersections'])
     # Near-target refinement never drops a measured point.
     assert scene['near_target_refined_runs']>0
+    # A real task writes this exact scene as strict JSON before planning.
+    # NumPy scalar counters must not abort preparation after reconstruction.
+    assert json.loads(json.dumps(scene,allow_nan=False))==scene
     from unloading_sim.workbench.detection import metric_points
     assert covered(scene['world'],metric_points(obs.frame).reshape(-1,3))
 

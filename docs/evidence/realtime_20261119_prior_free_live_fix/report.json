@@ -1,0 +1,207 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "ecca78965213ed86ad49cf305ff56c8572b49835",
+  "scope": "RESTORE_LIVE_DEVICE_DATA_FIX_SCENE_JSON_AND_VALIDATE_PRIOR_FREE_PREPARATION",
+  "connection_resolution": {
+    "saved_network_and_addresses_changed": false,
+    "robot_carrier": "RESTORED",
+    "robot_feedback": "LIVE_VALID",
+    "vacuum": "LIVE_CHECKED_BINARY_PRESSURE_RESTORED",
+    "camera": "LIVE_VALID",
+    "fresh_session": true
+  },
+  "failure": {
+    "reason": "Object of type int64 is not JSON serializable",
+    "field_task_ids": [
+      "87736fb9b25b45f68bf30aca08e2b809",
+      "ac5706f3be634550bec81ff0f1a7e096"
+    ],
+    "root_cause": "near_target_refined_boxes_accumulated_numpy_int64_from_which_max",
+    "regression_before": "FAILED_WITH_SAME_TYPE_ERROR",
+    "fix": "EXPLICIT_INTEGER_COUNTER_NO_GEOMETRY_CHANGE"
+  },
+  "tests": {
+    "directed_pytest": {
+      "tests": "629",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "238.427"
+    },
+    "focused_regression": "16 passed",
+    "m710_clearance_optimized": "PASS",
+    "m710_clearance_reference": "PASS",
+    "native": {
+      "status": "PASS",
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE",
+      "points": 491,
+      "sent_path": "PASS"
+    },
+    "config": {
+      "issues": [],
+      "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+      "receiver_qualification_deferred": true,
+      "receiver_configured": false,
+      "unknown_space_policy": "USER_CONFIRMED_CLEAR",
+      "detector_backend": "local",
+      "detector_remote_configured": true,
+      "hardware_execution": "NOT_RUN"
+    }
+  },
+  "new_live_observation": {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "source": "LIVE_RGBD_AND_CONTROLLER_FEEDBACK",
+    "observation_id": "68bd63b6-5e9f-41fe-b3dc-c07321c5509f",
+    "capture_checks": {
+      "stationary": true,
+      "window_s": 0.40503220801474527,
+      "samples": 37,
+      "max_gap_s": 0.015128205966902897,
+      "range_deg": 0.011000000000000747,
+      "speed_deg_s": 0.01,
+      "speed_source": "MEASURED_UDP_SPEED",
+      "elapsed_s": 0.4075480049941689,
+      "waiting": "已锁定",
+      "frame_age_s": 0.01647001,
+      "pair_skew_s": 0.0021021210122853518,
+      "rgb_number": 1076,
+      "depth_number": 1073
+    },
+    "q_start": [
+      1.416160155068199,
+      -0.21839304930205045,
+      -0.9463349737238455,
+      -0.27495917035918666,
+      1.5007562639123642,
+      -0.08986700318518803
+    ],
+    "q_capture": [
+      1.4161950616532388,
+      -0.21844540917961028,
+      -0.9463175204313254,
+      -0.27495917035918666,
+      1.5007562639123642,
+      -0.0899717229403077
+    ],
+    "same_frame_binding_verified": true,
+    "inference_backend": "LOCAL_CPU",
+    "gpu_used": false,
+    "prior_applied": false,
+    "recovered": [
+      {
+        "index": 0,
+        "estimated_dimensions_mm": [
+          167.98684635384535,
+          110.44937394882734,
+          109.08050095330097
+        ],
+        "dimension_source": "RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR",
+        "quality": {
+          "valid_depth_points": 45197,
+          "plane_inliers": 5240,
+          "plane_rms_m": 0.0007037645885378172,
+          "face_coverage": 1.0,
+          "measured_face_size_m": [
+            0.16798684635384536,
+            0.11044937394882734
+          ],
+          "measured_thickness_m": 0.10908050095330096,
+          "surface_consistency": 0.9849105029094851,
+          "hidden_extent_measured": true,
+          "unseen_surfaces_observed": false,
+          "side_plane_rms_m": 0.0010149976030894737,
+          "orthogonality_error_rad": 0.014819667375930497,
+          "ambiguity": "180_DEGREE_FACE_SYMMETRY",
+          "all_dimensions_source": "RGBD_VISIBLE_BOUNDARIES"
+        },
+        "contact_candidates": 32,
+        "anticipated_seal_counts": [
+          2,
+          3,
+          4,
+          6
+        ],
+        "all_observed_coverage": true
+      }
+    ],
+    "rejected": [
+      {
+        "detection_index": 1,
+        "reason": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+        "contact_candidate_check": {
+          "count": 32,
+          "anticipated_seal_counts": [
+            1,
+            2,
+            3
+          ],
+          "all_observed_coverage": true,
+          "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+        }
+      }
+    ],
+    "geometry_status": "GEOMETRY_UNRESOLVED",
+    "unbounded_carton_indices": [
+      1
+    ],
+    "scene_refined_runs": 1,
+    "scene_refined_boxes": 9,
+    "scene_objects": {
+      "observed": 54,
+      "observed_support": 1,
+      "workspace_boundary": 6
+    },
+    "source_hashes": {
+      "observation.npz": "4d3a55534f047e7cfaaeb6d3a298ffa0ef09aeb67210c73100f78525460efbe3",
+      "site-scene.json": "8f0659ad4b4c989068c0b125ee1cc1738b77527bf85ee9166a1d3c86fca92521",
+      "detections.json": "03c805d5aad0bbcd6ccbc74c9a375deb1b9495e75a74b511ccc603c2a9931015",
+      "segmentation.npz": "880db6b32875a18b7beec0c3b21cf5667b924608de73b0d3b18b87986fbe501b",
+      "geometry.json": "97b1d0692901019b88b43b6be725c916d2dcf4150feaa5d57712f26c3b03d19d",
+      "result.json": "491961e045f5e7d58036d01f3f508766792b9156606520e6a86c4726a45eca29",
+      "observation.json": "4901d0ef3794c0e7ea16df127fd33bde406da2c3d4af189bea6c1965793a1c29",
+      "events.jsonl": "29a446c1fcb8dc7f6576e43e3191ba822d54bfe3829b1318019fe5db1ca6e0a5"
+    },
+    "full_plan_created": false,
+    "motion_evidence_exists": false,
+    "physical_result": "NOT_RUN"
+  },
+  "observation_persistence": "VERIFIED_DETECTIONS_AND_MASKS_BEFORE_SCENE_BUILD_SYNC_AND_ASYNC_FAILURE_TESTS",
+  "local_config": "/home/jd/下载/code/eco65 pick and place/outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+  "execution_lock_basis": {
+    "locked": false,
+    "basis": "USER_CONFIRMATION_2026_11_19_TOOL_AND_CONNECTOR_REPAIRED_TOOL_GEOMETRY_AND_TCP_REVIEW_COMPLETED",
+    "previous_incident_basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED",
+    "verification_source": "USER_FIELD_CONFIRMATION_NOT_AUTOMATED_PHYSICAL_ACCEPTANCE"
+  },
+  "raw_calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+  "motion_started": false,
+  "valve_commands_issued": false,
+  "physical_acceptance": "NOT_RUN",
+  "not_verified": [
+    "FULL_LOADED_PATH_FOR_CURRENT_STACK",
+    "PHYSICAL_PICK_RETURN_RELEASE",
+    "PREPARE_PLAN_P95_2_SECONDS",
+    "ACTUAL_CARTON_DIMENSION_GROUND_TRUTH"
+  ],
+  "code_sha256": {
+    "src/unloading_sim/workbench/single_carton/runtime.py": "41c3be0a8db1c18dd87f648a522501326dfe8a8a5178a0a40f3bf4c71fe14df7",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "14aedcbbc16246a6e70a693ba5bf82a713863b571d3bd9f0537f8134104bea54",
+    "tools/replay_single_carton_record.py": "0b89b62b73e2c421947b90b7039424add8f0144beb0beb5a45765d6c0f0ecf7c",
+    "tests/test_single_carton_partial_site.py": "2b28d6e883e959b13a1c32b4acc70ab9c37dfbb0b69385af4e98f2af7a100dea",
+    "tests/test_single_carton_unknown_sizes.py": "682f1400864d0241b54d4493085eb18a4e87fb1b1df73ea583c6712c13cccaa1",
+    "tests/test_single_carton_offline_replay.py": "9333e1d25acf40be30874e91dafea4a1b9fdea5aac548b17f56057b2f2073644"
+  },
+  "evidence_sha256": {
+    "local-config-check.json": "a0d5058ca799a3ed2822386d4e566e3a8680bb3857f713986c70af26d49e455d",
+    "native-check.log": "6ac1307bfec0133f060bda9df60e4c9e4e749611c7427d0971e2283c8a7182c9",
+    "regression-before.log": "9983e78273752a19293b59bb9fe151dc3f4c01e2fedbafe1bfcc0f72771a6428",
+    "connected-before-fix.json": "5062112b8395896e82ceeb10a37d3fd265ff43222cfd70d8ff9e1ccf9fb55d2e",
+    "clearance-reference.log": "f1067d6099d181d0f52b88a2e2cd4b97af268166a6190dfa0b55f99d9ec7c329",
+    "live-after-fix.json": "5aedad3deb22ffdac0f6c791617cf87759e56781b1a42e5885a4f931f2e2b741",
+    "clearance-optimized.log": "3b074552063d2c72fb02cd057c7d37a05b9001a996b1e93cd3c6c37e1ed15bba",
+    "regression-after.log": "90032ad1a83c5786ebe6e0584283eac8f7a4d8d90003d5b825a2553a0ec5f44f",
+    "failed-live-preparations.json": "3278160e24ace5cf88954fc825aefd18dc6f06d91f5ab0c4f695fdef6fb8fd0b",
+    "pytest.xml": "f6b7f5c9918591388d16e4ecaa7c435175a6c060aa9e44f8b66135a8a2c4f95c",
+    "pytest.log": "8fa0b66a6fda18cd577145a4857c488586b73bf6d081cfb9a48782952045c838"
+  }
+}
