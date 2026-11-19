@@ -1,0 +1,3352 @@
+{
+ "date": "2026-11-19",
+ "scope": "OFFLINE_GEOMETRY_ROBUSTNESS_NO_DEVICE_NO_MOTION_NO_VALVE",
+ "physical_acceptance": "NOT_RUN",
+ "head_before": "8d8a78ae04e3d7a37476db55e66a2b62dd784ef7",
+ "baseline_commit": "89514c26",
+ "code_sha256": {
+  "src/unloading_sim/workbench/single_carton/geometry.py": "06ef8a161834b3ddec28ac630c4181dda2b33a5267a665cf071bc54ed8b4f27c",
+  "src/unloading_sim/workbench/single_carton/measured_envelope.py": "21bf32bc747413d12dd9941fdcca5bcc65500af34bdcbcda9dc001c4760377e8",
+  "src/unloading_sim/workbench/single_carton/instance_fit.py": "fc2a381900d97ce18dfe2393ee74afb3c4e039d4ad2df98ca4a6d700b881c8ef",
+  "src/unloading_sim/workbench/single_carton/hf_detector_core.py": "0ae3c404d8f6512b70fbe8d6160b030ed925a1082b85108af59846400decd287",
+  "src/unloading_sim/workbench/single_carton/perception.py": "968fcd66864ce4adb3c132a036495e02b4dcd3ee5b0b5b5dac2d4756a0e1d884",
+  "src/unloading_sim/workbench/single_carton/site_scene.py": "4bf8b81eeb9fa9ddac844094dcdeb4d709dca8aab7c5f113a34bd78e61a5571d",
+  "src/unloading_sim/workbench/single_carton/stack_support.py": "6d88c33ae05b778e58d0bdcff32ff8cba816d06becdde9c4dacb29357467a856",
+  "src/unloading_sim/workbench/single_carton/planner.py": "d4ae9172fb5312cfcec94a71c838864b0806bc5ba5f37547432e1b813242461f",
+  "src/unloading_sim/workbench/single_carton/coplanar_seam.py": "fe276778c8b9e230d6c22070f473f52b572f92e012815eef5cf4d2d2c817dc87",
+  "src/unloading_sim/workbench/single_carton/rgb_edges.py": "9da6004120a73cec6d2d9fef30aa4ed5a3b4b471da4bce9721baf054d94162d0",
+  "src/unloading_sim/workbench/single_carton/config.py": "64c288b748cbca0f534a8b3cd6b6bac0bf80178ffc85be56d3ddb59141411488",
+  "src/unloading_sim/workbench/single_carton/ui.py": "156f7f2972b5b571ae50b55dcf9ff39ab6b648911c303aa46011a4258c3128f8",
+  "tools/compare_geometry_replay.py": "db63087dffd9d8b802483b71bf16a14e4d063ed1abfba4b6aad6a523baf73c29",
+  "tools/summarize_geometry_replay.py": "0a91be07b6f26b532571a8cfb64e018b9b136b7c1bdac3c626174290fb56780c",
+  "tools/geometry_robustness_sweep.py": "726ec0cd8a265df461d583d625491df7d9ef638a28faf67f0ecba6aa0f95dce7",
+  "tests/field_like_scene.py": "ed9d32eb052972a2d62f41cdf8c1f2c350d09e33ba97c7b11d4bdb301ba99537",
+  "tests/test_single_carton_geometry_robustness.py": "c30ae6e653f4202de1e1a433e7749d23bbe4f5b8a03fce3b5b8f11e81b171a55",
+  "configs/workbench/single_carton.example.json": "03c3212bba36147832f333c4628815f3d2712f0f9fe663cbc09c88bf26756d5e"
+ },
+ "user_decisions": {
+  "seam": "MASK_RGB_EDGE_COINCIDENT allowed under explicit policy, +/-5 mm",
+  "camera": "UNCHANGED",
+  "others": "IMPLEMENTER_PROPOSAL",
+  "executor": "THIS_SESSION_NOT_OTHER_SESSIONS"
+ },
+ "calibration": {
+  "direct_boundary": {
+   "min_pixels": 10,
+   "min_span_m": 0.015,
+   "sweep": {
+    "cases": 945,
+    "accepted": 791,
+    "rejected": 154,
+    "not_contained": 0,
+    "direct_min_pixels": 10,
+    "direct_min_span_m": 0.015
+   },
+   "zero_threshold": {
+    "cases": 945,
+    "accepted": 791,
+    "not_contained": 1,
+    "worst_violation_m": 0.00020688588988490575
+   },
+   "basis": "945-case raycast sweep (3 sizes x 3 poses x noise 0/0.5/1 mm x 35 mask defects); with the gate 0 not contained; without the gate (1 px, 0 m) see zero_threshold"
+  },
+  "thickness_far_quantile": {
+   "value": 0.95,
+   "basis": "0.8 under-reads oblique field sides by up to ~14 mm; 1.0 lets mask bleed add 15-24 mm; 0.95 keeps synthetic errors within +/-1 mm"
+  },
+  "support_clip": {
+   "margin": "one robust sigma (MAD) of the support height below the support top; drop+margin <= max(4 mm, 4 sigma)",
+   "basis": "noise in the median support height cut a synthetic truth by 0.02 mm"
+  },
+  "seam": {
+   "constants": {
+    "SIDE_WINDOW_M": 0.015,
+    "OUTWARD_PX": [
+     1,
+     6
+    ],
+    "COPLANAR_MIN_M": 0.003,
+    "COPLANAR_RMS_FACTOR": 4.0,
+    "FOREGROUND_M": 0.008,
+    "MIN_OUTWARD_VALID": 20,
+    "COPLANAR_MAJORITY": 0.5,
+    "EDGE_COVERAGE": 0.7,
+    "EDGE_ANGLE_DEG": 3.0,
+    "GRADIENT_TEXTURE_RATIO": 2.0,
+    "GRADIENT_MIN": 40.0,
+    "LINE_MEDIAN_PX": 2.0,
+    "LINE_WITHIN_PX": 3.0,
+    "LINE_WITHIN_FRACTION": 0.8,
+    "IMAGE_BORDER_PX": 2,
+    "BBOX_EDGE_PX": 2,
+    "BBOX_TOUCH_FRACTION": 0.2
+   }
+  }
+ },
+ "synthetic": {
+  "field_like_before": [
+   "ideal_stack              OK measured=[169.6, 109.7, 110.6] envelope=[178.0, 114.0, 123.0] truth_outside_mm=0.0 {'w-': 'DIRECT_DEPTH_BOUNDARY', 'w+': 'DIRECT_DEPTH_BOUNDARY', 'h-': 'MEASURED_SUPPORT_PLANE', 'h+': 'DIRECT_DEPTH_BOUNDARY', 't-': 'DIRECT_DEPTH_BOUNDARY', 't+': 'DIRECT_DEPTH_BOUNDARY'}",
+   "noisy_visible_support    FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "flush_stack              FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "flush_stack_mask_+1px    FAIL COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED",
+   "stack_mask_+1px          FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "stack_mask_+3px          FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "stack_mask_-2px          FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "stack_samlike_0.35       FAIL MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE",
+   "frontal_yaw_0            FAIL BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+   "yaw_-12                  FAIL BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+   "yaw_+20                  FAIL BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+   "coplanar_touching_left   OK measured=[169.6, 109.7, 110.9] envelope=[408.0, 119.0, 125.0] truth_outside_mm=0.0 {'w-': 'MISSING_BOUNDARY_MAXIMUM_EXTENT', 'w+': 'DIRECT_DEPTH_BOUNDARY', 'h-': 'DIRECT_DEPTH_BOUNDARY', 'h+': 'DIRECT_DEPTH_BOUNDARY', 't-': 'DIRECT_DEPTH_BOUNDARY', 't+': 'DIRECT_DEPTH_BOUNDARY'}",
+   "left_gap_30mm            OK measured=[169.6, 109.7, 110.9] envelope=[180.0, 119.0, 125.0] truth_outside_mm=0.0 {'w-': 'DIRECT_DEPTH_BOUNDARY', 'w+': 'DIRECT_DEPTH_BOUNDARY', 'h-': 'DIRECT_DEPTH_BOUNDARY', 'h+': 'DIRECT_DEPTH_BOUNDARY', 't-': 'DIRECT_DEPTH_BOUNDARY', 't+': 'DIRECT_DEPTH_BOUNDARY'}",
+   "parent_mask_with_child   FAIL BOX_ENVELOPE_CLIPPED_BY_IMAGE",
+   "packed_wall              FAIL BOX_THICKNESS_UNOBSERVED_SHOW_SIDE"
+  ],
+  "field_like_after": [
+   {
+    "scene": "ideal_stack",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.0
+    ],
+    "envelope_mm": [
+     177.5,
+     117.4,
+     122.7
+    ],
+    "thickness_error_mm": -0.03,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "DIRECT_DEPTH_BOUNDARY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "ideal_stack",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.0
+    ],
+    "envelope_mm": [
+     177.5,
+     117.4,
+     122.7
+    ],
+    "thickness_error_mm": -0.03,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "DIRECT_DEPTH_BOUNDARY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "noisy_visible_support",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     212.4,
+     118.1,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "noisy_visible_support",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     212.4,
+     118.1,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "flush_stack",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     212.4,
+     118.3,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "flush_stack",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     212.4,
+     118.3,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "flush_stack_mask_+1px",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.7,
+     110.5,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.4,
+     134.2
+    ],
+    "thickness_error_mm": 0.97,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "flush_stack_mask_+1px",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.7,
+     110.5,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.4,
+     134.2
+    ],
+    "thickness_error_mm": 0.97,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_+1px",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     134.2
+    ],
+    "thickness_error_mm": 0.97,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_+1px",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     134.2
+    ],
+    "thickness_error_mm": 0.97,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_+3px",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     134.3
+    ],
+    "thickness_error_mm": 0.99,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_+3px",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     134.3
+    ],
+    "thickness_error_mm": 0.99,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_-2px",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     168.1,
+     108.1,
+     101.4
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     133.9
+    ],
+    "thickness_error_mm": -9.65,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_mask_-2px",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     168.1,
+     108.1,
+     101.4
+    ],
+    "envelope_mm": [
+     216.2,
+     118.1,
+     133.9
+    ],
+    "thickness_error_mm": -9.65,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_samlike_0.35",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     212.5,
+     118.1,
+     124.9
+    ],
+    "thickness_error_mm": 0.99,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "stack_samlike_0.35",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     112.0
+    ],
+    "envelope_mm": [
+     212.5,
+     118.1,
+     124.9
+    ],
+    "thickness_error_mm": 0.99,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MEASURED_SUPPORT_PLANE",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "frontal_yaw_0",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.4,
+     111.3
+    ],
+    "envelope_mm": [
+     118.4,
+     204.7,
+     124.4
+    ],
+    "thickness_error_mm": 0.25,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "DIRECT_DEPTH_BOUNDARY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "frontal_yaw_0",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.4,
+     111.3
+    ],
+    "envelope_mm": [
+     118.4,
+     204.7,
+     124.4
+    ],
+    "thickness_error_mm": 0.25,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "DIRECT_DEPTH_BOUNDARY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "yaw_-12",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.5,
+     111.2
+    ],
+    "envelope_mm": [
+     114.3,
+     209.3,
+     124.2
+    ],
+    "thickness_error_mm": 0.2,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MEASURED_SUPPORT_PLANE",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "yaw_-12",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.5,
+     111.2
+    ],
+    "envelope_mm": [
+     114.3,
+     209.3,
+     124.2
+    ],
+    "thickness_error_mm": 0.2,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MEASURED_SUPPORT_PLANE",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "yaw_+20",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.6,
+     111.1
+    ],
+    "envelope_mm": [
+     114.4,
+     183.4,
+     123.9
+    ],
+    "thickness_error_mm": 0.05,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MEASURED_SUPPORT_PLANE",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "yaw_+20",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.6,
+     111.1
+    ],
+    "envelope_mm": [
+     114.4,
+     183.4,
+     123.9
+    ],
+    "thickness_error_mm": 0.05,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MEASURED_SUPPORT_PLANE",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "coplanar_touching_left",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     408.4,
+     122.4,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "coplanar_touching_left",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     180.7,
+     122.4,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "COPLANAR_SEAM_MASK_RGB_EDGE_POLICY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "left_gap_30mm",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     186.9,
+     122.4,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "left_gap_30mm",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     186.9,
+     122.4,
+     124.9
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "DIRECT_DEPTH_BOUNDARY",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "parent_mask_with_child",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     213.9,
+     125.5,
+     127.6
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "parent_mask_with_child",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     169.6,
+     109.7,
+     111.8
+    ],
+    "envelope_mm": [
+     213.9,
+     125.5,
+     127.6
+    ],
+    "thickness_error_mm": 0.79,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "h+": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "packed_wall",
+    "seam": "DISABLED",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.4,
+     111.3
+    ],
+    "envelope_mm": [
+     407.8,
+     637.3,
+     124.0
+    ],
+    "thickness_error_mm": 0.25,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+     "h+": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   },
+   {
+    "scene": "packed_wall",
+    "seam": "SEAM",
+    "status": "OK",
+    "measured_mm": [
+     109.7,
+     169.4,
+     111.3
+    ],
+    "envelope_mm": [
+     119.6,
+     181.4,
+     124.0
+    ],
+    "thickness_error_mm": 0.25,
+    "truth_outside_mm": 0.0,
+    "edges": {
+     "w-": "COPLANAR_SEAM_MASK_RGB_EDGE_POLICY",
+     "w+": "DIRECT_DEPTH_BOUNDARY",
+     "h-": "COPLANAR_SEAM_MASK_RGB_EDGE_POLICY",
+     "h+": "COPLANAR_SEAM_MASK_RGB_EDGE_POLICY",
+     "t-": "DIRECT_DEPTH_BOUNDARY",
+     "t+": "DIRECT_DEPTH_BOUNDARY"
+    }
+   }
+  ]
+ },
+ "field": {
+  "before_89514c2": [
+   {
+    "task_id": "045e08d158a64bef9a45d89987c53df1",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "NOT_APPLIED_UPPER_HAS_NO_MEASURED_BOX",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "31e4617215ca46fba96f8087181f3e47",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.2,
+       110.6,
+       104.0
+      ],
+      "envelope_size_mm": [
+       223.3,
+       184.7,
+       407.7
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.7,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.2,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 65.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 294.3,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 33,
+       "outside_workspace": true,
+       "first": {
+        "id": "site_boundary_0_0",
+        "category": "workspace_boundary",
+        "overlap_mm": 159.099
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.4,
+       110.9,
+       107.7
+      ],
+      "envelope_size_mm": [
+       228.4,
+       123.3,
+       118.0
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 47.4,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.2,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 36,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_7_21_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.183
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "a9a1eaac54624c93ad96c5e35d33166b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       109.8
+      ],
+      "envelope_size_mm": [
+       225.5,
+       125.9,
+       407.7
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 45.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 289.0,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 37,
+       "outside_workspace": true,
+       "first": {
+        "id": "site_boundary_0_0",
+        "category": "workspace_boundary",
+        "overlap_mm": 155.894
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "MEASURED_UPPER_BOTTOM_AND_RELIABLE_LOWER_FACE_REQUIRED"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.0,
+       110.4,
+       109.1
+      ],
+      "envelope_size_mm": [
+       222.2,
+       123.7,
+       119.8
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.4,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 28,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_7_21_11_s0",
+        "category": "observed",
+        "overlap_mm": 10.114
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 2,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       109.3
+      ],
+      "envelope_size_mm": [
+       407.9,
+       126.2,
+       408.1
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 226.2,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.9,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.0,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 290.7,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 55,
+       "outside_workspace": true,
+       "first": {
+        "id": "site_boundary_0_0",
+        "category": "workspace_boundary",
+        "overlap_mm": 202.699
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 229
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       170.6,
+       109.8,
+       111.2
+      ],
+      "envelope_size_mm": [
+       407.9,
+       125.7,
+       122.0
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 225.1,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 3.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.3,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.9,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.9,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": false,
+      "rest": {
+       "blocked": true,
+       "intersections": 38,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_5_16_9_s26",
+        "category": "observed",
+        "overlap_mm": 9.699
+       },
+       "supports": [],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 2,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   }
+  ],
+  "after_seam_disabled": [
+   {
+    "task_id": "045e08d158a64bef9a45d89987c53df1",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "NOT_APPLIED_UPPER_HAS_NO_MEASURED_BOX",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "31e4617215ca46fba96f8087181f3e47",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31906041151329045,
+       "lower_visible_top": 0.30787872548967465
+      },
+      "selected_m": 0.30787872548967465,
+      "spread_m": 0.0111816860236158
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.2,
+       110.6,
+       104.5
+      ],
+      "envelope_size_mm": [
+       223.8,
+       188.3,
+       123.6
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.7,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 65.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 13.3,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 46,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.511
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_0_for_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1",
+        "rgbd_support_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3205629712214476,
+       "lower_visible_top": 0.31091528071292823
+      },
+      "selected_m": 0.31091528071292823,
+      "spread_m": 0.00964769050851938
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.4,
+       110.9,
+       107.5
+      ],
+      "envelope_size_mm": [
+       224.6,
+       128.5,
+       122.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 47.4,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.3,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 39,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s1",
+        "category": "observed",
+        "overlap_mm": 12.651
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "a9a1eaac54624c93ad96c5e35d33166b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31936591140856274,
+       "lower_visible_top": 0.3092568109777358
+      },
+      "selected_m": 0.3092568109777358,
+      "spread_m": 0.010109100430826967
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       112.5
+      ],
+      "envelope_size_mm": [
+       223.4,
+       128.5,
+       127.8
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 45.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.4,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.5,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 42,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_7_21_11_s0",
+        "category": "observed",
+        "overlap_mm": 13.224
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+        "rgbd_support_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3173097062916551,
+       "lower_visible_top": 0.3059828979597006
+      },
+      "selected_m": 0.3059828979597006,
+      "spread_m": 0.011326808331954541
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.0,
+       110.4,
+       109.3
+      ],
+      "envelope_size_mm": [
+       222.7,
+       129.9,
+       125.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.9,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 10.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.4,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 10.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 45,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.577
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+        "rgbd_support_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.32008297293175403,
+       "lower_visible_top": 0.3092698397015932
+      },
+      "selected_m": 0.3092698397015932,
+      "spread_m": 0.01081313323016081
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 2,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       111.0
+      ],
+      "envelope_size_mm": [
+       408.9,
+       129.2,
+       154.9
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.5,
+        "missing_class": "DETECTION_BOX_EDGE"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 4.9,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 38.1,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 61,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_19_11_s5",
+        "category": "observed",
+        "overlap_mm": 13.476
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2",
+        "rgbd_support_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.34429422679084876,
+       "lower_visible_top": 0.3342524724515995
+      },
+      "selected_m": 0.3342524724515995,
+      "spread_m": 0.010041754339249254
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 229
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       170.6,
+       109.8,
+       111.6
+      ],
+      "envelope_size_mm": [
+       409.5,
+       127.8,
+       129.1
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.1,
+        "missing_class": "OTHER"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.5,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 7.1,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.2,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 11.7,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.9,
+        "missing_class": null
+       }
+      },
+      "instance_fit": "DIFFERENCE_MASK",
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 46,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_5_16_9_s11",
+        "category": "observed",
+        "overlap_mm": 11.774
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_2_for_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "rgbd_support_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 2,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   }
+  ],
+  "after_seam_enabled": [
+   {
+    "task_id": "045e08d158a64bef9a45d89987c53df1",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "NOT_APPLIED_UPPER_HAS_NO_MEASURED_BOX",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "31e4617215ca46fba96f8087181f3e47",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31906041151329045,
+       "lower_visible_top": 0.30787872548967465
+      },
+      "selected_m": 0.30787872548967465,
+      "spread_m": 0.0111816860236158
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.2,
+       110.6,
+       104.5
+      ],
+      "envelope_size_mm": [
+       223.8,
+       188.3,
+       123.6
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.7,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 65.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 13.3,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 46,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.511
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_0_for_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1",
+        "rgbd_support_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3205629712214476,
+       "lower_visible_top": 0.31091528071292823
+      },
+      "selected_m": 0.31091528071292823,
+      "spread_m": 0.00964769050851938
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.4,
+       110.9,
+       107.5
+      ],
+      "envelope_size_mm": [
+       224.6,
+       128.5,
+       122.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 47.4,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.3,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 39,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s1",
+        "category": "observed",
+        "overlap_mm": 12.651
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "a9a1eaac54624c93ad96c5e35d33166b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31936591140856274,
+       "lower_visible_top": 0.3092568109777358
+      },
+      "selected_m": 0.3092568109777358,
+      "spread_m": 0.010109100430826967
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       112.5
+      ],
+      "envelope_size_mm": [
+       223.4,
+       128.5,
+       127.8
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 45.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.4,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.5,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 42,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_7_21_11_s0",
+        "category": "observed",
+        "overlap_mm": 13.224
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+        "rgbd_support_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3173097062916551,
+       "lower_visible_top": 0.3059828979597006
+      },
+      "selected_m": 0.3059828979597006,
+      "spread_m": 0.011326808331954541
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.0,
+       110.4,
+       109.3
+      ],
+      "envelope_size_mm": [
+       222.7,
+       129.9,
+       125.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.9,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 10.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.4,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 10.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 45,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.577
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+        "rgbd_support_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.32008297293175403,
+       "lower_visible_top": 0.3092698397015932
+      },
+      "selected_m": 0.3092698397015932,
+      "spread_m": 0.01081313323016081
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 2,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       111.0
+      ],
+      "envelope_size_mm": [
+       408.9,
+       129.2,
+       154.9
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.5,
+        "missing_class": "DETECTION_BOX_EDGE"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 4.9,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 38.1,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 61,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_19_11_s5",
+        "category": "observed",
+        "overlap_mm": 13.476
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2",
+        "rgbd_support_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.34429422679084876,
+       "lower_visible_top": 0.3342524724515995
+      },
+      "selected_m": 0.3342524724515995,
+      "spread_m": 0.010041754339249254
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "USER_CONFIRMED_NAMED_LIST",
+     "status": "APPLIED",
+     "ignored_points": 229
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       170.6,
+       109.8,
+       111.6
+      ],
+      "envelope_size_mm": [
+       409.5,
+       127.8,
+       129.1
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.1,
+        "missing_class": "OTHER"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.5,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 7.1,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.2,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 11.7,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.9,
+        "missing_class": null
+       }
+      },
+      "instance_fit": "DIFFERENCE_MASK",
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 46,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_5_16_9_s11",
+        "category": "observed",
+        "overlap_mm": 11.774
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_2_for_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "rgbd_support_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 2,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   }
+  ],
+  "after_seam_enabled_pointcloud_keep": [
+   {
+    "task_id": "045e08d158a64bef9a45d89987c53df1",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "NOT_APPLIED",
+      "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "31e4617215ca46fba96f8087181f3e47",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31906041151329045,
+       "lower_visible_top": 0.30787872548967465
+      },
+      "selected_m": 0.30787872548967465,
+      "spread_m": 0.0111816860236158
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.2,
+       110.6,
+       104.5
+      ],
+      "envelope_size_mm": [
+       223.8,
+       188.3,
+       123.6
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.7,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.8,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 65.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 13.3,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 46,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.511
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_0_for_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1",
+        "rgbd_support_a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3205629712214476,
+       "lower_visible_top": 0.31091528071292823
+      },
+      "selected_m": 0.31091528071292823,
+      "spread_m": 0.00964769050851938
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.4,
+       110.9,
+       107.5
+      ],
+      "envelope_size_mm": [
+       224.6,
+       128.5,
+       122.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 47.4,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.3,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 7.0,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 39,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s1",
+        "category": "observed",
+        "overlap_mm": 12.651
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "a9a1eaac54624c93ad96c5e35d33166b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.31936591140856274,
+       "lower_visible_top": 0.3092568109777358
+      },
+      "selected_m": 0.3092568109777358,
+      "spread_m": 0.010109100430826967
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       112.5
+      ],
+      "envelope_size_mm": [
+       223.4,
+       128.5,
+       127.8
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 45.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 4.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 8.4,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.1,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 9.5,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 42,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_7_21_11_s0",
+        "category": "observed",
+        "overlap_mm": 13.224
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0",
+        "rgbd_support_9a17b5f1-921b-4d75-8f04-5aed4c9bfaf7-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.3173097062916551,
+       "lower_visible_top": 0.3059828979597006
+      },
+      "selected_m": 0.3059828979597006,
+      "spread_m": 0.011326808331954541
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       168.0,
+       110.4,
+       109.3
+      ],
+      "envelope_size_mm": [
+       222.7,
+       129.9,
+       125.5
+      ],
+      "edges": {
+       "w-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 43.0,
+        "missing_class": null
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.9,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 10.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.4,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 10.2,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 45,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_17_11_s0",
+        "category": "observed",
+        "overlap_mm": 12.577
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+        "rgbd_support_68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   },
+   {
+    "task_id": "bb81d99e52bc4c8d93b41ba6d9c6c3a6",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.32008297293175403,
+       "lower_visible_top": 0.3092698397015932
+      },
+      "selected_m": 0.3092698397015932,
+      "spread_m": 0.01081313323016081
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 2,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       169.5,
+       110.8,
+       111.0
+      ],
+      "envelope_size_mm": [
+       408.9,
+       129.2,
+       154.9
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.5,
+        "missing_class": "DETECTION_BOX_EDGE"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.0,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 9.0,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 4.9,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 38.1,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.8,
+        "missing_class": null
+       }
+      },
+      "instance_fit": null,
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 61,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_6_19_11_s5",
+        "category": "observed",
+        "overlap_mm": 13.476
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_1_for_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2",
+        "rgbd_support_dea2bb92-2f51-4891-97c4-eb4d841989ce-carton-2"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     }
+    ]
+   },
+   {
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "source_unchanged": true,
+    "stack_support": [
+     {
+      "status": "APPLIED",
+      "estimates": {
+       "upper_measured_bottom": 0.34429422679084876,
+       "lower_visible_top": 0.3342524724515995
+      },
+      "selected_m": 0.3342524724515995,
+      "spread_m": 0.010041754339249254
+     }
+    ],
+    "pointcloud_artifacts": {
+     "policy": "KEEP",
+     "status": "DISABLED",
+     "ignored_points": 0
+    },
+    "detections": [
+     {
+      "detection_index": 0,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     },
+     {
+      "detection_index": 1,
+      "status": "RECOVERED",
+      "measured_size_mm": [
+       170.6,
+       109.8,
+       111.6
+      ],
+      "envelope_size_mm": [
+       409.5,
+       127.8,
+       129.1
+      ],
+      "edges": {
+       "w-": {
+        "method": "MISSING_BOUNDARY_MAXIMUM_EXTENT",
+        "outer_mm": 229.1,
+        "missing_class": "OTHER"
+       },
+       "w+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 5.5,
+        "missing_class": null
+       },
+       "h-": {
+        "method": "CONFIRMED_STACK_SUPPORT_PLANE",
+        "outer_mm": 7.1,
+        "missing_class": null
+       },
+       "h+": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 6.2,
+        "missing_class": null
+       },
+       "t-": {
+        "method": "SENSOR_FREE_RECTANGLE_SPAN_BOUND",
+        "outer_mm": 11.7,
+        "missing_class": null
+       },
+       "t+": {
+        "method": "DIRECT_DEPTH_BOUNDARY",
+        "outer_mm": 3.9,
+        "missing_class": null
+       }
+      },
+      "instance_fit": "DIFFERENCE_MASK",
+      "stack_support_clip": true,
+      "rest": {
+       "blocked": true,
+       "intersections": 61,
+       "outside_workspace": false,
+       "first": {
+        "id": "rgbd_observed_5_15_12_s1",
+        "category": "observed",
+        "overlap_mm": 21.259
+       },
+       "supports": [
+        "rgbd_confirmed_stack_support_2_for_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "rgbd_support_80078bf9-a465-454b-bc26-7a905ebc3656-carton-1"
+       ],
+       "coplanar_seam_contact": null
+      },
+      "enters_candidate_search": false
+     },
+     {
+      "detection_index": 2,
+      "status": "REJECTED",
+      "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+     }
+    ]
+   }
+  ]
+ },
+ "tests": {
+  "P0_stage": {
+   "commit": "d09e2a5",
+   "directed": {
+    "result": "890 passed, 9 skipped",
+    "seconds": 334.04
+   }
+  },
+  "P1_stage": {
+   "commit": "71dc245",
+   "directed": {
+    "result": "922 passed, 9 skipped",
+    "seconds": 389.17
+   }
+  },
+  "seam_stage": {
+   "commit": "56c8466",
+   "directed": {
+    "result": "935 passed, 9 skipped",
+    "seconds": 335.01
+   },
+   "native_optimized": {
+    "pass_items": 17,
+    "fail_items": 0,
+    "status": "PASS"
+   },
+   "native_reference": {
+    "pass_items": 14,
+    "fail_items": 0,
+    "status": "PASS"
+   },
+   "native_component": {
+    "sent_path": "PASS",
+    "points": 491
+   }
+  },
+  "native_note": "m710_clearance_test optimized/reference and check_eco65_single_carton_native.py PASS at every stage (no C++ change); skipped 9 = optional OCP absent",
+  "stage_tests": "each stage tested in its own worktree with that stage's src on the path"
+ },
+ "field_config": {
+  "path": "outputs/workbench/single_carton.prior_free_cpu.20261119.json (git-ignored)",
+  "sha256_before": "cb342b005f1ea2cd04cc682e0dcf7a77ffff01452d29cf5042f2660492976c32",
+  "sha256_after": "622de8b47ac6efba426be87ebdd90cf64473670b4e41157aa6f31f7531f492b3",
+  "change": "geometry.coplanar_seam_policy MASK_RGB_EDGE_COINCIDENT 0.005 m",
+  "check_config_issues": [],
+  "live_workbench": "running process started 20:40 before the change; not restarted; still uses old code and config"
+ },
+ "rejected_detections_after": {
+  "d6d985f17e6f4b6b84eaffb71c5da66b": [
+   {
+    "detection_index": 0,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 36491,
+    "bbox": [
+     -0.041828155517578125,
+     364.81121826171875,
+     504.3858337402344,
+     479.74462890625
+    ]
+   },
+   {
+    "detection_index": 2,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 21002,
+    "bbox": [
+     102.52066802978516,
+     313.8900146484375,
+     309.7626953125,
+     441.9789123535156
+    ]
+   }
+  ],
+  "bb81d99e52bc4c8d93b41ba6d9c6c3a6": [
+   {
+    "detection_index": 0,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 34962,
+    "bbox": [
+     0.21791458129882812,
+     365.9153747558594,
+     499.960693359375,
+     479.459228515625
+    ]
+   },
+   {
+    "detection_index": 1,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 21667,
+    "bbox": [
+     89.63401794433594,
+     322.4756774902344,
+     298.83209228515625,
+     447.21240234375
+    ]
+   }
+  ],
+  "045e08d158a64bef9a45d89987c53df1": [
+   {
+    "detection_index": 0,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 48309,
+    "bbox": [
+     139.36306762695312,
+     162.49212646484375,
+     427.07415771484375,
+     363.7132568359375
+    ]
+   },
+   {
+    "detection_index": 1,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 21844,
+    "bbox": [
+     178.37765502929688,
+     329.5542297363281,
+     392.07342529296875,
+     472.1248779296875
+    ]
+   }
+  ],
+  "67dbcaac6b39429f91ccaa7b98136b4b": [
+   {
+    "detection_index": 1,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 22863,
+    "bbox": [
+     178.16830444335938,
+     329.9873352050781,
+     413.1011962890625,
+     472.6497802734375
+    ]
+   }
+  ],
+  "31e4617215ca46fba96f8087181f3e47": [
+   {
+    "detection_index": 0,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 22815,
+    "bbox": [
+     177.78587341308594,
+     330.04791259765625,
+     395.3071594238281,
+     472.12786865234375
+    ]
+   }
+  ],
+  "b8992c098eaa476284ed1c107d7e7ccf": [
+   {
+    "detection_index": 1,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 22769,
+    "bbox": [
+     178.12551879882812,
+     330.42999267578125,
+     395.74456787109375,
+     472.3683776855469
+    ]
+   }
+  ],
+  "a9a1eaac54624c93ad96c5e35d33166b": [
+   {
+    "detection_index": 1,
+    "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+    "measurement_failure": "BOX_THICKNESS_UNOBSERVED_SHOW_SIDE",
+    "mask_pixels": 23306,
+    "bbox": [
+     184.6031951904297,
+     331.6750793457031,
+     405.10693359375,
+     474.30084228515625
+    ]
+   }
+  ]
+ },
+ "field_table_markdown": "| task/det | before_89514c2 | after_disabled | after_seam | after_seam_keep |\n|---|---|---|---|---|\n| 045e08d1/0 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| 045e08d1/1 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| 31e46172/0 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| 31e46172/1 | meas [168.2, 110.6, 104.0] env [223.3, 184.7, 407.7]; w-:SENSOR w+:DIRECT h-:SENSOR h+:SENSOR t-:MISSIN t+:DIRECT; rest BLOCKED site_boundary_0_0 159.099 mm x33; search NO | meas [168.2, 110.6, 104.5] env [223.8, 188.3, 123.6]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.511 mm x46; search NO | meas [168.2, 110.6, 104.5] env [223.8, 188.3, 123.6]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.511 mm x46; search NO | meas [168.2, 110.6, 104.5] env [223.8, 188.3, 123.6]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.511 mm x46; search NO |\n| 67dbcaac/0 | meas [168.4, 110.9, 107.7] env [228.4, 123.3, 118.0]; w-:SENSOR w+:DIRECT h-:SENSOR h+:DIRECT t-:DIRECT t+:DIRECT; rest BLOCKED rgbd_observed_7_21_11_s0 12.183 mm x36; search NO | meas [168.4, 110.9, 107.5] env [224.6, 128.5, 122.5]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s1 12.651 mm x39; search NO | meas [168.4, 110.9, 107.5] env [224.6, 128.5, 122.5]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s1 12.651 mm x39; search NO | meas [168.4, 110.9, 107.5] env [224.6, 128.5, 122.5]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s1 12.651 mm x39; search NO |\n| 67dbcaac/1 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| a9a1eaac/0 | meas [169.5, 110.8, 109.8] env [225.5, 125.9, 407.7]; w-:SENSOR w+:DIRECT h-:SENSOR h+:SENSOR t-:MISSIN t+:DIRECT; rest BLOCKED site_boundary_0_0 155.894 mm x37; search NO | meas [169.5, 110.8, 112.5] env [223.4, 128.5, 127.8]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_7_21_11_s0 13.224 mm x42; search NO | meas [169.5, 110.8, 112.5] env [223.4, 128.5, 127.8]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_7_21_11_s0 13.224 mm x42; search NO | meas [169.5, 110.8, 112.5] env [223.4, 128.5, 127.8]; w-:SENSOR w+:DIRECT h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_7_21_11_s0 13.224 mm x42; search NO |\n| a9a1eaac/1 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| b8992c09/0 | meas [168.0, 110.4, 109.1] env [222.2, 123.7, 119.8]; w-:SENSOR w+:DIRECT h-:DIRECT h+:SENSOR t-:DIRECT t+:DIRECT; rest BLOCKED rgbd_observed_7_21_11_s0 10.114 mm x28; search NO | meas [168.0, 110.4, 109.3] env [222.7, 129.9, 125.5]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.577 mm x45; search NO | meas [168.0, 110.4, 109.3] env [222.7, 129.9, 125.5]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.577 mm x45; search NO | meas [168.0, 110.4, 109.3] env [222.7, 129.9, 125.5]; w-:SENSOR w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_17_11_s0 12.577 mm x45; search NO |\n| b8992c09/1 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| bb81d99e/0 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| bb81d99e/1 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| bb81d99e/2 | meas [169.5, 110.8, 109.3] env [407.9, 126.2, 408.1]; w-:MISSIN w+:SENSOR h-:SENSOR h+:SENSOR t-:MISSIN t+:DIRECT; rest BLOCKED site_boundary_0_0 202.699 mm x55; search NO | meas [169.5, 110.8, 111.0] env [408.9, 129.2, 154.9]; w-:MISSIN(DETECTION_BOX_EDGE) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_19_11_s5 13.476 mm x61; search NO | meas [169.5, 110.8, 111.0] env [408.9, 129.2, 154.9]; w-:MISSIN(DETECTION_BOX_EDGE) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_19_11_s5 13.476 mm x61; search NO | meas [169.5, 110.8, 111.0] env [408.9, 129.2, 154.9]; w-:MISSIN(DETECTION_BOX_EDGE) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_6_19_11_s5 13.476 mm x61; search NO |\n| d6d985f1/0 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n| d6d985f1/1 | meas [170.6, 109.8, 111.2] env [407.9, 125.7, 122.0]; w-:MISSIN w+:DIRECT h-:SENSOR h+:SENSOR t-:DIRECT t+:DIRECT; rest BLOCKED rgbd_observed_5_16_9_s26 9.699 mm x38; search NO | meas [170.6, 109.8, 111.6] env [409.5, 127.8, 129.1]; w-:MISSIN(OTHER) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_5_16_9_s11 11.774 mm x46; search NO | meas [170.6, 109.8, 111.6] env [409.5, 127.8, 129.1]; w-:MISSIN(OTHER) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_5_16_9_s11 11.774 mm x46; search NO | meas [170.6, 109.8, 111.6] env [409.5, 127.8, 129.1]; w-:MISSIN(OTHER) w+:SENSOR h-:CONFIR h+:SENSOR t-:SENSOR t+:DIRECT; rest BLOCKED rgbd_observed_5_15_12_s1 21.259 mm x61; search NO |\n| d6d985f1/2 | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD | REJECTED: HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD |\n",
+ "user_decisions_pending": [
+  "POINT_OWNERSHIP_IN_STACK_SEAM_BAND: lower-mask returns between lower visible top and upper measured bottom block every stacked target at rest (9-13 mm, 39-61 objects)",
+  "D435_LEFT_OCCLUSION_BAND: w- bounded by free rays 43-47 mm out; no depth is not free space",
+  "SILHOUETTE_DEPTH_FATTENING: d6d985f1 w- (wall in RGB, carton depth 1-6 px out) excluded by the stricter far-band rule",
+  "DETECTION_BOX_EDGE_RULE: bb81d99e w- has 31 % of its segment within 2 px of the DINO box; SAM masks usually follow the box",
+  "SEAM_CONTACT_RULE: no at-rest overlap entirely inside a seam band occurred in this replay"
+ ],
+ "not_verified": [
+  "field depth / mask error calibration",
+  "systematic calibration of the P1-C thresholds (37-session values, checked on field-like views and negatives only)",
+  "complete path search and final audit on any field record",
+  "live workbench with the new code",
+  "physical pick: NOT_RUN"
+ ],
+ "sessions": {
+  "inherited": "uncommitted P0-A..P1-G work of session eco65-pick-and-place-37 (backup diff kept), reviewed, corrected and completed here per user instruction"
+ }
+}
