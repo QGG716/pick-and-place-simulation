@@ -37,22 +37,25 @@ def payload_mass_properties(box,mass):
         basis='USER_CONFIGURED_MASS_UNIFORM_CUBOID_INERTIA_ESTIMATE_NOT_MEASURED_MASS_DISTRIBUTION')
 
 
-def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
-    """Bound a known-axis rectangular face across short missing-depth bands.
+def plane_free_witnesses(points,camera_pose,face_axis,face_position,measured_lo,measured_hi,pad):
+    """Bound a measured cuboid face's in-plane extents by sensor-free rays.
 
-    A rectangle containing the observed face spans each observed coordinate
-    interval. A sensor-free point at an interior coordinate of one axis thus
-    limits its extent on the other axis. This needs neither a closed mask nor
-    a closed global free-space component. Foreground and absent returns give
-    no witness. The existing RGB-D free-space margin and pixel guard apply.
+    ``face_axis``/``face_position`` name a visible face of the carton in the
+    measured box frame (front, side or top). A cuboid containing the observed
+    rectangle spans each observed coordinate interval on that face. If a ray
+    crosses the face plane at a point inside the span of one in-plane axis and
+    the sensor returned clearly farther depth, the carton is not at that point
+    (a solid there would have returned it), so it cannot extend that far along
+    the other in-plane axis. Foreground, absent and off-image returns give no
+    witness. The existing RGB-D free-space margin and pixel guard apply.
     """
     from .visibility_geometry import FREE_MARGIN_M,PIXEL_GUARD
-    p=np.asarray(points,float);R=camera_pose[:3,:3];normal=R[:,2]
-    front=camera_pose[:3,3]+normal*measured_hi[2]
+    p=np.asarray(points,float);R=camera_pose[:3,:3];normal=R[:,face_axis]
+    on_face=camera_pose[:3,3]+normal*face_position
     valid=np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
     with np.errstate(divide='ignore',invalid='ignore'):
         denominator=(p@normal)/p[...,2]
-        z=(front@normal)/denominator
+        z=(on_face@normal)/denominator
         query=p*(z/p[...,2])[...,None]
         free=valid&(z>.1)&(abs(denominator)>1e-8)&(
             p[...,2]>z+FREE_MARGIN_M/abs(denominator)+FREE_MARGIN_M)
@@ -60,8 +63,9 @@ def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
         borderType=cv2.BORDER_CONSTANT,borderValue=0).astype(bool)
     query=np.where(np.isfinite(query).all(-1)[...,None],query,0.)
     local=(query-camera_pose[:3,3])@R;witnesses={}
-    for axis in (0,1):
-        other=1-axis
+    in_plane=[a for a in range(3) if a!=face_axis]
+    for axis in in_plane:
+        other=in_plane[0] if axis==in_plane[1] else in_plane[1]
         strip=(local[...,other]>measured_lo[other]+pad[other])&(
             local[...,other]<measured_hi[other]-pad[other])
         for sign in (-1,1):
@@ -73,12 +77,34 @@ def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
             y,x=map(int,np.argwhere(use)[k]);outer=float(values[k]+sign*pad[axis])
             witnesses[(axis,sign)]=dict(outer_m=outer,pixel_xy=[x,y],
                 observed_depth_m=float(p[y,x,2]),plane_depth_m=float(z[y,x]),
-                query_face_local_m=local[y,x].tolist(),
+                query_face_local_m=local[y,x].tolist(),face_axis=int(face_axis),
+                face_position_m=float(face_position),witness_pixels=int(use.sum()),
                 interior_other_axis_m=[float(measured_lo[other]+pad[other]),float(measured_hi[other]-pad[other])],
                 free_margin_m=FREE_MARGIN_M,pixel_guard=PIXEL_GUARD,
                 method='SENSOR_FREE_POINT_IN_OBSERVED_RECTANGLE_SPAN',
                 mask_boundary_used_as_carton_edge=False)
     return witnesses
+
+
+def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
+    """The measured front face (+Z) case of plane_free_witnesses."""
+    return plane_free_witnesses(points,camera_pose,2,measured_hi[2],measured_lo,measured_hi,pad)
+
+
+def visible_face_witnesses(points,camera_pose,models,W,measured_lo,measured_hi,pad):
+    """Tightest witness per boundary over every accepted visible plane."""
+    out={}
+    C=np.linalg.inv(np.asarray(W,float))
+    for model in models or [None]:
+        if model is None:axis,position=2,measured_hi[2]
+        else:
+            n=C[:3,:3]@np.asarray(model['normal']);c=transform(C,[model['center_m']])[0]
+            axis=int(np.argmax(abs(camera_pose[:3,:3].T@n)))
+            position=float((c-camera_pose[:3,3])@camera_pose[:3,axis])
+            if axis==2:position=measured_hi[2]
+        for key,w in plane_free_witnesses(points,camera_pose,axis,position,measured_lo,measured_hi,pad).items():
+            if key not in out or (w['outer_m']-out[key]['outer_m'])*key[1]<0:out[key]=w
+    return out
 
 
 SUPPORT_TILT_LIMIT_RAD = float(np.deg2rad(5))  # same limit as observed_support_plane
@@ -159,13 +185,36 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     models=box.get('observed_plane_models',[])
     if models:
         world=transform(W,p.reshape(-1,3)).reshape(p.shape);supported=np.zeros(mask.shape,bool)
-        for plane in models:
-            supported|=abs((world-np.asarray(plane['center_m']))@np.asarray(plane['normal']))<=plane['residual_m']+1e-9
+        from .geometry import ADJACENT_EDGE_BAND_M
+        main=models[0];main_distance=abs((world-np.asarray(main['center_m']))@np.asarray(main['normal']))
+        disconnected=0;adjacent_only=np.zeros(mask.shape,bool)
+        for k,plane in enumerate(models):
+            on=use&(abs((world-np.asarray(plane['center_m']))@np.asarray(plane['normal']))<=plane['residual_m']+1e-9)
+            if k:
+                # An adjacent face only counts where its patch connects to the
+                # common edge with the front face (same rule as thickness):
+                # mask bleed across the plane's extension is not carton surface.
+                _,labels=cv2.connectedComponents(on.astype('uint8'),connectivity=8)
+                ids=np.unique(labels[on&(main_distance<=ADJACENT_EDGE_BAND_M)]);ids=ids[ids!=0]
+                connected=on&np.isin(labels,ids);disconnected+=int((on&~connected).sum());on=connected
+            supported|=on
+            if k:adjacent_only|=on
         use&=supported
+        b['quality']['envelope_side_points_not_connected_to_common_edge']=disconnected
     b['quality']['envelope_surface_depth_points']=int(use.sum())
     b['quality']['envelope_rejected_off_plane_depth_points']=raw_count-int(use.sum())
     b['quality']['envelope_depth_source']='ACCEPTED_VISIBLE_PLANES' if models else 'LEGACY_ALL_VALID_MASK_DEPTH'
-    local=(p-camera_pose[:3,3])@R;observed=local[use]
+    local=(p-camera_pose[:3,3])@R
+    if models:
+        # Adjacent-face samples beyond the robust connected far end (plus the
+        # depth-noise allowance) are another surface crossing that plane's
+        # extension, not this carton. They stay scene obstacles; the far
+        # boundary itself is still decided by direct or free-ray evidence.
+        limit=np.asarray(box['size_m'])/2+DEPTH_NOISE_ALLOWANCE_M
+        beyond=use&adjacent_only&~(abs((world-np.asarray(models[0]['center_m']))@np.asarray(models[0]['normal']))
+            <=models[0]['residual_m']+1e-9)&np.any(abs(local)>limit,axis=-1)
+        use&=~beyond;b['quality']['envelope_side_points_beyond_robust_far_end']=int(beyond.sum())
+    observed=local[use]
     if not len(observed):raise ValueError('NO_MEASURED_ENVELOPE_SUPPORT')
     measured_lo=-np.asarray(box['size_m'])/2;measured_hi=-measured_lo
     if np.max(box['size_m'])>maximum:raise ValueError('MEASURED_BOX_EXCEEDS_CONFIGURED_MAXIMUM_EXTENT')
@@ -180,7 +229,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     if not differences:raise ValueError('PIXEL_FOOTPRINT_UNRESOLVED')
     footprint=np.maximum(np.quantile(np.concatenate(differences),.95,axis=0),.0001)
     pad=BOUNDARY_PIXEL_FOOTPRINTS*footprint+DEPTH_NOISE_ALLOWANCE_M
-    free_witnesses=front_free_witnesses(p,camera_pose,measured_lo,measured_hi,pad)
+    free_witnesses=visible_face_witnesses(p,camera_pose,models,W,measured_lo,measured_hi,pad)
     # A direct boundary needs a valid target return immediately adjacent to
     # valid, farther background. A hole between it and the mask edge is unknown.
     boundary=mask&~cv2.erode(mask.astype('uint8'),np.ones((3,3),'uint8')).astype(bool)
@@ -245,3 +294,4 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
         depth_noise_allowance_m=DEPTH_NOISE_ALLOWANCE_M,
         basis='SYNTHETIC_SWEEP_CALIBRATION_NOT_FIELD_DIMENSION_VALIDATION')
     return b
+

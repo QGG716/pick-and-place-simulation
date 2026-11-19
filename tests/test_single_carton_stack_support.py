@@ -43,17 +43,21 @@ def test_stack_relation_retains_full_hidden_static_volume_and_exact_support_plan
 
 
 @pytest.mark.parametrize('change,reason',[
-    ('extra_instance','TWO_CARTON'),('uncertain_upper','MEASURED_UPPER'),('prior_upper','MEASURED_UPPER'),
-    ('contradicting_lower','CONFLICTS'),('no_interface','NO_SAME_FRAME')])
+    ('second_lower_with_interface','AMBIGUOUS_STACK_LOWER'),('uncertain_upper','MEASURED_UPPER'),('prior_upper','MEASURED_UPPER'),
+    ('contradicting_lower','CONFLICTS'),('no_interface','NO_SAME_FRAME|HEIGHT_ESTIMATES_DISAGREE')])
 def test_stack_confirmation_never_binds_unrelated_or_conflicting_observations(change,reason):
     args=list(fixture())
-    if change=='extra_instance':args[1].masks.append(np.zeros_like(args[1].masks[0]))
+    if change=='second_lower_with_interface':
+        args[1].masks.append(np.roll(args[1].masks[1],2,axis=1))
+        args[3].append(dict(detection_index=2,evidence=deepcopy(args[3][0]['evidence'])))
     if change=='uncertain_upper':args[2][0]['uncertainty']={'kind':'BOUNDED_CUBOID_UNION'}
     if change=='prior_upper':args[2][0]['quality']['all_dimensions_source']='SIZE_PRIOR'
     if change=='contradicting_lower':args[3][0]['evidence']['observed_face']['center_m'][2]+=.2
     if change=='no_interface':args[6][...,2]-=.1
     bodies,records=infer_supports(*args)
-    assert not bodies and records[0]['status']=='NOT_APPLIED' and reason in records[0]['reason']
+    # Shifting all depth also moves the lower visible top, which may now be
+    # rejected as disagreeing height estimates before the interface check.
+    assert not bodies and records[0]['status']=='NOT_APPLIED' and any(r in records[0]['reason'] for r in reason.split('|'))
 
 
 def test_support_relation_is_explicit_and_requires_field_basis():
@@ -126,3 +130,10 @@ def test_old_worker_cannot_silently_force_measured_side_into_front_rectangle(cas
     with pytest.raises(ValueError,match='UPDATE_REQUIRED_FOR_OBSERVED_SIDE_ENVELOPE'):
         p.plan_cycle(obs,[box],folder)
     assert not p.authority._plans and not [r for r in calls if r.get('op')=='plan']
+
+
+def test_instance_outside_the_column_neither_blocks_nor_joins_the_stack():
+    args=list(fixture());far=np.zeros_like(args[1].masks[0]);far[50:,:6]=True   # no interface with the upper
+    args[1].masks.append(far);args[3].append(dict(detection_index=2,evidence=deepcopy(args[3][0]['evidence'])))
+    bodies,records=infer_supports(*args)
+    assert records[0]['status']=='APPLIED' and records[0]['column']['other_instances_not_in_column']==[2]

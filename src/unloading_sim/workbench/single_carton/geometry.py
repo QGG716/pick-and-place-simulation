@@ -26,7 +26,49 @@ class GeometryRejected(ValueError):
         self.evidence = evidence
 
 
-def _visible_planes(points, mask, seed, min_points, residual_m):
+# A non-dominant plane is accepted on absolute evidence, not a share of the
+# mask: a real side seen obliquely can be a few percent of the pixels.
+# Values calibrated on the synthetic field-like/raycast sweeps; see
+# docs/evidence/<date>_geometry_robustness/report.json.
+SECOND_PLANE_MIN_SUPPORT_PIXELS = 300
+ADJACENT_EDGE_BAND_M = .004
+ADJACENT_EDGE_BIN_M = .002
+ADJACENT_EDGE_MIN_RUN_M = .02
+ADJACENT_EDGE_MIN_POINTS = 20
+# Same 70 % coverage as before; the band (+/-3 px) now straddles the mask boundary.
+COPLANAR_EDGE_MIN_FRACTION = .70
+
+
+def adjacent_face_evidence(main, plane):
+    """Is ``plane`` a face meeting ``main`` along a supported common edge?
+
+    Both planes need support within ADJACENT_EDGE_BAND_M of their intersection
+    line, overlapping along it in a continuous run (2 mm bins, one-bin gaps).
+    A lower carton's recessed top or a background wall never reaches it.
+    """
+    n1, n2 = main['normal'], plane['normal']; d = np.cross(n1, n2); length = np.linalg.norm(d)
+    if length < np.sin(np.deg2rad(45)): return dict(adjacent=False, reason='NOT_TRANSVERSE')
+    d /= length
+    near_plane = plane['support'][abs((plane['support']-main['center'])@n1) <= ADJACENT_EDGE_BAND_M]
+    near_main = main['support'][abs((main['support']-plane['center'])@n2) <= ADJACENT_EDGE_BAND_M]
+    record = dict(edge_points_on_plane=len(near_plane), edge_points_on_main=len(near_main))
+    if min(len(near_plane), len(near_main)) < ADJACENT_EDGE_MIN_POINTS:
+        return dict(record, adjacent=False, reason='NO_SUPPORTED_COMMON_EDGE', run_m=0.)
+    a = near_plane@d; b = near_main@d; lo = max(a.min(), b.min()); hi = min(a.max(), b.max())
+    if hi <= lo: return dict(record, adjacent=False, reason='COMMON_EDGE_DOES_NOT_OVERLAP', run_m=0.)
+    edges = np.arange(lo, hi+ADJACENT_EDGE_BIN_M, ADJACENT_EDGE_BIN_M)
+    occupied = (np.histogram(a, edges)[0] > 0) & (np.histogram(b, edges)[0] > 0)
+    run = best = gap = 0
+    for o in occupied:
+        if o: run += 1+gap; gap = 0; best = max(best, run)
+        elif run and gap == 0: gap = 1
+        else: run = gap = 0
+    run_m = best*ADJACENT_EDGE_BIN_M
+    return dict(record, adjacent=run_m >= ADJACENT_EDGE_MIN_RUN_M, run_m=float(run_m),
+                reason=None if run_m >= ADJACENT_EDGE_MIN_RUN_M else 'COMMON_EDGE_RUN_TOO_SHORT')
+
+
+def _visible_planes(points, mask, seed, min_points, residual_m, diagnostics=None):
     valid = mask & np.isfinite(points).all(-1) & (points[..., 2] > .1) & (points[..., 2] < 3.)
     interior = cv2.erode(mask.astype('uint8'), np.ones((5, 5), 'uint8')).astype(bool) & valid
     rng = np.random.default_rng(seed)
@@ -44,7 +86,7 @@ def _visible_planes(points, mask, seed, min_points, residual_m):
             if length < 1e-9: continue
             n /= length; inliers = abs((fit-a)@n) <= residual_m
             if best is None or inliers.sum() > best.sum(): best = inliers
-        if best is None or best.sum() < min_points or best.sum()/original < .04: break
+        if best is None or best.sum() < min_points: break
         sample = fit[best]; center = sample.mean(0)
         _, _, vh = np.linalg.svd(sample-center, full_matrices=False)
         n = vh[-1]
@@ -61,14 +103,75 @@ def _visible_planes(points, mask, seed, min_points, residual_m):
         # Merge parallel fragments from cardboard waviness; they do not provide
         # independent thickness evidence. Do not count them as a second face.
         if not any(abs(n@p['normal']) > np.cos(np.deg2rad(12)) for p in planes):
-            support = points[valid & (abs((points-center)@n) <= residual_m)]
-            planes.append(dict(center=center, normal=n, support=support,
-                               fraction=float(best.sum()/original), count=int(best.sum()),
-                               rms=float(np.sqrt(np.mean(((sample-center)@n)**2)))))
+            support_mask = valid & (abs((points-center)@n) <= residual_m)
+            support = points[support_mask]
+            plane = dict(center=center, normal=n, support=support, support_mask=support_mask,
+                         fraction=float(best.sum()/original), count=int(best.sum()),
+                         rms=float(np.sqrt(np.mean(((sample-center)@n)**2))))
+            if not planes:
+                planes.append(plane)
+            else:
+                # Absolute evidence and adjacency to the dominant face; a
+                # failed candidate is recorded and the search continues.
+                transverse = abs(n@planes[0]['normal']) <= np.sin(np.deg2rad(10))
+                check = dict(subsample_inliers=plane['count'], support_pixels=len(support),
+                             rms_m=plane['rms'], transverse=bool(transverse), reason=None)
+                if len(support) < SECOND_PLANE_MIN_SUPPORT_PIXELS: check['reason'] = 'INSUFFICIENT_SUPPORT_PIXELS'
+                elif plane['rms'] > residual_m: check['reason'] = 'PLANE_RMS_EXCEEDS_RESIDUAL'
+                elif transverse:
+                    adjacency = adjacent_face_evidence(planes[0], plane)
+                    check.update(adjacency, reason=None if adjacency['adjacent'] else 'NOT_ADJACENT_FACE:'+str(adjacency['reason']))
+                check['accepted'] = check['reason'] is None
+                plane['acceptance'] = check
+                if diagnostics is not None: diagnostics.append(dict(check, normal_camera=n.tolist()))
+                if check['accepted']: planes.append(plane)
         fit = fit[~best]
     if not planes or planes[0]['fraction'] < .25:
         raise ValueError('NO_TRUSTWORTHY_DOMINANT_VISIBLE_PLANE')
     return valid, planes
+
+
+THICKNESS_BIN_M = .005
+THICKNESS_BIN_MIN_POINTS = 3
+# Calibrated 2026-11-19 (docs/evidence/20261119_geometry_robustness): 0.8
+# under-reads obliquely seen field sides by up to ~14 mm (few far rows); 1.0
+# lets mask bleed onto a lower top add 15-24 mm; 0.95 keeps the synthetic
+# field-like errors within +/-1 mm and the saved field sides at 104-112 mm.
+THICKNESS_FAR_QUANTILE = .95
+
+
+def connected_side_thickness(points, main, side, face_center):
+    """Thickness from the side patch connected to the front/side common edge.
+
+    Only side-plane pixels in an 8-connected image component that reaches the
+    common edge (within ADJACENT_EDGE_BAND_M of the front plane) are used. Mask
+    bleed onto a lower carton's top crossing the side plane's extension is
+    either disconnected or confined to a few rows along the edge direction;
+    per-row far ends (5 mm bins along the common edge) and their 95th
+    percentile remove it. Excluded pixels are counted, never made free space.
+    """
+    n = main['normal']; sm = side['support_mask'].astype('uint8')
+    seed = side['support_mask'] & (abs((points-main['center'])@n) <= ADJACENT_EDGE_BAND_M)
+    _, labels = cv2.connectedComponents(sm, connectivity=8)
+    ids = np.unique(labels[seed]); ids = ids[ids != 0]
+    keep = np.isin(labels, ids) & side['support_mask']
+    pts = points[keep]
+    record = dict(side_support_pixels=int(side['support_mask'].sum()), connected_pixels=int(keep.sum()),
+                  excluded_disconnected_pixels=int(side['support_mask'].sum()-keep.sum()),
+                  bin_m=THICKNESS_BIN_M, far_quantile=THICKNESS_FAR_QUANTILE,
+                  method='SIDE_PATCH_CONNECTED_TO_COMMON_EDGE_ROBUST_FAR_END')
+    if not len(pts): return 0., pts, dict(record, rows=0)
+    d = np.cross(n, side['normal']); d /= np.linalg.norm(d)
+    depth = (face_center-pts)@n; along = pts@d
+    rows = np.floor((along-along.min())/THICKNESS_BIN_M).astype(int); far = []
+    for r in np.unique(rows):
+        values = depth[rows == r]
+        if len(values) >= THICKNESS_BIN_MIN_POINTS: far.append(values.max())
+    if not far: return 0., pts, dict(record, rows=0)
+    thickness = float(np.quantile(far, THICKNESS_FAR_QUANTILE))
+    return thickness, pts, dict(record, rows=len(far), thickness_m=thickness,
+        raw_quantile_998_m=float(np.quantile(depth, .998)),
+        points_beyond_robust_far_end=int((depth > thickness).sum()))
 
 
 def _measured_face(points, plane, x, world_camera):
@@ -96,7 +199,8 @@ def _measured_face(points, plane, x, world_camera):
 def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, residual_m, bounded=False):
     points = np.asarray(points, float); mask = np.asarray(mask, bool); W = rigid(world_camera)
     if points.shape != (*mask.shape, 3): raise ValueError('MASK_DEPTH_SHAPE_MISMATCH')
-    valid, planes = _visible_planes(points, mask, seed, min_points, residual_m)
+    candidates = []
+    valid, planes = _visible_planes(points, mask, seed, min_points, residual_m, candidates)
     main = planes[0]; n = main['normal']
     side = next((p for p in planes[1:] if abs(p['normal']@n) <= np.sin(np.deg2rad(10))), None)
     if side is None:
@@ -109,7 +213,8 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         x = side['normal']-n*(side['normal']@n); x /= np.linalg.norm(x)
     face, face_center, size2, coverage = _measured_face(points, main, x, W)
     evidence = dict(observed_face=face, measured_face_size_m=size2.tolist(),
-                    plane_rms_m=main['rms'], plane_count=len(planes), hidden_extent_measured=False)
+                    plane_rms_m=main['rms'], plane_count=len(planes), hidden_extent_measured=False,
+                    second_plane_candidates=candidates)
     # No fixed carton dimensions and no guessed extrusion behind a lone face.
     if side is None: raise GeometryRejected('BOX_THICKNESS_UNOBSERVED_SHOW_SIDE', evidence)
     if mask[:2].any() or mask[-2:].any() or mask[:,:2].any() or mask[:,-2:].any():
@@ -129,10 +234,10 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         occluded |= outside & near_plane & (predicted_z-points[...,2]>.008)
     if not bounded and occluded.sum()>max(12, outside.sum()*.15):
         raise GeometryRejected('BOX_FAR_BOUNDARY_OCCLUDED_SHOW_SIDE_EDGE',dict(evidence,occluded_boundary_pixels=int(occluded.sum())))
-    depth = (face_center-side['support'])@n
     # The side face must span a finite thickness and have a trustworthy far
     # boundary; the single dominant plane cannot provide this dimension.
-    thickness = float(np.quantile(depth,.998))
+    thickness, side_points, thickness_evidence = connected_side_thickness(points, main, side, face_center)
+    evidence['thickness_evidence'] = thickness_evidence
     if thickness <= max(.008,4*residual_m):
         raise GeometryRejected('BOX_THICKNESS_UNRESOLVED',evidence)
     y = np.cross(n,x); R = np.column_stack((x,y,n)); size = np.r_[size2,thickness]
@@ -147,8 +252,10 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
     continuation = outside & (abs((points-main['center'])@n)<=residual_m)
     if continuation.sum()>max(10,outside.sum()*.25):
         if rgb is None: raise GeometryRejected('MASK_BOUNDARY_CUTS_CONTINUING_PLANE',evidence)
-        edge_pixels=cv2.dilate(cv2.Canny(cv2.cvtColor(rgb,cv2.COLOR_RGB2GRAY),30,80),np.ones((5,5),'uint8'))>0
-        if np.mean(edge_pixels[continuation])<.70: raise GeometryRejected('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED',evidence)
+        from .rgb_edges import boundary_edge_coverage
+        seam=boundary_edge_coverage(rgb,mask,continuation);evidence['coplanar_boundary_rgb_edge']=seam
+        if seam['fraction']<COPLANAR_EDGE_MIN_FRACTION:
+            raise GeometryRejected('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED',evidence)
     # The fitted side is not exactly perpendicular to the front (cardboard
     # bowing and measurement noise). Its normal alone must not determine the
     # box: a front-edge rectangle can be narrower than the actual side farther
@@ -158,7 +265,7 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
     # infer the hidden opposite side from a lone plane. The full-boundary and
     # mixed-instance checks above still apply before this conservative union.
     front_dimensions=size.copy()
-    side_x=(side['support']-pose[:3,3])@x
+    side_x=(side_points-pose[:3,3])@x
     side_lo=min(-size[0]/2,float(side_x.min()))
     side_hi=max(size[0]/2,float(side_x.max()))
     expansion=[float(-size[0]/2-side_lo),float(side_hi-size[0]/2)]
@@ -184,7 +291,7 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
             front_face_and_depth_dimensions_m=front_dimensions.tolist(),
             observed_side_envelope_expansion_m=expansion,
             observed_side_envelope_source='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR',
-            observed_side_envelope_points=len(side['support']),
+            observed_side_envelope_points=len(side_points),thickness_evidence=thickness_evidence,
             ambiguity='180_DEGREE_FACE_SYMMETRY',all_dimensions_source='RGBD_VISIBLE_BOUNDARIES'))
 
 
@@ -236,9 +343,9 @@ def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
     continuation=outside&(abs((points-center)@n)<=residual_m)
     if continuation.sum()>max(10,outside.sum()*.25):
         if rgb is None:raise ValueError('MASK_BOUNDARY_CUTS_CONTINUING_PLANE')
-        gray=cv2.cvtColor(rgb,cv2.COLOR_RGB2GRAY)
-        edges=cv2.dilate(cv2.Canny(gray,30,80),np.ones((5,5),'uint8'))>0
-        if np.mean(edges[continuation])<.70:raise ValueError('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED')
+        from .rgb_edges import boundary_edge_coverage
+        if boundary_edge_coverage(rgb,mask,continuation)['fraction']<COPLANAR_EDGE_MIN_FRACTION:
+            raise ValueError('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED')
     u = vh[0]; v = np.cross(n,u)
     plane = all_points[abs((all_points-center)@n) <= residual_m]
     xy = np.c_[(plane-center)@u, (plane-center)@v]

@@ -257,6 +257,11 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     z=np.where(valid,depth,0.).astype(np.float32);square=np.ones((3,3),np.uint8)
     jump=(cv2.dilate(z,square)-cv2.erode(z,square))>FLYING_DEPTH_JUMP_M
     lap('points_and_depth_jumps')
+    # A confirmed stack sets the upper envelope bottom (in place) before any
+    # point is claimed, so claims, supports and the planner use one bottom.
+    from .stack_support import infer_supports
+    stack_bodies,stack_evidence=infer_supports(observation,result,boxes,unresolved_cartons,config,geometry,
+        world_points,valid,outside_ignored)
     claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
         claim_valid=valid
@@ -336,8 +341,6 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # depth rays extended by one conservative carton depth. Reconstructed target
     # envelopes, robot-owned cells and sensor-proven free cells are excluded.
     lap('fixed_obstacles_indexing_occupancy')
-    from .stack_support import infer_supports
-    stack_bodies,stack_evidence=infer_supports(observation,result,boxes,unresolved_cartons,config,geometry,world_points,valid)
     shadow=np.zeros(tuple(shape),bool);unreconstructed=[];extrusion_records=[]
     if neighbor_depth_m:
         reconstructed={b['detection_index'] for b in boxes}|set(stack_bodies)

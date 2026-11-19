@@ -324,7 +324,8 @@ class SinglePlanner(EmptyPlanner):
     def detach_supports(self,world,box):
         if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':return []
         if (box.get('uncertainty',{}).get('kind')=='MEASURED_BOUNDARY_INTERVALS'
-                and not box.get('quality',{}).get('observed_support_plane')):return []
+                and not box.get('quality',{}).get('observed_support_plane')
+                and not box.get('quality',{}).get('confirmed_stack_support_clip')):return []
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
@@ -1476,3 +1477,4 @@ class SinglePlanner(EmptyPlanner):
         if client is not None:client.close()
         self.close_check_pool()
         if evidence is not None:evidence.close()
+

@@ -19,7 +19,8 @@ def detection_result(frame,boxes,inference=None):
     if len(boxes)>MAX_TARGETS:raise ValueError('TOO_MANY_TARGETS_FOR_SINGLE_CARTON_OBSERVATION')
     extra={} if inference is None else dict(inference=inference)
     items=tuple(dict(label=str(b['label']),score=float(b['score']),bbox_xyxy=[float(x) for x in b['bbox_xyxy']],center_m=None,
-        frame_id='camera_optical',geometry_kind='DETECTION_ONLY',**extra) for b in boxes)
+        frame_id='camera_optical',geometry_kind='DETECTION_ONLY',**extra,
+        **({'suppressed_stack_boxes':b['suppressed_stack_boxes']} if b.get('suppressed_stack_boxes') else {})) for b in boxes)
     return DetectionResult(frame.observation_id,frame.stamp.source,monotonic_ns(),items,(),
                            'HF_GROUNDING_DINO_ACTUAL_INFERENCE'+('' if inference is None else '_'+inference['backend']))
 

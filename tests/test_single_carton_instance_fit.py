@@ -48,7 +48,12 @@ def test_non_nested_detection_does_not_remove_part_of_a_mixed_mask():
 def test_duplicate_or_partial_same_object_does_not_change_a_valid_fit():
     p,m,_,_=measured_box();partial=m.copy();partial[:,:200]=False
     b=measured_instance(p,[m,m.copy(),partial],0,np.eye(4),rgb=None,maximum=.4)
-    assert 'instance_fit' not in b
+    plain=measured_instance(p,[m],0,np.eye(4),rgb=None,maximum=.4)
+    # 2026-11-19: the difference is tried first whatever the original outcome;
+    # a partial duplicate leaves no fittable difference, so the original fit
+    # is used unchanged and the attempt is recorded.
+    assert b['instance_fit']['used']=='ORIGINAL_MASK_AFTER_DIFFERENCE_FAILED'
+    for key in ('pose','size_m','measured_size_m'):assert np.allclose(b[key],plain[key])
 
 
 def test_envelope_evidence_must_contain_fit_mask_and_remain_measured_only():
