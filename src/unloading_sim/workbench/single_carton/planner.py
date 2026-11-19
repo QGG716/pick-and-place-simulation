@@ -328,7 +328,7 @@ class SinglePlanner(EmptyPlanner):
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
-            if o.get('category')=='unresolved_carton_volume':continue
+            if o.get('category') in ('unresolved_carton_volume','neighbor_shadow'):continue
             top=self.object_top(o)
             if abs(top-bottom)<=.0004:supports.append(dict(id=o['id'],top_world_m=top))
         return supports

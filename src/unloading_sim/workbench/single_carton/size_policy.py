@@ -18,7 +18,9 @@ def size_policy(geometry):
 def neighbor_depth_bound(geometry):
     """Never use a known previous carton to bound a different unknown carton."""
     geometry=geometry or {}
-    if size_policy(geometry) in NO_PRIOR_POLICIES:return None
+    if size_policy(geometry) in NO_PRIOR_POLICIES:
+        from .measured_envelope import max_carton_extent
+        return max_carton_extent(geometry)
     prior=geometry.get('prior_size_m')
     return float(np.linalg.norm(prior))+float(geometry.get('dimension_tolerance_m',0.)) if prior else None
 
@@ -36,7 +38,7 @@ def size_policy_notice(geometry):
 def mark_incomplete_scene(scene,geometry,rejected):
     policy=size_policy(geometry)
     if policy in NO_PRIOR_POLICIES:
-        scene.update(unbounded_carton_indices=[r['detection_index'] for r in rejected],
+        scene.update(unbounded_carton_indices=[r['detection_index'] for r in rejected if r.get('reason')!='OUTSIDE_WORKSPACE_IGNORED'],
             geometry_qualification=('INCOMPLETE_INSTANCE_EXTENTS' if rejected else 'MEASURED_INSTANCE_EXTENTS'),size_policy=policy,
             shared_prior_applied=False,hidden_carton_volume_assumed_clear=False)
         scene['unmodeled_carton_indices']=unmodeled_cartons(scene)
@@ -47,4 +49,6 @@ def unmodeled_cartons(scene):
     represented={r['detection_index'] for r in scene.get('unresolved_carton_obstacles',[])
         if r.get('scope')=='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD'
         and r.get('sensor_free_cells_excluded') is True and r.get('user_clearance_applied') is False}
+    represented.update(r['detection_index'] for r in scene.get('unresolved_neighbor_extrusion',[])
+        if r.get('status') in ('NEIGHBOR_SHADOW_REPRESENTED','OCCUPIED_UNKNOWN_REPRESENTED','ALL_SURFACE_POINTS_OWNED_OR_FLYING'))
     return [i for i in scene.get('unbounded_carton_indices',[]) if i not in represented]

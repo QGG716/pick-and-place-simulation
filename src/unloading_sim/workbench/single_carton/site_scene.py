@@ -237,6 +237,12 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     lap('measured_clear_regions')
     points=metric_points(frame);valid=np.isfinite(points).all(-1)&(depth>.1)&(depth<3.)
     world_points=transform(W,points.reshape(-1,3)).reshape(points.shape)
+    outside_ignored=[]
+    for i,mask in enumerate(result.masks):
+        selected=np.asarray(mask,bool)&valid
+        inside=np.all((world_points>=lo)&(world_points<=hi),axis=-1)
+        if selected.any() and not (selected&inside).any():
+            outside_ignored.append(i);valid&=~np.asarray(mask,bool)
     z=np.where(valid,depth,0.).astype(np.float32);square=np.ones((3,3),np.uint8)
     jump=(cv2.dilate(z,square)-cv2.erode(z,square))>FLYING_DEPTH_JUMP_M
     lap('points_and_depth_jumps')
@@ -277,7 +283,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     lap('target_point_claims',targets=len(boxes))
     observed=world_points[valid&~claimed&~flying]
-    removed_self=0
+    removed_self=0;owned_cells=np.zeros(len(centers),bool)
     if self_filter is not None:
         owned=self_filter.contains(observed,observation.q_capture)
         removed_self=int(owned.sum());observed=observed[~owned]
@@ -305,15 +311,26 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     # depth rays extended by one conservative carton depth. Reconstructed target
     # envelopes, robot-owned cells and sensor-proven free cells are excluded.
     lap('fixed_obstacles_indexing_occupancy')
-    shadow=np.zeros(tuple(shape),bool);unreconstructed=[]
-    if cleared_unknown and neighbor_depth_m:
+    shadow=np.zeros(tuple(shape),bool);unreconstructed=[];extrusion_records=[]
+    if neighbor_depth_m:
         reconstructed={b['detection_index'] for b in boxes}
-        unreconstructed=[i for i in range(len(result.masks)) if i not in reconstructed]
+        unreconstructed=[i for i in range(len(result.masks)) if i not in reconstructed and i not in outside_ignored]
         pick=np.zeros(valid.shape,bool)
-        for i in unreconstructed:pick|=np.asarray(result.masks[i],bool)
-        surface=points[pick&valid&~claimed&~flying]
-        if self_filter is not None and len(surface):
-            surface=surface[~self_filter.contains(transform(W,surface),observation.q_capture)]
+        filtered_surfaces=[]
+        for i in unreconstructed:
+            mask=np.asarray(result.masks[i],bool);pick|=mask
+            raw=mask&valid;selected=raw&~claimed&~flying&~jump
+            surface=points[selected]
+            if self_filter is not None and len(surface):
+                surface=surface[~self_filter.contains(transform(W,surface),observation.q_capture)]
+            status=('NEIGHBOR_SHADOW_REPRESENTED' if cleared_unknown else 'OCCUPIED_UNKNOWN_REPRESENTED')
+            if not len(surface):status='ALL_SURFACE_POINTS_OWNED_OR_FLYING' if raw.any() else 'NO_VALID_SURFACE_UNMODELED'
+            extrusion_records.append(dict(detection_index=i,status=status,valid_surface_points=int(raw.sum()),
+                filtered_surface_points=len(surface),depth_m=float(neighbor_depth_m),
+                direction='CAMERA_OPTICAL_RAY_AWAY_FROM_CAMERA',user_clearance_applied=False,
+                basis='USER_2026_11_19_MAX_CARTON_EXTENT_STATIC_NEIGHBOR_SHADOW_NOT_PAYLOAD'))
+            filtered_surfaces.append(surface)
+        surface=np.concatenate(filtered_surfaces) if filtered_surfaces else np.empty((0,3))
         if len(surface):
             rays=surface/np.linalg.norm(surface,axis=1,keepdims=True)
             steps=np.arange(cell/2,float(neighbor_depth_m)+cell/2,cell/2)
@@ -324,16 +341,20 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             cells_hit=np.floor((samples-lo)/cell).astype(int)
             cells_hit=cells_hit[np.all(cells_hit>=0,axis=1)&np.all(cells_hit<shape,axis=1)]
             if len(cells_hit):shadow[tuple(cells_hit.T)]=True
-        shadow&=unknown
+        shadow &= (~sensor_free&~owned_cells).reshape(tuple(shape))&~measured
+        if not cleared_unknown:
+            unknown|=shadow  # explicit neighbor evidence overrides clear regions
+            shadow[:]=False
     lap('neighbor_shadow')
     # A detected carton is not covered by the user's unknown-space clearance.
     # Its possible body remains an obstacle even when its exact dimensions are
     # unknown. Clip only this STATIC occupancy query to the enforced workspace;
     # never reuse the clipped volume as a payload size or an attachment.
     unresolved_grids=[];unresolved_records=[]
-    if unresolved_cartons:
+    if unresolved_cartons and not neighbor_depth_m:
         from .visibility_geometry import possible_static_cells
         for item in unresolved_cartons:
+            if item['detection_index'] in outside_ignored:continue
             possible=possible_static_cells(vertices,W,item.get('evidence') or {})&~sensor_free
             grid=possible.reshape(tuple(shape));index=item['detection_index']
             unresolved_grids.append((f'carton_possible_{index}',grid))
@@ -373,6 +394,11 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         keys,starts=np.unique(linear[chosen],return_index=True)
         for key,group in zip(keys,np.split(chosen,starts[1:])):cell_points[int(key)]=observed[group]
     envelopes=[(np.asarray(b['pose'],float),np.asarray(b['size_m'],float)/2) for b in boxes]
+    from .convex_clip import box_solid,subtract_solids,mesh
+    shadow_owned=[box_solid(T,2*h) for T,h in envelopes]
+    if self_filter is not None and hasattr(self_filter,'world_solids'):
+        shadow_owned+=self_filter.world_solids(observation.q_capture)
+    shadow_clipped_pieces=0
     refined_runs=0;refined_boxes=0
     emit=emit.reshape(tuple(shape));tight=tight.reshape(tuple(shape))
     low=low.reshape(*shape,3);high=high.reshape(*shape,3);tight_runs=0;camera_side_runs=0;camera_origin=W[:3,3]
@@ -415,6 +441,16 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                         camera_side_runs+=int(np.any(lower!=before[0]) or np.any(upper!=before[1]))
                     category='unresolved_carton_volume' if kind.startswith('carton_possible_') else kind
                     obj=_box(f'rgbd_{kind}_{ix}_{iy}_{a}',lower,upper,category)
+                    if kind=='neighbor_shadow' and shadow_owned:
+                        vertices=np.array(list(product(*zip(lower,upper))))
+                        pieces=subtract_solids(vertices,shadow_owned)
+                        if len(pieces)==1 and np.array_equal(pieces[0],vertices):world.append(obj)
+                        else:
+                            for k,part in enumerate(pieces):
+                                world.append(dict(id=obj['id']+f'_clip{k}',pose=np.eye(4).tolist(),
+                                    convex_mesh=mesh(part),category=kind,support_contact_qualified=False))
+                            shadow_clipped_pieces+=len(pieces)
+                        continue
                     if category=='unresolved_carton_volume':
                         obj.update(geometry_uncertain=True,detection_index=int(kind.removeprefix('carton_possible_')),
                             support_contact_qualified=False)
@@ -434,6 +470,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         unknown_collision_voxels=0 if cleared_unknown else int(unknown.sum()),
         user_confirmed_clear_unknown_voxels=int((unknown&~shadow&~possible_union).sum()) if cleared_unknown else 0,
         unreconstructed_detections=unreconstructed,neighbor_shadow_voxels=int(shadow.sum()),
+        outside_workspace_ignored=outside_ignored,unresolved_neighbor_extrusion=extrusion_records,
+        neighbor_shadow_clipped_pieces=shadow_clipped_pieces,
         unresolved_carton_obstacles=unresolved_records,
         neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
         target_envelope_points=config.get('target_envelope_points','OBSTACLE'),

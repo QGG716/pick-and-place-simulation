@@ -140,7 +140,8 @@ class TaskManager:
             if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
             self.progress('本次同帧检测 / 分割已完成；恢复箱体与实测接触面')
             with timing.span('observe.reconstruct'):
-                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'))
+                self.boxes,rejected=reconstruct(self.observation,self.result,self.config.get('geometry'),
+                    (self.config.get('site') or {}).get('workspace_bounds_m'))
             # Persist the verified same-frame inference before scene/model work.
             # A later scene failure must not lose the original masks or require
             # another inference just to diagnose the failed frozen observation.
@@ -161,8 +162,8 @@ class TaskManager:
                 if self.self_filter is None:
                     with timing.span('observe.self_filter_construct'):
                         self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
-                # Only an applicable known type bounds a hidden neighbour.
-                # Mixed unknown sizes must not inherit an older carton's depth.
+                # Mixed sizes use the user's site-wide maximum, never an older
+                # carton's size prior. Unresolved objects are static shadows.
                 geometry=self.config.get('geometry') or {}
                 neighbor_depth=neighbor_depth_bound(geometry)
                 with timing.span('observe.build_scene'):
@@ -187,8 +188,7 @@ class TaskManager:
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if ((self.scene or {}).get('unmodeled_carton_indices') or
-                    (not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected))):
+            if not self.boxes:
                 self.phase='GEOMETRY_UNRESOLVED'
                 self.reason=(f'可规划目标 {len(self.boxes)} 箱，{len(rejected)} 箱保留可见面及隐藏体积约束；未使用尺寸先验。'
                     '当前 RGB-D 尚不能为待抓目标给出完整带载包络，接触候选仍已保存；不要求所有邻箱先测出完整尺寸。\n'+
@@ -217,7 +217,7 @@ class TaskManager:
                     return f"{r['detection_index']}: {r['reason']}"
                 raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
             self.phase='TARGET_READY'
-            self.reason=(f'可规划目标 {len(self.boxes)} 箱；另 {len(rejected)} 箱尺寸未解，已作为保守现场障碍保留。' if rejected else '')
+            self.reason=(f'可规划目标 {len(self.boxes)} 箱；未恢复邻箱以保守阴影保留，工作范围外检测已单独忽略。' if rejected else '')
             timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
         except Exception as e:self.reject(e);raise
         finally:

@@ -1,0 +1,48 @@
+{
+  "step": 3,
+  "status": "IMPLEMENTED_WITH_PRE_EXISTING_TEST_FAILURE",
+  "physical_execution": "NOT_RUN",
+  "checks": {
+    "clearance_optimized": "PASS",
+    "clearance_reference": "PASS",
+    "native_component": "PASS",
+    "check_config": "PASS",
+    "directed_pytest": {
+      "passed": 749,
+      "baseline_failed": 1
+    },
+    "new_shadow_rerun": {
+      "passed": 4
+    },
+    "combined": {
+      "passed": 750,
+      "baseline_failed": 1
+    }
+  },
+  "neighbor_depth_m": 0.4,
+  "scope": "STATIC_NEIGHBOR_OBSTACLES_NOT_TARGET_PAYLOAD",
+  "shadow_basis": "USER_APPROVED_SITE_CARTON_MAXIMUM_EXTENT",
+  "tests": [
+    "Upper measured target with lower single face and missing far-depth remains target eligible",
+    "Outside-workspace detection ignored and six boundary walls retained",
+    "Exact convex subtraction preserves all unowned obstacle volume",
+    "Shadows clipped against actual target envelope and robot convex solids"
+  ],
+  "stage7_document_corrections": [
+    "UNKNOWN [0,1] replay attribution moved to 5f80edf8 section",
+    "MEASURED prior_free report retains [1]",
+    "UNKNOWN diagnosis command creates and explicitly selects separate diagnostic config"
+  ],
+  "not_verified": [
+    "New field RGB-D reconstruction",
+    "Complete site pick plan",
+    "Physical execution",
+    "Continuous cycles"
+  ],
+  "geometry_unresolved": "NO_COMPLETE_TARGET_ONLY",
+  "missing_neighbor_evidence": "PLANNING_SCENE_AUDIT_REMAINS_FAIL_CLOSED",
+  "continuous_scene_timing": {
+    "incremental": "NOT_IMPLEMENTED_STEP_6",
+    "full_comparison": "NOT_RUN_WAITING_FOR_REAL_STEP"
+  }
+}

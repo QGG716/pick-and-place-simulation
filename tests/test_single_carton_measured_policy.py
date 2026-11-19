@@ -44,7 +44,7 @@ def test_two_different_complete_boxes_are_measured_independently_of_historical_p
             assert not box['prior_applied'] and box['size_policy']=='MEASURED_PER_INSTANCE'
             assert box['dimension_source']=='RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR'
         results.append(boxes)
-        assert neighbor_depth_bound(geometry) is None
+        assert neighbor_depth_bound(geometry)==.4
     assert results[0]==results[1]==results[2]
 
 

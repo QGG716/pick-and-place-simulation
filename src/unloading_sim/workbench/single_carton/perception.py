@@ -184,14 +184,14 @@ def freeze(backend,service,model,calibration,*,cancelled=lambda:False,clock=mono
                           '\nNO_FRESH_STATIONARY_RGBD_JOINT_PAIR_WITHIN_30_MS',diagnostic)
 
 
-def reconstruct(observation,result,geometry=None):
+def reconstruct(observation,result,geometry=None,workspace_bounds_m=None):
     f=observation.frame
     if result.source!=Source.LIVE or result.observation_id!=f.observation_id or len(result.masks)!=len(result.detections):
         raise ValueError('SAME_FRAME_REAL_SEGMENTATION_REQUIRED')
-    return recover_boxes(f,observation.world_camera,result.detections,result.masks,geometry)
+    return recover_boxes(f,observation.world_camera,result.detections,result.masks,geometry,workspace_bounds_m)
 
 
-def recover_boxes(f,world_camera,detections,masks,geometry=None):
+def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds_m=None):
     """Recover boxes from one frame's masks; callers own the frame provenance."""
     from .size_policy import size_policy
     policy=size_policy(geometry)
@@ -200,6 +200,15 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
         # Also handle old saved observations produced before detector NMS.
         if any(np.count_nonzero(mask&previous)/max(1,np.count_nonzero(mask|previous))>=.95 for previous in seen):continue
         seen.append(mask)
+        if workspace_bounds_m is not None:
+            from .geometry import transform
+            valid=mask&np.isfinite(points).all(-1)&(points[...,2]>.1)&(points[...,2]<3.)
+            surface=transform(world_camera,points[valid]);lo,hi=np.asarray(workspace_bounds_m)
+            if len(surface) and not np.any(np.all((surface>=lo)&(surface<=hi),axis=1)):
+                rejected.append(dict(detection_index=i,reason='OUTSIDE_WORKSPACE_IGNORED',
+                    evidence=dict(valid_depth_points=len(surface),all_valid_depth_outside_workspace=True,
+                        workspace_bounds_m=workspace_bounds_m,obstacle_generated=False)))
+                continue
         try:
             with timing.span('reconstruct.box',detection_index=i,mask_pixels=int(np.count_nonzero(mask)) if timing.ENABLED else None):
                 if policy=='UNKNOWN_PER_INSTANCE':

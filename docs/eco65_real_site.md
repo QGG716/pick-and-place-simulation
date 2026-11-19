@@ -1140,8 +1140,18 @@ xdg-open outputs/field-envelope-diagnosis-new/index.html
 
 ```bash
 # 只读复用已保存 RGB-D 和掩码；输出必须为新目录。
+python3 - <<'PY'
+import json
+from pathlib import Path
+c=json.loads(Path('configs/workbench/single_carton.example.json').read_text())
+c['geometry'].update(size_policy='UNKNOWN_PER_INSTANCE',size_policy_basis='EXPLICIT_HISTORICAL_SURFACE_ONLY_DIAGNOSTIC')
+p=Path('outputs/workbench/single_carton.unknown_diagnostic.json')
+p.parent.mkdir(parents=True,exist_ok=True)
+p.write_text(json.dumps(c,ensure_ascii=False,indent=2))
+PY
 .venv-workbench/bin/python tools/diagnose_unknown_cartons.py \
   outputs/field-replan-20261118-new-start/replay \
+  --config outputs/workbench/single_carton.unknown_diagnostic.json \
   --output outputs/unknown-carton-surfaces-new
 xdg-open outputs/unknown-carton-surfaces-new/index.html
 ```
@@ -1149,6 +1159,8 @@ xdg-open outputs/unknown-carton-surfaces-new/index.html
 本轮更正图为 `outputs/field-mixed-sizes-20261119/viewer-final/index.html`：默认只显示两个实测面点云和同帧掩码，各箱完整尺寸明确标为未知，当前箱体重叠量不计算。历史包络及示例不会被当成当前恢复结果显示。混合箱型的完整边界恢复、上下箱联合约束与完整带载规划仍未完成；物理抓放 **NOT_RUN**，许可0。
 
 定向验证：规定集合 **617 passed / 0 failed / 0 skipped**（213.70 s）；新增覆盖不同大小局部面不继承共同先验、部分出视场/遮挡时保留真实 CAD 密封候选、策略依据校验、未定邻箱体积阻止规划、完整准备观测流程保存候选并显示未解状态。旧启动测试要求“尺寸先验可配置”的文案与本轮默认策略冲突，更新为必须显示“各箱尺寸未知”和“历史统一箱型先验停用”，原无硬件连接/无执行检查保留。早期失败和一次SIGTERM中断日志保留，未计为通过。`m710_clearance_test optimized/reference`、单箱原生组件（491发送点）与配置静态检查均PASS。
+
+本节 `5f80edf8` 的 UNKNOWN 模式还实际执行了 `tools/replay_single_carton_record.py ... --detector saved --scene-only`：保留54个实测障碍体和6个工作范围边界，完整箱体数0，`unbounded_carton_indices=[0,1]`，不应用任何共同尺寸或邻箱厚度先验，状态为 `GEOMETRY_UNRESOLVED`，搜索0、许可0。源RGB-D、掩码及旧几何文件哈希均不变。新版浏览器点云开关、零完整箱体网格、候选数及未知尺寸字段通过检查，截图已检查。详见 [不同箱型更正证据](evidence/realtime_20261119_unknown_mixed_sizes/report.json)。这不是下节 MEASURED 的结果；本次文档归位没有重新执行该现场回放。
 
 ### 2026-11-19：接入逐箱无先验尺寸恢复
 
@@ -1194,7 +1206,7 @@ source /opt/ros/humble/setup.bash
 
 当前本机入口仍为 `outputs/workbench/single_carton.prior_free_cpu.20261119.json`。新的完整观测记录已可直接回放；完整带载规划、抓取返回释放、2秒成功规划目标均未完成，物理验收 **NOT_RUN**。见 [现场验证与修复记录](evidence/realtime_20261119_prior_free_live_fix/report.json)。
 
-此外实际执行 `tools/replay_single_carton_record.py ... --detector saved --scene-only`：保留54个实测障碍体和6个工作范围边界，完整箱体数0，`unbounded_carton_indices=[0,1]`，不应用任何共同尺寸或邻箱厚度先验，状态为 `GEOMETRY_UNRESOLVED`，搜索0、许可0。源RGB-D、掩码及旧几何文件哈希均不变。新版浏览器点云开关、零完整箱体网格、候选数及未知尺寸字段通过检查，截图已检查。详见 [不同箱型更正证据](evidence/realtime_20261119_unknown_mixed_sizes/report.json)。本轮未验证混合箱型完整恢复、完整规划2 s目标或实机抓放。
+MEASURED 历史回放以 [prior_free/report.json](evidence/realtime_20261119_prior_free/report.json) 为准：检测 0 恢复成功，`unbounded_carton_indices=[1]`。UNKNOWN 的 `[0,1]` 记录已归回前节；本次未重算历史记录或声称完成现场规划。
 
 ### 2026-11-19 仅当前 RGB-D：取消所有箱子必须完整测量的门槛
 
@@ -1257,3 +1269,13 @@ source /opt/ros/humble/setup.bash
 叠箱夹具中，上箱底面止于实测支撑平面（世界高度 −0.09 m），穿入量为 0。当前包络采用 OBB；若实测支撑面不与其面平行，会拒绝并记录 `MEASURED_SUPPORT_REQUIRES_CLIPPED_ENVELOPE`，尚未实现任意倾角载荷的多面体裁剪。原生接触判据独立绑定实测面，碰撞体保持完整包络，既有密封和唇部穿入阈值不变。
 
 重建安装、optimized/reference、原生组件和配置静态检查均通过。本地数值检查 123 通过；远程完整集合首次 745 通过、2 失败，更新实测尺寸语义的旧断言后相关 120 项复测通过。合并为 746 通过、1 个步骤 1 已记录的基线失败。见 [report.json](evidence/20261119_measured_envelope/report.json)。设备连接、运动、阀门写入、物理验收全部 `NOT_RUN`。
+
+## 2026-11-19 未恢复邻箱的有限阴影与范围外检测（步骤 3）
+
+无先验策略的邻箱深度改用用户配置的 `geometry.max_carton_extent_m=0.40`，不继承历史箱型。去掉目标归属点、机器人自身点及深度飞点后，沿相机视线向后延伸为 `neighbor_shadow`。用户清空未知空间的确认不能清除这层障碍；OCCUPIED 保留相同区域的占用并记录 `unresolved_neighbor_extrusion`。阴影与目标和已证实的机器人凸实体相交时，使用半空间裁剪保留所有外侧体积，不删除整个相交体素，也不添加碰撞豁免。
+
+完整保守包络的上箱可以进入 `TARGET_READY`，未恢复下箱仅作障碍，实测面和密封候选继续保存；后续原位和带载路径仍可能被阴影拒绝。`GEOMETRY_UNRESOLVED` 仅表示没有任何完整目标。缺少有效深度、不能建模的邻物仍会在规划场景审计中拒绝，不会静默当作空闲。
+
+检测的全部有效深度点位于工作范围之外时标记 `OUTSIDE_WORKSPACE_IGNORED`，不构建障碍且不阻止范围内目标；6 面工作范围边界保留。合成的上下箱、范围外误检、目标裁剪和机器人裁剪均通过。原生两种间隙检查、491 状态组件和配置检查通过；完整定向集合 749 通过、1 个既有失败，额外机器人裁剪加入后 4 项阴影复测通过，合并为 750 通过、1 个既有失败。证据见 [report.json](evidence/20261119_neighbor_shadows/report.json)。
+
+本节更新算法结论，没有重新使用设备或执行现场回放；当前现场是否可以生成完整路径仍未验证。连接、运动、阀门写入与物理验收全部 `NOT_RUN`。步骤 7 中与本节直接相关的历史记录归位和 UNKNOWN 命令修正已完成；连续作业与释放提示仍待后续步骤。
