@@ -7,7 +7,7 @@ import threading
 import time
 import uuid
 import numpy as np
-from .config import issues,pre_execute_visual_recheck,execution_lock
+from .config import issues,pre_execute_visual_recheck,execution_lock,start_joint_check,plan_validity
 from .cycle import Cycle,TERMINAL
 from .geometry import candidate_contact_check,contact_candidates
 from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene,NO_PRIOR_POLICIES
@@ -296,9 +296,9 @@ class TaskManager:
                 # Keep the new frame even when the comparison rejects it.
                 self.save_observation(current,'pre_execute_observation')
                 if recheck['scope']=='TARGET_ONLY':
-                    same_session_start_and_camera(self.observation,current)
+                    same_session_start_and_camera(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
                     check=dict(status='PASS',scope='TARGET_ONLY',basis=recheck['basis'],whole_scene_comparison='SKIPPED_BY_CONFIGURATION')
-                else:check=unchanged(self.observation,current)
+                else:check=unchanged(self.observation,current,max_joint_rad=np.deg2rad(start_joint_check(self.config)['tolerance_deg']))
                 # Target-local check prevents a small target movement being diluted
                 # by unchanged background pixels in the whole-view scene test.
                 mask=self.result.masks[self.plan['target']['detection_index']]
@@ -328,6 +328,7 @@ class TaskManager:
                 # submit still claims its permit atomically; a revocation after
                 # verification is refused there. Never hold its lock across IO.
                 if self.stop_event.is_set():raise ValueError('CANCELLED')
+                if self.plan_remaining_s()<0:raise ValueError('PLAN_EXPIRED_REPLAN')
                 with timing.span('execute.cycle_start'):self.cycle.start()
                 self.phase=self.cycle.state
         except Exception as e:
@@ -336,6 +337,11 @@ class TaskManager:
             else:self.reject(e)
             raise
         finally:self.busy=False
+    def plan_remaining_s(self):
+        if self.observation is None:return 0.
+        age=time.monotonic()-self.observation.frame.stamp.received_monotonic_ns/1e9
+        if not np.isfinite(age) or age<0:raise ValueError('PLAN_EXPOSURE_CLOCK_INVALID')
+        return plan_validity(self.config)['seconds']-age
     def check_contact(self,q,plan):
         check=candidate_contact_check(self.model.tcp(q),plan['candidate'])
         self.journal(kind='actual_contact_fk',q_actual=q.tolist(),seal=check)

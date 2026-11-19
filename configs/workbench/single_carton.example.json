@@ -12,8 +12,8 @@
   "parallel_candidate_lanes": 7,
   "pre_execute_visual_recheck": "DISABLED_BY_USER",
   "pre_execute_visual_recheck_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_PRE_EXECUTE_RECHECK_AFTER_TASK_6b648ffcdb35403cb9d992e2ed8554be_TARGET_OR_SCENE_CHANGED_REPLAN_STATIC_SCENE_DEPTH_NOISE_41_PERCENT_PIXELS_OVER_5_MM",
-  "start_joint_check": "DISABLED_BY_USER",
-  "start_joint_check_basis": "USER_INSTRUCTION_2026_11_13_CANCEL_START_JOINT_CHECK_AFTER_TASK_71ce26a3e9cf458e906b065bcb8275e7_START_CHANGED_REPLAN_STATIONARY_ENCODER_JITTER_UP_TO_0_006_DEG_VS_0_01_DEG_LIMIT",
+  "start_joint_check": "ENABLED",
+  "start_joint_check_basis": "USER_DECISION_2026_11_19_RESTORE_START_CHECK",
   "topology": {
     "mode": "COMMON_GRIPPER_VALVE",
     "connected_cup_ids": [
@@ -138,8 +138,22 @@
   "contact_search": {
     "reference_face_roll_deg": 90,
     "j6_rotation_deg": 180,
-    "lift_offsets_m": [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06],
+    "lift_offsets_m": [
+      0.0,
+      0.01,
+      0.02,
+      0.03,
+      0.04,
+      0.05,
+      0.06
+    ],
     "max_candidates": 32,
     "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
-  }
+  },
+  "start_joint_tolerance_deg": 0.02,
+  "start_joint_tolerance_basis": "Measured stationary encoder jitter maximum 0.006 degree; user approves 0.02 degree",
+  "start_hard_cap_deg": 0.5,
+  "start_hard_cap_basis": "User decision 2026-11-19: non-waivable maximum first-start error",
+  "plan_validity_s": 120,
+  "plan_validity_basis": "User decision 2026-11-19: seconds since frozen exposure host monotonic receipt"
 }

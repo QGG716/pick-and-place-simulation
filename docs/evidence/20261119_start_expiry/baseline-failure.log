@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior _____
+
+    def test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior():
+        p,m=plane(width=.15,height=.1);box=recover_partial(p,m,np.eye(4),prior=[.15,.1,.1])
+        size=np.asarray(box['size_m'])
+>       assert np.all(size>=[.15,.1,.1]) and np.all(size<=[.19,.145,.11])  # was 217 x 169 x 108 mm
+E       assert (False)
+E        +  where False = <function all at 0x7f6b3c1d3770>(array([0.14007188, 0.18569301, 0.108     ]) >= [0.15, 0.1, 0.1])
+E        +    where <function all at 0x7f6b3c1d3770> = np.all
+
+tests/test_single_carton_review_fixes.py:343: AssertionError
+=============================== warnings summary ===============================
+tests/test_controlled_execution.py:306
+  /root/autodl-tmp/eco65-safety-20261119/baseline-265b29f/tests/test_controlled_execution.py:306: PytestUnknownMarkWarning: Unknown pytest.mark.real_eco65_asset - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.real_eco65_asset
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_single_carton_review_fixes.py::test_exact_prior_face_keeps_a_bounded_envelope_that_covers_the_prior
+1 failed, 1 warning in 1.52s

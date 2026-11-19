@@ -4,6 +4,7 @@ from time import monotonic
 import numpy as np
 from ..controlled.engine import SubmissionRejected,MonitorConfig
 from ..controlled.trajectory import digest
+from ..controlled.start_policy import start_limits
 from .perception import validate_robot
 from .. import timing
 
@@ -50,9 +51,12 @@ class Cycle:
             q=validate_robot(self._rpc('snapshot',self.robot.snapshot),self.clock())
             start_error=float(np.rad2deg(np.max(abs(q-self.plan['q_start']))))
             policy=self.plan.get('start_joint_check') or dict(enabled=True)
+            tolerance,hard_cap=start_limits(policy)
             self.record(kind='start_joint_check',q_live=q.tolist(),q_start=list(self.plan['q_start']),
-                        max_difference_deg=start_error,limit_deg=.01 if policy['enabled'] else None,policy=policy)
-            if policy['enabled'] and start_error>.01:
+                        max_difference_deg=start_error,limit_deg=float(np.rad2deg(tolerance)) if policy['enabled'] else None,policy=policy)
+            if start_error>np.rad2deg(hard_cap):
+                self.transition('FAILED',reason='START_CHANGED_REPLAN_REQUIRED');raise ValueError('START_CHANGED_REPLAN_REQUIRED')
+            if policy['enabled'] and start_error>np.rad2deg(tolerance):
                 self.transition('FAILED',reason='START_CHANGED_REPLAN');raise ValueError('START_CHANGED_REPLAN')
             self.vacuum.claim(self.task_id,self.record,lambda r:self.stop(r))
             self.cancelled=False;self.reason=''

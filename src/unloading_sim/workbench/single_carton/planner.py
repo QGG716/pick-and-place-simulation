@@ -1228,7 +1228,7 @@ class SinglePlanner(EmptyPlanner):
                 # A user-disabled start check is bound into the first segment's
                 # package (and therefore its digest), never applied implicitly.
                 start_policy=start_joint_check(self.site)
-                if not start_policy['enabled']:segments[0]['prepared']['start_joint_check']=start_policy
+                segments[0]['prepared']['start_joint_check']=start_policy
                 # Final audit of every sent state against the wrist limits.
                 for segment in segments:
                     violation=wrist_branch_violation(self.wrist_limits,q,segment['prepared']['collision_path'])

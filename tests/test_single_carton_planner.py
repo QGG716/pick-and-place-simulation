@@ -751,7 +751,7 @@ def test_start_check_policy_is_bound_into_plan_and_first_segment_only(case,monke
     plan=p.plan_cycle(obs,[box],folder)
     assert plan['start_joint_check']['enabled'] is (not disabled)
     first=plan['segments'][0]['package']['prepared']
-    assert ('start_joint_check' in first)==disabled
+    assert first['start_joint_check']==plan['start_joint_check']
     assert all('start_joint_check' not in s['package']['prepared'] for s in plan['segments'][1:])
     # The waiver is part of the registered package: altering it breaks the claim.
     package=plan['segments'][0]['package']

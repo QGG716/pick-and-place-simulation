@@ -28,11 +28,12 @@ def manager(tmp_path, policy, *, generation=1, binding_error=None):
         cycle=SimpleNamespace(state='PLAN_READY', active=False, start=lambda: started.append(1)),
         journal=Journal(), _enter=lambda: None, busy=True, phase='PLAN_READY',
         planner=SimpleNamespace(authority=authority, binding=binding),
-        observation=SimpleNamespace(generation=1), backend=SimpleNamespace(observation_generation=generation, observation_lock=threading.RLock()),
+        observation=SimpleNamespace(generation=1,frame=SimpleNamespace(stamp=SimpleNamespace(received_monotonic_ns=runtime.time.monotonic_ns()))), backend=SimpleNamespace(observation_generation=generation, observation_lock=threading.RLock()),
         stop_event=SimpleNamespace(is_set=lambda: False), config=dict(policy), progress=lambda text: events.append(dict(progress=text)),
         save_observation=lambda o, name: saved.append(name), result=SimpleNamespace(masks=[None]), plan=dict(target=dict(detection_index=0), binding=binding_record, segments=segments),
         service=None, model=None, calibration=None, rejected=[])
     m.reject = lambda e: m.rejected.append(str(e))
+    m.plan_remaining_s = lambda: TaskManager.plan_remaining_s(m)
     return m, events, started, saved
 
 
@@ -46,7 +47,7 @@ def test_disabled_recheck_never_recaptures_and_starts_the_cycle(tmp_path, monkey
     assert started == [1] and saved == [] and m.busy is False
     record = next(e for e in events if e.get('kind') == 'pre_execute_recheck')['evidence']
     assert record['status'] == 'VISUAL_RECHECK_DISABLED_BY_USER' and record['basis'] == 'SYNTHETIC_USER_INSTRUCTION'
-    assert 'FRESH_LIVE_JOINTS_WITHIN_0_01_DEG_OF_Q_START_ENABLED_NO_ALARM' in record['retained']
+    assert 'FRESH_LIVE_JOINTS_CONFIGURED_START_TOLERANCE_ENABLED_NO_ALARM' in record['retained']
 
 
 @pytest.mark.parametrize('generation,binding_error,reason', [(2, None, 'OBSERVATION_INVALIDATED'), (1, 'FILE_CHANGED_REPLAN', 'FILE_CHANGED_REPLAN')])
@@ -60,7 +61,7 @@ def test_disabled_recheck_keeps_session_and_file_binding_interlocks(tmp_path, mo
 def test_enabled_recheck_saves_the_new_frame_even_when_the_scene_check_rejects(tmp_path, monkeypatch):
     m, events, started, saved = manager(tmp_path, {})
     monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: SimpleNamespace(frame='new'))
-    def changed(a, b): raise ValueError('TARGET_OR_SCENE_CHANGED_REPLAN')
+    def changed(a, b, **kwargs): raise ValueError('TARGET_OR_SCENE_CHANGED_REPLAN')
     monkeypatch.setattr(runtime, 'unchanged', changed)
     with pytest.raises(ValueError, match='TARGET_OR_SCENE_CHANGED_REPLAN'): TaskManager.execute(m)
     assert saved == ['pre_execute_observation'] and started == [] and m.rejected
@@ -70,7 +71,7 @@ def test_enabled_recheck_compares_scene_and_target_before_start(tmp_path, monkey
     m, events, started, saved = manager(tmp_path, dict(pre_execute_visual_recheck='ENABLED'))
     calls = []
     monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: SimpleNamespace(frame='new'))
-    monkeypatch.setattr(runtime, 'unchanged', lambda a, b: calls.append('scene') or dict(status='PASS'))
+    monkeypatch.setattr(runtime, 'unchanged', lambda a, b, **kwargs: calls.append('scene') or dict(status='PASS'))
     monkeypatch.setattr(runtime, 'target_unchanged', lambda a, b, mask: calls.append('target'))
     TaskManager.execute(m)
     assert calls == ['scene', 'target'] and started == [1]
@@ -100,7 +101,7 @@ def test_target_only_skips_the_whole_scene_comparison_but_keeps_target_and_start
     calls = []
     monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: SimpleNamespace(frame='new'))
     monkeypatch.setattr(runtime, 'unchanged', lambda a, b: pytest.fail('whole-scene comparison must be skipped'))
-    monkeypatch.setattr(runtime, 'same_session_start_and_camera', lambda a, b: calls.append('start'))
+    monkeypatch.setattr(runtime, 'same_session_start_and_camera', lambda a, b, **kwargs: calls.append('start'))
     monkeypatch.setattr(runtime, 'target_unchanged', lambda a, b, mask: calls.append('target'))
     TaskManager.execute(m)
     assert calls == ['start', 'target'] and started == [1] and saved == ['pre_execute_observation']
@@ -111,9 +112,9 @@ def test_target_only_skips_the_whole_scene_comparison_but_keeps_target_and_start
 @pytest.mark.parametrize('failure', ['START_CHANGED_REPLAN', 'LOCKED_TARGET_CHANGED_REPLAN'])
 def test_target_only_still_rejects_a_moved_start_or_target(tmp_path, monkeypatch, failure):
     m, events, started, saved = manager(tmp_path, dict(pre_execute_visual_recheck='TARGET_ONLY', pre_execute_visual_recheck_basis='SYNTHETIC'))
-    def fail(*a): raise ValueError(failure)
+    def fail(*a, **kwargs): raise ValueError(failure)
     monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: SimpleNamespace(frame='new'))
-    monkeypatch.setattr(runtime, 'same_session_start_and_camera', fail if failure.startswith('START') else (lambda a, b: None))
+    monkeypatch.setattr(runtime, 'same_session_start_and_camera', fail if failure.startswith('START') else (lambda a, b, **kwargs: None))
     monkeypatch.setattr(runtime, 'target_unchanged', fail if failure.startswith('LOCKED') else (lambda a, b, mask: None))
     with pytest.raises(ValueError, match=failure): TaskManager.execute(m)
     assert started == [] and m.rejected
@@ -184,8 +185,8 @@ def test_start_check_policy_values_are_explicit(value, basis, ok):
         with pytest.raises(ValueError, match='START_JOINT_CHECK'): start_joint_check(c)
 
 
-def test_field_config_disables_start_check_with_the_user_instruction_on_record():
+def test_field_config_enables_measured_jitter_tolerance():
     c = load(ROOT/'configs/workbench/single_carton.example.json')
     policy = start_joint_check(c)
-    assert policy['enabled'] is False and '71ce26a3e9cf458e906b065bcb8275e7' in policy['basis']
+    assert policy['enabled'] is True and policy['tolerance_deg']==.02 and '0.006' in policy['tolerance_basis']
     assert MonitorConfig().start_rad == pytest.approx(np.deg2rad(.01))  # controlled-empty default unchanged

@@ -25,7 +25,7 @@ def test_invalidation_during_final_npz_barrier(tmp_path, monkeypatch, transition
     observation = SimpleNamespace(metadata=lambda: dict(generation=1),
         frame=SimpleNamespace(rgb=np.zeros((2, 2, 3)), depth=np.zeros((2, 2))))
     monkeypatch.setattr(runtime, 'freeze', lambda *a, **k: observation)
-    monkeypatch.setattr(runtime, 'unchanged', lambda *a: dict(status='PASS'))
+    monkeypatch.setattr(runtime, 'unchanged', lambda *a, **kwargs: dict(status='PASS'))
     monkeypatch.setattr(runtime, 'target_unchanged', lambda *a: None)
     entered, release = threading.Event(), threading.Event()
     original = np.savez_compressed

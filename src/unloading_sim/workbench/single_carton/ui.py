@@ -504,9 +504,15 @@ class SingleWorkbench(Workbench):
         if m.phase!='PLAN_READY' or m.observation is None or stale:blockers.append('无有效计划')
         elif not self.previewed:blockers.append('未查看完整轨迹预览')
         if self.job_pending or m.active:blockers.append('操作进行中')
+        validity=''
+        if m.phase=='PLAN_READY' and m.observation is not None:
+            try:
+                remaining=m.plan_remaining_s();validity=f' · 计划剩余有效时间 {max(0.,remaining):.1f} s'
+                if remaining<0:blockers.append('计划已过期，请重新观测规划')
+            except ValueError:blockers.append('计划曝光时钟无效')
         self.execute_blockers=blockers
         self.execute_button.configure(state='disabled' if blockers else 'normal')
-        readiness='待执行前复核' if not blockers else '尚未满足执行条件：'+'、'.join(blockers)
+        readiness=('待执行前复核' if not blockers else '尚未满足执行条件：'+'、'.join(blockers))+validity
         self.health.set(f"执行准备：{readiness} · 实测 ° {numbers(q)}\n指令 ° {numbers(command)} · 本段目标 ° {numbers(goal)}\n跟踪误差 ° {numbers(error)} · 反馈年龄 {format(age,'.3f') if isinstance(age,(int,float)) else '—'} s · 吸具 {pressure}\n控制器报警：{alarm}")
         if self.service.process is not None and not self.feedback_pending and not m.active:
             self.feedback_pending=True
