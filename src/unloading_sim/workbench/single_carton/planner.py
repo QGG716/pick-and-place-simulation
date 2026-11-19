@@ -896,7 +896,8 @@ class SinglePlanner(EmptyPlanner):
             actual_flange=actual@np.linalg.inv(self.coordinate_model.tool.matrix)
             attachment=np.linalg.inv(actual_flange)@rigid(box['pose'])
             reuse=dict(approach=approach,known=known,qpre=qpre,contact=contact,qc=qc,actual=actual,seal=seal,attachment=attachment,
-                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[])
+                       release=self.release_check(q,attachment,box,world),original=self.detach_supports(world,box),rejected=[],
+                       capacity_box=box,capacity_candidate=candidate)
         r=dict(reuse);r['rejected']=list(r['rejected']);excluded={x['profile'] for x in r['rejected']}
         for name,goal in self.detach_goals(r['actual'],box,candidate):
             if name in excluded:continue
@@ -935,6 +936,18 @@ class SinglePlanner(EmptyPlanner):
             if np.max(abs(np.asarray(returning['prepared']['points'][-1]['q'])-q))>1e-7:raise ValueError('RETURN_NOT_LOCKED_Q_START')
             return dict(r,extraction=extraction,returning=returning,profile=name)
         raise ValueError('detach:ALL_PROFILES_REJECTED:'+json.dumps(r['rejected'],ensure_ascii=False))
+    def holding_postcheck(self,planned,sub):
+        from .holding_capacity import evaluate,sent_poses
+        poses,times=sent_poses(planned,self.coordinate_model)
+        args=(planned['capacity_box'],planned['capacity_candidate'],self.source['tool'],self.site)
+        static=evaluate(*args,contact_tcp=planned['actual'])
+        dynamic=evaluate(*args,poses=poses,times=times,contact_tcp=planned['actual'])
+        result=dict(static_actual_contact=static,loaded_sent_states=dynamic,
+            valid=static['valid'] and dynamic['valid'],hardware_validation='NOT_RUN')
+        self.write_evidence(sub/'holding-capacity-final.json',result,'holding-capacity-final.json')
+        if not result['valid']:
+            raise SegmentRejected('holding_capacity','HOLDING_CAPACITY_INSUFFICIENT:'+json.dumps(result))
+        return result
     def verify_candidate(self,planned,sub,progress=lambda _:None,cancelled=None,workers=None):
         """Final dense sent-path checks of a planned candidate, cheapest first.
 
@@ -944,12 +957,14 @@ class SinglePlanner(EmptyPlanner):
         segments=[planned[k] for k in ('approach','contact','extraction','returning')]
         for segment in sorted(segments,key=lambda s:len(s['prepared']['collision_path'])):
             if segment.get('evidence') is None:self.sent_check(segment,sub,progress,cancelled,workers)
+        capacity=self.holding_postcheck(planned,sub)
+        for segment in segments:segment['evidence']['holding_capacity']=capacity
         planned['extraction']['evidence'].update(detach_profile=planned['profile'],rejected_detach_profiles=planned['rejected'])
         return dict(segments=[dict(stage=s['stage'],prepared=s['prepared'],evidence=s['evidence']) for s in segments],
                     attachment=planned['attachment'],release=planned['release'],seal=planned['seal'])
     def replan_after(self,planned,error):
         """reuse for the next detach profile after a detach/return sent-path rejection."""
-        if error.stage in ('approach','contact'):raise error
+        if error.stage in ('approach','contact','holding_capacity'):raise error
         return dict(planned,rejected=planned['rejected']+[dict(profile=planned['profile'],reason=str(error)[:400])])
     def plan_candidate(self,q,world,box,candidate,sub,screened,progress=lambda _:None,cancelled=None,clients=None,workers=None):
         """Four native segments for one candidate, planned then densely checked; no permit."""
@@ -1071,15 +1086,28 @@ class SinglePlanner(EmptyPlanner):
             with timing.span('search.contact_candidates'):
                 candidates=contact_candidates(box,self.source['tool'],self.site['topology'],self.site.get('contact_search'))
         except ValueError as e:failures.append(dict(target=box['id'],reason=str(e)));return None
+        considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter]
+        viable=[]
+        from .holding_capacity import evaluate
+        for i in considered:
+            try:capacity=evaluate(box,candidates[i],self.source['tool'],self.site)
+            except ValueError as e:capacity=dict(valid=False,status='HOLDING_CAPACITY_INSUFFICIENT',invalid_evidence=str(e))
+            candidates[i]['holding_capacity']=capacity
+            if capacity['valid']:viable.append(i)
+            else:failures.append(dict(target=box['id'],candidate=i,reason='HOLDING_CAPACITY_INSUFFICIENT',evidence=capacity))
         self.write_evidence(folder/(box['id']+'-candidates.json'),[
             dict(index=i,active_ids=c['active_ids'],commanded_cup_ids=c['commanded_cup_ids'],
                  expected_passively_closed_ids=c['expected_passively_closed_ids'],tcp_pose=c['tcp_pose'],
                  precontact_pose=c['precontact_pose'],seal_check=c['seal_check'],
-                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'])
+                 contact_search=c.get('contact_search'),rings_tcp=c['rings_tcp'],holding_capacity=c.get('holding_capacity'))
             for i,c in enumerate(candidates)],'contact-candidates.json')
         # Bookkeeping for the searched / unsearched summary only.
         self.search_counts[box['id']]=dict(candidates=len(candidates),phase='SCREENING',screened=0,
-            considered=[i for i in range(len(candidates)) if candidate_filter is None or i in candidate_filter])
+            considered=considered,holding_capacity_rejected=len(considered)-len(viable))
+        candidate_filter=viable
+        if not viable:
+            self.search_counts[box['id']]['phase']='DONE'
+            return None
         screened=[];solutions=[]
         try:
             # planning_module NATIVE: one composite screens every candidate; the
@@ -1103,12 +1131,14 @@ class SinglePlanner(EmptyPlanner):
                 from .native_flow import NativeFlowDiverged
                 raise NativeFlowDiverged(f'NATIVE_FLOW_DIVERGED: {replay.unused()} recorded screening results not requested')
             def candidate_priority(row):
+                from .holding_capacity import priority
                 screen=row[3]['screen'];clear=screen['conclusion']=='CLEAR'
                 preferred=posture.key(self.posture_policy,screen['approach_q'],q) if self.posture_policy and clear else ()
-                return (not clear,preferred)
+                return priority(clear,row[1]['holding_capacity']['minimum_margin'],preferred)
             order=sorted(screened,key=candidate_priority)
             self.write_evidence(folder/'candidate-priority.json',[
                 dict(candidate=i,screen=s['screen']['conclusion'],
+                     holding_capacity_tier=c['holding_capacity']['tier'],holding_capacity_margin=c['holding_capacity']['minimum_margin'],
                      posture=posture.metrics(self.posture_policy,s['screen']['approach_q'],q)
                      if self.posture_policy and s['screen']['conclusion']=='CLEAR' else None)
                 for i,c,sub,s in order],'candidate-priority.json')

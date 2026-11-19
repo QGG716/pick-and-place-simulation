@@ -180,6 +180,9 @@ def wrist_branch_violation(limits,q_start,states):
 
 def issues(c):
     errors=[]
+    from .holding_capacity import settings as capacity_settings
+    try:capacity_settings(c)
+    except ValueError as e:errors.append('holding_capacity: '+str(e))
     try:release_policy_evidence(c)
     except ValueError as e:errors.append('release_policy：'+str(e))
     try:pre_execute_visual_recheck(c)

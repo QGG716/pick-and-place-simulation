@@ -157,5 +157,13 @@
   "start_hard_cap_deg": 0.5,
   "start_hard_cap_basis": "User decision 2026-11-19: non-waivable maximum first-start error",
   "plan_validity_s": 120,
-  "plan_validity_basis": "User decision 2026-11-19: seconds since frozen exposure host monotonic receipt"
+  "plan_validity_basis": "User decision 2026-11-19: seconds since frozen exposure host monotonic receipt",
+  "holding_capacity": {
+    "design_pressure_source": "vacuum.hold_below_kpa",
+    "design_pressure_basis": "USER_DECISION_2026_11_19_HOLD_GATE_DESIGN_PRESSURE",
+    "friction_coefficient": 0.5,
+    "safety_factor": 2.0,
+    "effective_area_factor": 0.8,
+    "basis": "工程估计，待现场拉脱试验标定"
+  }
 }
