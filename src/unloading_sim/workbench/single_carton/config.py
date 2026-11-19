@@ -211,6 +211,9 @@ def issues(c):
     from .stack_support import policy as stack_policy
     try:stack_policy(geometry)
     except ValueError as e:errors.append('geometry.confirmed_stack_support：'+str(e))
+    from .coplanar_seam import policy as seam_policy
+    try:seam_policy(geometry)
+    except ValueError as e:errors.append('geometry.coplanar_seam_policy: '+str(e))
     from .measured_envelope import max_carton_extent
     try:max_carton_extent(geometry)
     except ValueError as e:errors.append('geometry.max_carton_extent_m: '+str(e))

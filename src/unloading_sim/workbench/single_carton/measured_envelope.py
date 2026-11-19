@@ -170,7 +170,7 @@ def support_clip(T,lo,hi,plane):
     return dict(record,applied=True)
 
 
-def conservative_envelope(box,points,mask,world_camera,maximum=.40):
+def conservative_envelope(box,points,mask,world_camera,maximum=.40,*,rgb=None,seam_policy=None,bbox=None):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
     camera_pose=np.linalg.inv(W)@T;R=camera_pose[:3,:3]
@@ -237,6 +237,10 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     farther=cv2.dilate(background,np.ones((3,3),'uint8'))>p[...,2]+.012
     witnesses=use&boundary&farther
     lo=low.copy();hi=high.copy();intervals=[]
+    from . import coplanar_seam
+    try:front_plane=coplanar_seam.FrontPlane(p,camera_pose,measured_hi[2])
+    except ValueError as error:front_plane=error
+    rms=float((box.get('quality') or {}).get('plane_rms_m',0.))
     for axis in range(3):
         for sign in (-1,1):
             edge=low[axis] if sign<0 else high[axis]
@@ -255,6 +259,13 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
                     outer=(min(witness['outer_m'],low[axis]-pad[axis]) if sign<0 else
                            max(witness['outer_m'],high[axis]+pad[axis]))
                     method='SENSOR_FREE_RECTANGLE_SPAN_BOUND'
+            missing=None
+            if method=='MISSING_BOUNDARY_MAXIMUM_EXTENT':
+                # Seam policy only after direct and free-ray evidence are both
+                # absent; every remaining missing edge is classified.
+                missing=coplanar_seam.missing_edge(p,mask,rgb,front_plane,axis,sign,low,high,pad,rms,seam_policy,bbox)
+                if missing.get('seam_policy')=='APPLIED':
+                    outer=missing['outer_m'];method='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
             if sign<0:lo[axis]=min(outer,low[axis])
             else:hi[axis]=max(outer,high[axis])
             intervals.append(dict(axis=axis,side=sign,measured_m=float(edge),outer_m=float(outer),
@@ -263,6 +274,11 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
                 pixel_footprint_m=float(footprint[axis]),noise_allowance_m=DEPTH_NOISE_ALLOWANCE_M))
             if method=='SENSOR_FREE_RECTANGLE_SPAN_BOUND':
                 intervals[-1]['free_space_witness']=free_witnesses[(axis,sign)]
+            if method=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':
+                intervals[-1].update(seam=missing,basis=seam_policy['basis'],uncertainty_m=seam_policy['uncertainty_m'],
+                    evidence_kind='USER_POLICY_RGB_SEAM_NOT_DEPTH_BOUNDARY')
+            elif missing is not None:
+                intervals[-1].update(missing_boundary_class=missing['classification'],missing_boundary=missing)
     measured={k:deepcopy(box[k]) for k in ('pose','size_m','corners_m','faces')}
     b.update(measured_box=measured,measured_size_m=deepcopy(box['size_m']))
     from .partial_geometry import observed_support_plane
@@ -288,6 +304,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     b['collision_envelope']={k:deepcopy(b[k]) for k in ('pose','size_m','corners_m')}
     b['quality']['hidden_extent_measured']=False
     b['quality']['full_extent_bounded']=True
+    b['quality']['coplanar_seam_policy']=dict(seam_policy) if seam_policy else dict(mode='DISABLED')
     b['uncertainty']=dict(kind='MEASURED_BOUNDARY_INTERVALS',bound_method='PIXEL_FOOTPRINT_AND_MAXIMUM_EXTENT',
         frame='MEASURED_BOX',intervals=intervals,lower_m=lo.tolist(),upper_m=hi.tolist(),
         max_carton_extent_m=maximum,pixel_footprints=BOUNDARY_PIXEL_FOOTPRINTS,
@@ -295,3 +312,25 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
         basis='SYNTHETIC_SWEEP_CALIBRATION_NOT_FIELD_DIMENSION_VALIDATION')
     return b
 
+
+EDGE_METHOD_LABELS={'DIRECT_DEPTH_BOUNDARY':'深度边界','SENSOR_FREE_RECTANGLE_SPAN_BOUND':'自由射线',
+    'MEASURED_SUPPORT_PLANE':'实测支撑面','CONFIRMED_STACK_SUPPORT_PLANE':'叠箱支撑面',
+    'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY':'接缝策略','MISSING_BOUNDARY_MAXIMUM_EXTENT':'缺边'}
+MISSING_CLASS_LABELS={'COPLANAR_CONTINUATION':'共面延续','INVALID_DEPTH_BAND':'无效深度带',
+    'FOREGROUND_OCCLUDER':'前景遮挡','IMAGE_BORDER':'画面边缘','DETECTION_BOX_EDGE':'贴检测框边',
+    'NO_RGB_EDGE':'无RGB边缘','OTHER':'其他'}
+
+
+def edge_summary(box):
+    """One display line: envelope size and the method of each of the six edges."""
+    u=box.get('uncertainty') or {}
+    if u.get('kind')!='MEASURED_BOUNDARY_INTERVALS':return None
+    parts=[]
+    for i in u['intervals']:
+        name='宽高厚'[i['axis']]+('-' if i['side']<0 else '+')
+        text=EDGE_METHOD_LABELS.get(i['method'],i['method'])
+        if i['method']=='MISSING_BOUNDARY_MAXIMUM_EXTENT':
+            text+='（'+MISSING_CLASS_LABELS.get(i.get('missing_boundary_class'),'未分类')+'）'
+        parts.append(name+' '+text)
+    size=(np.asarray(box['size_m'])*1000).round(1).tolist()
+    return '包络 '+str(size)+' mm · '+'，'.join(parts)

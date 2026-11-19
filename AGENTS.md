@@ -1,4 +1,40 @@
-# November 19 user-confirmed upper-carton pointcloud artefacts (current active override)
+# November 19 carton geometry robustness and coplanar seam policy (current active override)
+
+User decisions of 2026-11-19 20:41, given with the geometry-robustness task:
+(1) a coplanar seam may be trusted where the SAM mask boundary coincides with a
+strong straight RGB edge, only under the explicit policy
+`geometry.coplanar_seam_policy={mode,uncertainty_m,basis}`; (2) the camera
+mounting stays unchanged: do not implement or propose relocation, and views
+that cannot measure an edge keep an explicit failure class; (3) all other
+robustness fixes follow the implementer's proposal (tilted support clip,
+corner-proof direct boundaries, absolute second-plane evidence, connected side
+thickness, free rays on every visible face, +/-3 px RGB-edge band, nested masks
+and stack-box NMS, interval-envelope stack support). The user then directed
+that this session, not other sessions, carries out the work.
+
+Seam policy: mode DISABLED (default; shared example) or MASK_RGB_EDGE_COINCIDENT
+with uncertainty_m 0.005-0.02 m (field values may only enlarge it) and a
+non-empty basis. It applies only to the four in-plane edges of the measured
+front face that remain MISSING after direct and free-ray evidence; never to
+thickness; a confirmed stack support decides the bottom. The interval records
+USER_POLICY_RGB_SEAM_NOT_DEPTH_BOUNDARY; the measured box is unchanged. It is a
+field premise, not depth evidence. No collision exemption is added: an at-rest
+overlap lying entirely in the seam band is reported as
+COPLANAR_SEAM_CONTACT_NOT_PERMITTED and any seam contact rule is the user's
+decision. A stack support plane is the lowest of the upper measured bottom, the
+lower visible top and the seam line minus its uncertainty.
+
+Unchanged: 2.4 mm pair clearance, 5 mm tool/robot reserve, 1 mm rest depth,
+0.4 mm support penetration, 0.40 m maximum extent, 6 mm free margin, 2 px guard,
+3 mm depth noise, 2 mm plane residual, 715 solids, 12 cups, CAD seals and 3 mm
+edge band, pressure gates, motion limits, 5 ms period, stop and lock
+semantics, camera extrinsics and status, unknown_policy and the named
+pointcloud list. The true carton must stay inside the envelope; changes only
+replace unevidenced enlargement by evidenced bounds, and every new threshold
+records its calibration basis. Development is offline (no device, no motion
+or valve command); physical acceptance stays NOT_RUN.
+
+# November 19 user-confirmed upper-carton pointcloud artefacts (in force where not superseded)
 
 The user selects ONLY the current failed upper-carton pointcloud object list,
 not a 60 mm exclusion neighbourhood. Apply USER_CONFIRMED_NAMED_LIST to

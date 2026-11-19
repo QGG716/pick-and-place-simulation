@@ -92,6 +92,7 @@
   "site_scene": "configs/workbench/real_site.example.json",
   "geometry": {
     "confirmed_stack_support": {"mode": "DISABLED"},
+    "coplanar_seam_policy": {"mode": "DISABLED"},
     "size_policy": "MEASURED_PER_INSTANCE",
     "size_policy_basis": "USER_REQUEST_2026_11_19_PRIOR_FREE_SINGLE_FACE_ALLOWED_DIFFERENT_UNKNOWN_SIZES_CURRENT_RGBD_ONLY_NO_ADDITIONAL_MEASUREMENTS",
     "prior_size_m": [

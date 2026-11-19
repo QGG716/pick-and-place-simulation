@@ -450,6 +450,9 @@ class SingleWorkbench(Workbench):
                         label=('RGB-D 保守包络，非实测箱尺寸' if partial else
                                '逐箱 RGB-D 实测尺寸，不使用先验' if measured else '碰撞包络，含先验不确定性')
                         lines.append(str(b['detection_index'])+' → '+str((np.asarray(b.get('measured_size_m',b['size_m']))*1000).round(1).tolist())+' mm · '+label)
+                        from .measured_envelope import edge_summary
+                        summary=edge_summary(b)
+                        if summary:lines.append('    '+summary)
                     self.details.set(self.details.get()+'\n'+'\n'.join(lines))
                 scene=getattr(self.manager,'scene',None) or {}
                 artifacts=scene.get('upper_carton_pointcloud_artifacts',{})

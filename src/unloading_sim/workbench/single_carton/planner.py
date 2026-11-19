@@ -1105,7 +1105,15 @@ class SinglePlanner(EmptyPlanner):
         self.write_evidence(folder/(box['id']+'-payload-rest-check.json'),rest,'payload-rest-check.json')
         if rest['intersections'] or rest['outside_workspace']:
             hit=rest['intersections'][0] if rest['intersections'] else None
-            if rest.get('geometry_basis')=='CONSERVATIVE_UNCERTAINTY_ENVELOPE':
+            seam=seam_band_contacts(world,box,rest)
+            if seam:rest['coplanar_seam_contact']=seam
+            if seam and seam['all_within_seam_band'] and not rest['outside_workspace']:
+                # Not merged into the generic overlap: the user decides whether
+                # a payload-only seam contact rule may be added (none exists).
+                reason=('COPLANAR_SEAM_CONTACT_NOT_PERMITTED: 接缝策略外界与共面邻物重叠，全部位于接缝带内：'+
+                        '；'.join(f"{c['id']} {c['overlap_depth_m']*1000:.3f} mm" for c in seam['contacts'])+
+                        '；本轮未增加接缝接触规则，未进行候选/路径搜索')
+            elif rest.get('geometry_basis')=='CONSERVATIVE_UNCERTAINTY_ENVELOPE':
                 reason=('GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 '+
                         (f"{hit['id']} 的模型包络重叠 {hit['overlap_depth_m']*1000:.3f} mm" if hit else '现场工作范围边界重叠')+
                         '；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索')
@@ -1478,3 +1486,31 @@ class SinglePlanner(EmptyPlanner):
         self.close_check_pool()
         if evidence is not None:evidence.close()
 
+
+def seam_band_contacts(world,box,rest):
+    """Classify at-rest overlaps against the coplanar seam band (report only).
+
+    The band of a seam edge lies between the seam position (RGB line / mask
+    boundary) and its outer bound (+uncertainty). An overlap lies entirely in
+    the band when the envelope with every seam edge retracted to its seam
+    position no longer overlaps that object beyond PAYLOAD_REST_DEPTH_M.
+    Returns None when the envelope has no seam edge. No permission is granted.
+    """
+    u=box.get('uncertainty') or {}
+    seams=[i for i in u.get('intervals',[]) if i.get('method')=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY']
+    if not seams or not rest['intersections']:return None
+    lo=np.asarray(u['lower_m'],float).copy();hi=np.asarray(u['upper_m'],float).copy()
+    for i in seams:
+        retracted=i['outer_m']-i['side']*i['uncertainty_m']
+        if i['side']<0:lo[i['axis']]=retracted
+        else:hi[i['axis']]=retracted
+    T=np.asarray((box.get('measured_box') or box)['pose'],float);pose=T.copy();pose[:3,3]+=T[:3,:3]@((lo+hi)/2)
+    objects={o['id']:o for o in world};contacts=[]
+    for hit in rest['intersections']:
+        o=objects.get(hit['id'])
+        inner=obb_overlap_depth(pose,(hi-lo)/2,o['pose'],np.asarray(o['size'])/2) if o and 'size' in o else np.inf
+        contacts.append(dict(id=hit['id'],category=hit.get('category'),overlap_depth_m=hit['overlap_depth_m'],
+            overlap_without_seam_band_m=float(inner),within_seam_band=bool(inner<=PAYLOAD_REST_DEPTH_M)))
+    return dict(contacts=contacts,all_within_seam_band=all(c['within_seam_band'] for c in contacts),
+        seam_edges=[dict(axis=i['axis'],side=i['side'],outer_m=i['outer_m'],uncertainty_m=i['uncertainty_m']) for i in seams],
+        rule='ENVELOPE_WITH_SEAM_EDGES_RETRACTED_TO_SEAM_POSITION',permission_granted=False)

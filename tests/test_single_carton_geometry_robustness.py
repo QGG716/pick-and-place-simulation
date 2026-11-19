@@ -8,10 +8,13 @@ import pytest
 import field_like_scene as fl
 from test_single_carton_variable_geometry import measured_box
 from test_single_carton_measured_envelope import stacked_fixture
+from unloading_sim.workbench.single_carton import coplanar_seam
 from unloading_sim.workbench.single_carton.geometry import recover, corners, _visible_planes
 from unloading_sim.workbench.single_carton.instance_fit import measured_instance
-from unloading_sim.workbench.single_carton.measured_envelope import conservative_envelope, support_clip, SUPPORT_TILT_LIMIT_RAD
+from unloading_sim.workbench.single_carton.measured_envelope import (conservative_envelope, support_clip,
+    edge_summary, SUPPORT_TILT_LIMIT_RAD)
 from unloading_sim.workbench.single_carton.hf_detector_core import carton_nms
+from unloading_sim.workbench.single_carton.planner import seam_band_contacts
 from unloading_sim.workbench.single_carton.stack_support import infer_supports, effective_instances
 
 SEAM = dict(mode='MASK_RGB_EDGE_COINCIDENT', uncertainty_m=.005,
@@ -37,10 +40,12 @@ def run(name, seam=None, bbox_slack=6, rgb=None):
         p, masks, image, cam, (pose, size) = fl.frame(name)
         ys, xs = np.nonzero(masks[0])
         bbox = [xs.min()-bbox_slack, ys.min()-bbox_slack, xs.max()+bbox_slack, ys.max()+bbox_slack]
-        box = measured_instance(p, masks, 0, cam, rgb=image if rgb is None else rgb, maximum=.4)
+        box = measured_instance(p, masks, 0, cam, rgb=image if rgb is None else rgb, maximum=.4, seam_policy=seam, bbox=bbox)
         CACHE[key] = (box, pose, size)
     return CACHE[key]
 
+
+# --- field-like scenes (all 15): recovered and truth contained ---------------
 
 @pytest.mark.parametrize('name', NAMES)
 def test_field_like_scene_recovers_and_contains_truth(name):
@@ -73,6 +78,8 @@ def test_parent_mask_with_child_uses_difference_first():
     assert outside_mm(box, pose, size) == 0.
 
 
+# --- P0-A tilted support -----------------------------------------------------
+
 @pytest.mark.parametrize('noise_mm', [0., .1, .5, 1.])
 def test_noisy_stack_fixture_recovers_with_support(noise_mm):
     p, m, W, height = stacked_fixture()
@@ -103,6 +110,8 @@ def test_support_clip_keeps_everything_above_the_plane():
     wide = support_clip(T, np.array([-.05, -.4, -.4]), np.array([.05, .4, .05]), dict(top_world_m=-.03, noise_m=.0005))
     assert not wide['applied'] and wide['reason'] == 'MEASURED_SUPPORT_TILT_DROP_EXCEEDS_SUPPORT_NOISE_WINDOW'
 
+
+# --- P0-B corner pixels never certify an edge ---------------------------------
 
 def test_mask_missing_one_side_is_never_certified_by_corner_pixels():
     p, m, c, R = measured_box((.24, .18, .12)); xs = np.nonzero(m)[1]
@@ -138,6 +147,8 @@ def test_truth_contained_under_mask_defects(defect, noise_mm):
     assert np.max(abs((corners(truth, size)-T[:3, 3])@T[:3, :3])-np.asarray(b['size_m'])/2) <= 1e-7
 
 
+# --- P1-C a non-adjacent plane is never a side --------------------------------
+
 def test_transverse_plane_not_touching_the_face_is_not_accepted_as_side():
     """A perpendicular plane elsewhere in the mask (lower top, wall) has no
     supported common edge with the front face and must never be the side."""
@@ -160,6 +171,8 @@ def test_transverse_plane_not_touching_the_face_is_not_accepted_as_side():
         if abs(pl['normal']@normal) > .99:assert abs((pl['center']-c)@normal) <= size[0]/2+.005
 
 
+# --- P1-E no witness from occluded or missing depth ---------------------------
+
 def test_no_free_witness_without_farther_valid_depth():
     p, masks, image, cam, _ = fl.frame('flush_stack')        # exact mask: no background inside it
     p = p.copy(); p[~masks[0]] = np.nan
@@ -175,6 +188,8 @@ def test_no_free_witness_without_farther_valid_depth():
             assert np.isfinite(p[y, x]).all() and masks[0][y, x]
 
 
+# --- P1-F coplanar cut without an RGB edge is rejected -------------------------
+
 def test_mask_cut_through_the_same_plane_without_rgb_edge_is_rejected():
     p, m, _, _ = measured_box((.24, .18, .12)); xs = np.nonzero(m)[1]
     cut = m.copy(); cut[:, :int(xs.mean())] = False
@@ -182,6 +197,19 @@ def test_mask_cut_through_the_same_plane_without_rgb_edge_is_rejected():
     with pytest.raises(ValueError, match='COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED'):
         recover(p, cut, np.eye(4), rgb=flat, conservative_measured=True)
 
+
+def test_touching_neighbour_without_rgb_edge_never_gets_a_seam():
+    p, masks, image, cam, _ = fl.frame('coplanar_touching_left')
+    flat = np.full_like(image, 110); ys, xs = np.nonzero(masks[0])
+    try:box = measured_instance(p, masks, 0, cam, rgb=flat, maximum=.4, seam_policy=SEAM,
+                                bbox=[xs.min()-6, ys.min()-6, xs.max()+6, ys.max()+6])
+    except ValueError as e:
+        assert 'COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED' in str(e); return
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT' and interval['missing_boundary_class'] == 'NO_RGB_EDGE'
+
+
+# --- P1-G detector containment --------------------------------------------------
 
 def test_stack_box_with_two_children_is_dropped_single_child_kept():
     record = []
@@ -191,6 +219,8 @@ def test_stack_box_with_two_children_is_dropped_single_child_kept():
     keep = carton_nms([[0, 0, 100, 100], [2, 2, 98, 50]], [.9, .8], record=record)
     assert keep == [0, 1] and not record
 
+
+# --- P1-H stack support with an interval envelope -------------------------------
 
 def interval_stack():
     from test_single_carton_stack_support import fixture
@@ -227,3 +257,147 @@ def test_third_detection_outside_workspace_or_whole_stack_mask_is_not_counted():
     assert records[0]['status'] == 'APPLIED'
     effective, counting = effective_instances(args[1].masks, (3,))
     assert effective == [0, 1] and counting['group_masks'] == [2]
+
+
+# --- coplanar seam policy -------------------------------------------------------
+
+def test_seam_policy_configuration():
+    assert coplanar_seam.policy({}) is None and coplanar_seam.policy({'coplanar_seam_policy': {'mode': 'DISABLED'}}) is None
+    assert coplanar_seam.policy({'coplanar_seam_policy': SEAM})['uncertainty_m'] == .005
+    for bad in (dict(SEAM, uncertainty_m=.004), dict(SEAM, uncertainty_m=.021), dict(SEAM, basis=' '),
+                dict(SEAM, mode='ON'), {k: v for k, v in SEAM.items() if k != 'basis'}):
+        with pytest.raises(ValueError):coplanar_seam.policy({'coplanar_seam_policy': bad})
+
+
+def test_seam_applies_on_touching_coplanar_neighbour_and_contains_truth():
+    off, pose, size = run('coplanar_touching_left')
+    on, _, _ = run('coplanar_touching_left', SEAM)
+    assert methods(off)['w-'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    interval = next(i for i in off['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['missing_boundary_class'] == 'COPLANAR_CONTINUATION'
+    seam = next(i for i in on['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert seam['method'] == 'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
+    assert seam['evidence_kind'] == 'USER_POLICY_RGB_SEAM_NOT_DEPTH_BOUNDARY' and seam['basis'] == SEAM['basis']
+    w_plus = next(i for i in on['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, 1))
+    pad = w_plus['outer_m']-w_plus['measured_m']
+    assert on['size_m'][0] <= size[0]+2*.005+pad+1e-9
+    assert outside_mm(on, pose, size) == 0.
+    assert on['measured_size_m'] == off['measured_size_m']
+
+
+def test_seam_policy_leaves_gap_scene_unchanged():
+    off, _, _ = run('left_gap_30mm'); on, _, _ = run('left_gap_30mm', SEAM)
+    assert off['size_m'] == on['size_m'] and methods(off) == methods(on)
+
+
+def test_seam_not_applied_at_detection_box_edge():
+    box, _, _ = run('coplanar_touching_left', SEAM, bbox_slack=0)
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert interval['missing_boundary_class'] == 'DETECTION_BOX_EDGE'
+
+
+def test_seam_not_applied_when_edge_is_a_foreground_occluder():
+    up = fl.upper_box(); neighbour = fl.side_neighbour(-1, 0., 0.); cam = fl.T_base_cam()
+    t = up[0][:3, 0]; edge = np.asarray(fl.UPPER_FRONT)-t*fl.UPPER[0]/2
+    ray = cam[:3, 3]-edge; ray /= np.linalg.norm(ray)
+    pole = (fl.box_pose(edge+ray*.08, (.02, .30, .02)), (.02, .30, .02))   # on the line of sight to the edge
+    p, ident, cam = fl.render([up, neighbour, pole]); p = fl.stereo_shadow(fl.add_noise(p))
+    masks = [ident == 0, ident == 1, ident == 2]; ys, xs = np.nonzero(masks[0])
+    box = measured_instance(p, masks, 0, cam, rgb=fl.gray(ident), maximum=.4, seam_policy=SEAM,
+                            bbox=[xs.min()-6, ys.min()-6, xs.max()+6, ys.max()+6])
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert interval['missing_boundary_class'] == 'FOREGROUND_OCCLUDER'
+
+
+def test_protruding_neighbour_side_is_not_a_seam():
+    up = fl.upper_box(); neighbour = fl.side_neighbour(-1, 0., -.02)
+    p, ident, cam = fl.render([up, neighbour]); p = fl.stereo_shadow(fl.add_noise(p))
+    masks = [ident == 0, ident == 1]; ys, xs = np.nonzero(masks[0])
+    box = measured_instance(p, masks, 0, cam, rgb=fl.gray(ident), maximum=.4, seam_policy=SEAM,
+                            bbox=[xs.min()-6, ys.min()-6, xs.max()+6, ys.max()+6])
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] != 'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'
+
+
+def test_seam_not_applied_when_rgb_edge_is_not_stronger_than_texture():
+    p, masks, image, cam, _ = fl.frame('coplanar_touching_left')
+    rng = np.random.default_rng(3)
+    textured = np.clip(image.astype(int)+rng.integers(-60, 61, image.shape[:2])[..., None], 0, 255).astype(np.uint8)
+    ys, xs = np.nonzero(masks[0])
+    try:box = measured_instance(p, masks, 0, cam, rgb=textured, maximum=.4, seam_policy=SEAM,
+                                bbox=[xs.min()-6, ys.min()-6, xs.max()+6, ys.max()+6])
+    except ValueError:return   # rejected outright is also safe
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert interval['missing_boundary_class'] == 'NO_RGB_EDGE'
+
+
+def test_seam_not_applied_at_image_border():
+    p, masks, image, cam, _ = fl.frame('coplanar_touching_left')
+    raw = recover(p, masks[0], cam, rgb=image)
+    x0 = int(np.nonzero(masks[0])[1].min())-1
+    b = conservative_envelope(raw, p[:, x0:], masks[0][:, x0:], cam, rgb=image[:, x0:], seam_policy=SEAM)
+    interval = next(i for i in b['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert interval['missing_boundary_class'] == 'IMAGE_BORDER'
+
+
+def test_missing_edges_are_classified_and_displayed():
+    box, _, _ = run('coplanar_touching_left')
+    text = edge_summary(box)
+    assert '缺边（共面延续）' in text and '宽-' in text
+
+
+def test_seam_band_contact_is_reported_separately_without_permission():
+    on, _, _ = run('coplanar_touching_left', SEAM)
+    seam = next(i for i in on['uncertainty']['intervals'] if i['method'] == 'COPLANAR_SEAM_MASK_RGB_EDGE_POLICY')
+    M = np.asarray(on['measured_box']['pose']); axis = M[:3, 0]
+    lo = np.asarray(on['uncertainty']['lower_m']); hi = np.asarray(on['uncertainty']['upper_m'])
+    # neighbour face 2 mm inside the seam position: 3 mm into the 5 mm band
+    seam_position = seam['outer_m']+seam['uncertainty_m']
+    centre = M[:3, 3]+M[:3, :3]@np.array([seam_position-.002-.1, (lo[1]+hi[1])/2, (lo[2]+hi[2])/2])
+    pose = np.eye(4); pose[:3, :3] = M[:3, :3]; pose[:3, 3] = centre
+    world = [dict(id='neighbour', pose=pose.tolist(), size=[.2, .1, .1])]
+    rest = dict(intersections=[dict(id='neighbour', category='observed', overlap_depth_m=.003)])
+    result = seam_band_contacts(world, on, rest)
+    assert result['all_within_seam_band'] and not result['permission_granted']
+    pose2 = pose.copy(); pose2[:3, 3] += axis*.02
+    world2 = [dict(id='neighbour', pose=pose2.tolist(), size=[.2, .1, .1])]
+    assert not seam_band_contacts(world2, on, rest)['all_within_seam_band']
+
+
+def test_depth_fattening_at_a_silhouette_is_not_a_seam():
+    """Field frame d6d985f1: stereo matching extends the carton's depth ~4 px
+    over the wall beyond its silhouette. That is not a coplanar neighbour."""
+    up = fl.upper_box(); p, ident, cam = fl.render([up]); p = fl.add_noise(p)
+    masks = [ident == 0]; ys, xs = np.nonzero(masks[0])
+    plane_point = np.linalg.inv(cam)@np.r_[fl.UPPER_FRONT, 1.]; n_cam = (np.linalg.inv(cam)[:3, :3]@up[0][:3, 2])
+    rays = p/p[..., 2, None]
+    band = cv2.dilate(masks[0].astype('uint8'), np.ones((1, 9), 'uint8')).astype(bool) & ~masks[0]
+    band &= np.indices(masks[0].shape)[1] < int(xs.mean())          # left silhouette only
+    left = np.indices(masks[0].shape)[1] < int(xs.mean())
+    p[left & ~masks[0] & ~band] = np.nan              # invalid (occlusion band) beyond the fattening, as in the field
+    depth = (plane_point[:3]@n_cam)/(rays[band]@n_cam); p[band] = rays[band]*depth[:, None]
+    box = measured_instance(p, masks, 0, cam, rgb=fl.gray(ident), maximum=.4, seam_policy=SEAM,
+                            bbox=[xs.min()-6, ys.min()-6, xs.max()+6, ys.max()+6])
+    interval = next(i for i in box['uncertainty']['intervals'] if (i['axis'], i['side']) == (0, -1))
+    assert interval['method'] == 'MISSING_BOUNDARY_MAXIMUM_EXTENT'
+    assert interval['missing_boundary_class'] in ('INVALID_DEPTH_BAND', 'OTHER')
+
+
+def test_check_config_reports_invalid_seam_policy_and_accepts_field_value():
+    import json
+    from pathlib import Path
+    from unloading_sim.workbench.single_carton.config import issues, load
+    root = Path(__file__).resolve().parents[1]
+    base = json.loads((root/'configs/workbench/single_carton.example.json').read_text())
+    assert base['geometry']['coplanar_seam_policy'] == {'mode': 'DISABLED'}
+    config = load(root/'configs/workbench/single_carton.example.json')
+    assert not any('coplanar_seam_policy' in i for i in issues(config))
+    for bad in (dict(SEAM, uncertainty_m=.004), dict(SEAM, basis='')):
+        config['geometry']['coplanar_seam_policy'] = bad
+        assert any('coplanar_seam_policy' in i for i in issues(config))
+    config['geometry']['coplanar_seam_policy'] = SEAM
+    assert not any('coplanar_seam_policy' in i for i in issues(config))

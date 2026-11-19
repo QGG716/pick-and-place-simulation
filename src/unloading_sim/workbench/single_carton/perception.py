@@ -224,8 +224,10 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds
                     try:
                         from .measured_envelope import max_carton_extent
                         from .instance_fit import measured_instance
+                        from .coplanar_seam import policy as seam_policy
                         box=measured_instance(points,masks,i,world_camera,rgb=f.rgb,
-                            maximum=max_carton_extent(geometry))
+                            maximum=max_carton_extent(geometry),seam_policy=seam_policy(geometry),
+                            bbox=item.get('bbox_xyxy'))
                     except ValueError as failure:
                         from .observed_surface import observed_surface
                         from .geometry import GeometryRejected

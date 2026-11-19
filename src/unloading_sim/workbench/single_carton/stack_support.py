@@ -97,7 +97,8 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     The upper envelope may be a MEASURED_BOUNDARY_INTERVALS envelope; its
     bottom is then set (in place) to the support plane, which is the LOWEST of
     the upper measured bottom, the lower visible-face robust top (pixels of
-    the upper mask excluded). Lowering can only enlarge the
+    the upper mask excluded) and, where the seam policy bounded the bottom
+    edge, the seam line minus its uncertainty. Lowering can only enlarge the
     payload; the volume removed is below that plane.
     """
     from .site_scene import TARGET_PIXEL_BAND_PX,TARGET_PLANE_BAND_M,SUPPORT_MIN_POINTS,SUPPORT_BELOW_M,SUPPORT_ABOVE_M,NEAR_TARGET_M
@@ -155,6 +156,10 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
     lower_face=lower_mask&~upper_mask&valid&on_face
     if int(lower_face.sum())>=SUPPORT_MIN_POINTS:
         estimates['lower_visible_top']=float(np.percentile(world_points[lower_face]@normal,LOWER_TOP_QUANTILE))
+    for interval in (upper.get('uncertainty') or {}).get('intervals',[]):
+        if (interval['axis']==axis and interval['side']==side and
+                interval['method']=='COPLANAR_SEAM_MASK_RGB_EDGE_POLICY'):
+            estimates['seam_line_minus_uncertainty']=float(normal@(T[:3,3]+R[:,axis]*interval['outer_m']))
     offset=min(estimates.values())
     record_estimates=dict(estimates=estimates,selected_m=offset,spread_m=float(max(estimates.values())-offset))
     if estimates.get('lower_visible_top',-np.inf)-estimates['upper_measured_bottom']>SUPPORT_ABOVE_M:
@@ -187,7 +192,7 @@ def infer_supports(observation,result,boxes,unresolved,site,geometry,world_point
         support_basis=setting['basis'],observation_id=observation.frame.observation_id)
     record=dict(status='APPLIED',upper_id=upper['id'],lower_index=lower['detection_index'],
         object_id=body['id'],basis=setting['basis'],plane=body['support_plane'],
-        plane_source='LOWEST_OF_UPPER_MEASURED_BOTTOM_AND_LOWER_VISIBLE_TOP_PLUS_USER_CONFIRMED_STACK_TOPOLOGY',
+        plane_source='LOWEST_OF_UPPER_MEASURED_BOTTOM_LOWER_VISIBLE_TOP_AND_SEAM_PLUS_USER_CONFIRMED_STACK_TOPOLOGY',
         **record_estimates,instances=counting,column=column,
         interface_points=int(joint.sum()),interface_gap_m=[float(-distance[joint].max()),float(-distance[joint].min())],
         lower_front_max_above_plane_m=float(signed.max()),

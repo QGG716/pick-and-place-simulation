@@ -27,9 +27,10 @@ def nested_children(masks, index):
     return children
 
 
-def measured_instance(points, masks, index, world_camera, *, rgb, maximum):
+def measured_instance(points, masks, index, world_camera, *, rgb, maximum, seam_policy=None, bbox=None):
     mask = np.asarray(masks[index], bool)
-    options = dict(rgb=rgb, prior=None, conservative_measured=True, max_carton_extent_m=maximum)
+    options = dict(rgb=rgb, prior=None, conservative_measured=True, max_carton_extent_m=maximum,
+                   seam_policy=seam_policy, bbox=bbox)
     children = nested_children(masks, index)
     if not children:
         return recover(points, mask, world_camera, **options)
