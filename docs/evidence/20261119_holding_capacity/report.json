@@ -38,7 +38,10 @@
     "minimum_margin": 2.1929369580051223
   },
   "upward_60mm_fixture": {
-    "assumption": "Vertical side suction with normal acceleration, not pure static vertical translation",
+    "scenario": "Vertical side suction with normal acceleration",
+    "scenario_basis": "USER_CONFIRMED_2026_11_19",
+    "user_confirmation": "带法向加速度的竖直侧吸",
+    "fixture_numeric_basis": "Synthetic near-capacity regression values; not field measurements or separately user-specified numeric values",
     "carton_depth_m": 0.217,
     "normal_acceleration_m_s2": 0.2,
     "before_margin": 1.0063140852132495,
