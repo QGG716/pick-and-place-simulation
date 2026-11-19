@@ -32,7 +32,7 @@ def test_requested_j5_crossing_keeps_other_limits_and_stop_lock(policy):
     states[-1][5]=start[5]+np.deg2rad(181.)
     assert wrist_branch_violation(limits,start,states)['reason']=='J6_TRAVEL_EXCEEDED'
     with pytest.raises(ValueError):wrist_branch_limits(dict(wrist_branch_limits=dict(limits,max_j6_travel_deg=None)))
-    assert c['execution_lock']['locked'] and c['tool_robot_clearance']['clearance_m']==.04
+    assert c['execution_lock']['locked'] and c['tool_robot_clearance']['clearance_m']==.005
 
 
 def test_soft_preference_is_geometry_based_not_a_joint_lock(policy):

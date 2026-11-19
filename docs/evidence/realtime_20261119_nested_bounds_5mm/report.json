@@ -1,0 +1,692 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "b0ad4e5",
+  "physical_result": "NOT_RUN",
+  "motion_commands": 0,
+  "valve_commands": 0,
+  "complete_plan": false,
+  "permits_issued": 0,
+  "changes": [
+    "Mixed-mask retry uses separate nested-instance pixels for fitting only; original masks/points retained for envelope and scene.",
+    "Missing face edges can use a guarded sensor-free ray inside the other observed rectangle span; no image/occlusion boundary alone proves a carton edge.",
+    "Explicit user change: tool_robot_clearance 0.040 to 0.005 m. Original 2.4 mm pair rules, solids, seal and device thresholds preserved."
+  ],
+  "source_sha256": {
+    "src/unloading_sim/workbench/single_carton/geometry.py": "c0ae76bab5ba9d6ad6526408fe35f9453acf582f78a9ede0848da4b15b30f572",
+    "src/unloading_sim/workbench/single_carton/measured_envelope.py": "0b281b8336737e2b29a944758e9db17be49fcf5dd389c3a19c90e920b33e999f",
+    "src/unloading_sim/workbench/single_carton/instance_fit.py": "7db5ecd33e30d9cb29b1ae7ea347d61ebb6e97596d5ac0b8a4e8170ce1252d2d",
+    "src/unloading_sim/workbench/single_carton/perception.py": "a5524aa76e1572e78251a165fef319c6a39f22e625e34cc0a332442723d2e7ec",
+    "configs/workbench/single_carton.example.json": "1ab090889317c0ddded65dd45c5ce8ac7f8a0cee90d750fba1ca410bb6da5410",
+    "ros2/m710_moveit_backend/src/clearance_test.cpp": "dedc10f2edb182f774895d8ca71fe261e66d57c16504d067979ee6d4833e457e",
+    "tests/test_single_carton_instance_fit.py": "adad498eaeb9dc0851289e542ddf18dfa072ccf1fd45fc66b6fe21994309b392",
+    "tests/test_single_carton_free_face_bounds.py": "c53bda6bccdf4b3b057c1a25caa0a1a3ca998f7ae2b234edcd26411ac8b36014",
+    "tests/test_single_carton_incident_fixes.py": "51934290bfde0c88c43104cb911ebac9ec8b203bb2845003a0074352c73b87a0",
+    "tests/test_single_carton_posture_retry.py": "fddad43477d7f1f9085ebf581e3775d87f4983efd6a7fe47b530433e5e5a367f"
+  },
+  "tests": {
+    "full_directed": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "9",
+      "tests": "860",
+      "time": "383.759",
+      "timestamp": "2026-11-19T20:05:06.917420+08:00",
+      "hostname": "JD"
+    },
+    "numeric_directed": {
+      "passed": 159,
+      "elapsed_s": 38.41
+    },
+    "native": {
+      "optimized": {
+        "status": "PASS",
+        "physical_reserve_cases": [
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004899999999999999
+            },
+            "gap_m": 0.0049,
+            "reserve_m": 0.005,
+            "valid": false
+          },
+          {
+            "failure": null,
+            "gap_m": 0.0051,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": null,
+            "gap_m": 0.039,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": null,
+            "gap_m": 0.041,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.004899999999999999
+            },
+            "gap_m": 0.0049,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.005100000000000001
+            },
+            "gap_m": 0.0051,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.03900000000000001
+            },
+            "gap_m": 0.039,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": null,
+            "gap_m": 0.041,
+            "reserve_m": 0.04,
+            "valid": true
+          }
+        ],
+        "physical_case_checker": "optimized explicit convex workspace; legacy reference checks retained"
+      },
+      "reference": {
+        "status": "PASS",
+        "physical_reserve_cases": [
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.006,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.005,
+              "surface_distance_m": 0.004899999999999999
+            },
+            "gap_m": 0.0049,
+            "reserve_m": 0.005,
+            "valid": false
+          },
+          {
+            "failure": null,
+            "gap_m": 0.0051,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": null,
+            "gap_m": 0.039,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": null,
+            "gap_m": 0.041,
+            "reserve_m": 0.005,
+            "valid": true
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.004899999999999999
+            },
+            "gap_m": 0.0049,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.005100000000000001
+            },
+            "gap_m": 0.0051,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "robot",
+                "tool"
+              ],
+              "query_range_m": 0.041,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.04,
+              "surface_distance_m": 0.03900000000000001
+            },
+            "gap_m": 0.039,
+            "reserve_m": 0.04,
+            "valid": false
+          },
+          {
+            "failure": null,
+            "gap_m": 0.041,
+            "reserve_m": 0.04,
+            "valid": true
+          }
+        ],
+        "physical_case_checker": "optimized explicit convex workspace; legacy reference checks retained"
+      }
+    },
+    "native_component": {
+      "status": "PASS",
+      "sent_states": 491,
+      "elapsed_s": 2.73998108698288
+    },
+    "initial_failures": [
+      "Two negative free-ray fixtures unintentionally included visible side-plane free witnesses; fixtures now remove those returns before asserting no witness.",
+      "Initial physical native reserve test invoked unsupported reference mode; production requires explicit convex workspace. Physical cases now run required checker; legacy reference regression remains."
+    ],
+    "initial_logs_retained": true
+  },
+  "saved_field_replay": {
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "task_id": "d6d985f17e6f4b6b84eaffb71c5da66b",
+    "source_record_unchanged": true,
+    "planning_policy": {
+      "wrist_branch_limits": {
+        "keep_j5_sign": false,
+        "j5_min_abs_deg": 0.0,
+        "max_j4_travel_deg": null,
+        "max_j6_travel_deg": 180.0,
+        "basis": "USER_REQUEST_2026_11_18_REMOVE_J5_FLIP_ZERO_BAND_AND_CONFIRMED_J4_RELATIVE_TRAVEL_GATE_RETAIN_J6_LIMIT_AND_OFFICIAL_BOUNDS"
+      },
+      "posture_preference": {
+        "mode": "SOFT_LINK_DIRECTIONS",
+        "upper_up_weight": 4.0,
+        "forearm_horizontal_weight": 2.0,
+        "joint_travel_weight": 0.05,
+        "basis": "USER_REQUEST_2026_11_18_UPPER_ARM_UP_FOREARM_HORIZONTAL_SOFT_PREFERENCE"
+      },
+      "contact_search": {
+        "reference_face_roll_deg": 90,
+        "j6_rotation_deg": 180,
+        "lift_offsets_m": [
+          0.0,
+          0.01,
+          0.02,
+          0.03,
+          0.04,
+          0.05,
+          0.06
+        ],
+        "max_candidates": 32,
+        "basis": "USER_REQUEST_2026_11_18_ROTATE_VIEWED_CANDIDATE_3_J6_180_AND_ALLOW_UPWARD_PARTIAL_PASSIVE_SEALS_REFERENCE_FACE_ROLL_90"
+      },
+      "tool_robot_clearance": {
+        "clearance_m": 0.005,
+        "exempt_robot_links": [
+          "link_6"
+        ],
+        "exempt_pairs": [
+          [
+            "part_041_region_1",
+            "link_5"
+          ],
+          [
+            "part_041_region_2",
+            "link_5"
+          ]
+        ],
+        "basis": "USER_REQUEST_2026_11_19_CHANGE_TOOL_ROBOT_CLEARANCE_FROM_40_MM_TO_5_MM",
+        "previous_basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+      },
+      "execution_lock": {
+        "locked": false,
+        "basis": "USER_CONFIRMATION_2026_11_19_TOOL_AND_CONNECTOR_REPAIRED_TOOL_GEOMETRY_AND_TCP_REVIEW_COMPLETED",
+        "previous_incident_basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED",
+        "verification_source": "USER_FIELD_CONFIRMATION_NOT_AUTOMATED_PHYSICAL_ACCEPTANCE"
+      },
+      "native_solver_budget_s": 25.0
+    },
+    "boxes": [
+      {
+        "id": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "size_m": [
+          0.40791340157614364,
+          0.1257442241853645,
+          0.12202175330691664
+        ],
+        "measured_size_m": [
+          0.17060873025258266,
+          0.10979326257912896,
+          0.11121051642578983
+        ],
+        "collision_envelope_size_m": [
+          0.40791340157614364,
+          0.1257442241853645,
+          0.12202175330691664
+        ],
+        "geometry_uncertainty_kind": "MEASURED_BOUNDARY_INTERVALS",
+        "nominal_size_m": null,
+        "observed_patch_m": null,
+        "support_plane": null
+      }
+    ],
+    "scene_objects": {
+      "observed": 182,
+      "neighbor_shadow": 91,
+      "observed_support": 1,
+      "workspace_boundary": 6
+    },
+    "perception_and_scene_s": 28.3,
+    "planning_s": 0.39,
+    "failures": [
+      {
+        "target": "80078bf9-a465-454b-bc26-7a905ebc3656-carton-1",
+        "reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_observed_5_15_12_s1 的模型包络重叠 21.290 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索",
+        "evidence": {
+          "intersections": [
+            {
+              "id": "rgbd_observed_5_15_12_s1",
+              "category": "observed",
+              "overlap_depth_m": 0.021289648820124393,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_15_12_s2",
+              "category": "observed",
+              "overlap_depth_m": 0.02093076729601425,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_15_12_s4",
+              "category": "observed",
+              "overlap_depth_m": 0.014827864052765816,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_15_12_s0",
+              "category": "observed",
+              "overlap_depth_m": 0.014593865262181566,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_15_12_s3",
+              "category": "observed",
+              "overlap_depth_m": 0.014466618268922392,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_15_12_s5",
+              "category": "observed",
+              "overlap_depth_m": 0.01348972313814567,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s26",
+              "category": "observed",
+              "overlap_depth_m": 0.009699197860094162,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_6_19_11_s1",
+              "category": "observed",
+              "overlap_depth_m": 0.00947184063383711,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_6_19_11_s0",
+              "category": "observed",
+              "overlap_depth_m": 0.008784214129138504,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s28",
+              "category": "observed",
+              "overlap_depth_m": 0.008287734699757326,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_19_9_s20",
+              "category": "observed",
+              "overlap_depth_m": 0.007982358841747847,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s30",
+              "category": "observed",
+              "overlap_depth_m": 0.007074847784350406,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s29",
+              "category": "observed",
+              "overlap_depth_m": 0.0069201368231467525,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s28",
+              "category": "observed",
+              "overlap_depth_m": 0.006871287385590258,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s24",
+              "category": "observed",
+              "overlap_depth_m": 0.0067101838164245475,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s25",
+              "category": "observed",
+              "overlap_depth_m": 0.006520742541510319,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s30",
+              "category": "observed",
+              "overlap_depth_m": 0.006466902301859992,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s2",
+              "category": "observed",
+              "overlap_depth_m": 0.0064398496241427905,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s32",
+              "category": "observed",
+              "overlap_depth_m": 0.0064310996464218145,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s4",
+              "category": "observed",
+              "overlap_depth_m": 0.006418004691305101,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s5",
+              "category": "observed",
+              "overlap_depth_m": 0.006386986503126801,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s22",
+              "category": "observed",
+              "overlap_depth_m": 0.006367629567886238,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s7",
+              "category": "observed",
+              "overlap_depth_m": 0.006364450702176894,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s29",
+              "category": "observed",
+              "overlap_depth_m": 0.006335650208093034,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s1",
+              "category": "observed",
+              "overlap_depth_m": 0.006257435229310604,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s21",
+              "category": "observed",
+              "overlap_depth_m": 0.0062410413407486195,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_19_9_s21",
+              "category": "observed",
+              "overlap_depth_m": 0.006212560789707319,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s16",
+              "category": "observed",
+              "overlap_depth_m": 0.0062082506204027485,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s6",
+              "category": "observed",
+              "overlap_depth_m": 0.005977381120676389,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s24",
+              "category": "observed",
+              "overlap_depth_m": 0.00590987776049582,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s25",
+              "category": "observed",
+              "overlap_depth_m": 0.005864654295775033,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s27",
+              "category": "observed",
+              "overlap_depth_m": 0.005863008002447295,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s8",
+              "category": "observed",
+              "overlap_depth_m": 0.005748020365988954,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s22",
+              "category": "observed",
+              "overlap_depth_m": 0.005661198658408181,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s29",
+              "category": "observed",
+              "overlap_depth_m": 0.005646693811069116,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s23",
+              "category": "observed",
+              "overlap_depth_m": 0.005553533293970944,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s26",
+              "category": "observed",
+              "overlap_depth_m": 0.005542426242002435,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s23",
+              "category": "observed",
+              "overlap_depth_m": 0.005511695167974388,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s27",
+              "category": "observed",
+              "overlap_depth_m": 0.005250037727193284,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s24",
+              "category": "observed",
+              "overlap_depth_m": 0.005094428306175361,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s22",
+              "category": "observed",
+              "overlap_depth_m": 0.00502273617209445,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s20",
+              "category": "observed",
+              "overlap_depth_m": 0.00484932926693675,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s3",
+              "category": "observed",
+              "overlap_depth_m": 0.0047754875127019245,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s26",
+              "category": "observed",
+              "overlap_depth_m": 0.004708399772005767,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_17_9_s28",
+              "category": "observed",
+              "overlap_depth_m": 0.00457674797310343,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s23",
+              "category": "observed",
+              "overlap_depth_m": 0.004257293553173183,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s25",
+              "category": "observed",
+              "overlap_depth_m": 0.0042133229394410165,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s21",
+              "category": "observed",
+              "overlap_depth_m": 0.004212701958720172,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_16_9_s10",
+              "category": "observed",
+              "overlap_depth_m": 0.003959943360017842,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s27",
+              "category": "observed",
+              "overlap_depth_m": 0.00395886078580647,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s31",
+              "category": "observed",
+              "overlap_depth_m": 0.003776390333189536,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_5_18_9_s20",
+              "category": "observed",
+              "overlap_depth_m": 0.002571399919187159,
+              "geometry_uncertain": false
+            },
+            {
+              "id": "rgbd_observed_3_20_12_s0",
+              "category": "observed",
+              "overlap_depth_m": 0.0021611641488989627,
+              "geometry_uncertain": false
+            }
+          ],
+          "outside_workspace": false,
+          "supports": [],
+          "geometry_basis": "CONSERVATIVE_UNCERTAINTY_ENVELOPE",
+          "measured_volume_overlap_proven": false,
+          "all_hypotheses_infeasible_proven": false
+        }
+      }
+    ]
+  },
+  "live_restart": {
+    "pid_at_start": 1103710,
+    "config": "outputs/workbench/single_carton.prior_free_cpu.20261119.json",
+    "clearance_m": 0.005,
+    "three_devices_data_valid": true,
+    "camera_usb": "3.2",
+    "latest_prepared_task": "5eab967d6a914d839f9aaea753a232bd",
+    "planning_or_execution_not_claimed": true
+  },
+  "not_verified": [
+    "Physical grasp/loaded return/release",
+    "Complete path for current field input",
+    "2 s PLAN_READY latency target",
+    "Field accuracy/holding-capacity calibration"
+  ],
+  "new_pointcloud_ignore_request": "User subsequently requested local pointcloud-artifact exclusion; NOT_APPLIED in this report. A separate step must bind its scope and evidence."
+}

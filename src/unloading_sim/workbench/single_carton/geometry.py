@@ -190,13 +190,19 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
 
 def recover(points, mask, world_camera, *, rgb=None, prior=None, seed=6518,
             min_points=120, residual_m=.002, dimension_tolerance_m=.008,
-            conservative_measured=False,max_carton_extent_m=.40):
+            conservative_measured=False,max_carton_extent_m=.40,envelope_mask=None):
+    if envelope_mask is not None:
+        outer=np.asarray(envelope_mask,bool);inner=np.asarray(mask,bool)
+        if (prior is not None or not conservative_measured or outer.shape!=inner.shape or
+                np.any(inner&~outer)):
+            raise ValueError('INVALID_ENVELOPE_EVIDENCE_MASK')
     if prior is None:
         box=_recover_measured(points,mask,world_camera,rgb=rgb,seed=seed,min_points=min_points,
             residual_m=residual_m,bounded=conservative_measured)
         if conservative_measured:
             from .measured_envelope import conservative_envelope
-            return conservative_envelope(box,points,mask,world_camera,max_carton_extent_m)
+            return conservative_envelope(box,points,mask if envelope_mask is None else envelope_mask,
+                world_camera,max_carton_extent_m)
         return box
     # Explicit known-size callers remain compatible; the physical entry never supplies a prior.
     points = np.asarray(points, float)

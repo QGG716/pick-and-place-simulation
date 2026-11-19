@@ -27,12 +27,14 @@ LIMITS = dict(keep_j5_sign=True, j5_min_abs_deg=10., max_j4_travel_deg=90., max_
 
 # --- configuration ----------------------------------------------------------------
 
-def test_field_config_is_locked_with_40_mm_tool_clearance_and_wrist_limits():
+def test_example_retains_incident_lock_and_current_user_5_mm_tool_clearance():
     c = load(ROOT/'configs/workbench/single_carton.example.json')
     assert not [e for e in issues(c) if e.split('：')[0] in ('execution_lock', 'tool_robot_clearance', 'wrist_branch_limits')]
     assert execution_lock(c)['locked'] and 'd99b1a8f5d71445395c158b3c353ca42' in execution_lock(c)['basis']
     t = tool_robot_clearance(c)
-    assert t['clearance_m'] == .04 and t['exempt_robot_links'] == ['link_6']
+    assert t['clearance_m'] == .005 and t['exempt_robot_links'] == ['link_6']
+    assert t['basis']=='USER_REQUEST_2026_11_19_CHANGE_TOOL_ROBOT_CLEARANCE_FROM_40_MM_TO_5_MM'
+    assert '40_MM' in c['tool_robot_clearance']['previous_basis']
     assert t['exempt_pairs'] == [['part_041_region_1', 'link_5'], ['part_041_region_2', 'link_5']]
     w = wrist_branch_limits(c)
     assert not w['keep_j5_sign'] and w['j5_min_abs_deg'] == 0.

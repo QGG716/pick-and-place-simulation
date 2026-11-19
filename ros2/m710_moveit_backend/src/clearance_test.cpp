@@ -267,6 +267,29 @@ void physicalSingleCartonCases(J& out) {
   auto old=m710::nativeFrames();m710::nativeFrames().flange_link="robot";
   auto s=scene(.02);auto state=s->getCurrentState();m710::SingleCartonContact c(req);
   require(c.check(state).is_null(),"PHYSICAL_SEAL_CONTACT_VALID");
+  // The user-selected 5 mm tool/robot reserve is distinct from the retained
+  // 2.4 mm source pair policy. Check both it and the historical 40 mm value.
+  auto reserve_policy=policy();reserve_policy["schema"]="eco65_native_single_carton_clearance_v1";
+  reserve_policy["source_policy"]={{"schema","eco65_pair_collision_policy_v1"},
+    {"collision_margin_m",.002},{"mesh_error_reserve_m",.0002},
+    {"required_pair_clearance_m",.0024},{"self_collision_clearance_m",.0024},
+    {"contact_tolerance_m",.0004}};
+  auto no_contact=req;no_contact["single_carton_contact"]["allow_contact"]=false;
+  no_contact["allowed_pairs"]=J::array({J::array({"base_link","robot_mount_plate"})});
+  out["physical_tool_robot_reserve_cases"]=J::array();
+  for(double reserve:{.005,.04}) for(double gap:{.0049,.0051,.039,.041}) {
+    reserve_policy["tool_robot_clearance"]={{"clearance_m",reserve},{"basis","SYNTHETIC_USER_RESERVE_REGRESSION"},
+      {"exempt_robot_links",J::array()},{"exempt_pairs",J::array()}};
+    auto test_scene=scene(gap);
+    // Physical ECO65 requires the explicit convex workspace (optimized).
+    // The reference suite retains its legacy checks and also runs this
+    // physical-only parameter regression through the required workspace.
+    m710::Clearance checker(test_scene,reserve_policy,"optimized",nullptr,no_contact);
+    const bool valid=checker.check(test_scene->getCurrentState());
+    require(valid==(gap+1e-9>=reserve),"PHYSICAL_TOOL_ROBOT_RESERVE_NOT_APPLIED");
+    out["physical_tool_robot_reserve_cases"].push_back({{"reserve_m",reserve},{"gap_m",gap},
+      {"valid",valid},{"failure",checker.last_failure}});
+  }
   state.setJointGroupPositions("manipulator",std::vector<double>{.08});state.update();
   require(!c.check(state).is_null(),"PHYSICAL_EDGE_OVERHANG_REJECTED");
   auto bad=req;bad["single_carton_contact"]["geometry"]["flange_from_contact_frame"][1][3]=-.001;

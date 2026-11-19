@@ -37,6 +37,50 @@ def payload_mass_properties(box,mass):
         basis='USER_CONFIGURED_MASS_UNIFORM_CUBOID_INERTIA_ESTIMATE_NOT_MEASURED_MASS_DISTRIBUTION')
 
 
+def front_free_witnesses(points,camera_pose,measured_lo,measured_hi,pad):
+    """Bound a known-axis rectangular face across short missing-depth bands.
+
+    A rectangle containing the observed face spans each observed coordinate
+    interval. A sensor-free point at an interior coordinate of one axis thus
+    limits its extent on the other axis. This needs neither a closed mask nor
+    a closed global free-space component. Foreground and absent returns give
+    no witness. The existing RGB-D free-space margin and pixel guard apply.
+    """
+    from .visibility_geometry import FREE_MARGIN_M,PIXEL_GUARD
+    p=np.asarray(points,float);R=camera_pose[:3,:3];normal=R[:,2]
+    front=camera_pose[:3,3]+normal*measured_hi[2]
+    valid=np.isfinite(p).all(-1)&(p[...,2]>.1)&(p[...,2]<3.)
+    with np.errstate(divide='ignore',invalid='ignore'):
+        denominator=(p@normal)/p[...,2]
+        z=(front@normal)/denominator
+        query=p*(z/p[...,2])[...,None]
+        free=valid&(z>.1)&(abs(denominator)>1e-8)&(
+            p[...,2]>z+FREE_MARGIN_M/abs(denominator)+FREE_MARGIN_M)
+    free=cv2.erode(free.astype('uint8'),np.ones((2*PIXEL_GUARD+1,)*2,'uint8'),
+        borderType=cv2.BORDER_CONSTANT,borderValue=0).astype(bool)
+    query=np.where(np.isfinite(query).all(-1)[...,None],query,0.)
+    local=(query-camera_pose[:3,3])@R;witnesses={}
+    for axis in (0,1):
+        other=1-axis
+        strip=(local[...,other]>measured_lo[other]+pad[other])&(
+            local[...,other]<measured_hi[other]-pad[other])
+        for sign in (-1,1):
+            edge=measured_lo[axis] if sign<0 else measured_hi[axis]
+            use=free&strip&((local[...,axis]<edge-pad[axis]) if sign<0 else
+                           (local[...,axis]>edge+pad[axis]))
+            if not use.any():continue
+            values=local[use,axis];k=int(np.argmax(values) if sign<0 else np.argmin(values))
+            y,x=map(int,np.argwhere(use)[k]);outer=float(values[k]+sign*pad[axis])
+            witnesses[(axis,sign)]=dict(outer_m=outer,pixel_xy=[x,y],
+                observed_depth_m=float(p[y,x,2]),plane_depth_m=float(z[y,x]),
+                query_face_local_m=local[y,x].tolist(),
+                interior_other_axis_m=[float(measured_lo[other]+pad[other]),float(measured_hi[other]-pad[other])],
+                free_margin_m=FREE_MARGIN_M,pixel_guard=PIXEL_GUARD,
+                method='SENSOR_FREE_POINT_IN_OBSERVED_RECTANGLE_SPAN',
+                mask_boundary_used_as_carton_edge=False)
+    return witnesses
+
+
 def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     b=deepcopy(box);p=np.asarray(points,float);mask=np.asarray(mask,bool)
     W=np.asarray(world_camera,float);T=np.asarray(box['pose'],float)
@@ -73,6 +117,7 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
     if not differences:raise ValueError('PIXEL_FOOTPRINT_UNRESOLVED')
     footprint=np.maximum(np.quantile(np.concatenate(differences),.95,axis=0),.0001)
     pad=BOUNDARY_PIXEL_FOOTPRINTS*footprint+DEPTH_NOISE_ALLOWANCE_M
+    free_witnesses=front_free_witnesses(p,camera_pose,measured_lo,measured_hi,pad)
     # A direct boundary needs a valid target return immediately adjacent to
     # valid, farther background. A hole between it and the mask edge is unknown.
     boundary=mask&~cv2.erode(mask.astype('uint8'),np.ones((3,3),'uint8')).astype(bool)
@@ -92,12 +137,19 @@ def conservative_envelope(box,points,mask,world_camera,maximum=.40):
             else:
                 outer=(high[axis]-maximum-pad[axis] if sign<0 else low[axis]+maximum+pad[axis])
                 method='MISSING_BOUNDARY_MAXIMUM_EXTENT'
+                witness=free_witnesses.get((axis,sign))
+                if witness and (witness['outer_m']-outer)*sign<0:
+                    outer=(min(witness['outer_m'],low[axis]-pad[axis]) if sign<0 else
+                           max(witness['outer_m'],high[axis]+pad[axis]))
+                    method='SENSOR_FREE_RECTANGLE_SPAN_BOUND'
             if sign<0:lo[axis]=min(outer,low[axis])
             else:hi[axis]=max(outer,high[axis])
             intervals.append(dict(axis=axis,side=sign,measured_m=float(edge),outer_m=float(outer),
                 interval_m=sorted([float(edge),float(outer)]),method=method,
                 direct_boundary_pixels=int(np.count_nonzero(witnesses&near)),
                 pixel_footprint_m=float(footprint[axis]),noise_allowance_m=DEPTH_NOISE_ALLOWANCE_M))
+            if method=='SENSOR_FREE_RECTANGLE_SPAN_BOUND':
+                intervals[-1]['free_space_witness']=free_witnesses[(axis,sign)]
     measured={k:deepcopy(box[k]) for k in ('pose','size_m','corners_m','faces')}
     b.update(measured_box=measured,measured_size_m=deepcopy(box['size_m']))
     from .partial_geometry import observed_support_plane

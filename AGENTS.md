@@ -1,4 +1,16 @@
-# November 19 registered site layout and conservative payload safety (current active override)
+# November 19 user-requested 5 mm tool-to-robot clearance (current active override)
+
+The latest user explicitly changes the existing 40 mm tool/robot collision
+reserve to 5 mm. Set `tool_robot_clearance.clearance_m=0.005` in the current
+field configuration and shared single-carton example, with the user-request
+basis. This supersedes only the 40 mm requirement and the prohibition on
+changing that field below. Preserve all solids, pair exemptions, the other
+2.4 mm pair rules, complete carton uncertainty volumes and device/stop checks.
+This change does not certify a path or authorize startup motion. Re-plan and
+audit with the new source-bound configuration; historical 40 mm evidence stays
+historical. Physical acceptance still needs an operator-started complete cycle.
+
+# November 19 registered site layout and conservative payload safety (in force where not superseded)
 
 Work from latest HEAD on `feat/v0.6-eco65-ubuntu-real-integration` (not before
 ecca7896); preserve all commits and LFS resources. Development, commit and push

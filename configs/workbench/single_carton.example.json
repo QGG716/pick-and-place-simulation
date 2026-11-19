@@ -109,7 +109,7 @@
     "basis": "INCIDENT_2026_11_14_TASK_d99b1a8f5d71445395c158b3c353ca42_TOOL_STRUCK_J6_DURING_APPROACH_TCP_CONNECTOR_BROKE_LOCKED_UNTIL_TOOL_MODEL_AND_REPAIR_VERIFIED"
   },
   "tool_robot_clearance": {
-    "clearance_m": 0.04,
+    "clearance_m": 0.005,
     "exempt_robot_links": [
       "link_6"
     ],
@@ -123,7 +123,8 @@
         "link_5"
       ]
     ],
-    "basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
+    "basis": "USER_REQUEST_2026_11_19_CHANGE_TOOL_ROBOT_CLEARANCE_FROM_40_MM_TO_5_MM",
+    "previous_basis": "INCIDENT_2026_11_14_UNMODELLED_SENSOR_CABLE_AND_VACUUM_HOSE_40_MM_UNTIL_MODELLED_link_6_IS_THE_FIXED_MOUNT_part_041_IS_J6_COAXIAL_CONSTANT_28_9_AND_36_9_MM_TO_link_5"
   },
   "wrist_branch_limits": {
     "keep_j5_sign": false,

@@ -222,8 +222,9 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None,workspace_bounds
                     # field file. Never let it select or fill this route.
                     try:
                         from .measured_envelope import max_carton_extent
-                        box=recover(points,mask,world_camera,rgb=f.rgb,prior=None,
-                            conservative_measured=True,max_carton_extent_m=max_carton_extent(geometry))
+                        from .instance_fit import measured_instance
+                        box=measured_instance(points,masks,i,world_camera,rgb=f.rgb,
+                            maximum=max_carton_extent(geometry))
                     except ValueError as failure:
                         from .observed_surface import observed_surface
                         from .geometry import GeometryRejected
