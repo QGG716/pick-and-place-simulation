@@ -39,7 +39,7 @@ def project_camera(points,intrinsics):
     uv,_=cv2.projectPoints(np.asarray(points,float),np.zeros(3),np.zeros(3),K,np.asarray(coefficients))
     return uv.reshape(-1,2)
 
-LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',GEOMETRY_UNRESOLVED='实测面已保留，箱体尺寸未解',TARGET_READY='观测已冻结，选择目标后规划',PLANNING='规划与完整路径检查',
+LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',GEOMETRY_UNRESOLVED='接触面已保留，带载范围未定',TARGET_READY='观测已冻结，选择目标后规划',PLANNING='规划与完整路径检查',
     PLAN_READY='计划就绪',APPROACH='接近',CONTACT='接触',ESTABLISH_VACUUM='建立真空',ATTACHMENT_CONFIRMED='吸附已确认',
     DETACH='脱离原位置',RETURN_LOADED='带载返回本次 q_start',RELEASE='释放并等待压力确认',COMPLETE='完成',
     STOPPING='正在停止，等待实测确认',FAILED='失败',CANCELLED='已取消',STOP_UNCONFIRMED='停止未确认')
@@ -444,8 +444,13 @@ class SingleWorkbench(Workbench):
                 self.details.set('本次 q_start（度）：'+' '.join(f'{x:.3f}' for x in np.rad2deg(obs.q_start))+f'\n恢复 {len(boxes)} 个箱体；选择检测编号或留空自动选择。')
                 if boxes:
                     measured=self.config_single.get('geometry',{}).get('size_policy')=='MEASURED_PER_INSTANCE'
-                    label='逐箱 RGB-D 实测尺寸（mm，不使用先验）：' if measured else '碰撞包络尺寸（mm，含先验不确定性）：'
-                    self.details.set(self.details.get()+'\n'+label+'；'.join(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist()) for b in boxes))
+                    lines=[]
+                    for b in boxes:
+                        partial=b.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
+                        label=('RGB-D 保守包络，非实测箱尺寸' if partial else
+                               '逐箱 RGB-D 实测尺寸，不使用先验' if measured else '碰撞包络，含先验不确定性')
+                        lines.append(str(b['detection_index'])+' → '+str((np.asarray(b['size_m'])*1000).round(1).tolist())+' mm · '+label)
+                    self.details.set(self.details.get()+'\n'+'\n'.join(lines))
                 self.bound_details.set('锁定 q_start（°）：'+str(np.rad2deg(obs.q_start).round(3).tolist())+
                     '\n起始 TCP（m）：'+str(np.asarray(obs.world_tcp_start)[:3,3].round(5).tolist()))
                 self.draw_observation()

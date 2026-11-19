@@ -222,7 +222,13 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
                         evidence.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'],
                             prior_applied=False,full_extent_bounded=False,full_dimensions_m=None,
                             measurement_failure=str(failure))
-                        raise GeometryRejected(str(failure),evidence) from failure
+                        box=None
+                        if evidence.get('observed_face'):
+                            from .visibility_geometry import bound_visible_carton
+                            box,bounds=bound_visible_carton(f,world_camera,evidence)
+                            evidence['visibility_bounds']=bounds
+                        if box is None:
+                            raise GeometryRejected('HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD',evidence) from failure
                     box.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'],prior_applied=False)
                 elif geometry and geometry.get('prior_size_m'):
                     from .partial_geometry import recover_partial

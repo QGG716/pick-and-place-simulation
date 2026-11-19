@@ -167,7 +167,8 @@ class TaskManager:
                 neighbor_depth=neighbor_depth_bound(geometry)
                 with timing.span('observe.build_scene'):
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
-                                           neighbor_depth_m=neighbor_depth)
+                        neighbor_depth_m=neighbor_depth,
+                        unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else ())
                 if size_policy(geometry) in NO_PRIOR_POLICIES:
                     mark_incomplete_scene(self.scene,geometry,rejected)
                     for item in rejected:
@@ -186,11 +187,11 @@ class TaskManager:
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
-            if ((self.scene or {}).get('unbounded_carton_indices') or
+            if ((self.scene or {}).get('unmodeled_carton_indices') or
                     (not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected))):
                 self.phase='GEOMETRY_UNRESOLVED'
-                self.reason=(f'逐箱实测恢复完成 {len(self.boxes)} 箱，{len(rejected)} 箱完整尺寸未解；已保留可靠接触面，未使用统一尺寸先验。'
-                    '完整箱体及邻箱隐藏体积尚无可靠边界，不能据此验证带载路径。\n'+
+                self.reason=(f'可规划目标 {len(self.boxes)} 箱，{len(rejected)} 箱保留可见面及隐藏体积约束；未使用尺寸先验。'
+                    '当前 RGB-D 尚不能为待抓目标给出完整带载包络，接触候选仍已保存；不要求所有邻箱先测出完整尺寸。\n'+
                     '\n'.join(f"编号 {r['detection_index']}：{r['reason']}" for r in rejected))
                 self.journal(kind='geometry_unresolved',reason=self.reason,physical_result='NOT_RUN')
                 self.progress(self.reason)
@@ -215,7 +216,8 @@ class TaskManager:
                                 '请在“现场配置”中把 geometry.prior_size_m 改为实际纸箱尺寸并重启）')
                     return f"{r['detection_index']}: {r['reason']}"
                 raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
-            self.phase='TARGET_READY';self.reason=''
+            self.phase='TARGET_READY'
+            self.reason=(f'可规划目标 {len(self.boxes)} 箱；另 {len(rejected)} 箱尺寸未解，已作为保守现场障碍保留。' if rejected else '')
             timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
         except Exception as e:self.reject(e);raise
         finally:

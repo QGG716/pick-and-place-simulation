@@ -17,6 +17,10 @@ MEASURED=dict(size_policy='MEASURED_PER_INSTANCE',size_policy_basis='SYNTHETIC_P
 
 def recover_instances(monkeypatch,points,masks,geometry):
     monkeypatch.setattr('unloading_sim.workbench.single_carton.perception.metric_points',lambda _:points)
+    # These literal point fixtures have no image projection. The separate
+    # visibility tests exercise actual pinhole RGB-D and its free-space bounds.
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.visibility_geometry.bound_visible_carton',
+                        lambda *a:(None,dict(reason='POINT_FIXTURE_HAS_NO_CAMERA_PROJECTION')))
     def no_prior(*a,**kw):pytest.fail('Prior-free mode called prior-based recovery')
     monkeypatch.setattr('unloading_sim.workbench.single_carton.partial_geometry.recover_partial',no_prior)
     frame=SimpleNamespace(rgb=np.zeros(points.shape,dtype=np.uint8),observation_id='prior-free-fixture')
@@ -52,7 +56,8 @@ def test_measured_route_preserves_partial_contact_without_inventing_hidden_size(
     boxes,rejected=recover_instances(monkeypatch,p,[m],MEASURED)
     assert not boxes and len(rejected)==1
     e=rejected[0]['evidence']
-    assert rejected[0]['reason']=='BOX_THICKNESS_UNOBSERVED_SHOW_SIDE'
+    assert rejected[0]['reason']=='HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD'
+    assert e['measurement_failure']=='BOX_THICKNESS_UNOBSERVED_SHOW_SIDE'
     assert e['geometry_state']=='OBSERVED_SURFACE_ONLY' and not e['prior_applied']
     assert not e['full_extent_bounded'] and e['full_dimensions_m'] is None
     c=load(Path('configs/workbench/single_carton.example.json'))

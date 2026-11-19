@@ -125,11 +125,13 @@ def _target_claims(box,mask,valid,world_points,jump):
     kernel=np.ones((2*TARGET_PIXEL_BAND_PX+1,)*2,np.uint8)
     band=cv2.dilate(mask.astype(np.uint8),kernel).astype(bool)
     observed=[f for f in box['faces'] if f.get('observed')]
+    visibility_bound=box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
     on_plane=np.zeros(valid.shape,bool);on_side=np.zeros(valid.shape,bool)
     for face in observed:
         offset=world_points-np.asarray(face['center_m'])
         distance=offset@np.asarray(face['normal'])
         on_plane |= abs(distance)<=TARGET_PLANE_BAND_M
+        if visibility_bound:continue  # A partial patch edge is not a side plane.
         # The carton's own side faces: perpendicular planes through the visible
         # patch edges, behind the face, within the other patch extent.
         coords=[offset@np.asarray(face[a]) for a in ('u','v')];half_patch=np.asarray(face['size_m'])/2
@@ -197,7 +199,7 @@ def _project(points,k):
     return uv.reshape(-1,2)
 
 
-def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None):
+def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None,unresolved_cartons=()):
     lap=timing.Laps('scene.')  # measurement only; no-op unless ECO65_TIMING=1
     cleared_unknown=user_cleared_unknown(config)
     frame=observation.frame
@@ -222,6 +224,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         x0,y0,x1,y1=bounds[i];patch=depth[y0:y1+1,x0:x1+1]
         free[i]=bool(patch.size and patch.min()>camera[i,:,2].max()+.006)
     lap('free_space_voxel_loop',voxels_in_view=int(in_view.sum()))
+    sensor_free=free.copy()
     for region in config.get('measured_clear_regions',[]):
         a,b=np.asarray(region['bounds_m'])
         free |= np.all(centers-cell/2>=a,axis=1)&np.all(centers+cell/2<=b,axis=1)
@@ -237,7 +240,15 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     lap('points_and_depth_jumps')
     claimed=np.zeros(valid.shape,bool);flying=np.zeros(valid.shape,bool);evidence=[]
     for box in boxes:
-        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),valid,world_points,jump)
+        claim_valid=valid
+        # A visibility envelope may enclose an occluder. Only this instance's
+        # observed plane/mask owns its pixels, never other segmented instances.
+        if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':
+            others=np.zeros(valid.shape,bool)
+            for index,mask in enumerate(result.masks):
+                if index!=box['detection_index']:others|=np.asarray(mask,bool)
+            claim_valid=valid&~others
+        owned,mixed,counts=_target_claims(box,np.asarray(result.masks[box['detection_index']],bool),claim_valid,world_points,jump)
         claimed|=owned;flying|=mixed;evidence.append(dict(target_id=box['id'],**counts))
     flying&=~claimed
     assign_envelope=target_envelope_points_assigned(config)
@@ -246,6 +257,10 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         # that target (edge pixels SAM missed), not a separate world solid.
         margin=float(config.get('target_envelope_points_margin_m',0.))
         for box,record in zip(boxes,evidence):
+            if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':
+                record['envelope_points_assigned_user_confirmed']=0
+                record['envelope_point_assignment']='NOT_APPLICABLE_TO_SIZE_FREE_POSSIBLE_VOLUME'
+                continue
             half=np.asarray(box['size_m'],float)/2+margin
             # The margin never reaches below the envelope bottom: the surface the
             # target stands on stays a measured support, never part of the target.
@@ -304,12 +319,31 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             if len(cells_hit):shadow[tuple(cells_hit.T)]=True
         shadow&=unknown
     lap('neighbor_shadow')
+    # A detected carton is not covered by the user's unknown-space clearance.
+    # Its possible body remains an obstacle even when its exact dimensions are
+    # unknown. Clip only this STATIC occupancy query to the enforced workspace;
+    # never reuse the clipped volume as a payload size or an attachment.
+    unresolved_grids=[];unresolved_records=[]
+    if unresolved_cartons:
+        from .visibility_geometry import possible_static_cells
+        for item in unresolved_cartons:
+            possible=possible_static_cells(vertices,W,item.get('evidence') or {})&~sensor_free
+            grid=possible.reshape(tuple(shape));index=item['detection_index']
+            unresolved_grids.append((f'carton_possible_{index}',grid))
+            unresolved_records.append(dict(detection_index=index,possible_voxels=int(possible.sum()),
+                object_id_prefix=f'rgbd_carton_possible_{index}_',
+                scope='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD',
+                sensor_free_cells_excluded=True,user_clearance_applied=False,
+                carton_end_at_workspace_boundary_assumed=False,
+                reliable_face=bool((item.get('evidence') or {}).get('observed_face'))))
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
     represented=np.zeros(len(observed),bool);supports=[]
     for box,record in zip(boxes,evidence):
-        support,selected,info=_support_below(box,observed[~represented]) if len(observed) else (None,None,dict(support='NONE_NO_POINTS'))
+        visibility_bound=box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
+        support,selected,info=(_support_below(box,observed[~represented]) if len(observed) and not visibility_bound
+            else (None,None,dict(support='NONE_NO_MEASURED_BOTTOM' if visibility_bound else 'NONE_NO_POINTS')))
         record.update(info)
         if support is not None:
             keep=np.flatnonzero(~represented);represented[keep[selected]]=True
@@ -339,6 +373,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     grids=[('observed',emit)]
     if not cleared_unknown:grids.append(('unknown',unknown))
     else:grids.append(('neighbor_shadow',shadow))
+    grids.extend(unresolved_grids)
     for ix in range(shape[0]):
         for iy in range(shape[1]):
             # Merge consecutive occupied cells along Z with identical ownership.
@@ -371,7 +406,12 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                         lower=np.where(camera_origin<lower,np.maximum(lower,near_side),lower)
                         upper=np.where(camera_origin>upper,np.minimum(upper,far_side),upper)
                         camera_side_runs+=int(np.any(lower!=before[0]) or np.any(upper!=before[1]))
-                    world.append(_box(f'rgbd_{kind}_{ix}_{iy}_{a}',lower,upper,kind))
+                    category='unresolved_carton_volume' if kind.startswith('carton_possible_') else kind
+                    obj=_box(f'rgbd_{kind}_{ix}_{iy}_{a}',lower,upper,category)
+                    if category=='unresolved_carton_volume':
+                        obj.update(geometry_uncertain=True,detection_index=int(kind.removeprefix('carton_possible_')),
+                            support_contact_qualified=False)
+                    world.append(obj)
     lap('voxel_column_merge',objects=len(world))
     # Finite boundary walls keep paths inside the region actually classified.
     for axis in range(3):
@@ -379,12 +419,15 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             a=lo.copy();b=hi.copy();a[axis]=(lo if sign==0 else hi)[axis]-.04*(sign==0);b[axis]=a[axis]+.04
             world.append(_box(f'site_boundary_{axis}_{sign}',a,b,'workspace_boundary'))
     lap('workspace_boundaries')
+    possible_union=np.zeros(tuple(shape),bool)
+    for _,grid in unresolved_grids:possible_union|=grid
     return dict(schema='eco65_real_rgbd_scene_v1',frame='base_link',world=world,
         observation_id=frame.observation_id,q_capture=list(observation.q_capture),T_base_camera=W.tolist(),
         unknown_policy=config['unknown_policy'],unknown_voxels=int(unknown.sum()),
         unknown_collision_voxels=0 if cleared_unknown else int(unknown.sum()),
-        user_confirmed_clear_unknown_voxels=int((unknown&~shadow).sum()) if cleared_unknown else 0,
+        user_confirmed_clear_unknown_voxels=int((unknown&~shadow&~possible_union).sum()) if cleared_unknown else 0,
         unreconstructed_detections=unreconstructed,neighbor_shadow_voxels=int(shadow.sum()),
+        unresolved_carton_obstacles=unresolved_records,
         neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
         target_envelope_points=config.get('target_envelope_points','OBSTACLE'),
         target_envelope_points_basis=config.get('target_envelope_points_basis') if assign_envelope else None,

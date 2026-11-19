@@ -68,9 +68,10 @@ def test_incomplete_neighbor_volume_cannot_be_used_as_a_clear_planning_scene(cas
     assert not calls and not p.authority._plans
 
 
-@pytest.mark.parametrize('has_measured_neighbor,scene_failure,async_evidence',[
-    (False,False,False),(True,False,False),(True,True,False),(True,True,True)])
-def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path,has_measured_neighbor,scene_failure,async_evidence):
+@pytest.mark.parametrize('has_measured_neighbor,scene_failure,async_evidence,modeled',[
+    (False,False,False,False),(True,False,False,False),(True,True,False,False),
+    (True,True,True,False),(True,False,False,True)])
+def test_prepare_retains_surface_candidates_and_reports_unresolved_without_planning(monkeypatch,tmp_path,has_measured_neighbor,scene_failure,async_evidence,modeled):
     from unloading_sim.workbench.single_carton import runtime,site_scene,self_filter
     from unloading_sim.workbench.controlled.trajectory import Authority
     from test_single_carton_observation import observation
@@ -88,7 +89,12 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
     seen=[]
     def scene(*args,**kwargs):
         if scene_failure:raise TypeError('SYNTHETIC_SCENE_SERIALIZATION_FAILURE')
-        seen.append(kwargs['neighbor_depth_m']);return dict(world=[dict(id='observed-obstacle')])
+        seen.append(kwargs['neighbor_depth_m'])
+        records=([dict(detection_index=0,
+            scope='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD',
+            sensor_free_cells_excluded=True,user_clearance_applied=False)] if modeled else [])
+        assert kwargs['unresolved_cartons']==rejected
+        return dict(world=[dict(id='observed-obstacle')],unresolved_carton_obstacles=records)
     monkeypatch.setattr(runtime,'freeze',lambda *a,**k:obs)
     measured=[dict(id='measured-other',detection_index=1)] if has_measured_neighbor else []
     monkeypatch.setattr(runtime,'reconstruct',lambda *a,**k:(measured,rejected))
@@ -106,12 +112,13 @@ def test_prepare_retains_surface_candidates_and_reports_unresolved_without_plann
             assert not planner.authority._plans and manager.plan is None and manager.phase=='FAILED'
             return
         manager.observe();manager.journal.flush()
-        assert manager.phase=='GEOMETRY_UNRESOLVED' and not manager.busy and seen==[None]
+        assert manager.phase==('TARGET_READY' if modeled else 'GEOMETRY_UNRESOLVED') and not manager.busy and seen==[None]
         assert manager.scene['world']==[dict(id='observed-obstacle')]
         assert manager.scene['unbounded_carton_indices']==[0] and not manager.plan
         assert manager.boxes==measured
-        assert f'恢复完成 {len(measured)} 箱' in manager.reason
-        with pytest.raises(ValueError,match='请先完成有效观测'):manager.prepare_plan()
+        assert f'可规划目标 {len(measured)} 箱' in manager.reason
+        if not modeled:
+            with pytest.raises(ValueError,match='请先完成有效观测'):manager.prepare_plan()
         stored=json.loads((manager.folder/'geometry.json').read_text())['rejected'][0]['evidence']
         assert stored['contact_candidate_check']['count']>0 and stored['contact_candidate_check']['all_observed_coverage']
         assert not planner.authority._plans

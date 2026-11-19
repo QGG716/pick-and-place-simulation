@@ -30,8 +30,9 @@ def test_single_carton_ui_starts_inert_and_rejects_preview_import(monkeypatch):
         root.update();assert '实机模式' in root.title()
         assert str(ui.execute_button.cget('state'))=='disabled'
         assert str(ui.plan_button.cget('state'))=='disabled'
-        assert '逐箱 RGB-D 实测尺寸' in ui.details.get()
-        assert '不依赖先验' in ui.details.get()
+        assert '无尺寸先验' in ui.details.get()
+        assert '单面可用同帧空隙约束碰撞包络' in ui.details.get()
+        assert '不要求每箱完整尺寸' in ui.details.get()
         assert set(ui.result_windows)=={'detection','segmentation'}
         assert ui.snapshot is None
         with pytest.raises(ValueError,match='预览'):ui.execute_cycle()

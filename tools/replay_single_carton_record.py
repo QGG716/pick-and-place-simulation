@@ -28,7 +28,7 @@ import numpy as np
 from unloading_sim.workbench.single_carton.config import load
 from unloading_sim.workbench.single_carton.planner import SinglePlanner, PlanningBudgetExhausted
 from unloading_sim.workbench.single_carton.perception import recover_boxes
-from unloading_sim.workbench.single_carton.size_policy import size_policy,neighbor_depth_bound,mark_incomplete_scene
+from unloading_sim.workbench.single_carton.size_policy import size_policy,neighbor_depth_bound,mark_incomplete_scene,unmodeled_cartons,NO_PRIOR_POLICIES
 from unloading_sim.workbench.single_carton.site_scene import build_scene
 from unloading_sim.workbench.single_carton.self_filter import RobotSelfFilter
 from unloading_sim.workbench.controlled.trajectory import Authority
@@ -137,7 +137,8 @@ def main():
         with timing.span('observe.build_scene'):
             scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
                                 SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
-                                self_filter,neighbor_depth_m=neighbor_depth_bound(config.get('geometry')))
+                                self_filter,neighbor_depth_m=neighbor_depth_bound(config.get('geometry')),
+                                unresolved_cartons=rejected if size_policy(config.get('geometry')) in NO_PRIOR_POLICIES else ())
         mark_incomplete_scene(scene,config.get('geometry'),rejected)
     timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected, detections=detections), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
@@ -153,10 +154,12 @@ def main():
                   perception_and_scene_s=round(time.monotonic()-started, 2), detector=args.detector, detection=detection_report)
     report.update(frozen_scene=args.frozen_scene,source_hashes=before,q_start=obs['q_start'],q_capture=obs['q_capture'],
                   planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock')})
-    print(json.dumps(dict(boxes=report['boxes'], rejected=rejected, scene_objects=report['scene_objects']), ensure_ascii=False))
+    print(json.dumps(dict(boxes=report['boxes'], rejected=[dict(detection_index=r['detection_index'],reason=r['reason'],
+        visibility_bounds=(r.get('evidence') or {}).get('visibility_bounds')) for r in rejected],
+        scene_objects=report['scene_objects']), ensure_ascii=False))
     failures = []; found = None
     try:
-        if scene.get('unbounded_carton_indices'):
+        if unmodeled_cartons(scene):
             report['geometry_status']='GEOMETRY_UNRESOLVED'
             failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
         elif not args.scene_only and boxes:

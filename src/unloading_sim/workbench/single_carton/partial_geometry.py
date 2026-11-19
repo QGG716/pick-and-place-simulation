@@ -316,6 +316,14 @@ def recover_partial(points, mask, world_camera, *, prior, dimension_tolerance_m=
 def possible_bottom_interval(box,returned_pose):
     """Bounds on each admissible cuboid's bottom at the proposed release pose."""
     uncertainty=box['uncertainty'];ref=rigid(returned_pose)@np.linalg.inv(box['pose'])@rigid(uncertainty['reference_pose'])
+    if uncertainty.get('bound_method')=='RGBD_VISIBILITY_INTERVALS':
+        # Exact dimensions are unknown. The full envelope bounds any lowest
+        # point from below; an actually observed point bounds it from above.
+        lo,hi=np.asarray(uncertainty['bounds_face_frame_m'])
+        low=float(transform(ref,list(product(*zip(lo,hi))))[:,2].min())
+        support=np.asarray(box['faces'][0]['support_points_uv_m'])
+        high=float(transform(ref,np.c_[support,np.zeros(len(support))])[:,2].min())
+        return low,high
     bottom=[]
     for h in uncertainty['hypotheses']:
         dims=np.asarray(h['dimensions_m']);a=h['yaw_center_rad'];rot=np.array([[np.cos(a),-np.sin(a)],[np.sin(a),np.cos(a)]])

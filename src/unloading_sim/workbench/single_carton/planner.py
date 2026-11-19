@@ -322,9 +322,11 @@ class SinglePlanner(EmptyPlanner):
                     '请补充对应盲区的实际观测或现场测量，不能直接清空未知障碍；原生诊断：'+str(failure))
         return 'LOADED_Q_START_COLLISION:'+str(failure)
     def detach_supports(self,world,box):
+        if box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS':return []
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
+            if o.get('category')=='unresolved_carton_volume':continue
             top=self.object_top(o)
             if abs(top-bottom)<=.0004:supports.append(dict(id=o['id'],top_world_m=top))
         return supports
@@ -401,7 +403,7 @@ class SinglePlanner(EmptyPlanner):
     def target_blocked_message(self,failure,box,source):
         pair=failure['pair'];other=pair[1] if pair[0]==box['id'] else pair[0];distance=failure.get('surface_distance_m')
         gap=f'间隙 {distance*1000:.2f} mm（要求 {failure.get("required_pair_clearance_m",0)*1000:.1f} mm）' if distance>=0 else '相交'
-        if box.get('uncertainty',{}).get('hypotheses'):
+        if box.get('uncertainty',{}).get('hypotheses') or other.startswith('rgbd_carton_possible_'):
             return (f'GEOMETRY_UNCERTAINTY_BLOCKED_AT_REST: 保守不确定性包络与 {other} {gap}；'
                     f'当前观测尚不能证明带载路径安全，不代表实物相交或全部箱体假设均无解（{source}）')
         return (f'TARGET_PAYLOAD_BLOCKED_AT_REST: 箱体在原位时碰撞包络与 {other} {gap}；带箱脱离的起点与吸取候选无关，'
@@ -426,7 +428,7 @@ class SinglePlanner(EmptyPlanner):
             lo,hi=np.asarray(bounds,float);c=np.asarray(box['corners_m'],float)
             outside=bool(np.any(c<lo) or np.any(c>hi))
         result=dict(intersections=sorted(hits,key=lambda h:-h['overlap_depth_m']),outside_workspace=outside,supports=sorted(supports))
-        if box.get('uncertainty',{}).get('hypotheses'):
+        if box.get('uncertainty',{}).get('hypotheses') or any(h['category']=='unresolved_carton_volume' for h in hits):
             result.update(geometry_basis='CONSERVATIVE_UNCERTAINTY_ENVELOPE',
                           measured_volume_overlap_proven=False,all_hypotheses_infeasible_proven=False)
         return result
@@ -1179,9 +1181,9 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
         self.deadline=deadline;self.abandoned=set();self.search_counts={};self.search_thread=None
         self.authority.invalidate();self.cycle_binding=None
-        if scene and scene.get('unbounded_carton_indices'):
-            raise ValueError('UNBOUNDED_INSTANCE_GEOMETRY: 各箱完整体积尚未确定；'
-                '可见接触面不等于完整碰撞包络，未开始路径搜索')
+        from .size_policy import unmodeled_cartons
+        if scene and unmodeled_cartons(scene):
+            raise ValueError('UNBOUNDED_INSTANCE_GEOMETRY: 未知箱体缺少保守现场障碍表示；未开始路径搜索')
         qualification=release_policy_evidence(self.site)
         with timing.span('plan_cycle.build'):self.build()
         # A global configuration failure is not 32 independent infeasible

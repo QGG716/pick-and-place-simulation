@@ -1,0 +1,384 @@
+{
+  "date": "2026-11-19",
+  "scope": "PRIOR_FREE_OBSERVED_CONTACT_WITH_RGBD_BOUNDS_AND_STATIC_UNKNOWN_NEIGHBORS",
+  "base_commit": "47f9b261bdd0c3c69d38b0a8e5bf6e48a17534ce",
+  "user_basis": [
+    "Not every carton needs complete measured dimensions before grasping",
+    "Single front face must remain eligible for contact assessment",
+    "No additional measurements; use current RGB-D"
+  ],
+  "invariants": {
+    "size_prior_applied": false,
+    "unknown_carton_volume_assumed_clear": false,
+    "workspace_as_payload_size_bound": false,
+    "source_calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "collision_pair_clearance_m": 0.0024,
+    "robot_tool_solids": 715,
+    "cups": 12,
+    "pressure_and_stop_thresholds_changed": false,
+    "motion_or_valve_commands_sent": false,
+    "physical_result": "NOT_RUN"
+  },
+  "saved_record": {
+    "task_id": "b8992c098eaa476284ed1c107d7e7ccf",
+    "path": "/home/jd/下载/code/eco65 pick and place/outputs/single_carton/b8992c098eaa476284ed1c107d7e7ccf",
+    "source_hashes": {
+      "observation.json": "4901d0ef3794c0e7ea16df127fd33bde406da2c3d4af189bea6c1965793a1c29",
+      "observation.npz": "4d3a55534f047e7cfaaeb6d3a298ffa0ef09aeb67210c73100f78525460efbe3",
+      "segmentation.npz": "880db6b32875a18b7beec0c3b21cf5667b924608de73b0d3b18b87986fbe501b",
+      "geometry.json": "97b1d0692901019b88b43b6be725c916d2dcf4150feaa5d57712f26c3b03d19d",
+      "detections.json": "03c805d5aad0bbcd6ccbc74c9a375deb1b9495e75a74b511ccc603c2a9931015"
+    },
+    "unchanged": true,
+    "detector": "SAVED_SAME_FRAME_MASKS_NO_MODEL_OR_GPU_RUN",
+    "eligible_targets": [
+      {
+        "id": "68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+        "size_m": [
+          0.16798684635384536,
+          0.11044937394882734,
+          0.10908050095330096
+        ],
+        "nominal_size_m": null,
+        "observed_patch_m": null,
+        "support_plane": null
+      }
+    ],
+    "incomplete": [
+      {
+        "detection_index": 1,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "visibility_bounds": {
+          "front": {
+            "method": "RGBD_FREE_SPACE_CONNECTED_FACE_COMPONENT",
+            "bounded": false,
+            "component_pixels": 200467,
+            "free_margin_m": 0.006,
+            "pixel_guard": 2,
+            "image_or_occlusion_boundary_is_box_edge": false,
+            "reason": "FRONT_FACE_POSSIBLE_EXTENT_REACHES_UNOBSERVED_RAYS"
+          },
+          "depth": {
+            "bounded": false,
+            "upper_m": null,
+            "search_limit_m": 3.0,
+            "search_limit_is_size_bound": false,
+            "reason": "NO_RGBD_FREE_SPACE_WITNESS_FOR_HIDDEN_THICKNESS"
+          },
+          "prior_applied": false,
+          "bound_basis": "SAME_FRAME_RGBD_FREE_SPACE_AND_OBSERVED_CONVEX_CUBOID_FACE",
+          "observed_normal_model": "RELIABLE_LOCAL_PLANE_FIT",
+          "workspace_used_as_size_bound": false
+        }
+      }
+    ],
+    "scene_objects": {
+      "workspace_boundary": 6,
+      "observed_support": 1,
+      "observed": 54,
+      "unresolved_carton_volume": 359
+    },
+    "unresolved_carton_obstacles": [
+      {
+        "detection_index": 1,
+        "possible_voxels": 10069,
+        "object_id_prefix": "rgbd_carton_possible_1_",
+        "scope": "STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD",
+        "sensor_free_cells_excluded": true,
+        "user_clearance_applied": false,
+        "carton_end_at_workspace_boundary_assumed": false,
+        "reliable_face": true
+      }
+    ],
+    "result": "GEOMETRY_UNCERTAINTY_AT_TARGET_REST_PRECHECK_NOT_PHYSICAL_PENETRATION",
+    "planning_budget": {
+      "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+      "where": null,
+      "detail": null,
+      "deadline_monotonic_s": 165057.351621745,
+      "classified_monotonic_s": 165029.895693478,
+      "reply_reserve_s": 0.1,
+      "targets": [
+        {
+          "target": "68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+          "status": "GEOMETRY_UNRESOLVED",
+          "candidates": null,
+          "considered": null,
+          "screened": 0,
+          "searched": 0,
+          "unsearched": "ALL_NOT_GENERATED",
+          "infeasible_candidates": 0,
+          "target_reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_1_5_19_0 的模型包络重叠 74.437 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索"
+        }
+      ],
+      "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+    },
+    "complete_plan": null,
+    "permits_issued": 0
+  },
+  "latency": {
+    "perception_and_scene_with_model_build_s": 15.91,
+    "search_s": 0.19,
+    "success_p95_s": null,
+    "target": "PLAN_READY_p95_LE_2S",
+    "status": "NOT_ESTABLISHED_NO_SUCCESSFUL_COMPLETE_FIELD_PLAN",
+    "final_perception_and_scene_with_model_build_s": 15.78,
+    "final_search_s": 0.41,
+    "measurement_overhead_s": 0.2772989509976469,
+    "stages": [
+      {
+        "name": "reconstruct.box",
+        "duration_s": 0.0818097090232186,
+        "thread": "MainThread",
+        "detection_index": 0,
+        "mask_pixels": 48507
+      },
+      {
+        "name": "reconstruct.box",
+        "duration_s": 0.3832722899969667,
+        "thread": "MainThread",
+        "detection_index": 1,
+        "mask_pixels": 22769,
+        "error": "GeometryRejected"
+      },
+      {
+        "name": "observe.reconstruct",
+        "duration_s": 0.4948436650156509,
+        "thread": "MainThread"
+      },
+      {
+        "name": "observe.planner_build",
+        "duration_s": 4.8889058160129935,
+        "thread": "MainThread"
+      },
+      {
+        "name": "observe.self_filter_construct",
+        "duration_s": 1.5937775410129689,
+        "thread": "MainThread"
+      },
+      {
+        "name": "scene.free_space_voxel_loop",
+        "duration_s": 0.025520715018501505,
+        "thread": "MainThread",
+        "voxels_in_view": 901
+      },
+      {
+        "name": "scene.observed_supports",
+        "duration_s": 0.010881197988055646,
+        "thread": "MainThread"
+      },
+      {
+        "name": "observe.build_scene",
+        "duration_s": 8.776546603010502,
+        "thread": "MainThread"
+      },
+      {
+        "name": "native.main_worker_process_start",
+        "duration_s": 0.000705607992131263,
+        "thread": "MainThread"
+      },
+      {
+        "name": "search.payload_rest_check",
+        "duration_s": 0.3959095510072075,
+        "thread": "target-search"
+      },
+      {
+        "name": "replay.planning_entry_to_search_end",
+        "duration_s": 2.8122343010036275,
+        "thread": "MainThread",
+        "scope": "PARTIAL_REPLAY_NOT_PREPARE_PLAN"
+      }
+    ]
+  },
+  "tests": {
+    "status": "PASS",
+    "initial_ui_assertion_failure": "Old copy expectation; updated to match single-face/no-size-prior UI",
+    "deadline_race": "TASK_WAIT can win over inner NO_REPLY_BY_DEADLINE after search exits before publication; accept existing owner classification, retain +50ms/abandoned worker gates and add entered-worker/no-permits assertions",
+    "pytest": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "644",
+      "time": "249.096",
+      "timestamp": "2026-11-19T16:38:24.746073+08:00",
+      "hostname": "JD"
+    },
+    "native_clearance": {
+      "optimized": "PASS",
+      "reference": "PASS"
+    },
+    "native_component": {
+      "status": "PASS",
+      "points": 491,
+      "physical_result": "NOT_RUN"
+    },
+    "local_config_issues": []
+  },
+  "limitations": [
+    "No complete field plan or physical pick-return-release",
+    "A head-on isolated plane can leave thickness unbounded; search limit is never used as measured size",
+    "Conservative static half-space voxels can obstruct a target even when real objects do not overlap",
+    "The bounds use the existing reliable local fitted-plane/cuboid observation model; no metric accuracy certification"
+  ],
+  "final_offline_replay": {
+    "path": "outputs/single_carton_development/rgbd-bounds-final-20261119",
+    "input_unchanged": true,
+    "scene_objects": {
+      "workspace_boundary": 6,
+      "observed": 54,
+      "unresolved_carton_volume": 359,
+      "observed_support": 1
+    },
+    "planning_budget": {
+      "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+      "where": null,
+      "detail": null,
+      "deadline_monotonic_s": 165790.960274611,
+      "classified_monotonic_s": 165763.772170325,
+      "reply_reserve_s": 0.1,
+      "targets": [
+        {
+          "target": "68bd63b6-5e9f-41fe-b3dc-c07321c5509f-carton-0",
+          "status": "GEOMETRY_UNRESOLVED",
+          "candidates": null,
+          "considered": null,
+          "screened": 0,
+          "searched": 0,
+          "unsearched": "ALL_NOT_GENERATED",
+          "infeasible_candidates": 0,
+          "target_reason": "GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_1_5_19_0 的模型包络重叠 74.437 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索"
+        }
+      ],
+      "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+    },
+    "permits_issued": 0
+  },
+  "changed_code_sha256": {
+    "configs/workbench/single_carton.example.json": "34ad42a24240a07ece6e621ee53494ad035eba8bbe5f8471ba436eef6eb23512",
+    "src/unloading_sim/workbench/single_carton/partial_geometry.py": "d80a4cba8c767a9c29cfcf176c78a1ad382c57bc58e62f29563b97ebc7bb9645",
+    "src/unloading_sim/workbench/single_carton/perception.py": "8c35f45f5db10579a2b1e234df07359fe1adce944218c4106462aced504306ad",
+    "src/unloading_sim/workbench/single_carton/planner.py": "e77c2da6f87f9f39e8c3ec39b237536ebb557cabad53d9fe406f60bc6e765be3",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "8fcfcabed95a1ab7394d2978c67771aefc49fd4c5b434e0dc5a160cd4a09cf9a",
+    "src/unloading_sim/workbench/single_carton/site_scene.py": "1c31224bff96eb8ba880b721153cbcfa4613d86b4442c5dad0a7d1504d06ed4b",
+    "src/unloading_sim/workbench/single_carton/size_policy.py": "56783d1cb9271914073d8f41e6a2e9eb790142f9db0c14358de499b5b91f38d8",
+    "src/unloading_sim/workbench/single_carton/ui.py": "dd1fcc75272bd0fb933046a7742d1bc9e0713f24c135dc8c3463c9083a5a71a9",
+    "src/unloading_sim/workbench/single_carton/visibility_geometry.py": "72da32e03a15438428f3d42e3a7551b54da2fa6d3afaece4ef3d4e5aaa425442",
+    "tests/test_single_carton_deadline.py": "660aa6b6b3fd012fdf9f63d9432ba69b132bc489955e9518c7ede03f30fbf6ce",
+    "tests/test_single_carton_measured_policy.py": "155b6297406229ca54eac5fc031bb56ff9dc3c46b5025608bfd9e8aa4be114cf",
+    "tests/test_single_carton_ui.py": "41123bfdad893da3f258332f04ae7f5389469aa27b37260b417720a48786f18f",
+    "tests/test_single_carton_unknown_sizes.py": "f05dd1a1871d97c67a93f0c115a9fb18d4ccd362648f27fc51f490f033d60273",
+    "tests/test_single_carton_visibility_bounds.py": "fed1f1c0e5759213e221dae48854d0d7046206e442aefa43d370b8337d8c0503",
+    "tools/replay_single_carton_record.py": "6f3ffb08c6cd2e128c692daca64b1de2c94fec70c37764475684f2be4d43d6b1"
+  },
+  "live_ui_prepare": {
+    "status_text": "实机单箱模式 · 观测已冻结，选择目标后规划 · task_id 31e4617215ca46fba96f8087181f3e47\n原因：可规划目标 1 箱；另 1 箱尺寸未解，已作为保守现场障碍保留。\n",
+    "plan_button_state": "normal",
+    "task_id": "31e4617215ca46fba96f8087181f3e47",
+    "scope": "LIVE_OBSERVATION_AND_PLANNING_ONLY",
+    "devices": "CAMERA_ROBOT_VACUUM_ALL_LIVE_VALID",
+    "hardware_execution": "NOT_RUN",
+    "observation": {
+      "observation_id": "a6c6c97e-441c-4d7c-93ce-987a4e5027be",
+      "rgb_number": 696,
+      "depth_number": 693,
+      "q_start": [
+        1.4160554353130794,
+        -0.2183232361319707,
+        -0.9462651605537656,
+        -0.27490681048162685,
+        1.5008086237899239,
+        -0.08986700318518803
+      ],
+      "q_capture": [
+        1.4160728886055993,
+        -0.2183232361319707,
+        -0.9462651605537656,
+        -0.2750115302367465,
+        1.5008435303749639,
+        -0.08986700318518803
+      ]
+    },
+    "eligible_boxes": [
+      {
+        "id": "a6c6c97e-441c-4d7c-93ce-987a4e5027be-carton-1",
+        "detection_index": 1,
+        "size_m": [
+          0.16821296954461534,
+          0.11061680342195607,
+          0.10396811416470905
+        ],
+        "dimension_source": "RGBD_VISIBLE_FACE_AND_SIDE_BOUNDARIES_NO_SIZE_PRIOR"
+      }
+    ],
+    "incomplete": [
+      {
+        "detection_index": 0,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD",
+        "visibility_bounds": {
+          "front": {
+            "method": "RGBD_FREE_SPACE_CONNECTED_FACE_COMPONENT",
+            "bounded": false,
+            "component_pixels": 200140,
+            "free_margin_m": 0.006,
+            "pixel_guard": 2,
+            "image_or_occlusion_boundary_is_box_edge": false,
+            "reason": "FRONT_FACE_POSSIBLE_EXTENT_REACHES_UNOBSERVED_RAYS"
+          },
+          "depth": {
+            "bounded": false,
+            "upper_m": null,
+            "search_limit_m": 3.0,
+            "search_limit_is_size_bound": false,
+            "reason": "NO_RGBD_FREE_SPACE_WITNESS_FOR_HIDDEN_THICKNESS"
+          },
+          "prior_applied": false,
+          "bound_basis": "SAME_FRAME_RGBD_FREE_SPACE_AND_OBSERVED_CONVEX_CUBOID_FACE",
+          "observed_normal_model": "RELIABLE_LOCAL_PLANE_FIT",
+          "workspace_used_as_size_bound": false
+        },
+        "contact_check": {
+          "count": 32,
+          "anticipated_seal_counts": [
+            1,
+            2
+          ],
+          "all_observed_coverage": true,
+          "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+        }
+      }
+    ],
+    "unbounded_carton_indices": [
+      0
+    ],
+    "unmodeled_carton_indices": [],
+    "scene_objects": {
+      "observed_support": 1,
+      "unresolved_carton_volume": 354,
+      "observed": 62,
+      "workspace_boundary": 6
+    },
+    "planning_result": {
+      "task_id": "31e4617215ca46fba96f8087181f3e47",
+      "state": "REJECTED",
+      "reason": "NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN: GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST × 1；首项：GEOMETRY_UNCERTAINTY_OVERLAP_AT_REST: 保守不确定性包络与 rgbd_carton_possible_0_5_19_0 的模型包络重叠 73.927 mm；当前观测尚不能证明带载路径安全，不代表实物穿入或全部几何假设均不可行；未进行候选/路径搜索；详情：planning-failures.json",
+      "evidence": null,
+      "physical_result": "NOT_RUN"
+    },
+    "execute_button_invoked": false,
+    "permits_issued": 0,
+    "complete_plan_written": false,
+    "controller_alarm": false,
+    "last_pressure_kpa": -1.63,
+    "source_record_sha256": {
+      "observation.json": "a49cd8424b86287a477d3407032e91d8cf86510446e881c28bd2b8eb5cdcd17a",
+      "observation.npz": "e9c2a29107e90c633b5292a1b8400ba7ccc07ac0ed928a65800748337ebea66b",
+      "detections.json": "4aeb70837d02291a9ea2daef21860bb3a39af8d675d71eab61264503d65a068b",
+      "segmentation.npz": "906d424a54ce32ada580fbd848d2f03c4c87d61b946bacd5a69433becebbdd7b",
+      "geometry.json": "7df942f4795c8592880fa1faa86741c10737156a1b9e7f10e71ecac22bca47c2",
+      "site-scene.json": "b8776cbef28e7003890d94ee250fd82e2d34208d00a69defe3de2c5612a5b22e",
+      "planning-failures.json": "c0f254367e2507e3a78a97418b9a0cc35e32ddffe012a69968fefb56ce60ac1a",
+      "result.json": "c84ecacf21c57777575b58d7252a893f79b79ec4df9e59cf0f4a19129b5357ca"
+    }
+  }
+}

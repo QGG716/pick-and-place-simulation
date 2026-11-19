@@ -136,15 +136,22 @@ def test_unanswered_request_is_abandoned_at_the_deadline_and_never_reused(case, 
     # Two IK-reachable candidates screen in milliseconds; the first plan hangs.
     p, obs, box, folder, calls, opts, cands = lanes_case(case, monkeypatch, count=2, lanes=1)
     release = threading.Event()
+    worker_entered = threading.Event()
 
     def plan(r):
+        worker_entered.set()
         release.wait(5)  # a worker that does not reply in time
     opts['plan'] = plan
     entered = time.monotonic()
     try:
-        with pytest.raises(PlanningBudgetExhausted, match='NO_REPLY_BY_DEADLINE|SEARCH_STEP_RUNNING_AT_DEADLINE'):
+        # The outer owner can observe expiry just after the search thread has
+        # ended but before its result is published. TASK_WAIT is the same
+        # budget exhaustion in that race; the abandoned-worker checks below
+        # (and the original +50 ms limit) must still hold.
+        with pytest.raises(PlanningBudgetExhausted, match='NO_REPLY_BY_DEADLINE|SEARCH_STEP_RUNNING_AT_DEADLINE|TASK_WAIT'):
             p.plan_cycle(obs, [box], folder, deadline=entered+.4)
         assert time.monotonic()-(entered+.4) <= ON_TIME_S
+        assert worker_entered.is_set() and not p.authority._plans
         p.last_task_context.search_thread.join(1)  # the released search records the unanswered worker
         assert p.last_task_context.abandoned and not any(id(c) in p.last_task_context.abandoned for c in p.checkers() if c is not None)
     finally:
