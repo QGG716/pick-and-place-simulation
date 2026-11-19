@@ -30,7 +30,8 @@ def test_single_carton_ui_starts_inert_and_rejects_preview_import(monkeypatch):
         root.update();assert '实机模式' in root.title()
         assert str(ui.execute_button.cget('state'))=='disabled'
         assert str(ui.plan_button.cget('state'))=='disabled'
-        assert '尺寸先验可配置' in ui.details.get()
+        assert '各箱尺寸未知' in ui.details.get()
+        assert '历史统一箱型先验停用' in ui.details.get()
         assert set(ui.result_windows)=={'detection','segmentation'}
         assert ui.snapshot is None
         with pytest.raises(ValueError,match='预览'):ui.execute_cycle()

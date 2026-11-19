@@ -193,6 +193,8 @@ def reconstruct(observation,result,geometry=None):
 
 def recover_boxes(f,world_camera,detections,masks,geometry=None):
     """Recover boxes from one frame's masks; callers own the frame provenance."""
+    from .size_policy import size_policy
+    policy=size_policy(geometry)
     points=metric_points(f);boxes=[];rejected=[];seen=[]
     for i,(item,mask) in enumerate(zip(detections,masks)):
         # Also handle old saved observations produced before detector NMS.
@@ -200,7 +202,13 @@ def recover_boxes(f,world_camera,detections,masks,geometry=None):
         seen.append(mask)
         try:
             with timing.span('reconstruct.box',detection_index=i,mask_pixels=int(np.count_nonzero(mask)) if timing.ENABLED else None):
-                if geometry and geometry.get('prior_size_m'):
+                if policy=='UNKNOWN_PER_INSTANCE':
+                    from .observed_surface import observed_surface
+                    from .geometry import GeometryRejected
+                    evidence=observed_surface(points,mask,world_camera)
+                    evidence.update(size_policy=policy,size_policy_basis=geometry['size_policy_basis'])
+                    raise GeometryRejected('INSTANCE_FULL_EXTENT_UNBOUNDED',evidence)
+                elif geometry and geometry.get('prior_size_m'):
                     from .partial_geometry import recover_partial
                     box=recover_partial(points,mask,world_camera,rgb=f.rgb,
                         prior=geometry['prior_size_m'],dimension_tolerance_m=geometry.get('dimension_tolerance_m',.008))

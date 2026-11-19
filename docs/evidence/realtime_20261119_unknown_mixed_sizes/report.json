@@ -1,0 +1,233 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "bc40bd67285849e21ad2e9d24551328c3912cc5b",
+  "scope": "CORRECT_UNCONFIRMED_SHARED_PRIOR_PRESERVE_PER_INSTANCE_OBSERVED_CONTACTS",
+  "user_confirmation": {
+    "cartons_have_different_sizes": true,
+    "actual_dimensions": "UNKNOWN",
+    "basis": "USER_CONFIRMATION_2026_11_19_UPPER_AND_LOWER_CARTONS_HAVE_DIFFERENT_DIMENSIONS_BOTH_DIMENSIONS_UNKNOWN_HISTORICAL_SINGLE_TYPE_PRIOR_DOES_NOT_APPLY"
+  },
+  "active_geometry_config": {
+    "size_policy": "UNKNOWN_PER_INSTANCE",
+    "size_policy_basis": "USER_CONFIRMATION_2026_11_19_UPPER_AND_LOWER_CARTONS_HAVE_DIFFERENT_DIMENSIONS_BOTH_DIMENSIONS_UNKNOWN_HISTORICAL_SINGLE_TYPE_PRIOR_DOES_NOT_APPLY",
+    "prior_size_m": [
+      0.17,
+      0.128,
+      0.101
+    ],
+    "dimension_tolerance_m": 0.008,
+    "prior_measurement_basis": "FIELD_RGBD_TASK_7ccdb15e54904c2fbc92025dcc7615d3_VISIBLE_FACE_AND_SIDE_BOUNDARIES_169.7x128.4x100.9_MM_2026_11_11_CONFIRM_WITH_TAPE_MEASUREMENT"
+  },
+  "prior_applied": false,
+  "shared_prior_applicable": false,
+  "previous_overlap_results": {
+    "original_model_mm": 102.02609053454184,
+    "edge_corrected_model_mm": 88.65265961977538,
+    "applicability": "HISTORICAL_UNCONFIRMED_COMMON_TYPE_MODEL_NOT_CURRENT_CARTON_GEOMETRY",
+    "prior_witness": "MATHEMATICAL_EXAMPLE_ONLY_NOT_CURRENT_BOX_POSES"
+  },
+  "source_record": "outputs/field-replan-20261118-new-start/replay",
+  "source_hashes": {
+    "observation.json": "4bfd1e9831d950ec7369671e66cd03c78cdc5af1b3fd660c94747b7d79b0fc81",
+    "observation.npz": "1ef0eb044205467ca9c031895ed5e6bf959ee27eb20f852148d4c88aaaac3ec5",
+    "segmentation.npz": "2cb3a9cefbfeeb3138a6eba5aa2b5adb3a97352dcda3fc0f202e65451cede8ff",
+    "geometry.json": "d8929aec93a97f8f6623b48148ffe95b7cdedbca67fa03e613ef5b69728c35e1"
+  },
+  "source_record_unchanged": true,
+  "geometry_status": "GEOMETRY_UNRESOLVED",
+  "complete_carton_count": 0,
+  "current_carton_overlap_m": null,
+  "observed_surfaces": [
+    {
+      "detection_index": 0,
+      "observed_patch_size_m": [
+        0.11096858663975752,
+        0.17218110932785397
+      ],
+      "patch_extent_is_carton_dimension": false,
+      "plane_rms_m": 0.000706969292230138,
+      "plane_inliers": 5446,
+      "full_dimensions_m": null,
+      "full_extent_bounded": false,
+      "contact_candidate_check": {
+        "count": 32,
+        "anticipated_seal_counts": [
+          2,
+          3,
+          4,
+          6
+        ],
+        "all_observed_coverage": true,
+        "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+      }
+    },
+    {
+      "detection_index": 1,
+      "observed_patch_size_m": [
+        0.14624957359371368,
+        0.0898342695539609
+      ],
+      "patch_extent_is_carton_dimension": false,
+      "plane_rms_m": 0.000778679966275934,
+      "plane_inliers": 5700,
+      "full_dimensions_m": null,
+      "full_extent_bounded": false,
+      "contact_candidate_check": {
+        "count": 32,
+        "anticipated_seal_counts": [
+          1,
+          2,
+          3
+        ],
+        "all_observed_coverage": true,
+        "scope": "OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN"
+      }
+    }
+  ],
+  "scene_replay": {
+    "detector": "saved",
+    "mode": "SCENE_ONLY_NO_PATH_SEARCH",
+    "objects": {
+      "observed": 54,
+      "workspace_boundary": 6
+    },
+    "geometry_qualification": "INCOMPLETE_INSTANCE_EXTENTS",
+    "unbounded_carton_indices": [
+      0,
+      1
+    ],
+    "hidden_carton_volume_assumed_clear": false,
+    "neighbor_shadow_depth_m": null,
+    "failures": [
+      {
+        "reason": "UNBOUNDED_INSTANCE_GEOMETRY",
+        "searched": 0,
+        "unsearched": "ALL_NOT_GENERATED"
+      }
+    ]
+  },
+  "tests": {
+    "directed_pytest": {
+      "passed": 617,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_s": 213.702
+    },
+    "m710_clearance_optimized": "PASS",
+    "m710_clearance_reference": "PASS",
+    "single_carton_native": {
+      "status": "PASS",
+      "audited_points": 491,
+      "scope": "OFFLINE_NATIVE_COMPONENT_NOT_FULL_CYCLE"
+    },
+    "config_check": {
+      "issues": [],
+      "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
+      "receiver_qualification_deferred": true,
+      "receiver_configured": false,
+      "unknown_space_policy": "USER_CONFIRMED_CLEAR",
+      "detector_backend": "remote_ssh",
+      "detector_remote_configured": true,
+      "hardware_execution": "NOT_RUN"
+    },
+    "browser": {
+      "status": "PASS",
+      "cloud_count": 2,
+      "point_counts": [
+        7704,
+        6798
+      ],
+      "complete_carton_meshes": 0,
+      "prior_applied": false,
+      "current_overlap": null,
+      "contact_candidates": [
+        32,
+        32
+      ],
+      "source_unchanged": true,
+      "physical_execution": "NOT_RUN"
+    }
+  },
+  "intermediate_runs": [
+    {
+      "log": "directed.log",
+      "result": "42 passed, 1 failed: new fake observation fixture lacked observation_id; fixed fixture"
+    },
+    {
+      "log": "pytest.log",
+      "result": "Incomplete; one failure observed, process ended with SIGTERM/143; not counted as a passing run"
+    },
+    {
+      "log": "pytest-final.log",
+      "result": "392 passed, 1 failed: obsolete UI text assertion; updated assertion to verify unknown dimensions and disabled historical prior"
+    },
+    {
+      "log": "ui-and-unknown-final.log",
+      "result": "Collection error from indentation while updating the UI assertion; fixed before verification"
+    },
+    {
+      "log": "ui-unknown-verified.log",
+      "result": "9 passed after correction"
+    }
+  ],
+  "retained_invariants": {
+    "robot_tool_solids": 715,
+    "cups": 12,
+    "pair_clearance_m": 0.0024,
+    "tool_robot_reserve_m": 0.04,
+    "calibration_bytes_unchanged": true,
+    "robot_q_start_and_q_capture_unchanged": true,
+    "execution_lock_unchanged": true,
+    "pressure_and_stop_rules_unchanged": true,
+    "live_inference_and_device_connection_unchanged": true
+  },
+  "limitations": [
+    "Unknown mixed-carton full boundary recovery remains unimplemented; surfaces are not complete payloads",
+    "Stacked-carton joint geometry remains unresolved",
+    "No full loaded path or physical cycle qualified; prepare_plan p95 <= 2 s not verified",
+    "Old workbench must finish its normal stop/held-load procedure and restart to load the changed code/config"
+  ],
+  "inference_rerun": false,
+  "gpu_recomputation": false,
+  "hardware_execution": "NOT_RUN",
+  "permits_issued": 0,
+  "bound_files_sha256": {
+    "configs/workbench/single_carton.example.json": "509427ed8bd1ea277e2cf4b9387cd91f4daa9449af41f5f021738479c287c2dc",
+    "docs/eco65_real_site.md": "1a1f0307378ceadf085c49a3515b5c67bb8350b6754cd9195e6c9605b5879848",
+    "src/unloading_sim/workbench/single_carton/size_policy.py": "30c8537fc09ae4875c2bfdacade87ded6f85be84aa710067235495f5cfb74f31",
+    "src/unloading_sim/workbench/single_carton/observed_surface.py": "bb9e19a5a740c6ea6c73d0c40cdd1ab35898c04aa6c113e90d2791962a6a34be",
+    "src/unloading_sim/workbench/single_carton/config.py": "7d826168f28d9abd13b24aec8dca08ba3677e27374144f9b17ed65cc67afda2a",
+    "src/unloading_sim/workbench/single_carton/perception.py": "01d2da932471d786c33ed5358afe0eb6c9921acef78cb943dfed66b579eaaa48",
+    "src/unloading_sim/workbench/single_carton/runtime.py": "b3cde6ab22fc8a7084f70926792375b20db9ee983bc3686e0fb5a87517605727",
+    "src/unloading_sim/workbench/single_carton/planner.py": "1004be04031ecc6f08343b39312d551c92895acd5644cba3c8b94bf12965d4ca",
+    "src/unloading_sim/workbench/single_carton/ui.py": "acfbc29f11aa8d4aed6ea3ffa8bc46b1930d605e6992108f0ecb556ef81d6293",
+    "tests/test_single_carton_unknown_sizes.py": "4b2665162c06e750d5827b08b7e644e944eaaf10ae8f06c3c282d587457bde82",
+    "tests/test_single_carton_partial_site.py": "288259ac137c2e1faf4539d0a372d7dca447e4ef010fbdc496be4e84a338e7cb",
+    "tests/test_single_carton_ui.py": "f178bae2d055e7d34f4f7e035da04be3424c89aec711a461c1f951ca5f966285",
+    "tests/test_single_carton_offline_replay.py": "5d34a7785faf3eb89d5ae8cd3342c4231eb3eb8e0a4cceff9d7b10dbbbaea978",
+    "tools/replay_single_carton_record.py": "71f620e4496cc245e0e88b41fe23ace1478f4641d26d5ba4a43510cb4c3ab036",
+    "tools/diagnose_unknown_cartons.py": "e8d0c5e38368682a8257b8c9044aa71e9405eb83a9fce548025807c278fe4f08",
+    "tools/search_replay/unknown_surfaces.html": "745729c61a144a336c9033343d574cde41feb87a0a352f0fce57f2476a2f6527",
+    "outputs/field-mixed-sizes-20261119/directed.log": "55cac7227e93a0468910ff29d9b55df50c2fce52940828322b1a495229d3bddc",
+    "outputs/field-mixed-sizes-20261119/new-tests.log": "71f8fcbc34459bb681d48291dc1eaebb96e8b220ffd0da485d4458b0d915db56",
+    "outputs/field-mixed-sizes-20261119/pytest.log": "b9b2584549d36558dab777913d0d240ca1e42285a9a50e6424c330e0edae301a",
+    "outputs/field-mixed-sizes-20261119/pytest-final.log": "e3dd4d44bb9d2c4de059010e65073b1088bd600309b7e14b81cc3bbbe30dfafa",
+    "outputs/field-mixed-sizes-20261119/pytest-verified.log": "5909ae15bf1688faa9691e6e177caae4b40b4934709806b7592152d19d961a66",
+    "outputs/field-mixed-sizes-20261119/pytest-verified.xml": "a588177be1985d30dc707e095656b43725cd3b338535780f0f2b1e131e3ed580",
+    "outputs/field-mixed-sizes-20261119/ui-and-unknown-final.log": "f50865e7905fc475fc263a713985c21ea4800adabe2d172f9bf385750273de36",
+    "outputs/field-mixed-sizes-20261119/ui-unknown-verified.log": "f9888cc38bca8b040670374f546e91914bb5d47072a806589e7f473acd2259e3",
+    "outputs/field-mixed-sizes-20261119/clearance-optimized.log": "4a6f4a7e48baeb39edc08a3cf54a9eb3f8ae7249e4d10f4b54abf7af884233f1",
+    "outputs/field-mixed-sizes-20261119/clearance-reference.log": "b40a2481aed07dc4d5cf13c921a7fbd8ef96ad6735c94c2efc08b54d2cdcbdd2",
+    "outputs/field-mixed-sizes-20261119/native-check.log": "183940c3f68ea1ac8f5d47a531782911ab7a1955d4d0a193d30513ac4afd1823",
+    "outputs/field-mixed-sizes-20261119/config-check.log": "1dfd74d3a7329444bb9bc4aaa5ad89a2fb7f85344d10e51d8cffba2bb762804e",
+    "outputs/field-mixed-sizes-20261119/scene-replay/replay-report.json": "ad79f6d6fc4032f4794e404f505ac7077f5f3d5110bc9188e9bf0c6224f1e2e6",
+    "outputs/field-mixed-sizes-20261119/scene-replay/site-scene.json": "cc7e15d940d9f304a4f6e81e765c673a3ab47b55577b51f0ed7f3aa8f9da24d1",
+    "outputs/field-mixed-sizes-20261119/scene-replay/geometry.json": "66ccb6982c0bf1ec7e6fe6e55a37284cb93695598736ea1ba3c946648a244208",
+    "outputs/field-mixed-sizes-20261119/viewer-final/report.json": "46c5cd04be2b1401919c8c3015d4f7068429b9e67cbd3bda539be8a68ca5ac07",
+    "outputs/field-mixed-sizes-20261119/viewer-final/index.html": "a3f9d6c0e8ecaf4fb6bda05c8adfef36141109411d6646ac0b9d6ebe332e256f",
+    "outputs/field-mixed-sizes-20261119/viewer-final/same-frame-segmentation.png": "8f9a13e05bb73fbeda83638ef551a9a813c04243ebd6338c2eb6f1ec0cdb09f1",
+    "outputs/field-mixed-sizes-20261119/viewer-final/observed-surfaces.png": "5942af1486b047bd30a51b73b804e71d7785a8e083a7f1d9d8f4a3cac74addab",
+    "outputs/field-mixed-sizes-20261119/viewer-final/browser-checks.json": "3c05fbdd10b142d36b4f823f3a03ca5abfa5498345199a224fdf52cfeb3ae9b2"
+  }
+}

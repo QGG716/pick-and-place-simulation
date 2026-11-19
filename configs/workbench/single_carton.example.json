@@ -75,7 +75,7 @@
   },
   "release_policy": "USER_DEFERRED_RECEIVER_QUALIFICATION",
   "receiver_qualification_basis": "USER_EXPLICIT_CURRENT_AGENTS_INSTRUCTION_DEFER_Q_START_RECEIVING_REGION_QUALIFICATION_KEEP_LOADED_RETURN_AND_RELEASE_COLLISION_CHECKS",
-  "geometry_mode": "OBSERVED_PATCH_WITH_CONFIGURABLE_PRIOR_AND_CONSERVATIVE_ENVELOPE",
+  "geometry_mode": "OBSERVED_PER_INSTANCE_SURFACES_WITH_UNBOUNDED_EXTENTS",
   "device_config": "outputs/workbench/stage1.local.json",
   "robot_network": {
     "manager": "NetworkManager",
@@ -90,6 +90,8 @@
   },
   "site_scene": "configs/workbench/real_site.example.json",
   "geometry": {
+    "size_policy": "UNKNOWN_PER_INSTANCE",
+    "size_policy_basis": "USER_CONFIRMATION_2026_11_19_UPPER_AND_LOWER_CARTONS_HAVE_DIFFERENT_DIMENSIONS_BOTH_DIMENSIONS_UNKNOWN_HISTORICAL_SINGLE_TYPE_PRIOR_DOES_NOT_APPLY",
     "prior_size_m": [
       0.17,
       0.128,

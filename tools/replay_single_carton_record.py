@@ -28,6 +28,7 @@ import numpy as np
 from unloading_sim.workbench.single_carton.config import load
 from unloading_sim.workbench.single_carton.planner import SinglePlanner, PlanningBudgetExhausted
 from unloading_sim.workbench.single_carton.perception import recover_boxes
+from unloading_sim.workbench.single_carton.size_policy import size_policy,neighbor_depth_bound,mark_incomplete_scene
 from unloading_sim.workbench.single_carton.site_scene import build_scene
 from unloading_sim.workbench.single_carton.self_filter import RobotSelfFilter
 from unloading_sim.workbench.controlled.trajectory import Authority
@@ -132,12 +133,14 @@ def main():
         with timing.span('observe.build_scene'):
             scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
                                 SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
-                                self_filter)
+                                self_filter,neighbor_depth_m=neighbor_depth_bound(config.get('geometry')))
+        mark_incomplete_scene(scene,config.get('geometry'),rejected)
     timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected, detections=detections), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
     report = dict(scope='OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE', record=str(record), task_id=record.name,
                   hardware_execution='NOT_RUN', physical_result='NOT_RUN', permits_issued=0,
-                  prior_size_m=config['geometry']['prior_size_m'],
+                  size_policy=size_policy(config.get('geometry')),
+                  prior_size_m=(config['geometry'].get('prior_size_m') if size_policy(config.get('geometry'))=='CONFIGURED_SINGLE_TYPE' else None),
                   boxes=[dict(id=b['id'], size_m=b['size_m'], nominal_size_m=b.get('nominal_size_m'),
                               observed_patch_m=b['quality'].get('observed_patch_size_m'),
                               support_plane=b['quality'].get('observed_support_plane')) for b in boxes],
@@ -149,7 +152,10 @@ def main():
     print(json.dumps(dict(boxes=report['boxes'], rejected=rejected, scene_objects=report['scene_objects']), ensure_ascii=False))
     failures = []; found = None
     try:
-        if not args.scene_only and boxes:
+        if scene.get('unbounded_carton_indices'):
+            report['geometry_status']='GEOMETRY_UNRESOLVED'
+            failures.append(dict(reason='UNBOUNDED_INSTANCE_GEOMETRY',searched=0,unsearched='ALL_NOT_GENERATED'))
+        elif not args.scene_only and boxes:
             world = json.loads(json.dumps(scene['world']))+[dict(id=b['id'], size=b['size_m'], pose=b['pose'], category='carton') for b in boxes]
             selected = {int(x) for x in args.candidates.split(',')} if args.candidates else None
             planning_entered = timing.now()

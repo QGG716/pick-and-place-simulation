@@ -89,15 +89,17 @@ def test_oblique_opencv_rectangle_does_not_scale_recovered_native_frames():
 def test_default_real_site_uses_explicit_user_clearance_without_simulation_furniture():
     c=load(ROOT/'configs/workbench/single_carton.example.json')
     assert c['camera']['width']==640 and c['camera']['height']==480 and c['camera']['fps']==30
-    # Field-measured carton, never the simulation's 150 x 100 x 100 mm.
+    # Retain the historical measured type, but the current mixed cartons do
+    # not inherit it. Neither is the simulation's 150 x 100 x 100 mm applied.
     assert c['geometry']['prior_size_m']==[.17,.128,.101]
     assert '7ccdb15e' in c['geometry']['prior_measurement_basis']
+    assert c['geometry']['size_policy']=='UNKNOWN_PER_INSTANCE'
     from unloading_sim.workbench.single_carton.config import issues
     # Remote GPU connection fields come from an ignored local file; geometry
     # and every other field-safety parameter must be complete in the example.
     assert [e for e in issues(c) if not e.startswith('detector.remote')]==[]
     for basis in (None,'','  '):
-        broken=dict(c,geometry=dict(c['geometry'],prior_measurement_basis=basis))
+        broken=dict(c,geometry=dict(c['geometry'],size_policy='CONFIGURED_SINGLE_TYPE',prior_measurement_basis=basis))
         assert any(e.startswith('geometry.prior_measurement_basis') for e in issues(broken))
     assert c['release_policy']=='USER_DEFERRED_RECEIVER_QUALIFICATION'
     assert c['receiver_qualification_basis']

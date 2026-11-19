@@ -1,0 +1,28 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>不同箱型 · 尺寸未知 · 实测面</title>
+<style>*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:#101a25;color:#e6eef6;font:14px/1.6 system-ui,'Noto Sans CJK SC',sans-serif}header{height:90px;padding:13px 22px;border-bottom:1px solid #394b5d}h1{font-size:22px;margin:0}small{color:#aabccd}main{display:grid;grid-template-columns:380px minmax(0,1fr);height:calc(100vh - 90px)}aside{padding:18px;overflow:auto;min-width:0;scrollbar-gutter:stable}article{border-left:3px solid #3ce6dc;background:#192b3b;padding:12px;margin:12px 0;white-space:pre-line}article:nth-of-type(2){border-color:#f5b43c}p{margin:14px 0}#image{width:100%;height:220px;object-fit:contain}#view{position:relative;min-height:0}canvas{display:block}#hud,#legend{position:absolute;left:16px;background:#101a25df;padding:10px;pointer-events:none;white-space:pre-line}#hud{top:16px}#legend{bottom:16px}button{padding:9px 16px;background:#23364b;color:#eef5fc;border:1px solid #50677d;border-radius:4px;font:inherit}label{display:block;margin:8px 0}#error{color:#ff8994;overflow-wrap:anywhere}</style>
+<header><h1>不同箱型、尺寸未知：保留各自实测接触面</h1><small>原始同帧 RGB-D 与掩码 · 历史统一尺寸先验已停用 · 无推理、GPU 或实机动作</small></header>
+<main><aside><p>你已确认：上下箱尺寸不同，当前尺寸未知。历史 170×128×101 mm 先验不能套用于两箱。</p><div id="cards"></div>
+<img id="image"><small>青色为上箱，橙色为下箱；沿用原始同帧分割。</small>
+<p>102.026 mm、88.653 mm 和上一版不穿透示例均依赖未确认的共同箱型。它们保留为历史诊断，本次不再将其用于描述现场箱体。</p>
+<p>实测面仍可检查吸盘密封轮廓；可见点的范围不等于完整纸箱尺寸。当前隐藏体积尚无可靠边界，完整带载路径没有得到验证。</p>
+<div id="toggles"></div><button id="reset">恢复观察角度</button><p><small>左键旋转 · 滚轮缩放 · 右键平移<br>仅显示观测面点云，没有虚构完整长方体。</small></p><div id="error"></div></aside>
+<div id="view"><div id="hud">坐标：base_link
+几何状态：完整尺寸未解
+当前箱体重叠量：不计算</div><div id="legend">青 / 橙：上 / 下箱的实际深度支持点
+密封候选只验证接触几何，不是可执行抓取计划</div></div></main>
+<script>/*__VENDOR__*/</script><script>
+const DATA=/*__DATA__*/;const T=THREE,$=id=>document.getElementById(id),view=$('view');window.onerror=m=>$('error').textContent=m;
+const scene=new T.Scene();scene.background=new T.Color('#101a25');const camera=new T.PerspectiveCamera(43,1,.002,10);camera.up.set(0,0,1);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));view.prepend(renderer.domElement);
+const controls=new T.OrbitControls(camera,renderer.domElement),bounds=new T.Box3();
+const clouds=DATA.clouds.map((p,i)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p.flat(),3));const o=new T.Points(g,new T.PointsMaterial({color:i?0xf5b43c:0x3ce6dc,size:.0015}));scene.add(o);g.computeBoundingBox();bounds.union(g.boundingBox);return o;});
+const center=bounds.getCenter(new T.Vector3()),axis=new T.AxesHelper(.06);axis.position.copy(bounds.min).add(new T.Vector3(0,-.04,-.04));scene.add(axis);
+function render(){renderer.render(scene,camera);}function reset(){camera.position.copy(center).add(new T.Vector3(.55,-.4,.3));controls.target.copy(center);controls.update();render();}
+for(const [i,item] of DATA.report.instances.entries()){
+ const e=item.evidence,check=e.contact_candidate_check,article=document.createElement('article'),name=i===0?'上箱':i===1?'下箱':`箱 ${i+1}`;
+ article.textContent=`${name} · 检测编号 ${item.detection_index}\n完整长×宽×高：未知\n观测面点云范围：${e.observed_patch_size_m.map(x=>(x*1000).toFixed(1)).join(' × ')} mm\n（仅局部面覆盖范围，不是箱体尺寸）\n密封几何候选：${check.count} 个 · 尚未规划`;$('cards').append(article);
+ const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=true;input.onchange=()=>{clouds[i].visible=input.checked;render();};label.append(input,` 显示${name}实测点`);$('toggles').append(label);
+}
+$('image').src=DATA.image;$('reset').onclick=reset;function resize(){renderer.setSize(view.clientWidth,view.clientHeight);camera.aspect=view.clientWidth/view.clientHeight;camera.updateProjectionMatrix();render();}
+controls.addEventListener('change',render);window.onresize=resize;reset();resize();window.GEOMETRY_VIEWER_READY=true;
+</script></html>

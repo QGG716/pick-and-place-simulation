@@ -1179,6 +1179,9 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('PHYSICAL_PLANNER_REQUIRES_CURRENT_SESSION_LIVE_CAPTURE')
         self.deadline=deadline;self.abandoned=set();self.search_counts={};self.search_thread=None
         self.authority.invalidate();self.cycle_binding=None
+        if scene and scene.get('unbounded_carton_indices'):
+            raise ValueError('UNBOUNDED_INSTANCE_GEOMETRY: 各箱完整体积尚未确定；'
+                '可见接触面不等于完整碰撞包络，未开始路径搜索')
         qualification=release_policy_evidence(self.site)
         with timing.span('plan_cycle.build'):self.build()
         # A global configuration failure is not 32 independent infeasible

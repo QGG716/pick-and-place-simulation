@@ -46,7 +46,7 @@ def test_explicit_reinference_persists_the_masks_used_for_geometry(tmp_path, mon
     def recover(frame, camera, boxes, masks, policy):
         np.testing.assert_array_equal(masks[0], mask); seen.append('recover')
         return [], []
-    def scene(observation, result, *args):
+    def scene(observation, result, *args, **kwargs):
         np.testing.assert_array_equal(result.masks[0], mask)
         assert observation.q_capture == observed['q_capture']; seen.append('scene')
         return dict(world=[])

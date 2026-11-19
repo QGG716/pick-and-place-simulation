@@ -25,6 +25,7 @@ from .planner import SinglePlanner
 from .vacuum import VacuumOwner,VacuumView
 from .runtime import TaskManager
 from .geometry import transform
+from .size_policy import size_policy_notice
 
 
 def project_camera(points,intrinsics):
@@ -38,7 +39,7 @@ def project_camera(points,intrinsics):
     uv,_=cv2.projectPoints(np.asarray(points,float),np.zeros(3),np.zeros(3),K,np.asarray(coefficients))
     return uv.reshape(-1,2)
 
-LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',TARGET_READY='观测已冻结，选择目标后规划',PLANNING='规划与完整路径检查',
+LABELS=dict(IDLE='待机',OBSERVING='停稳观测 / 推理',GEOMETRY_UNRESOLVED='实测面已保留，箱体尺寸未解',TARGET_READY='观测已冻结，选择目标后规划',PLANNING='规划与完整路径检查',
     PLAN_READY='计划就绪',APPROACH='接近',CONTACT='接触',ESTABLISH_VACUUM='建立真空',ATTACHMENT_CONFIRMED='吸附已确认',
     DETACH='脱离原位置',RETURN_LOADED='带载返回本次 q_start',RELEASE='释放并等待压力确认',COMPLETE='完成',
     STOPPING='正在停止，等待实测确认',FAILED='失败',CANCELLED='已取消',STOP_UNCONFIRMED='停止未确认')
@@ -91,7 +92,7 @@ class SingleWorkbench(Workbench):
             ('实测承接策略：规划前请填写现场 receiver。' if not config.get('site',{}).get('receiver') else '实测承接策略：已加载现场 receiver。'))
         receiver_notice+='\n'+('未观测区域：用户已确认清空；实测障碍与完整箱体仍检查碰撞。'
             if config.get('site',{}).get('unknown_policy')=='USER_CONFIRMED_CLEAR' else '未观测区域：按占用处理。')
-        self.details=StableStringVar(value='启动后自动连接三类设备，640×480@30fps；检测和分割持续运行。\n支持部分出画面与遮挡；尺寸先验可配置，完整不确定包络参与碰撞。\n'+('\n'.join(issues(config)) or receiver_notice))
+        self.details=StableStringVar(value='启动后自动连接三类设备，640×480@30fps；检测和分割持续运行。\n'+size_policy_notice(config.get('geometry'))+'\n'+('\n'.join(issues(config)) or receiver_notice))
         fixed_text(tab,self.details,height=4,pady=4)
         self.bound_details=StableStringVar(value='本次起始点、目标和释放位置：尚未锁定')
         fixed_text(tab,self.bound_details,height=4,pady=4)

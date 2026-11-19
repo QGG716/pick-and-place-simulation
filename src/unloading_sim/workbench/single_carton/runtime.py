@@ -9,7 +9,8 @@ import uuid
 import numpy as np
 from .config import issues,pre_execute_visual_recheck,execution_lock
 from .cycle import Cycle,TERMINAL
-from .geometry import candidate_contact_check
+from .geometry import candidate_contact_check,contact_candidates
+from .size_policy import neighbor_depth_bound,size_policy,mark_incomplete_scene
 from .perception import make_detector,freeze,reconstruct,unchanged,target_unchanged,same_session_start_and_camera
 from .. import timing
 
@@ -150,14 +151,26 @@ class TaskManager:
                 if self.self_filter is None:
                     with timing.span('observe.self_filter_construct'):
                         self.self_filter=RobotSelfFilter(self.planner.init['parameters']['robot_description'],self.model)
-                # Ray depth behind an unreconstructed neighbour's visible surface:
-                # the prior's space diagonal plus its tolerance bounds any carton.
+                # Only an applicable known type bounds a hidden neighbour.
+                # Mixed unknown sizes must not inherit an older carton's depth.
                 geometry=self.config.get('geometry') or {}
-                neighbor_depth=(float(np.linalg.norm(geometry['prior_size_m']))+float(geometry.get('dimension_tolerance_m',0.))
-                                if geometry.get('prior_size_m') else None)
+                neighbor_depth=neighbor_depth_bound(geometry)
                 with timing.span('observe.build_scene'):
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                                            neighbor_depth_m=neighbor_depth)
+                if size_policy(geometry)=='UNKNOWN_PER_INSTANCE':
+                    mark_incomplete_scene(self.scene,geometry,rejected)
+                    for item in rejected:
+                        evidence=item.get('evidence') or {};face=evidence.get('observed_face')
+                        if not face:continue
+                        try:
+                            candidates=contact_candidates(dict(faces=[face]),self.planner.source['tool'],
+                                self.config['topology'],self.config.get('contact_search'))
+                            evidence['contact_candidate_check']=dict(count=len(candidates),
+                                anticipated_seal_counts=sorted({len(c['active_ids']) for c in candidates}),
+                                all_observed_coverage=all(c['seal_check']['observed_surface_covered'] for c in candidates),
+                                scope='OBSERVED_CONTACT_GEOMETRY_ONLY_NOT_A_PLAN')
+                        except ValueError as e:evidence['contact_candidate_check']=dict(count=0,reason=str(e))
                 if self.stop_event.is_set() or self.observation.generation!=self.backend.observation_generation:raise ValueError('OBSERVATION_INVALIDATED')
                 self.write_record('site-scene.json',self.scene)
             if self.evidence is not None:
@@ -168,6 +181,13 @@ class TaskManager:
             self.write_record('geometry.json',dict(boxes=self.boxes,rejected=rejected,detections=self.result.detections),indent=2)
             self.journal(kind='perception',duration_s=time.monotonic()-started,observation_id=self.observation.frame.observation_id,boxes=len(self.boxes),rejected=rejected)
             self.notify('observation',(self.observation,self.result,self.boxes))
+            if not self.boxes and any((r.get('evidence') or {}).get('geometry_state')=='OBSERVED_SURFACE_ONLY' for r in rejected):
+                self.phase='GEOMETRY_UNRESOLVED'
+                self.reason=('各箱尺寸未知：已保留各自实测接触面，历史统一尺寸先验未使用；'
+                    '完整箱体及邻箱隐藏体积尚无可靠边界，不能据此验证带载路径。')
+                self.journal(kind='geometry_unresolved',reason=self.reason,physical_result='NOT_RUN')
+                self.progress(self.reason)
+                return
             if rejected and not self.config.get('site'):
                 labels=dict(BOX_THICKNESS_UNOBSERVED_SHOW_SIDE='已有可见面，后方厚度未测出，请露出侧面',
                     BOX_ENVELOPE_CLIPPED_BY_IMAGE='箱体被画面边缘截断',
