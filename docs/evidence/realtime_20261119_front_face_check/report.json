@@ -1,0 +1,289 @@
+{
+  "date": "2026-11-19",
+  "scope": "UPPER_OBSERVED_FRONT_ONLY_STATIC_DIAGNOSIS_NOT_EXECUTABLE",
+  "source_commit": "89514c2608ab7f6de937dad670c9886d34f27a46",
+  "source_task": "6e13d059fc1443f2ae1c8c56962d21fe",
+  "observation_id": "c27ca674-648a-4b10-ba1b-23c8c6c87c18",
+  "target_id": "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2",
+  "faces": [
+    {
+      "face": "visible_positive_z",
+      "center_m": [
+        -0.5502499817241313,
+        -0.10828099845306148,
+        0.3732617683106761
+      ],
+      "normal": [
+        0.9833732136713117,
+        -0.18149082519039908,
+        -0.006180857987915716
+      ],
+      "size_m": [
+        0.16947341482801723,
+        0.11058487617957939
+      ],
+      "observed": true
+    }
+  ],
+  "contact_candidates": 32,
+  "geometric_seal_pass": 32,
+  "maximum_anticipated_seals": 6,
+  "holding_estimate_pass": 0,
+  "nominal_com_comparison_scope": "COUNTERFACTUAL_UNVERIFIED_NOMINAL_COM_ONLY_NOT_PATH_OR_EXECUTION_EVIDENCE",
+  "nominal_com_comparison": [
+    {
+      "candidate": 0,
+      "full_envelope": 0.5427342157729367,
+      "unverified_nominal_only": 1.9257600253777745
+    },
+    {
+      "candidate": 11,
+      "full_envelope": 0.5428058698894853,
+      "unverified_nominal_only": 1.9266624630406175
+    },
+    {
+      "candidate": 12,
+      "full_envelope": 0.5426369878683576,
+      "unverified_nominal_only": 1.9245364727772205
+    }
+  ],
+  "native_static_queries": [
+    {
+      "candidate": 0,
+      "lift_m": 0.0,
+      "anticipated_seals": 6,
+      "stages": [
+        {
+          "stage": "approach",
+          "ik_solutions": 4,
+          "checked": 3,
+          "valid": 3,
+          "failures": [],
+          "max_fk_position_error_m": 1.251108016903267e-09,
+          "max_fk_orientation_error_rad": 4.5637467000227233e-07
+        },
+        {
+          "stage": "contact",
+          "ik_solutions": 5,
+          "checked": 3,
+          "valid": 0,
+          "failures": [
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.000669302235829595
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": -1.0
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.0006693022628106693
+            }
+          ],
+          "max_fk_position_error_m": 3.0000624677398106e-11,
+          "max_fk_orientation_error_rad": 1.1920928955078133e-07
+        }
+      ]
+    },
+    {
+      "candidate": 11,
+      "lift_m": 0.04,
+      "anticipated_seals": 6,
+      "stages": [
+        {
+          "stage": "approach",
+          "ik_solutions": 4,
+          "checked": 3,
+          "valid": 3,
+          "failures": [],
+          "max_fk_position_error_m": 1.4016688764642662e-10,
+          "max_fk_orientation_error_rad": 0.0
+        },
+        {
+          "stage": "contact",
+          "ik_solutions": 5,
+          "checked": 3,
+          "valid": 0,
+          "failures": [
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.000669302242699006
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": -1.0
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.0006693022612452779
+            }
+          ],
+          "max_fk_position_error_m": 6.46156607640391e-09,
+          "max_fk_orientation_error_rad": 0.0
+        }
+      ]
+    },
+    {
+      "candidate": 12,
+      "lift_m": 0.05,
+      "anticipated_seals": 6,
+      "stages": [
+        {
+          "stage": "approach",
+          "ik_solutions": 4,
+          "checked": 3,
+          "valid": 3,
+          "failures": [],
+          "max_fk_position_error_m": 1.3145079067628343e-09,
+          "max_fk_orientation_error_rad": 0.0
+        },
+        {
+          "stage": "contact",
+          "ik_solutions": 5,
+          "checked": 3,
+          "valid": 0,
+          "failures": [
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.0006693022330127777
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "link_3",
+                "eco65_mast_mast_part_019"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "self_including_robot_tool_and_payload",
+              "reason": "INTERSECTION_OR_CONTACT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": -1.0
+            },
+            {
+              "numerical_gap_tolerance_m": 1e-09,
+              "pair": [
+                "part_002_rigid",
+                "c27ca674-648a-4b10-ba1b-23c8c6c87c18-carton-2"
+              ],
+              "query_range_m": 0.0034,
+              "query_scope": "robot_tool_payload_to_world",
+              "reason": "CLEARANCE_INSUFFICIENT",
+              "required_pair_clearance_m": 0.0024,
+              "surface_distance_m": 0.000669302263777088
+            }
+          ],
+          "max_fk_position_error_m": 2.426664737247296e-10,
+          "max_fk_orientation_error_rad": 0.0
+        }
+      ]
+    }
+  ],
+  "measured_size_m": [
+    0.16947341482801723,
+    0.11058487617957939,
+    0.11168460994904157
+  ],
+  "collision_envelope_size_m": [
+    0.4079026948757862,
+    0.1237711119620648,
+    0.40805938409754117
+  ],
+  "rest_failure": {
+    "id": "site_boundary_0_0",
+    "category": "workspace_boundary",
+    "overlap_depth_m": 0.2024905561829603,
+    "geometry_uncertain": false
+  },
+  "source_hashes": {
+    "observation.json": "528331fb9d44a67797034abbac2d84db114831c8e69ade062e57af8f111b43c5",
+    "observation.npz": "7f10563702699e3f2f3e6626d0388dd1fdd52682b89aac8f11a43758e8f4bad4",
+    "geometry.json": "0ac8b34b91900d6b1310bd1691e1754f8d1a51b0201d5653cb580eb614b2fa01",
+    "site-scene.json": "368fcefd343fecc0655380889895f1dee73f20fa470c3c5483f7e95f6c612441",
+    "segmentation.npz": "fca3fb8225ef2f29388c832d962a297f67530763a51ff6b09ca43f3fc0e777c0"
+  },
+  "evidence": [
+    {
+      "path": "outputs/front-face-check-20261119-6e13d059/surface-report.json",
+      "sha256": "1dab9d7dab98c22ecc5d47c7d9fe549783b81cee34f843482e84a8a7fe43cf22"
+    },
+    {
+      "path": "outputs/front-face-check-20261119-6e13d059/static-report.json",
+      "sha256": "7a0295905c1208fa70ad2eab785bfc4dfe4ff94f607970bfd87e8c69e057d53a"
+    },
+    {
+      "path": "outputs/front-face-check-20261119-6e13d059/check_static.py",
+      "sha256": "7f2a50d6a113092df2a2d5df89d6beb9be2bc3c1e3acf3039ca8513c3309a765"
+    },
+    {
+      "path": "outputs/front-face-check-20261119-6e13d059/static-check.log",
+      "sha256": "03057acdd2be8e148440c49e3da61c1fed5baf1470c4806f42b0c6394708eb43"
+    }
+  ],
+  "archived_source_unchanged": true,
+  "production_code_changed": false,
+  "execution_configuration_changed": false,
+  "geometry_collision_or_pressure_gate_bypassed": false,
+  "full_path_search": "NOT_RUN",
+  "sent_path_audit": "NOT_RUN",
+  "motion_commands_sent": false,
+  "valve_commands_sent": false,
+  "permits_issued": 0,
+  "physical_acceptance": "NOT_RUN"
+}
