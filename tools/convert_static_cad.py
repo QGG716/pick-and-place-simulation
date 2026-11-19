@@ -13,12 +13,12 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def derived_path(path):
     path=Path(path).resolve()
-    if not any(path.is_relative_to(ROOT/p) for p in ['assets/mast/derived','assets/camera/derived']):
+    if not any(path.is_relative_to(ROOT/p) for p in ['assets/mast/derived','assets/camera/derived','assets/layout/derived']):
         raise ValueError('PRIVATE_DERIVED_DIRECTORY_REQUIRED')
     return path
 
 
-def convert(source,out,part_prefix='mast'):
+def convert(source,out,part_prefix='mast',collision_mode='convex_hull'):
     from OCP.STEPCAFControl import STEPCAFControl_Reader
     from OCP.IFSelect import IFSelect_RetDone
     from OCP.TDocStd import TDocStd_Document
@@ -40,6 +40,7 @@ def convert(source,out,part_prefix='mast'):
     from OCP.GProp import GProp_GProps
     from OCP.Interface import Interface_Static
     import OCP
+    if collision_mode not in ('convex_hull','cad_aabb'):raise ValueError('UNSUPPORTED_STATIC_COLLISION_MODE')
     source=Path(source).resolve();source.relative_to(ROOT);out=derived_path(out)
     if not re.fullmatch('[a-z][a-z0-9_]*',part_prefix):raise ValueError('INVALID_PART_PREFIX')
     original=source.read_bytes();sha=hashlib.sha256(original).hexdigest()
@@ -105,12 +106,25 @@ def convert(source,out,part_prefix='mast'):
             reverse=np.einsum('ij,ij->i',normals,ch.equations[:,:3])<0
             triangles[reverse]=triangles[reverse][:,::-1]
             hull=out/(id+'_convex.obj');trimesh.Trimesh(mesh.vertices,triangles,process=False).export(hull)
+            collision_bounds=mesh.bounds
+            if collision_mode=='cad_aabb':
+                # Analytic BRep bounds, not extrema of an inscribed triangle
+                # approximation. Curved STEP surfaces must remain enclosed.
+                from OCP.BRepBndLib import BRepBndLib
+                from OCP.Bnd import Bnd_Box
+                bound=Bnd_Box();BRepBndLib.AddOptimal_s(solid,bound,False,True)
+                collision_bounds=np.asarray(bound.Get()).reshape(2,3)*.001
+                extent=collision_bounds[1]-collision_bounds[0]
+                if np.any(extent<=0):raise ValueError('NONVOLUMETRIC_LAYOUT_PART:'+id)
+                conservative=trimesh.creation.box(extents=extent)
+                conservative.apply_translation(collision_bounds.mean(0));conservative.export(hull)
             color=Quantity_Color();has=ct.GetColor_s(definition,XCAFDoc_ColorGen,color) or ct.GetColor_s(definition,XCAFDoc_ColorSurf,color)
             parts.append(dict(id=id,instance=key,name=name(definition),bounds_m=mesh.bounds.tolist(),size_m=mesh.extents.tolist(),
                 rgb=[color.Red(),color.Green(),color.Blue()] if has else None,topology_valid=bool(BRepCheck_Analyzer(solid).IsValid()),
                 visual=visual.relative_to(ROOT).as_posix(),visual_sha256=hashlib.sha256(visual.read_bytes()).hexdigest(),
                 collision=hull.relative_to(ROOT).as_posix(),collision_sha256=hashlib.sha256(hull.read_bytes()).hexdigest(),
-                collision_type='per_solid_convex_hull',planar_faces=planes))
+                collision_type='analytic_brep_aabb' if collision_mode=='cad_aabb' else 'per_solid_convex_hull',
+                collision_bounds_m=collision_bounds.tolist(),planar_faces=planes))
     for i in range(1,free.Length()+1):walk(free.Value(i),TopLoc_Location(),'root')
     b=np.array([p['bounds_m'] for p in parts]);bounds=np.array([b[:,0].min(0),b[:,1].max(0)])
     result=dict(schema='private_static_cad_v1',source=source.relative_to(ROOT).as_posix(),source_sha256=sha,source_bytes=len(original),
@@ -120,6 +134,7 @@ def convert(source,out,part_prefix='mast'):
     assert hashlib.sha256(source.read_bytes()).hexdigest()==sha
     (out/'cad.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf8')
     print(json.dumps(dict(sha256=sha,parts=len(parts),bounds_m=result['bounds_m'],size_m=result['size_m']),indent=2))
+    return result
 
 
 if __name__=='__main__':

@@ -1225,6 +1225,13 @@ class SinglePlanner(EmptyPlanner):
         if self.site.get('site') and scene is None:raise ValueError('FROZEN_REAL_SITE_SCENE_REQUIRED')
         world=deepcopy(scene['world']) if scene else [deepcopy(x) for x in self.world if x.get('category')!='carton']
         if scene and scene['observation_id']!=observation.frame.observation_id:raise ValueError('REAL_SCENE_CAPTURE_MISMATCH')
+        if self.site.get('site_layout') or any(o.get('category')=='site_layout_cad' for o in world):
+            from .site_layout import load_layout
+            layout=load_layout(self.site,ROOT);registration=(scene or {}).get('layout_registration') or {}
+            if (layout is None or not registration.get('valid') or registration.get('identity')!=layout['identity']
+                    or [o for o in world if o.get('category')=='site_layout_cad']!=layout['world']):
+                raise ValueError('LAYOUT_REGISTRATION_MISMATCH')
+            for path in layout['inputs']:self.track(path)
         world += [dict(id=b['id'],size=b['size_m'],pose=b['pose'],category='carton') for b in boxes]
         q=np.array(observation.q_start);failures=[];self.task_failures=failures
         # Unified deadline for every native request of this plan (None: unchanged).
@@ -1233,6 +1240,8 @@ class SinglePlanner(EmptyPlanner):
         self.start_main_worker(folder)
         try:
             self.acquire_workers(folder,boxes)
+            from .site_layout import check_layout_start
+            check_layout_start(self,q,world,boxes,folder,cancelled)
             for box in boxes:
                 if selected is not None and box['detection_index']!=selected:continue
                 with timing.span('plan_cycle.search_box',target=box['id']):

@@ -170,6 +170,9 @@ class TaskManager:
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                         neighbor_depth_m=neighbor_depth,
                         unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else ())
+                from .site_layout import merge_registered_layout
+                self.scene=merge_registered_layout(self.scene,self.observation,self.result,self.config,
+                    self.planner,self.self_filter,self.write_record)
                 if size_policy(geometry) in NO_PRIOR_POLICIES:
                     mark_incomplete_scene(self.scene,geometry,rejected)
                     for item in rejected:

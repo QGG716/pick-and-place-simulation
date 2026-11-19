@@ -180,6 +180,16 @@ def wrist_branch_violation(limits,q_start,states):
 
 def issues(c):
     errors=[]
+    from .site_layout import registration_limits,load_layout
+    try:
+        registration_limits(c)
+        if c.get('site_layout') is not None:load_layout(c,ROOT)
+    except (ValueError,KeyError,OSError) as e:errors.append('site_layout: '+str(e))
+    age=c.get('scene_max_age_s',300.)
+    if type(age) not in (int,float) or not math.isfinite(age) or not 0<age<=300:
+        errors.append('scene_max_age_s: INVALID_OR_LOOSER_THAN_300_S')
+    if 'scene_max_age_s' in c and (not isinstance(c.get('scene_max_age_basis'),str) or not c['scene_max_age_basis'].strip()):
+        errors.append('scene_max_age_s: BASIS_REQUIRED')
     from .holding_capacity import settings as capacity_settings
     try:capacity_settings(c)
     except ValueError as e:errors.append('holding_capacity: '+str(e))

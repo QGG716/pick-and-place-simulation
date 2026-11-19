@@ -165,5 +165,13 @@
     "safety_factor": 2.0,
     "effective_area_factor": 0.8,
     "basis": "工程估计，待现场拉脱试验标定"
-  }
+  },
+  "site_layout": null,
+  "layout_registration": {
+    "max_rms_m": 0.005,
+    "max_p95_m": 0.010,
+    "basis": "USER_DECISION_2026_11_19_RGBD_TO_STATIC_CAD_REGISTRATION_LIMITS"
+  },
+  "scene_max_age_s": 300,
+  "scene_max_age_basis": "USER_DECISION_2026_11_19_RESERVED_FOR_STEP_6_SESSION_SCENE_NOT_YET_IMPLEMENTED"
 }
