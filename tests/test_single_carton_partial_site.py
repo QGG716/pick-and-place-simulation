@@ -295,6 +295,30 @@ def test_points_inside_target_envelope_stay_obstacles_by_default():
     assert covered(scene['world'],metric_points(obs.frame).reshape(-1,3))
 
 
+def test_nearly_separated_merged_cell_refines_without_dropping_points_or_padding(monkeypatch):
+    from unloading_sim.workbench.single_carton import site_scene
+    from unloading_sim.workbench.single_carton.geometry import corners,obb_overlap_depth
+    obs,result,box,site=envelope_scene_case()
+    T=np.eye(4);T[2,3]=.52
+    box.update(pose=T.tolist(),size_m=[.06,.06,.06],corners_m=corners(T,[.06]*3).tolist(),faces=[])
+    site['workspace_bounds_m']=[[-.06,-.06,.45],[.1,.1,.6]]
+    # Two disjoint returns in the same 40 mm cell. Its padded bounding box
+    # comes within 1.42 mm, although both point groups are >24 mm away.
+    points=np.zeros_like(obs.frame.rgb,dtype=float)
+    points[:20]=[.034,.057,.52];points[20:]=[.057,.034,.52]
+    monkeypatch.setattr(site_scene,'metric_points',lambda frame:points)
+    merged=np.eye(4);merged[:3,3]=[.0455,.0455,.52]
+    assert -.0024<obb_overlap_depth(merged,[.0145,.0145,.003],T,[.03]*3)<0
+    scene=build_scene(obs,result,[box],site)
+    assert scene['near_target_refined_runs']>0
+    obstacles=[o for o in scene['world'] if o['category']=='observed']
+    assert all(obb_overlap_depth(o['pose'],np.asarray(o['size'])/2,T,[.03]*3)<-.0024 for o in obstacles)
+    # Every corner of each original point's 3 mm uncertainty cube survives.
+    from itertools import product
+    pad=np.asarray(list(product((-.003,.003),repeat=3)))
+    assert covered(scene['world'],(np.unique(points.reshape(-1,3),axis=0)[:,None,:]+pad).reshape(-1,3))
+
+
 @pytest.mark.parametrize('margin',[0.,.008])
 def test_user_confirmed_policy_assigns_only_points_in_envelope_plus_margin(margin):
     obs,result,box,site=envelope_scene_case()

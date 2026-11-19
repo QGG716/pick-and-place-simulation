@@ -17,7 +17,7 @@ from .. import timing
 from . import posture
 
 # Successively slower Pilz LIN profiles after a full-scale failure.
-LIN_RETRY_SCALES=(.5,.25,.1)
+LIN_RETRY_SCALES=(.5,.25,.1,.05)
 # Minimal send slowdowns when interpolation would exceed a joint limit.
 SEND_SLOWDOWN_STEPS=(1.,1.1,1.25,1.5,2.)
 # Detach profiles after straight outward separation: (name, outward m, lift m).
@@ -214,7 +214,7 @@ class SinglePlanner(EmptyPlanner):
         text=json.dumps({k:result.get(k) for k in ('status','failure','path_failure','detail')},default=str)
         if DEADLINE_EXPIRED in text:return True
         # A solver budget is global only when the deadline, not the per-call
-        # 25 s cap, set it; a per-call exhaustion keeps its candidate verdict.
+        # configured per-call cap, set it; per-call exhaustion stays distinct.
         return result.get('status')=='NATIVE_SOLVER_BUDGET_EXHAUSTED' and (
             solver_capped or time.monotonic()>=self.deadline-DEADLINE_REPLY_RESERVE_S-1e-3)
     def build_world(self,s):
@@ -326,6 +326,13 @@ class SinglePlanner(EmptyPlanner):
         bottom=min(np.asarray(box['corners_m'])[:,2]);supports=[]
         for o in world:
             if o['id']==box['id']:continue
+            if o.get('category')=='confirmed_stack_support':
+                if o.get('supports_target_id')==box['id']:
+                    plane=o['support_plane'];n=np.asarray(plane['normal_world']);d=plane['offset_m']
+                    if abs(float(np.min(np.asarray(box['corners_m'])@n))-d)>.0004:
+                        raise ValueError('STACK_SUPPORT_NOT_BOUND_TO_TARGET_BOTTOM')
+                    supports.append(dict(id=o['id'],plane=plane))
+                continue
             if o.get('category')=='unresolved_carton_volume':continue
             top=self.object_top(o)
             if abs(top-bottom)<=.0004:supports.append(dict(id=o['id'],top_world_m=top))
@@ -498,6 +505,11 @@ class SinglePlanner(EmptyPlanner):
                   face=candidate['face'],active_ids=candidate['active_ids'],target_lip_contact_ids=contact_ids,
                   allow_contact=contact,supports=list(supports))
         if box.get('uncertainty'):spec['geometry_uncertainty']=box['uncertainty']
+        measured=box.get('quality') or {}
+        if measured.get('observed_side_envelope_source')=='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR':
+            spec['observed_side_envelope']=dict(source=measured['observed_side_envelope_source'],
+                front_dimensions_m=measured['front_face_and_depth_dimensions_m'],
+                expansion_m=measured['observed_side_envelope_expansion_m'])
         if self.enabled('scene_handles') and world is self.scene_world:
             # The task's world was hashed once when its scene was registered.
             fingerprint=self.scene_fingerprint
@@ -611,6 +623,11 @@ class SinglePlanner(EmptyPlanner):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_BOUNDED_SINGLE_CARTON_PLANNING')
         if any(b.get('uncertainty') for b in boxes) and not capabilities.get('partial_observed_contact_envelope'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_PARTIAL_OBSERVED_CONTACT')
+        if any((b.get('quality') or {}).get('observed_side_envelope_source') for b in boxes) and not capabilities.get('observed_side_envelope_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_OBSERVED_SIDE_ENVELOPE')
+        from .stack_support import policy as stack_policy
+        if stack_policy(getattr(self,'site',{}).get('geometry')) and not capabilities.get('inclined_carton_support_v1'):
+            raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_INCLINED_CARTON_SUPPORT')
         self.defer_output_check=bool(capabilities.get('single_carton_output_check_deferral'))
         if 'tool_robot_clearance' in self.clearance and not capabilities.get('single_carton_tool_robot_clearance'):
             raise ValueError('NATIVE_WORKER_UPDATE_REQUIRED_FOR_TOOL_ROBOT_CLEARANCE')
@@ -695,7 +712,7 @@ class SinglePlanner(EmptyPlanner):
     def plan_request(self,context,goal,linear):
         """The first native plan request of a segment (Pilz PTP or LIN)."""
         req=dict(context,op='plan',pipeline_id='pilz_industrial_motion_planner',planner_id='LIN' if linear else 'PTP',
-                 velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=25.)
+                 velocity_scale=1.,acceleration_scale=1.,allowed_planning_time_s=self.site.get('native_solver_budget_s',25.))
         # The worker's own dense check of its linear-joint waypoint path is
         # deferred only when it supports that, because sent_check() runs the
         # identical output-phase check on the exact sent path (all waypoints
@@ -725,7 +742,7 @@ class SinglePlanner(EmptyPlanner):
         if result.get('status')!='SUCCESS' and not linear and not str(result.get('status','')).startswith('INVALID_START'):
             # A new native search, with the identical loaded scene, never reverse playback.
             req.update(pipeline_id='ompl',planner_id='RRTConnectkConfigDefault')
-            progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（25 秒预算）')
+            progress(f'{stage} 直连未通过（{result.get("status")}），正在搜索避让路径（{req["allowed_planning_time_s"]:g} 秒预算）')
             result=self.native_call(req,folder,record+'-ompl',120,cancelled,client)
         self.write_evidence(folder/(record+'-native.json'),dict(request=req,result=result),'segment-native.json')
         accepted={'PASS'}|({DEFERRED_OUTPUT} if req.get('defer_output_check_to_sent_path') else set())
@@ -842,8 +859,10 @@ class SinglePlanner(EmptyPlanner):
         OUTWARD separates along the face normal by the box's largest extent with
         at least 10 mm of lift. When an observed obstacle stands just in front
         of the box bottom (e.g. a tray lip), a straight outward line cannot
-        rise in time, so a 45-degree and a lift-first profile follow. The loaded
-        return then plans freely from the detach end to q_start.
+        rise in time, so a 45-degree and a lift-first profile follow. Both
+        still move outward. A final purely vertical withdrawal can clear a
+        nearby front edge before the separately planned loaded return turns
+        outward. Every profile keeps the full payload and all obstacle checks.
         """
         outward=np.asarray(candidate['face']['normal'],float);up=np.array([0.,0.,1.])
         far=rigid(actual).copy();far[:3,3]+=outward*(max(box['size_m'])+.01)
@@ -852,6 +871,18 @@ class SinglePlanner(EmptyPlanner):
         for name,out,lift in DETACH_ALTERNATIVES:
             goal=rigid(actual).copy();goal[:3,3]+=outward*out+up*lift
             if min(np.linalg.norm(goal[:3,3]-g[:3,3]) for _,g in goals)>.005:goals.append((name,goal))
+        # First reuse the existing lift-first height without its outward
+        # component; a larger fallback clears one measured payload height.
+        # A detached endpoint alone never suffices: the loaded return must
+        # still be newly planned and all four sent paths audited.
+        # Follow a near-vertical carton edge when present. A world-Z move of
+        # a slightly tilted box otherwise drifts into its lateral neighbours.
+        R=rigid(box['pose'])[:3,:3];axis=int(np.argmax(abs(R[2])))
+        edge=R[:,axis]*np.sign(R[2,axis]);lift_axis=edge if edge[2]>=np.cos(np.deg2rad(10)) else up
+        height=float(np.ptp(np.asarray(box['corners_m'])[:,2]))
+        for name,lift in (('VERTICAL_CLEARANCE',DETACH_ALTERNATIVES[-1][2]),('VERTICAL_FULL_HEIGHT',height+.01)):
+            vertical=rigid(actual).copy();vertical[:3,3]+=lift_axis*lift
+            if min(np.linalg.norm(vertical[:3,3]-g[:3,3]) for _,g in goals)>.005:goals.append((name,vertical))
         return goals
     def screen_candidate(self,q,world,box,candidate,sub,cancelled=None,solutions=None):
         """Loaded q_start endpoint (rejecting) and task endpoints (ranking)."""

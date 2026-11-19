@@ -35,11 +35,15 @@ SUPPORT_BELOW_M=.015
 SUPPORT_ABOVE_M=.004
 SUPPORT_MIN_POINTS=30
 SUPPORT_MIN_THICKNESS_M=.005
-# A near-target run whose measured-extent box still overlaps a target
+# A near-target run whose measured-extent box reaches a target's vicinity
 # envelope is re-emitted as boxes over these sub-cells, each covering only
 # its own measured points (+ pad), so one 4 cm cell's L-shaped point set no
 # longer fills the empty corner that reaches into the envelope.
 NEAR_TARGET_SUBCELL_M=.01
+# Refinement changes representation, never the native pair clearance. Include
+# separated runs too: an L-shaped cloud's bounding box can manufacture a tiny
+# positive gap without intersecting the payload. Retain every point and pad.
+NEAR_TARGET_REFINE_GAP_M=2*MEASURED_EXTENT_PAD_M
 
 
 def user_cleared_unknown(c):
@@ -199,7 +203,7 @@ def _project(points,k):
     return uv.reshape(-1,2)
 
 
-def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None,unresolved_cartons=()):
+def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_m=None,unresolved_cartons=(),geometry=None):
     lap=timing.Laps('scene.')  # measurement only; no-op unless ECO65_TIMING=1
     cleared_unknown=user_cleared_unknown(config)
     frame=observation.frame
@@ -269,11 +273,12 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                     np.all(abs(_envelope_local(box,world_points))<=half,axis=-1))
             claimed|=inside;record['envelope_points_assigned_user_confirmed']=int(inside.sum())
     lap('target_point_claims',targets=len(boxes))
-    observed=world_points[valid&~claimed&~flying]
+    observed_pixels=np.flatnonzero(valid&~claimed&~flying)
+    observed=world_points.reshape(-1,3)[observed_pixels]
     removed_self=0
     if self_filter is not None:
         owned=self_filter.contains(observed,observation.q_capture)
-        removed_self=int(owned.sum());observed=observed[~owned]
+        removed_self=int(owned.sum());observed=observed[~owned];observed_pixels=observed_pixels[~owned]
         lap('self_filter_points',points=len(owned))
         # A voxel is owned only when ALL corners are inside actual robot solids.
         # Partial/uncertain cells remain occupied unless field evidence covers them.
@@ -282,10 +287,11 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         lap('self_filter_voxel_corners',corners=int(vertices.reshape(-1,3).shape[0]))
     for fixed in config.get('fixed_obstacles',[]):
         local=transform(np.linalg.inv(fixed['pose']),observed)
-        observed=observed[~np.all(abs(local)<=np.asarray(fixed['size_m'])/2+1e-9,axis=1)]
+        keep=~np.all(abs(local)<=np.asarray(fixed['size_m'])/2+1e-9,axis=1)
+        observed=observed[keep];observed_pixels=observed_pixels[keep]
     indices=np.floor((observed-lo)/cell).astype(int)
     inside=np.all(indices>=0,axis=1)&np.all(indices<shape,axis=1)
-    observed=observed[inside];indices=indices[inside]
+    observed=observed[inside];indices=indices[inside];observed_pixels=observed_pixels[inside]
     occupancy=(~free).reshape(tuple(shape));measured=np.zeros_like(occupancy)
     if len(indices):measured[tuple(indices.T)]=True
     occupancy |= measured
@@ -319,6 +325,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
             if len(cells_hit):shadow[tuple(cells_hit.T)]=True
         shadow&=unknown
     lap('neighbor_shadow')
+    from .stack_support import infer_supports
+    stack_bodies,stack_evidence=infer_supports(observation,result,boxes,unresolved_cartons,config,geometry,world_points,valid)
     # A detected carton is not covered by the user's unknown-space clearance.
     # Its possible body remains an obstacle even when its exact dimensions are
     # unknown. Clip only this STATIC occupancy query to the enforced workspace;
@@ -327,6 +335,21 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     if unresolved_cartons:
         from .visibility_geometry import possible_static_cells
         for item in unresolved_cartons:
+            index=item['detection_index']
+            if index in stack_bodies:
+                body,_=stack_bodies[index]
+                local=(vertices-np.asarray(body['pose'])[:3,3])@np.asarray(body['pose'])[:3,:3]
+                half=np.asarray(body['size'])/2
+                possible=np.all(local.max(1)>=-half,axis=1)&np.all(local.min(1)<=half,axis=1)
+                # This grid accounts for occupied volume but is not emitted:
+                # one oriented full-volume box preserves the exact top plane.
+                unresolved_grids.append((f'accounted_stack_{index}',possible.reshape(tuple(shape))))
+                unresolved_records.append(dict(detection_index=index,possible_voxels=int(possible.sum()),
+                    object_id=body['id'],representation_complete=True,
+                    scope='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD',
+                    sensor_free_cells_excluded=False,user_clearance_applied=False,
+                    carton_end_at_workspace_boundary_assumed=False,reliable_face=True))
+                continue
             possible=possible_static_cells(vertices,W,item.get('evidence') or {})&~sensor_free
             grid=possible.reshape(tuple(shape));index=item['detection_index']
             unresolved_grids.append((f'carton_possible_{index}',grid))
@@ -337,9 +360,20 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                 carton_end_at_workspace_boundary_assumed=False,
                 reliable_face=bool((item.get('evidence') or {}).get('observed_face'))))
     world=[dict(id=b['id'],pose=b['pose'],size=b['size_m'],category='measured_fixed') for b in config.get('fixed_obstacles',[])]
+    world.extend(body for body,_ in stack_bodies.values())
     # Supports are explicit objects; their points leave the voxel cloud but the
     # cells stay measured, so they never turn into unknown space.
     represented=np.zeros(len(observed),bool);supports=[]
+    for index,(body,record) in stack_bodies.items():
+        # Only this lower instance's returns already enclosed by its complete
+        # static body are represented here. Other instances/unlabelled objects
+        # and points outside that body remain ordinary obstacles. Keep measured
+        # occupancy above; no represented cell becomes sensor-free space.
+        local=transform(np.linalg.inv(body['pose']),observed)
+        selected=(np.asarray(result.masks[index],bool).ravel()[observed_pixels]&
+                  np.all(abs(local)<=np.asarray(body['size'])/2+1e-9,axis=1))
+        represented|=selected;record['observed_instance_points_represented']=int(selected.sum())
+        supports.append(body['id'])
     for box,record in zip(boxes,evidence):
         visibility_bound=box.get('uncertainty',{}).get('bound_method')=='RGBD_VISIBILITY_INTERVALS'
         support,selected,info=(_support_below(box,observed[~represented]) if len(observed) and not visibility_bound
@@ -373,7 +407,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
     grids=[('observed',emit)]
     if not cleared_unknown:grids.append(('unknown',unknown))
     else:grids.append(('neighbor_shadow',shadow))
-    grids.extend(unresolved_grids)
+    grids.extend((kind,grid) for kind,grid in unresolved_grids if not kind.startswith('accounted_stack_'))
     for ix in range(shape[0]):
         for iy in range(shape[1]):
             # Merge consecutive occupied cells along Z with identical ownership.
@@ -386,7 +420,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
                         lower=np.maximum(lower,low[ix,iy,a:b].min(0)-MEASURED_EXTENT_PAD_M)
                         upper=np.minimum(upper,high[ix,iy,a:b].max(0)+MEASURED_EXTENT_PAD_M);tight_runs+=1
                         run=np.eye(4);run[:3,3]=(lower+upper)/2
-                        if any(obb_overlap_depth(run,(upper-lower)/2,T,h)>0 for T,h in envelopes):
+                        if any(obb_overlap_depth(run,(upper-lower)/2,T,h)>=-NEAR_TARGET_REFINE_GAP_M for T,h in envelopes):
                             pts=np.concatenate([cell_points[k] for k in (np.ravel_multi_index((ix,iy,z),tuple(shape)) for z in range(a,b)) if k in cell_points])
                             groups=np.floor((pts-lower)/NEAR_TARGET_SUBCELL_M).astype(int)
                             _,which=np.unique(groups,axis=0,return_inverse=True);which=which.ravel()
@@ -428,6 +462,7 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         user_confirmed_clear_unknown_voxels=int((unknown&~shadow&~possible_union).sum()) if cleared_unknown else 0,
         unreconstructed_detections=unreconstructed,neighbor_shadow_voxels=int(shadow.sum()),
         unresolved_carton_obstacles=unresolved_records,
+        confirmed_stack_support=stack_evidence,
         neighbor_shadow_depth_m=float(neighbor_depth_m) if cleared_unknown and neighbor_depth_m else None,
         target_envelope_points=config.get('target_envelope_points','OBSTACLE'),
         target_envelope_points_basis=config.get('target_envelope_points_basis') if assign_envelope else None,
@@ -437,7 +472,8 @@ def build_scene(observation,result,boxes,config,self_filter=None,neighbor_depth_
         unknown_clearance_evidence='USER_FIELD_CONFIRMATION_NOT_SENSOR_OBSERVATION' if cleared_unknown else None,
         observed_voxels=int(measured.sum()),target_local_scene=evidence,observed_supports=supports,
         near_target_measured_extent_runs=tight_runs,near_target_refined_runs=refined_runs,near_target_refined_boxes=refined_boxes,
-        near_target_subcell_m=NEAR_TARGET_SUBCELL_M,camera_facing_measured_extent_runs=camera_side_runs,
+        near_target_subcell_m=NEAR_TARGET_SUBCELL_M,near_target_refine_gap_m=NEAR_TARGET_REFINE_GAP_M,
+        camera_facing_measured_extent_runs=camera_side_runs,
         camera_facing_rule='USER_CONFIRMED_CLEAR_ONLY_CAMERA_SIDE_TO_MEASURED_EXTENT_FAR_SIDE_FULL_CELL' if cleared_unknown else 'NOT_APPLIED_OCCUPIED_POLICY_FULL_CELLS',target_local_rules=dict(plane_band_m=TARGET_PLANE_BAND_M,
             pixel_band_px=TARGET_PIXEL_BAND_PX,flying_depth_jump_m=FLYING_DEPTH_JUMP_M,near_target_m=NEAR_TARGET_M,
             measured_extent_pad_m=MEASURED_EXTENT_PAD_M,support_window_m=[-SUPPORT_BELOW_M,SUPPORT_ABOVE_M]),

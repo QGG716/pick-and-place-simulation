@@ -149,6 +149,21 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
         if rgb is None: raise GeometryRejected('MASK_BOUNDARY_CUTS_CONTINUING_PLANE',evidence)
         edge_pixels=cv2.dilate(cv2.Canny(cv2.cvtColor(rgb,cv2.COLOR_RGB2GRAY),30,80),np.ones((5,5),'uint8'))>0
         if np.mean(edge_pixels[continuation])<.70: raise GeometryRejected('COPLANAR_NEIGHBOR_BOUNDARY_NOT_OBSERVED',evidence)
+    # The fitted side is not exactly perpendicular to the front (cardboard
+    # bowing and measurement noise). Its normal alone must not determine the
+    # box: a front-edge rectangle can be narrower than the actual side farther
+    # back. Keep that rectangle as the observed seal patch, and expand the
+    # collision body along the side-normal axis to contain EVERY accepted
+    # side-plane sample. Never shrink the old body, move a contact plane, or
+    # infer the hidden opposite side from a lone plane. The full-boundary and
+    # mixed-instance checks above still apply before this conservative union.
+    front_dimensions=size.copy()
+    side_x=(side['support']-pose[:3,3])@x
+    side_lo=min(-size[0]/2,float(side_x.min()))
+    side_hi=max(size[0]/2,float(side_x.max()))
+    expansion=[float(-size[0]/2-side_lo),float(side_hi-size[0]/2)]
+    pose[:3,3]+=x*((side_lo+side_hi)/2)
+    size[0]=side_hi-side_lo
     world_pose=W@pose
     return dict(pose=world_pose.tolist(),size_m=size.tolist(),corners_m=corners(world_pose,size).tolist(),
         faces=[face],observed_faces=['visible_positive_z','supporting_side'],
@@ -159,6 +174,10 @@ def _recover_measured(points, mask, world_camera, *, rgb, seed, min_points, resi
             surface_consistency=float(consistent.mean()),hidden_extent_measured=True,
             unseen_surfaces_observed=False,side_plane_rms_m=side['rms'],
             orthogonality_error_rad=float(np.arcsin(abs(n@side['normal']))),
+            front_face_and_depth_dimensions_m=front_dimensions.tolist(),
+            observed_side_envelope_expansion_m=expansion,
+            observed_side_envelope_source='ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR',
+            observed_side_envelope_points=len(side['support']),
             ambiguity='180_DEGREE_FACE_SYMMETRY',all_dimensions_source='RGBD_VISIBLE_BOUNDARIES'))
 
 

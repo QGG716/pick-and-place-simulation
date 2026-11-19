@@ -392,8 +392,8 @@ def test_detach_falls_back_to_lift_profiles_when_outward_line_is_blocked(case,mo
     assert detach['stage']=='detach' and detach['package']['evidence']['detach_profile']=='DIAGONAL_45'
     rejected=detach['package']['evidence']['rejected_detach_profiles']
     assert [r['profile'] for r in rejected]==['OUTWARD'] and 'NATIVE_REJECTED' in rejected[0]['reason']
-    # Outward attempt at full and three slower LIN profiles, then one 45-degree plan.
-    assert len(seen)==5
+    # Outward attempt at full and four slower LIN profiles, then one 45-degree plan.
+    assert len(seen)==6
     np.testing.assert_allclose(seen[-1],normal*.04+np.array([0,0,.04]),atol=1e-6)
     sub=next(folder.glob('*-0'))
     assert (sub/'detach-pilz-native.json').is_file() and (sub/'detach-diagonal_45-pilz-native.json').is_file()
@@ -409,6 +409,36 @@ def test_all_detach_profiles_rejected_issues_no_permit(case,monkeypatch):
     assert p.authority._plans=={} and not (folder/'complete-plan.json').exists()
     reason=json.loads((folder/'planning-failures.json').read_text())[0]['reason']
     assert 'ALL_PROFILES_REJECTED' in reason and all(name in reason for name in ('OUTWARD','DIAGONAL_45','LIFT_FIRST'))
+
+
+@pytest.mark.parametrize('blocked_return',[False,True])
+def test_vertical_withdrawal_keeps_loaded_return_and_final_audit(case,monkeypatch,blocked_return):
+    p,obs,box,folder,calls,opts=case
+    # Front suction: an object just ahead blocks every diagonal withdrawal,
+    # while a pure vertical lift remains clear. Fake IO only.
+    T=np.asarray(box['pose']);T[:3,:3]=[[0,0,1],[0,1,0],[-1,0,0]]
+    box['pose']=T.tolist();box['corners_m']=corners(T,box['size_m']).tolist()
+    box['faces'][0].update(center_m=[.45,0,.4],u=[0,0,-1],v=[0,1,0],normal=[1,0,0])
+    candidate=contact_candidates(box,p.source['tool'],p.site['topology'])[0]
+    monkeypatch.setattr('unloading_sim.workbench.single_carton.planner.contact_candidates',lambda *a:[deepcopy(candidate)])
+    tcp=np.asarray(candidate['tcp_pose'])
+    p.coordinate_model.tcp=lambda q:tcp if q[0]>.01 else np.eye(4)
+    opts['plan']=lambda r:(dict(status='NATIVE_PLANNING_FAILED') if r['stage']=='detach' and
+        np.linalg.norm(np.asarray(r['goal_pose'])[:2,3]-tcp[:2,3])>1e-8 else None)
+    opts['reject_return']=blocked_return
+    if blocked_return:
+        with pytest.raises(ValueError,match='NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN'):
+            p.plan_cycle(obs,[box],folder)
+        assert not p.authority._plans
+    else:
+        result=p.plan_cycle(obs,[box],folder)
+        detach=result['segments'][2]['package']['evidence']
+        assert detach['detach_profile']=='VERTICAL_CLEARANCE'
+        assert [x['profile'] for x in detach['rejected_detach_profiles']]==['OUTWARD','DIAGONAL_45','LIFT_FIRST']
+        assert len(p.authority._plans)==4
+    returning=[r for r in calls if r.get('op')=='plan' and r['stage']=='return']
+    assert returning and all(r['attachment'] is not None and r['q_goal']==list(obs.q_start) for r in returning)
+    assert any(r.get('op')=='validate' and r['stage']=='return' and 'probe_path' in r for r in calls)
 
 
 # Quintic rest-to-rest peaks: speed 1.875*d/T (limit 0.1), acceleration 5.7735*d/T^2 (limit 0.2).

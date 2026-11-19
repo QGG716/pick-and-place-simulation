@@ -1,0 +1,1047 @@
+{
+  "date": "2026-11-19",
+  "base_commit": "265b29f0c170b1c6fbf002ff9dacb76056a05868",
+  "scope": "CURRENT_FIELD_RGBD_GEOMETRY_FIX_AND_NATIVE_PLANNING_DIAGNOSIS",
+  "hardware_execution": "NOT_RUN",
+  "physical_result": "NOT_RUN",
+  "motion_commands_sent": 0,
+  "valve_commands_sent": 0,
+  "model_inference": "Saved records reuse original inference; new live observations use local CPU. No GPU recomputation.",
+  "original_task_id": "67dbcaac6b39429f91ccaa7b98136b4b",
+  "original_sha256": {
+    "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+    "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+    "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+    "geometry.json": "541ac2883f74541ac94f10b5d0a57415c4102803798c50482e6a9f78812558e8",
+    "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009"
+  },
+  "original_record_unchanged": true,
+  "original_overlap_report_m": 0.074274,
+  "overlap_meaning": "CONSERVATIVE_UNKNOWN_LOWER_VOLUME_NOT_MEASURED_PHYSICAL_INTERPENETRATION",
+  "changes": [
+    "Explicit user-confirmed two-carton stack plus same-frame support interface bounds lower static volume below measured upper bottom.",
+    "Lower dimensions remain unknown; full possible static body inside enforced workspace stays occupied.",
+    "Near-target measured clouds refined for small positive gaps as well as intersections; every point and existing 3 mm padding retained.",
+    "Accepted measured side samples expand the complete payload laterally; original observed seal rectangle remains unchanged and native-bound.",
+    "Pure near-vertical loaded withdrawal alternatives and additional native 0.05 LIN retry; full loaded return remains a separate native plan.",
+    "Per-call search budget exhaustion counted separately from physical infeasibility."
+  ],
+  "retained": {
+    "required_pair_clearance_m": 0.0024,
+    "tool_robot_reserve_m": 0.04,
+    "robot_tool_solids": 715,
+    "cups": 12,
+    "lip_and_support_penetration_m": 0.0004,
+    "velocity_rad_s": 0.1,
+    "acceleration_rad_s2": 0.2,
+    "canfd_period_s": 0.005,
+    "pressure_kpa": [
+      -60,
+      -30,
+      -10
+    ],
+    "pressure_fresh_heartbeats": 2,
+    "pressure_span_s": 1,
+    "pressure_timeouts_s": 3,
+    "stop_keeps_held_load": true,
+    "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7"
+  },
+  "field_policy": {
+    "issues": [],
+    "camera": {
+      "serial": "",
+      "width": 640,
+      "height": 480,
+      "fps": 30
+    },
+    "stack_support": {
+      "mode": "USER_CONFIRMED_TWO_CARTON_STACK",
+      "basis": "USER_FIELD_CONFIRMATION_2026_11_19_TWO_DIFFERENT_CARTONS_STACKED_LOWER_SUPPORTS_UPPER_NO_OCCLUSION_CURRENT_RGBD_ONLY"
+    },
+    "size_policy": "MEASURED_PER_INSTANCE",
+    "native_solver_budget_s": 25.0,
+    "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+    "motion_commands_sent": false,
+    "valve_commands_sent": false
+  },
+  "saved_scene": {
+    "record": "outputs/single_carton_development/stack-support-20261119-side-envelope",
+    "report_sha256": "36826dfac84e85ee64ad20b3c5a92ad2972ded01b62285e835a83efb48c5ae91",
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "source_hashes": {
+      "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+      "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+      "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+      "geometry.json": "541ac2883f74541ac94f10b5d0a57415c4102803798c50482e6a9f78812558e8",
+      "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009"
+    },
+    "source_record_unchanged": true,
+    "boxes": [
+      {
+        "id": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "collision_size_m": [
+          0.17521155581940212,
+          0.11093838492867042,
+          0.1076956147294154
+        ],
+        "front_face_and_depth_dimensions_m": [
+          0.16838774569716397,
+          0.11093838492867042,
+          0.1076956147294154
+        ],
+        "side_envelope_expansion_m": [
+          0.0,
+          0.006823810122238136
+        ],
+        "plane_rms_m": 0.0007090322424711114,
+        "side_plane_rms_m": 0.0011009098251781287
+      }
+    ],
+    "unresolved": [
+      {
+        "detection_index": 1,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+      }
+    ],
+    "scene_counts": {
+      "confirmed_stack_support": 1,
+      "observed_support": 1,
+      "observed": 54,
+      "workspace_boundary": 6
+    },
+    "stack_support": [
+      {
+        "status": "APPLIED",
+        "upper_id": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "lower_index": 1,
+        "object_id": "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "basis": "USER_FIELD_CONFIRMATION_2026_11_19_TWO_DIFFERENT_CARTONS_STACKED_LOWER_SUPPORTS_UPPER_NO_OCCLUSION_CURRENT_RGBD_ONLY",
+        "plane": {
+          "normal_world": [
+            -0.004523180670436164,
+            -0.030555666046017296,
+            0.9995228322100045
+          ],
+          "offset_m": 0.3205629712214476
+        },
+        "plane_source": "MEASURED_UPPER_BOTTOM_PLUS_USER_CONFIRMED_STACK_TOPOLOGY_NOT_MEASURED_LOWER_TOP",
+        "interface_points": 1185,
+        "interface_gap_m": [
+          -0.0031238769081136653,
+          0.014997489137476117
+        ],
+        "lower_front_max_above_plane_m": -0.007857626552330854,
+        "hidden_depth_measured": false,
+        "full_dimensions_m": null,
+        "carton_end_at_workspace_boundary_assumed": false,
+        "complete_static_domain_vertices": [
+          [
+            -0.8,
+            -0.8,
+            -0.15
+          ],
+          [
+            -0.8,
+            -0.8,
+            0.292639532007
+          ],
+          [
+            -0.8,
+            0.8,
+            -0.15
+          ],
+          [
+            -0.8,
+            0.8,
+            0.341551937105
+          ],
+          [
+            -0.620666431182,
+            -0.8,
+            -0.15
+          ],
+          [
+            -0.611808288013,
+            -0.8,
+            0.293491163492
+          ],
+          [
+            -0.503688061515,
+            0.8,
+            -0.15
+          ],
+          [
+            -0.493842295771,
+            0.8,
+            0.342937404815
+          ]
+        ],
+        "support_penetration_limit_m": 0.0004,
+        "contact_permission_scope": "THIS_TARGET_PAYLOAD_DURING_DETACH_ONLY_NO_ROBOT_OR_TOOL_EXCEPTION",
+        "observed_instance_points_represented": 21549
+      }
+    ],
+    "rest_check": {
+      "intersections": [],
+      "outside_workspace": false,
+      "supports": [
+        "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0"
+      ]
+    },
+    "perception_and_scene_s": 21.52,
+    "planning_s": null,
+    "planning_budget": null,
+    "failures": [],
+    "source_hash": {
+      "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+      "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+      "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+      "geometry.json": "541ac2883f74541ac94f10b5d0a57415c4102803798c50482e6a9f78812558e8",
+      "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009"
+    },
+    "found": false
+  },
+  "fresh_scene": {
+    "record": "outputs/single_carton_development/stack-support-20261119-fresh-side-envelope",
+    "report_sha256": "0dd7bf4b85844ea60ec44c1b6005ccd499eb05563bbd20ce19ad7996f6aeb146",
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "source_hashes": {
+      "observation.json": "d02b11f3551845fa90a8be0329ff9b13ff61b69e8059f533d2325ad6720b77ce",
+      "observation.npz": "fdcc2b21d8e62eae3001db4b78131c7c2f3597ba8f581530814fcbe5565903b8",
+      "segmentation.npz": "9c0e155a338a718ce705152d24d0d222d6898269cc1af31be0d658048cd12989",
+      "geometry.json": "87f33f921dfe3ba763d2580a01cbe5195970926a9a80b66aaef18467af6e5a4f",
+      "detections.json": "4df4ec046a7e1effd97bccaf9848d5874c9530a64f207798ee6baae8cba31c3f"
+    },
+    "source_record_unchanged": true,
+    "boxes": [
+      {
+        "id": "c84a3eef-928e-4f3c-97b7-36502e8f65db-carton-0",
+        "collision_size_m": [
+          0.1744318520565966,
+          0.11003754717728421,
+          0.10785574453584063
+        ],
+        "front_face_and_depth_dimensions_m": [
+          0.16810321341669393,
+          0.11003754717728421,
+          0.10785574453584063
+        ],
+        "side_envelope_expansion_m": [
+          0.0,
+          0.006328638639902656
+        ],
+        "plane_rms_m": 0.0007133809273385932,
+        "side_plane_rms_m": 0.0009052923224746904
+      }
+    ],
+    "unresolved": [],
+    "scene_counts": {
+      "observed_support": 1,
+      "observed": 57,
+      "workspace_boundary": 6
+    },
+    "stack_support": [
+      {
+        "status": "NOT_APPLIED",
+        "reason": "CONFIRMATION_ONLY_COVERS_TWO_CARTON_STACK"
+      }
+    ],
+    "rest_check": {
+      "intersections": [],
+      "outside_workspace": false,
+      "supports": [
+        "rgbd_support_c84a3eef-928e-4f3c-97b7-36502e8f65db-carton-0"
+      ]
+    },
+    "perception_and_scene_s": 20.1,
+    "planning_s": null,
+    "planning_budget": null,
+    "failures": [],
+    "source_hash": {
+      "observation.json": "d02b11f3551845fa90a8be0329ff9b13ff61b69e8059f533d2325ad6720b77ce",
+      "observation.npz": "fdcc2b21d8e62eae3001db4b78131c7c2f3597ba8f581530814fcbe5565903b8",
+      "segmentation.npz": "9c0e155a338a718ce705152d24d0d222d6898269cc1af31be0d658048cd12989",
+      "geometry.json": "87f33f921dfe3ba763d2580a01cbe5195970926a9a80b66aaef18467af6e5a4f",
+      "detections.json": "4df4ec046a7e1effd97bccaf9848d5874c9530a64f207798ee6baae8cba31c3f"
+    },
+    "found": false
+  },
+  "complete_retry": {
+    "record": "outputs/single_carton_development/stack-support-20261119-complete-retry",
+    "report_sha256": "47552d684bdedc1efb5d7c6ca19ae461aa1d88f41c3b22b7d3d97c8d877e16fd",
+    "scope": "OFFLINE_REPLAY_OF_SAVED_RECORD_NOT_EXECUTABLE",
+    "physical_result": "NOT_RUN",
+    "permits_issued": 0,
+    "source_hashes": {
+      "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+      "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+      "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+      "geometry.json": "635854034ab06d431be1e72039bcd48843a3258f51024818756efe43bbdda5b3",
+      "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009",
+      "site-scene.json": "e647374b28ca111a7970ed9bb2d455db8f9d36346a594913f6f8cc6021479730"
+    },
+    "source_record_unchanged": true,
+    "boxes": [
+      {
+        "id": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "collision_size_m": [
+          0.17521155581940212,
+          0.11093838492867042,
+          0.1076956147294154
+        ],
+        "front_face_and_depth_dimensions_m": [
+          0.16838774569716397,
+          0.11093838492867042,
+          0.1076956147294154
+        ],
+        "side_envelope_expansion_m": [
+          0.0,
+          0.006823810122238136
+        ],
+        "plane_rms_m": 0.0007090322424711114,
+        "side_plane_rms_m": 0.0011009098251781287
+      }
+    ],
+    "unresolved": [
+      {
+        "detection_index": 1,
+        "reason": "HIDDEN_EXTENT_NOT_BOUNDED_BY_CURRENT_RGBD"
+      }
+    ],
+    "scene_counts": {
+      "confirmed_stack_support": 1,
+      "observed_support": 1,
+      "observed": 54,
+      "workspace_boundary": 6
+    },
+    "stack_support": [
+      {
+        "status": "APPLIED",
+        "upper_id": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "lower_index": 1,
+        "object_id": "rgbd_confirmed_stack_support_1_for_8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "basis": "USER_FIELD_CONFIRMATION_2026_11_19_TWO_DIFFERENT_CARTONS_STACKED_LOWER_SUPPORTS_UPPER_NO_OCCLUSION_CURRENT_RGBD_ONLY",
+        "plane": {
+          "normal_world": [
+            -0.004523180670436164,
+            -0.030555666046017296,
+            0.9995228322100045
+          ],
+          "offset_m": 0.3205629712214476
+        },
+        "plane_source": "MEASURED_UPPER_BOTTOM_PLUS_USER_CONFIRMED_STACK_TOPOLOGY_NOT_MEASURED_LOWER_TOP",
+        "interface_points": 1185,
+        "interface_gap_m": [
+          -0.0031238769081136653,
+          0.014997489137476117
+        ],
+        "lower_front_max_above_plane_m": -0.007857626552330854,
+        "hidden_depth_measured": false,
+        "full_dimensions_m": null,
+        "carton_end_at_workspace_boundary_assumed": false,
+        "complete_static_domain_vertices": [
+          [
+            -0.8,
+            -0.8,
+            -0.15
+          ],
+          [
+            -0.8,
+            -0.8,
+            0.292639532007
+          ],
+          [
+            -0.8,
+            0.8,
+            -0.15
+          ],
+          [
+            -0.8,
+            0.8,
+            0.341551937105
+          ],
+          [
+            -0.620666431182,
+            -0.8,
+            -0.15
+          ],
+          [
+            -0.611808288013,
+            -0.8,
+            0.293491163492
+          ],
+          [
+            -0.503688061515,
+            0.8,
+            -0.15
+          ],
+          [
+            -0.493842295771,
+            0.8,
+            0.342937404815
+          ]
+        ],
+        "support_penetration_limit_m": 0.0004,
+        "contact_permission_scope": "THIS_TARGET_PAYLOAD_DURING_DETACH_ONLY_NO_ROBOT_OR_TOOL_EXCEPTION",
+        "observed_instance_points_represented": 21549
+      }
+    ],
+    "rest_check": null,
+    "perception_and_scene_s": 9.32,
+    "planning_s": 225.17,
+    "planning_budget": {
+      "status": "SEARCH_FINISHED_WITHIN_DEADLINE",
+      "where": null,
+      "detail": null,
+      "deadline_monotonic_s": 171386.046057442,
+      "classified_monotonic_s": 171376.223965627,
+      "reply_reserve_s": 0.1,
+      "targets": [
+        {
+          "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+          "status": "SEARCH_BUDGET_EXHAUSTED_NO_PLAN",
+          "candidates": 32,
+          "considered": 32,
+          "screened": 21,
+          "searched": 32,
+          "unsearched": 0,
+          "infeasible_candidates": 22,
+          "accepted_candidate": null,
+          "solver_budget_exhausted_candidates": 10,
+          "target_reason": null
+        }
+      ],
+      "rule": "UNSEARCHED_CANDIDATES_ARE_NOT_INFEASIBLE; BUDGET_EXHAUSTION_IS_NOT_IPC_FAILURE_OR_INFEASIBILITY"
+    },
+    "failures": [
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 7,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 8,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 9,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 10,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 间隙 0.52 mm；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 13,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 14,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_008_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 15,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_008_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 16,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 17,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 18,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 19,
+        "reason": "ENDPOINT_TOOL_OR_PAYLOAD_BLOCKED: contact 终态 part_002_lip ↔ rgbd_support_8455e418-05a1-4dab-9728-94b5513756be-carton-0 相交；与逆解分支无关，跳过本候选的路径搜索"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 11,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 28,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 0,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 21,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 12,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 29,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 1,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 22,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 27,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 20,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 6,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 30,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 23,
+        "reason": "approach:NATIVE_REJECTED:NATIVE_SOLVER_BUDGET_EXHAUSTED"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 2,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 24,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 31,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 3,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 25,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 4,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 26,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      },
+      {
+        "target": "8455e418-05a1-4dab-9728-94b5513756be-carton-0",
+        "candidate": 5,
+        "reason": "detach:ALL_PROFILES_REJECTED:[{\"profile\": \"OUTWARD\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"DIAGONAL_45\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"LIFT_FIRST\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_CLEARANCE\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}, {\"profile\": \"VERTICAL_FULL_HEIGHT\", \"reason\": \"detach:NATIVE_REJECTED:NATIVE_PLANNING_FAILED\"}]"
+      }
+    ],
+    "source_hash": {
+      "observation.json": "4ba35a967b5b0f4cc7b69197e18d1b206aa29d17ddca7f88133c5dd1af4b24d6",
+      "observation.npz": "bde2ea3cf1abce47d890edddeac46064bbc2be83b03a81c22311183a771d9890",
+      "segmentation.npz": "d1e1731103dc01b5cb87d39c907e104720645def8e20a76cfb32ec47f1167818",
+      "geometry.json": "635854034ab06d431be1e72039bcd48843a3258f51024818756efe43bbdda5b3",
+      "detections.json": "83e62b595c8adac16ef39220164b5233b44108e749daf6a55a1556f8846b1009",
+      "site-scene.json": "e647374b28ca111a7970ed9bb2d455db8f9d36346a594913f6f8cc6021479730"
+    },
+    "found": false
+  },
+  "tests": [
+    {
+      "file": "docs/evidence/realtime_20261119_stack_geometry/pytest.xml",
+      "sha256": "d2e90f6f00ec8cca9b116084f018e5ab1744216927d389bf8c337acb163ce913",
+      "tests": 665,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 254.54
+    },
+    {
+      "file": "docs/evidence/realtime_20261119_stack_geometry/pytest-side-envelope.xml",
+      "sha256": "1264ce46d955a6ef7969e90fc092c8e53c52f864a38e58d52783d329121ca841",
+      "tests": 666,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 340.67
+    },
+    {
+      "file": "docs/evidence/realtime_20261119_stack_geometry/pytest-final.xml",
+      "sha256": "070e86ddfa6b36798ea3d1a8e3dae64dbbc2ae852c665bf034a863aacf50901d",
+      "tests": 667,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_s": 367.397
+    }
+  ],
+  "native_logs": {
+    "native-optimized-final.log": {
+      "path": "docs/evidence/realtime_20261119_stack_geometry/native-optimized-final.log",
+      "sha256": "247665b47988d1253cf07aaf76f0f7f38fcc398af30c3f727f3246aa4eb12ce4"
+    },
+    "native-reference-final.log": {
+      "path": "docs/evidence/realtime_20261119_stack_geometry/native-reference-final.log",
+      "sha256": "9151b476625aa052ae1320ce88591811d3e19b7b4c455e1d2a9ec07a8b3801d4"
+    },
+    "native-component-side-final.log": {
+      "path": "docs/evidence/realtime_20261119_stack_geometry/native-component-side-final.log",
+      "sha256": "758530fbfa2f28361fc06701aa05d0346c0e4f4db7423359597c339ad12c9cd1"
+    }
+  },
+  "latency_target": {
+    "p95_prepare_plan_s": 2.0,
+    "status": "NOT_MET_NO_COMPLETE_PLAN",
+    "physical_latency": "NOT_RUN"
+  },
+  "abandoned_diagnostics": [
+    "Removing existing observed-support classification introduced padded seam overlaps; not retained.",
+    "25 s and 90 s solver budgets did not yield a full path on the earlier frozen scene; local budget restored to 25 s.",
+    "Offline 10 mm precontact and four wrist-roll bridge variants did not yield a complete path; not enabled in production.",
+    "First expanded-side replay correctly failed the old native face binding; explicit observed-side binding and capability gate added before retry."
+  ],
+  "initial_test_failures": [
+    "Minimal test planner lacked site before worker capability check; fixed getattr without weakening checks.",
+    "Two native invocations omitted ROS environment; two used a nonexistent installed test path. Successful runs use build/moveit test binary with existing ROS environment."
+  ],
+  "delivery_status": "FIELD_COMPLETE_CYCLE_NOT_RUN",
+  "approach_diagnosis": {
+    "file": "outputs/geometry-diagnosis-20261119-unoccluded/approach-trace-native.json",
+    "sha256": "523f5853038c892ea46e9d633c26a776ab7f6283dbcb276dd8424e63cf084202",
+    "elapsed_s": 25.34983103099512,
+    "status": "Timeout",
+    "vertices": 45,
+    "extensions": 44,
+    "custom_checks": 1642,
+    "truncated": false,
+    "collision_witnesses": [
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_026"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.3935630175632597,
+          -0.08278400949037054,
+          -1.0500126538451395,
+          -1.7460110066302597,
+          -0.6452820646527461,
+          -1.3777387898137596
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03736496221401657
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_027"
+        ],
+        "phase": "search",
+        "q_rad": [
+          1.0889573444481309,
+          -0.18877258744691205,
+          -0.9849333104319715,
+          -0.7150684990240463,
+          0.8260768566529813,
+          -0.518420079729373
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03881401491992111
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_026"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.4223287634879523,
+          -0.08545569945539483,
+          -1.0558368290561975,
+          -1.70192079433357,
+          -0.6325415652759562,
+          -1.3728682968007355
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03606338743703204
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_027"
+        ],
+        "phase": "search",
+        "q_rad": [
+          1.0882671445191126,
+          -0.18915993265798067,
+          -0.9847674287064566,
+          -0.71588872761421,
+          0.8260063093482823,
+          -0.5173923308420757
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.038796183698268115
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_027"
+        ],
+        "phase": "search",
+        "q_rad": [
+          1.0764202198974808,
+          -0.23705984061402186,
+          -0.9760947869021864,
+          -0.7039200917766172,
+          0.8190487944720058,
+          -0.46406797214393614
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03873401555083494
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_026"
+        ],
+        "phase": "search",
+        "q_rad": [
+          0.36784603224432083,
+          -0.07887286568486994,
+          -1.030234484667287,
+          -1.782128159257406,
+          -0.6601818388001317,
+          -1.3622565998396505
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03737582799654828
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_027"
+        ],
+        "phase": "search",
+        "q_rad": [
+          1.0786844860254645,
+          -0.205908971523938,
+          -0.9695191847341101,
+          -0.6643285179169195,
+          0.825859525197091,
+          -0.42998433717810075
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03924766253209844
+      },
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "link_3",
+          "part_027"
+        ],
+        "phase": "search",
+        "q_rad": [
+          1.0886005120178612,
+          -0.1888303949174246,
+          -0.9847868150005167,
+          -0.7149038116068053,
+          0.8267248941967242,
+          -0.5190802751620548
+        ],
+        "query_range_m": 0.041,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.04,
+        "surface_distance_m": 0.03886041521027329
+      }
+    ],
+    "evidence_scope": "DIAGNOSTIC_NOT_EXECUTION_EVIDENCE"
+  },
+  "fresh-blocker.json": {
+    "file": "outputs/geometry-diagnosis-20261119-unoccluded/fresh-blocker.json",
+    "sha256": "87337d0ad2a99af8f6cc2b23cc55579a4729c2531865e14b3330a347a728d426",
+    "result": {
+      "points": 64,
+      "nearest_point_distance_m": 0.005177833307836055,
+      "distance_quantiles_m": [
+        0.005177833307836055,
+        0.005894604907466508,
+        0.007216863958974085,
+        0.010153144071908551
+      ],
+      "nearest_pixel_xy": [
+        412,
+        287
+      ],
+      "local": [
+        0.08922944001618302,
+        -0.024161846824483774,
+        -0.02574138343092825
+      ],
+      "half": [
+        0.08405160670834697,
+        0.05501877358864211,
+        0.05392787226792031
+      ],
+      "point": [
+        -0.5835794943791048,
+        0.06809746985507294,
+        0.35068847220338495
+      ],
+      "target_claims": {
+        "mask_points_claimed": 41164,
+        "border_surface_points_claimed": 760,
+        "side_face_points_claimed": 1,
+        "flying_points_removed": 3657
+      }
+    }
+  },
+  "wrist-bridge/summary.json": {
+    "file": "outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/summary.json",
+    "sha256": "7550b617e21ecf689dcbeb06b4297be260d0731c5026b029234844fe41865a60",
+    "result": [
+      {
+        "roll_deg": -90,
+        "scope": "OFFLINE_NATIVE_NOT_EXECUTABLE",
+        "permits_issued": 0,
+        "segments": [
+          {
+            "status": "SUCCESS",
+            "failure": null,
+            "examples": [],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/-90-0.json"
+          },
+          {
+            "status": "NATIVE_PLANNING_FAILED",
+            "failure": null,
+            "examples": [
+              {
+                "numerical_gap_tolerance_m": 1e-09,
+                "pair": [
+                  "link_3",
+                  "part_026"
+                ],
+                "phase": "search",
+                "q_rad": [
+                  1.2188972301704004,
+                  -0.19163007954510047,
+                  -0.9661601822627874,
+                  -0.5599118659229905,
+                  1.0858086237899238,
+                  -1.5707963267948966
+                ],
+                "query_range_m": 0.041,
+                "query_scope": "self_including_robot_tool_and_payload",
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "required_pair_clearance_m": 0.04,
+                "surface_distance_m": 0.03994709426430518
+              }
+            ],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/-90-1.json"
+          }
+        ]
+      },
+      {
+        "roll_deg": 90,
+        "scope": "OFFLINE_NATIVE_NOT_EXECUTABLE",
+        "permits_issued": 0,
+        "segments": [
+          {
+            "status": "SUCCESS",
+            "failure": null,
+            "examples": [],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/90-0.json"
+          },
+          {
+            "status": "NATIVE_PLANNING_FAILED",
+            "failure": null,
+            "examples": [
+              {
+                "numerical_gap_tolerance_m": 1e-09,
+                "pair": [
+                  "link_3",
+                  "part_039"
+                ],
+                "phase": "search",
+                "q_rad": [
+                  1.1856386853741019,
+                  -0.18711584368248244,
+                  -0.9695159690570803,
+                  -0.6079761760180897,
+                  1.0158086237899242,
+                  1.5707963267948966
+                ],
+                "query_range_m": 0.041,
+                "query_scope": "self_including_robot_tool_and_payload",
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "required_pair_clearance_m": 0.04,
+                "surface_distance_m": 0.039959625086956954
+              }
+            ],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/90-1.json"
+          }
+        ]
+      },
+      {
+        "roll_deg": 0,
+        "scope": "OFFLINE_NATIVE_NOT_EXECUTABLE",
+        "permits_issued": 0,
+        "segments": [
+          {
+            "status": "SUCCESS",
+            "failure": null,
+            "examples": [],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/0-0.json"
+          },
+          {
+            "status": "NATIVE_PLANNING_FAILED",
+            "failure": null,
+            "examples": [
+              {
+                "numerical_gap_tolerance_m": 1e-09,
+                "pair": [
+                  "link_3",
+                  "part_027"
+                ],
+                "phase": "search",
+                "q_rad": [
+                  1.062106947559279,
+                  -0.17034868190704397,
+                  -0.9819803200073107,
+                  -0.7865007563713157,
+                  0.7558086237899251,
+                  0.0
+                ],
+                "query_range_m": 0.041,
+                "query_scope": "self_including_robot_tool_and_payload",
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "required_pair_clearance_m": 0.04,
+                "surface_distance_m": 0.03955766371586643
+              }
+            ],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/0-1.json"
+          }
+        ]
+      },
+      {
+        "roll_deg": 170,
+        "scope": "OFFLINE_NATIVE_NOT_EXECUTABLE",
+        "permits_issued": 0,
+        "segments": [
+          {
+            "status": "SUCCESS",
+            "failure": null,
+            "examples": [],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/170-0.json"
+          },
+          {
+            "status": "NATIVE_PLANNING_FAILED",
+            "failure": null,
+            "examples": [
+              {
+                "numerical_gap_tolerance_m": 1e-09,
+                "pair": [
+                  "link_3",
+                  "part_039"
+                ],
+                "phase": "search",
+                "q_rad": [
+                  0.9243215476888995,
+                  -0.1516468476190549,
+                  -0.9958828652979523,
+                  -0.9856243267652984,
+                  0.46580862378992616,
+                  2.9670597283903604
+                ],
+                "query_range_m": 0.041,
+                "query_scope": "self_including_robot_tool_and_payload",
+                "reason": "CLEARANCE_INSUFFICIENT",
+                "required_pair_clearance_m": 0.04,
+                "surface_distance_m": 0.039417714687651303
+              }
+            ],
+            "file": "/home/jd/下载/code/eco65 pick and place/outputs/geometry-diagnosis-20261119-unoccluded/wrist-bridge/170-1.json"
+          }
+        ]
+      }
+    ]
+  },
+  "integration_pending": {
+    "remote_head": "035b388",
+    "new_remote_commits": 5,
+    "scope": "PRE_INTEGRATION_BASELINE_ONLY"
+  }
+}

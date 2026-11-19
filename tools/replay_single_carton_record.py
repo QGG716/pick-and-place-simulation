@@ -138,7 +138,8 @@ def main():
             scene = build_scene(SimpleNamespace(frame=frame, world_camera=obs['T_world_camera'], q_capture=obs['q_capture']),
                                 SimpleNamespace(observation_id=obs['observation_id'], masks=masks), boxes, config['site'],
                                 self_filter,neighbor_depth_m=neighbor_depth_bound(config.get('geometry')),
-                                unresolved_cartons=rejected if size_policy(config.get('geometry')) in NO_PRIOR_POLICIES else ())
+                                unresolved_cartons=rejected if size_policy(config.get('geometry')) in NO_PRIOR_POLICIES else (),
+                                geometry=config.get('geometry'))
         mark_incomplete_scene(scene,config.get('geometry'),rejected)
     timing.write_json(out/'geometry.json', dict(boxes=boxes, rejected=rejected, detections=detections), 'geometry.json', indent=2)
     timing.write_json(out/'site-scene.json', scene, 'site-scene.json')
@@ -153,7 +154,7 @@ def main():
                   scene_objects={c: sum(o['category'] == c for o in scene['world']) for c in {o['category'] for o in scene['world']}},
                   perception_and_scene_s=round(time.monotonic()-started, 2), detector=args.detector, detection=detection_report)
     report.update(frozen_scene=args.frozen_scene,source_hashes=before,q_start=obs['q_start'],q_capture=obs['q_capture'],
-                  planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock')})
+                  planning_policy={k:config.get(k) for k in ('wrist_branch_limits','posture_preference','contact_search','tool_robot_clearance','execution_lock','native_solver_budget_s')})
     print(json.dumps(dict(boxes=report['boxes'], rejected=[dict(detection_index=r['detection_index'],reason=r['reason'],
         visibility_bounds=(r.get('evidence') or {}).get('visibility_bounds')) for r in rejected],
         scene_objects=report['scene_objects']), ensure_ascii=False))

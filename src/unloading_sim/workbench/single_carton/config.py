@@ -173,6 +173,9 @@ def issues(c):
         try:check(c)
         except ValueError as e:errors.append(name+'：'+str(e))
     geometry=c.get('geometry',{})
+    from .stack_support import policy as stack_policy
+    try:stack_policy(geometry)
+    except ValueError as e:errors.append('geometry.confirmed_stack_support：'+str(e))
     from .size_policy import size_policy
     try:policy=size_policy(geometry)
     except ValueError as e:errors.append('geometry.size_policy：'+str(e));policy=None
@@ -213,6 +216,9 @@ def issues(c):
     lanes=c.get('parallel_candidate_lanes',1)
     if type(lanes)!=int or not 1<=lanes<=13:
         errors.append('parallel_candidate_lanes：同时规划的候选数（每个占一个原生进程），1 至 13（1 为逐个规划）')
+    solver=c.get('native_solver_budget_s',25.)
+    if type(solver) not in (int,float) or not math.isfinite(solver) or not 0<solver<=100:
+        errors.append('native_solver_budget_s：单次原生路径搜索预算（秒），0 < s ≤ 100；仍受统一规划截止时间约束')
     # Optional: absent keeps the per-request budgets; present sets one absolute
     # planning deadline from prepare_plan entry, and expiry is budget exhaustion.
     deadline=c.get('planning_deadline_s')

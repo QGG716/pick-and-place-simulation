@@ -168,7 +168,7 @@ class TaskManager:
                 with timing.span('observe.build_scene'):
                     self.scene=build_scene(self.observation,self.result,self.boxes,self.config['site'],self.self_filter,
                         neighbor_depth_m=neighbor_depth,
-                        unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else ())
+                        unresolved_cartons=rejected if size_policy(geometry) in NO_PRIOR_POLICIES else (),geometry=geometry)
                 if size_policy(geometry) in NO_PRIOR_POLICIES:
                     mark_incomplete_scene(self.scene,geometry,rejected)
                     for item in rejected:
@@ -218,6 +218,8 @@ class TaskManager:
                 raise ValueError('NO_REAL_BOX_WITH_TRUSTWORTHY_GEOMETRY: '+'; '.join(map(explain,rejected)))
             self.phase='TARGET_READY'
             self.reason=(f'可规划目标 {len(self.boxes)} 箱；另 {len(rejected)} 箱尺寸未解，已作为保守现场障碍保留。' if rejected else '')
+            if any(r.get('status')=='APPLIED' for r in (self.scene or {}).get('confirmed_stack_support',[])):
+                self.reason+=' 已按现场确认的叠放关系约束下箱支撑体，未将其包络尺寸冒充实测箱尺寸。'
             timing.add('observe.entry_to_target_ready',entered,timing.now()-entered)
         except Exception as e:self.reject(e);raise
         finally:

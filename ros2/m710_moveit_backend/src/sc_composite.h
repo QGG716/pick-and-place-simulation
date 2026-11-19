@@ -159,7 +159,7 @@ class CompositeRunner {
     Segment s;s.stage=stage;s.record=record;s.context=context;
     J result=call(req,record+"-pilz",120.);
     if(status(result)!="SUCCESS"&&linear&&!startsWith(status(result),"INVALID_START")) {
-      const std::pair<double,const char*> retries[3]={{.5,"0.5"},{.25,"0.25"},{.1,"0.1"}};
+      const std::pair<double,const char*> retries[4]={{.5,"0.5"},{.25,"0.25"},{.1,"0.1"},{.05,"0.05"}};
       for(const auto& [f,name]:retries) {
         req["velocity_scale"]=f;req["acceleration_scale"]=f;
         result=call(req,record+"-pilz-s"+name,120.);

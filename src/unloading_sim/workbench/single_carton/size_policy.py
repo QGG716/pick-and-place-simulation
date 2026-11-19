@@ -46,5 +46,6 @@ def unmodeled_cartons(scene):
     """An unknown size is allowed; silently omitting its obstacle is not."""
     represented={r['detection_index'] for r in scene.get('unresolved_carton_obstacles',[])
         if r.get('scope')=='STATIC_OBSTACLE_INTERSECTION_WITH_ENFORCED_WORKSPACE_NOT_PAYLOAD'
-        and r.get('sensor_free_cells_excluded') is True and r.get('user_clearance_applied') is False}
+        and (r.get('sensor_free_cells_excluded') is True or r.get('representation_complete') is True)
+        and r.get('user_clearance_applied') is False}
     return [i for i in scene.get('unbounded_carton_indices',[]) if i not in represented]

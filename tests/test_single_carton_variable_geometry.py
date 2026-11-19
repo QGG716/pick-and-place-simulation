@@ -86,3 +86,34 @@ def test_clipped_full_envelope_does_not_become_an_executable_small_box():
 
 def test_overlapping_distinct_detections_are_retained_for_neighbor_collision():
     assert carton_nms([[10,10,100,100],[12,10,102,100]],[.5,.4])==[0,1]
+
+
+def test_bowed_visible_side_is_in_payload_envelope_not_a_neighbor_obstacle():
+    # Literal six half-spaces: the measured right wall leans out by 7.2 mm
+    # toward the back. This is visible geometry, not a hidden-size prior.
+    shape=(350,400);yy,xx=np.indices(shape)
+    rays=np.stack(((xx-200)/450.,(yy-175)/450.,np.ones(shape)),-1)
+    rotation=Rotation.from_euler('xyz',(10,30,15),degrees=True).as_matrix()@np.diag([1.,-1.,-1.])
+    center=np.array([0.,0.,.7]);origin=-center@rotation;directions=rays@rotation
+    normals=np.array([[1,0,.06],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1.]])
+    offsets=np.array([.12+.06*.06,.12,.09,.09,.06,.06])
+    denominator=directions@normals.T
+    with np.errstate(divide='ignore',invalid='ignore'):
+        hits=(offsets-origin@normals.T)/denominator
+    near=np.where(denominator<0,hits,-np.inf).max(-1)
+    far=np.where(denominator>0,hits,np.inf).min(-1)
+    mask=(near<far)&(near>.1);points=rays*np.where(mask,near,1.4)[...,None]
+    box=recover(points,mask,np.eye(4))
+    face=box['faces'][0];pose=np.asarray(box['pose']);half=np.asarray(box['size_m'])/2
+    actual_local=(points-center)@rotation
+    side=mask&(abs(actual_local@normals[0]-offsets[0])<1e-8)
+    payload_local=(points[side]-pose[:3,3])@pose[:3,:3]
+    # Side-normal extent is conservative for every measured side sample.
+    assert np.max(abs(payload_local[:,0]))<=half[0]+1e-8
+    assert max(box['quality']['observed_side_envelope_expansion_m'])>.005
+    # No seal is gained by enlarging the collision envelope: its observed
+    # plane and finite contact rectangle stay at the actual front.
+    np.testing.assert_allclose(face['normal'],rotation[:,2],atol=1e-5)
+    np.testing.assert_allclose(np.asarray(face['size_m']),[.24,.18],atol=.004)
+    assert abs((np.asarray(face['center_m'])-center)@rotation[:,2]-.06)<1e-6
+    assert not box['quality']['unseen_surfaces_observed']

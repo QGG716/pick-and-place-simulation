@@ -4,8 +4,9 @@ import time
 def snapshot(self,boxes,failures,selected,error,deadline=None):
     """Per-target searched / unsearched candidate counts under the unified deadline.
 
-    A candidate is searched only when it was concluded: rejected (it has a
-    recorded failure) or accepted. Candidates screened but not planned, in
+    A candidate is searched when its attempt ended (a recorded failure,
+    including a per-solver budget expiry) or it was accepted. A per-solver
+    expiry is inconclusive and never counts as infeasible. Candidates screened but not planned, in
     flight at expiry, or never reached are unsearched and are never counted
     as infeasible. A definite target-level verdict concludes every candidate
     of that target. Overlapping uncertainty envelopes do not establish that
@@ -19,6 +20,8 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
         level=[f for f in failures if f.get('target')==ident and 'candidate' not in f]
         unresolved=any(f['reason'].startswith('GEOMETRY_UNCERTAINTY_') for f in level)
         failed={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f}
+        exhausted={f['candidate'] for f in failures if f.get('target')==ident and 'candidate' in f
+                   and 'NATIVE_SOLVER_BUDGET_EXHAUSTED' in f['reason']}
         if counts is None or counts['considered'] is None:
             # Candidates never generated: a target-level verdict, or not reached.
             status='GEOMETRY_UNRESOLVED' if unresolved else 'TARGET_REJECTED' if level else 'NOT_STARTED' if counts is None else (
@@ -31,17 +34,18 @@ def snapshot(self,boxes,failures,selected,error,deadline=None):
         considered=counts['considered']
         accepted=counts.get('accepted')
         if unresolved:
-            status,searched,infeasible='GEOMETRY_UNRESOLVED',len(failed&set(considered)),len(failed&set(considered))
+            status,searched,infeasible='GEOMETRY_UNRESOLVED',len(failed&set(considered)),len((failed-exhausted)&set(considered))
         elif level:
             status,searched,infeasible='TARGET_BLOCKED',len(considered),len(considered)
         else:
-            infeasible=len(failed&set(considered));searched=len((failed|({accepted} if accepted is not None else set()))&set(considered))
+            infeasible=len((failed-exhausted)&set(considered));searched=len((failed|({accepted} if accepted is not None else set()))&set(considered))
             status=(('SEARCH_SUCCEEDED_FINALIZATION_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_SUCCEEDED') if accepted is not None else
-                    'SEARCHED_NO_PLAN' if counts['phase']=='DONE' else
+                    ('SEARCH_BUDGET_EXHAUSTED_NO_PLAN' if exhausted else 'SEARCHED_NO_PLAN') if counts['phase']=='DONE' else
                     'BUDGET_EXHAUSTED_IN_'+counts['phase'] if error is not None else counts['phase'])
         targets.append(dict(target=ident,status=status,candidates=counts['candidates'],considered=len(considered),
                             screened=counts['screened'],searched=searched,unsearched=len(considered)-searched,
                             infeasible_candidates=infeasible,accepted_candidate=accepted,
+                            solver_budget_exhausted_candidates=len(exhausted&set(considered)),
                             target_reason=level[0]['reason'][:300] if level else None))
     return dict(status='PLANNING_BUDGET_EXHAUSTED' if error is not None else 'SEARCH_FINISHED_WITHIN_DEADLINE',
                 where=getattr(error,'where',None),detail=getattr(error,'detail',None),

@@ -7,11 +7,13 @@
 #include "native_deadline.h"
 namespace m710 {
 // Physical contact permission is confined to source-bound terminal skirts and
-// a named box. No robot, rigid tool, neighboring carton or unknown exemption.
+// a named box. Loaded support permission is source-bound with a penetration
+// guard; no robot, rigid tool, unnamed neighbour or unknown exemption.
 class SingleCartonContact {
   using J=nlohmann::json;
   J spec_; Eigen::Isometry3d target_, flange_cad_;
   std::vector<Eigen::Vector3d> rings_, sealing_rings_, corners_;
+  std::vector<std::pair<Eigen::Vector3d,double>> support_planes_;
   Eigen::Vector3d normal_,u_,v_,center_,half_,patch_center_;
   Eigen::Vector2d patch_half_;
   bool loaded_,contact_;
@@ -50,11 +52,25 @@ class SingleCartonContact {
                                double(spec_.at("face").at("size_m")[1])/2);
     const bool partial=spec_.contains("geometry_uncertainty") &&
       spec_.at("geometry_uncertainty").value("kind",std::string())=="BOUNDED_CUBOID_UNION";
+    const bool measured_side=spec_.contains("observed_side_envelope");
+    if(measured_side) {
+      const auto& e=spec_.at("observed_side_envelope");
+      const auto front=vec(e.at("front_dimensions_m"));
+      if(e.value("source",std::string())!="ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR" ||
+         e.at("expansion_m").size()!=2)throw std::runtime_error("SINGLE_CARTON_OBSERVED_SIDE_UNBOUND");
+      const double left=e.at("expansion_m")[0],right=e.at("expansion_m")[1];
+      if(!std::isfinite(left)||!std::isfinite(right)||left<0||right<0||
+         std::abs(front.x()+left+right-2*half_.x())>1e-8 ||
+         std::abs(front.y()-2*half_.y())>1e-8 || std::abs(front.z()-2*half_.z())>1e-8 ||
+         (front.head<2>()/2-patch_half_).norm()>1e-8 ||
+         std::abs(patch_center_.x()-(left-right)/2)>1e-8 || std::abs(patch_center_.y())>1e-8)
+        throw std::runtime_error("SINGLE_CARTON_OBSERVED_SIDE_UNBOUND");
+    }
     if((normal_-target_.linear().col(2)).norm()>1e-7 || (u_-target_.linear().col(0)).norm()>1e-7 ||
        (v_-target_.linear().col(1)).norm()>1e-7 || !patch_half_.allFinite() || (patch_half_.array()<=0).any() ||
        std::abs(patch_center_.z()-half_.z())>1e-7 ||
        (patch_center_.head<2>().cwiseAbs()+patch_half_-half_.head<2>()).maxCoeff()>1e-7 ||
-       (!partial && (patch_center_.head<2>().norm()>1e-7 || (patch_half_-half_.head<2>()).norm()>1e-9)))
+       (!partial && !measured_side && (patch_center_.head<2>().norm()>1e-7 || (patch_half_-half_.head<2>()).norm()>1e-9)))
       throw std::runtime_error("SINGLE_CARTON_FACE_NOT_BOUND_TO_BOX");
     bool target_found=false;
     for(const auto& b:req.at("world"))if(b.at("id")==target) {
@@ -98,14 +114,27 @@ class SingleCartonContact {
       target_=tf(a.at("pose"));
       for(int i:{-1,1})for(int j:{-1,1})for(int k:{-1,1})corners_.push_back(Eigen::Vector3d(i*half_[0],j*half_[1],k*half_[2]));
       for(const auto& support:spec_.at("supports")) {
-        const std::string id=support.at("id");double top=support.at("top_world_m");bool found=false;
+        const std::string id=support.at("id");bool found=false;
+        Eigen::Vector3d support_normal(0.,0.,1.);double top;
+        const bool inclined=support.contains("plane");
+        if(inclined) {
+          support_normal=vec(support.at("plane").at("normal_world"));top=support.at("plane").at("offset_m");
+          if(std::abs(support_normal.norm()-1.)>1e-8 || support_normal.z()<std::cos(10.*M_PI/180.) || !std::isfinite(top))
+            throw std::runtime_error("SINGLE_CARTON_SUPPORT_NORMAL_INVALID");
+        } else top=support.at("top_world_m");
         for(const auto& object:req.at("world"))if(object.at("id")==id) {
+          if(inclined && (object.value("category",std::string())!="confirmed_stack_support" ||
+              object.value("supports_target_id",std::string())!=target ||
+              object.value("support_basis",std::string()).empty() ||
+              !object.contains("support_plane") || object.at("support_plane")!=support.at("plane")))
+            throw std::runtime_error("SINGLE_CARTON_STACK_SUPPORT_IDENTITY_UNBOUND");
           auto T=tf(object.at("pose"));double highest=-INFINITY;
-          if(object.contains("convex_mesh"))for(const auto& p:object.at("convex_mesh").at("vertices"))highest=std::max(highest,(T*vec(p)).z());
-          else {auto size=vec(object.at("size"))/2;highest=T.translation().z()+T.linear().row(2).cwiseAbs().dot(size);}
+          if(object.contains("convex_mesh"))for(const auto& p:object.at("convex_mesh").at("vertices"))highest=std::max(highest,support_normal.dot(T*vec(p)));
+          else {auto size=vec(object.at("size"))/2;highest=support_normal.dot(T.translation())+(T.linear().transpose()*support_normal).cwiseAbs().dot(size);}
           if(std::abs(highest-top)>1e-8)throw std::runtime_error("SINGLE_CARTON_SUPPORT_PLANE_UNBOUND");found=true;
         }
         if(!found)throw std::runtime_error("SINGLE_CARTON_SUPPORT_UNKNOWN");
+        support_planes_.emplace_back(support_normal,top);
         allowed.push_back(J::array({target,id}));
       }
     } else if(!spec_.at("supports").empty())throw std::runtime_error("SINGLE_CARTON_UNLOADED_SUPPORT_EXCEPTION");
@@ -171,9 +200,9 @@ class SingleCartonContact {
         if(std::abs(d.x()-patch_center_.x())>patch_half_.x()-.003 || std::abs(d.y()-patch_center_.y())>patch_half_.y()-.003)
           return {{"reason","SINGLE_CARTON_SEAL_EDGE_COVERAGE"}};
       }
-      for(const auto& support:spec_.at("supports"))for(const auto& p:corners_)
-        if((box*p).z()<double(support.at("top_world_m"))-.0004)
-          return {{"reason","SINGLE_CARTON_PAYLOAD_SUPPORT_PENETRATION"},{"support",support.at("id")}};
+      for(std::size_t i=0;i<support_planes_.size();++i)for(const auto& p:corners_)
+        if(support_planes_[i].first.dot(box*p)<support_planes_[i].second-.0004)
+          return {{"reason","SINGLE_CARTON_PAYLOAD_SUPPORT_PENETRATION"},{"support",spec_.at("supports").at(i).at("id")}};
     } else if(contact_) {
       auto T=flange*flange_cad_;auto size=spec_.at("face").at("size_m");
       if((T.linear()*vec(spec_.at("geometry").at("normal_cad"))).dot(normal_)>-std::cos(.01))

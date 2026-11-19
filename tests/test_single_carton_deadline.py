@@ -71,7 +71,7 @@ def test_short_deadline_caps_solver_time_and_reports_it_as_budget_not_infeasible
     assert p.authority._plans == {}
 
 
-def test_per_call_solver_cap_with_ample_deadline_keeps_the_candidate_verdict(case):
+def test_per_call_solver_cap_with_ample_deadline_is_searched_but_not_infeasible(case):
     p, obs, box, folder, calls, opts = case
     opts['plan'] = lambda r: dict(status='NATIVE_SOLVER_BUDGET_EXHAUSTED') if r['stage'] == 'approach' else None
     with pytest.raises(ValueError, match='NO_COMPLETE_FEASIBLE_SINGLE_CARTON_PLAN') as raised:
@@ -80,8 +80,11 @@ def test_per_call_solver_cap_with_ample_deadline_keeps_the_candidate_verdict(cas
     budget = record['planning_budget']
     assert budget['status'] == 'SEARCH_FINISHED_WITHIN_DEADLINE'
     target = budget['targets'][0]
-    assert target['status'] == 'SEARCHED_NO_PLAN' and target['unsearched'] == 0
-    assert target['infeasible_candidates'] == target['considered'] == len(record['failures'])
+    assert target['unsearched'] == 0
+    assert target['searched'] == target['considered'] == len(record['failures'])
+    assert target['infeasible_candidates'] == 0
+    assert target['solver_budget_exhausted_candidates'] == target['considered']
+    assert target['status'] == 'SEARCH_BUDGET_EXHAUSTED_NO_PLAN'
     assert '已搜索' in str(raised.value) and '未搜索 0' in str(raised.value)
 
 
@@ -219,6 +222,21 @@ def test_planning_deadline_configuration(value, ok):
         config['planning_deadline_s'] = value
     found = [e for e in issues(config) if e.startswith('planning_deadline_s')]
     assert (not found) == ok
+
+
+@pytest.mark.parametrize('value,ok',[(25.,True),(90.,True),(0,False),(101,False),(float('nan'),False),(True,False),('90',False)])
+def test_solver_budget_configuration_stays_bounded(value,ok,case):
+    p,*_=case;p.site['native_solver_budget_s']=value
+    assert (not [e for e in issues(p.site) if e.startswith('native_solver_budget_s')])==ok
+
+
+def test_longer_solver_budget_cannot_extend_absolute_deadline(case):
+    p,*_=case;p.site['native_solver_budget_s']=90.
+    p.deadline_reference=time.monotonic();p.deadline=p.deadline_reference+.5
+    request=p.deadline_fields(p.plan_request({'q_start':[0.]*6},[.1]*6,False),110.)
+    assert request['allowed_planning_time_s']==90.
+    assert 0<request['request_budget_s']<=.5
+    assert request['absolute_deadline_monotonic_s']==p.deadline-DEADLINE_REPLY_RESERVE_S
 
 
 def test_prepare_plan_passes_one_absolute_deadline_from_its_entry():

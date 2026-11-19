@@ -1,0 +1,202 @@
+[INFO] [1795083179.279230689] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.279312262] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.280361846] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.280395582] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283058697] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283085332] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283235499] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283240562] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283332353] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283337399] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283397489] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283401068] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283455421] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283459669] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283510209] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283512992] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283561725] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283565016] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283650826] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283654267] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.283734432] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.283737681] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[INFO] [1795083179.284725226] [moveit_robot_model.robot_model]: Loading robot model 'test'...
+[INFO] [1795083179.284734728] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+{
+  "attached_failure": {
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "neighbor",
+      "payload"
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.001999999999999988
+  },
+  "conservative_rotated_local_bounds": "PASS",
+  "controlled_exact_repeat_reuse": "PASS",
+  "cup_permission_not_rigid": "PASS",
+  "edge_counts": {
+    "collision_check_mode": "EXACT",
+    "continuous_swept_proof": false,
+    "counts": {
+      "endpoint": {
+        "bookkeeping_s": 4.7e-08,
+        "clearance_rejected": 0,
+        "distance_api_calls": 4,
+        "legacy_witness_checks": 0,
+        "legacy_witness_s": 0.0,
+        "queries": 2,
+        "rejected": 0,
+        "seconds": 5.368e-06,
+        "valid": 2
+      },
+      "output": {
+        "bookkeeping_s": 9.091000000000003e-06,
+        "clearance_rejected": 1,
+        "distance_api_calls": 804,
+        "legacy_witness_checks": 0,
+        "legacy_witness_s": 0.0,
+        "queries": 402,
+        "rejected": 1,
+        "seconds": 0.0008330530000000003,
+        "valid": 401
+      }
+    },
+    "dense_path_calls": 1,
+    "distance_method": "MoveIt_FCL_unpadded_pair_minima",
+    "evidence_materialization_s": 1.7115e-05,
+    "exact_repeated_path_states_reused": 0,
+    "mode": "reference",
+    "policy": {
+      "conveyor_ids": [],
+      "numerical_gap_tolerance_m": 1e-09,
+      "payload_id": "",
+      "receiver_reserve_m": 0.0,
+      "schema": "m710_native_free_clearance_v1",
+      "source_policy": {
+        "required_pair_clearance_m": 0.005,
+        "schema": "m710_poc_pair_collision_policy_v4",
+        "self_collision_clearance_m": 0.0
+      },
+      "stage": "transit",
+      "tool_links": [
+        "tool"
+      ]
+    },
+    "profile": {
+      "self_distance_api_s": 0.000305302,
+      "state_copy_update_s": 6.0352999999999976e-05,
+      "world_distance_api_s": 0.00033739300000000007
+    },
+    "query_range_m": 0.006,
+    "rejected_examples": [
+      {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "wall",
+          "tool"
+        ],
+        "phase": "output",
+        "q_rad": [
+          0.025312500000000016
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "robot_tool_payload_to_world",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.00468749999999999
+      }
+    ],
+    "search_gap_witness": null,
+    "search_payload_query_range_m": 0.006,
+    "search_reserve_scope": "ATTACHED_PAYLOAD_PAIRS_DURING_SEARCH_ONLY_OUTPUT_POLICY_UNCHANGED",
+    "tool_robot_clearance_m": 0.0,
+    "workspace": null
+  },
+  "inclined_confirmed_carton_support_and_04mm_guard": "PASS",
+  "mode": "reference",
+  "named_robot_tool_exemption": "PASS",
+  "observed_side_envelope_preserves_contact_and_attachment": "PASS",
+  "partial_observed_patch_and_complete_uncertainty_envelope": "PASS",
+  "payload_receiver_stage_thresholds": "PASS",
+  "physical_passive_lip_contact_and_loaded_seal_guards": "PASS",
+  "physical_single_carton_contact_and_loaded_support": "PASS",
+  "rigid_carton_policy": "PASS",
+  "scope": "synthetic implementation checks only",
+  "self_tool_and_diff": "PASS",
+  "status": "PASS",
+  "threshold_cases": [
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004000000000000001
+      },
+      "gap": 0.004,
+      "valid": false
+    },
+    {
+      "failure": {
+        "numerical_gap_tolerance_m": 1e-09,
+        "pair": [
+          "robot",
+          "tool"
+        ],
+        "query_range_m": 0.006,
+        "query_scope": "self_including_robot_tool_and_payload",
+        "reason": "CLEARANCE_INSUFFICIENT",
+        "required_pair_clearance_m": 0.005,
+        "surface_distance_m": 0.004999997999999999
+      },
+      "gap": 0.004999998,
+      "valid": false
+    },
+    {
+      "failure": null,
+      "gap": 0.0049999995,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.0050000005,
+      "valid": true
+    },
+    {
+      "failure": null,
+      "gap": 0.006,
+      "valid": true
+    }
+  ],
+  "valid_endpoints_invalid_edge": {
+    "edge": 0,
+    "fraction": 0.6265625,
+    "numerical_gap_tolerance_m": 1e-09,
+    "pair": [
+      "wall",
+      "tool"
+    ],
+    "q_rad": [
+      0.025312500000000016
+    ],
+    "query_range_m": 0.006,
+    "query_scope": "robot_tool_payload_to_world",
+    "reason": "CLEARANCE_INSUFFICIENT",
+    "required_pair_clearance_m": 0.005,
+    "surface_distance_m": 0.00468749999999999
+  }
+}

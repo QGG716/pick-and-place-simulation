@@ -285,6 +285,35 @@ void physicalSingleCartonCases(J& out) {
   bad=loaded;bad["attachment"]["pose"][2][3]=-.001;m710::SingleCartonContact under(bad);
   require(!under.check(s->getCurrentState()).is_null(),"PHYSICAL_PAYLOAD_SUPPORT_PENETRATION");
   bad=loaded;bad["single_carton_contact"]["supports"][0]["top_world_m"]=-.1;rejects(bad);
+  // Same 0.4 mm loaded-support guard in signed plane distance. The named
+  // supporting carton is bound to the exact source object, not a blanket ACM.
+  auto inclined=loaded;const double angle=5.*M_PI/180.;
+  const Eigen::Vector3d sn(std::sin(angle),0.,std::cos(angle));
+  const double sd=-.075*sn.x()-.05*sn.z();
+  J plane={{"normal_world",{sn.x(),sn.y(),sn.z()}},{"offset_m",sd}};
+  auto sp=I;sp[0][0]=std::cos(angle);sp[0][2]=std::sin(angle);sp[2][0]=-std::sin(angle);sp[2][2]=std::cos(angle);
+  for(int k=0;k<3;++k)sp[k][3]=sn[k]*(sd-.005);
+  inclined["world"][1]={{"id","support"},{"size",{1.,1.,.01}},{"pose",sp},
+    {"category","confirmed_stack_support"},{"supports_target_id","target"},
+    {"support_basis","SYNTHETIC_STACK_TEST_NOT_FIELD_EVIDENCE"},{"support_plane",plane}};
+  inclined["single_carton_contact"]["supports"]=J::array({{{"id","support"},{"plane",plane}}});
+  m710::SingleCartonContact inclined_support(inclined);
+  require(inclined_support.check(s->getCurrentState()).is_null(),"INCLINED_SUPPORT_CONTACT");
+  auto near_limit=s->getCurrentState();
+  near_limit.setJointGroupPositions("manipulator",std::vector<double>{-.00039/sn.x()});near_limit.update();
+  require(inclined_support.check(near_limit).is_null(),"INCLINED_SUPPORT_039MM_WITHIN_GUARD");
+  near_limit.setJointGroupPositions("manipulator",std::vector<double>{-.00041/sn.x()});near_limit.update();
+  require(!inclined_support.check(near_limit).is_null(),"INCLINED_SUPPORT_041MM_EXCEEDS_GUARD");
+  auto below=s->getCurrentState();below.setJointGroupPositions("manipulator",std::vector<double>{-.01});below.update();
+  require(!inclined_support.check(below).is_null(),"INCLINED_SUPPORT_04MM_PENETRATION_GUARD");
+  bad=inclined;bad["world"][1]["support_basis"]="";rejects(bad);
+  bad=inclined;bad["world"][1]["supports_target_id"]="other-carton";rejects(bad);
+  bad=inclined;bad["world"][1]["pose"][2][3]=.1;rejects(bad);
+  bad=inclined;bad["single_carton_contact"]["supports"][0]["plane"]["normal_world"]={0.,0.,2.};rejects(bad);
+  bad=inclined;bad["single_carton_contact"]["supports"][0]["plane"]["offset_m"]=sd+.001;rejects(bad);
+  bad=inclined;bad["attachment"]=nullptr;rejects(bad);
+  bad=inclined;bad["allowed_pairs"].push_back({"robot","support"});rejects(bad);
+  out["inclined_confirmed_carton_support_and_04mm_guard"]="PASS";
   // A passive, nonsealing ring crosses the target edge. Its terminal skirt
   // can touch the target plane, but contributes no anticipated seal.
   auto passive=req;
@@ -320,6 +349,27 @@ void physicalSingleCartonCases(J& out) {
   bad=pload;bad["single_carton_contact"]["geometry"]["contours"][1]["points_m"][0][1]=-.001;
   m710::SingleCartonContact loadedEdgeUnder(bad);require(!loadedEdgeUnder.check(s->getCurrentState()).is_null(),"LOADED_PASSIVE_EDGE_PENETRATION_REJECTED");
   out["physical_passive_lip_contact_and_loaded_seal_guards"]="PASS";
+  // A measured side may extend beyond the front rectangle. Bind the larger
+  // full payload to that unchanged observed seal patch arithmetically.
+  auto observed_side=req;auto side_pose=pose;side_pose[0][3]=.004;
+  observed_side["world"][0]["pose"]=side_pose;observed_side["world"][0]["size"]={.158,.1,.1};
+  auto& os=observed_side["single_carton_contact"];
+  os["target_pose"]=side_pose;os["size_m"]={.158,.1,.1};
+  os["observed_side_envelope"]={{"source","ALL_ACCEPTED_SIDE_PLANE_SAMPLES_NO_SIZE_PRIOR"},
+    {"front_dimensions_m",{.15,.1,.1}},{"expansion_m",{0.,.008}}};
+  m710::SingleCartonContact measured_side(observed_side);
+  require(measured_side.check(s->getCurrentState()).is_null(),"OBSERVED_SIDE_BOUND_WITH_UNCHANGED_PATCH");
+  observed_side["attachment"]={{"id","target"},{"size",{.158,.1,.1}},{"pose",side_pose},{"touch_links",{"tool"}}};
+  m710::SingleCartonContact measured_side_loaded(observed_side);
+  require(measured_side_loaded.check(s->getCurrentState()).is_null(),"OBSERVED_SIDE_LOADED_PATCH_VALID");
+  bad=observed_side;bad["attachment"]["pose"][0][3]=.073;
+  m710::SingleCartonContact side_no_seal_gain(bad);
+  require(!side_no_seal_gain.check(s->getCurrentState()).is_null(),"OBSERVED_SIDE_EXPANSION_GAINS_NO_SEAL_AREA");
+  bad=observed_side;bad["single_carton_contact"]["observed_side_envelope"]["expansion_m"]={0.,.007};rejects(bad);
+  bad=observed_side;bad["single_carton_contact"]["observed_side_envelope"]["expansion_m"]={-.001,.009};rejects(bad);
+  bad=observed_side;bad["single_carton_contact"].erase("observed_side_envelope");rejects(bad);
+  bad=observed_side;bad["single_carton_contact"]["observed_side_envelope"]["source"]="UNBOUND";rejects(bad);
+  out["observed_side_envelope_preserves_contact_and_attachment"]="PASS";
   // A small observed patch may lie on a much larger uncertain payload bound.
   // Only the observed rectangle counts as a seal, including while attached.
   auto partial=req;

@@ -1,0 +1,18 @@
+{
+  "issues": [],
+  "camera": {
+    "serial": "",
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "stack_support": {
+    "mode": "USER_CONFIRMED_TWO_CARTON_STACK",
+    "basis": "USER_FIELD_CONFIRMATION_2026_11_19_TWO_DIFFERENT_CARTONS_STACKED_LOWER_SUPPORTS_UPPER_NO_OCCLUSION_CURRENT_RGBD_ONLY"
+  },
+  "size_policy": "MEASURED_PER_INSTANCE",
+  "native_solver_budget_s": 25.0,
+  "calibration_sha256": "73946bc457de625353fa65ad181a1de0ffdba9ba0b64ca0ae1ff3d52e7b325c7",
+  "motion_commands_sent": false,
+  "valve_commands_sent": false
+}
